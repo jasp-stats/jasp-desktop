@@ -22,7 +22,7 @@ public:
 	QSqlQuery	runQuery()	const;
 	
 	
-	DbType  _dbType			= DbType::QODBC;
+	DbType  _dbType			= DbType::NOTCHOSEN;
 	QString _username		= "",
 			_password		= "",
 			_database		= "",

@@ -77,27 +77,43 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		anchors.top:		warning.bottom
 		anchors.topMargin:	jaspTheme.generalAnchorMargin
 
-		ComboBox
-		{
-			id:						dbDriver
-			fieldWidth:				400
-
-
-			label:					qsTr("Choose DB driver")
-
-			currentIndex:			fileMenuModel.database.dbType
-			onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-
-			source:					fileMenuModel.database.dbTypes 
-
-			KeyNavigation.tab:		dbHostnameInput
-		}
-
 		Item
 		{
 			anchors.left:		parent.left;
 			anchors.right:		parent.right;
-			height:				childrenRect.height
+			height:				Math.max(dbDriverLabel.contentHeight, dbDriver.implicitHeight)
+
+			Text
+			{
+				id:						dbDriverLabel
+				text:					qsTr("Choose DB driver")
+
+				anchors.verticalCenter: parent.verticalCenter
+				width:					dbHostnameLabel.width
+			}
+		
+			QC.ComboBox
+			{
+				id:						dbDriver
+				x:						dbHostnameLabel.width
+				width:					dbHostnameInput.width
+
+				focus:					true
+	
+				currentIndex:			fileMenuModel.database.dbType
+				onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+				model:					fileMenuModel.database.dbTypes 
+	
+				KeyNavigation.tab:		dbHostnameInput
+			}
+		}
+
+		Item
+		{
+			id:					dbHostnameItem
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				Math.max(dbHostnameLabel.contentHeight, dbHostnameInput.implicitHeight)
 
 			Text
 			{
@@ -105,8 +121,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:					qsTr("Hostname")
 
 				anchors.verticalCenter: parent.verticalCenter
-				onWidthChanged:			console.log("dbHostnameLabel width: " + width);
-				width:					jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth)
+				width:					jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth, dbDriverLabel.contentWidth)
 			}
 
 			PrefsTextInput
@@ -118,7 +133,6 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 				x:				dbHostnameLabel.width
 				width:			parent.width - dbHostnameLabel.width
-				onWidthChanged: console.log("dbHostnameInput width: " + width);
 			}
 		}
 
@@ -126,7 +140,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		{
 			anchors.left:		parent.left;
 			anchors.right:		parent.right;
-			height:				childrenRect.height
+			height:				dbHostnameItem.height
 			
 			Text
 			{
@@ -154,7 +168,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		{
 			anchors.left:		parent.left;
 			anchors.right:		parent.right;
-			height:				childrenRect.height
+			height:				dbHostnameItem.height
 
 			Text
 			{
@@ -180,7 +194,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		{
 			anchors.left:		parent.left;
 			anchors.right:		parent.right;
-			height:				childrenRect.height
+			height:				dbHostnameItem.height
 
 			Text
 			{
@@ -206,7 +220,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		{
 			anchors.left:		parent.left;
 			anchors.right:		parent.right;
-			height:				childrenRect.height		
+			height:				dbHostnameItem.height		
 
 			Text
 			{
@@ -250,7 +264,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				id:						dbQueryLabel
 				text:					qsTr("Query")
 				width:					implicitWidth + jaspTheme.generalAnchorMargin
-				anchors.verticalCenter: parent.verticalCenter
+				//anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -288,7 +302,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 			height:			childrenRect.height
 			anchors
 			{
-				left:		parent.right
+				left:		parent.left
 				right:		parent.right
 				margins:	jaspTheme.generalAnchorMargin
 			}
@@ -299,6 +313,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:					qsTr("Load into JASP")
 				onClicked:				fileMenuModel.database.importResults();
 				KeyNavigation.tab:		intervalSpinner
+				anchors.left:			parent.left
 			}
 			
 			SpinBox
@@ -307,7 +322,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				value:				fileMenuModel.database.interval
 				onValueChanged:		if(value != "") fileMenuModel.database.interval = value
 				from:				0
-				to:					24 * 60 * 7 // do we want to have bigger than a week interval?
+				to:					24 * 60 * 7 // do we want to allow for an interval bigger than a week?
 				defaultValue:		0 
 				stepSize:			1
 				text:				qsTr("Synching interval in minutes: ")

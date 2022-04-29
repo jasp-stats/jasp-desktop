@@ -37,7 +37,10 @@ void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 
 bool DatabaseConnectionInfo::connect() const
 {
-	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");//DbTypeToQString(_dbType));
+	QString			dbTypeString	= DbTypeToQString(_dbType);
+	Log::log() << "dbTypeString is '" << dbTypeString << "'" << std::endl;
+	
+	QSqlDatabase	db				= QSqlDatabase::addDatabase(dbTypeString);
 
 	db.setDatabaseName(	_database);
 	db.setHostName(		_hostname);

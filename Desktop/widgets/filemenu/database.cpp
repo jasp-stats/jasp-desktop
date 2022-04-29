@@ -1,6 +1,5 @@
 #include "database.h"
 #include "utilities/settings.h"
-#include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
@@ -12,20 +11,24 @@ const QStringList Database::dbTypes()
 	//Should be the *exact* same as DbType definition!
 	return {	tr("Choose a database driver..."					),
 				tr("IBM DB2"										),
-				tr("Borland InterBase Driver"						),
+				
+				/*tr("Borland InterBase Driver"						),*/
+
 				tr("MySQL Driver"									),
 				tr("Oracle Call Interface Driver"					),
 				tr("ODBC Driver (includes Microsoft SQL Server)"	),
 				tr("PostgreSQL Driver"								),
-				tr("SQLite version 3 or above"						),
+				tr("SQLite version 3 or above"						)
+				
+				/*,
 				tr("SQLite version 2"								),
-				tr("Sybase Adaptive Server"							) };
+				tr("Sybase Adaptive Server"							)*/ };
 }
 
 Database::Database(QObject *parent)
 	: FileMenuObject{parent}
 {
-	_info._dbType	= DbType::QODBC;// just hardcode this until combobox works static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
+	_info._dbType	= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
 	_info._database	=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
 	_info._hostname	=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
 	_info._port		=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
@@ -166,7 +169,7 @@ void Database::setDbType(const DbType newDbType)
 {
 	if (_info._dbType == newDbType)
 		return;
-	
+
 	_info._dbType = newDbType;
 	Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_info._dbType));
 	
