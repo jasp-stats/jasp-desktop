@@ -66,9 +66,8 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent, boo
 {
 	_name			= extractPackageNameFromArchive(modulePackageFile);
 	_moduleFolder	= QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(_name) + "/");
-	unpackage();
 
-	loadDescriptionFromFolder(_modulePackage);
+	loadDescriptionFromArchive(_modulePackage);
 }
 
 QFileInfo DynamicModule::developmentModuleFolder()
@@ -384,28 +383,6 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	requestJson["moduleCode"]		= generateModuleLoadingR();
 
 	return requestJson;
-}
-
-void DynamicModule::unpackage()
-{
-	if(_modulePackage == "")
-	{
-		Log::log() << "DynamicModule::unpackage has some trouble because _modulePackage is empty..." << std::endl;
-
-		setInstallLog("Installing module " + _name + " failed because package filepath was not specified");
-		setStatus(moduleStatus::error);
-		return;
-	}
-
-	std::string tmpDir = TempFiles::createTmpFolder(),
-				modDir = tmpDir + "/" + _name;
-
-	ExtractArchive::extractArchiveToFolder(_modulePackage, modDir);
-
-	Log::log() << "Unpacked module to folder " << modDir << std::endl;
-
-	_modulePackage = modDir;
-
 }
 
 std::string DynamicModule::getLibPathsToUse()

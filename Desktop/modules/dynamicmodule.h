@@ -188,7 +188,6 @@ public:
 	static std::string	extractPackageNameFromDescriptionQmlTxt(	const std::string & descriptionQmlTxt);
 	static std::string	extractPackageNameFromDescriptionJsonTxt(	const std::string & descriptionJsonTxt);
 
-	void unpackage();
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
 	static Description	* instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
 	static Upgrades		* instantiateUpgradesQml(	const QString & upgradesTxt,	const QUrl & url, const std::string & moduleName);

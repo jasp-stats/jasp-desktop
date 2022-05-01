@@ -269,10 +269,6 @@ void DynamicModules::replaceModule(DynamicModule * module)
 
 	_modules[moduleName] = module;
 
-	//Tmp folder with pkg data was removed so lets unpackage (again)
-	if(!module->isDevMod())
-		module->unpackage();
-
 	emit unloadModule(moduleName);
 	emit dynamicModuleReplaced(oldModule, module);
 	emit dynamicModuleChanged(module);
@@ -515,10 +511,7 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 	if(_modules.count(moduleName) > 0 && _modules[moduleName]->isBundled())
 		replaceModule(dynMod);
 	else
-	{
-		dynMod->unpackage();
 		_modules[moduleName] = dynMod;
-	}
 
 	registerForInstalling(moduleName);
 
