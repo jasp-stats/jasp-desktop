@@ -108,7 +108,7 @@
 	branch = master
 [submodule "Modules/jaspBsts"]
 	path = Modules/jaspBsts
-	url = https://github.com/jasp-stats/jaspBSTS
+	url = https://github.com/jasp-stats/jaspBsts
 	branch = master
 [submodule "Common/jaspColumnEncoder"]
 	path = Common/jaspColumnEncoder
