@@ -297,7 +297,7 @@ Window
 
 			JW.RoundedButton
 			{
-				id:		clearOutput
+				id:			clearOutput
 				text:		qsTr("Clear Output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
 				width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
@@ -305,7 +305,7 @@ Window
 				anchors
 				{
 					top:		parent.verticalCenter
-					left:		parent.left
+					right:		parent.right
 					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 					topMargin:	jaspTheme.generalAnchorMargin * 0.5

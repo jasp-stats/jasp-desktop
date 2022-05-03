@@ -64,7 +64,7 @@ Window
 
 				Rectangle
 				{
-					height: parent.height * 0.5
+					height: parent.height * 0.4
 					width:	height
 					radius: height
 
@@ -79,20 +79,21 @@ Window
 						verticalCenter:	parent.verticalCenter
 					}
 			}
+				
 		}
 
 		JASPMouseAreaToolTipped
 		{
-			acceptedButtons:	Qt.MiddleButton
+			acceptedButtons:	Qt.MiddleButton | Qt.RightButton
 
-			toolTipText:		qsTr("Middle mouse button to kill an engine.")
+			toolTipText:		qsTr("Right and middle mouse button to kill an engine.")
 
 
 
 			onClicked: (mouse) =>
 			{
 				messages.log("engine pressed " + model.engineState + " #" + model.channel);
-				if(mouse.button == Qt.MiddleButton)
+				if(mouse.button == Qt.MiddleButton || mouse.button == Qt.RightButton)
 				{
 					//messages.log("killing!");
 					engineSync.killEngine(model.channel);

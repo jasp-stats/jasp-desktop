@@ -174,13 +174,13 @@ private:
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::map<std::string,
-		EngineRepresentation * >		_moduleEngines;					///<An engine per module active. Engines will be started and closed as needed.
-	std::set<EngineRepresentation*>		_engines,						///<All analysis/utility/module engines, excepting _rCmder
+		EngineRepresentation * >		_moduleEngines;					///< An engine per module active. Engines will be started and closed as needed.
+	std::set<EngineRepresentation*>		_engines,						///< All analysis/utility/module engines, excepting _rCmder
 										_logCfgRequested;
-	std::vector<IPCChannel*>			_channels;						///<Channels are instantiated separately from the engines to avoid boost messing up
-	EngineRepresentation			*	_rCmder				= nullptr;	///<For those special occassions where you just want to shout at R in a more personal manner
-	IPCChannel						*	_rCmderChannel		= nullptr;	///<The channel for shouting at R in a more personal manner
-	std::vector<long>					_engineStopTimes;				///<Here we keep track of how long ago it is an engine shut down, this way we can give it a slight time between closing and starting an engine. To avoid shared memory problems on windows.
+	std::vector<IPCChannel*>			_channels;						///< Channels are instantiated separately from the engines to avoid boost messing up
+	EngineRepresentation			*	_rCmder				= nullptr;	///< For those special occassions where you just want to shout at R in a more personal manner
+	IPCChannel						*	_rCmderChannel		= nullptr;	///< The channel for shouting at R in a more personal manner
+	std::vector<long>					_engineStopTimes;				///< Here we keep track of how long ago it is an engine shut down, this way we can give it a slight time between closing and starting an engine. To avoid shared memory problems on windows.
 
 };
 
