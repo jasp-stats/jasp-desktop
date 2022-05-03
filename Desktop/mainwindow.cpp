@@ -1473,16 +1473,16 @@ void MainWindow::startDataEditor(QString path)
 	if (appname.isEmpty())
 		useDefaultSpreadsheetEditor = true;
 
-	QString startProcess;
 	if (!useDefaultSpreadsheetEditor)
 	{
+		QStringList args;
 #ifdef __APPLE__
-		appname = appname.mid(appname.lastIndexOf('/') + 1);
-		startProcess = "open -a \"" + appname + "\" \"" + path + "\"";
+		args = {"-a", appname, path};
+		appname = "open";
 #else
-		startProcess = "\"" + appname + "\" \"" + path + "\"";
+		args = {path};
 #endif
-		if (!QProcess::startDetached(startProcess))
+		if (!QProcess::startDetached(appname, args))
 			MessageForwarder::showWarning(tr("Start Editor"), tr("Unable to start the editor : %1. Please check your editor settings in the preference menu.").arg(appname));
 	}
 	else
