@@ -106,6 +106,10 @@
 	path = Modules/jaspCircular
 	url = https://github.com/jasp-stats/jaspCircular
 	branch = master
+[submodule "Modules/jaspBsts"]
+	path = Modules/jaspBsts
+	url = https://github.com/jasp-stats/jaspBsts
+	branch = master
 [submodule "Common/jaspColumnEncoder"]
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
