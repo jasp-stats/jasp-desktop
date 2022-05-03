@@ -618,7 +618,7 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
 		return;
 
-	bool readyForUseInvolved = newStatus == moduleStatus::readyForUse || _status == moduleStatus::readyForUse;
+	bool readyForUseInvolved = ( newStatus == moduleStatus::readyForUse ) || ( _status == moduleStatus::readyForUse );
 
 	_status = newStatus;
 

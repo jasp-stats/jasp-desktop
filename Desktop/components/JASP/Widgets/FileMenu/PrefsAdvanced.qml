@@ -335,7 +335,7 @@ ScrollView
 				stepSize:			1
 				KeyNavigation.tab:	showEnginesWindow
 				KeyNavigation.down:	showEnginesWindow
-				text:				qsTr("Maximum # of engines: ")
+				text:				qsTr("Maximum number of engines: ")
 			}
 
 			RoundedButton
