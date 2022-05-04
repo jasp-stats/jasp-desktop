@@ -18,9 +18,7 @@ Description::Description(QQuickItem *parent) : QQuickItem(parent)
 
 Description::~Description()
 {
-	for(EntryBase * entry : _entries)
-		delete entry;
-
+	//We let qml handle destroying the children
 	_entries.clear();
 }
 
