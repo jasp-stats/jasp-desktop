@@ -33,6 +33,7 @@ class FactorLevelListBase :  public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString			levelPlaceHolder	READ levelPlaceHolder		WRITE setLevelPlaceHolder		NOTIFY levelPlaceHolderChanged		)
 	Q_PROPERTY( int				minFactors			READ minFactors				WRITE setMinFactors				NOTIFY minFactorsChanged			)
 	Q_PROPERTY( int				minLevels			READ minLevels				WRITE setMinLevels				NOTIFY minLevelsChanged				)
+	Q_PROPERTY( int				nbFactors			READ nbFactors												NOTIFY nbFactorsChanged				)
 
 public:
 	FactorLevelListBase(QQuickItem* parent = nullptr);
@@ -52,6 +53,7 @@ public:
 	QString			levelPlaceHolder()					const				{ return _levelPlaceHolder;		}
 	int				minFactors()						const				{ return _minFactors;			}
 	int				minLevels()							const				{ return _minLevels;			}
+	int				nbFactors()							const				{ return _nbFactors;			}
 
 	QString			getFactorName(int i)				const				{ return QStringLiteral("%1 %2").arg(_factorName).arg(i);	}
 	QString			getLevelName(int i)					const				{ return QStringLiteral("%1 %2").arg(_levelName).arg(i);	}
@@ -66,6 +68,7 @@ signals:
 	void			levelPlaceHolderChanged();
 	void			minFactorsChanged();
 	void			minLevelsChanged();
+	void			nbFactorsChanged();
 
 protected slots:
 	void			termsChangedHandler() override;
@@ -77,6 +80,7 @@ protected:
 	GENERIC_SET_FUNCTION(LevelPlaceHolder,		_levelPlaceHolder,		levelPlaceHolderChanged,	QString		)
 	GENERIC_SET_FUNCTION(MinFactors,			_minFactors,			minFactorsChanged,			int			)
 	GENERIC_SET_FUNCTION(MinLevels,				_minLevels,				minLevelsChanged,			int			)
+	GENERIC_SET_FUNCTION(NbFactors,				_nbFactors,				nbFactorsChanged,			int			)
 
 private:
 	ListModelFactorLevels*				_factorLevelsModel	= nullptr;
@@ -86,7 +90,8 @@ private:
 	QString								_factorPlaceHolder;
 	QString								_levelPlaceHolder;
 	int									_minFactors			=	1,
-										_minLevels			=	2;
+										_minLevels			=	2,
+										_nbFactors			=	1;
 
 };
 
