@@ -41,10 +41,6 @@
 #include "utilities/qutils.h"
 #include "utilities/processhelper.h"
 
-
-
-
-
 using namespace boost::interprocess;
 
 EngineSync * EngineSync::_singleton = nullptr;
@@ -361,6 +357,9 @@ void EngineSync::shutdownBoredEngines()
 void EngineSync::process()
 {
 	if(_stopProcessing)	return;
+
+	if(_rCmder)
+		_rCmder->processReplies();
 	
 	restartKilledAndStoppedEngines();
 	shutdownBoredEngines();
@@ -664,6 +663,9 @@ bool EngineSync::anEngineIdleSoon() const
 
 IPCChannel *EngineSync::channel(size_t channelNumber)
 {
+	if(_rCmderChannel && channelNumber == _rCmderChannel->channelNumber())
+		return _rCmderChannel;
+
 	if(channelNumber > _channels.size())
 	{
 		Log::log() << "IPCChannel requested for channel #" + std::to_string(channelNumber) + " but only " + std::to_string(_channels.size()) + " exist...";
