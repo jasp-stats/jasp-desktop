@@ -133,5 +133,6 @@ void FactorLevelListBase::termsChangedHandler()
 		boundValue.append(row);
 	}
 	
+	setNbFactors(factors.size());
 	setBoundValue(boundValue);
 }
