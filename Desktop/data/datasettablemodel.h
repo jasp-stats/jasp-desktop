@@ -51,7 +51,7 @@ public:
 	columnType				getColumnType(size_t column)			const				{ return DataSetPackage::pkg()->getColumnType(column);								}
 	std::string				getColumnName(size_t col)				const				{ return DataSetPackage::pkg()->getColumnName(col);									}
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
-	QStringList				getColumnLabelsAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnLabelsAsStringList(col);					}
+	QStringList				getColumnLabelsAsStringList(int col)	const;
 	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
 	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
