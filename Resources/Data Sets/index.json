@@ -353,6 +353,13 @@
           "description": "Men's libido (and that of their partners) after having been administered different doses of Viagra. <br><br> The example JASP file demonstrates the use of an ANCOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
           "kind": "file",
           "associated_datafile": "Viagra.csv"
+        },
+        {
+          "name": "Stroop",
+          "path": "Stroop.jasp",
+          "description": "Response times of 19 partitipants on a Stroop task. <br><br> The example JASP file demonstrates the use of a repeated measures ANOVA.<br><br> <i>Data courtesy of Ronen Hershman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stroop.csv"
         }
       ],
       "debug": false

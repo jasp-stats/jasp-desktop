@@ -353,6 +353,13 @@
           "description": "Mannen hun libido (en dat van hun partners) nadat zij verschillende doseringen Viagra hebben gehad. <br><br> Het voorbeeldbestand in JASP laat zien hoe een ANCOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
           "kind": "file",
           "associated_datafile": "Viagra.csv"
+        },
+        {
+          "name": "Stroop",
+          "path": "Stroop.jasp",
+          "description": "Responstijden van 19 participanten op een Stroop taak. <br><br> Het voorbeeldbestand in JASP laat zien hoe een ANOVA voor herhaalde metingen kan worden toegepast.<br><br> <i>Data aangeboden door Ronen Hershman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stroop.csv"
         }
       ],
       "debug": false
