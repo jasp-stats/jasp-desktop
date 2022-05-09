@@ -52,7 +52,7 @@ option(JASP_PRINT_ENGINE_MESSAGES
 
 if(NOT R_REPOSITORY)
   set(R_REPOSITORY
-      "http://cran.r-project.org"
+      "http://cloud.r-project.org"
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
 
