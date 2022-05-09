@@ -42,7 +42,7 @@ TableViewBase
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property alias	rowNumberWidth	: theView.rowNumberWidth
 	property var	validator		: (itemType === JASP.Integer) ? intValidator : (itemType === JASP.Double ? doubleValidator : stringValidator)
-	property int	minimum			: 0
+	property double	minimum			: 0
 	property int	decimals		: 1
 	property int	colSelected		: -1
 	property int	rowSelected		: -1
