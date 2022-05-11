@@ -729,6 +729,13 @@
             "description": "Data contains a spiral figure on a two-dimensional plane. Two classes are represented in the 200 samples. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
+          },
+          {
+            "name": "Penguins",
+            "path": "penguins.jasp",
+            "description": "Data contains measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. <br><br> <i>Data set included in R package palmerpenguins.<\/i>",
+            "kind": "file",
+            "associated_datafile": "penguins.csv"
           }
         ],
         "debug": false

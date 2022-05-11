@@ -729,6 +729,13 @@
             "description": "De data bevat een spiraalvormig figuur op een twee-dimensionaal vlak. Twee klassen zijn vertegenwoordigd in de 200 observaties. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
+          },
+          {
+            "name": "Penguins",
+            "path": "penguins.jasp",
+            "description": "De data bevat metingen voor pinguïnsoorten, eiland in de Palmer-archipel, grootte (lengte van de vinnen, lichaamsgewicht, snavelafmetingen) en geslacht. <br><br> <i>Dataset opgenomen in R package palmerpenguins.<\/i>",
+            "kind": "file",
+            "associated_datafile": "penguins.csv"
           }
         ],
         "debug": false

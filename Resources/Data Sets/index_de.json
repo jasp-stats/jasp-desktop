@@ -729,6 +729,13 @@
             "description": "Die Daten enthalten eine Spiralfigur auf einer zweidimensionalen Ebene. In den 200 Beobachtungen sind zwei Klassen vertreten. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
+          },
+          {
+            "name": "Penguins",
+            "path": "penguins.jasp",
+            "description": "Die Daten enthalten Messungen für Pinguinarten, Inseln im Palmer-Archipel, Größe (Flossenlänge, Körpermasse, Schnabelabmessungen) und Geschlecht. <br><br> <i>Datensatz im R-Paket palmerpenguins enthalten.<\/i>",
+            "kind": "file",
+            "associated_datafile": "penguins.csv"
           }
         ],
         "debug": false
