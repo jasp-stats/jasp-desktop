@@ -460,6 +460,13 @@
           "description": "Age, cabin class, and survival status of 1313 passengers on the Titanic. <br><br> The example JASP file demonstrates the use of logistic regression.<br><br> <i>Data set included in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Titanic.csv"
+        },
+        {
+          "name": "Turbines",
+          "path": "Turbines.jasp",
+          "description": "Die Anzahl und der Anteil der Turbinenräder, die nach einer bestimmten Anzahl von Betriebsstunden Risse aufweisen. <br><br> Die JASP-Beispieldatei demonstriert die Verwendung der binomialen logistischen Regression.<br><br> <i>Daten von Nelsen, W. (1982).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Turbines.csv"
         }
       ],
       "debug": false
