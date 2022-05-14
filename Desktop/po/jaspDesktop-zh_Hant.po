@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2023-10-06 13:45+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Last-Translator: Hector Tsai <hector.tsai@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
 "Language: zh_Hant\n"
