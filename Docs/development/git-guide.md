@@ -242,12 +242,13 @@ A PR needs to be reviewed and approved by a JASP Team member to be merged into `
 |jaspAnova|Bayesian analyses|Don|
 |jaspAudit|All|Koen|
 |jaspBain|All|Koen|
+|jaspBsts|All|Don|
 |jaspCircular|All|Simon|
 |jaspCochrane|All|Frantisek|
 |jaspDescriptives|All|No one/any JASP Team member|
 |jaspDistributions|All|Simon|
 |jaspEquivalenceTests|All|Jill|
-|jaspFactor|All|Don & Simon & Julius|
+|jaspFactor|All|Don & Simon & Julius & Lorenzo|
 |jaspFrequencies|All|Tim & Frantisek & Simon|
 |jaspJags|All|Don & Jiashun|
 |jaspLearnBayes|Binary classification|Simon|
@@ -261,10 +262,11 @@ A PR needs to be reviewed and approved by a JASP Team member to be merged into `
 |jaspNetwork|All|Don|
 |jaspRegression|Correlation|Simon|
 |jaspRegression|Classical linear and classical logistic regression|Qixiang & Simon & Don|
+|jaspRegression|Classical GLMs|Qixiang & Simon|
 |jaspRegression|Bayesian correlation|Alexander & Don & Simon|
 |jaspRegression|Bayesian linear regression|Don|
 |jaspReliability|All|Julius|
-|jaspSem|All|Simon & Julius|
+|jaspSem|All|Simon & Julius & Lorenzo|
 |jaspSummaryStatistics|All|EJ & Akash|
 |jaspTTests|All|Don|
 |jaspVisualModeling|All|Dustin|
