@@ -43,7 +43,7 @@ If you changed any option name in the Qml files, now it is time to make sure tha
 
 The option names need to be also updated in the test files in the `tests/testthat/` folder!
 
-**Note**. Be careful with using "find and replace all" especially if there is a chance of changing code that you did not intend to change, e.g., due to partial matching. An easy way to prevent this to happen is to use wider context of the text to replace. E.g. if we renamed an option from `old_option_name` to `newOptionName`, you can run find: `options[["old_option_name"]]` and replace all: `options[["newOptionName"]]` to avoid any surprises. You still need to check manually whether there is anything that you missed.
+**Note**. Be careful with using "find and replace all" especially if there is a chance of changing code that you did not intend to change, e.g., due to partial matching. An easy way to prevent this to happen is to use wider context of the text to replace. E.g. if we renamed an option from `old_option_name` to `newOptionName`, you can run find: `options[["old_option_name"]]` and replace all: `options[["newOptionName"]]` to avoid any surprises. You still need to check manually whether there is anything that you missed. In some situations, you may find R Studio's feature "Rename in Scope" useful. Read about it [here](https://appsilon.com/rstudio-shortcuts-and-tips/#code-inserting).
 
 #### Run tests
 
