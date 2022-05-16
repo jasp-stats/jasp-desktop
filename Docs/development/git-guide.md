@@ -316,7 +316,7 @@ Do not delete it if you for whatever reason want to keep the branch! Before maki
 In case you have been assigned for a review, you may need to check out the code that is implemented in the PR, and try it out on your computer. To do this, you can add the author's GitHub repository as additional remote, and temporarily switch to their feature branch for testing. Assuming that the author's GitHub handle is `anotherAuthor`, execute
 
 ```
-git add remote anotherAuthor https://github.com/anotherAuthor/jaspRegression.git
+git remote add anotherAuthor https://github.com/anotherAuthor/jaspRegression.git
 ```
 
 which adds `anotherAuthor` to your list of remotes in the jaspRegression repository (verify with `git remote -v`). Fetch their code:
