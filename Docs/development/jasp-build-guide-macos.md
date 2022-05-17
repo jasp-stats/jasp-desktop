@@ -84,3 +84,40 @@ If you change any of these parameters, you need to reconfigure the CMake. This a
 ```
 
 Now you can press the "Build" button, and start building JASP. If everything goes well, you have not missed anything, the build will be successful, and you should be able to run JASP by pressing the "Play" button in the left bottom corner.
+
+
+### Troubleshooting
+
+Here is a list of issues we encountered in the past and possible solutions for them.
+
+#### When creating a .dmg installer
+
+- If under Build Steps `install` and `dmg` targets are selected, and the following error occurs:
+
+```
+CMake Error at cmake_install.cmake:69 (file):
+  file cannot create directory: /usr/local/JASP.app/Contents/Resources.
+  Maybe need administrative privileges.
+```
+
+Check `CMAKE_INSTALL_PREFIX` variable. It should be set to `<path-to-your-build-folder>/Install`
+
+- When `dmg` target is selected and the following error occurs:
+
+```
+AppleEvent timed out. (-1712)
+Failed running AppleScript
+```
+
+1. Try `brew upgrade create-dmg`
+2. Go to System preferences -> Security & Privacy -> Privacy -> Accessibility, and add the Terminal application (you may need to use your admin password to unlock the option). [See here.](https://github.com/create-dmg/create-dmg/issues/72#issuecomment-447400844)
+
+
+- When `dmg` target is selected and the following error occurs:
+
+```
+hdiutil: attach failed - Device not configured
+Device name:     
+```
+
+Try disabling Spotlight indexing: `sudo mdutil -i off`. [See here.](https://github.com/electron-userland/electron-builder/issues/4606#issuecomment-667641621)
