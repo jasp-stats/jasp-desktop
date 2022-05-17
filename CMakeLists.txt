@@ -8,17 +8,18 @@ set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
 if(APPLE)
 
+  message(CHECK_START "Making sure CMAKE_OSX_ARCHITECTURES is set to something.")
+
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
     set(CMAKE_OSX_ARCHITECTURES
         ${CMAKE_HOST_SYSTEM_PROCESSOR}
         CACHE STRING "" FORCE)
     set(CROSS_COMPILING 0)
-    message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
+    message(CHECK_PASS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
   else()
     if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
       set(CROSS_COMPILING 1)
-      message(
-        STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
+      message(CHECK_PASS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
     endif()
   endif()
 
@@ -36,6 +37,9 @@ if(APPLE)
     set(CONAN_ARCH "x86_64")
   endif()
 
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
+    message(CHECK_FAIL "CMAKE_OSX_ARCHITECTURES is not set to anything, this will break the build.")
+  endif()
 endif()
 
 project(
