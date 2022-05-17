@@ -116,7 +116,7 @@ if(APPLE)
     VERBATIM
     DEPENDS ${CMAKE_BINARY_DIR}/Install/JASP.app/Contents/MacOS/JASP
     COMMAND
-      ${CREATE_DMG_EXECUTABLE} --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
+      ${CREATE_DMG_EXECUTABLE} --skip-jenkins --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
       "${CMAKE_SOURCE_DIR}/Tools/macOS/Volume.icns" --icon-size 96 --icon
       "JASP.app" 130 270 --background "${CPACK_DMG_BACKGROUND_IMAGE}"
       --window-size 527 454 --window-pos 200 200 --app-drop-link 430 270
