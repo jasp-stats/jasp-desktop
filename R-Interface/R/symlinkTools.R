@@ -49,7 +49,7 @@ determineOverlap <- function(targetRoot, sourceRoot)
     #tgtToSrc     <- paste0(tgtToSrc, .Platform$file.sep, ".")
 
     if(addRootToSource)
-      return(paste0(tgtToSrc, rootToSrc)) #We do not need to add the separator because it is there in tgtToSrc
+      return(pastePath(c(tgtToSrc, rootToSrc)))
     return(tgtToSrc)
   }
 
@@ -68,13 +68,8 @@ determineOverlap <- function(targetRoot, sourceRoot)
 # Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
 getRelativityFunction <- function(modulesRoot, renvCache)
 {
-  
-  if (Sys.info()["sysname"] == "Darwin") {
-    modToRenvS <- pastePath(c("..", "renv-cache"))
-  } else {
-    modToRenvF <- determineOverlap(modulesRoot, renvCache)
-    modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
-  }
+  modToRenvF <- determineOverlap(modulesRoot, renvCache)
+  modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
 
   return(
     function(linkLocation, targetPath)
@@ -216,7 +211,7 @@ convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache)
     {
       linkLoc <- symlinks[row, "linkLocation"]
       setwd(dirname(linkLoc))
-      #print(paste0("For link '", padToMax(symlinks[row, "linkLocation"], 1), "' will convert '", padToMax(symlinks[row, "originalTarget"], 2), "' to '", padToMax(symlinks[row, "linkTarget"], 3), "'"))
+      print(paste0("For link '", padToMax(symlinks[row, "linkLocation"], 1), "' will convert '", padToMax(symlinks[row, "originalTarget"], 2), "' to '", padToMax(symlinks[row, "linkTarget"], 3), "'"))
       file.symlink(from=symlinks[row, "linkTarget"], to=basename(linkLoc))
       
     }

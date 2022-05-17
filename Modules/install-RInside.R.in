@@ -6,9 +6,12 @@
 
 options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
 
-if (Sys.info()["sysname"] == "Darwin") {
+if (Sys.info()["sysname"] != "Darwin") {
+  install.packages(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')
+} else {
   Sys.setenv(RENV_PATHS_ROOT='@MODULES_RENV_ROOT_PATH@', RENV_PATHS_CACHE='@MODULES_RENV_CACHE_PATH@')
   renv::install(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')
-} else {
-  install.packages(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')
+
+  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }

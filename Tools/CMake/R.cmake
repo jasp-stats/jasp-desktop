@@ -66,7 +66,7 @@ if(WIN32)
   endif()
 endif()
 
-# ------ Preparing REnv Paths
+# ------ Preparing Renv Paths
 #
 set(MODULES_SOURCE_PATH
     ${PROJECT_SOURCE_DIR}/Modules
@@ -78,9 +78,14 @@ set(MODULES_BINARY_PATH
 set(MODULES_RENV_ROOT_PATH
     "${PROJECT_BINARY_DIR}/_cache/renv-root"
     CACHE PATH "Location of renv root directories")
-set(MODULES_RENV_CACHE_PATH
-    "${MODULES_BINARY_PATH}/renv-cache"
-    CACHE PATH "Location of renv cache directories")
+
+if(FLATPAK_USED)
+  set(MODULES_RENV_CACHE_PATH "/app/lib64/renv-cache" CACHE PATH "Location of renv cache directories")
+else()
+  set(MODULES_RENV_CACHE_PATH "${MODULES_BINARY_PATH}/renv-cache" CACHE PATH "Location of renv cache directories")
+endif()
+
+
 set(JASP_ENGINE_PATH
     "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
