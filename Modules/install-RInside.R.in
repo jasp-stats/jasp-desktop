@@ -4,7 +4,7 @@
 # I've ran into situation where installing `RInside` doesn't install the `Rcpp`.
 # 
 
-options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
+options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = FALSE)
 
 if (Sys.info()["sysname"] != "Darwin") {
   install.packages(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')

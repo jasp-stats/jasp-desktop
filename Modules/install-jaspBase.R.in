@@ -36,7 +36,7 @@ currentHash <- computeHash("@PROJECT_SOURCE_DIR@/Engine/jaspBase/")
 if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
   options(
     install_opts = "--no-multiarch --no-docs --no-test-load",
-    renv.cache.linkable = TRUE
+    renv.cache.linkable = FALSE
   )
   if (Sys.info()["sysname"] == "Darwin") {
      renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase", repos=NULL, library="@R_LIBRARY_PATH@")
@@ -53,7 +53,7 @@ if ("jaspBase" %in% installed.packages()) {
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") {
-  source('@MODULES_BINARY_PATH@/symlinkTools.R')
-  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
-}
+#if (Sys.info()["sysname"] == "Darwin") {
+#  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+#  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+#}

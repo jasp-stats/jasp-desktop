@@ -223,7 +223,7 @@ if(LINUX)
 else()
 
   set(IS_LINUX_LOCAL_BUILD FALSE)
-
+  set(IS_FLATPAK_USED FALSE)
 endif()
 
 # I have a construct for this, and Qt often messes things up.

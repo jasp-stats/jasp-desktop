@@ -11,10 +11,10 @@
 #   Have a function here or in that file that restores them and add it as a custom action to Wix
 
 pastePath <- function(path) { return(paste0(  path, collapse=.Platform$file.sep)     ) }
-splitPath <- function(path)
-{
+splitPath <- function(path) 
+{ 
   path  <- gsub("\\", "/", path, fixed=TRUE)
-  paths <- strsplit(path, "/")[[1]];
+  paths <- strsplit(path, "/")[[1]]; 
   return(paths[paths != ""]) # Remove "empty" dir between // like: "blablac//weird/path"
 }
 
@@ -32,7 +32,7 @@ determineOverlap <- function(targetRoot, sourceRoot)
 
   overlapVec <- targetSplit[seq(overlap)]
   overlap    <- list(
-    vec = overlapVec,
+    vec = overlapVec, 
     str = pastePath(overlapVec),
     len = overlap
   )
@@ -49,7 +49,7 @@ determineOverlap <- function(targetRoot, sourceRoot)
     #tgtToSrc     <- paste0(tgtToSrc, .Platform$file.sep, ".")
 
     if(addRootToSource)
-      return(pastePath(c(tgtToSrc, rootToSrc)))
+      return(paste0(tgtToSrc, rootToSrc)) #We do not need to add the separator because it is there in tgtToSrc
     return(tgtToSrc)
   }
 
@@ -68,8 +68,13 @@ determineOverlap <- function(targetRoot, sourceRoot)
 # Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
 getRelativityFunction <- function(modulesRoot, renvCache)
 {
-  modToRenvF <- determineOverlap(modulesRoot, renvCache)
-  modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
+  
+  if (Sys.info()["sysname"] == "Darwin") {
+    modToRenvS <- pastePath(c("..", "renv-cache"))
+  } else {
+    modToRenvF <- determineOverlap(modulesRoot, renvCache)
+    modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
+  }
 
   return(
     function(linkLocation, targetPath)
@@ -87,7 +92,7 @@ getRelativityFunction <- function(modulesRoot, renvCache)
 
       # print(paste0("for link '", linkLocation, "' and target '",targetPath, "'"))
       # print(paste0("- linkToModS '",linkToModS, " modToRenvS: '", modToRenvS, "' pathToRenvS: '", pathToRenvS, "'\n results in newTarget: '", newTarget, "'"))
-
+      
       return(newTarget)
     }
   )
@@ -103,23 +108,23 @@ is.junction <- function(paths)
   #Also this function isn't very safe, make sure that you only ask it about existing paths or you get garbage
   as.logical(
     sapply(
-      paths,
-      function(path)
+      paths, 
+      function(path) 
         as.logical(as.integer(
           system2(command="powershell", args=paste0('-command "if ((Get-Item -Path ', path,' -Force).LinkType -eq \\"Junction\\") { 1 } else { 0 }'), stdout=TRUE)
-        ))
+        )) 
     )
   )
 }
 
-get.junction.pwrshll <- function(paths)
+get.junction.pwrshll <- function(paths) 
 {
   sapply(
-    paths,
+    paths, 
     function(path) system2(command="powershell", args=paste0('-command "(Get-Item -Path ', path,' -Force).Target'), stdout=TRUE)
 )
 }
-
+ 
 
 
 # Returns a list of symlinks with target location relative to modulesRoot
@@ -158,7 +163,7 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
             else
             {
               everything  <- list.files(path, recursive=FALSE, include.dirs=TRUE, all.files=FALSE, full.names=TRUE)
-
+      
               if(length(everything) > 0)
               {
                 allDirs     <- everything[file.info(everything)$isdir]
@@ -191,10 +196,8 @@ generatePadFunction <- function()
 }
 
 #call like: convertAbsoluteSymlinksToRelative("~/Broncode/build-JASP-Desktop_Qt_5_15_2_clang_64bit-Debug/Modules", "~/Broncode/build-JASP-Desktop_Qt_5_15_2_clang_64bit-Debug/renv-cache")
-convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache, prefixTarget)
+convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache)
 {
-  if (missing(prefixTarget))
-    prefixTarget = "";
   symlinks <- collectLinks(modulesRoot, renvCache, is.symlink, Sys.readlink)
 
   if(nrow(symlinks) == 0)
@@ -203,17 +206,17 @@ convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache, prefixTarg
   {
     #remove absolute links
     unlink(symlinks$linkLocation)
-
+    
     wd       <- getwd()
     on.exit(setwd(wd))
-    padToMax <- generatePadFunction()
+    #padToMax <- generatePadFunction()
 
     #create the new ones
     for(row in seq(nrow(symlinks)))
     {
       linkLoc <- symlinks[row, "linkLocation"]
       setwd(dirname(linkLoc))
-      print(paste0("For link '", padToMax(symlinks[row, "linkLocation"], 1), "' will convert '", padToMax(symlinks[row, "originalTarget"], 2), "' to '", padToMax(symlinks[row, "linkTarget"], 3), "'"))
+      #print(paste0("For link '", padToMax(symlinks[row, "linkLocation"], 1), "' will convert '", padToMax(symlinks[row, "originalTarget"], 2), "' to '", padToMax(symlinks[row, "linkTarget"], 3), "'"))
       file.symlink(from=symlinks[row, "linkTarget"], to=basename(linkLoc))
       
     }
@@ -222,12 +225,12 @@ convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache, prefixTarg
 
 junctionFilename <- function(modulesRoot)
 {
-  return(pastePath(c(modulesRoot, "..", "junctions.rds")))
+  return(pastePath(c(modulesRoot, "..", "junctions.rds")))   
 }
 
 collectAndStoreJunctions <- function(buildfolder)
 {
-  modulesRoot <- pastePath(c(buildfolder, "Modules"))
+  modulesRoot <- pastePath(c(buildfolder, "Modules")) 
   renvCache   <- pastePath(c(buildfolder, "Modules/renv-cache"))
   symlinks    <- collectLinks(modulesRoot, renvCache, is.junction, normalizePath)
   overlap     <- determineOverlap(modulesRoot, modulesRoot)
@@ -246,8 +249,8 @@ collectAndStoreJunctions <- function(buildfolder)
 
 restoreJunctions <- function(modulesRoot)
 {
-  # Should contain a data.frame with columns: renv, module and link.
-  # As created in collectAndStoreJunctions
+  # Should contain a data.frame with columns: renv, module and link. 
+  # As created in collectAndStoreJunctions  
   junctions <- readRDS(junctionFilename(modulesRoot))
 
   if(nrow(junctions) == 0)
@@ -294,7 +297,8 @@ restoreModulesIfNeeded <- function(jaspFolder)
   modulesRoot <- pastePath(c(jaspFolder, "Modules"))
   if(!file.exists(modulesRoot))
     dir.create(modulesRoot)
-
+  
   restoreJunctions(pastePath(c(jaspFolder, "Modules")))
 }
+
 
