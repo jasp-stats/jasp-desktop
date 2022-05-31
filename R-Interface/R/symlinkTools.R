@@ -152,10 +152,10 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
     {
       #path <- normalizePath(path) This follows the junction immediately...
       if(!grepl("renv-cache", path)){
-            print(paste0("Checking if path is link: ", path))
+            #print(paste0("Checking if path is link: ", path))
             if(isLink(path))
             {
-              print('is symlink')
+              #print('is symlink')
               symPath  <- getLink(path)
               if(!startsWith(symPath, ".")) #if starts with dot it is already relative
                 symlinks[nrow(symlinks)+1, ] <<- list(linkLocation=path, linkTarget=relativeer(path, symPath), originalTarget=symPath)
