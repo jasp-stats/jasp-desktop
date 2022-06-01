@@ -41,8 +41,6 @@ DataSet *SharedMemory::createDataSet()
 		ss << ProcessInfo::currentPID();
 		_memoryName = ss.str();
 
-		TempFiles::addShmemFileName(_memoryName);
-
 		interprocess::shared_memory_object::remove(_memoryName.c_str());
 		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6 * 1024 * 1024);
 		Log::log() << "Created shared mem with name " << _memoryName << std::endl;
@@ -109,9 +107,7 @@ void SharedMemory::deleteDataSet(DataSet *dataSet)
 
 void SharedMemory::unloadDataSet()
 {
-	Log::log() << "SharedMemory::unloadDataSet " << _memoryName << std::endl;
-	if(_memory != NULL)
-		delete _memory;
-
-	_memory = NULL;
+	Log::log() << "SharedMemory::unloadDataSet " << _memoryName << ( _memory ? "" : " but it wasn't loaded.") << std::endl;
+	delete _memory;
+	_memory = nullptr;
 }

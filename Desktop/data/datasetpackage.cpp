@@ -54,8 +54,8 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	_engineSync = engineSync;
 
 	//These signals should *ONLY* be called from a different thread than _engineSync!
-	connect(this,	&DataSetPackage::pauseEnginesSignal,	_engineSync,	&EngineSync::pauseEngines,	Qt::BlockingQueuedConnection);
-	connect(this,	&DataSetPackage::resumeEnginesSignal,	_engineSync,	&EngineSync::resumeEngines,	Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::enginesPrepareForDataSignal,	_engineSync,	&EngineSync::enginesPrepareForData,	Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::enginesReceiveNewDataSignal,	_engineSync,	&EngineSync::enginesReceiveNewData,	Qt::BlockingQueuedConnection);
 
 	reset();
 }
@@ -65,16 +65,16 @@ bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 	return	QThread::currentThread() == _engineSync->thread();
 }
 
-void DataSetPackage::pauseEngines()
+void DataSetPackage::enginesPrepareForData()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->pauseEngines(true);
-	else									emit pauseEnginesSignal(true);
+	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesPrepareForData();
+	else									emit enginesPrepareForDataSignal();
 }
 
-void DataSetPackage::resumeEngines()
+void DataSetPackage::enginesReceiveNewData()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->resumeEngines();
-	else									emit resumeEnginesSignal();
+	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesReceiveNewData();
+	else									emit enginesReceiveNewDataSignal();
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
 }
@@ -935,11 +935,7 @@ void DataSetPackage::beginLoadingData()
 {
 	JASPTIMER_SCOPE(DataSetPackage::beginLoadingData);
 
-	_enginesLoadedAtBeginSync = !enginesInitializing();
-
-	if(_enginesLoadedAtBeginSync)
-		pauseEngines();
-
+	enginesPrepareForData();
 	beginResetModel();
 }
 
@@ -949,9 +945,7 @@ void DataSetPackage::endLoadingData()
 
 	regenerateInternalPointers();
 	endResetModel();
-
-	if(_enginesLoadedAtBeginSync)
-		resumeEngines();
+	enginesReceiveNewData();
 
 	emit modelInit();
 	emit dataSetChanged();
@@ -1512,15 +1506,14 @@ bool DataSetPackage::createColumn(std::string name, columnType columnType)
 
 	size_t newColumnIndex	= columnCount();
 
+	enginesPrepareForData();
 	beginResetModel();
 	setDataSetColumnCount(newColumnIndex + 1);
 
 	_dataSet->columns().initializeColumnAs(newColumnIndex, name)->setDefaultValues(columnType);
 	regenerateInternalPointers();
 	endResetModel();
-
-	pauseEngines();
-	resumeEngines();
+	enginesReceiveNewData();
 
 	return true;
 }

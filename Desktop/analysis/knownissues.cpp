@@ -31,7 +31,10 @@ void KnownIssues::loadLocalJson(const std::string & filePath, bool saveIt)
 void KnownIssues::loadJson(const std::string & jsonTxt,	bool saveIt)
 {
 	if(jsonTxt == "") 
+	{
 		MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem downloading the known issues for this version, it probably could not connect to the server. Don't worry, JASP will work fine it just might not tell you about a few small known issues."));
+		return;
+	}
 	
 	Json::Value known;
 	if(Json::Reader().parse(jsonTxt, known))	loadJson(known, saveIt);

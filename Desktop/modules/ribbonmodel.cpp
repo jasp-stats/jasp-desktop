@@ -122,12 +122,12 @@ void RibbonModel::addRibbonButtonModel(RibbonButton* model)
 	if(isModuleName(model->moduleName()))
 		removeRibbonButtonModel(model->moduleName());
 
-	emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
+	beginInsertRows(QModelIndex(), rowCount(), rowCount());
 
 	_moduleNames.push_back(model->moduleName());
 	_buttonModelsByName[model->moduleName()] = model;
 
-	emit endInsertRows();
+	endInsertRows();
 
 	connect(model, &RibbonButton::iChanged,				this, &RibbonModel::ribbonButtonModelChanged);
 }
@@ -323,11 +323,11 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButton* model)
 	emit dataChanged(index(row), index(row));
 }
 
-void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)
+/*void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)
 {
 	if(moduleName == "*")
 		return;
 
 	RibbonButton * ribMod = ribbonButtonModel(moduleName.toStdString());
 	ribMod->setEnabled(true);
-}
+}*/

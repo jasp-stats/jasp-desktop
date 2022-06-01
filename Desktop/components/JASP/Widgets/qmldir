@@ -50,4 +50,4 @@ ImageInverter				1.0 ImageInverter.qml
 PlotEditor                  1.0 PlotEditor/PlotEditor.qml
 FactorsList					1.0 FactorsList.qml
 FactorsForm					1.0 FactorsForm.qml
-
+EnginesWindow				1.0 EnginesWindow.qml
