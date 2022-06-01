@@ -429,7 +429,7 @@ int main(int argc, char *argv[])
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
 				{					
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support, or try the MSI." << std::endl;	
-					exit(1234);
+					exit(254);
 				}
 			}
 #endif

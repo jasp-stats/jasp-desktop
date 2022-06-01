@@ -73,6 +73,7 @@ private: // Methods:
 	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
 	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
 	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
+	void receiveReloadData();
 	void receiveLogCfg(					const Json::Value & jsonRequest);
 	void receiveSettings(				const Json::Value & jsonRequest);
 	void absorbSettings(				const Json::Value & json);
@@ -108,6 +109,7 @@ private: // Methods:
 	void provideStateFileName(											std::string & root,	std::string & relativePath);
 	void provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
 	void provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
+	void reloadColumnNames();
 
 private: // Data:
 	static Engine	*	_EngineInstance;

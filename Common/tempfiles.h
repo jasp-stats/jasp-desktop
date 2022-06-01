@@ -60,8 +60,6 @@ public:
 	static void			deleteAll(int id = -1);
 	static void			deleteOrphans();
 
-	static void			addShmemFileName(std::string &name);
-
 private:
 						TempFiles() {}
 	static long			_sessionId;
@@ -70,7 +68,6 @@ private:
 						_clipboard;
 	static int			_nextFileId,
 						_nextTmpFolderId;
-	static stringvec	_shmemNames;
 };
 
 
