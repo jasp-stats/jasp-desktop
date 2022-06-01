@@ -168,7 +168,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 	
 	jaspRCPP_logString("Creating Output sink.\n");
-	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
+	rInside[".outputSink"]						= jaspRCPP_CreateCaptureConnection();
+
+	rInside.parseEvalQNT("sink(.outputSink); print('.outputSink initialized!'); sink();");
+	Rcpp::RObject sinkObj = rInside[".outputSink"];
+	//jaspRCPP_logString(sinkObj.isNULL() ? "sink is null\n" : !sinkObj.isObject() ? " sink is not object\n" : sinkObj.isS4() ? "sink is s4\n" : "sink is obj but not s4\n");
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
@@ -270,17 +274,19 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
-	std::string libP = libPathsToUse;
-
-	if(libP != "")
-		jaspRCPP_parseEvalQNT(".libPaths(" + libP + ");");
-
-	SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
-
 	static std::string str;
-	if(results != NULL && Rcpp::is<std::string>(results))	str = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(results));
-	else													str = "error!";
+	try
+	{
+		SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
 
+		if(results != NULL && Rcpp::is<std::string>(results))	str = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(results));
+		else													str = "error!";
+	}
+	catch(std::runtime_error & e)
+	{
+		rInside["errorJaspResultsCrash"] = e.what();
+		jaspRCPP_parseEvalQNT("initJaspResults(); jaspResults$title <- title; jaspResults$setErrorMessage(errorJaspResultsCrash); jaspResults$send();");
+	}
 
 #ifdef PRINT_ENGINE_MESSAGES
 	jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
@@ -436,7 +442,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 		"returnVal = 'null';	"
 		"tryCatch("
 		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
-		"    error	= function(e) { .setRError(  paste0(toString(e$message), '\n', paste0(sys.calls(), collapse='\n'))) } 	"
+		"    error	= function(e) { .setRError(  paste0(toString(e), '\n', paste0(sys.calls(), collapse='\n'))) } 	"
 		")"
 		"; returnVal	");
 
@@ -1151,11 +1157,11 @@ RInside::Proxy jaspRCPP_parseEval(const std::string & code, bool setWd, bool pre
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
-	RInside::Proxy returnthis = rinside->parseEvalNT(__sinkMe(code)); //Not throwing is nice actually!
+	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code)); //Not throwing is nice actually! Well, unless you want to hear about missing modules etc...
 	jaspRCPP_logString("\n");
 
 	rinside->parseEvalQNT("sink();"); //back to normal!
-	
+
 	return returnthis;
 }
 

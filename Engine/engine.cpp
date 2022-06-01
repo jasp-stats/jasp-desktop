@@ -100,15 +100,26 @@ void Engine::initialize()
 
 	try
 	{
+		std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
+		_channel = new IPCChannel(memoryName, _slaveNo, true);
+
 		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultsFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 	
 		//Is there maybe already some data? Like, if we just killed and restarted the engine
+		std::vector<std::string> columns;
+		if(provideDataSet())
+		{
+			columns = provideDataSet()->getColumnNames();
+			Log::log() << "There is a dataset and got " << columns.size() << " columns in it, loading them into encoder now." << std::endl;
+		}
+		else
+			Log::log() << "No dataset available so resetting columnnames in encoder." << std::endl;
+
 		ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
 
-		_engineState = engineState::idle;
-		sendEngineResumed(); //Then the desktop knows we've finished init.
+
 
 		Log::log() << "Engine::initialize() done" << std::endl;
 	}
@@ -125,30 +136,29 @@ Engine::~Engine()
 
 	delete _channel; //shared memory files will be removed in jaspDesktop
 	_channel = nullptr;
+
+
 }
 
 void Engine::run()
 {
-	JASPTIMER_START(Engine::run startup);
-
-	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
-	_channel = new IPCChannel(memoryName, _slaveNo, true);
-
-	JASPTIMER_STOP(Engine::run startup);
-
-	sendString(""); //Clear the buffer, because it might have been filled by a previous incarnation of the engine
-
 	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
-		if(_engineState == engineState::initializing) //Do this first, otherwise receiveMessages possibly triggers some other functions
+		static bool initDone = false;
+		if(!initDone && _engineState == engineState::initializing) //Do this first, otherwise receiveMessages possibly triggers some other functions
+		{
 			initialize();
+			initDone = true;
+		}
 
 		receiveMessages(100);
 
 		switch(_engineState)
 		{
+
 		case engineState::idle:				beIdle(_lastRequest == engineState::analysis);	break;
 		case engineState::analysis:			runAnalysis();									break;
+		case engineState::initializing:
 		case engineState::paused:			/* Do nothing */
 		case engineState::stopped:															break;
 		case engineState::resuming:			throw std::runtime_error("Enginestate " + engineStateToString(_engineState) + " should NOT be set as currentState!");
@@ -159,6 +169,9 @@ void Engine::run()
 
 	if(_engineState == engineState::stopped)
 		Log::log() << "Engine leaving mainloop after having been asked to stop." << std::endl;
+
+	delete _channel;
+	_channel = nullptr;
 }
 
 void Engine::beIdle(bool newlyIdle)
@@ -177,16 +190,17 @@ void Engine::beIdle(bool newlyIdle)
 	_lastRequest = engineState::idle;
 }
 
-
-
 bool Engine::receiveMessages(int timeout)
 {
 	std::string data;
 
 	if (_channel->receive(data, timeout))
 	{
-		if(data =="")
+		if(data == "")
+		{
+			Log::log() << "Received nothing..." << std::endl;
 			return false;
+		}
 
 		// JSONCPP_STRING          err;
 		// Json::Value		        jsonRequest;
@@ -194,6 +208,7 @@ bool Engine::receiveMessages(int timeout)
 		// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
 		// if(!jsonReader->parse(data.c_str(), data.c_str() + data.length(), &jsonRequest, &err))
+		
 
 		Json::Value		jsonRequest;
 		Json::Reader	jsonReader;
@@ -215,6 +230,8 @@ bool Engine::receiveMessages(int timeout)
 		}
 
 		//Clear send buffer
+		Log::log() << "Received: '" << data << "' so now clearing my send buffer" << std::endl;
+
 		sendString("");
 
 		//Check if we got anyting useful
@@ -230,21 +247,30 @@ bool Engine::receiveMessages(int timeout)
 #ifdef PRINT_ENGINE_MESSAGES
 		Log::log() << "Engine received " << engineStateToString(_lastRequest) <<" message" << std::endl;
 #endif
-		switch(_lastRequest)
+
+		if(_engineState == engineState::initializing)
 		{
-		case engineState::analysis:				receiveAnalysisMessage(jsonRequest);		return true;
-		case engineState::filter:				receiveFilterMessage(jsonRequest);			break;
-		case engineState::rCode:				receiveRCodeMessage(jsonRequest);			break;
-		case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
-		case engineState::pauseRequested:		pauseEngine(jsonRequest);					break;
-		case engineState::resuming:				resumeEngine(jsonRequest);					break;
-		case engineState::moduleInstallRequest:	
-		case engineState::moduleLoadRequest:	receiveModuleRequestMessage(jsonRequest);	break;
-		case engineState::stopRequested:		stopEngine();								break;
-		case engineState::logCfg:				receiveLogCfg(jsonRequest);					break;
-		case engineState::settings:				receiveSettings(jsonRequest);				break;
-		default:								throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(_lastRequest) + " to it!");
+			if(_lastRequest == engineState::resuming)
+				resumeEngine(jsonRequest);
+			//We ignore everything else
 		}
+		else
+			switch(_lastRequest)
+			{
+			case engineState::analysis:				receiveAnalysisMessage(jsonRequest);		return true;
+			case engineState::filter:				receiveFilterMessage(jsonRequest);			break;
+			case engineState::rCode:				receiveRCodeMessage(jsonRequest);			break;
+			case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
+			case engineState::pauseRequested:		pauseEngine(jsonRequest);					break;
+			case engineState::resuming:				resumeEngine(jsonRequest);					break;
+			case engineState::moduleInstallRequest:
+			case engineState::moduleLoadRequest:	receiveModuleRequestMessage(jsonRequest);	break;
+			case engineState::stopRequested:		stopEngine();								break;
+			case engineState::logCfg:				receiveLogCfg(jsonRequest);					break;
+			case engineState::settings:				receiveSettings(jsonRequest);				break;
+			case engineState::reloadData:			receiveReloadData();						break;
+			default:								throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(_lastRequest) + " to it!");
+			}
 	}
 
 	return false;
@@ -456,7 +482,10 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	jsonAnswer["succes"]			= succes;
 	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
 	jsonAnswer["typeRequest"]		= engineStateToString(_engineState);
-	
+
+	if(!succes)
+		Log::log() << "Error was:\n" << jsonAnswer["error"].asString() << std::endl;
+
 	Log::log() << "Sending it." << std::endl;
 
 	sendString(jsonAnswer.toStyledString());
@@ -870,6 +899,29 @@ void Engine::pauseEngine(const Json::Value & json)
 	sendEnginePaused();
 }
 
+void Engine::receiveReloadData()
+{
+	//Im doing the following switch as a copy from Engine::pauseEngine, but probably the engine is always going to be idle anyway.
+	switch(_engineState)
+	{
+	default:							/* everything not mentioned is fine */	break;
+	case engineState::analysis:			_analysisStatus = Status::aborted;		break;
+	case engineState::filter:
+	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(_engineState) + " somehow, you should not expect to see this exception ever.");
+	};
+
+	_engineState = engineState::idle;
+
+	Log::log() << "Engine reloadData, unloading dataset now" << std::endl;
+	SharedMemory::unloadDataSet();
+	provideDataSet();
+	reloadColumnNames();
+
+	Json::Value rCodeResponse		= Json::objectValue;
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::reloadData);
+	sendString(rCodeResponse.toStyledString());
+}
+
 void Engine::sendEnginePaused()
 {
 	Json::Value rCodeResponse		= Json::objectValue;
@@ -878,11 +930,16 @@ void Engine::sendEnginePaused()
 	sendString(rCodeResponse.toStyledString());
 }
 
+void Engine::reloadColumnNames()
+{
+	Log::log() << "Engine rescanning columnNames for en/decoding" << std::endl;
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+}
+
 void Engine::resumeEngine(const Json::Value & jsonRequest)
 {
-	Log::log() << "Engine resuming, absorbing settings and rescanning columnNames for en/decoding" << std::endl;
-	//Any changes to the data that engine needs to know about are accompanied by pause + resume I think.
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+	Log::log() << "Engine resuming and absorbing settings from request." << std::endl;
+	reloadColumnNames();
 
 	absorbSettings(jsonRequest);
 

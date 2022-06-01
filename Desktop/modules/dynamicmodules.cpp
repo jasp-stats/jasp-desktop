@@ -48,8 +48,6 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 	if(_singleton) throw std::runtime_error("Can only instantiate DynamicModules once!");
 	_singleton = this;
 
-	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
-
 	_modulesInstallDirectory = AppDirs::userModulesDir().toStdWString();
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
@@ -110,12 +108,6 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 	if(!initializeModule(newMod))
 		return false;
 
-	if(isCommon)
-	{
-		if(_startingUp)	newMod->setReadyForUse();  //To make sure "engineSync->loadAllActiveModules()" loads it.
-		else			newMod->setLoadingNeeded();
-	}
-
 	return true;
 }
 
@@ -135,21 +127,27 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 			wasAddedAlready = false;
 		}
 
-		if(oldModule) //I guess we could also check wasAddedAlready because I assume the only way oldModule can exist is if _moduleNames already contains moduleName.
+		/* Fairly sure this isnt necessary anymore: if(oldModule) //I guess we could also check wasAddedAlready because I assume the only way oldModule can exist is if _moduleNames already contains moduleName.
 		{
 			emit stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
-			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-		}
+		}*/
 
 		_modules[moduleName] = module;
 		
 		
 		if(!module->initialized())
 		{	
-			connect(module, &DynamicModule::registerForLoading,				this, &DynamicModules::registerForLoading			);
-			connect(module, &DynamicModule::registerForInstalling,			this, &DynamicModules::registerForInstalling		);
-			connect(module, &DynamicModule::registerForInstallingModPkg,	this, &DynamicModules::registerForInstallingModPkg	);
-			connect(module, &DynamicModule::descriptionReloaded,			this, &DynamicModules::descriptionReloaded			);
+			connect(module, &DynamicModule::registerForInstalling,			this,	&DynamicModules::registerForInstalling		);
+			connect(module, &DynamicModule::registerForInstallingModPkg,	this,	&DynamicModules::registerForInstallingModPkg	);
+			connect(module, &DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
+			connect(module, &DynamicModule::statusChanged,					module,	[=]()
+			{
+				if(module->status() == moduleStatus::error)
+				{
+						_modulesInstallPackagesNeeded.erase(moduleName);
+						QTimer::singleShot(0, module, [=](){ uninstallModule(moduleName); });
+				}
+			});
 			
 			module->initialize();
 		}
@@ -161,12 +159,11 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 		}
 		else if(oldModule)
 		{
+			emit unloadModule(moduleName);
 			emit dynamicModuleReplaced(oldModule, module);
 			delete oldModule;
 			emit dynamicModuleChanged(module);
 			emit loadModuleTranslationFile(module);
-			emit restartEngines();
-
 		}		
 
 		emit reloadQmlImportPaths();
@@ -186,8 +183,6 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 				_moduleNames.erase(_moduleNames.begin() + i - 1);
 	}
 
-	emit restartEngines();
-
 	return false;
 }
 
@@ -199,10 +194,7 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 			throw std::runtime_error("Couldn't load (and initialize) module " + moduleName);
 
 
-		DynamicModule	*loadMe	= _modules[moduleName];
-
-		if(_startingUp)	loadMe->setReadyForUse(); //So that engineSync->loadAllActiveModules will load this module
-		else			loadMe->setLoadingNeeded();
+		//DynamicModule	*loadMe	= _modules[moduleName];
 
 		return moduleName;
 	}
@@ -213,6 +205,22 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 	}
 }
 
+void DynamicModules::unloadModule(const std::string & moduleName)
+{
+	Log::log() << "Module '" << moduleName << "' being registered for unloading!" << std::endl;
+
+	_modulesInstallPackagesNeeded   .erase(moduleName);
+
+	if(_modules.count(moduleName) > 0)
+	{
+		DynamicModule * dynMod = _modules[moduleName];
+
+		emit dynamicModuleUnloadBegin(dynMod);
+		emit reloadQmlImportPaths();
+	}
+}
+
+
 void DynamicModules::registerForInstalling(const std::string & moduleName)
 {
 	registerForInstallingSubFunc(moduleName, false);
@@ -221,13 +229,6 @@ void DynamicModules::registerForInstalling(const std::string & moduleName)
 void DynamicModules::registerForInstallingModPkg(const std::string & moduleName)
 {
 	registerForInstallingSubFunc(moduleName, true);
-}
-
-void DynamicModules::stopAndRestartEngines()
-{
-	emit stopEngines();
-	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-	emit restartEngines();
 }
 
 QStringList DynamicModules::importPaths() const
@@ -247,60 +248,14 @@ QStringList DynamicModules::importPaths() const
 
 void DynamicModules::registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg)
 {
-	Log::log() << "Module '" << moduleName << "' being registered for installing (onlyModPkg? " << (onlyModPkg ? "true" : "false") << ")!" << std::endl;
+	if(!_modulesInstallPackagesNeeded.count(moduleName) || _modulesInstallPackagesNeeded[moduleName] != onlyModPkg)
+	{ 
+		Log::log() << "Module '" << moduleName << "' being registered for installing (onlyModPkg? " << (onlyModPkg ? "true" : "false") << ")!" << std::endl;
 
-	_modulesToBeUnloaded.erase(moduleName);
-	_modulesToBeLoaded.erase(moduleName);
-	_modulesInstallPackagesNeeded[moduleName] = onlyModPkg;
-
-	if(_modules[moduleName]->loaded())	//If the package is already loaded it might be hard to convince R to reinstall it properly, so let's restart the engines
-	{
-		stopAndRestartEngines();
-		_modules[moduleName]->setUnloaded();
+		_modulesInstallPackagesNeeded[moduleName] = onlyModPkg;
 	}
-}
 
-void DynamicModules::registerForLoading(const std::string & moduleName)
-{
-	Log::log() << "Module '" << moduleName << "' being registered for loading!" << std::endl;
-
-	if(_modulesInstallPackagesNeeded.count(moduleName) > 0)
-		return; //When the install is done it will trigger the need for loading anyway.
-
-	_modulesToBeUnloaded.erase(moduleName);
-	_modulesToBeLoaded.insert(moduleName);
-}
-
-bool DynamicModules::requiredModulesForModuleReady(const std::string & moduleName) const
-{
-	DynamicModule	*	dynMod	= _modules.at(moduleName);
-	std::set<std::string>		reqMods	= dynMod->importsR();
-
-	for(const std::string & reqMod : reqMods)
-		if(_modules.count(reqMod) > 0 && !_modules.at(reqMod)->readyForUse())
-			return false;
-
-	return true;
-}
-
-void DynamicModules::unloadModule(const std::string & moduleName)
-{
-	Log::log() << "Module '" << moduleName << "' being registered for unloading!" << std::endl;
-
-	_modulesInstallPackagesNeeded	.erase(moduleName);
-	_modulesToBeLoaded				.erase(moduleName);
-	_modulesWaitingForDependency	.erase(moduleName);
-
-	if(_modules.count(moduleName) > 0)
-	{
-		DynamicModule * dynMod		= _modules[moduleName];
-		_modulesToBeUnloaded[moduleName]	= dynMod->requestJsonForPackageUnloadingRequest();
-
-		dynMod->setUnloaded();
-
-		emit dynamicModuleUnloadBegin(dynMod);
-		emit reloadQmlImportPaths();
-	}
+	//Installing modules always restarts all the (relevant) engines anyway
 }
 
 void DynamicModules::replaceModule(DynamicModule * module)
@@ -312,25 +267,13 @@ void DynamicModules::replaceModule(DynamicModule * module)
 
 	DynamicModule * oldModule = _modules[moduleName];
 
-	emit stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
-	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-
 	_modules[moduleName] = module;
 
-	//Tmp folder with pkg data was removed so lets unpackage (again)
-	if(!module->isDevMod())
-		module->unpackage();
-
-	//registerForInstalling(moduleName);
-
-
-
+	emit unloadModule(moduleName);
 	emit dynamicModuleReplaced(oldModule, module);
 	emit dynamicModuleChanged(module);
 	emit reloadQmlImportPaths();
 	delete oldModule;
-
-	emit restartEngines();
 }
 
 void DynamicModules::uninstallModule(const std::string & moduleName)
@@ -372,9 +315,9 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 }
 
-void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped)
+void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleName)
 {
-	Log::log() << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ", engines " << (enginesStopped ? "stopped" : "started") << ")" << std::endl;
+	Log::log() << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ")" << std::endl;
 
 	std::wstring modulePath	= moduleDirectoryW(moduleName);
 
@@ -386,18 +329,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	}
 	catch (boost::filesystem::filesystem_error & e)
 	{
-		if(enginesStopped)
-			MessageForwarder::showWarning(tr("Something went wrong removing files for module %1 at path '%2' and the error was: %3").arg(tq(moduleName)).arg(tq(moduleDirectory(moduleName))).arg(e.what()));
-		else
-		{
-			Log::log() << "Probably some library was still loaded in R... Let's stop the engines!" << std::endl;
-
-			emit stopEngines();
-			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-			removeUninstalledModuleFolder(moduleName, true);
-			emit restartEngines();
-		}
-
+		MessageForwarder::showWarning(tr("Something went wrong removing files for module %1 at path '%2' and the error was: %3").arg(tq(moduleName)).arg(tq(moduleDirectory(moduleName))).arg(e.what()));
 		return;
 	}
 }
@@ -413,56 +345,88 @@ DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std
 	return _modules[installMe];
 }
 
-Json::Value	DynamicModules::getJsonForPackageInstallationRequest()
+bool DynamicModules::aModuleNeedsPackagesInstalled() const
+{
+	return numModulesNeedingPackagesInstalled() > 0;
+}
+
+
+size_t DynamicModules::numModulesNeedingPackagesInstalled() const
+{
+	size_t thisMany = 0;
+
+
+	for(auto & nameModPkg : _modulesInstallPackagesNeeded)
+		if(!isModuleInstallRequestActive(tq(nameModPkg.first)))
+			thisMany++;
+
+	return thisMany;
+}
+
+stringset DynamicModules::modulesNeedingPackagesInstalled() const
+{
+	stringset keys;
+
+	for(auto & nameMod : _modulesInstallPackagesNeeded)
+		keys.insert(nameMod.first);
+
+	return keys;
+}
+
+Json::Value	DynamicModules::getJsonForPackageInstallationRequest(const std::string & module)
 {
 	if(_modulesInstallPackagesNeeded.size() == 0)
-		return Json::nullValue;
+		throw std::runtime_error("Tried to get json for open module install request but there are none, getJsonForPackageInstallationRequest should never have been called. Is aModuleNeedsPackagesInstalled perhaps broken?");
 
-	std::string installMe	= _modulesInstallPackagesNeeded.begin()->first;
-	bool		onlyModPkg = _modulesInstallPackagesNeeded.begin()->second;
 
-	_modulesInstallPackagesNeeded.erase(installMe);
+	std::string installMe	= module;
+	bool		onlyModPkg	= installMe == "???" || _modulesInstallPackagesNeeded[module];
+
+	if(installMe == "???")
+		for(auto & nameModPkg : _modulesInstallPackagesNeeded)
+			if(!isModuleInstallRequestActive(tq(nameModPkg.first)))
+			{
+				installMe	= nameModPkg.first;
+				onlyModPkg	= nameModPkg.second;
+			}
+
+	if(installMe == "???")
+		throw std::runtime_error("Tried to get json for module install request but there were none.");
 
 	return _modules[installMe]->requestJsonForPackageInstallationRequest(onlyModPkg);
 }
 
-Json::Value DynamicModules::getJsonForPackageUnloadingRequest()
-{
-	std::string firstModule		= _modulesToBeUnloaded.begin()->first;
-	Json::Value	unloadRequest	= _modulesToBeUnloaded[firstModule];
-
-	_modulesToBeUnloaded.erase(firstModule);
-
-	return unloadRequest;
-}
 
 void DynamicModules::installationPackagesFailed(const QString & moduleName, const QString & errorMessage)
 {
 	if(_modules.count(moduleName.toStdString()) > 0)
 		_modules[moduleName.toStdString()]->setInstallingSucces(false);
 
-	MessageForwarder::showWarning(
-				tq("Installation of Module %1 failed").arg(moduleName),
-				tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
-
 	uninstallModule(moduleName.toStdString());
+
+	_modulesInstallPackagesNeeded.erase(moduleName.toStdString());
 
 	if(moduleName.toStdString() == developmentModuleName())
 		setDevelopersModuleInstallButtonEnabled(true);
+	
+	
+	MessageForwarder::showWarning(
+				tq("Installation of Module %1 failed").arg(moduleName),
+				tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));	
 }
 
 void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 {
 	Log::log() << "Installing packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
 	_modules[moduleName.toStdString()]->setInstallingSucces(true);
+	_modulesInstallPackagesNeeded.erase(moduleName.toStdString());
 
 	auto *dynMod = _modules[moduleName.toStdString()];
 
 	bool wasInitialized = dynMod->initialized();
 
-	if(!wasInitialized)			initializeModule(dynMod);
-	if(dynMod->initialized())	registerForLoading(moduleName.toStdString());
-
+	if(!wasInitialized)
+		initializeModule(dynMod);
 
 	if(dynMod->isDevMod())
 	{
@@ -478,50 +442,6 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 	emit reloadQmlImportPaths();
 }
 
-
-void DynamicModules::loadingFailed(const QString & moduleName, const QString & errorMessage)
-{
-	Log::log() << "Loading packages for module (" << moduleName.toStdString() << ") failed because of: " << errorMessage.toStdString() << std::endl;
-	if(moduleName != "*")
-	{
-		_modules[moduleName.toStdString()]->setLoadingSucces(false);
-
-		MessageForwarder::showWarning(
-					tr("Loading packages for Module %1 failed").arg(moduleName),
-					tr("Loading the packages of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
-	}
-	else
-		for(const auto & nameModule : _modules)
-			if(nameModule.second->readyForUse())
-				nameModule.second->setLoaded(false);
-}
-
-void DynamicModules::loadingSucceeded(const QString & moduleName)
-{
-	Log::log() << "Loading packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
-
-	if(moduleName != "*")
-	{
-		_modules[moduleName.toStdString()]->setLoadingSucces(true);
-
-		std::set<std::string> removeThese;
-
-		for(const std::string & modWait : _modulesWaitingForDependency)
-			if(requiredModulesForModuleReady(modWait))
-			{
-				Log::log() << "Required modules for module '" << modWait << "' ready, so now registering it for loading!" << std::endl;
-				removeThese.insert(modWait);
-				_modulesToBeLoaded.insert(modWait);
-			}
-
-		for(const std::string & modWait : removeThese)
-			_modulesWaitingForDependency.erase(modWait);
-	}
-	else
-		for(const auto & nameModule : _modules)
-			if(nameModule.second->readyForUse())
-				nameModule.second->setLoaded(true);
-}
 
 Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
 {
@@ -581,13 +501,16 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 	if(_modules.count(moduleName) > 0 && _modules[moduleName]->isBundled())
 		replaceModule(dynMod);
 	else
-	{
-		dynMod->unpackage();
 		_modules[moduleName] = dynMod;
-	}
 
 	registerForInstalling(moduleName);
 
+}
+
+void DynamicModules::uninstallJASPDeveloperModule()
+{
+	if(_modules.count(developmentModuleName()))
+		uninstallModule(developmentModuleName());
 }
 
 void DynamicModules::installJASPDeveloperModule()
@@ -595,6 +518,11 @@ void DynamicModules::installJASPDeveloperModule()
 	if(Settings::value(Settings::DEVELOPER_FOLDER).toString() == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
+		return;
+	}
+	else if(!QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString()).exists())
+	{
+		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(Settings::value(Settings::DEVELOPER_FOLDER).toString()));
 		return;
 	}
 
@@ -607,6 +535,8 @@ void DynamicModules::installJASPDeveloperModule()
 
 		DynamicModule * devMod = new DynamicModule(this);
 
+		devMod->loadDescriptionFromFolder(fq(_devModSourceDirectory.absolutePath()));
+
 		std::string origin	= devMod->modulePackage(),
 					name	= devMod->name(),
 					dest	= devMod->moduleRLibrary().toStdString();
@@ -614,9 +544,6 @@ void DynamicModules::installJASPDeveloperModule()
 		if(moduleIsInstalledByUser(name))
 		{
 			uninstallModule(name);
-			emit stopEngines();
-			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-			emit restartEngines();
 		}
 		else if(_modules.count(name) > 0 && _modules[name] != devMod)
 			replaceModule(devMod);
@@ -677,8 +604,10 @@ void DynamicModules::startWatchingDevelopersModule()
 	devModCopyDescription(descFound);
 	devModWatchFolder("R",		_devModRWatcher);
 	devModWatchFolder("help",	_devModHelpWatcher);
+	//QML is watched by Analysis itself
 }
 
+///This function says it's copying something, and maybe it did that before, but it doesn't seem to be doing so now.
 void DynamicModules::devModCopyDescription(QString filename)
 {
 	const QString descJson = "inst/" + filename;
@@ -813,36 +742,6 @@ void DynamicModules::regenerateDeveloperModuleRPackage()
 
 	auto * devMod = _modules[developmentModuleName()];
 	devMod->setStatus(moduleStatus::installModPkgNeeded);
-}
-
-Json::Value	DynamicModules::getJsonForReloadingActiveModules()
-{
-	Json::Value requestJson(Json::objectValue);
-
-	std::stringstream loadingCode;
-	for(size_t i=0; i<_moduleNames.size(); i++)
-	{
-		const std::string & modName = _moduleNames[i];
-
-		if(_modules[modName]->readyForUse()) //should be loaded again
-        	loadingCode << _modules[modName]->generateModuleLoadingR(i == _moduleNames.size() - 1) << "\n";
-	}
-
-	if(loadingCode.str() != "")
-		loadingCode << "return('" << DynamicModule::succesResultString() << "')"; //We could also avoid calling getJsonForReloadingActiveModules altogether but whatever
-
-	requestJson["moduleCode"]		= loadingCode.str();
-	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loadingNeeded);
-	requestJson["moduleName"]		= "*";
-
-	return requestJson;
-}
-
-void DynamicModules::enginesStopped()
-{
-	//for(auto & nameMod : _modules)
-	//	nameMod.second->setLoaded(false); //Cause we restarted the engines
-	// It is slightly misleading all this, but by not setting them to unloaded the GUI becomes cleaner and we do not have to set them back to loaded later in a hacky fashion
 }
 
 QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const

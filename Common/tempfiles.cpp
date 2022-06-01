@@ -36,7 +36,6 @@ std::string				TempFiles::_statusFileName	= "";
 std::string				TempFiles::_clipboard		= "";
 int						TempFiles::_nextFileId		= 0;
 int						TempFiles::_nextTmpFolderId	= 0;
-TempFiles::stringvec	TempFiles::_shmemNames		= TempFiles::stringvec();
 
 void TempFiles::init(long sessionId)
 {
@@ -146,10 +145,6 @@ void TempFiles::deleteOrphans()
 			if (p.compare(sessionPath) == 0)
 				continue;
 
-			for (std::string & shmemName : _shmemNames)
-				if (p.compare(shmemName) == 0)
-					continue;
-
 			string fileName		= Utils::osPath(p.filename());
 			bool is_directory	= boost::filesystem::is_directory(p, error);
 
@@ -216,8 +211,6 @@ void TempFiles::deleteOrphans()
 void TempFiles::heartbeat()
 {
 	Utils::touch(_statusFileName);
-	for (string & shmemName : _shmemNames)
-		Utils::touch(shmemName);
 }
 
 void TempFiles::purgeClipboard()
@@ -348,15 +341,3 @@ void TempFiles::deleteList(const vector<string> &files)
 	}
 }
 
-
-///Fairly sure this function is pointless, the "_shmemNames" it collects do not seem to reflect the actual paths to the sharedmem files...
-void TempFiles::addShmemFileName(std::string &name)
-{
-	_shmemNames.push_back(Dirs::tempDir()+ "/" + name);
-
-	Log::log() << "TempFiles::addShmemFileName(" << name << ") called, whole list is now: " ;
-	int c=0;
-	for(const auto & n : _shmemNames)
-		Log::log(false) << ( c++ > 0 ? ", " : "") << "'" << n << "'";
-	Log::log(false) << std::endl;
-}

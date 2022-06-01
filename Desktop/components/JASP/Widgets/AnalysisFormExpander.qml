@@ -12,9 +12,8 @@ DropArea
 						keys:					["analysis"]
 
 	property alias		myIndex:				draggableItem.myIndex
-	property alias		myAnalysis:				loader.myAnalysis
-	property alias		formQmlUrl:				loader.formQmlUrl
-	property alias		backgroundFlickable:	loader.backgroundFlickable
+	property alias		myAnalysis:				formParent.myAnalysis
+	property alias		backgroundFlickable:	formParent.backgroundFlickable
 
 	onEntered: (drag)=>
 	{
@@ -52,7 +51,7 @@ DropArea
 
 		property int		myIndex:			-1
 		property int		droppedIndex:		-1
-		property alias		myAnalysis:			loader.myAnalysis
+		property alias		myAnalysis:			formParent.myAnalysis
 
 		Drag.keys:			["analysis"]
 		Drag.active:		mouseArea.drag.active
@@ -133,7 +132,7 @@ DropArea
 				else
 				{
 					analysesModel.moving = false
-					analysesModel.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
+					analysesModel.moveAnalysesResults(formParent.myAnalysis, draggableItem.droppedIndex)
 				}
 			}
 
@@ -186,7 +185,14 @@ DropArea
 			clip:				true
 
 			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
-			property real		formHeight:			0
+			property bool		loadingQml:			!formParent.loaded
+			property real		formHeight:			formParent.height
+
+			onLoadingQmlChanged:
+			{
+				if(loadingQml)	qmlLoadingIndicator.startManually();
+				else			qmlLoadingIndicator.stopManually();
+			}
 
 			Connections
 			{
@@ -195,8 +201,9 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;	}	},
-				State { name: "imploded";	when: !expanderButton.expanded;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;									}	}
+				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;			}	},
+				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;	}	},
+				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;											}	}
 			]
 
 			transitions: Transition
@@ -261,7 +268,7 @@ DropArea
 					Text
 					{
 						id:				analysisTitle
-						text:			loader.myAnalysis != null ? loader.myAnalysis.title : "?"
+						text:			formParent.myAnalysis ? formParent.myAnalysis.title : "?"
 						font:			jaspTheme.fontLabel
 						color:			jaspTheme.textEnabled
 						visible:		!analysisTitleInput.visible
@@ -307,8 +314,8 @@ DropArea
 
 						function stopEditing(storeChangedValue)
 						{
-							if(storeChangedValue && loader.myAnalysis != null)
-								loader.myAnalysis.title = text;
+							if(storeChangedValue && formParent.myAnalysis)
+								formParent.myAnalysis.title = text;
 
 							visible = false;
 						}
@@ -363,7 +370,7 @@ DropArea
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
-					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(loader.myAnalysis.helpFile))
+					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile))
 										{
 											if(helpModel.markdown !== myAnalysis.helpMD)
 												helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
@@ -375,7 +382,7 @@ DropArea
 										else
 										{
 											helpModel.markdown = "";	
-											helpModel.showOrTogglePageForAnalysis(loader.myAnalysis)
+											helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
 										}
 										
 					toolTip:			qsTr("Show info for this analysis")
@@ -398,7 +405,7 @@ DropArea
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
-					onClicked:			analysesModel.removeAnalysis(loader.myAnalysis)
+					onClicked:			analysesModel.removeAnalysis(formParent.myAnalysis)
 					toolTip:			qsTr("Remove this analysis")
 					radius:				height
 					anchors
@@ -412,13 +419,31 @@ DropArea
 				}
 			}
 
+			LoadingIndicator
+			{
+
+				id:						qmlLoadingIndicator
+				visible:				expanderButton.loadingQml && expanderButton.expanded && formParent.error == ""
+				implicitHeight:			300 * jaspTheme.uiScale
+				height:					implicitHeight
+				autoStartOnVisibility:	false
+
+				anchors
+				{
+					top:				expanderRectangle.bottom
+					left:				parent.left
+					right:				parent.right
+					margins:			jaspTheme.formMargin
+				}
+
+			}
 
 			Item
 			{
 				id:					loaderAndError
-				implicitHeight:		loader.loaded ? Math.max(loader.height, errorRect.height * preferencesModel.uiScale) : 0
+				implicitHeight:		formParent.loaded ? formParent.height : formParent.error != "" ? errorRect.height * preferencesModel.uiScale : 0
 				height:				implicitHeight
-				visible:			expanderButton.expanded
+				visible:			expanderButton.expanded && (formParent.loaded || formParent.error != "")
 
 				anchors
 				{
@@ -430,8 +455,8 @@ DropArea
 
 				Rectangle
 				{
-					id: errorRect
-					visible:		loader.status === Loader.Error
+					id:				errorRect
+					visible:		formParent.error != ""
 					anchors.top:	parent.top
 					color:			jaspTheme.errorMessagesBackgroundColor
 					width:			jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
@@ -444,22 +469,20 @@ DropArea
 						width:				parent.width
 						padding:			5
 						verticalAlignment:	Text.AlignVCenter
-						text:				loader.status === Loader.Error ? loader.sourceComponent.errorString() : ""
+						text:				formParent.error
 						wrapMode:			Text.Wrap
+						
+						//onTextChanged:		messages.log("errorMessagesText text changed to '" + text + "'");
 					}
 				}
 
-				Connections
+				Item
 				{
-					target:		loader.item
-					function	onHeightChanged() { if(loader.loaded) expanderButton.formHeight = loader.item.height; }
-				}
+					id:					formParent
+					height:				myForm ? myForm.implicitHeight : 0
 
-				Loader
-				{
-					id:					loader
-					source:				loader.formQmlUrl
-					asynchronous:		false // makes it slow when true
+					property string error:		!myAnalysis ? "No Analysis!\n" : myAnalysis.qmlError
+					property bool	loaded:		myForm
 
 					anchors
 					{
@@ -469,11 +492,19 @@ DropArea
 						right:			parent.right
 					}
 
-					property var myAnalysis:			null
-					property var backgroundFlickable:	null
-					property string formQmlUrl
+					property var	myForm:					myAnalysis ? myAnalysis.formItem : null
+					property var	myAnalysis:				null	///< Set from AnalysisForms.qml and given through Analyses or `analysesModel`
+					property var	backgroundFlickable:	null	///< Set from AnalysisForms.qml
 
-					onLoaded:	if(source != "") expanderButton.formHeight = loader.item.height
+					onMyFormChanged:	if(myForm != null)
+					{
+						myForm.backgroundForms = backgroundFlickable;
+					}
+
+					onMyAnalysisChanged: if(myAnalysis)
+					{
+						myAnalysis.formParent = formParent; //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
+					}
 				}
 			}
 		}

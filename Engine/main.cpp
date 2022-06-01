@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
+		Log::log() << "Current directory is: '" << boost::filesystem::current_path().string() << "'" << std::endl;
 
 #ifdef _WIN32
 		//Should help with converting korean/japanese/etc to utf-8.

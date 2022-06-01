@@ -6,10 +6,38 @@ Item
 	implicitWidth:	200
 	implicitHeight: 200
 
+	property bool autoStartOnVisibility:	true
+	property bool runningManually:			false;
+
+	function startManually()
+	{
+		if(container.autoStartOnVisibility)
+		{
+			//console.log("LoadingIndicator ignores manual start/stop if autoStartOnVisibility is true");
+			return;
+		}
+
+		runningManually = true;
+		img.run = 0;
+		anim.start();
+	}
+
+	function stopManually()
+	{
+		if(container.autoStartOnVisibility)
+		{
+			//console.log("LoadingIndicator ignores manual start/stop if autoStartOnVisibility is true");
+			return;
+		}
+
+		runningManually = false;
+		anim.stop();
+	}
+
 	Image
 	{
 		id						: img
-		source					: visible ? jaspTheme.iconPath + "/loading.svg" : ""
+		source					: visible || runningManually ? jaspTheme.iconPath + "/loading.svg" : ""
 		sourceSize.width		: width
 		sourceSize.height		: width
 		height					: width
@@ -23,10 +51,13 @@ Item
 
 		onVisibleChanged: 	startStopIfVisible();
 		ListView.onReused:	startStopIfVisible();
-		ListView.onPooled:	anim.stop()
+		ListView.onPooled:	if(container.autoStartOnVisibility) anim.stop()
 
 		function startStopIfVisible()
 		{
+			if(!container.autoStartOnVisibility)
+				return;
+
 			if ( visible && !anim.running)
 			{
 				run = 0;
@@ -44,7 +75,7 @@ Item
 			loops		: 1
 
 			onFinished :
-				if(visible)
+				if(visible || ( !container.autoStartOnVisibility && container.runningManually))
 				{
 					img.run ++;
 					img.run %= img.segments
