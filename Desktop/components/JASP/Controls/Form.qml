@@ -36,8 +36,7 @@ AnalysisForm
 	property int	majorVersion		: 1
 	property int	minorVersion		: 0
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
-					analysis			: myAnalysis
-	property var	backgroundForms		: backgroundFlickable
+	property var	backgroundForms		: undefined
 	property alias	columns				: contentArea.columns
 	property bool	runAnalysisWhenOptionChange : true
 
@@ -69,7 +68,7 @@ AnalysisForm
 		Rectangle
 		{
 			id:				oldFileMessagesBox
-			visible:		myAnalysis !== null && myAnalysis.needsRefresh && myAnalysis.hasVolatileNotes //Ill leave the text as is for now to avoid having to go back to the po again
+			visible:		form.analysis !== null && form.analysis.needsRefresh && form.analysis.hasVolatileNotes //Ill leave the text as is for now to avoid having to go back to the po again
 			color:			jaspTheme.controlWarningBackgroundColor
 			width:			form.implicitWidth
 			height:			visible ? oldAnalysisText.height : 0
@@ -86,7 +85,7 @@ AnalysisForm
 				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
 				text:				qsTr("This analysis was created with an older version of JASP (or a dynamic module)") + //I do not want to bother with formatting strings here to be honest
-									( myAnalysis !== null && !myAnalysis.hasVolatileNotes ?
+									( form.analysis !== null && !form.analysis.hasVolatileNotes ?
 										qsTr(", refreshing could give a slightly different result.") :
 										qsTr(", to keep your notes where they are it is highly recommended to first refresh your analyses!"))
 
@@ -178,14 +177,5 @@ AnalysisForm
 		}
 	}
 	
-	Timer
-	{
-		id:				bindingTimer
-		running:		false
-		repeat:			false
-		interval:		0
-		onTriggered:	formCompleted();
-	}
-	
-	Component.onCompleted:	bindingTimer.start()
+	Component.onCompleted:	formCompletedSignal();
 }

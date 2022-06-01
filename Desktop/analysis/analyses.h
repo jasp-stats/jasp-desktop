@@ -27,7 +27,6 @@
 #include <QString>
 #include <QMap>
 #include <QAbstractListModel>
-#include <QFileSystemWatcher>
 #include <sstream>
 
 class RibbonModel;
@@ -60,19 +59,20 @@ public:
 					idRole};
 
 						Analyses();
-						~Analyses() { _singleton = nullptr; }
-	static Analyses *	analyses() { return _singleton; }
+						~Analyses()	{ _singleton = nullptr; }
+	static Analyses *	analyses()	{ return _singleton; }
 
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
-	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
+	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(Json::nullValue, analysisEntry, _nextId++);						}
 
 	Analysis	*	operator[](size_t index)	{ return _analysisMap[_orderedIds[index]]; }
 	Analysis	*	get(size_t id) const		{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 
 	void			clear();
-	void			reload(Analysis* analysis, bool logProblem);
+	void			reload(Analysis* analysis, bool qmlFileChanged, bool logProblem);
+	void			destroyAllForms();
 
 	bool			allFresh() const;
 	void			setAnalysesUserData(Json::Value userData);
@@ -150,6 +150,7 @@ signals:
 	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
+	void reloadQmlForm(					int			row);
 	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
 	void currentFormHeightChanged(		double		currentFormHeight);
 	void visibleChanged(				bool		visible);
@@ -175,7 +176,6 @@ private:
 	void bindAnalysisHandler(Analysis* analysis);
 	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);	
 	void _makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
-	void _analysisQMLFileChanged(Analysis* analysis);
 
 
 private:
@@ -187,7 +187,6 @@ private:
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;
 	std::vector<size_t>				_orderedIdsBeforeMoving;
-	QFileSystemWatcher				_QMLFileWatcher;
 
 	size_t							_nextId					= 0;
 	int								_currentAnalysisIndex	= -1;
