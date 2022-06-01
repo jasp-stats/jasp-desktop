@@ -206,6 +206,6 @@ QString AppDirs::renvCacheLocations()
 							':';
 #endif
 	
-	return dynamicCache + separator + staticCache;
+    return dynamicCache + separator + staticCache;
 	
 }
