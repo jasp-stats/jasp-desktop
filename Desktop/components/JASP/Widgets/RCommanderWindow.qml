@@ -297,7 +297,7 @@ Window
 
 			JW.RoundedButton
 			{
-				id:		clearOutput
+				id:			clearOutput
 				text:		qsTr("Clear Output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
 				width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
