@@ -47,6 +47,14 @@ Analyses::Analyses()
 	new KnownIssues(this);
 }
 
+void Analyses::destroyAllForms() 
+{ 
+	Log::log() << "Analyses::destroyAllForms()" << std::endl;
+	
+	//Destroy all existing forms *before* destroying the rest of QML, to avoid a massive slew of errors
+	applyToAll([](Analysis * a){ if(a->form()) a->destroyForm(); });
+}
+
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
@@ -100,9 +108,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		analysis			= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
 	}
 
-	if(analysisEntry && analysisEntry->dynamicModule() && !analysisEntry->dynamicModule()->loaded())
-		analysisEntry->dynamicModule()->setLoadingNeeded();
-
 	if(wasUpgraded)
 		analysis->setUpgradeMsgs(msgs);
 
@@ -147,7 +152,7 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 	{
 		emit analysisAdded(analysis);
 		setCurrentAnalysisIndex(_orderedIds.size() - 1);
-		showAnalysisInResults(id);
+		emit showAnalysisInResults(id);
 	}
 }
 
@@ -165,20 +170,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis,	&Analysis::titleChanged,						this, &Analyses::somethingModified					);
 	connect(analysis,	&Analysis::imageChanged,						this, &Analyses::somethingModified					);
 	connect(analysis,	&Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
-
-	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
-	{
-		QString filePath = tq(analysis->qmlFormPath());
-		
-		if (filePath.startsWith("file:"))
-			filePath.remove(0,5);
-		if (!_QMLFileWatcher.files().contains(filePath))
-		{
-			if (!_QMLFileWatcher.addPath(filePath))
-				Log::log()  << "Could not watch: " << filePath.toStdString() << std::endl;
-		}
-		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
-	}
+	connect(analysis,	&Analysis::emptyQMLCache,						this, &Analyses::emptyQMLCache						);
 }
 
 void Analyses::clear()
@@ -206,19 +198,18 @@ void Analyses::clear()
 	emit countChanged();
 }
 
-void Analyses::reload(Analysis *analysis, bool logProblem)
+void Analyses::reload(Analysis *analysis, bool qmlFileNameChanged, bool logProblem)
 {
 
 	for (size_t i = 0; i < _orderedIds.size(); i++)
 		if (_analysisMap[_orderedIds[i]] == analysis)
 		{
 			int ind = int(i);
-			// Force the loader to load again the QML file
-			beginRemoveRows(QModelIndex(), ind, ind);
-			endRemoveRows();
+			if(!qmlFileNameChanged)	Log::log() << "Analyses::reload(" << analysis << ") Force a reload of QML file '" << analysis->qmlFormPath() << "' for " << analysis->name() << "("<< analysis->id() << ")." << std::endl;
+			else					Log::log() << "Analyses::reload(" << analysis << ") emit dataChanged for QML file '" << analysis->qmlFormPath() << "' for " << analysis->name() << "("<< analysis->id() << ")." << std::endl;
 
-			beginInsertRows(QModelIndex(), ind, ind);
-			endInsertRows();
+			if(!qmlFileNameChanged)	analysis->reloadForm();
+			else					emit dataChanged(index(ind), index(ind), QList<int>({ Qt::DisplayRole, formPathRole}));
 
 			return;
 		}
@@ -227,6 +218,7 @@ void Analyses::reload(Analysis *analysis, bool logProblem)
 	if(logProblem)
 		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl;
 }
+
 
 
 bool Analyses::allFresh() const
@@ -238,11 +230,7 @@ bool Analyses::allFresh() const
 	return true;
 }
 
-void Analyses::_analysisQMLFileChanged(Analysis *analysis)
-{
-	emit emptyQMLCache();
-	reload(analysis, false); //Do not log problem because it can cause trouble!
-}
+
 
 Json::Value Analyses::asJson() const
 {
@@ -308,7 +296,7 @@ void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
 
 void Analyses::refreshAnalysesOfDynamicModule(Modules::DynamicModule * module)
 {
-	Log::log() << "void RibbonModel::dynamicModuleChanged(" << module->toString() << ")" << std::endl;
+	//Log::log() << "void Analyses::refreshAnalysesOfDynamicModule(" << module->toString() << ")" << std::endl;
 
 
 	for(auto & keyval : _analysisMap)
@@ -335,8 +323,18 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 {
 	std::set<int> removeIds;
 	for(auto & keyval : _analysisMap)
-		if(keyval.second->dynamicModule() == module  && !keyval.second->checkAnalysisEntry()) // Check if the analysisEntry this analysis is based still exists
-			removeIds.insert(keyval.first);
+		if(keyval.second->dynamicModule() == module)
+		{
+			if(!keyval.second->checkAnalysisEntry()) // Check if the analysisEntry this analysis is based still exists
+				removeIds.insert(keyval.first);
+			else
+			{
+				Analysis * a = keyval.second;
+
+				if(!a->form() && a->readyToCreateForm())
+					a->createForm();
+			}
+		}
 
 	for(const int & id : removeIds)
 		removeAnalysisById(size_t(id));
@@ -381,9 +379,6 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 	{
 		int				corruptAnalyses = 0;
 		stringstream	corruptionStrings;
-		Analysis	*	currentAnalysis = nullptr;
-
-		//This really should all be moved to Analyses!
 
 		Json::Value analysesData = DataSetPackage::pkg()->analysesData();
 		if (analysesData.isNull())
@@ -416,7 +411,7 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 			{
 				try
 				{
-					currentAnalysis = createFromJaspFileEntry(analysisData, ribbonModel);
+					createFromJaspFileEntry(analysisData, ribbonModel);
 				}
 				catch (Modules::ModuleException modProb)
 				{
