@@ -173,7 +173,7 @@ bool LanguageModel::isValidLocaleName(const QString& filename, QLocale& locale, 
 
 void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
 {
-	Log::log() << "LanguageModel::loadModuleTranslationFile called for module: " << (dyn ? dyn->name() : "NULL") << std::endl;
+	//Log::log() << "LanguageModel::loadModuleTranslationFile called for module: " << (dyn ? dyn->name() : "NULL") << std::endl;
 
 	bool result;
 	QLocale loc;

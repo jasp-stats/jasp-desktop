@@ -49,7 +49,7 @@ DynamicModule*	AnalysisEntry::dynamicModule() const
 
 std::string AnalysisEntry::qmlFilePath() const
 {
-	return dynamicModule()->qmlFilePath(_qml);
+	return dynamicModule() ? dynamicModule()->qmlFilePath(_qml) : "";
 }
 
 std::string AnalysisEntry::icon() const

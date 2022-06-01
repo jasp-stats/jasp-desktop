@@ -144,7 +144,7 @@ public slots:
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 
-
+	void	showEnginesWindow(); //For debugging
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
 
@@ -156,6 +156,7 @@ private:
 	void startDataEditor(QString path);
 	void loadRibbonQML();
 	void loadQML();
+
 
 	void checkUsedModules();
 

@@ -67,6 +67,9 @@ QString decrypt(const QString &input);
 QString getSortableTimestamp();
 QString QJSErrorToString(QJSValue::ErrorType errorType);
 
+QObject * instantiateQml(const QUrl & filePath, const std::string & moduleName, QQmlContext * ctxt = nullptr);
+QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename, QQmlContext * ctxt = nullptr);
+
 QString shortenWinPaths(QString);
 
 bool pathIsSafeForR(const QString & checkThis);
