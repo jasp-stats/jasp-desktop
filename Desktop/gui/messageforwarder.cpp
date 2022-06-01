@@ -17,6 +17,11 @@ MessageForwarder::MessageForwarder(MainWindow *main) : QQuickItem(nullptr), _mai
 	setParent(main);
 }
 
+void MessageForwarder::log(QString msg)
+{
+	Log::log() << msg << std::endl;
+}
+
 MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)

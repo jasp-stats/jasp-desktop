@@ -61,12 +61,19 @@ public:
 
 	size_t channelNumber() { return _channelNumber; }
 
+	void findConstructAllAgain();
+
 private:
 	bool tryWait(int timeout = 0);
+	void catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis);
 
 	void doubleMemoryOut();
 	void rebindMemoryInIfSizeChanged();
 	void generateNames();
+
+	void findConstructSizes();
+	void findConstructDataStrings();
+	void findConstructMutexes();
 
 	std::string										_baseName,
 													_nameControl,
