@@ -36,7 +36,8 @@ void Description::setUpDelayedUpdate()
 	_timer.callOnTimeout([=]()
 	{
 		Log::log() << "Description delay timer done, update!" << std::endl;
-		desc->iShouldBeUpdated(desc);
+		try { desc->iShouldBeUpdated(desc); }
+		catch (std::exception e) { Log::log() << "iShouldBeUpdated had exception " << e.what() << std::endl; }
 	});
 }
 

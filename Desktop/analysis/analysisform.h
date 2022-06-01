@@ -29,7 +29,6 @@
 #include "widgets/listmodeltermsavailable.h"
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
-
 #include <queue>
 
 class ListModelTermsAssigned;
@@ -55,49 +54,52 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged		)
 	Q_PROPERTY(QString		info				READ info				WRITE setInfo				NOTIFY infoChanged				)
 	Q_PROPERTY(QString		helpMD				READ helpMD											NOTIFY helpMDChanged			)
-	Q_PROPERTY(QVariant		analysis			READ analysis			WRITE setAnalysis			NOTIFY analysisChanged			)
+	Q_PROPERTY(QVariant		analysis			READ analysis										NOTIFY analysisChanged			)
 
 public:
-	explicit					AnalysisForm(QQuickItem * = nullptr);
-				void			bindTo();
-				void			unbind();
+	explicit				AnalysisForm(QQuickItem * = nullptr);
+							~AnalysisForm();
 
-				void			runRScript(QString script, QString controlName, bool whiteListedVersion);
-				
-				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
+	void					bindTo();
+	void					unbind();
 
-				void			setMustBe(		std::set<std::string>						mustBe);
-				void			setMustContain(	std::map<std::string,std::set<std::string>> mustContain);
+	void					runRScript(QString script, QString controlName, bool whiteListedVersion);
 
-				bool			runOnChange()	{ return _runOnChange; }
-				void			setRunOnChange(bool change);
-				void			blockValueChangeSignal(bool block, bool notifyOnceUnblocked = true);
+	void					itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
+
+	void					setMustBe(		std::set<std::string>						mustBe);
+	void					setMustContain(	std::map<std::string,std::set<std::string>> mustContain);
+
+	bool					runOnChange()	{ return _runOnChange; }
+	void					setRunOnChange(bool change);
+	void					blockValueChangeSignal(bool block, bool notifyOnceUnblocked = true);
+	bool					formCompleted() const { return _formCompleted; }
 
 public slots:
-				void			runScriptRequestDone(const QString& result, const QString& requestId);
-				void			setInfo(QString info);
-				void			setAnalysis(QVariant analysis);
-				void			boundValueChangedHandler(JASPControl* control);
+	void					runScriptRequestDone(const QString& result, const QString& requestId);
+	void					setInfo(QString info);
+	void					setAnalysis(Analysis * analysis);
+	void					boundValueChangedHandler(JASPControl* control);
 
 signals:
-				void			sendRScript(QString script, int key);
-				void			formChanged(Analysis* analysis);
-				void			formCompleted();
-				void			refreshTableViewModels();
-				void			errorMessagesItemChanged();
-				void			languageChanged();
-				void			needsRefreshChanged();
-				void			hasVolatileNotesChanged();
-				void			runOnChangeChanged();
-				void			infoChanged();
-				void			helpMDChanged();
-				void			errorsChanged();
-				void			warningsChanged();
-				void			analysisChanged();
-				void			rSourceChanged(const QString& name);
+	void					sendRScript(QString script, int key);
+	void					formChanged(Analysis* analysis);
+	void					formCompletedSignal();
+	void					refreshTableViewModels();
+	void					errorMessagesItemChanged();
+	void					languageChanged();
+	void					needsRefreshChanged();
+	void					hasVolatileNotesChanged();
+	void					runOnChangeChanged();
+	void					infoChanged();
+	void					helpMDChanged();
+	void					errorsChanged();
+	void					warningsChanged();
+	void					analysisChanged();
+	void					rSourceChanged(const QString& name);
 
 protected:
-				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
+	QVariant				requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
 
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
@@ -116,81 +118,81 @@ public:
 	Q_INVOKABLE void		runAnalysis();
 	Q_INVOKABLE bool		initialized()	const	{ return _initialized; }
 
-	void		addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
-	void		clearControlError(JASPControl* control);
-	void		cleanUpForm();
-	bool		hasError();
+	void			addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
+	void			clearControlError(JASPControl* control);
+	void			cleanUpForm();
+	bool			hasError();
 
-	bool		isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->computedColumns().contains(col) : false; }
+	bool			isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->computedColumns().contains(col) : false; }
 
-	bool		needsRefresh()		const;
-	bool		hasVolatileNotes()	const;
+	bool			needsRefresh()		const;
+	bool			hasVolatileNotes()	const;
 
-	QString		info()				const { return _info; }
-	QString		helpMD()			const;
-	QString		metaHelpMD()		const;
-	QString		errors()			const {	return msgsListToString(_formErrors);	}
-	QString		warnings()			const { return msgsListToString(_formWarnings);	}
-	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
-	Analysis*	analysisObj()		const { return _analysis;						}
+	QString			info()				const { return _info; }
+	QString			helpMD()			const;
+	QString			metaHelpMD()		const;
+	QString			errors()			const {	return msgsListToString(_formErrors);	}
+	QString			warnings()			const { return msgsListToString(_formWarnings);	}
+	QVariant		analysis()			const { return QVariant::fromValue(_analysis);	}
+	Analysis	*	analysisObj()		const { return _analysis;						}
 
-	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
-	void		addColumnControl(JASPControl* control, bool isComputed);
+	stringvecvec	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
+	void			addColumnControl(JASPControl* control, bool isComputed);
 
-	bool		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
-	std::set<std::string> usedVariables();
+	bool			setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	stringset		usedVariables();
 
-	void		sortControls(QList<JASPControl*>& controls);
+	void			sortControls(QList<JASPControl*>& controls);
 
 protected:
-	QString		msgsListToString(const QStringList & list) const;
+	QString			msgsListToString(const QStringList & list) const;
 
 private:
-	Json::Value& _getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
-	void		_setUpControls();
-	void		_setUpModels();
-	void		_setUp();
-	void		_orderExpanders();
-	QString		_getControlLabel(QString controlName);
-	void		_addLoadingError(QStringList wrongJson);
-	void		setControlIsDependency(	QString controlName, bool isDependency);
-	void		setControlMustContain(	QString controlName, QStringList containThis);
-	void		setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
-	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
-	void		setAnalysisUp();
-	std::vector<std::vector<std::string> > _getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
+
+	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
+	void			_setUpControls();
+	void			_setUpModels();
+	void			_setUp();
+	void			_orderExpanders();
+	QString			_getControlLabel(QString controlName);
+	void			_addLoadingError(QStringList wrongJson);
+	void			setControlIsDependency(	QString controlName, bool isDependency);
+	void			setControlMustContain(	QString controlName, QStringList containThis);
+	void			setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
+	void			setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
+	void			setAnalysisUp();
+	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
+
 
 private slots:
-	   void		formCompletedHandler();
-	   void		knownIssuesUpdated();
+	   void			formCompletedHandler();
+	   void			knownIssuesUpdated();
 
 protected:
-	Analysis								*	_analysis			= nullptr;
-	QMap<QString, JASPControl* >				_controls;
+	Analysis									*	_analysis			= nullptr;
+	QMap<QString, JASPControl* >					_controls;
 
 	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
-	QVector<JASPControl*>						_dependsOrderedCtrls;
-	QMap<QString, ListModel* >					_modelMap;
-	QVector<ExpanderButtonBase*>				_expanders;
+	QVector<JASPControl*>							_dependsOrderedCtrls;
+	QMap<QString, ListModel* >						_modelMap;
+	QVector<ExpanderButtonBase*>					_expanders;
 	QMap<ExpanderButtonBase*, ExpanderButtonBase*>	_nextExpanderMap;
-	QMap<JASPControl*, ExpanderButtonBase*>		_controlExpanderMap;
-	bool										_removed = false;
-	std::set<std::string>						_mustBe;
-	std::map<std::string,std::set<std::string>>	_mustContain;
+	QMap<JASPControl*, ExpanderButtonBase*>			_controlExpanderMap;
+	bool											_removed						= false;
+	stringset										_mustBe;
+	std::map<std::string,std::set<std::string>>		_mustContain;
 	
 private:
-	QStringList									_formErrors,
-												_formWarnings;
-
-	QQmlComponent*								_controlErrorMessageComponent = nullptr;
-	QList<QQuickItem*>							_controlErrorMessageCache;
-	bool										_runOnChange	= true,
-												_formCompleted = false,
-												_initialized = false;
-	QString										_info;
-	int											_signalValueChangedBlocked = 0;
-	bool										_signalValueChangedWasEmittedButBlocked = false;
-	
+	QStringList										_formErrors,
+													_formWarnings;
+	QQmlComponent*									_controlErrorMessageComponent	= nullptr;
+	QList<QQuickItem*>								_controlErrorMessageCache;
+	bool											_runOnChange					= true,
+													_formCompleted					= false,
+													_initialized					= false,
+													_valueChangedEmittedButBlocked	= false;
+	QString											_info;
+	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 };
 

@@ -26,18 +26,20 @@
 #include "log.h"
 #include "utils.h"
 #include "utilities/settings.h"
+#include "utilities/qutils.h"
+
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
-	  QObject(Analyses::analyses()),
-	  _id(id),
-	  _name(analysisEntry->function()),
-	  _qml(analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
-	  _titleDefault(analysisEntry->title()),
-	  _title(title == "" ? _titleDefault : title),
-	  _moduleVersion(moduleVersion),
-	  _version(AppInfo::version),
-	  _moduleData(analysisEntry),
-	  _dynamicModule(_moduleData->dynamicModule())
+	  QObject(			Analyses::analyses()),
+	  _id(				id),
+	  _name(			analysisEntry->function()),
+	  _qml(				analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
+	  _titleDefault(	analysisEntry->title()),
+	  _title(			title == "" ? _titleDefault : title),
+	  _moduleVersion(	moduleVersion),
+	  _version(			AppInfo::version),
+	  _moduleData(		analysisEntry),
+	  _dynamicModule(	_moduleData->dynamicModule())
 {
 	if(_moduleVersion == "" && _dynamicModule)
 		_moduleVersion = _dynamicModule->version();
@@ -45,39 +47,59 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
 
-	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
+	_codedAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	setHelpFile(dynamicModule()->helpFolderPath() + tq(analysisEntry->function()));
+
+	initAnalysis();
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
-	: QObject(			Analyses::analyses()		)
-	, _status(			duplicateMe->_status		)
-	, _boundValues(		duplicateMe->boundValues()	)
-	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
-	, _results(			duplicateMe->_results		)
-	, _resultsMeta(			_results.get(".meta", Json::arrayValue))
-	, _imgResults(		duplicateMe->_imgResults	)
-	, _userData(		duplicateMe->_userData		)
-	, _imgOptions(		duplicateMe->_imgOptions	)
-	, _progress(		duplicateMe->_progress		)
-	, _id(				id							)
-	, _name(			duplicateMe->_name			)
-	, _qml(				duplicateMe->_qml			)
-	, _titleDefault(	duplicateMe->_titleDefault	)
-	, _title("Copy of "+duplicateMe->_title			)
-	, _rfile(			duplicateMe->_rfile			)
-	, _isDuplicate(		true						)
-	, _version(			duplicateMe->_version		)
-	, _moduleData(		duplicateMe->_moduleData	)
-	, _dynamicModule(	duplicateMe->_dynamicModule	)
-	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
-	, _helpFile(						duplicateMe->_helpFile)
-	, _rSources(		duplicateMe->_rSources		)
+	: QObject(				Analyses::analyses()					)
+	, _status(				duplicateMe->_status					)
+	, _boundValues(			duplicateMe->boundValues()				)
+	, _optionsDotJASP(		duplicateMe->_optionsDotJASP			)
+	, _results(				duplicateMe->_results					)
+	, _resultsMeta(			_results.get(".meta", Json::arrayValue)	)
+	, _imgResults(			duplicateMe->_imgResults				)
+	, _userData(			duplicateMe->_userData					)
+	, _imgOptions(			duplicateMe->_imgOptions				)
+	, _progress(			duplicateMe->_progress					)
+	, _id(					id										)
+	, _name(				duplicateMe->_name						)
+	, _qml(					duplicateMe->_qml						)
+	, _titleDefault(		duplicateMe->_titleDefault				)
+	, _title("Copy of "+	duplicateMe->_title						)
+	, _rfile(				duplicateMe->_rfile						)
+	, _isDuplicate(			true									)
+	, _version(				duplicateMe->_version					)
+	, _moduleData(			duplicateMe->_moduleData				)
+	, _dynamicModule(		duplicateMe->_dynamicModule				)
+	, _codedAnalysisEntry(	duplicateMe->_codedAnalysisEntry		)
+	, _helpFile(			duplicateMe->_helpFile					)
+	, _rSources(			duplicateMe->_rSources					)
 {
+	initAnalysis();
+}
+
+void Analysis::initAnalysis()
+{
+	watchQmlForm();
+	connect(&_QMLFileWatcher,	&QFileSystemWatcher::fileChanged,			this,	&Analysis::analysisQMLFileChanged,	Qt::UniqueConnection);
+	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
+
+
+	bool isNewAnalysis = optionsFromJASPFile().size() == 0;
+
+	if(!_isDuplicate && isNewAnalysis)
+		_status = Empty;
+
 }
 
 Analysis::~Analysis()
 {
+	if(form())
+		destroyForm();
+
 	if(DataSetPackage::pkg()->hasDataSet())
 		for(const std::string & col : computedColumns())
 			emit requestComputedColumnDestruction(col);
@@ -90,12 +112,26 @@ void Analysis::clearOptions()
 
 bool Analysis::checkAnalysisEntry()
 {
+	/*
+		This function is necessary because we have multiple datastructures representing the same data...
+
+		The `RibbonModel` has its own copy and `Analysis` points there.
+		We also have DynamicModule(s) which contains the original data as loaded from Description.qml and the Ribbon* objects are created based on that.
+		
+		This might mean that when a development module is installed the Analysis still has a pointer to the old RibbonButton/Model info and must be updated.
+		Same for when Description.qml was changed and thus reloaded.
+
+		To be able to find the right pointer we store a textual representation of which module+analysis is meant in Analysis::_codedAnalysisEntry.
+
+		This function then corrects the pointers when necessary
+	*/
+
 	try
 	{
-		if(_codedReferenceToAnalysisEntry == "" || !_dynamicModule)
+		if(_codedAnalysisEntry == "" || !_dynamicModule)
 			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
 
-		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedAnalysisEntry);
 		
 		bool updateTitleToDefault = _title == _titleDefault;
 		
@@ -104,6 +140,18 @@ bool Analysis::checkAnalysisEntry()
 		if(updateTitleToDefault)
 			setTitle(_titleDefault);
 
+		bool qmlFileChanged = _lastQmlFormPath != qmlFormPath(false, true);
+
+		_lastQmlFormPath = qmlFormPath(false, true);
+
+		if(qmlFileChanged)
+		{
+			Log::log() << "Analysis::checkAnalysisEntry() has a changed qml file path, calling watchQmlForm()" << std::endl;
+			watchQmlForm();
+
+			reloadForm();
+		}
+
 		return true;
 	}
 	catch (Modules::ModuleException & e)
@@ -111,6 +159,8 @@ bool Analysis::checkAnalysisEntry()
 		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
 
 		_moduleData = nullptr;
+		if(_QMLFileWatcher.files().size())
+			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
 		return false;
 	}
 }
@@ -151,11 +201,6 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_wasUpgraded = false;
 }
 
-void Analysis::reload()
-{
-	Analyses::analyses()->reload(this, true);
-}
-
 void Analysis::exportResults()
 {
 	emit Analyses::analyses()->analysesExportResults();
@@ -163,6 +208,7 @@ void Analysis::exportResults()
 
 void Analysis::run()
 {
+	Log::log() << "Analysis::run() for " << title() << "(" << id() << ")" << std::endl;
 	setStatus(Empty);
 }
 
@@ -243,15 +289,6 @@ bool Analysis::updatePlotSize(const std::string & plotName, int width, int heigh
 	return false;
 }
 
-Modules::AnalysisEntry * Analysis::moduleData()
-{
-	if(!_moduleData)
-		checkAnalysisEntry();
-
-	return _moduleData;
-}
-
-
 void Analysis::rewriteImages()
 {
 	setStatus(Analysis::RewriteImgs);
@@ -268,11 +305,11 @@ void Analysis::imagesRewritten(const Json::Value & results)
 Analysis::Status Analysis::parseStatus(std::string name)
 {
 	if		(name == "empty")			return Analysis::Empty;
-	else if (name == "waiting")			return Analysis::Running; //For backwards compatibility
+	else if (name == "initializing")	return Analysis::Empty;		//For backwards compatibility ?
+	else if (name == "waiting")			return Analysis::Running;	//For backwards compatibility
 	else if (name == "running")			return Analysis::Running;
 	else if (name == "runningImg")		return Analysis::RunningImg;
 	else if (name == "complete")		return Analysis::Complete;
-	else if (name == "initializing")	return Analysis::Initializing;
 	else if (name == "RewriteImgs")		return Analysis::RewriteImgs;
 	else if (name == "validationError")	return Analysis::ValidationError;
 	else if (name == "aborted")			return Analysis::Aborted;
@@ -281,13 +318,8 @@ Analysis::Status Analysis::parseStatus(std::string name)
 	else								return Analysis::FatalError;
 }
 
-void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
+void Analysis::formConnect()
 {
-	_analysisForm	= form;
-
-	if(!_isDuplicate && isNewAnalysis)
-		_status = Empty;
-	
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
 	connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisForm::rSourceChanged				);
 	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
@@ -324,7 +356,6 @@ std::string Analysis::statusToString(Status status)
 	case Analysis::EditImg:			return "EditImg";
 	case Analysis::RewriteImgs:		return "RewriteImgs";
 	case Analysis::ValidationError:	return "validationError";
-	case Analysis::Initializing:	return "initializing";
 	case Analysis::FatalError:		return "fatalError";
 	default:						return "?????";
 	}
@@ -346,6 +377,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
+
 	if (withRSource)
 		analysisAsJson["rSources"]	= rSources();
 
@@ -518,8 +550,7 @@ void Analysis::setStatus(Analysis::Status status)
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
 		setVersion(AppInfo::version, true);
 
-		if(_dynamicModule)
-			_moduleVersion = _dynamicModule->version();
+		_moduleVersion = _dynamicModule->version();
 
 		if(neededRefresh != needsRefresh())
 			emit needsRefreshChanged();
@@ -578,9 +609,12 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	}
 }
 
-std::string Analysis::qmlFormPath() const
+std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) const
 {
-	return "file:" + (_moduleData != nullptr	?
+	if(!ignoreReadyForUse && !dynamicModule()->readyForUse())
+		return "";
+
+	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
@@ -680,8 +714,7 @@ void Analysis::emitDuplicationSignals()
 
 QString	Analysis::fullHelpPath(QString helpFileName)
 {
-	if(isDynamicModule())	return dynamicModule()->helpFolderPath() + helpFileName;
-	else					return "analyses/" + helpFileName;
+	return dynamicModule()->helpFolderPath() + helpFileName;
 }
 
 void Analysis::duplicateMe()
@@ -831,6 +864,118 @@ void Analysis::setErrorInResults(const std::string & msg)
 	errorResults["title"]			= title();
 
 	setResults(errorResults, Status::FatalError);
+}
+
+void Analysis::setFormParent(QQuickItem *formParent)
+{
+	if(_formParent == formParent)
+		return;
+
+	//Log::log() << "Analysis::setFormParent(" << formParent << ") " << name() << std::endl;
+
+	_formParent = formParent;
+
+	emit formParentChanged();
+
+	if(_formParent)
+	{
+		if(_analysisForm)				_analysisForm->setParentItem(_formParent);
+		else if(readyToCreateForm())	createForm();
+	}
+}
+
+bool Analysis::readyToCreateForm() const
+{
+	return _formParent && dynamicModule() && dynamicModule()->readyForUse();
+}
+
+void Analysis::createForm()
+{
+	Log::log() << "Analysis(" << this << ")::createForm() called ";
+
+	setQmlError("");
+
+	if(!_formParent)
+	{
+		Log::log() << "There is no formParent..." << std::endl;
+		return;
+	}
+
+	if(_analysisForm)
+	{
+		Log::log() << "It already has a form, so we destroy it.";
+		destroyForm();
+	}
+
+	try
+	{
+		Log::log()  << std::endl << "Loading QML form from: " << qmlFormPath(false, false) << std::endl;
+
+		QObject * newForm = instantiateQml(QUrl::fromLocalFile(tq(qmlFormPath(false, false))), module(), qmlContext(_formParent));
+
+		Log::log() << "Created a form, got pointer " << newForm << std::endl;
+
+		AnalysisForm * formItem = qobject_cast<AnalysisForm *>(newForm);
+
+		if(!formItem)
+			throw Modules::ModuleException(module(), "QML file '" + qmlFormPath(false, false) + "' didn't spawn into AnalysisForm, but into: " + (newForm ? fq(newForm->objectName()) : "null"));
+
+		setAnalysisForm(formItem);
+
+		formConnect();
+	}
+	catch(Modules::ModuleException me)
+	{
+		Log::log() << "Had an error loading qml: " << me.what() << std::endl;
+		setQmlError(me.what());
+		_analysisForm = nullptr;
+	}
+	catch(std::exception e)
+	{
+		setQmlError(e.what());
+		_analysisForm = nullptr;
+	}
+}
+
+void Analysis::destroyForm()
+{
+	Log::log() << "Analysis(" << this << ")::destroyForm() called";
+
+	if(_analysisForm)
+	{
+		Log::log(false) << " it has a AnalysisForm " << _analysisForm << " so let's destroy it" << std::endl;
+
+		_optionsDotJASP = _boundValues;  //So that we can later reload the controls to what we currently have
+
+		_analysisForm->setParent(		nullptr);
+		_analysisForm->setParentItem(	nullptr);
+
+		delete _analysisForm;
+		_analysisForm = nullptr;
+
+		emit formItemChanged();
+	}
+	else
+		Log::log(false) << " it has no AnalysisForm." << std::endl;
+}
+
+
+
+void Analysis::setAnalysisForm(AnalysisForm * analysisForm)
+{
+	if(_analysisForm == analysisForm)
+		return;
+
+	_analysisForm = analysisForm;
+	_analysisForm->setAnalysis(this);
+	_analysisForm->setParent(this);
+
+	if(formParent())
+		_analysisForm->setParentItem(formParent());
+
+	Log::log() << "AnalysisForm (" << _analysisForm << ") assigned to  " << name() << " (" << id() << ") " << std::endl;
+
+	emit formItemChanged();
 }
 
 std::string Analysis::upgradeMsgsForOption(const std::string & name) const
@@ -1075,7 +1220,7 @@ bool Analysis::needsRefresh() const
 bool Analysis::isWaitingForModule()
 {
 	//if moduleData == nullptr we might still be waiting for the module to be reloaded after replacement. Because it doesnt know which Analyses it contains yet.
-	return isDynamicModule() && (!moduleData() || !moduleData()->dynamicModule()->readyForUse());
+	return !dynamicModule()->readyForUse();
 }
 
 
@@ -1120,9 +1265,53 @@ void Analysis::setRSources(const Json::Value &rSources)
 void Analysis::setDynamicModule(Modules::DynamicModule * module)
 {
 	Log::log() << "Replacing module connected to analysis " << title() << " (" << id() << ") for module " << module->name() << std::endl;
-	_dynamicModule = module;
+	if(_dynamicModule != module)
+	{
+		if(_analysisForm)
+			destroyForm();
+
+		_dynamicModule = module;
+		emit dynamicModuleChanged();
+	}
 
 	checkAnalysisEntry();
+}
+
+void Analysis::watchQmlForm()
+{
+	if(PreferencesModel::prefs()->developerMode())
+	{
+		QString		filePath		= tq(qmlFormPath(false, true));
+
+		if(_QMLFileWatcher.files().size())
+			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
+
+		if(!_QMLFileWatcher.addPath(filePath))
+			Log::log()  << "Analysis::watchQmlForm, could not watch: " << filePath << std::endl;
+	}
+}
+
+
+void Analysis::reloadForm()
+{
+	if(form())
+		destroyForm();
+
+	if(readyToCreateForm())
+	{
+		emit emptyQMLCache();
+		emit createFormWhenYouHaveAMoment();		//Give Qml a moment to clean up
+	}
+}
+
+void Analysis::analysisQMLFileChanged()
+{
+	Log::log() << "Analysis::analysisQMLFileChanged() for " << name() << " (" << id() << ")" << std::endl;
+	
+	if(form() && form()->formCompleted())	reloadForm();
+	else if(qmlError() != "")				createForm(); //Last time it failed apparently
+	else
+		Log::log() << "Form (" << form() << ") wasn't complete " << ( form() ? std::to_string(form()->formCompleted()) : " because there was no form...") << " yet, and also did not have a QML error set yet, so ignoring it." << std::endl;
 }
 
 void Analysis::checkForRSources()
@@ -1144,11 +1333,11 @@ void Analysis::checkForRSources()
 		else if(meta.isObject())
 		{
 			//Here we collect the meta's names for collections and qmlSources
-			if(meta.isMember("type") && meta["type"].asString() == "qmlSource")
-				sourceIDs.insert(meta["name"].asString());
-
-			if(meta.isMember("type") && meta["type"].asString() == "collection")
-				isCollection.insert(meta["name"].asString());
+			if(meta.isMember("type"))
+			{
+					if(		meta["type"].asString() == "qmlSource")		sourceIDs.insert(	meta["name"].asString());
+					else if(meta["type"].asString() == "collection")	isCollection.insert(meta["name"].asString());
+			}
 
 			if(meta.isMember("meta")) //means there is an array of more meta below there
 				findNewSource(meta["meta"]);
@@ -1218,4 +1407,27 @@ void Analysis::clearRSources()
 	}
 
 	_rSources.clear();
+}
+
+QQuickItem *Analysis::formParent() const
+{
+	return _formParent;
+}
+
+QQuickItem *Analysis::formItem() const
+{
+	return _analysisForm;
+}
+
+const QString &Analysis::qmlError() const
+{
+	return _qmlError;
+}
+
+void Analysis::setQmlError(const QString &newQmlError)
+{
+	if (_qmlError == newQmlError)
+		return;
+	_qmlError = newQmlError;
+	emit qmlErrorChanged();
 }

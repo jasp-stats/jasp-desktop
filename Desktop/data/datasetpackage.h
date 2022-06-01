@@ -90,6 +90,8 @@ public:
 
 		void				pauseEngines();
 		void				resumeEngines();
+		void				enginesPrepareForData();
+		void				enginesReceiveNewData();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
 
 		SubNodeModel	*	dataSubModel	() { return _dataSubModel;	 }
@@ -276,8 +278,8 @@ signals:
 				void				columnDataTypeChanged(	QString columnName);
 				void				labelsReordered(		QString columnName);
 				void				isModifiedChanged();
-				void				pauseEnginesSignal(bool unloadData);
-				void				resumeEnginesSignal();
+				void				enginesPrepareForDataSignal();
+				void				enginesReceiveNewDataSignal();
 				bool				enginesInitializingSignal();
 				void				freeDatasetSignal(DataSet * dataset);
 				void				filteredOutChanged(int column);
@@ -330,8 +332,7 @@ private:
 								_isLoaded					= false,
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
-								_filterShouldRunInit		= false,
-								_enginesLoadedAtBeginSync;
+								_filterShouldRunInit		= false;
 
 	Json::Value					_analysesData;
 	Version						_archiveVersion,

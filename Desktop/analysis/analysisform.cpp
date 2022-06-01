@@ -35,11 +35,17 @@ using namespace std;
 
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
+	Log::log() << "AnalysisForm created " << this << std::endl;
 	setObjectName("AnalysisForm");
 	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
-	connect(this,					&AnalysisForm::formCompleted,		this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
+	connect(this,					&AnalysisForm::formCompletedSignal,	this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+}
+
+AnalysisForm::~AnalysisForm()
+{
+	Log::log() << "~AnalysisForm " << this << std::endl;
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
@@ -47,19 +53,22 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	ColumnsModel* colModel = ColumnsModel::singleton();
 	if (!colModel) return QVariant();
 
-	try {
+	try
+	{
 		int i = colModel->getColumnIndex(term.asString());
-		if (i < 0)									return "";
+
+		if (i < 0)
+			return "";
 
 		QModelIndex index = colModel->index(i, 0);
 		switch(info)
 		{
-		case VariableInfo::VariableType:			return colModel->data(index, ColumnsModel::ColumnTypeRole);
-		case VariableInfo::VariableTypeName:		return columnTypeToQString(columnType((colModel->data(index, ColumnsModel::ColumnTypeRole)).toInt()));
-		case VariableInfo::VariableTypeIcon:		return colModel->data(index, ColumnsModel::IconSourceRole);
-		case VariableInfo::VariableTypeDisabledIcon: return colModel->data(index, ColumnsModel::DisabledIconSourceRole);
-		case VariableInfo::VariableTypeInactiveIcon: return colModel->data(index, ColumnsModel::InactiveIconSourceRole);
-		case VariableInfo::Labels:					return	colModel->data(index, ColumnsModel::LabelsRole);
+		case VariableInfo::VariableType:				return									colModel->data(index, ColumnsModel::ColumnTypeRole);
+		case VariableInfo::VariableTypeName:			return columnTypeToQString(columnType((	colModel->data(index, ColumnsModel::ColumnTypeRole)).toInt()));
+		case VariableInfo::VariableTypeIcon:			return									colModel->data(index, ColumnsModel::IconSourceRole);
+		case VariableInfo::VariableTypeDisabledIcon:	return									colModel->data(index, ColumnsModel::DisabledIconSourceRole);
+		case VariableInfo::VariableTypeInactiveIcon:	return									colModel->data(index, ColumnsModel::InactiveIconSourceRole);
+		case VariableInfo::Labels:						return									colModel->data(index, ColumnsModel::LabelsRole);
 		}
 	}
 	catch(columnNotFound & e) {} //just return an empty QVariant right?
@@ -76,8 +85,8 @@ void AnalysisForm::runRScript(QString script, QString controlName, bool whiteLis
 {
 	if(_analysis && !_removed)
 	{
-		if(_signalValueChangedBlocked == 0)	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
-		else								_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
+		if(_valueChangedSignalsBlocked == 0)	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+		else									_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
 	}
 }
 
@@ -108,6 +117,8 @@ void AnalysisForm::cleanUpForm()
 			// controls will be automatically deleted by the deletion of AnalysisForm
 			// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 			control->cleanUp();
+
+		_formCompleted = false;
 	}
 }
 
@@ -279,7 +290,7 @@ void AnalysisForm::_orderExpanders()
 void AnalysisForm::reset()
 {
 	_analysis->clearOptions();
-    _analysis->reload();
+	_analysis->reloadForm();
 }
 
 void AnalysisForm::exportResults()
@@ -537,31 +548,33 @@ void AnalysisForm::clearFormWarnings()
 		control->setHasWarning(false);
 }
 
-void AnalysisForm::setAnalysis(QVariant analysis)
+void AnalysisForm::setAnalysis(Analysis * analysis)
 {
-	Analysis * analysisPointer = qobject_cast<Analysis *>(analysis.value<QObject *>());
 
-	if(_analysis == analysisPointer) return;
+	if(_analysis == analysis) return;
 
-	if(_analysis && analysisPointer)
+	if(_analysis && analysis)
 		throw std::runtime_error("An analysis of an analysisform was replaced by another analysis, this is decidedly NOT supported!");
 
-	_analysis = analysisPointer;
+	_analysis = analysis;
+
+	Log::log() << "AnalysisForm " << this << " sets Analysis " << _analysis << " on itself" << std::endl;
 
 	setAnalysisUp();
 }
 
 void AnalysisForm::boundValueChangedHandler(JASPControl *)
 {
-	if (_signalValueChangedBlocked == 0 && _analysis)
+	if (_valueChangedSignalsBlocked == 0 && _analysis)
 		_analysis->boundValueChangedHandler();
 	else
-		_signalValueChangedWasEmittedButBlocked = true;
+		_valueChangedEmittedButBlocked = true;
 }
-
 
 void AnalysisForm::formCompletedHandler()
 {
+	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
+
 	_formCompleted = true;
 	setAnalysisUp();
 }
@@ -571,10 +584,10 @@ void AnalysisForm::setAnalysisUp()
 	if(!_formCompleted || !_analysis)
 		return;
 
+	Log::log() << "AnalysisForm::setAnalysisUp() for " << this << std::endl;
+
 	connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
 	connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
-
-	bool isNewAnalysis = _analysis->optionsFromJASPFile().size() == 0;
 
 	blockValueChangeSignal(true);
 
@@ -583,7 +596,6 @@ void AnalysisForm::setAnalysisUp()
 
 	blockValueChangeSignal(false, false);
 
-	_analysis->initialized(this, isNewAnalysis);
 	_initialized = true;
 
 	emit analysisChanged();
@@ -625,6 +637,9 @@ void AnalysisForm::setControlMustContain(QString controlName, QStringList contai
 
 void AnalysisForm::setMustBe(std::set<std::string> mustBe)
 {
+	if(mustBe == _mustBe)
+		return;
+
 	for(const std::string & mustveBeen : _mustBe)
 		if(mustBe.count(mustveBeen) == 0)
 			setControlIsDependency(mustveBeen, false);
@@ -637,6 +652,9 @@ void AnalysisForm::setMustBe(std::set<std::string> mustBe)
 
 void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mustContain)
 {
+	if(mustContain == _mustContain)
+		return;
+
 	//For now ignore specific thing that must be contained
 	for(const auto & nameContainsPair : _mustContain)
 		if(mustContain.count(nameContainsPair.first) == 0)
@@ -664,20 +682,20 @@ void AnalysisForm::setRunOnChange(bool change)
 void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 {
 	if (block)
-		_signalValueChangedBlocked++;
+		_valueChangedSignalsBlocked++;
 	else
 	{
-		_signalValueChangedBlocked--;
+		_valueChangedSignalsBlocked--;
 		
-		if (_signalValueChangedBlocked < 0)	
-			_signalValueChangedBlocked = 0;
+		if (_valueChangedSignalsBlocked < 0)
+			_valueChangedSignalsBlocked = 0;
 
-		if (_signalValueChangedBlocked == 0)
+		if (_valueChangedSignalsBlocked == 0)
 		{
-			if(notifyOnceUnblocked && _analysis && _signalValueChangedWasEmittedButBlocked)
+			if(notifyOnceUnblocked && _analysis && _valueChangedEmittedButBlocked)
 				_analysis->boundValueChangedHandler();
 
-			_signalValueChangedWasEmittedButBlocked = false;
+			_valueChangedEmittedButBlocked = false;
 		
 			if(_analysis && (notifyOnceUnblocked || _analysis->wasUpgraded())) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
 				while(_waitingRScripts.size() > 0)

@@ -173,6 +173,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"						);
 
+
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
@@ -199,6 +200,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
+
+	_analyses->destroyAllForms();
 
 	_singleton = nullptr;
 
@@ -283,7 +286,6 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
 	connect(_engineSync,			&EngineSync::processFilterErrorMsg,					_filterModel,			&FilterModel::processFilterErrorMsg							);
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
-	connect(_engineSync,			&EngineSync::moduleLoadingSucceeded,				_ribbonModel,			&RibbonModel::moduleLoadingSucceeded						);
 	connect(_engineSync,			&EngineSync::plotEditorRefresh,						_plotEditorModel,		&PlotEditorModel::refresh									);
 
 	qRegisterMetaType<columnType>();
@@ -356,6 +358,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_engineSync,			&EngineSync::refreshAllPlots								);
 	connect(_preferences,			&PreferencesModel::restartAllEngines,				_engineSync,			&EngineSync::haveYouTriedTurningItOffAndOnAgain				);
+	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
@@ -369,15 +372,15 @@ void MainWindow::makeConnections()
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
-	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
-	connect(_dynamicModules,		&DynamicModules::dynamicModuleReplaced,				_analyses,				&Analyses::replaceAnalysesOfDynamicModule					);
-	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
+	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule						);
+	connect(_dynamicModules,		&DynamicModules::dynamicModuleReplaced,				_analyses,				&Analyses::replaceAnalysesOfDynamicModule,					Qt::DirectConnection);
+	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule,			Qt::QueuedConnection);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
 	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFiles					);
-	connect(_dynamicModules,		&DynamicModules::requestRootContext,				this,					&MainWindow::giveRootQmlContext,							Qt::UniqueConnection);
-	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
 	connect(_dynamicModules,		&DynamicModules::reloadQmlImportPaths,				this,					&MainWindow::setQmlImportPaths,								Qt::QueuedConnection); //If this is queued this should make the loadingprocess of qml a bit less weird I think.
+	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_engineSync,			&EngineSync::killModuleEngine								);
+	connect(_dynamicModules,		&DynamicModules::isModuleInstallRequestActive,		_engineSync,			&EngineSync::isModuleInstallRequestActive					);
 
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
@@ -510,9 +513,13 @@ void MainWindow::loadQML()
 	_ribbonModel->loadModules(	
 		ActiveModules::getActiveCommonModules(),
 		ActiveModules::getActiveExtraModules());
+	
+}
 
-	_engineSync->loadAllActiveModules();
-	_dynamicModules->startUpCompleted();
+void MainWindow::showEnginesWindow()
+{
+	Log::log() << "Showing EnginesWindow"  << std::endl;
+	_qml->load(QUrl("qrc:///components/JASP/Widgets/EnginesWindow.qml"));
 }
 
 void MainWindow::setQmlImportPaths()
@@ -540,6 +547,7 @@ QObject * MainWindow::loadQmlData(QString data, QUrl url)
 
 	QMetaObject::Connection returnTheObjectConn = connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url)
 	{
+			//ignore the warnings about the out of scope thing, the lambda is disconnected in this function itself and crashes it on purpose if it didn't et a response by then.
 			createdObject = obj;
 			lambdaCalled = true;
 	});
@@ -570,8 +578,8 @@ void MainWindow::showRCommander()
 		Log::log() << "Loading RCommander"  << std::endl;
 		_qml		-> load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
 
-		_resultsJsInterface->resetResults();//To reload page
-
+		//To reload page because of https://github.com/jasp-stats/INTERNAL-jasp/issues/1280
+		_resultsJsInterface->resetResults();
 		QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
 	}
 }
@@ -1114,11 +1122,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 
 			setWelcomePageVisible(true);
-			_engineSync->cleanUpAfterClose();
 
-			if (_applicationExiting)	QApplication::exit();
+			if (_applicationExiting)	
+				QApplication::exit();
 			else
 			{
+				_engineSync->cleanUpAfterClose();
 				setDataPanelVisible(false);
 				setDataAvailable(false);
 			}
