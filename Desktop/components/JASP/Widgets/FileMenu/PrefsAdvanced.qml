@@ -286,10 +286,17 @@ ScrollView
 				defaultValue:		Math.max(preferencesModel.maxEnginesAdmin, 4)
 				stepSize:			1
 
-				KeyNavigation.tab:		rememberModulesSelected
-				text:				qsTr("Maximum # of engines: ")
+				KeyNavigation.tab:	showEnginesWindow
+				text:				qsTr("Maximum number of engines: ")
 			}
-			
+
+			RoundedButton
+			{
+				id:					showEnginesWindow
+				text:				qsTr("Show engines")
+				onClicked:			mainWindow.showEnginesWindow()
+				KeyNavigation.tab:	rememberModulesSelected
+			}
 		}
 	}
 }

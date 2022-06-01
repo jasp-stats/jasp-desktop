@@ -35,7 +35,7 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					maintainer		READ maintainer			WRITE setMaintainer			NOTIFY maintainerChanged		)
 	Q_PROPERTY(QUrl						website			READ website			WRITE setWebsite			NOTIFY websiteChanged			)
 	Q_PROPERTY(QString					license			READ license			WRITE setLicense			NOTIFY licenseChanged			)
-	//requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
+	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
 	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod				WRITE setDynMod				NOTIFY dynModChanged			)
 
@@ -62,32 +62,32 @@ public:
 	std::set<std::string>			requiredModules()	const;
 
 public slots:
-	void setName(				QString			name		);
-	void setTitle(				QString			title		);
-	void setIcon(				QString			icon		);
-	void setDescription(		QString			description	);
-	void setVersion(			QString			version		);
-	void setAuthor(				QString			author		);
-	void setMaintainer(			QString			maintainer	);
-	void setWebsite(			QUrl			website		);
-	void setLicense(			QString			license		);
-	void setRequiresDataDef(	bool			defRequiresData);
-	void setDynMod(				DynamicModule * dynMod		);
+	void setName(				QString							name			);
+	void setTitle(				QString							title			);
+	void setIcon(				QString							icon			);
+	void setDescription(		QString							description		);
+	void setVersion(			QString							version			);
+	void setAuthor(				QString							author			);
+	void setMaintainer(			QString							maintainer		);
+	void setWebsite(			QUrl							website			);
+	void setLicense(			QString							license			);
+	void setRequiresDataDef(	bool							defRequiresData	);
+	void setDynMod(				Modules::DynamicModule		*	dynMod			);
 	void delayedUpdate();
 
 signals:
-	void titleChanged(				QString			title		);
-	void iconChanged(				QString			icon		);
-	void descriptionChanged(		QString			description	);
+	void titleChanged(				QString						title			);
+	void iconChanged(				QString						icon			);
+	void descriptionChanged(		QString						description		);
 	void versionChanged();
-	void authorChanged(				QString			author		);
-	void maintainerChanged(			QString			maintainer	);
-	void websiteChanged(			QUrl			website		);
-	void licenseChanged(			QString			license		);
-	void nameChanged(				QString			name		);
-	void requiresDataDefChanged(	bool			defRequiresData);
-	void dynModChanged(				DynamicModule * dynMod		);
-	void iShouldBeUpdated(			Description	  *	desc		);
+	void authorChanged(				QString						author			);
+	void maintainerChanged(			QString						maintainer		);
+	void websiteChanged(			QUrl						website			);
+	void licenseChanged(			QString						license			);
+	void nameChanged(				QString						name			);
+	void requiresDataDefChanged(	bool						defRequiresData	);
+	void dynModChanged(				Modules::DynamicModule	*	dynMod			);
+	void iShouldBeUpdated(			Modules::Description	*	desc			);
 	void childChanged();
 
 private:

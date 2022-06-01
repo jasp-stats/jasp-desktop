@@ -190,7 +190,6 @@ FocusScope
 						{
 							myIndex:				index
 							myAnalysis:				model.analysis
-							formQmlUrl:				model.formPath
 							backgroundFlickable:	analysesFlickable
 						}
 					}

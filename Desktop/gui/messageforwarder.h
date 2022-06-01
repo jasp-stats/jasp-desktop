@@ -23,7 +23,6 @@ public:
 
 	static MessageForwarder * msgForwarder() { return _singleton; }
 
-
 	static void showWarning(QString title, QString message);
 	static void showWarning(std::string title, std::string message)		{ showWarning(QString::fromStdString(title),	QString::fromStdString(message));	}
 	static void showWarning(const char * title, const char * message)	{ showWarning(QString(title),					QString(message));					}
@@ -61,6 +60,8 @@ public slots:
 	QString			browseOpenFolderQML(QString caption, QString browsePath)																				{ return browseOpenFolder(caption, browsePath);}
 	QString			browseOpenFolderQML(QString caption)																									{ return browseOpenFolder(caption);}
 
+
+	void			log(QString msg);
 
 private:
 	static		MessageForwarder	*_singleton;

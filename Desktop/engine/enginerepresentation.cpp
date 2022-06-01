@@ -5,8 +5,8 @@
 #include "utils.h"
 #include "log.h"
 
-EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
-	: QObject(parent), _channel(channel)
+EngineRepresentation::EngineRepresentation(size_t channelNumber, QProcess * slaveProcess, QObject * parent)
+	: QObject(parent), _channelNumber(channelNumber)
 {
 	setSlaveProcess(slaveProcess);
 }
@@ -14,6 +14,8 @@ EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slav
 
 void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 {
+	Log::log() << "Setting new engine process to engineRepresentation Engine #" << _channelNumber << std::endl;
+
 	_slaveCrashed = false;
 	_slaveProcess = slaveProcess;
 	_slaveProcess->setParent(this);
@@ -23,20 +25,24 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 
 EngineRepresentation::~EngineRepresentation()
 {
-	Log::log() << "~EngineRepresentation()" << std::endl;
+	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
+
 
 	if(_slaveProcess != nullptr)
 	{
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
 	}
-
-	delete _channel;
-	_channel = nullptr;
 }
 
 void EngineRepresentation::cleanUpAfterClose()
 {
+	disconnect(_analysisInProgressStatusConnection); //Just in case
+
+	Analysis * runMeLater = nullptr;
+	if(_analysisAborted && (_analysisAborted->isAborted() || _analysisAborted->isAborting()))
+		runMeLater = _analysisAborted;
+
 	_analysisInProgress = nullptr;
 	_analysisAborted	= nullptr;
 	_idRemovedAnalysis	= -1;
@@ -48,6 +54,16 @@ void EngineRepresentation::cleanUpAfterClose()
 	_settingsChanged	= true;
 	_abortAndRestart	= false;
 	_lastCompColName	= "???";
+
+
+	if(_dynModName != "")
+		emit unregisterForModule(this, _dynModName);
+
+	_dynModName			= "";
+	_moduleLoaded		= "";
+
+	if(runMeLater)
+		runMeLater->run();
 }
 
 void EngineRepresentation::sendString(std::string str)
@@ -55,14 +71,17 @@ void EngineRepresentation::sendString(std::string str)
 #ifdef PRINT_ENGINE_MESSAGES
 	Log::log() << "sending to jaspEngine: " << str << "\n" << std::endl;
 #endif
-	_channel->send(str);
+	channel()->send(str);
 }
+
+
 
 void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
 	Log::log() << "Engine # " << channelNumber() << " finished while in state '" << _engineState << "' " << (exitStatus == QProcess::ExitStatus::NormalExit || stopped() ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
 
-	_slaveProcess->deleteLater();
+	if(_slaveProcess)
+		_slaveProcess->deleteLater();
 	_slaveProcess = nullptr;
 	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit && !(stopped() || killed());
 
@@ -114,15 +133,14 @@ void EngineRepresentation::handleEngineCrash()
 		return;
 
 	case engineState::killed:
-		_engineState = engineState::initializing;
-		return; //It will be resumed somewhere in EngineSync::process() or thereabouts
+		return; //It will be resumed by EngineSync::restartKilledEngines()
 
 	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
 		emit  engineTerminated();
 		return;
 	}
 
-	_engineState = engineState::initializing;
+	setState(engineState::initializing);
 
 	emit requestEngineRestart(this); //Only for actual crashes
 }
@@ -131,41 +149,84 @@ void EngineRepresentation::clearAnalysisInProgress()
 {
 	Log::log() << "Engine " << channelNumber() << " clears current analysis in progress (" << (_analysisInProgress ? _analysisInProgress->name() : "???" ) << ")" << std::endl;
 
+	disconnect(_analysisInProgressStatusConnection);
 	_analysisInProgress = nullptr;
-	_engineState		= engineState::idle;
+	setState(engineState::idle);
 }
 
 void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 {
 	if(_engineState == engineState::analysis)
 	{
-		if(_analysisInProgress == analysis)	return; //we are already busy with this analysis so everything is fine
-		else								throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is running another analysis. Yet you are trying to set an analysis in progress on it..");
+		if(_analysisInProgress == analysis)
+			return; //we are already busy with this analysis so everything is fine
+		else
+			throw std::runtime_error("Engine " + std::to_string(channel()->channelNumber()) + " is running another analysis. Yet you are trying to set an analysis in progress on it..");
 	}
 
-	if(_engineState != engineState::idle)	throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is not idle! Yet you are trying to set an analysis in progress on it..");
+	if(_engineState != engineState::idle)
+		throw std::runtime_error("Engine " + std::to_string(channel()->channelNumber()) + " is not idle! Yet you are trying to set an analysis in progress on it..");
+
+	if(_dynModName	!= analysis->dynamicModule()->name())
+		throw std::runtime_error("Engine " + std::to_string(channel()->channelNumber()) + " is assigned to module '" + _dynModName + "'! Yet you are trying to set an analysis from '" + analysis->dynamicModule()->name() + "' in progress on it..");
 
 	_analysisInProgress = analysis;
-	_engineState		= engineState::analysis;
+
+	setState(engineState::analysis);
+
+	_analysisInProgressStatusConnection = connect(_analysisInProgress, &Analysis::statusChanged, this, &EngineRepresentation::analysisStatusChanged);
+
+}
+
+void EngineRepresentation::setDynamicModule(const std::string & name)
+{
+	if(!_runsAnalysis)
+		throw std::runtime_error("Cannot register engine " + std::to_string(channelNumber()) + " for dynamic module '" + name + "' to engine not meant for analyses!");
+
+	_dynModName		= name;
+	_moduleLoaded	= false;
+}
+
+void EngineRepresentation::moduleLoad()
+{
+	if(_dynModName == "" || moduleLoaded() || moduleLoading())
+		return;
+
+
+	if(!idle())
+		return;
+
+	runModuleLoadRequestOnProcess(Modules::DynamicModules::dynMods()->dynamicModule(_dynModName)->requestJsonForPackageLoadingRequest());
 }
 
 void EngineRepresentation::processReplies()
 {
-	if (_engineState == engineState::idle)
+	if(!channel())
 	{
+		Log::log() << "EngineRepresentation::processReplies() for engine #" << channelNumber() << " called but no channel available." << std::endl;
+		return;
+	}
+
+	if(!_slaveProcess)
+		return; //No point in receiving replies from an engine that isn't running is there?
+
+	if(_engineState == engineState::idle)
+	{
+
 		if		(_stopRequested)	sendStopEngine();
 		else if	(_pauseRequested)	sendPauseEngine();
-		
-		if(_idleStartSecs == -1)	_idleStartSecs = Utils::currentSeconds();
- 
+
+		if(_idleStartSecs == -1)
+			_idleStartSecs = Utils::currentSeconds();
+
 		return;
-	} 
-	
+	}
+
 	_idleStartSecs = -1;
 
 	std::string data;
 
-	if (_channel->receive(data))
+	if (channel()->receive(data))
 	{
 #ifdef PRINT_ENGINE_MESSAGES
 		{
@@ -210,26 +271,40 @@ void EngineRepresentation::processReplies()
 
 		engineState typeRequest = engineStateFromString(json.get("typeRequest", "analysis").asString());
 
-		switch(typeRequest)
+		if(_engineState == engineState::initializing)
 		{
-		case engineState::filter:				processFilterReply(json);			break;
-		case engineState::rCode:				processRCodeReply(json);			break;
-		case engineState::analysis:				processAnalysisReply(json);			break;
-		case engineState::computeColumn:		processComputeColumnReply(json);	break;
-		case engineState::paused:				processEnginePausedReply();			break;
-		case engineState::resuming:				processEngineResumedReply();		break;
-		case engineState::stopped:				processEngineStoppedReply();		break;
-		case engineState::moduleInstallRequest:
-		case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
-		case engineState::logCfg:				processLogCfgReply();				break;
-		case engineState::settings:				processSettingsReply();				break;
-		default:								throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
-		}
-	}
+			Log::log() << "Engine #" << channelNumber() << " still initializing and got " + engineStateToString(typeRequest) << std::endl;
 
-	if(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
+			if(typeRequest == engineState::resuming)
+				_engineState = engineState::idle;
+		}
+		else
+			switch(typeRequest)
+			{
+			case engineState::filter:				processFilterReply(json);			break;
+			case engineState::rCode:				processRCodeReply(json);			break;
+			case engineState::analysis:				processAnalysisReply(json);			break;
+			case engineState::computeColumn:		processComputeColumnReply(json);	break;
+			case engineState::paused:				processEnginePausedReply();			break;
+			case engineState::resuming:				processEngineResumedReply();		break;
+			case engineState::stopped:				processEngineStoppedReply();		break;
+			case engineState::moduleInstallRequest:
+			case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
+			case engineState::logCfg:				processLogCfgReply();				break;
+			case engineState::settings:				processSettingsReply();				break;
+			case engineState::reloadData:			processReloadDataReply();			break;
+			default:								throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
+			}
+	}
+	else if(_engineState == engineState::initializing && !_stopRequested)
+		resumeEngine();
+
+
+	if(!_stopRequested && _analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
 	{
-		killEngine();
+		if(jaspEngineStillRunning())
+			killEngine();
+
 		restartAbortedAnalysis();
 	}
 }
@@ -238,7 +313,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 {
 	Json::Value json = Json::Value(Json::objectValue);
 
-	_engineState			= engineState::filter;
+	setState(engineState::filter);
 
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
@@ -258,7 +333,7 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::filter);
 
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 
 #ifdef PRINT_ENGINE_MESSAGES
 			Log::log() << "msg is filter reply" << std::endl;
@@ -296,7 +371,8 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 {
 	Json::Value json = Json::Value(Json::objectValue);
 
-	_engineState			= engineState::rCode;
+	setState(engineState::rCode);
+
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["rCode"]			= scriptStore->script.toStdString();
 	json["requestId"]		= scriptStore->requestId;
@@ -313,7 +389,7 @@ void EngineRepresentation::processRCodeReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::rCode);
 
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 
 	std::string rCodeResult = json.get("rCodeResult", "").asString();
 	int requestId			= json.get("requestId", -1).asInt();
@@ -329,7 +405,7 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 {
 	Json::Value json = Json::Value(Json::objectValue);
 
-	_engineState			= engineState::computeColumn;
+	setState(engineState::computeColumn);
 
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["columnName"]		= computeColumnStore->_columnName.toStdString();
@@ -346,7 +422,7 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::computeColumn);
 
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 
 
 	std::string result		= json.get("result", "some string that is not 'TRUE' or 'FALSE'").asString();
@@ -372,7 +448,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	Log::log() << "sending: " << json.toStyledString() << std::endl;
 #endif
 
-	_channel->send(json.toStyledString());
+	channel()->send(json.toStyledString());
 
 }
 
@@ -384,6 +460,7 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 	_idRemovedAnalysis = analysis->id();
 	abortAnalysisInProgress(false);
 	_analysisInProgress = nullptr; //Because it will be deleted!
+	disconnect(_analysisInProgressStatusConnection);
 	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
 
@@ -411,7 +488,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	Json::Value progress		= json.get("progress",	Json::nullValue);
 	Json::Value results			= json.get("results",	Json::nullValue);
 
-	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "error").asString());
+	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "???").asString());
 
 	if(_analysisInProgress == nullptr && id == _idRemovedAnalysis)
 	{
@@ -422,7 +499,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		case analysisResultStatus::complete:
 		case analysisResultStatus::fatalError:
 		case analysisResultStatus::validationError:
-			_engineState		= engineState::idle;
+			setState(engineState::idle);
 			_idRemovedAnalysis	= -1;
 
 			Log::log() << "Analysis got the message and we now reset the engineStatus to idle!" << std::endl;
@@ -538,7 +615,7 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 				emit columnDataTypeChanged(tq(columnName));
 		}
 		else
-			for(std::string member : members)
+			for(const std::string & member : members)
 				checkForComputedColumns(results[member]);
 	}
 }
@@ -557,31 +634,47 @@ void EngineRepresentation::killEngine()
 {
 	Log::log() << "Killing Engine #" << channelNumber() << std::endl; //" and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
 
-	_engineState  = engineState::killed;
+	if(_analysisInProgress)
+		abortAnalysisInProgress(true);
 
-	//Always disconnect finished because if the engine is to be killed by JASP jasp should not show a "crashed" msgbox
-	//if(disconnectFinished)
-		//We must make sure we do not get a popup, and while processFinished checks for "killed" or not it doesnt help that that needs the eventloop to be processed
-		//I want pause and resume all engines to be done in a single function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
-	disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+	setState(engineState::killed);
 
-	_slaveProcess->kill();
-	//The rest will be handled in EngineRepresentation::processFinished
+	if(_slaveProcess)
+	{
+		//Always disconnect finished because if the engine is to be killed by JASP jasp should not show a "crashed" msgbox
+		//if(disconnectFinished)
+			//We must make sure we do not get a popup, and while processFinished checks for "killed" or not it doesnt help that that needs the eventloop to be processed
+			//I want pause and resume all engines to be done in a single function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
+		disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+
+		_slaveProcess->kill();
+		_slaveProcess->deleteLater();
+		_slaveProcess = nullptr;
+	}
+
+	EngineRepresentation::processFinished();
 }
 
 void EngineRepresentation::stopEngine()
 {
+	Log::log() << "Engine #" << _channelNumber << " stopEngine(), _stopRequested will be set" << std::endl;
 	_stopRequested = true;
 }
 
 void EngineRepresentation::shutEngineDown()
 {
+
+	Log::log() << "Engine #" << _channelNumber << " shutEngineDown()" << std::endl;
+
 	if(_analysisInProgress)
 	{
+		Log::log() << "An analysis is running, so we abort it and wait for the response." << std::endl;
 		abortAnalysisInProgress(true);	
+
+		stopEngine();
 		
 		//Wait for the engine to get the message.
-		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME + 1 < Utils::currentSeconds())
+		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME > Utils::currentSeconds())
 			processReplies();
 		
 		if(!killed() && !stopped())
@@ -592,7 +685,7 @@ void EngineRepresentation::shutEngineDown()
 		size_t stopTime = Utils::currentSeconds();
 		stopEngine();
 		
-		while(!stopped() && stopTime + ENGINE_KILLTIME < Utils::currentSeconds())
+		while(!stopped() && stopTime + ENGINE_KILLTIME > Utils::currentSeconds())
 			processReplies();
 		
 		if(!stopped())
@@ -603,7 +696,7 @@ void EngineRepresentation::shutEngineDown()
 void EngineRepresentation::sendStopEngine()
 {
 	Json::Value json		= Json::Value(Json::objectValue);
-	_engineState			= engineState::stopRequested;
+	setState(engineState::stopRequested);
 	json["typeRequest"]		= engineStateToString(_engineState);
 
 	Log::log() << "informing engine #" << channelNumber() << " that it ought to stop" << std::endl;
@@ -617,6 +710,11 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 
 	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
 	{
+		Log::log() << "Killing and deleting old engine process and replacing it with fresh one" << std::endl;
+
+		if(jaspEngineStillRunning())
+			shutEngineDown();
+
 		_slaveProcess->kill();
 		_slaveProcess->deleteLater();
 
@@ -625,17 +723,36 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	}
 
 	sendString("");
-	setSlaveProcess(jaspEngineProcess);
 	cleanUpAfterClose();
-	loadAllActiveModules();
+	setSlaveProcess(jaspEngineProcess);
 
-	_engineState	 = engineState::initializing;
+	setState(engineState::initializing);
+}
+
+int EngineRepresentation::idleFor() const
+{
+	return _idleStartSecs >= 0 ? Utils::currentSeconds() - _idleStartSecs : 0;
 }
 
 bool EngineRepresentation::isBored() const 
 { 
 	
-	return _idleStartSecs != -1 && _idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds();		
+	return _idleStartSecs != -1 && (_idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds());
+}
+
+bool EngineRepresentation::busyWithData() const
+{
+	switch(_engineState)
+	{
+	case engineState::analysis:
+	case engineState::computeColumn:
+	case engineState::filter:
+	case engineState::rCode:
+		return true;
+
+	default:
+		return false;
+	}
 }
 
 void EngineRepresentation::pauseEngine(bool unloadData)
@@ -651,7 +768,7 @@ void EngineRepresentation::pauseEngine(bool unloadData)
 void EngineRepresentation::sendPauseEngine()
 {
 	Json::Value json		= Json::Value(Json::objectValue);
-	_engineState			= engineState::pauseRequested;
+	setState(engineState::pauseRequested);
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["unloadData"]		= _pauseUnloadData;
 
@@ -660,18 +777,17 @@ void EngineRepresentation::sendPauseEngine()
 	sendString(json.toStyledString());
 }
 
-void EngineRepresentation::resumeEngine()
+void EngineRepresentation::resumeEngine(bool setResuming)
 {
 	if(_engineState != engineState::paused && _engineState != engineState::stopped && _engineState != engineState::initializing)
 		throw unexpectedEngineReply("Attempt to resume engine #" + std::to_string(channelNumber()) + " made but it isn't paused, initializing or stopped");
 
-	if(initializing())
-		return;
+	if(setResuming)
+		setState(engineState::resuming);
 
 	_pauseRequested			= false;
-	_engineState			= engineState::resuming;
 	Json::Value json		= Json::Value(Json::objectValue);
-	json["typeRequest"]		= engineStateToString(_engineState);
+	json["typeRequest"]		= engineStateToString(engineState::resuming);
 
 	addSettingsToJson(json);
 
@@ -685,7 +801,7 @@ void EngineRepresentation::processEnginePausedReply()
 	Log::log() << "EngineRepresentation::processEnginePausedReply() for engine #" << channelNumber() << std::endl;
 	checkIfExpectedReplyType(engineState::pauseRequested);
 
-	_engineState = engineState::paused;
+	setState(engineState::paused);
 }
 
 void EngineRepresentation::processEngineResumedReply()
@@ -697,7 +813,7 @@ void EngineRepresentation::processEngineResumedReply()
 
 	//_settingsChanged = true; //Make sure we send the settings at least once. We now do this be also sending the settings in the resume request
 
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 }
 
 void EngineRepresentation::processEngineStoppedReply()
@@ -705,23 +821,28 @@ void EngineRepresentation::processEngineStoppedReply()
 	Log::log() << "EngineRepresentation::processEngineStoppedReply() for engine #" << channelNumber() << std::endl;
 	checkIfExpectedReplyType(engineState::stopRequested);
 
-	_engineState = engineState::stopped;
+	setState(engineState::stopped);
 
 	disconnect(_slaveFinishedConnection);
 }
 
 void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
 {
-	_engineState			= engineState::moduleInstallRequest;
+	setState(engineState::moduleInstallRequest);
 	request["typeRequest"]	= engineStateToString(_engineState);
+
+	_requestModName	= request["moduleName"].asString();
 
 	sendString(request.toStyledString());
 }
 
 void EngineRepresentation::runModuleLoadRequestOnProcess(Json::Value request)
 {
-	_engineState			= engineState::moduleLoadRequest;
+	_moduleLoaded = false;
+	setState(engineState::moduleLoadRequest);
 	request["typeRequest"]	= engineStateToString(_engineState);
+
+	_requestModName	= request["moduleName"].asString();
 
 	sendString(request.toStyledString());
 }
@@ -730,12 +851,16 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(_engineState);
 
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 
 	moduleStatus moduleRequest	= moduleStatusFromString(json["moduleRequest"].asString());
 	bool succes					= json["succes"].asBool();
 	QString moduleName			= QString::fromStdString(json["moduleName"].asString());
 	auto getError				= [&](){ return QString::fromStdString(json.get("error", "Unknown error").asString()); };
+
+	if(_requestModName != fq(moduleName))
+		throw std::runtime_error("Received answer for a module request, as expected, but from the wrong module... '" + _requestModName + "' was expected, but got '" + fq(moduleName) + "' instead.");
+	_requestModName = "";
 
 	switch(moduleRequest)
 	{
@@ -744,18 +869,22 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 		else		emit moduleInstallationFailed(moduleName, getError());
 		break;
 
-	case moduleStatus::loadingNeeded:
-		if(succes)	emit moduleLoadingSucceeded(moduleName, channelNumber());
-		else		emit moduleLoadingFailed(moduleName, getError(), channelNumber());
-		break;
-
-	case moduleStatus::unloadingNeeded:
-		emit moduleUnloadingFinished(moduleName, channelNumber());
+	case moduleStatus::loading:
+		if(succes)	{ emit moduleLoadingSucceeded(moduleName, channelNumber());				_dynModName = fq(moduleName);		_moduleLoaded = true;	}
+		else		{ emit moduleLoadingFailed(moduleName, getError(), channelNumber());	_dynModName = "";											}
 		break;
 
 	default:
 		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
 	}
+
+	// If the engine isn't loading then probably an error occured like "cannot open connection" and this is often solved by restarting the engine,
+	// so unless someone figures out why the connections sometimes isnt there this is a reasonable workaround
+	if(!succes && moduleRequest == moduleStatus::loading)
+		emit stopAndDestroyEngine(this);
+
+	if(moduleRequest == moduleStatus::installNeeded)
+		emit stopModuleEngine(moduleName);
 }
 
 void EngineRepresentation::sendLogCfg()
@@ -765,7 +894,7 @@ void EngineRepresentation::sendLogCfg()
 	if(_engineState != engineState::idle)
 		throw std::runtime_error("EngineRepresentation::sendLogCfg() expects to be run from an idle engine.");
 
-	_engineState		= engineState::logCfg;
+	setState(engineState::logCfg);
 	Json::Value msg		= Log::createLogCfgMsg();
 	msg["typeRequest"]	= engineStateToString(_engineState);
 
@@ -774,7 +903,7 @@ void EngineRepresentation::sendLogCfg()
 
 void EngineRepresentation::processLogCfgReply()
 {
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 
 	emit logCfgReplyReceived(this);
 }
@@ -866,13 +995,27 @@ void EngineRepresentation::sendSettings()
 	if(_engineState != engineState::idle)
 		throw std::runtime_error("EngineRepresentation::sendSettings() expects to be run from an idle engine.");
 
-	_engineState			= engineState::settings;
+	setState(engineState::settings);
 	Json::Value msg			= Json::objectValue;
 	msg["typeRequest"]		= engineStateToString(_engineState);
 	addSettingsToJson(msg);
 	sendString(msg.toStyledString());
 
 	_settingsChanged = false;
+}
+
+void EngineRepresentation::sendReloadData()
+{
+	Log::log() << "EngineRepresentation::sendReloadData()" << std::endl;
+
+	if(_engineState != engineState::idle)
+		throw std::runtime_error("EngineRepresentation::sendReloadData() expects to be run from an idle engine.");
+
+	setState(engineState::reloadData);
+	Json::Value msg			= Json::objectValue;
+	msg["typeRequest"]		= engineStateToString(_engineState);
+
+	sendString(msg.toStyledString());
 }
 
 void EngineRepresentation::addSettingsToJson(Json::Value & msg)
@@ -886,7 +1029,7 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 
 void EngineRepresentation::processSettingsReply()
 {
-	_engineState = engineState::idle;
+	setState(engineState::idle);
 	restartAbortedAnalysis();
 }
 
@@ -898,13 +1041,18 @@ void EngineRepresentation::restartAbortedAnalysis()
 	_analysisAborted = nullptr;
 }
 
-bool EngineRepresentation::willProcessAnalysis(Analysis * analysis) const
+bool EngineRepresentation::willProcessAnalysis(Analysis * analysis)
 {
-	if(!analysis || !idle() || !analysis->shouldRun())
+	if(_stopRequested || !channel() || !analysis || !idle() || !analysis->shouldRun())
 		return false;
 
-	return runsAnalysis() || (analysis->utilityRunAllowed() && runsUtility());
+	const std::string modName = analysis->dynamicModule()->name();
+
+	return	(	runsAnalysis()					&& _dynModName == modName && _moduleLoaded)
+			|| (analysis->utilityRunAllowed()	&& runsUtility()		 );
 }
+
+void canIRegisterModule(const std::string & name);
 
 bool EngineRepresentation::idleSoon() const
 {
@@ -916,9 +1064,27 @@ bool EngineRepresentation::idleSoon() const
 	case engineState::settings:
 	case engineState::logCfg:
 	case engineState::moduleLoadRequest:
+	case engineState::reloadData:
+	case engineState::idle:
 		return true;
 	
 	default:
 		return false;
 	}
 }
+
+void EngineRepresentation::setState(engineState newState)
+{
+	if (_engineState == newState)
+		return;
+
+	_engineState = newState;
+
+	emit stateChanged();
+}
+
+const QString EngineRepresentation::analysisStatus() const
+{
+	return _analysisInProgress ? _analysisInProgress->statusQ() : "NA";
+}
+
