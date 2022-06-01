@@ -141,6 +141,7 @@ if(APPLE)
       notarise
       COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
               --keychain-profile "AC_PASSWORD"
+              USES_TERMINAL
       COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
 
   else()
@@ -153,6 +154,7 @@ if(APPLE)
         xcrun altool --notarize-app --primary-bundle-id "org.jasp-stats.jasp"
         --password "@keychain:AC_PASSWORD" --file
         "JASP/${CPACK_DMG_VOLUME_NAME}"
+        USES_TERMINAL
       COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
   endif()
 
