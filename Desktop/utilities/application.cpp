@@ -54,7 +54,16 @@ bool Application::notify(QObject *receiver, QEvent *event)
 {
 	try
 	{
-		//Log::log()  << "Application::notify: " << receiver->objectName() << " with event: " << event  << std::endl;
+		//Print events for main thread only
+		/*if(receiver->thread() == QApplication::thread())
+		{
+			static int	eventEnumIndex	= QEvent::staticMetaObject.indexOfEnumerator("Type");
+			QString		name			= QEvent::staticMetaObject.enumerator(eventEnumIndex).valueToKey(event->type()),
+						logThis			= "Application::notify event type: " + (name != "" ? name : QString(event->type())) + " for receiver: '" + receiver->objectName() + "'";
+
+			Log::log()  << logThis << std::endl;
+		}*/
+
 		return QApplication::notify(receiver, event);
 	}
 	catch (std::exception &e)

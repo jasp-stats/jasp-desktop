@@ -45,15 +45,13 @@ void RibbonButton::setDynamicModule(DynamicModule * module)
 	{
 		_module = module;
 		connect(_module, &DynamicModule::descriptionReloaded,	this, &RibbonButton::reloadDynamicModule,	Qt::QueuedConnection);
-		connect(_module, &DynamicModule::installedChanged,		this, &RibbonButton::setReady									);
+		connect(_module, &DynamicModule::readyChanged,			this, &RibbonButton::setReady,				Qt::QueuedConnection);
 		connect(_module, &DynamicModule::errorChanged,			this, &RibbonButton::setError									);
 
 		if(!_analysisMenuModel)
 			_analysisMenuModel = new AnalysisMenuModel(this, _module);
 
 		_analysisMenuModel->setDynamicModule(_module);
-
-		setReady(_module->installed());
 	}
 }
 
@@ -70,7 +68,6 @@ void RibbonButton::reloadDynamicModule(DynamicModule * dynMod)
 	setIconSource(tq(	_module->iconFilePath()));
 	setModuleName(		_module->name()			);
 
-	//if(dynamicModuleChanged)
 	emit iChanged(this);
 }
 
@@ -92,6 +89,9 @@ void RibbonButton::setReady(bool ready)
 
 	_ready = ready;
 	emit readyChanged(_ready);
+	
+	if(_ready && dynamicModule() && dynamicModule()->isDevMod())
+		setEnabled(true); 
 }
 
 RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip)
@@ -145,7 +145,7 @@ void RibbonButton::setTitle(std::string title)
 
 void RibbonButton::setIconSource(QString iconSource)
 {
-	Log::log() << "Iconsource ribbonbutton changed to: " << iconSource.toStdString() << std::endl;
+	//Log::log() << "Iconsource ribbonbutton changed to: " << iconSource.toStdString() << std::endl;
 
 	_iconSource = iconSource;
 	emit iconSourceChanged();
@@ -194,7 +194,7 @@ void RibbonButton::setModuleName(std::string moduleName)
 
 DynamicModule * RibbonButton::dynamicModule()
 {
-	return DynamicModules::dynMods()->dynamicModule(_moduleName);
+	return _module; //DynamicModules::dynMods()->dynamicModule(_moduleName); //Why would we get this from DynamicModules??
 }
 
 AnalysisEntry *RibbonButton::getAnalysis(const std::string &name)
