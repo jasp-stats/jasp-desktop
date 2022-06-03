@@ -1109,6 +1109,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			_analyses->setVisible(false);
+			_package->setDataSet(nullptr); // Prevent analyses to change the dataset if they have computed columns.
 			_analyses->clear();
 			_package->reset();
 

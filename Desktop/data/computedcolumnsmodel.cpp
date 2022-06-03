@@ -444,7 +444,8 @@ void ComputedColumnsModel::requestComputedColumnDestruction(const std::string& c
 
 	computedColumns()->removeComputedColumn(columnName);
 
-	emit headerDataChanged(Qt::Horizontal, index, DataSetPackage::pkg()->columnCount() + 1);
+	if (DataSetPackage::pkg()->hasDataSet())
+		emit headerDataChanged(Qt::Horizontal, index, DataSetPackage::pkg()->columnCount() + 1);
 
 	checkForDependentColumnsToBeSent(columnName);
 
@@ -495,7 +496,10 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 			colsToRemove.insert(QString::fromStdString(col->name()));
 
 	for(const QString & col : colsToRemove)
+	{
 		requestComputedColumnDestruction(fq(col));
+		analysis->removeOwnComputedColumn(fq(col));
+	}
 }
 
 void ComputedColumnsModel::setShowThisColumn(QString showThisColumn)
