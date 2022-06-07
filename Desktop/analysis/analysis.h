@@ -177,7 +177,7 @@ public:
 	const QList<std::string>	& computedColumns()								const	{ return _computedColumns; }
 	const Json::Value			& getRSource(const std::string& name)			const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	Json::Value				rSources()											const;
-	
+
 signals:
 	void				nameChanged();
 	void				helpFileChanged();

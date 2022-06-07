@@ -444,7 +444,8 @@ void ComputedColumnsModel::requestComputedColumnDestruction(const std::string& c
 
 	computedColumns()->removeComputedColumn(columnName);
 
-	emit headerDataChanged(Qt::Horizontal, index, DataSetPackage::pkg()->columnCount() + 1);
+	if (DataSetPackage::pkg()->hasDataSet())
+		emit headerDataChanged(Qt::Horizontal, index, DataSetPackage::pkg()->columnCount() + 1);
 
 	checkForDependentColumnsToBeSent(columnName);
 
