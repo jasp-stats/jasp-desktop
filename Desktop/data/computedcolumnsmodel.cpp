@@ -496,10 +496,7 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 			colsToRemove.insert(QString::fromStdString(col->name()));
 
 	for(const QString & col : colsToRemove)
-	{
 		requestComputedColumnDestruction(fq(col));
-		analysis->removeOwnComputedColumn(fq(col));
-	}
 }
 
 void ComputedColumnsModel::setShowThisColumn(QString showThisColumn)

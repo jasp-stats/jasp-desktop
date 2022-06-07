@@ -177,7 +177,6 @@ public:
 	const QList<std::string>	& computedColumns()								const	{ return _computedColumns; }
 	const Json::Value			& getRSource(const std::string& name)			const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	Json::Value				rSources()											const;
-	void					removeOwnComputedColumn(const std::string& col)				{ _computedColumns.removeAll(col); }
 
 signals:
 	void				nameChanged();
@@ -228,6 +227,7 @@ public slots:
 protected:
 	void					abort();
 	void					addOwnComputedColumn(const std::string& col)				{ _computedColumns.push_back(col); }
+	void					removeOwnComputedColumn(const std::string& col)				{ _computedColumns.removeAll(col); }
 
 private:
 	void					processResultsForDependenciesToBeShown();

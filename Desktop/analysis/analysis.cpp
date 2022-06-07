@@ -78,11 +78,14 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 
 Analysis::~Analysis()
 {
-	const auto & cols = computedColumns();
+	if(DataSetPackage::pkg()->hasDataSet())
+	{
+		const auto & cols = computedColumns();
 
-	if(cols.size() > 0)
-		for(const std::string & col : cols)
-			emit requestComputedColumnDestruction(col);
+		if(cols.size() > 0)
+			for(const std::string & col : cols)
+				emit requestComputedColumnDestruction(col);
+	}
 }
 
 void Analysis::clearOptions()
