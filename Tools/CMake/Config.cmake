@@ -195,6 +195,9 @@ if(LINUX)
   if(FLATPAK_USED)
     set(LINUX_LOCAL_BUILD OFF)
     set(IS_LINUX_LOCAL_BUILD FALSE)
+    set(IS_FLATPAK_USED TRUE)
+  else()
+      set(IS_FLATPAK_USED FALSE)
   endif()
 
   # IS_LINUX_LOCAL_BUILD is a special variable that will be used in install-module.R
@@ -220,7 +223,7 @@ if(LINUX)
 else()
 
   set(IS_LINUX_LOCAL_BUILD FALSE)
-
+  set(IS_FLATPAK_USED FALSE)
 endif()
 
 # I have a construct for this, and Qt often messes things up.

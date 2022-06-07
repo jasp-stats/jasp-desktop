@@ -114,9 +114,10 @@ if(APPLE)
   add_custom_target(
     dmg
     VERBATIM
+    USES_TERMINAL
     DEPENDS ${CMAKE_BINARY_DIR}/Install/JASP.app/Contents/MacOS/JASP
     COMMAND
-      ${CREATE_DMG_EXECUTABLE} --skip-jenkins --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
+      ${CREATE_DMG_EXECUTABLE} --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
       "${CMAKE_SOURCE_DIR}/Tools/macOS/Volume.icns" --icon-size 96 --icon
       "JASP.app" 130 270 --background "${CPACK_DMG_BACKGROUND_IMAGE}"
       --window-size 527 454 --window-pos 200 200 --app-drop-link 430 270
@@ -139,6 +140,7 @@ if(APPLE)
     #              --password <secret_2FA_password>
     add_custom_target(
       notarise
+      USES_TERMINAL
       COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
               --keychain-profile "AC_PASSWORD"
       COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
@@ -149,6 +151,7 @@ if(APPLE)
     #            -p <secret_password>
     add_custom_target(
       notarise
+      USES_TERMINAL
       COMMAND
         xcrun altool --notarize-app --primary-bundle-id "org.jasp-stats.jasp"
         --password "@keychain:AC_PASSWORD" --file
@@ -163,6 +166,7 @@ if(APPLE)
 
   add_custom_target(
     upload
+    USES_TERMINAL
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND bash Upload.sh)
 

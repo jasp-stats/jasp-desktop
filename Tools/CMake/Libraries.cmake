@@ -115,19 +115,7 @@ if(NOT FLATPAK_USED)
 
 else()
 
-  find_package(
-    Qt6WebEngineQuick
-    REQUIRED
-    PATHS
-    ${Qt6WebEngineQuick_DIR}
-    NO_DEFAULT_PATH)
-
-  find_package(
-    Qt6Core5Compat
-    REQUIRED
-    PATHS
-    ${Qt6Core5Compat_DIR}
-    NO_DEFAULT_PATH)
+	message(STATUS "flatpak arch is $ENV{FLATPAK_ARCH}")
 
   find_package(
     Qt6 REQUIRED
@@ -150,6 +138,22 @@ else()
                QuickControls2Impl
                QmlWorkerScript
                QuickWidgets)
+
+  find_package(
+    Qt6WebEngineQuick
+    REQUIRED
+    PATHS
+    "/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/cmake/Qt6WebEngineQuick/"
+       ${Qt6WebEngineQuick_DIR}
+    NO_DEFAULT_PATH)
+
+  find_package(
+    Qt6Core5Compat
+    REQUIRED
+    PATHS
+	  "/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/cmake/Qt6Core5Compat/"
+	  ${Qt6Core5Compat_DIR}
+    NO_DEFAULT_PATH)
 
 endif()
 
