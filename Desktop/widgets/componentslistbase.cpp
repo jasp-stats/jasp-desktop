@@ -191,6 +191,18 @@ void ComponentsListBase::nameChangedHandler(int index, QString name)
 
 	name = _makeUnique(name, index);
 
+	if (isBound())
+	{
+		// The name is the key value that allows to distinguish the elements of the components list.
+		// So this must be also updated in the bound value.
+		Json::Value val = boundValue();
+		if (val.isArray() && val.size() > index)
+		{
+			val[index][fq(_optionKey)] = fq(name);
+			setBoundValue(val, false);
+		}
+	}
+
 	_termsModel->changeTerm(index, name);
 }
 
