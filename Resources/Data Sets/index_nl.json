@@ -460,6 +460,13 @@
           "description": "Leeftijd, kabineklasse, en overlevingstatus van 1313 passagiers op de Titanic. <br><br> Het voorbeeldbestand in JASP laat zien hoe een logistische regressie kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Titanic.csv"
+        },
+        {
+          "name": "Turbines",
+          "path": "Turbines.jasp",
+          "description": "Het aantal en het aandeel van de turbinewielen die na een bepaald aantal draaiuren scheuren vertonen. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van binomiale logistische regressie.<br><br> <i>Gegevens van Nelsen, W. (1982).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Turbines.csv"
         }
       ],
       "debug": false
