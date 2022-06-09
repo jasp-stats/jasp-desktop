@@ -134,10 +134,7 @@ if(APPLE)
   # Add your password like this to the KeyChain
   #
   if(XCODE_VERSION VERSION_GREATER 12)
-    # % xcrun notarytool store-credentials "AC_PASSWORD"
-    #              --apple-id "jasp.stats@gmail.com"
-    #              --team-id AWJJ3YVK9B
-    #              --password <secret_2FA_password>
+    # % xcrun notarytool store-credentials "AC_PASSWORD" --apple-id "jasp.stats@gmail.com" --team-id AWJJ3YVK9B --password <secret_2FA_password>
     add_custom_target(
       notarise
       USES_TERMINAL
