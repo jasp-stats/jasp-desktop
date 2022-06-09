@@ -10,7 +10,7 @@
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
                 COMMAND rm -rf Libraries)
 
-message(CHECK_START "Siging 'R.framework'")
+message(CHECK_START "Signing 'R.framework'")
 
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
                 COMMAND bash @PARALLEL_SIGNER@ R.framework)

@@ -104,7 +104,15 @@ if(APPLE)
     DIRECTORY ${_R_Framework}
     DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ".*/bin/R(Script)?$" EXCLUDE
+    )
+
+    #copy R(Script) separately as a program so they have execution permissions
+    install(
+      PROGRAMS ${_R_Framework}/Resources/bin/R ${_R_Framework}/Resources/bin/RScript
+      DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/
+    )
 
   # I had to do this manually, since `macdeployqt` misses it.
   # See here: https://bugreports.qt.io/browse/QTBUG-100686
