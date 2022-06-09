@@ -18,6 +18,7 @@
 
 #include "comboboxbase.h"
 #include "../analysis/analysisform.h"
+#include "log.h"
 
 
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
@@ -41,6 +42,36 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 		else
 		{
 			auto itr = std::find(values.begin(), values.end(), selectedValue);
+
+			if (itr == values.end())
+			{
+				// Buggy situation: the value is not one of the available values of the DropDown.
+				// This might happen with a corrupted JASP file, or an old bug like https://github.com/jasp-stats/jasp-test-release/issues/1836
+				// Before throwing an error message, let's be a bit flexible: if we can find a value which is case-insensitive equal to the selectedValue,
+				// then we can be confident that it is the right one.
+				auto caseInsensitiveEquals = [&](const std::string& s)
+				{
+					return std::equal(s.begin(), s.end(),
+									  selectedValue.begin(), selectedValue.end(),
+									  [](char a, char b) { return tolower(a) == tolower(b); });
+				};
+				itr = std::find_if(values.begin(), values.end(), caseInsensitiveEquals);
+				if (itr != values.end())
+					Log::log() << "Option " << selectedValue << " in DropDown " << name() << " found but not with the same case: " << *itr << std::endl;
+			}
+
+			if (itr == values.end())
+			{
+				// Try also to find a label equals to the selectedValue.
+				auto labelEqualts = [&](const std::string& s)
+				{
+					return fq(_model->getLabel(tq(s))) == selectedValue;
+				};
+				itr = std::find_if(values.begin(), values.end(), labelEqualts);
+				if (itr != values.end())
+					Log::log() << "Option " << selectedValue << " in DropDown " << name() << " found but as label." << std::endl;
+			}
+
 			if (itr == values.end())
 			{
 				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
