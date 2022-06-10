@@ -78,7 +78,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 
 Analysis::~Analysis()
 {
-	if(DataSetPackage::pkg()->hasDataSet())
+	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 		for(const std::string & col : computedColumns())
 			emit requestComputedColumnDestruction(col);
 }
