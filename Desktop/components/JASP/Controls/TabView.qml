@@ -235,7 +235,7 @@ ComponentsListBase
 				{
 					rowComponentItem.parent = tabViewWrapper
 					rowComponentItem.z = 10
-					itemStack.height = rowComponentItem.height
+					itemStack.height = Qt.binding( function() { return rowComponentItem.height; });
 				}
 			}
 		}
