@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-06-13 08:17+0000\n"
+"PO-Revision-Date: 2022-06-13 10:00+0000\n"
 "Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
@@ -873,19 +873,20 @@ msgid ""
 "to use it seamlessly on any background that isn't white."
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Caratteri"
 
 #, fuzzy
 msgctxt "PrefsUI|"
 msgid "Interface:"
 msgstr "Carattere interfaccia:"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "default: %1"
 
 #, fuzzy
 msgctxt "PrefsUI|"
@@ -898,35 +899,48 @@ msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr "Passa a un tema chiaro, quello predefinito di JASP."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
+"Passa a un tema scuro, migliora la visualizzazione di JASP per l'utilizzo "
+"durante le ora notturne."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "Impostazioni aggiuntive"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "Zoom (%): "
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
+"Aumenta o diminuisce le dimensioni degli elementi dell'interfaccia (testo, "
+"pulsanti, ecc.)."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "Velocità di scorrimento (pixel/s): "
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
+"Imposta la velocità di scorrimento nelle opzioni, nel dataviewer e in altre "
+"sezioni."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
@@ -934,38 +948,57 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"Passa a una modalità più \"sicura\" per le sezioni grafiche, ossia il "
+"rendering software.\n"
+"Rende l'interfaccia più lenta, ma potrebbe risolvere eventuali problemi ("
+"strani glitch, impossibilità di vedere i risultati o altro) potrebbe "
+"risolverli.\n"
+"Questa impostazione non influenzerà la velocità di analisi dei dati."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
+"Disattiva tutte le animazioni; questa impostazione è attivata "
+"automaticamente quando la \"Modalità grafica sicura\" è attiva."
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
+"Animazioni già disabilitate perché la \"Modalità grafica sicura\" è attiva"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "If disabled it will not use your operating system's file dialogs but those "
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Se disattivato, non utilizzerà le finestre di dialogo dei file del sistema "
+"operativo, ma quelle realizzate da Qt. Questo potrebbe risolvere alcuni "
+"problemi su Windows se JASP si blocca quando si seleziona \"Sfoglia\"."
 
+#, fuzzy
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "File recenti"
 
+#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Codice delle colonne computate chiaro"
 
+#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Codice delle colonne calcolate applicato"
 
+#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "Inserire tutti gli argomenti - vedi i campi contrassegnati in rosso."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
@@ -3147,13 +3180,15 @@ msgctxt "PrefsUI|"
 msgid "Dark theme"
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Lingua"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "Lingua selezionata:  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
@@ -3326,9 +3361,10 @@ msgctxt "PrefsData|"
 msgid "See documentation for more information "
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Impostazioni interfaccia"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
