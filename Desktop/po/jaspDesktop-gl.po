@@ -188,14 +188,6 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr "Ordenador"
 
-msgctxt "DataLibrary|"
-msgid "Data Library"
-msgstr "Biblioteca de Datos"
-
-msgctxt "MainPage|"
-msgid "Results"
-msgstr "Resultados"
-
 msgctxt "ResourceButtons|"
 msgid "Interface"
 msgstr "Interface"
@@ -598,10 +590,6 @@ msgctxt "ActionButtons|"
 msgid "About"
 msgstr "Sobre"
 
-msgctxt "AboutWindow|"
-msgid "Close"
-msgstr "Pechar"
-
 msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr "Sincronizar Datos"
@@ -932,50 +920,9 @@ msgstr ""
 "Para engadir un novo proxecto, pregámosche que utilices os servizos en liña "
 "de OSF."
 
-msgctxt "CreateComputeColumnDialog|"
-msgid "Text"
-msgstr "Texto"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Name:"
-msgstr "Nome:"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Column name is already used, please choose a different one."
-msgstr "O nome da columna xa está en uso; por favor, elixe outro diferente."
-
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "Abrir a Documentación"
-
-#, qt-format
-msgctxt "CreateComputeColumnDialog|"
-msgid "Click here to create your new computed column '%1'"
-msgstr "Fai clic aquí para crear a túa nova columna calculada '%1'"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Create Computed Column"
-msgstr "Crear Columna Calculada"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Enter a valid (unused) name for computed column"
-msgstr "Introduce un nome válido (sen usar) para a columna calculada"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Close without creating a computed column"
-msgstr "Pechar sen crear unha columna calculada"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Define column through drag and drop formulas"
-msgstr "Definir unha columna mediante fórmulas de Arrastrar e Soltar"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Create Column"
-msgstr "Crear Columna"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Define column through R code"
-msgstr "Definir unha columna mediante código de R"
 
 msgctxt "FilterWindow|"
 msgid "mean"
@@ -1445,46 +1392,6 @@ msgstr "Non: %1"
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
 msgstr "devolve os valores lóxicos"
-
-msgctxt "AboutWindow|"
-msgid "Built on:"
-msgstr "Compilación:"
-
-msgctxt "AboutWindow|"
-msgid "Access the sources here"
-msgstr "Acceder aquí ás fontes"
-
-msgctxt "AboutWindow|"
-msgid "BibTeX"
-msgstr "BibTeX"
-
-msgctxt "AboutWindow|"
-msgid "Copy Selection"
-msgstr "Copiar a Selección"
-
-msgctxt "AboutWindow|"
-msgid "Source:"
-msgstr "Fonte:"
-
-msgctxt "AboutWindow|"
-msgid "Citation:"
-msgstr "Referencia:"
-
-msgctxt "AboutWindow|"
-msgid "Select All"
-msgstr "Escoller Todo"
-
-msgctxt "AboutWindow|"
-msgid "About JASP"
-msgstr "Sobre JASP"
-
-msgctxt "AboutWindow|"
-msgid "Version:"
-msgstr "Versión:"
-
-msgctxt "AboutWindow|"
-msgid "Download:"
-msgstr "Descargar:"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
@@ -1961,26 +1868,6 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
 msgstr "Creando un novo cartafol "
 
-msgctxt "AnalysisFormExpander|"
-msgid "Drag to reorder the analyses"
-msgstr "Arrastrar para reordenar as análises"
-
-msgctxt "AnalysisFormExpander|"
-msgid "Duplicate this analysis"
-msgstr "Duplicar esta análise"
-
-msgctxt "AnalysisFormExpander|"
-msgid "Remove this analysis"
-msgstr "Eliminar esta análise"
-
-msgctxt "AnalysisFormExpander|"
-msgid "Edit the title of this analysis"
-msgstr "Editar o título desta análise"
-
-msgctxt "AnalysisFormExpander|"
-msgid "Show info for this analysis"
-msgstr "Amosar a información para esta análise"
-
 msgctxt "FileEvent|"
 msgid "Processing File"
 msgstr "Procesando Ficheiro"
@@ -2070,38 +1957,6 @@ msgstr ""
 "Trocaches o modo gráfico seguro de JASP, polo que necesítase reiniciar JASP "
 "para que funcione esta opción"
 
-msgctxt "TextArea|"
-msgid "⌘ + Enter to apply"
-msgstr "⌘ + Intro para aplicar"
-
-msgctxt "TextArea|"
-msgid "Ctrl + Enter to apply"
-msgstr "Ctrl + Intro para aplicar"
-
-msgctxt "MainPage|"
-msgid "Drag to show data"
-msgstr "Arrastrar para amosar os datos"
-
-msgctxt "MainPage|"
-msgid "Resize data/results"
-msgstr "Volver dar dimensión aos datos/resultados"
-
-msgctxt "AnalysisForms|"
-msgid "Hide input options"
-msgstr "Ocultar as opcións de entrada"
-
-msgctxt "AnalysisForms|"
-msgid "Show input options"
-msgstr "Amosar as opcións de entrada"
-
-msgctxt "MainPage|"
-msgid "Show data"
-msgstr "Amosar os datos"
-
-msgctxt "MainPage|"
-msgid "Hide data"
-msgstr "Ocultar os datos"
-
 msgctxt "FileMenu|"
 msgid ""
 "JASP has no associated data file to be synchronized with.\n"
@@ -2148,50 +2003,6 @@ msgstr "Ordenar os elementos"
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
 msgstr "Problema ao cargar os problemas xa coñecidos"
-
-msgctxt "ModulesMenu|"
-msgid "Install Module"
-msgstr "Instalar Módulo"
-
-msgctxt "ModulesMenu|"
-msgid "Select a Developer Module"
-msgstr "Escoller un Módulo de Desenvolvemento"
-
-msgctxt "ModulesMenu|"
-msgid "Installing Developer Module"
-msgstr "Instalando un Módulo de Desenvolvemento"
-
-msgctxt "ModulesMenu|"
-msgid "Install selected developer module"
-msgstr "Instalar o módulo de desenvolvemento seleccionado"
-
-msgctxt "ModulesMenu|"
-msgid "Error occurred!"
-msgstr "Aconteceu un fallo!"
-
-msgctxt "ModulesMenu|"
-msgid "Loaded and ready for use!"
-msgstr "Cargado e listo para usar!"
-
-msgctxt "ModulesMenu|"
-msgid "Not ready for use?"
-msgstr "Non está preparado para usar?"
-
-msgctxt "ModulesMenu|"
-msgid "Installing developer module now"
-msgstr "Instalando agora o módulo de desenvolvemento"
-
-msgctxt "ModulesMenu|"
-msgid "Uninstall module "
-msgstr "Desinstalar o módulo "
-
-msgctxt "ModulesMenu|"
-msgid "Install Developer Module"
-msgstr "Instalar un Módulo de Desenvolvemento"
-
-msgctxt "ModulesMenu|"
-msgid "Install a module"
-msgstr "Instalar un módulo"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
@@ -2250,22 +2061,6 @@ msgid "Please enter all arguments - see fields marked in red."
 msgstr ""
 "Por favor, introduce todos os argumentos (observar os campos marcados en "
 "vermello)."
-
-msgctxt "ListItem|"
-msgid "Synchronize with this Data File"
-msgstr "Sincronizar con este Ficheiro de Datos"
-
-msgctxt "ListItem|"
-msgid "Navigate to folder"
-msgstr "Navegar ata o cartafol"
-
-msgctxt "ListItem|"
-msgid "Open data file"
-msgstr "Abrir un ficheiro de datos"
-
-msgctxt "ListItem|"
-msgid "Open JASP file"
-msgstr "Abrir un ficheiro JASP"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
@@ -2333,11 +2128,6 @@ msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
 msgstr "Filtro aplicado<br>"
 
-#, qt-format
-msgctxt "TextField|"
-msgid "Restoring last correct value: %1"
-msgstr "Restablecendo o derradeiro valor correcto: %1"
-
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
@@ -2361,14 +2151,6 @@ msgstr ""
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
 msgstr "Aviso de Resultados"
-
-msgctxt "HelpWindow|"
-msgid "JASP Help"
-msgstr "Axuda de JASP"
-
-msgctxt "HelpWindow|"
-msgid "Search for:"
-msgstr "Procurar:"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
@@ -2397,10 +2179,6 @@ msgstr ""
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "O ficheiro cambiou"
-
-msgctxt "JASPDataView|"
-msgid "Double click to edit data"
-msgstr "Fai clic dúas veces para editar os datos"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -2488,14 +2266,6 @@ msgstr "Engadir á dereita"
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "Eliminar"
-
-msgctxt "AnalysisForms|"
-msgid "Resize data/results"
-msgstr "Volver dar dimensión aos datos/resultados"
-
-msgctxt "AnalysisForms|"
-msgid "Drag to show data"
-msgstr "Arrastrar para amosar os datos"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
@@ -2585,22 +2355,6 @@ msgstr "ningún"
 msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr "Factores"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Scale"
-msgstr "Escala"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Ordinal"
-msgstr "Ordinal"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Nominal"
-msgstr "Nominal"
-
-msgctxt "CreateComputeColumnDialog|"
-msgid "Open Documentation"
-msgstr "Abrir a Documentación"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
@@ -2814,24 +2568,6 @@ msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Restablecer"
 
-msgctxt "ModulesMenu|"
-msgid "Select a developer module by clicking here"
-msgstr "Escoller un módulo de desenvolvemento facendo clic aquí"
-
-msgctxt "ModulesMenu|"
-msgid "Ready"
-msgstr "Preparado"
-
-#, qt-format
-msgctxt "ModulesMenu|"
-msgid "Installing: %1\n"
-msgstr "Instalando: %1\n"
-
-#, qt-format
-msgctxt "ModulesMenu|"
-msgid "Loading: %1\n"
-msgstr "Cargando: %1\n"
-
 msgctxt "PlotEditingAxis|"
 msgid "Title"
 msgstr "Título"
@@ -2899,14 +2635,6 @@ msgstr "eixe x"
 msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "eixe y"
-
-msgctxt "RibbonBar|"
-msgid "Show main menu"
-msgstr "Amosar o menú principal"
-
-msgctxt "RibbonBar|"
-msgid "Show modules menu"
-msgstr "Amosar o menú dos módulos"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
@@ -3786,10 +3514,6 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "Abrir a Documentación"
-
-msgctxt "AboutWindow|"
-msgid "Open Source Components"
-msgstr "Compoñentes de Código Aberto"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
