@@ -78,6 +78,99 @@ msgctxt "TabView|"
 msgid "New tab"
 msgstr ""
 
+msgctxt "TextArea|"
+msgid "⌘ + Enter to apply"
+msgstr ""
+
+msgctxt "TextArea|"
+msgid "Ctrl + Enter to apply"
+msgstr ""
+
+#, qt-format
+msgctxt "TextField|"
+msgid "Restoring last correct value: %1"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "About JASP"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Version:"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Built on:"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Source:"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Access the sources here"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Download:"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Citation:"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Select All"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Copy Selection"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "BibTeX"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Close"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Drag to reorder the analyses"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Edit the title of this analysis"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Duplicate this analysis"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show info for this analysis"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Remove this analysis"
+msgstr ""
+
+msgctxt "AnalysisForms|"
+msgid "Resize data/results"
+msgstr ""
+
+msgctxt "AnalysisForms|"
+msgid "Drag to show data"
+msgstr ""
+
+msgctxt "AnalysisForms|"
+msgid "Hide input options"
+msgstr ""
+
+msgctxt "AnalysisForms|"
+msgid "Show input options"
+msgstr ""
+
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
 msgstr ""
@@ -394,6 +487,63 @@ msgctxt "ContrastsList|"
 msgid "Custom for %1"
 msgstr ""
 
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Computed Column"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Column name is already used, please choose a different one."
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through R code"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through drag and drop formulas"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Open Documentation"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr ""
+
+#, qt-format
+msgctxt "CreateComputeColumnDialog|"
+msgid "Click here to create your new computed column '%1'"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Enter a valid (unused) name for computed column"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Close without creating a computed column"
+msgstr ""
+
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
 msgstr ""
@@ -461,6 +611,26 @@ msgstr ""
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
+msgstr ""
+
+msgctxt "DataLibrary|"
+msgid "Data Library"
+msgstr ""
+
+msgctxt "ListItem|"
+msgid "Synchronize with this Data File"
+msgstr ""
+
+msgctxt "ListItem|"
+msgid "Navigate to folder"
+msgstr ""
+
+msgctxt "ListItem|"
+msgid "Open JASP file"
+msgstr ""
+
+msgctxt "ListItem|"
+msgid "Open data file"
 msgstr ""
 
 msgctxt "MenuHeader|"
@@ -1123,6 +1293,14 @@ msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
 msgstr ""
 
+msgctxt "HelpWindow|"
+msgid "JASP Help"
+msgstr ""
+
+msgctxt "HelpWindow|"
+msgid "Search for:"
+msgstr ""
+
 msgctxt "JagsTableView|"
 msgid "Add Data"
 msgstr ""
@@ -1133,6 +1311,30 @@ msgstr ""
 
 msgctxt "JagsTableView|"
 msgid "Reset"
+msgstr ""
+
+msgctxt "JASPDataView|"
+msgid "Double click to edit data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Hide data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Show data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Resize data/results"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Drag to show data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Results"
 msgstr ""
 
 msgctxt "ModuleInstaller|"
@@ -1150,6 +1352,64 @@ msgstr ""
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install a module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Installing Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install selected developer module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Installing developer module now"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Ready"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Installing: %1\n"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Loading: %1\n"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Loaded and ready for use!"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Error occurred!"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Not ready for use?"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Uninstall module "
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
@@ -2887,6 +3147,18 @@ msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
 msgstr ""
@@ -3169,6 +3441,10 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
 msgstr ""
 
 msgctxt "PrefsUI|"

@@ -81,6 +81,99 @@ msgctxt "TabView|"
 msgid "New tab"
 msgstr "Tab baru"
 
+msgctxt "TextArea|"
+msgid "⌘ + Enter to apply"
+msgstr "⌘ + Enter untuk menerapkan"
+
+msgctxt "TextArea|"
+msgid "Ctrl + Enter to apply"
+msgstr "Ctrl + Enter untuk menerapkan"
+
+#, qt-format
+msgctxt "TextField|"
+msgid "Restoring last correct value: %1"
+msgstr "Memulihkan nilai terakhir yang benar: %1"
+
+msgctxt "AboutWindow|"
+msgid "About JASP"
+msgstr "Tentang JASP"
+
+msgctxt "AboutWindow|"
+msgid "Version:"
+msgstr "Versi:"
+
+msgctxt "AboutWindow|"
+msgid "Built on:"
+msgstr "Dibangun pada:"
+
+msgctxt "AboutWindow|"
+msgid "Source:"
+msgstr "Sumber:"
+
+msgctxt "AboutWindow|"
+msgid "Access the sources here"
+msgstr "Akses sumbernya di sini"
+
+msgctxt "AboutWindow|"
+msgid "Download:"
+msgstr "Unduh:"
+
+msgctxt "AboutWindow|"
+msgid "Citation:"
+msgstr "Sitasi:"
+
+msgctxt "AboutWindow|"
+msgid "Select All"
+msgstr "Pilih Semua"
+
+msgctxt "AboutWindow|"
+msgid "Copy Selection"
+msgstr "Salin Pilihan"
+
+msgctxt "AboutWindow|"
+msgid "BibTeX"
+msgstr "BibTeX"
+
+msgctxt "AboutWindow|"
+msgid "Close"
+msgstr "Tutup"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Drag to reorder the analyses"
+msgstr "Drag untuk menyusun ulang analisis"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Edit the title of this analysis"
+msgstr "Sunting judul analisis"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Duplicate this analysis"
+msgstr "Duplikat analisis ini"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show info for this analysis"
+msgstr "Tampilkan info untuk analisis ini"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Remove this analysis"
+msgstr "Hapus analisis ini"
+
+msgctxt "AnalysisForms|"
+msgid "Resize data/results"
+msgstr "Ubah ukuran data/hasil"
+
+msgctxt "AnalysisForms|"
+msgid "Drag to show data"
+msgstr "Drag untuk menampilkan data"
+
+msgctxt "AnalysisForms|"
+msgid "Hide input options"
+msgstr "Sembunyikan opsi input"
+
+msgctxt "AnalysisForms|"
+msgid "Show input options"
+msgstr "Tampilkan opsi input"
+
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
 msgstr "Tambahkan"
@@ -425,6 +518,65 @@ msgctxt "ContrastsList|"
 msgid "Custom for %1"
 msgstr "Kustom untuk %1"
 
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Computed Column"
+msgstr "Buat Kolom Hasil Penghitungan"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr "Nama:"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Column name is already used, please choose a different one."
+msgstr "Nama kolom sudah digunakan, mohon pilih nama yang berbeda."
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through R code"
+msgstr "Jelaskan kolom dengan kode R"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through drag and drop formulas"
+msgstr "Jelaskan kolom dengan rumus drag dan drop"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr "Skala"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr "Ordinal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr "Nominal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr "Teks"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Open Documentation"
+msgstr "Buka Dokumentasi"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr "Buat Kolom"
+
+#, qt-format
+msgctxt "CreateComputeColumnDialog|"
+msgid "Click here to create your new computed column '%1'"
+msgstr "Klik di sini untuk membuat kolom hasil penghitungan Anda '%1'"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Enter a valid (unused) name for computed column"
+msgstr ""
+"Masukkkan nama yang valid (yang belum digunakan) untuk kolom hasil "
+"penghitungan"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Close without creating a computed column"
+msgstr "Tutup tanpa membuat kolom hasil penghitungan"
+
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
 msgstr "Tambahkan Kontras"
@@ -485,6 +637,26 @@ msgstr ""
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
 msgstr "Berkas data saat ini untuk sinkronisasi"
+
+msgctxt "DataLibrary|"
+msgid "Data Library"
+msgstr "Perpustakaan Data"
+
+msgctxt "ListItem|"
+msgid "Synchronize with this Data File"
+msgstr "Sinkronisasikan dengan Berkas Data ini"
+
+msgctxt "ListItem|"
+msgid "Navigate to folder"
+msgstr "Arahkan ke folder"
+
+msgctxt "ListItem|"
+msgid "Open JASP file"
+msgstr "Buka berkas JASP"
+
+msgctxt "ListItem|"
+msgid "Open data file"
+msgstr "Buka berkas data"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -1179,6 +1351,14 @@ msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
 msgstr ""
 
+msgctxt "HelpWindow|"
+msgid "JASP Help"
+msgstr ""
+
+msgctxt "HelpWindow|"
+msgid "Search for:"
+msgstr ""
+
 msgctxt "JagsTableView|"
 msgid "Add Data"
 msgstr ""
@@ -1191,6 +1371,32 @@ msgstr ""
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Atur ulang"
+
+msgctxt "JASPDataView|"
+msgid "Double click to edit data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Hide data"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Show data"
+msgstr ""
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Resize data/results"
+msgstr "Ubah ukuran data/hasil"
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Drag to show data"
+msgstr "Drag untuk menampilkan data"
+
+msgctxt "MainPage|"
+msgid "Results"
+msgstr ""
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
@@ -1207,6 +1413,64 @@ msgstr ""
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install a module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Installing Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a Developer Module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Install selected developer module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Installing developer module now"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Ready"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Installing: %1\n"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Loading: %1\n"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Loaded and ready for use!"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Error occurred!"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Not ready for use?"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Uninstall module "
 msgstr ""
 
 msgctxt "RCommanderWindow|"
@@ -2991,6 +3255,18 @@ msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
 msgstr ""
@@ -3264,6 +3540,10 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "Buka Dokumentasi"
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"

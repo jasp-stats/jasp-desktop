@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-04-24 08:13+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -77,6 +83,99 @@ msgstr "移除选项卡"
 msgctxt "TabView|"
 msgid "New tab"
 msgstr "新建选项卡"
+
+msgctxt "TextArea|"
+msgid "⌘ + Enter to apply"
+msgstr "按 ⌘ + Enter 应用"
+
+msgctxt "TextArea|"
+msgid "Ctrl + Enter to apply"
+msgstr "按 Ctrl + Enter 应用"
+
+#, qt-format
+msgctxt "TextField|"
+msgid "Restoring last correct value: %1"
+msgstr "正在恢复最近的正确值：%1"
+
+msgctxt "AboutWindow|"
+msgid "About JASP"
+msgstr "关于JASP"
+
+msgctxt "AboutWindow|"
+msgid "Version:"
+msgstr "版本："
+
+msgctxt "AboutWindow|"
+msgid "Built on:"
+msgstr "构建于："
+
+msgctxt "AboutWindow|"
+msgid "Source:"
+msgstr "源："
+
+msgctxt "AboutWindow|"
+msgid "Access the sources here"
+msgstr "在此处访问源"
+
+msgctxt "AboutWindow|"
+msgid "Download:"
+msgstr "下载："
+
+msgctxt "AboutWindow|"
+msgid "Citation:"
+msgstr "引文："
+
+msgctxt "AboutWindow|"
+msgid "Select All"
+msgstr "全选"
+
+msgctxt "AboutWindow|"
+msgid "Copy Selection"
+msgstr "复制所选"
+
+msgctxt "AboutWindow|"
+msgid "BibTeX"
+msgstr "BibTeX"
+
+msgctxt "AboutWindow|"
+msgid "Close"
+msgstr "关闭"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Drag to reorder the analyses"
+msgstr "拖拽可重新排布分析栏"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Edit the title of this analysis"
+msgstr "编辑此分析的标题"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Duplicate this analysis"
+msgstr "重建此分析"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show info for this analysis"
+msgstr "显示此分析的信息"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Remove this analysis"
+msgstr "移除此分析"
+
+msgctxt "AnalysisForms|"
+msgid "Resize data/results"
+msgstr "调整数据/结果的大小"
+
+msgctxt "AnalysisForms|"
+msgid "Drag to show data"
+msgstr "拖动以显示数据"
+
+msgctxt "AnalysisForms|"
+msgid "Hide input options"
+msgstr "隐藏输入选项"
+
+msgctxt "AnalysisForms|"
+msgid "Show input options"
+msgstr "显示输入选项"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -392,6 +491,63 @@ msgctxt "ContrastsList|"
 msgid "Custom for %1"
 msgstr "自定义为 %1"
 
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Computed Column"
+msgstr "创建计算列"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr "名称："
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Column name is already used, please choose a different one."
+msgstr "列名已被使用，请选择其他名称。"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through R code"
+msgstr "通过 R 代码定义列"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through drag and drop formulas"
+msgstr "通过拖放公式定义列"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr "定距"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr "定序"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr "名义"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr "文本"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Open Documentation"
+msgstr "打开文档"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr "创建列"
+
+#, qt-format
+msgctxt "CreateComputeColumnDialog|"
+msgid "Click here to create your new computed column '%1'"
+msgstr "单击此处创建新的计算列“%1”"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Enter a valid (unused) name for computed column"
+msgstr "输入计算列的有效（未使用）名称"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Close without creating a computed column"
+msgstr "关闭而不创建计算列"
+
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
 msgstr "添加对比"
@@ -452,6 +608,26 @@ msgstr "浏览"
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
 msgstr "当前用于同步的数据文件"
+
+msgctxt "DataLibrary|"
+msgid "Data Library"
+msgstr "数据库"
+
+msgctxt "ListItem|"
+msgid "Synchronize with this Data File"
+msgstr "与此数据文件同步"
+
+msgctxt "ListItem|"
+msgid "Navigate to folder"
+msgstr "导航到文件夹"
+
+msgctxt "ListItem|"
+msgid "Open JASP file"
+msgstr "打开 JASP 文件"
+
+msgctxt "ListItem|"
+msgid "Open data file"
+msgstr "打开数据文件"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -1123,6 +1299,14 @@ msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
 msgstr "筛选器与默认值保持不变"
 
+msgctxt "HelpWindow|"
+msgid "JASP Help"
+msgstr "JASP 帮助"
+
+msgctxt "HelpWindow|"
+msgid "Search for:"
+msgstr "搜索："
+
 msgctxt "JagsTableView|"
 msgid "Add Data"
 msgstr "添加数据"
@@ -1134,6 +1318,30 @@ msgstr "删除数据"
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "重置"
+
+msgctxt "JASPDataView|"
+msgid "Double click to edit data"
+msgstr "双击以编辑数据"
+
+msgctxt "MainPage|"
+msgid "Hide data"
+msgstr "隐藏数据"
+
+msgctxt "MainPage|"
+msgid "Show data"
+msgstr "显示数据"
+
+msgctxt "MainPage|"
+msgid "Resize data/results"
+msgstr "调整数据/结果"
+
+msgctxt "MainPage|"
+msgid "Drag to show data"
+msgstr "拖动以显示数据"
+
+msgctxt "MainPage|"
+msgid "Results"
+msgstr "结果"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
@@ -1151,6 +1359,64 @@ msgstr "<i>浏览 JASP 模块，在此处查看更多信息</i>"
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
 msgstr "<i>%1 不是（正确的）JASP 模块！</i>"
+
+msgctxt "ModulesMenu|"
+msgid "Install Module"
+msgstr "安装模块"
+
+msgctxt "ModulesMenu|"
+msgid "Install a module"
+msgstr "安装一个模块"
+
+msgctxt "ModulesMenu|"
+msgid "Install Developer Module"
+msgstr "安装开发者模块"
+
+msgctxt "ModulesMenu|"
+msgid "Installing Developer Module"
+msgstr "正在安装开发者模块"
+
+msgctxt "ModulesMenu|"
+msgid "Select a Developer Module"
+msgstr "选择一个开发者模块"
+
+msgctxt "ModulesMenu|"
+msgid "Install selected developer module"
+msgstr "安装选定的开发者模块"
+
+msgctxt "ModulesMenu|"
+msgid "Installing developer module now"
+msgstr "立即安装开发者模块"
+
+msgctxt "ModulesMenu|"
+msgid "Ready"
+msgstr "就绪"
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Installing: %1\n"
+msgstr "正在安装：%1\n"
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Loading: %1\n"
+msgstr "正在加载：%1\n"
+
+msgctxt "ModulesMenu|"
+msgid "Loaded and ready for use!"
+msgstr "已加载并准备使用！"
+
+msgctxt "ModulesMenu|"
+msgid "Error occurred!"
+msgstr "发生错误!"
+
+msgctxt "ModulesMenu|"
+msgid "Not ready for use?"
+msgstr "还没准备好使用？"
+
+msgctxt "ModulesMenu|"
+msgid "Uninstall module "
+msgstr "卸载模块 "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
@@ -3040,6 +3306,18 @@ msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "使用本地文件对话框"
 
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr "单击此处选择开发者模块"
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr "显示主菜单"
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr "显示模块菜单"
+
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
 msgstr "一个很好的元素分组"
@@ -3337,6 +3615,10 @@ msgstr ""
 msgctxt "MainWindow|"
 msgid "Clean"
 msgstr "清除"
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr "开源组件"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
