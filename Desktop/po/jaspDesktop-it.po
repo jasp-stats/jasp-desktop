@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-06-13 08:17+0000\n"
+"Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -871,23 +877,26 @@ msgctxt "PrefsUI|"
 msgid "Fonts"
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Carattere interfaccia:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "Temi"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr ""
+msgstr "Passa a un tema chiaro, quello predefinito di JASP."
 
 msgctxt "PrefsUI|"
 msgid ""
