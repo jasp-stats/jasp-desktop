@@ -161,10 +161,12 @@ void ListModel::setUpRowControls()
 	if (_rowComponent == nullptr)
 		return;
 
+	QStringList keys;
 	int row = 0;
 	for (const Term& term : terms())
 	{
 		const QString& key = term.asQString();
+		keys.append(key);
 		if (!_rowControlsMap.contains(key))
 		{
 			bool hasOptions = _rowControlsValues.contains(key);
@@ -176,6 +178,12 @@ void ListModel::setUpRowControls()
 			_rowControlsMap[key]->setContext(row, key);
 		row++;
 	}
+
+	for (const QString& key : _rowControlsMap.keys())
+		if (!keys.contains(key))
+			// If some row controls are not used anymore, if they use some sources, they must be disconnected from these sources
+			// If a source changes and emits a signal, these controls should not be activated (cf. https://github.com/jasp-stats/jasp-test-release/issues/1786)
+			_rowControlsMap[key]->disconnectControls();
 }
 
 JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const

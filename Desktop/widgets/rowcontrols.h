@@ -48,6 +48,7 @@ public:
 	const QMap<QString, JASPControl*>&			getJASPControlsMap()						const	{ return _rowJASPControlMap;	}
 	JASPControl*								getJASPControl(const QString& name)					{ return _rowJASPControlMap.contains(name) ? _rowJASPControlMap[name] : nullptr; }
 	bool										addJASPControl(JASPControl* control);
+	void										disconnectControls();
 
 private:
 

@@ -20,6 +20,7 @@
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrol.h"
 #include "jasplistcontrol.h"
+#include "sourceitem.h"
 
 #include "log.h"
 
@@ -92,7 +93,11 @@ void RowControls::_setupControls(bool reuseBoundValue)
 			// If a ListView depends on a source, it has to be initialized by this source
 			// For this just call the sourceTermsChanged handler.
 			if (listView && listView->hasSource())
+			{
+				for (SourceItem* source : listView->sourceItems())
+					source->connectModels(); // If the source was disconnected, reconnect it.
 				listView->model()->sourceTermsReset();
+			}
 		}
 	}
 
@@ -126,4 +131,17 @@ bool RowControls::addJASPControl(JASPControl *control)
 		_rowJASPControlMap[control->name()] = control;
 
 	return success;
+}
+
+void RowControls::disconnectControls()
+{
+	// If a control depends on a source, disconnect this source with this control.
+	JASPListControl* parentControl = _parentModel->listView();
+	for (JASPControl* control : _rowJASPControlMap.values())
+	{
+		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+		if (listControl)
+			for (SourceItem* source : listControl->sourceItems())
+				source->disconnectModels();
+	}
 }
