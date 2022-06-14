@@ -35,12 +35,56 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.16.3" date="2022-05-17">
+	<release version="0.16.3" date="2022-06-15">
 			<description>
-				Using Qt 6 to fix problems like flatpak JASP crashing hard on filter/comp.column.
-				We also switched the buildsystem to cmake and related changes to that.
-
-				Also a whole bunch of new modules and analyses.
+JASP Release Notes 0.16.3
+New features and improvements
+* New Module: Quality Control.
+* New Module: Bayesian State Space Models.
+* New analysis added: Frequentist/ Classical Generalized Linear Model to the Regression module (#1656).
+* ANOVA:
+   * Bayesian ANOVA, Bayesian ANCOVA, and Bayesian repeated-measures ANOVA (#151)
+      * The value for the r-scale of the prior distribution on the coefficients can now be set individually for fixed effects.
+      * The principle of marginality can be violated individually for fixed effects and random slopes. By default it is respected for fixed effects and violated for random slopes.
+      * The prior on the model space can now be adjusted. Possible options are Uniform (default), Beta binomial, Wilson, Castillo, Bernoulli, and Custom. Custom allows for specifying individual inclusion probabilities for each effect. Note that the inclusion probabilities for interactions change if the principle of marginality is violated.
+      * Nuisance predictors and other predictors common to all models can be shown in the model by unchecking “Hide nuisance in model”.
+      * Warning message about changes (#158).
+   * Message added when Welch correction fails (#131).
+   * Improvements to Order restricted hypotheses (#153)
+* Regression:
+   * Bayesian linear regression now exports residuals and residual standard deviations (#110, #1596).
+   * Add bootstrapped p-value to linear regression (#120).
+   * Improved part and partial correlations (#1638).
+* T-Tests
+   * Coefficient of variation added to the descriptives tables of all T-Tests (#122, #1599).
+* Bain:
+   * Draw correct posterior probability plot in all AN(C)OVA / regression / SEM situations (#80)
+* Descriptives:
+   * Improved interface (#1635)
+* Frequencies:
+   * Bayesian Binomial Test (#83, #1605)
+      * Improved help files. 
+      * Improved lay-out.
+      * Footnote added to display what kind of beta prior is used on the alternative hypothesis.
+   * Multinomial Test (#87)
+      * Increased number of decimals in the input table (from 1 to 3).
+      * Expected counts can be decimals (#1652).
+* Machine Learning:
+   * Matthews correlation coefficient added to evaluation metrics for classification (#134, #750).
+   * Decision Trees able to only show relevant splits (#152).
+   * Improvement to decision boundary matrix (#152).
+* Audit:
+   * UI improvements
+* Reliability:
+   * Krippendorff's alpha added to Rater Agreement (#1665).
+   * Improvements to fit measure table for Bayesiansingle factor model (#94).
+Bug fixes
+* Raincloud plot lines that connect data points within-subject (#155).
+* In RM ANOVA contrast couldn’t be negative (#1704).
+* ANOVA affected coding options in Regression (#1677).
+* Error in JAGS (#1691).
+* Help button not clickable in Bayesian Unidimensional Reliability (#1621).
+* Flatpak no longer crashes on certain actions (#1424).
 			</description>
 		</release>
 		<release version="0.16.1" date="2022-02-15">
