@@ -245,6 +245,7 @@ void RibbonModel::setModuleEnabled(int ribbonButtonModelIndex, bool enabled)
 	{
 		ribbonButtonModel->setEnabled(enabled);
 		emit dataChanged(index(ribbonButtonModelIndex), index(ribbonButtonModelIndex));
+		emit invalidateFilterModel();
 	}
 }
 
