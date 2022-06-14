@@ -90,9 +90,9 @@ SourceItem::SourceItem(JASPListControl *listControl)
 	_setUp();
 }
 
-void SourceItem::_connectModels()
+void SourceItem::connectModels()
 {
-	if (!_listControl->initialized()) return;
+	if (!_listControl->initialized() || _connected) return;
 
 	ListModel *controlModel = _listControl->model();
 	AnalysisForm* form		= _listControl->form();
@@ -127,7 +127,34 @@ void SourceItem::_connectModels()
 		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
+
+	_connected = true;
 }
+
+void SourceItem::disconnectModels()
+{
+	if (!_connected) return;
+
+	ListModel *controlModel = _listControl->model();
+	AnalysisForm* form		= _listControl->form();
+
+	if (_isRSource && form)
+		disconnect(form,	&AnalysisForm::rSourceChanged,				this, &SourceItem::_rSourceChanged);
+
+	if (!_nativeModel) return;
+
+	_nativeModel->disconnect(this);
+
+	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
+	if (columnsModel)
+		columnsModel->disconnect(controlModel);
+
+	if (_listModel)
+		_listModel->disconnect(controlModel);
+
+	_connected = false;
+}
+
 
 void SourceItem::_resetModel()
 {
@@ -168,8 +195,8 @@ void SourceItem::_setUp()
 
 		// Do not connect before this control (and the controls of the source) are completely initialized
 		// The source could sent some data to this control before it is completely ready for it.
-		if (_listControl->initialized()) _connectModels();
-		else connect(_listControl, &JASPControl::initializedChanged, this, &SourceItem::_connectModels);
+		if (_listControl->initialized()) connectModels();
+		else connect(_listControl, &JASPControl::initializedChanged, this, &SourceItem::connectModels);
 	}
 	else if (_rSources.length() == 0)
 	{

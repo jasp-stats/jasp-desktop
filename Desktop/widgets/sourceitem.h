@@ -72,6 +72,9 @@ public:
 	QAbstractItemModel*		nativeModel()						{ return _nativeModel;				}
 	Terms					getTerms();
 
+
+	void									connectModels();
+	void									disconnectModels();
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
 
 private:
@@ -86,7 +89,6 @@ private:
 	Terms									_readAllTerms();
 
 private slots:
-	void									_connectModels();
 	void									_resetModel();
 	void									_dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 	void									_rSourceChanged(const QString& name);
@@ -109,6 +111,7 @@ private:
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;
 	QSet<QString>					_usedControls;
+	bool							_connected				= false;
 };
 
 #endif // SOURCEITEM_H
