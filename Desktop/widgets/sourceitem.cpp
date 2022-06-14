@@ -100,15 +100,15 @@ void SourceItem::connectModels()
 	if (_isRSource && form)
 		connect(form,	&AnalysisForm::rSourceChanged,				this, &SourceItem::_rSourceChanged);
 
-	if (!_nativeModel) return;
-
 	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
-
-	connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_dataChangedHandler);
-	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this, &SourceItem::_resetModel);
-	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this, &SourceItem::_resetModel);
-	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
-	connect(_nativeModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
+	if (_nativeModel)
+	{
+		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_dataChangedHandler);
+		connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this, &SourceItem::_resetModel);
+		connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this, &SourceItem::_resetModel);
+		connect(_nativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
+		connect(_nativeModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
+	}
 
 	if (columnsModel)
 	{
@@ -141,9 +141,8 @@ void SourceItem::disconnectModels()
 	if (_isRSource && form)
 		disconnect(form,	&AnalysisForm::rSourceChanged,				this, &SourceItem::_rSourceChanged);
 
-	if (!_nativeModel) return;
-
-	_nativeModel->disconnect(this);
+	if (_nativeModel)
+		_nativeModel->disconnect(this);
 
 	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
 	if (columnsModel)
