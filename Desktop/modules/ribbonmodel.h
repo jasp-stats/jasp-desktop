@@ -89,6 +89,7 @@ signals:
 				void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 				void showRCommander();
+				void invalidateFilterModel();
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);		}

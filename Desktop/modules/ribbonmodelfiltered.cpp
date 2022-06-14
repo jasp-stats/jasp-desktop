@@ -3,6 +3,7 @@
 RibbonModelFiltered::RibbonModelFiltered(QObject * parent, RibbonModel * ribbonModel) : QSortFilterProxyModel(parent)
 {
 	setRibbonModel(ribbonModel);
+	connect(ribbonModel, &RibbonModel::invalidateFilterModel, this, &RibbonModelFiltered::invalidateFilterModel);
 }
 
 void RibbonModelFiltered::setRibbonModel(RibbonModel * ribbonModel)

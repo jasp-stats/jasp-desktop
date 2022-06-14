@@ -26,6 +26,9 @@ public:
 
 signals:
 	void highlightedModuleIndexChanged(int highlightedModuleIndex);
+	
+protected slots:
+	void invalidateFilterModel() { invalidate(); }
 
 private:
 	RibbonModel		*_ribbonModel			= nullptr;
