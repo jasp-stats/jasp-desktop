@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-06-13 10:00+0000\n"
+"PO-Revision-Date: 2022-06-14 10:37+0000\n"
 "Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
@@ -12,68 +12,87 @@ msgstr ""
 "X-Generator: Weblate 4.13-dev\n"
 "X-Qt-Contexts: true\n"
 
+#, fuzzy
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "Aggiungi una riga"
 
+#, fuzzy
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "Elimina una riga"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "Salva file in:"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "Carica file da:"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr ""
+msgstr "Seleziona file da salvare"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr ""
+msgstr "Seleziona file da caricare"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr ""
+msgstr "Sfoglia"
 
+#, fuzzy
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
+"Questa analisi è stata creata con una versione precedente di JASP (o con un "
+"modulo dinamico)"
 
+#, fuzzy
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr ", l'aggiornamento potrebbe mostrare un risultato leggermente diverso."
 
+#, fuzzy
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
+", per mantenere la posizione delle note è fortemente raccomandato "
+"l'aggiornamento delle analisi!"
 
+#, fuzzy
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr ""
+msgstr "Nuovo valore"
 
+#, fuzzy
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr ""
+msgstr "Elementi del modello"
 
+#, fuzzy
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr ""
+msgstr "Aggiungi al modello nullo"
 
+#, fuzzy
 msgctxt "TableView|"
 msgid "Row #"
-msgstr ""
+msgstr "Riga #"
 
+#, fuzzy
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr ""
+msgstr "Aggiungi una scheda"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
@@ -96,57 +115,69 @@ msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "Informazioni su JASP"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "Versione:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr ""
+msgstr "Data:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "Fonte:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr ""
+msgstr "Visualizza le fonti"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "Download:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "Citazione:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "Seleziona tutto"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "Copia selezione"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Chiudi"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
 msgstr ""
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "Modifica il titolo di questa analisi"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
@@ -622,9 +653,10 @@ msgctxt "ListItem|"
 msgid "Open data file"
 msgstr ""
 
+#, fuzzy
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "Mostra informazioni su queste impostazioni"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
@@ -654,21 +686,25 @@ msgctxt "OSFLogin|"
 msgid "OSF"
 msgstr ""
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "Accedi con il tuo account OSF per proseguire"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "Accedi"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "Ricordami"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "Informazioni su OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
@@ -682,11 +718,14 @@ msgctxt "PrefsAdvanced|"
 msgid "Modules options"
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"Al prossimo avvio di JASP, continua da dove hai lasciato.\n"
+"Attivando questa opzione, JASP ricorda quali moduli sono stati abilitati."
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
@@ -1583,21 +1622,25 @@ msgctxt "VariablesWindow|"
 msgid "Filter"
 msgstr ""
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Value"
-msgstr ""
+msgstr "Valore"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Label"
-msgstr ""
+msgstr "Etichetta"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "Sposta su le etichette selezionate"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "Sposta giù le etichette selezionate"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
@@ -1641,10 +1684,11 @@ msgid ""
 "of Amsterdam."
 msgstr ""
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
-msgstr ""
+msgstr "JASP ha un'interfaccia intuitiva, progettata pensando all'utente."
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -1729,13 +1773,15 @@ msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr ""
 
+#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "Tabella"
 
+#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "Grafico"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
@@ -1781,9 +1827,10 @@ msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr ""
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Variables"
-msgstr ""
+msgstr "Variabili"
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
@@ -2338,9 +2385,10 @@ msgctxt "ResultMenuModel|"
 msgid "Collapse"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "Modifica titolo"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
@@ -2762,9 +2810,10 @@ msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Standardizza la variabile"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
@@ -2778,17 +2827,19 @@ msgctxt "FactorsForm|"
 msgid "-"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Standardizza la variabile"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
@@ -3206,13 +3257,15 @@ msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
 msgstr ""
 
+#, fuzzy
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Mostra menu principale"
 
+#, fuzzy
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "Mostra menu moduli"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
@@ -3238,9 +3291,10 @@ msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
 msgstr ""
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "Variabili"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
@@ -3335,11 +3389,14 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
 msgstr ""
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup>Solo credenziali OSF, ORCID o credenziali istituzionali non sono "
+"supportate."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
@@ -3422,9 +3479,10 @@ msgctxt "PlotEditor|"
 msgid "Reset defaults"
 msgstr ""
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Mostra titolo"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
@@ -3487,9 +3545,10 @@ msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr ""
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
-msgstr ""
+msgstr "Componenti open source"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
