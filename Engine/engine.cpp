@@ -535,6 +535,8 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		
 		ColumnEncoder::encodeColumnNamesinOptions(optionsEnc);
 		_analysisOptions		= optionsEnc.toStyledString();
+
+        //Debug encoded stuff? -> Log::log() << "Options encoded: " << _analysisOptions << std::endl;
 	}
 	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pass that msg on by itself.
 }
