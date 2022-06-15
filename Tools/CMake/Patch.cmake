@@ -312,31 +312,15 @@ else()
 
       else()
 
-        # Changing the `/opt/jags/lib` prefix
-
-        if(R_DIR_NAME MATCHES "arm64")
-
-          execute_process(
-            # COMMAND_ECHO STDOUT
-            ERROR_QUIET OUTPUT_QUIET
-            WORKING_DIRECTORY ${PATH}
-            COMMAND
-              bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
-              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
-          )
-
-        else()
-
-          execute_process(
-            # COMMAND_ECHO STDOUT
-            ERROR_QUIET OUTPUT_QUIET
-            WORKING_DIRECTORY ${PATH}
-            COMMAND
-              bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
-              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
-          )
-
-        endif()
+      # Changing the `/usr/local/lib` prefix
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+      )
 
       endif()
 
