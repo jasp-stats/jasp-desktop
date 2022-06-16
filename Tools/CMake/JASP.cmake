@@ -69,7 +69,8 @@ if(BUILDING_JASP)
 endif()
 
 # This one is GLOBAL
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+# should be off for flatpak though because it is always build in debug mode (but the symbols are split off)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT FLATPAK_USED)
   add_definitions(-DJASP_DEBUG)
 endif()
 
