@@ -357,7 +357,7 @@
         {
           "name": "Stroop",
           "path": "Stroop.jasp",
-          "description": "Response times of 19 partitipants on a Stroop task. <br><br> The example JASP file demonstrates the use of a repeated measures ANOVA.<br><br> <i>Data courtesy of Ronen Hershman.<\/i>",
+          "description": "Response times of 19 participants on a Stroop task. <br><br> The example JASP file demonstrates the use of a repeated measures ANOVA.<br><br> <i>Data courtesy of Ronen Hershman.<\/i>",
           "kind": "file",
           "associated_datafile": "Stroop.csv"
         }
