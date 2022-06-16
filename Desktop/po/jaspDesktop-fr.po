@@ -1,18 +1,11 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-02-26 02:54+0000\n"
-"Last-Translator: Jordy STEFAN <jordy.stefan@askoria.eu>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"fr/>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.11.1-dev\n"
-"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: fr\n"
-
+"X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -101,30 +94,6 @@ msgstr "Ctrl + Entrée pour appliquer"
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "Restauration de la dernière valeur correcte : %1"
-
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "Effets principaux"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "Seulement 2 facteurs"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "Seulement 3 facteurs"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "Seulement 4 facteurs"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "Seulement 5 facteurs"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "Tout"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -2966,11 +2935,6 @@ msgstr "Le modèle source de %1 doit provenir d'une liste de facteurs"
 
 #, qt-format
 msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "Impossible de trouver la source de la liste de variables %1"
-
-#, qt-format
-msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
 msgstr "Mauvais type de source pour VariableList %1"
 
@@ -3032,43 +2996,8 @@ msgid "Title"
 msgstr "Titre"
 
 msgctxt "PlotEditingAxis|"
-msgid ""
-"The title can only be modified in advanced mode because it is not plain text."
-msgstr ""
-"Le titre ne peut être modifié qu'en mode avancé car il ne s'agit pas de "
-"texte en clair."
-
-msgctxt "PlotEditingAxis|"
-msgid "Title Type"
-msgstr "Type de titre"
-
-msgctxt "PlotEditingAxis|"
-msgid "Plain text"
-msgstr "Texte brut"
-
-msgctxt "PlotEditingAxis|"
-msgid "R expression"
-msgstr "Expression R"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide title"
-msgstr "Masquer le titre"
-
-msgctxt "PlotEditingAxis|"
-msgid "Ticks"
-msgstr "Marques"
-
-msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
 msgstr "Spécifier la séquence"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide ticks"
-msgstr "Masquer les marques"
-
-msgctxt "PlotEditingAxis|"
-msgid "Specify ticks:"
-msgstr "Spécifiez les marques :"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -3081,10 +3010,6 @@ msgstr "à"
 msgctxt "PlotEditingAxis|"
 msgid "steps"
 msgstr "étapes"
-
-msgctxt "PlotEditingAxis|"
-msgid "Range"
-msgstr "Gamme"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
@@ -3113,14 +3038,6 @@ msgstr "axe x"
 msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "axe y"
-
-msgctxt "PlotEditor|"
-msgid "Advanced settings"
-msgstr "Paramètres avancés"
-
-msgctxt "PlotEditor|"
-msgid "Save plot as"
-msgstr "Enregistrer le graphique sous"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
@@ -3773,10 +3690,6 @@ msgid "returns the sign of values"
 msgstr "retourne le signe des valeurs"
 
 msgctxt "PlotEditingAxis|"
-msgid "Value"
-msgstr "Valeur"
-
-msgctxt "PlotEditingAxis|"
 msgid "Label"
 msgstr "Étiquette"
 
@@ -3833,3 +3746,94 @@ msgstr "Annuler"
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
 msgstr "Réinitialiser les valeurs par défaut"
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Use normalized notation"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Help us translate or improve JASP in your language"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Install"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Press this to install your selected Module"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module to install"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show axis"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Position"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Advanced"
+msgstr "Avancé"
+
+msgctxt "PlotEditingAxis|"
+msgid "Parse title as R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Limits:"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Open Documentation"
+msgstr "Ouvrir la documentation"
+
+msgctxt "PlotEditor|"
+msgid "Save image as"
+msgstr ""
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be resized.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "Error editing plot"
+msgstr ""
+
+msgctxt "Application|"
+msgid "One time setup for JASP Modules"
+msgstr ""
+
+msgctxt "Application|"
+msgid ""
+"JASP has been installed from a zip and it needs to recreate certain paths "
+"for your analyses to work.\n"
+"\n"
+"Please be patient and wait for the application to show before attempting to "
+"start JASP again."
+msgstr ""
