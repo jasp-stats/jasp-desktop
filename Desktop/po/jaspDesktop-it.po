@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-06-14 10:37+0000\n"
+"PO-Revision-Date: 2022-06-16 12:41+0000\n"
 "Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
@@ -94,26 +94,30 @@ msgctxt "TabView|"
 msgid "Add a tab"
 msgstr "Aggiungi una scheda"
 
+#, fuzzy
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr ""
+msgstr "Rimuovi questa scheda"
 
+#, fuzzy
 msgctxt "TabView|"
 msgid "New tab"
-msgstr ""
+msgstr "Nuova scheda"
 
+#, fuzzy
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr ""
+msgstr "⌘ + Invio per applicare"
 
+#, fuzzy
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr ""
+msgstr "Ctrl + Invio per applicare"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "Ripristino ultimo valore corretto: %1"
 
 #, fuzzy
 msgctxt "AboutWindow|"
@@ -187,9 +191,10 @@ msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
 msgstr ""
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "Elimina questa analisi"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
@@ -584,13 +589,15 @@ msgctxt "CustomContrastsTableView|"
 msgid "Reset"
 msgstr ""
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Nascondi filtri"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "Mostra filtri"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
@@ -1369,13 +1376,15 @@ msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr ""
 
+#, fuzzy
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr ""
+msgstr "Doppio click per modificare i dati"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "Nascondi dati"
 
 msgctxt "MainPage|"
 msgid "Show data"
@@ -1482,21 +1491,24 @@ msgid ""
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
 
+#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr ""
+msgstr "Inserisci qui il tuo codice in R."
 
+#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr ""
+msgstr "Carica codice"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr ""
 
+#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr ""
+msgstr "Elimina output"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
@@ -1510,9 +1522,10 @@ msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
 msgstr ""
 
+#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
@@ -1700,9 +1713,10 @@ msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
 msgstr ""
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
+msgstr "Clicca per ottenere l'ultima versione"
 
 msgctxt "WelcomePage|"
 msgid ""
