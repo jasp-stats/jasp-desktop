@@ -255,7 +255,7 @@ void ResultsJsInterface::setStatus(Analysis *analysis)
 void ResultsJsInterface::changeTitle(Analysis *analysis)
 {
     int id = analysis->id();
-    QString title = analysis->titleQ();
+	QString title = tq(analysis->title());
 	
 	Log::log() << " void ResultsJsInterface::changeTitle(Analysis *analysis)" << std::endl;
 

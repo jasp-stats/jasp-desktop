@@ -247,7 +247,7 @@ signals:
 	void boundValueChanged(JASPControl* control);
 
 	void				requestColumnCreation(std::string columnName, columnType columnType);
-	ComputedColumn *	requestComputedColumnCreation(std::string columnName);
+	void				requestComputedColumnCreation(std::string columnName);
 	void				requestComputedColumnDestruction(std::string columnName);
 
 protected:

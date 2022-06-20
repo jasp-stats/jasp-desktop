@@ -29,6 +29,7 @@
 
 #include <QQmlProperty>
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QTimer>
 
 using namespace std;
@@ -85,7 +86,7 @@ void AnalysisForm::runRScript(QString script, QString controlName, bool whiteLis
 {
 	if(_analysis && !_removed)
 	{
-		if(_valueChangedSignalsBlocked == 0)	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+		if(_valueChangedSignalsBlocked == 0)	emit _analysis->sendRScript(script, controlName, whiteListedVersion);
 		else									_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
 	}
 }
@@ -173,7 +174,7 @@ void AnalysisForm::addControl(JASPControl *control)
 
 	if (_analysis)
 	{
-		connect(control, &JASPControl::requestColumnCreation, _analysis, &Analysis::requestColumnCreationHandler);
+		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
 	}
 
 	if (control->controlType() == JASPControl::ControlType::Expander)
@@ -187,11 +188,11 @@ void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
 {
 	if (isComputed)
 	{
-		connect(control, &JASPControl::requestComputedColumnCreation, _analysis, &Analysis::requestComputedColumnCreationHandler);
-		connect(control, &JASPControl::requestComputedColumnDestruction, _analysis, &Analysis::requestComputedColumnDestructionHandler);
+		connect(control, &JASPControl::requestComputedColumnCreation, _analysis, &AnalysisBase::requestComputedColumnCreationHandler);
+		connect(control, &JASPControl::requestComputedColumnDestruction, _analysis, &AnalysisBase::requestComputedColumnDestructionHandler);
 	}
 	else
-		connect(control, &JASPControl::requestColumnCreation, _analysis, &Analysis::requestColumnCreationHandler);
+		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
 }
 
 void AnalysisForm::_setUpControls()
@@ -239,6 +240,15 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		[](JASPControl* a, JASPControl* b) {
 			return a->depends().size() < b->depends().size();
 		});
+}
+
+void AnalysisForm::setHasVolatileNotes(bool hasVolatileNotes)
+{
+	if (_hasVolatileNotes == hasVolatileNotes)
+		return;
+
+	_hasVolatileNotes = hasVolatileNotes;
+	emit hasVolatileNotesChanged();
 }
 
 void AnalysisForm::_setUp()
@@ -289,7 +299,6 @@ void AnalysisForm::_orderExpanders()
 
 void AnalysisForm::reset()
 {
-	_analysis->clearOptions();
 	_analysis->reloadForm();
 }
 
@@ -360,8 +369,6 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo()
 {
-	unbind();
-
 	const Json::Value & defaultOptions = _analysis->isDuplicate() ? _analysis->boundValues() : _analysis->optionsFromJASPFile();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
@@ -433,13 +440,6 @@ void AnalysisForm::bindTo()
 
 	if(upgradeMsg != "")
 		addFormError(upgradeMsg);
-
-	_analysis->setOptionsBound(true);
-}
-
-void AnalysisForm::unbind()
-{
-	_analysis->setOptionsBound(false);
 }
 
 void AnalysisForm::addFormError(const QString &error)
@@ -548,9 +548,8 @@ void AnalysisForm::clearFormWarnings()
 		control->setHasWarning(false);
 }
 
-void AnalysisForm::setAnalysis(Analysis * analysis)
+void AnalysisForm::setAnalysis(AnalysisBase * analysis)
 {
-
 	if(_analysis == analysis) return;
 
 	if(_analysis && analysis)
@@ -571,6 +570,12 @@ void AnalysisForm::boundValueChangedHandler(JASPControl *)
 		_valueChangedEmittedButBlocked = true;
 }
 
+void AnalysisForm::setTitle(QString title)
+{
+	if (_analysis)
+		_analysis->setTitle(fq(title.simplified()));
+}
+
 void AnalysisForm::formCompletedHandler()
 {
 	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
@@ -585,9 +590,6 @@ void AnalysisForm::setAnalysisUp()
 		return;
 
 	Log::log() << "AnalysisForm::setAnalysisUp() for " << this << std::endl;
-
-	connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
-	connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
 
 	blockValueChangeSignal(true);
 
@@ -701,7 +703,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 				while(_waitingRScripts.size() > 0)
 				{
 					const auto & front = _waitingRScripts.front();
-					emit _analysis->sendRScript(_analysis, std::get<0>(front), std::get<1>(front), std::get<2>(front));
+					emit _analysis->sendRScript(std::get<0>(front), std::get<1>(front), std::get<2>(front));
 					_waitingRScripts.pop();
 				}
 			else //Otherwise just clean it up
@@ -713,11 +715,6 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 bool AnalysisForm::needsRefresh() const
 {
 	return _analysis ? _analysis->needsRefresh() : false;
-}
-
-bool AnalysisForm::hasVolatileNotes() const
-{
-	return _analysis ? _analysis->hasVolatileNotes() : false;
 }
 
 QString AnalysisForm::metaHelpMD() const
@@ -892,7 +889,7 @@ QString AnalysisForm::helpMD() const
 
 	QStringList markdown =
 	{
-		_analysis->titleQ(), "\n",
+		title(), "\n",
 		"=====================\n",
 		_info, "\n\n",
 		"---\n# ", tr("Input"), "\n"
@@ -907,8 +904,8 @@ QString AnalysisForm::helpMD() const
 	
 	QString md = markdown.join("");
 	
-	if(_analysis && _analysis->dynamicModule())
-		_analysis->dynamicModule()->preprocessMarkdownHelp(md);
+	if(_analysis)
+		_analysis->preprocessMarkdownHelp(md);
 	
 	return md;
 }

@@ -88,8 +88,8 @@ const Json::Value &BoundControlBase::boundValue()
 {
 	AnalysisForm* form = _control->form();
 
-	if (form && form->analysisObj())	return form->analysisObj()->boundValue(getName(), _control->getParentKeys());
-	else								return Json::Value::null;
+	if (form)	return form->boundValue(getName(), _control->getParentKeys());
+	else		return Json::Value::null;
 }
 
 void BoundControlBase::setIsColumn(bool isComputed, columnType type)

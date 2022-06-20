@@ -118,7 +118,7 @@ QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
 
 	boundValue["columns"] = columns;
 
-	setBoundValue(boundValue, !_control->form()->analysisObj()->wasUpgraded());
+	setBoundValue(boundValue, !_control->form()->wasUpgraded());
 
 	return QString();
 

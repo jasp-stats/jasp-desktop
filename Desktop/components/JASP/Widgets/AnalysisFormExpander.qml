@@ -51,7 +51,6 @@ DropArea
 
 		property int		myIndex:			-1
 		property int		droppedIndex:		-1
-		property alias		myAnalysis:			formParent.myAnalysis
 
 		Drag.keys:			["analysis"]
 		Drag.active:		mouseArea.drag.active
@@ -268,7 +267,7 @@ DropArea
 					Text
 					{
 						id:				analysisTitle
-						text:			formParent.myAnalysis ? formParent.myAnalysis.title : "?"
+						text:			formParent.myForm ? formParent.myForm.title : "?"
 						font:			jaspTheme.fontLabel
 						color:			jaspTheme.textEnabled
 						visible:		!analysisTitleInput.visible
@@ -314,8 +313,8 @@ DropArea
 
 						function stopEditing(storeChangedValue)
 						{
-							if(storeChangedValue && formParent.myAnalysis)
-								formParent.myAnalysis.title = text;
+							if(storeChangedValue && formParent.myForm)
+								formParent.myForm.title = text;
 
 							visible = false;
 						}
@@ -370,10 +369,10 @@ DropArea
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
-					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile))
+					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
 										{
-											if(helpModel.markdown !== myAnalysis.helpMD)
-												helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
+											if(helpModel.markdown !== formParent.myForm.helpMD)
+												helpModel.markdown = Qt.binding(function(){ return formParent.myForm.helpMD; });
 											else
 												helpModel.visible  = false;
 											
@@ -496,14 +495,16 @@ DropArea
 					property var	myAnalysis:				null	///< Set from AnalysisForms.qml and given through Analyses or `analysesModel`
 					property var	backgroundFlickable:	null	///< Set from AnalysisForms.qml
 
-					onMyFormChanged:	if(myForm != null)
+					onMyFormChanged:
 					{
-						myForm.backgroundForms = backgroundFlickable;
+						if(myForm != null)
+							myForm.backgroundForms = backgroundFlickable;
 					}
 
-					onMyAnalysisChanged: if(myAnalysis)
+					onMyAnalysisChanged:
 					{
-						myAnalysis.formParent = formParent; //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
+						if(myAnalysis)
+							myAnalysis.createForm(formParent); //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
 					}
 				}
 			}
