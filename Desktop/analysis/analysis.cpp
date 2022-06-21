@@ -1127,9 +1127,6 @@ void Analysis::setDynamicModule(Modules::DynamicModule * module)
 	Log::log() << "Replacing module connected to analysis " << title() << " (" << id() << ") for module " << module->name() << std::endl;
 	if(_dynamicModule != module)
 	{
-		if(_analysisForm)
-			destroyForm();
-
 		_dynamicModule = module;
 		emit dynamicModuleChanged();
 	}
@@ -1158,16 +1155,10 @@ void Analysis::reloadForm()
 
 	QQuickItem* parentForm = nullptr;
 
-	if(form())
-	{
-		parentForm = form()->parentItem();
-		destroyForm();
-	}
-
 	if(readyToCreateForm())
 	{
 		emit emptyQMLCache();
-		emit createFormWhenYouHaveAMoment(parentForm);		//Give Qml a moment to clean up
+		emit createFormWhenYouHaveAMoment();		//Give Qml a moment to clean up
 	}
 }
 

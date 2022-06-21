@@ -35,7 +35,7 @@ void AnalysisBase::destroyForm()
 
 void AnalysisBase::createForm(QQuickItem* parentItem)
 {
-	Log::log() << "Analysis(" << this << ")::createForm() called " << std::endl;
+	Log::log() << "Analysis(" << this << ")::createForm() called with parentItem " << parentItem << std::endl;
 
 	setQmlError("");
 

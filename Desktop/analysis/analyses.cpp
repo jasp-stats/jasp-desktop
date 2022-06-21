@@ -331,7 +331,7 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 			{
 				Analysis * a = keyval.second;
 
-				if(!a->form() && a->readyToCreateForm())
+				if(a->readyToCreateForm())
 					a->createForm();
 			}
 		}

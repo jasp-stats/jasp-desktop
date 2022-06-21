@@ -195,7 +195,7 @@ signals:
 	Q_INVOKABLE void		expandAnalysis();
 	void					emptyQMLCache();
 
-	void					createFormWhenYouHaveAMoment(QQuickItem* parent);
+	void					createFormWhenYouHaveAMoment(QQuickItem* parent = nullptr);
 
 public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);
