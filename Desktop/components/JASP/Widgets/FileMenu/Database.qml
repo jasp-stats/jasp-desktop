@@ -48,31 +48,32 @@ QC.ScrollView
             x:				jaspTheme.generalMenuMargin
         }
 
-        //Maybe the warning should look like a warning as in Form. It might also be good to make a special QML item for it
-        Text
+		ErrorMessage
         {
-            id:			warning
-            color:		jaspTheme.red
-            font:       jaspTheme.font
-            text:		qsTr(
-    "<i>Warning!</i>
-    <br><br>
-    JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
-    <br><br>
-    In case you are trying to connect to a production or even just network-accessible database:
-    <br>
-    We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
-    <br><br>
-    For a local or toy database this is probably overkill, but use your own judgement."
+			id:						warning
+			warning:				true
+			visible:				preferencesModel.dbShowWarning
+			dontShowAgain:			preferencesModel.dbShowWarning
+			onDontShowAgainClicked: preferencesModel.dbShowWarning = false
+			text:					qsTr(
+"<i>Warning!</i>
+<br><br>
+JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
+If you share this file that means they and however they share with could extract it.
+<br><br>
+In case you are trying to connect to a production or even just network-accessible database:
+<br>
+We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
+<br><br>
+For a local or toy database this is probably overkill, but use your own judgement."
     )
-            wrapMode:	Text.Wrap
+
             anchors
             {
                 left:		parent.left
                 right:		parent.right
                 margins:	jaspTheme.generalAnchorMargin
             }
-
         }
 
         PrefsGroupRect
@@ -97,7 +98,7 @@ QC.ScrollView
                     width:					dbHostnameLabel.width
                 }
 
-                QC.ComboBox
+				QC.ComboBox
                 {
                     id:						dbDriver
                     x:						dbHostnameLabel.width
@@ -105,9 +106,9 @@ QC.ScrollView
 
                     focus:					true
 
-                    currentIndex:			fileMenuModel.database.dbType
-                    onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-                    model:					fileMenuModel.database.dbTypes
+					currentIndex:			fileMenuModel.database.dbType
+					onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+					model:					fileMenuModel.database.dbTypes
 
                     KeyNavigation.tab:		dbHostnameInput
                 }
@@ -186,13 +187,24 @@ QC.ScrollView
                 PrefsTextInput
                 {
                     id:				dbNameInput
-                    nextEl:			dbUsernameInput.textInput
+					nextEl:			connectButton
                     text:			fileMenuModel.database.database
                     onTextChanged:	fileMenuModel.database.database = text;
 
                     x:				dbHostnameLabel.width
-                    width:			dbHostnameInput.width
+					width:			dbHostnameInput.width - (!browseDbButton.enabled ? 0 : browseDbButton.width + jaspTheme.generalAnchorMargin)
                 }
+
+				RoundedButton
+				{
+					id:					browseDbButton
+					text:				qsTr("Browse")
+					KeyNavigation.tab:	dbUsernameInput.textInput
+					enabled:			fileMenuModel.database.dbMaybeFile
+					visible:			enabled
+					onClicked:			fileMenuModel.database.browseDbFile();
+					anchors.right:		parent.right
+				}
             }
 
             Item
@@ -332,17 +344,29 @@ QC.ScrollView
                 }
             }
 
-            QC.TextArea
-            {
-                height:			contentHeight < 100 ? 100 : contentHeight
-                text:			fileMenuModel.database.connected ? fileMenuModel.database.queryResult : fileMenuModel.database.lastError
-                font:			jaspTheme.font
-                color:			jaspTheme.textEnabled
-                width:			parent.width
-                wrapMode:		TextEdit.Wrap
-                readOnly:		true
-                selectByMouse:	true
-            }
+
+			Rectangle
+			{
+				border.color:	jaspTheme.borderColor
+				border.width:	1
+				radius:			jaspTheme.borderRadius
+				color:			fileMenuModel.database.connected || fileMenuModel.database.lastError == "" ?jaspTheme.white : jaspTheme.controlErrorBackgroundColor
+				width:			parent.width
+				height:			sqlOutput.height
+
+				QC.TextArea
+				{
+					id:				sqlOutput
+					height:			contentHeight < 100 ? 100 : contentHeight
+					text:			fileMenuModel.database.connected ? fileMenuModel.database.queryResult : fileMenuModel.database.lastError
+					font:			jaspTheme.font
+					color:			fileMenuModel.database.connected ?jaspTheme.textEnabled : fileMenuModel.database.lastError != "" ? jaspTheme.controlErrorTextColor : jaspTheme.textDisabled
+					width:			parent.width
+					wrapMode:		TextEdit.Wrap
+					readOnly:		true
+					selectByMouse:	true
+				}
+			}
         }
     }
 

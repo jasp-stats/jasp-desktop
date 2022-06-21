@@ -66,7 +66,8 @@ public:
 		DB_IMPORT_USERNAME,
 		DB_IMPORT_PASSWORD,
 		DB_IMPORT_QUERY,
-		DB_IMPORT_INTERVAL
+		DB_IMPORT_INTERVAL,
+		DB_SHOW_WARNING
 	};
 
 	static QVariant value(Settings::Type key);

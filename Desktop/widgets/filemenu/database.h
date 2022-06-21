@@ -24,6 +24,7 @@ class Database : public FileMenuObject
 	Q_PROPERTY(int			port		READ port			WRITE setPort			NOTIFY portChanged			)
 	Q_PROPERTY(bool			resultsOK	READ resultsOK		WRITE setResultsOK		NOTIFY resultsOKChanged		)
 	Q_PROPERTY(int			interval	READ interval		WRITE setInterval		NOTIFY intervalChanged		)
+	Q_PROPERTY(bool			dbMaybeFile	READ dbMaybeFile							NOTIFY dbTypeChanged		)
 
 public:
 	explicit Database(QObject *parent = nullptr);
@@ -32,6 +33,7 @@ public:
 	Q_INVOKABLE void	runQuery();
 	Q_INVOKABLE void	importResults();
 	Q_INVOKABLE void	setDbTypeFromIndex(int dbTypeIdx);
+	Q_INVOKABLE void	browseDbFile();
 
 	const DbType			dbType()			const { return _info._dbType;	}
 	const QString		&	hostname()			const { return _info._hostname;	}
@@ -45,6 +47,7 @@ public:
 	const QString		&	query()				const { return _info._query;	}
 	bool					resultsOK()			const { return _resultsOK;		}
 	int						interval()			const { return _info._interval; }
+	bool					dbMaybeFile()		const { return _info._dbType == DbType::QSQLITE;}
 
 	bool					readyForImport()	const;
 
@@ -62,8 +65,7 @@ public:
 	void setLastError(	const QString &	newLastError	);
 	void setResultsOK(	bool			newResultsOK	);
 	void setInterval(	int				newInterval		);
-	
-	
+
 signals:
 	void dbTypeChanged();
 	void usernameChanged();
@@ -89,7 +91,6 @@ private:
 			_lastError		= "";
 	bool	_connected		= false,
 			_resultsOK		= false;
-	
 };
 
 #endif // DATABASE_H

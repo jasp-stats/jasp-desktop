@@ -120,6 +120,7 @@ GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_INT(	maxEngines,					Settings::MAX_ENGINE_COUNT							)
 GET_PREF_FUNC_BOOL( windowsNoBomNative,			Settings::WINDOWS_NO_BOM_NATIVE						)
+GET_PREF_FUNC_BOOL( dbShowWarning,				Settings::DB_SHOW_WARNING							)
 
 QString PreferencesModel::githubPatCustom() const
 {
@@ -261,6 +262,7 @@ SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Set
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
 SET_PREF_FUNCTION(bool,		setWindowsNoBomNative,		windowsNoBomNative,			windowsNoBomNativeChanged,		Settings::WINDOWS_NO_BOM_NATIVE						)
+SET_PREF_FUNCTION(bool,		setDbShowWarning,			dbShowWarning,				dbShowWarningChanged,			Settings::DB_SHOW_WARNING							)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

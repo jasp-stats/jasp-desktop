@@ -71,7 +71,8 @@ const Settings::Setting Settings::Values[] = {
 	{"dbImportUserName",			""		},
 	{"dbImportPassword",			""		},
 	{"dbImportQuery",				""		},
-	{"dbImportInterval",			0		}
+	{"dbImportInterval",			0		},
+	{"dbShowWarning",				true	}
 	
 };	
 

@@ -5,6 +5,7 @@
 #include <QtSql/QSqlRecord>
 #include "log.h"
 #include "utilities/qutils.h"
+#include "gui/messageforwarder.h"
 
 const QStringList Database::dbTypes()
 {
@@ -44,11 +45,6 @@ void Database::connect()
 	setLastError(connected() ? "Connected!" : "Error: " + _info.lastError());
 }
 
-void Database::runQuery()
-{
-	setQueryResult(_runQuery());
-}
-
 bool Database::readyForImport() const
 {
 	return connected() && resultsOK();
@@ -74,6 +70,11 @@ void Database::setDbTypeFromIndex(int dbTypeIdx)
 {
 	if(dbTypeIdx > 0 && dbTypeIdx <= int(DbType::QSQLITE)) //is it really a DbType?
 		setDbType(static_cast<DbType>(dbTypeIdx));
+}
+
+void Database::runQuery()
+{
+	setQueryResult(_runQuery());
 }
 
 QString	Database::_runQuery()
@@ -119,6 +120,16 @@ QString	Database::_runQuery()
 	{
 		return tq(e.what());	
 	}
+}
+
+
+void Database::browseDbFile()
+{
+	QString file = MessageForwarder::msgForwarder()->browseOpenFileDocuments("Select your database file", "*");
+
+	if(file.size())
+		setDatabase(file);
+
 }
 
 void Database::setUsername(const QString &newUsername)
@@ -244,3 +255,4 @@ void Database::setInterval(int newInterval)
 	
 	emit intervalChanged();
 }
+
