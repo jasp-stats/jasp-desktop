@@ -15,9 +15,10 @@ if(LINUX)
 
 endif()
 
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-add_executable(JASPEngine ${SOURCE_FILES})
+add_executable(JASPEngine ${SOURCE_FILES} ${HEADER_FILES})
 
 add_dependencies(JASPEngine R-Interface jaspBase)
 

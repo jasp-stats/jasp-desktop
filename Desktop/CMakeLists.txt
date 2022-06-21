@@ -28,6 +28,7 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
                ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
 message(STATUS "appdirs.h is successfully generated...")
 
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
@@ -36,6 +37,7 @@ qt_add_executable(
   JASP
   ${SYSTEM_TYPE}
   ${SOURCE_FILES}
+  ${HEADER_FILES}
   ${BUNDLE_RESOURCES}
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)

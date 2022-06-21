@@ -12,9 +12,10 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/appinfo.cpp.in
                ${CMAKE_CURRENT_LIST_DIR}/appinfo.cpp)
 message(STATUS "appinfo.cpp is successfully generated...")
 
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-add_library(Common ${SOURCE_FILES})
+add_library(Common ${SOURCE_FILES} ${HEADER_FILES})
 
 if(LINUX)
 

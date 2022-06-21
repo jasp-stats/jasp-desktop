@@ -28,6 +28,13 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
+file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
+list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
+
+file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.h")
+list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
+list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
+
 if(WIN32)
 
   set(QT_CREATOR_SKIP_CONAN_SETUP ON)
@@ -103,16 +110,13 @@ if(WIN32)
     NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin REQUIRED)
 
-  file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
-  list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
-
   find_package(
     Boost
     1.78
     REQUIRED
     nowide)
 
-  add_library(R-Interface SHARED ${SOURCE_FILES})
+  add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 
@@ -161,10 +165,8 @@ if(WIN32)
 else()
   # Linux and macOS
 
-  file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
-  list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
-  add_library(R-Interface ${SOURCE_FILES})
+  add_library(R-Interface ${SOURCE_FILES} ${HEADER_FILES})
 
   target_include_directories(
     R-Interface
