@@ -23,327 +23,333 @@ import JASP.Controls
 import QtQuick.Layouts as LQ
 import JASP
 
-Item
+QC.ScrollView
 {
-	id	: rect
+    id:						scrollDB
+    focus:					true
+    onActiveFocusChanged:	if(activeFocus) connectButton.forceActiveFocus();
+    Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
+    contentWidth:           availableWidth
+    contentHeight:          colDB.height
+
+    Column
+    {
+        id:             colDB
+        width:			scrollDB.width
+        spacing:		jaspTheme.rowSpacing
+
+        MenuHeader
+        {
+            id				: menuHeader
+            headertext		: qsTr("Database")
+            helpfile:		"filemenu/Database"
+            anchorMe        : false
+            width:			scrollDB.width - (2 * jaspTheme.generalMenuMargin)
+            x:				jaspTheme.generalMenuMargin
+        }
+
+        //Maybe the warning should look like a warning as in Form. It might also be good to make a special QML item for it
+        Text
+        {
+            id:			warning
+            color:		jaspTheme.red
+            font:       jaspTheme.font
+            text:		qsTr(
+    "<i>Warning!</i>
+    <br><br>
+    JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
+    <br><br>
+    In case you are trying to connect to a production or even just network-accessible database:
+    <br>
+    We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
+    <br><br>
+    For a local or toy database this is probably overkill, but use your own judgement."
+    )
+            wrapMode:	Text.Wrap
+            anchors
+            {
+                left:		parent.left
+                right:		parent.right
+                margins:	jaspTheme.generalAnchorMargin
+            }
+
+        }
+
+        PrefsGroupRect
+        {
+            id:		databaseGroup
+
+            title:	qsTr("Database")
 
 
-	MouseArea
-	{
-		z:				-5
-		anchors.fill:	parent
-		onClicked:		rect.forceActiveFocus()
-	}
+            Item
+            {
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				Math.max(dbDriverLabel.contentHeight, dbDriver.implicitHeight)
 
-	MenuHeader
-	{
-		id				: menuHeader
-		headertext		: qsTr("Database")
-	}
-	
-	//Maybe the warning should look like a warning as in Form. It might also be good to make a special QML item for it
-	Text
-	{
-		id:			warning
-		color:		jaspTheme.red
-		text:		qsTr(
-"<i>Warning!</i>
-<br><br>
-JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
-<br><br>
-In case you are trying to connect to a production or even just network-accessible database:
-<br>
-We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
-<br><br>
-For a local or toy database this is probably overkill, but use your own judgement."
-)
-		wrapMode:	Text.Wrap
-		anchors
-		{
-			top:		menuHeader.bottom
-			left:		parent.left
-			right:		parent.right
-			margins:	jaspTheme.generalAnchorMargin
-		}
-				
-	}
+                Text
+                {
+                    id:						dbDriverLabel
+                    text:					qsTr("Choose DB driver")
 
-	PrefsGroupRect
-	{
-		id:		databaseGroup
+                    anchors.verticalCenter: parent.verticalCenter
+                    width:					dbHostnameLabel.width
+                }
 
-		title:	qsTr("Database")
+                QC.ComboBox
+                {
+                    id:						dbDriver
+                    x:						dbHostnameLabel.width
+                    width:					dbHostnameInput.width
 
-		anchors.top:		warning.bottom
-		anchors.topMargin:	jaspTheme.generalAnchorMargin
+                    focus:					true
 
-		Item
-		{
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				Math.max(dbDriverLabel.contentHeight, dbDriver.implicitHeight)
+                    currentIndex:			fileMenuModel.database.dbType
+                    onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+                    model:					fileMenuModel.database.dbTypes
 
-			Text
-			{
-				id:						dbDriverLabel
-				text:					qsTr("Choose DB driver")
+                    KeyNavigation.tab:		dbHostnameInput
+                }
+            }
 
-				anchors.verticalCenter: parent.verticalCenter
-				width:					dbHostnameLabel.width
-			}
-		
-			QC.ComboBox
-			{
-				id:						dbDriver
-				x:						dbHostnameLabel.width
-				width:					dbHostnameInput.width
+            Item
+            {
+                id:					dbHostnameItem
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				Math.max(dbHostnameLabel.contentHeight, dbHostnameInput.implicitHeight)
 
-				focus:					true
-	
-				currentIndex:			fileMenuModel.database.dbType
-				onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-				model:					fileMenuModel.database.dbTypes 
-	
-				KeyNavigation.tab:		dbHostnameInput
-			}
-		}
+                Text
+                {
+                    id:						dbHostnameLabel
+                    text:					qsTr("Hostname")
 
-		Item
-		{
-			id:					dbHostnameItem
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				Math.max(dbHostnameLabel.contentHeight, dbHostnameInput.implicitHeight)
+                    anchors.verticalCenter: parent.verticalCenter
+                    width:					jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth, dbDriverLabel.contentWidth)
+                }
 
-			Text
-			{
-				id:						dbHostnameLabel
-				text:					qsTr("Hostname")
+                PrefsTextInput
+                {
+                    id:				dbHostnameInput
+                    nextEl:			dbPortInput.textInput
+                    text:			fileMenuModel.database.hostname
+                    onTextChanged:	fileMenuModel.database.hostname = text;
 
-				anchors.verticalCenter: parent.verticalCenter
-				width:					jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth, dbDriverLabel.contentWidth)
-			}
+                    x:				dbHostnameLabel.width
+                    width:			parent.width - dbHostnameLabel.width
+                }
+            }
 
-			PrefsTextInput
-			{
-				id:				dbHostnameInput
-				nextEl:			dbPortInput.textInput
-				text:			fileMenuModel.database.hostname
-				onTextChanged:	fileMenuModel.database.hostname = text;
+            Item
+            {
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				dbHostnameItem.height
 
-				x:				dbHostnameLabel.width
-				width:			parent.width - dbHostnameLabel.width
-			}
-		}
+                Text
+                {
+                    id:						dbPortLabel
+                    text:					qsTr("Port")
+                    width:					dbHostnameLabel.width
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-		Item
-		{
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				dbHostnameItem.height
-			
-			Text
-			{
-				id:						dbPortLabel
-				text:					qsTr("Port")
-				width:					dbHostnameLabel.width
-				anchors.verticalCenter: parent.verticalCenter
-			}
+                PrefsTextInput
+                {
+                    id:				dbPortInput
+                    nextEl:			dbNameInput.textInput
+                    text:			fileMenuModel.database.port
+                    onTextChanged:	fileMenuModel.database.port = parseInt(text);
 
-			PrefsTextInput
-			{
-				id:				dbPortInput
-				nextEl:			dbNameInput.textInput
-				text:			fileMenuModel.database.port
-				onTextChanged:	fileMenuModel.database.port = parseInt(text);
+                    textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
 
-				textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
-				
-				x:				dbHostnameLabel.width
-				width:			dbHostnameInput.width
-			}
-		}
+                    x:				dbHostnameLabel.width
+                    width:			dbHostnameInput.width
+                }
+            }
 
-		Item
-		{
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				dbHostnameItem.height
+            Item
+            {
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				dbHostnameItem.height
 
-			Text
-			{
-				id:						dbNameLabel
-				text:					qsTr("Name")
-				width:					dbHostnameLabel.width
-				anchors.verticalCenter: parent.verticalCenter
-			}
+                Text
+                {
+                    id:						dbNameLabel
+                    text:					qsTr("Name")
+                    width:					dbHostnameLabel.width
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-			PrefsTextInput
-			{
-				id:				dbNameInput
-				nextEl:			dbUsernameInput.textInput
-				text:			fileMenuModel.database.database
-				onTextChanged:	fileMenuModel.database.database = text;
+                PrefsTextInput
+                {
+                    id:				dbNameInput
+                    nextEl:			dbUsernameInput.textInput
+                    text:			fileMenuModel.database.database
+                    onTextChanged:	fileMenuModel.database.database = text;
 
-				x:				dbHostnameLabel.width
-				width:			dbHostnameInput.width
-			}
-		}
+                    x:				dbHostnameLabel.width
+                    width:			dbHostnameInput.width
+                }
+            }
 
-		Item
-		{
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				dbHostnameItem.height
+            Item
+            {
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				dbHostnameItem.height
 
-			Text
-			{
-				id:						dbUsernameLabel
-				text:					qsTr("Username")
-				width:					dbHostnameLabel.width
-				anchors.verticalCenter: parent.verticalCenter
-			}
+                Text
+                {
+                    id:						dbUsernameLabel
+                    text:					qsTr("Username")
+                    width:					dbHostnameLabel.width
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-			PrefsTextInput
-			{
-				id:				dbUsernameInput
-				nextEl:			dbPasswordInput.textInput
-				text:			fileMenuModel.database.username
-				onTextChanged:	fileMenuModel.database.username = text;
+                PrefsTextInput
+                {
+                    id:				dbUsernameInput
+                    nextEl:			dbPasswordInput.textInput
+                    text:			fileMenuModel.database.username
+                    onTextChanged:	fileMenuModel.database.username = text;
 
-				x:				dbHostnameLabel.width
-				width:			dbHostnameInput.width
-			}
-		}
+                    x:				dbHostnameLabel.width
+                    width:			dbHostnameInput.width
+                }
+            }
 
-		Item
-		{
-			anchors.left:		parent.left;
-			anchors.right:		parent.right;
-			height:				dbHostnameItem.height		
+            Item
+            {
+                anchors.left:		parent.left;
+                anchors.right:		parent.right;
+                height:				dbHostnameItem.height
 
-			Text
-			{
-				id:						dbPasswordLabel
-				text:					qsTr("Password")
-				width:					dbHostnameLabel.width
-				anchors.verticalCenter: parent.verticalCenter
-			}
+                Text
+                {
+                    id:						dbPasswordLabel
+                    text:					qsTr("Password")
+                    width:					dbHostnameLabel.width
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-			PrefsTextInput
-			{
-				id:						dbPasswordInput
-				nextEl:					connectButton
-				text:					fileMenuModel.database.password
-				onTextChanged:			fileMenuModel.database.password = text;
+                PrefsTextInput
+                {
+                    id:						dbPasswordInput
+                    nextEl:					connectButton
+                    text:					fileMenuModel.database.password
+                    onTextChanged:			fileMenuModel.database.password = text;
 
-				textInput.echoMode:		TextInput.Password
+                    textInput.echoMode:		TextInput.Password
 
-				x:						dbHostnameLabel.width
-				width:					dbHostnameInput.width
-			}
-		}
+                    x:						dbHostnameLabel.width
+                    width:					dbHostnameInput.width
+                }
+            }
 
-		RoundedButton
-		{
-			id:					connectButton
-			text:				qsTr("Connect to database")
-			onClicked:			fileMenuModel.database.connect();
-			KeyNavigation.tab:	dbQuery.textInput
-		}
+            RoundedButton
+            {
+                id:					connectButton
+                text:				qsTr("Connect to database")
+                onClicked:			fileMenuModel.database.connect();
+                KeyNavigation.tab:	dbQuery.textInput
+            }
 
 
-		RowLayout
-		{
-			width:						parent.width
+            RowLayout
+            {
+                width:						parent.width
 
-			enabled:					fileMenuModel.database.connected
+                enabled:					fileMenuModel.database.connected
 
-			Text
-			{
-				id:						dbQueryLabel
-				text:					qsTr("Query")
-				width:					implicitWidth + jaspTheme.generalAnchorMargin
-				//anchors.verticalCenter: parent.verticalCenter
-			}
+                Text
+                {
+                    id:						dbQueryLabel
+                    text:					qsTr("Query")
+                    width:					implicitWidth + jaspTheme.generalAnchorMargin
+                    //anchors.verticalCenter: parent.verticalCenter
+                }
 
-			PrefsTextInput
-			{
-				id:						dbQuery
-				nextEl:					runQuery
-				text:					fileMenuModel.database.query
-				onTextChanged:			fileMenuModel.database.query = text
-				LQ.Layout.fillWidth:	true
-			}
+                PrefsTextInput
+                {
+                    id:						dbQuery
+                    nextEl:					runQuery
+                    text:					fileMenuModel.database.query
+                    onTextChanged:			fileMenuModel.database.query = text
+                    LQ.Layout.fillWidth:	true
+                }
 
-			RoundedButton
-			{
-				id:						runQuery
-				text:					qsTr("Execute")
-				onClicked:				fileMenuModel.database.runQuery();
-				KeyNavigation.tab:		loadResults
-			}
-		}
+                RoundedButton
+                {
+                    id:						runQuery
+                    text:					qsTr("Execute")
+                    onClicked:				fileMenuModel.database.runQuery();
+                    KeyNavigation.tab:		loadResults
+                }
+            }
 
-	}
+        }
 
-	PrefsGroupRect
-	{
-		id:			previewGroup
-		title:		qsTr("Preview data")
-		enabled:	fileMenuModel.database.connected && fileMenuModel.database.resultsOK
+        PrefsGroupRect
+        {
+            id:			previewGroup
+            title:		qsTr("Preview data")
+            enabled:	fileMenuModel.database.connected && fileMenuModel.database.resultsOK
 
-		anchors.top:		databaseGroup.bottom
-		anchors.topMargin:	jaspTheme.generalAnchorMargin
+            Item
+            {
+                height:			childrenRect.height
+                anchors
+                {
+                    left:		parent.left
+                    right:		parent.right
+                    margins:	jaspTheme.generalAnchorMargin
+                }
 
-		
-		Item
-		{
-			height:			childrenRect.height
-			anchors
-			{
-				left:		parent.left
-				right:		parent.right
-				margins:	jaspTheme.generalAnchorMargin
-			}
-			
-			RoundedButton
-			{
-				id:						loadResults
-				text:					qsTr("Load into JASP")
-				onClicked:				fileMenuModel.database.importResults();
-				KeyNavigation.tab:		intervalSpinner
-				anchors.left:			parent.left
-			}
-			
-			SpinBox
-			{
-				id:					intervalSpinner
-				value:				fileMenuModel.database.interval
-				onValueChanged:		if(value != "") fileMenuModel.database.interval = value
-				from:				0
-				to:					24 * 60 * 7 // do we want to allow for an interval bigger than a week?
-				defaultValue:		0 
-				stepSize:			1
-				text:				qsTr("Synching interval in minutes: ")
-				toolTip:			qsTr("0 means no automatic synching, but you can still synch manually by pressing Ctrl/Cmd+Y")
-				anchors.right:		parent.right
-			}
-		}
+                RoundedButton
+                {
+                    id:						loadResults
+                    text:					qsTr("Load into JASP")
+                    onClicked:				fileMenuModel.database.importResults();
+                    KeyNavigation.tab:		intervalSpinner
+                    anchors.left:			parent.left
+                }
 
-		QC.TextArea
-		{
-			height:			contentHeight < 100 ? 100 : contentHeight
-			text:			fileMenuModel.database.connected ? fileMenuModel.database.queryResult : fileMenuModel.database.lastError
-			font:			jaspTheme.font
-			color:			jaspTheme.textEnabled
-			width:			parent.width
-			wrapMode:		TextEdit.Wrap
-			readOnly:		true
-			selectByMouse:	true
-		}
-		
-		
+                SpinBox
+                {
+                    id:					intervalSpinner
+                    value:				fileMenuModel.database.interval
+                    onValueChanged:		if(value != "") fileMenuModel.database.interval = value
+                    from:				0
+                    to:					24 * 60 * 7 // do we want to allow for an interval bigger than a week?
+                    defaultValue:		0
+                    stepSize:			1
+                    text:				qsTr("Synching interval in minutes: ")
+                    toolTip:			qsTr("0 means no automatic synching, but you can still synch manually by pressing Ctrl/Cmd+Y")
+                    anchors.right:		parent.right
+                }
+            }
 
-	}
+            QC.TextArea
+            {
+                height:			contentHeight < 100 ? 100 : contentHeight
+                text:			fileMenuModel.database.connected ? fileMenuModel.database.queryResult : fileMenuModel.database.lastError
+                font:			jaspTheme.font
+                color:			jaspTheme.textEnabled
+                width:			parent.width
+                wrapMode:		TextEdit.Wrap
+                readOnly:		true
+                selectByMouse:	true
+            }
+        }
+    }
+
+    MouseArea
+    {
+        z:				-5
+        anchors.fill:	parent
+        onClicked:		scrollDB.forceActiveFocus()
+    }
 }

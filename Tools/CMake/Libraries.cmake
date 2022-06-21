@@ -99,7 +99,7 @@ if(NOT FLATPAK_USED)
                Network
                PrintSupport
                Xml
-			   Sql
+               Sql
                DBus
                QuickTemplates2
                LabsFolderListModel
@@ -124,6 +124,7 @@ else()
                Qml
                WebChannel
                Svg
+               Sql
                Network
                PrintSupport
                Xml
