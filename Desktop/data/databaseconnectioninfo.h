@@ -14,7 +14,7 @@ public:
 	
 	void		fromJson(const Json::Value & json);
 	Json::Value	toJson() const;
-	
+
 	bool		connect()	const;
 	void		close()		const;
 	
