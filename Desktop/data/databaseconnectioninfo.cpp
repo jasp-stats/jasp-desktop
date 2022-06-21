@@ -42,11 +42,11 @@ bool DatabaseConnectionInfo::connect() const
 	
 	QSqlDatabase	db				= QSqlDatabase::addDatabase(dbTypeString);
 
-	db.setDatabaseName(	_database);
-	db.setHostName(		_hostname);
-	db.setUserName(		_username);
-	db.setPassword(		_password);
-	db.setPort(			_port);
+	if(_database.size())	db.setDatabaseName(	_database);
+	if(_hostname.size())	db.setHostName(		_hostname);
+	if(_username.size())	db.setUserName(		_username);
+	if(_password.size())	db.setPassword(		_password);
+	if(_port)				db.setPort(			_port);
 
 	return db.open();
 }
@@ -58,7 +58,7 @@ void DatabaseConnectionInfo::close() const
 
 QString DatabaseConnectionInfo::lastError() const
 {
-	return QSqlDatabase::database().lastError().text();	
+	return QSqlDatabase::database().lastError().text();
 }
 
 QSqlQuery DatabaseConnectionInfo::runQuery() const
