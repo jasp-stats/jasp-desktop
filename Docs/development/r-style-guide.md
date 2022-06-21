@@ -6,6 +6,7 @@ This style was influenced by the [Google style guide](https://google.github.io/s
 
 ## Style Guide
 
+- `camelCasing` or `lowercase` for variable names: Read our [option names guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/guide-option-names.md#use-camelcase) on how for instance abbreviations should be treated. 
 - No tabs allowed, use 2 spaces. Otherwise the file will be malformed on GitHub.
 - Code may not be wider than 120 characters. This makes it possible to view 2 files side-by-side on a reasonable screen and it makes sure there is no sideways scrolling on GitHub. It does still allow wider than regular code (regular limit is 80 characters). Adjust your editor to show you the margin!
 - Use `<-` not `=` for assignment.
@@ -54,14 +55,13 @@ otherwise, return may be used but is not required.
     sth2
   }
 ```
-- `camelCasing` or `lowercase` for variable names.
 - Main analysis functions have the format `SomeCoolAnalysis()`, as well as all other functions called by the user interface.
 - R internal functions have the format `.[name]ReadData()` where `[name]` is a unique short identifier of the analysis.
 - Follow the (`analysis-skeleton.R`)[https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/analysis-skeleton.R] file for structuring analyses.
 - Each file starts with the following copyright notice (edit the date if necessary):
 ```r
 #
-# Copyright (C) 2018 University of Amsterdam
+# Copyright (C) 2013-2022 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
