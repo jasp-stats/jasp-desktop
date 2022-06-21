@@ -27,6 +27,9 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, boost::fu
 	QSqlRecord  record	= query.record();
 	
 	ImportDataSet * data = new ImportDataSet(this);
+
+	if(_info._dbType == DbType::QSQLITE)
+		query.next(); //skip first empy line
 	
 	for(int i=0; i<record.count(); i++)
 		data->addColumn(new DatabaseImportColumn(data, fq(record.fieldName(i)), record.field(i).metaType()));

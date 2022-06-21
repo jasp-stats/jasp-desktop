@@ -101,6 +101,9 @@ QString	Database::_runQuery()
 			fewLines.push_back(names.join(", "));
 		}
 		
+		if(_info._dbType == DbType::QSQLITE)
+			query.next(); //skip first empy line
+
 		do
 		{
 			QStringList values;
