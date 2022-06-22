@@ -56,6 +56,14 @@ if(NOT R_REPOSITORY)
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
 
+option(JASP_RENV_INSTALL_VERBOSE "Tell renv to show package installation logs" OFF)
+option(JASP_RECORD_LOCKFILE "Whether to record all module dependencies in lockfiles so they can be reinstalled later" OFF)
+if(NOT JASP_UPDATE_R_DEPENDENCIES)
+  set(JASP_UPDATE_R_DEPENDENCIES
+      "weekly"
+      CACHE STRING "How often should R dependencies be updated? Possible values are: 'true', 'false', 'daily', 'triweekly', 'biweekly', 'weekly', 'fortnightly', 'monthly', 'monday', 'tuesday', ... 'sunday', or a combination of weekdays, 'monday;wednesday;friday'")
+endif()
+
 if(FLATPAK_USED AND LINUX)
   set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()

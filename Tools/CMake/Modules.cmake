@@ -22,7 +22,7 @@ set(JASP_COMMON_MODULES
     "jaspDescriptives"
     "jaspTTests"
     "jaspAnova"
-    "jaspMixedModels"
+#    "jaspMixedModels"
     "jaspRegression"
     "jaspFrequencies"
     "jaspFactor"
@@ -210,7 +210,7 @@ if(APPLE)
       #   ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
-                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
     add_dependencies(${MODULE} JASPEngine)

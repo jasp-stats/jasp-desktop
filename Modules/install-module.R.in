@@ -14,6 +14,9 @@ if (@IS_LINUX_LOCAL_BUILD@) {
 	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
+isON <- function(x) identical(x, "ON")
+if (isON("@JASP_RENV_INSTALL_VERBOSE@"))
+  options(renv.config.install.verbose = TRUE)
 
 if (@IS_FLATPAK_USED@) {
 	source('/app/lib64/Rprofile.R');
@@ -24,18 +27,14 @@ if (@IS_FLATPAK_USED@) {
 # it anyway! It gets to if-y. 
 .libPaths(c("@R_LIBRARY_PATH@"))
 
-# Related to the comment above, there is variable here called, 
-# `libPathsToUse` but it is not connected to anything. If this works,
-# then, I don't need to set the libPaths() anymore perhaps.
-result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
-	repos="@R_REPOSITORY@", 
-	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
-	onlyModPkg=FALSE,
-	frameworkLibrary="@R_LIBRARY_PATH@")
-
-if (result == "succes") {
-	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
-}
+jaspBase::installJaspModuleNew(
+  modulePkg      = "@MODULES_SOURCE_PATH@/@MODULE@",
+  jaspRoot       = "@PROJECT_SOURCE_DIR@",
+  moduleLibrary  = "@MODULES_BINARY_PATH@/@MODULE@",
+  repos          = "@R_REPOSITORY@",
+  updatePackages = "@JASP_UPDATE_R_DEPENDENCIES@",
+  recordPackages = if (isON("@JASP_RECORD_LOCKFILE@")) "all" else "localJasp"
+)
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
