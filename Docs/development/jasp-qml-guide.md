@@ -939,3 +939,10 @@ Descriptives 1.0 qml/Descriptives.qml
 ```
 
 And then suppose you want to use it in any other module you can simply do `import jaspDescriptives 1.0` and use it directly as `Descriptives {}`.
+
+There is only small thing to keep in mind, when your module is loaded in JASP it can only use qml modules from jasp modules that are installed in jasp.
+This means that if your jasp module depends on another, like the above `jaspDescriptives`, you will get the r-code from the dependency-rpkg.
+But the qml will come from the loaded `jaspDescriptives` in JASP. This is far from ideal because it can lead to conflicts between the r-code and qml.
+
+There is sadly no way around this at the moment though. But this can be worked around once we have an online module library. Then we can just force the dependencies to be installed fully.
+If it turns out it is too much of a problem we could also consider using multiple qml-engines or something, but for now that seems overkill.
