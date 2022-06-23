@@ -89,6 +89,7 @@ signals:
 public slots:
 	void resultsDocumentChanged()		{ emit packageModified(); }
 	void setZoom(						double			zoom);
+	void uiScaleChangedHandler();
 	void saveTempImage(					int				id,			QString path,			QByteArray data);
 	void getImageInBase64(				int				id,			const QString & path);
 	void pushImageToClipboard(	const	QByteArray	&	base64,		const QString & html);

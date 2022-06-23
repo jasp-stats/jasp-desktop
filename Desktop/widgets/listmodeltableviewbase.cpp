@@ -24,14 +24,13 @@
 #include "utilities/qutils.h"
 #include "tableviewbase.h"
 #include "textinputbase.h"
-#include "gui/preferencesmodel.h"
 
 using namespace std;
 
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
 	: ListModel(tableView), _tableView(tableView)
 {
-	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
+	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const

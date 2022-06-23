@@ -52,6 +52,11 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
 }
 
+void ResultsJsInterface::uiScaleChangedHandler()
+{
+	setZoom(PreferencesModel::prefs()->uiScale());
+}
+
 void ResultsJsInterface::setZoom(double zoom)
 {
 	if(zoom == _webEngineZoom)

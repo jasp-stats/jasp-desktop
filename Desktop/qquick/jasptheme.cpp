@@ -10,10 +10,10 @@ std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	connect(this,						&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
-	connect(this,						&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,						&JaspTheme::uiScaleChanged				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,						&JaspTheme::maximumFlickVelocity		);
+	connect(this,							&JaspTheme::currentThemeNameChanged,			PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeNameHandler	);
+	connect(this,							&JaspTheme::currentThemeReady,					PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeReady		);
+	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::uiScaleChanged,			this,								&JaspTheme::uiScaleHandler						);
+	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::maxFlickVelocityChanged, this,								&JaspTheme::maximumFlickVelocityChanged			);
 
 	connectSizeDistancesToUiScaleChanged();
 
@@ -101,7 +101,7 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 	if(_currentTheme)
 	{
 		_currentTheme->updateFontMetrics();
-		emit _currentTheme->jaspThemeChanged(theme);
+		emit _currentTheme->currentThemeReady(theme);
 	}
 }
 
@@ -1225,7 +1225,7 @@ void JaspTheme::setThemeName(QString themeName)
 	setIconPath("qrc:/icons/" + _themeName + "/");
 
 	if(_currentTheme == this)
-		emit currentThemeNameChanged(_themeName);
+		emit currentThemeNameChanged();
 }
 
 void JaspTheme::setFontRCode(QFont fontRCode)
@@ -1253,6 +1253,11 @@ void JaspTheme::setIsDark(bool isDark)
 
 	_isDark = isDark;
 	emit isDarkChanged(_isDark);
+}
+
+void JaspTheme::uiScaleHandler()
+{
+	emit uiScaleChanged(PreferencesModelBase::prefs()->uiScale());
 }
 
 QString JaspTheme::currentIconPath()

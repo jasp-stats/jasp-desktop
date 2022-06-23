@@ -350,9 +350,9 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
-	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
+	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::uiScaleChangedHandler								);
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
-	connect(_preferences,			&PreferencesModel::jaspThemeChanged,				this,					&MainWindow::jaspThemeChanged								);
+	connect(_preferences,			&PreferencesModel::currentJaspThemeChanged,			this,					&MainWindow::setCurrentJaspTheme						);
 	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_engineSync,			&EngineSync::refreshAllPlots								);
@@ -392,7 +392,6 @@ void MainWindow::makeConnections()
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
 	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
-
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
@@ -493,6 +492,8 @@ void MainWindow::loadQML()
 		_qml->load(QUrl("qrc:///components/JASP/Theme/Theme.qml"));
 	}
 
+	setCurrentJaspTheme();
+
 	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
@@ -589,9 +590,9 @@ void MainWindow::resendResultsToWebEngine()
 	_analyses	-> applyToAll([&](Analysis * a){ emit a->resultsChangedSignal(a); });
 }
 
-void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
+void MainWindow::setCurrentJaspTheme()
 {
-	_qml->rootContext()->setContextProperty("jaspTheme",				newTheme);
+	_qml->rootContext()->setContextProperty("jaspTheme", JaspTheme::currentTheme());
 }
 
 void MainWindow::initLog()

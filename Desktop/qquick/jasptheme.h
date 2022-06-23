@@ -5,7 +5,7 @@
 #include <QColor>
 #include <QFont>
 #include <QFontMetricsF>
-#include "gui/preferencesmodel.h"
+#include "gui/preferencesmodelbase.h"
 
 #define theme_distanceType	float
 #define theme_sizeType		float
@@ -184,7 +184,7 @@ public:
 	static JaspTheme		* currentTheme() { return _currentTheme; }
 	static QFontMetricsF	& fontMetrics()	 { return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
 
-	float				uiScale()							const	{ return PreferencesModel::prefs()->uiScale(); }
+	float				uiScale()							const	{ return PreferencesModelBase::prefs()->uiScale(); }
 	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered; }
 	QColor				white()								const	{ return _white; }
 	QColor				whiteBroken()						const	{ return _whiteBroken; }
@@ -296,7 +296,7 @@ public:
 	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight					* uiScale(); }
 	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight				* uiScale(); }
 	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight					* uiScale(); }
-	float				maximumFlickVelocity()				const	{ return PreferencesModel::prefs()->maxFlickVelocity(); }
+	float				maximumFlickVelocity()				const	{ return PreferencesModelBase::prefs()->maxFlickVelocity(); }
 	int					hoverTime()							const	{ return _hoverTime;					}
 	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration;		}
 	int					toolTipDelay()						const	{ return _toolTipDelay;					}
@@ -314,7 +314,7 @@ public:
 	bool				isDark()							const	{ return _isDark;						}
 
 signals:
-	void jaspThemeChanged(JaspTheme * newTheme);
+	void currentThemeReady(JaspTheme * newTheme);
 	void uiScaleChanged(float uiScale);
 	void ribbonScaleHoveredChanged(float ribbonScaleHovered);
 	void whiteChanged(QColor white);
@@ -428,7 +428,7 @@ signals:
 	void menuItemHeightChanged();
 	void menuGroupTitleHeightChanged();
 	void menuHeaderHeightChanged();
-	void maximumFlickVelocityChanged(float maximumFlickVelocity);
+	void maximumFlickVelocityChanged();
 	void hoverTimeChanged(theme_timeType hoverTime);
 	void fileMenuSlideDurationChanged(theme_timeType fileMenuSlideDuration);
 	void toolTipDelayChanged(theme_timeType toolTipDelay);
@@ -442,7 +442,7 @@ signals:
 	void fontCodeChanged(QFont fontCode);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
-	void currentThemeNameChanged(QString themeName);
+	void currentThemeNameChanged();
 	void isDarkChanged(bool isDark);
 
 public slots:
@@ -571,6 +571,7 @@ public slots:
 	void setFontRCode(QFont fontRCode);
 	void setFontCode(QFont fontCode);
 	void setIsDark(bool isDark);
+	void uiScaleHandler();
 
 private:
 	void connectSizeDistancesToUiScaleChanged();

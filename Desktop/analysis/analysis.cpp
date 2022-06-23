@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
+#include "gui/preferencesmodel.h"
 
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :

@@ -234,7 +234,7 @@ private slots:
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
 	void resetQmlCache();
-	void jaspThemeChanged(JaspTheme * newTheme);
+	void setCurrentJaspTheme();
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
 

@@ -48,8 +48,7 @@ class AnalysisForm;
 class Analysis : public AnalysisBase
 {
 	Q_OBJECT
-	Q_PROPERTY(Modules::DynamicModule	*	module					READ dynamicModule									NOTIFY dynamicModuleChanged		)
-
+\
 	friend class Analyses;
 
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
