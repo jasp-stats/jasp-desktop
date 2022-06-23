@@ -24,8 +24,8 @@
 #include <QDir>
 
 
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
+//#include <boost/interprocess/shared_memory_object.hpp>
+//#include <boost/interprocess/mapped_region.hpp>
 
 #include <json/json.h>
 #include "processinfo.h"
@@ -84,12 +84,15 @@ EngineSync::EngineSync(QObject *parent)
 
 EngineSync::~EngineSync()
 {
-	try			{ stopEngines(); }
-	catch(...)	{ /* Whatever! */ }
-
-	for(EngineRepresentation * engine : _engines)
-		if(!engine->stopped())
-			engine->killEngine();
+	if(!_stopProcessing)
+	{
+		for(EngineRepresentation * engine : _engines)
+		{
+			if(!engine->stopped())
+				engine->killEngine();
+			delete engine;
+		}
+	}
 
 	_moduleEngines.clear();
 	_engines.clear();
@@ -319,6 +322,8 @@ void EngineSync::restartEngines()
 		}
 
 	logCfgRequest();
+	
+	_stopProcessing = false;
 }
 
 void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
@@ -381,8 +386,9 @@ void EngineSync::shutdownBoredEngines()
  */
 void EngineSync::process()
 {
-	if(_stopProcessing)	return;
-
+	if(_stopProcessing && !_dataMode)
+		return;
+		
 	if(_rCmder)
 	{
 		restartAKilledOrStoppedEngine(_rCmder);
@@ -403,6 +409,13 @@ void EngineSync::process()
 
 	processReloadData();
 	processSettingsChanged();
+	
+	if(_stopProcessing || _dataMode)
+	{
+		processComputedColumnQueue();
+		return;
+	}	
+	
 	processFilterScript();
 
 	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
@@ -485,18 +498,18 @@ void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListe
 void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
 {
 	//first we remove the previously sent requests for this same column!
-	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
-	_waitingScripts = std::queue<RScriptStore*>() ;
+	std::queue<RComputeColumnStore*> copiedWaiting(_waitingCompCols);
+	_waitingCompCols = std::queue<RComputeColumnStore*>() ;
 
 	while(copiedWaiting.size() > 0)
 	{
-		RScriptStore * cur = copiedWaiting.front();
+		RComputeColumnStore * cur = copiedWaiting.front();
 		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->_columnName != columnName)
-			_waitingScripts.push(cur);
+			_waitingCompCols.push(cur);
 		copiedWaiting.pop();
 	}
 
-	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, colType));
+	_waitingCompCols.push(new RComputeColumnStore(columnName, computeCode, colType));
 }
 
 void EngineSync::processFilterScript()
@@ -632,31 +645,39 @@ bool EngineSync::processComputedColumnQueue()
 	bool needEngine = false;
 	try
 	{
-		if(_waitingScripts.size() > 0)
+		std::queue<RComputeColumnStore*>	newWaiting;
+		
+		while(_waitingCompCols.size() > 0)
 		{
-			RScriptStore * waiting = _waitingScripts.front();
+			RComputeColumnStore * waiting = _waitingCompCols.front();
 								
-			if(waiting->typeScript == engineState::computeColumn)	
-			{
-				needEngine = true;
+			needEngine = true;
+			bool foundOne = false;
+			
+			for(auto * engine : _engines)
+				if(engine->idle()  && engine->runsUtility())
+				{
+					engine->runScriptOnProcess(waiting);
 				
-				for(auto * engine : _engines)
-					if(engine->idle()  && engine->runsUtility())
-					{
-						engine->runScriptOnProcess((RComputeColumnStore*)waiting);
-					
-						delete waiting;
-						_waitingScripts.pop();
-						
-						needEngine = false;
-						break;
-					}
+					delete waiting;
+					_waitingCompCols.pop();
+					foundOne = true;
+					needEngine = false;
+					break;
+				}
+		
+			if(!foundOne)
+			{
+				newWaiting.push(waiting);
+				_waitingCompCols.pop();
 			}
 		}
+		
+		_waitingCompCols = newWaiting;
 	}
 	catch(...)
 	{
-		Log::log() << "Exception thrown in processScriptQueue" << std::endl;
+		Log::log() << "Exception thrown in processComputedColumnQueue" << std::endl;
 	}
 	
 	return needEngine;
@@ -965,6 +986,8 @@ void EngineSync::heartbeatTempFiles()
 void EngineSync::stopEngines()
 {	
 	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
+	
+	_stopProcessing = true;
 
 	for(EngineRepresentation * e : _engines)
 		e->stopEngine();
@@ -990,6 +1013,7 @@ void EngineSync::pauseEngines(bool unloadData)
 {
 	JASPTIMER_SCOPE(EngineSync::pauseEngines);
 
+	_stopProcessing = true;
 
 	Log::log() << "EngineSync::pauseEngines()" << std::endl;
 
@@ -1027,6 +1051,8 @@ void EngineSync::resumeEngines()
 
 	for(EngineRepresentation * engine : _engines)
 		startStoppedEngine(engine);
+
+	_stopProcessing = false;
 	
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
@@ -1067,25 +1093,25 @@ bool EngineSync::allEnginesInitializing(std::set<EngineRepresentation *> these)
 
 void EngineSync::dataModeChanged(bool dataMode)
 {
-	_stopProcessing = dataMode;
-
-	if(!dataMode)
+	_dataMode = dataMode;
+	/*if(!dataMode)
 	{
 		Log::log() << "Data mode turned off, resuming engines." << std::endl;
+
 		resumeEngines();
 	}
 	else
 	{
-		Log::log() << "Data mode turned on, pausing engines." << std::endl;
+		Log::log() << "Data mode turned on,  pausing engines." << std::endl;
 		pauseEngines();
-	}
-
+	}*/
 }
 
 void EngineSync::enginesPrepareForData()
 {
 	JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
 
+	/*
 	//make sure we process any received messages first.
 	for(auto * engine : _engines)
 		engine->processReplies();
@@ -1107,28 +1133,11 @@ void EngineSync::enginesPrepareForData()
 
 	for (auto * engine : pauseOrKillThese)
 		if(!engine->paused())
-			engine->killEngine();
+			engine->killEngine();*/
 }
 
 void EngineSync::enginesReceiveNewData()
 {
-	if(_stopProcessing)
-		return;
-	
-	JASPTIMER_SCOPE(EngineSync::enginesReceiveNewData);
-
-	//make sure we process any received messages first.
-	for(auto * engine : _engines)
-		engine->processReplies();
-
-	for(auto * engine : _engines)
-		if(engine->paused())
-			engine->resumeEngine();
-
-	for(auto * engine : _engines)
-		if(!engine->jaspEngineStillRunning())
-			engine->restartEngine(startSlaveProcess(engine->channelNumber()));
-
 	emit reloadData();
 }
 

@@ -144,9 +144,9 @@ public slots:
 
 signals:
 	void			engineTerminated();
-	void			filterDone(															int requestID);
+	void			filterDone(																int requestID);
 	void			processFilterErrorMsg(			const QString & error,					int requestId = -1);
-	void			processNewFilterResult(			const std::vector<bool> & filterResult, int requestId);
+	void			processNewFilterResult(			int requestId);
 	void			computeColumnErrorTextChanged(	const QString & error);
 
 	void			rCodeReturned(					const QString & result, int requestId, bool hasError	);

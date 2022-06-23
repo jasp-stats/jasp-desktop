@@ -42,7 +42,9 @@ qt_add_executable(
   ${BUNDLE_RESOURCES}
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>)
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
 set(
     QML_IMPORT_PATH
     "${PROJECT_SOURCE_DIR}/Desktop/components" 

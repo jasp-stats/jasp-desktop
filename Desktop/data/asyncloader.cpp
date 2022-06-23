@@ -78,11 +78,6 @@ void AsyncLoader::io(FileEvent *event)
 	}
 }
 
-void AsyncLoader::free(DataSet *dataSet)
-{
-	_loader.freeDataSet(dataSet);
-}
-
 void AsyncLoader::loadTask(FileEvent *event)
 {
 	_currentEvent = event;

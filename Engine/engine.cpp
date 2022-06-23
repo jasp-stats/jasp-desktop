@@ -25,12 +25,12 @@
 #include "tempfiles.h"
 #include "utils.h"
 #include "columnutils.h"
-#include "sharedmemory.h"
 #include <csignal>
 
 #include "rbridge.h"
 #include "timers.h"
 #include "log.h"
+#include "databaseinterface.h"
 
 
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
@@ -75,6 +75,9 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	JASPTIMER_START(TempFiles Attach);
 	TempFiles::attach(parentPID);
 	JASPTIMER_STOP(TempFiles Attach);
+
+	if(parentPID != 0) //Otherwise we are just running to fix R packages
+		_db = new DatabaseInterface();
 
 	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
@@ -298,7 +301,15 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 		std::vector<bool> filterResult	= rbridge_applyFilter(strippedFilter, generatedFilter);
 		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
-		sendFilterResult(filterRequestId, filterResult, RPossibleWarning);
+		_dataSet->db().transactionWriteBegin();
+		_dataSet->filter()->setRFilter(filter);
+		_dataSet->filter()->setFilterVector(filterResult);
+		_dataSet->filter()->setErrorMsg(RPossibleWarning);
+		_dataSet->filter()->incRevision();
+		_dataSet->db().transactionWriteEnd();
+
+
+		sendFilterResult(filterRequestId);
 
 	}
 	catch(filterException & e)
@@ -309,16 +320,15 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 	_engineState = engineState::idle;
 }
 
-void Engine::sendFilterResult(int filterRequestId, const std::vector<bool> & filterResult, const std::string & warning)
+void Engine::sendFilterResult(int filterRequestId)
 {
 	Json::Value filterResponse(Json::objectValue);
 
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
-	filterResponse["filterResult"]	= Json::arrayValue;
 	filterResponse["requestId"]		= filterRequestId;
 
-	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
-	if(warning != "")			filterResponse["filterError"] = warning;
+//	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
+//	if(warning != "")			filterResponse["filterError"] = warning;
 
 	sendString(filterResponse.toStyledString());
 }
@@ -327,8 +337,9 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 {
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
+	provideDataSet()->filter()->setErrorMsg(errorMessage);
+
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
-	filterResponse["filterError"]	= errorMessage;
 	filterResponse["requestId"]		= filterRequestId;
 
 	sendString(filterResponse.toStyledString());
@@ -779,10 +790,13 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 DataSet * Engine::provideDataSet()
 {
 	JASPTIMER_RESUME(Engine::provideDataSet());
-	DataSet * dataset = SharedMemory::retrieveDataSet(_parentPID);
+
+	if(_dataSet)						_dataSet->checkForUpdates();
+	else if(_db->dataSetGetId() != -1)	_dataSet = new DataSet(_db->dataSetGetId());
+
 	JASPTIMER_STOP(Engine::provideDataSet());
 
-	return dataset;
+	return _dataSet;
 }
 
 void Engine::provideStateFileName(std::string & root, std::string & relativePath)
@@ -810,26 +824,19 @@ bool Engine::isColumnNameOk(std::string columnName)
 	if(columnName == "" || !provideDataSet())
 		return false;
 
-	try
-	{
-		provideDataSet()->columns().findIndexByName(columnName);
-		return true;
-	}
-	catch(columnNotFound &)
-	{
-		return false;
-	}
+	return provideDataSet()->column(columnName);
 }
 
 bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels)
 {
 	std::map<int, int> uniqueInts;
 
-	for(auto keyval : levels)
+	for(auto & keyval : levels)
 	{
 		size_t convertedChars;
 
-		try {
+		try
+		{
 			int asInt = std::stoi(keyval.second, &convertedChars);
 
 			if(convertedChars == keyval.second.size()) //It was a number!
@@ -844,13 +851,13 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string &
 			if(dat != std::numeric_limits<int>::lowest())
 				dat = uniqueInts[dat];
 
-		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data);
-		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data);
+		if(isOrdinal)	return	provideDataSet()->column(columnName)->overwriteDataWithOrdinal(data);
+		else			return	provideDataSet()->column(columnName)->overwriteDataWithNominal(data);
 	}
 	else
 	{
-		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data, levels);
-		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data, levels);
+		if(isOrdinal)	return	provideDataSet()->column(columnName)->overwriteDataWithOrdinal(data, levels);
+		else			return	provideDataSet()->column(columnName)->overwriteDataWithNominal(data, levels);
 	}
 }
 
@@ -869,7 +876,6 @@ void Engine::stopEngine()
 	_engineState = engineState::stopped;
 
 	freeRBridgeColumns();
-	SharedMemory::unloadDataSet();
 	sendEngineStopped();
 }
 
@@ -895,8 +901,12 @@ void Engine::pauseEngine(const Json::Value & json)
 	_engineState = engineState::paused;
 
 	freeRBridgeColumns();
-	if(json.get("unloadData", false).asBool()) //Don't do it too often or otherwise the sharedmemfile might get lost. See https://github.com/jasp-stats/jasp-issues/issues/1302
-		SharedMemory::unloadDataSet();
+	if(json.get("unloadData", false).asBool())
+	{
+		delete _dataSet;
+		_dataSet = nullptr;
+	}
+
 	sendEnginePaused();
 }
 
@@ -913,9 +923,10 @@ void Engine::receiveReloadData()
 
 	_engineState = engineState::idle;
 
-	Log::log() << "Engine reloadData, unloading dataset now" << std::endl;
-	SharedMemory::unloadDataSet();
-	provideDataSet();
+	Log::log() << "Engine reloadData, reloading columnnames now" << std::endl;
+
+	provideDataSet(); //Also triggers loading from DB
+
 	reloadColumnNames();
 
 	Json::Value rCodeResponse		= Json::objectValue;

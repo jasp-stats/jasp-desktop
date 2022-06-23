@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "column.h"
+#include "columntype.h"
 
 class ImportDataSet;
 
@@ -22,8 +22,6 @@ public:
 	virtual std::vector<std::string>	allValuesAsStrings()					const = 0;
 			std::string					name()									const;
 			void						changeName(const std::string & name);
-
-	static bool isStringValueEqual(const std::string &value, Column &col, size_t row);
 
 protected:
 	ImportDataSet * _importDataSet;

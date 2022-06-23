@@ -26,7 +26,6 @@
 
 #include "analysis/analyses.h"
 #include "analysisform.h"
-#include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
@@ -172,7 +171,6 @@ private:
 	void		analysisSaveImageHandler(int id, QString options);
 	void		analysisEditImageHandler(int id, QString options);
 	void		removeAnalysisRequestHandler(int id);
-	void		matchComputedColumnsToAnalyses();
 	Json::Value getResultsMeta();
 
 	void startComparingResults();
@@ -208,6 +206,7 @@ signals:
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 	void closeWindows();
 	void hideDataPanel();
+	void exitSignal(int returnCode = 0) const;
 
 private slots:
 	void resultsPageLoaded();

@@ -3,7 +3,7 @@
 #include "log.h"
 #include "utilities/qutils.h"
 
-ColumnsModel* ColumnsModel::_singleton = nullptr;
+ColumnsModel * ColumnsModel::_singleton = nullptr;
 
 ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) 
 : QTransposeProxyModel(tableModel), _tableModel(tableModel)
@@ -26,12 +26,10 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(this, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
 }
 
-
-
 ColumnsModel::~ColumnsModel()
 { 
 	if(_singleton == this) 
-		_singleton = nullptr; 
+		_singleton = nullptr;
 }
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
@@ -146,7 +144,6 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::VariableNames:				return	getColumnNames();
 		}
 	}
-	catch(columnNotFound & e) {} //just return an empty QVariant right?
 	catch(std::exception & e)
 	{
 		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;

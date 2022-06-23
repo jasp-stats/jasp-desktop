@@ -28,7 +28,7 @@ CSVImporter::CSVImporter() : Importer()
 	DataSetPackage::pkg()->setIsArchive(false);
 }
 
-ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(int)> progressCallback)
+ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(CSVImporter::loadFile);
 
@@ -104,8 +104,10 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 		if (line.size() != 0) {
 			size_t i = 0;
+			
 			for (; i < line.size() && i < columnCount; i++)
 				importColumns.at(i)->addValue(line[i]);
+			
 			for (; i < columnCount; i++)
 				importColumns.at(i)->addValue(string());
 		}

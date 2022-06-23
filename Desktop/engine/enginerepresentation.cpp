@@ -28,10 +28,17 @@ EngineRepresentation::~EngineRepresentation()
 	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
 
 
-	if(_slaveProcess != nullptr)
+	if(_slaveProcess && _slaveProcess->state() == QProcess::ProcessState::Running)
 	{
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
+	}
+	
+	if(_slaveProcess)
+	{
+		_slaveProcess->setParent(nullptr);
+		_slaveProcess->deleteLater();
+		_slaveProcess = nullptr;
 	}
 }
 
@@ -345,19 +352,8 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 
 	emit filterDone(requestId);
 
-	if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
-	{
-		std::vector<bool> filterResult;
-		for(Json::Value & jsonResult : json.get("filterResult", Json::Value(Json::arrayValue)))
-			filterResult.push_back(jsonResult.asBool());
-
-		emit processNewFilterResult(filterResult, requestId);
-
-		if(json.get("filterError", "").asString() != "")
-			emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "there was a warning").asString()), requestId);
-	}
-	else
-		emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "something went wrong").asString()), requestId);
+	if(requestId == _lastRequestId)
+		emit processNewFilterResult(requestId);
 }
 
 void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
@@ -730,6 +726,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 
 		_slaveProcess->kill();
 		_slaveProcess->deleteLater();
+		_slaveProcess = nullptr;
 
 		if(_engineState != engineState::killed && _engineState != engineState::stopped)
 			Log::log() << "EngineRepresentation::restartEngine says: Engine already had jaspEngine process that is now replaced!" << std::endl;

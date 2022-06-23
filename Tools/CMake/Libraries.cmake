@@ -40,6 +40,7 @@ endif()
 
 find_package(ZLIB 1.2 REQUIRED)
 find_package(Iconv 1.16 REQUIRED)
+find_package(SQLite3 3.37.0 REQUIRED)
 
 #if(USE_CONAN)
 #  find_package(jsoncpp 1.9 REQUIRED)

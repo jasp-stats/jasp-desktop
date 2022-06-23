@@ -7,23 +7,41 @@ import "FilterConstructor"
 
 FocusScope
 {
-	id:							computedColumnContainer
-    visible: opened
+	id:				computedColumnContainer
+	visible:		opened
 
 	property bool	opened:						false
 	property bool	changed:					computedColumnsInterface.computeColumnUsesRCode ? computeColumnEdit.changed : computedColumnConstructor.somethingChanged
-	property bool	userLikesR:					computedColumnsInterface.computeColumnUsesRCode
-	property bool	dataSetLoaded:				computedColumnsInterface.datasetLoaded
-	property string jsonConstructedModel:		computedColumnsInterface.computeColumnJson
-	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
 	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
-	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
-	property string lastCreatedColumn:			computedColumnsInterface.lastCreatedColumn
 
-	onDataSetLoadedChanged:				if(!dataSetLoaded) close();
-	onSelectedColumnNameMirrorChanged:	if(selectedColumnNameMirror === "") close();
-	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel);
-	onComputeColumnRCodeChanged:		computeColumnEdit.text = computeColumnRCode;
+	Connections
+	{
+		target: computedColumnsInterface
+
+		function onComputeColumnJsonChanged()
+		{
+			computedColumnConstructor.initializeFromJSON(computedColumnsInterface.computeColumnUsesRCode ? "{\"formulas\":[]}" : computedColumnsInterface.computeColumnJson);
+		}
+
+		function onComputeColumnRCodeChanged()
+		{
+			computeColumnEdit.text = computedColumnsInterface.computeColumnRCode;
+		}
+
+		function computeColumnNameSelectedChanged()
+		{
+			if(computedColumnsInterface.computeColumnNameSelected == "")
+				close();
+			else
+				open(computedColumnsInterface.computeColumnNameSelected)
+		}
+
+		function onRefreshProperties()
+		{
+			if(!computedColumnsInterface.dataSetLoaded)
+				close();
+		}
+	}
 
 	Rectangle
 	{
@@ -35,36 +53,21 @@ FocusScope
 		z:				-1
 	}
 
-	Connections
-	{
-		target:						computedColumnsInterface
-		function onShowThisColumnChanged(columnName)
-		{
-			if (!computedColumnContainer.changed && columnName !== computedColumnsInterface.computeColumnNameSelected)
-				open(columnName);
-		}
-	}
-
 	function close()
     {
 		opened = false
-		computedColumnsInterface.computeColumnNameSelected = ""
     }
 
 	function open(columnName)
     {
+		messages.log("ComputeColumnWindow::open("+columnName+")")
+
 		if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
-				close();
-		else if(computedColumnsInterface.computeColumnNameSelected !== columnName)
+			close();
+		else
 		{
+			computedColumnsInterface.computeColumnNameSelected	= columnName;
 			opened = true
-
-			computedColumnsInterface.computeColumnNameSelected = columnName
-			computeColumnEdit.text = computedColumnsInterface.computeColumnRCode
-
-			if(!computedColumnContainer.userLikesR)
-				computedColumnConstructor.initializeFromJSON(computedColumnContainer.jsonConstructedModel)
-
 		}
     }
 
@@ -142,7 +145,7 @@ FocusScope
 
 				property real desiredMinimumHeight: computedColumnContainer.minimumHeightTextBoxes
 
-				visible: computedColumnContainer.userLikesR
+				visible: computedColumnsInterface.computeColumnUsesRCode
 
 				anchors.fill: parent
 
@@ -159,12 +162,13 @@ FocusScope
 
 					property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
-					font.family:			"Courier"
-					font.pixelSize:			baseFontSize * preferencesModel.uiScale
+					font:					jaspTheme.fontRCode
 					wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 					color:					jaspTheme.textEnabled
 
-					property bool changed: text != computedColumnsInterface.computeColumnRCode
+					property bool changed:	text != computedColumnsInterface.computeColumnRCode
+					
+					KeyNavigation.tab:		applyComputedColumnButton
 				}
 
 
@@ -186,11 +190,12 @@ FocusScope
 
 			ComputedColumnsConstructor
 			{
-				id: computedColumnConstructor
-				anchors.fill: parent
-				visible: !computedColumnContainer.userLikesR
+				id:						computedColumnConstructor
+				anchors.fill:			parent
+				visible:				!computedColumnsInterface.computeColumnUsesRCode
 
-				showGeneratedRCode: false
+				showGeneratedRCode:		false
+				KeyNavigation.tab:		applyComputedColumnButton
 
 
 				functionModel: ListModel
@@ -282,8 +287,7 @@ FocusScope
 				selectByMouse:			true
 				onActiveFocusChanged:	if(!activeFocus) deselect()
 
-				font.family:			"Courier"
-				font.pixelSize:			baseFontSize * preferencesModel.uiScale
+				font:					jaspTheme.fontCode
 				height:					text.length === 0 ? 0 : computeColumnError.contentHeight
 			}
 		}
@@ -334,7 +338,7 @@ FocusScope
 
 			JaspControls.RectangularButton
 			{
-				id:				applycomputeColumn
+				id:				applyComputedColumnButton
 
 				text:			computeColumnEdit.changedSinceLastApply ? qsTr("Compute column") : qsTr("Column computed")
 				enabled:		computeColumnEdit.changedSinceLastApply
@@ -344,6 +348,7 @@ FocusScope
 				anchors.top:	closeColumnEditorButton.top
 				onClicked:		computedColumnContainer.applyComputedColumn()
 				toolTip:		computeColumnEdit.changedSinceLastApply ? qsTr("Click to compute column") : qsTr("Column (in line to be) computed")
+				
 			}
 
 			JaspControls.RectangularButton

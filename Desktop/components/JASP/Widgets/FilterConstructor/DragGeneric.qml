@@ -100,7 +100,7 @@ MouseArea
 	}
 
 
-	onPressed:
+	onPressed: (mouse)=>
 	{
 		//console.log(__debugName," onPressed")
 

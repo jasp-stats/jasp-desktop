@@ -440,7 +440,8 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 
 void PreferencesModel::updateUtilsMissingValues()
 {
-	ColumnUtils::_currentEmptyValues = fq(missingValues());
+	stringvec miss = fq(missingValues());
+	ColumnUtils::_currentEmptyValues = stringset(miss.begin(), miss.end());
 	ColumnUtils::processEmptyValues();
 }
 

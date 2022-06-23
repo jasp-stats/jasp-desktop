@@ -126,25 +126,25 @@ private:
 	 * @brief setColumnConvertStringData Sets String data into the column, after doing a code page convert.
 	 * @param column The columns to insert into.
 	 */
-	void _setColumnConvertStringData(Column &column);
+//	void _setColumnConvertStringData(Column *column);
 
 	/**
 	 * @brief setColumnConvertDblToString Sets String data into the column.
 	 * @param column The columns to insert into.
 	 */
-	void _setColumnConvertDblToString(Column &column);
+	//void _setColumnConvertDblToString(Column *column);
 
 	/**
 	 * @brief setColumnLabeledData Sets numeric data into the column, with labels.
 	 * @param column The columns to insert into.
 	 */
-	void _setColumnLabeledData(Column &column);
+	//void _setColumnLabeledData(Column *column);
 
 	/**
 	 * @brief setColumnScaleData Sets floating point / scalar data into the column.
 	 * @param column The columns to insert into.
 	 */
-	void _setColumnScaleData(Column &column);
+	// _setColumnScaleData(Column *column);
 
 };
 

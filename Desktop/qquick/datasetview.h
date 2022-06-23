@@ -157,7 +157,6 @@ signals:
 	void		selectionBudgesLeft();
 	void		selectionBudgesRight();
 	
-	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
 	void		aContentSizeChanged()	{ _recalculateCellSizes = true; }

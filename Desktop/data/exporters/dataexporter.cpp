@@ -17,7 +17,6 @@
 
 #include "dataexporter.h"
 #include <sys/stat.h>
-#include "dataset.h"
 #include <fstream>
 #include "stringutils.h"
 #include "utilenums.h"
@@ -33,7 +32,7 @@ DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(
 
 DataExporter::~DataExporter() {}
 
-void DataExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
+void DataExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	progressCallback(0);
 
