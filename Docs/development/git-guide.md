@@ -116,16 +116,13 @@ In case that rebasing fails with git telling you it could not apply some commits
 
 Remember that the best solution of merge conflicts is to avoid them at all, and that involves rebasing your repository often to make sure you are always up to date. Even if you eventually hit some conflict, rebasing often can reduce the chance things get out of hand.
 
-### Git tells you to `git pull`
+### Git tells you to `git pull` when rebasing
 
 - When `git` tells you to `git pull` while you are rebasing, you probably do not want to do that.
-- Usually, you can do `git push -f` instead.
-- If unsure what to do, ask before executing anything to avoid difficult problems.
+- Usually, instead of pulling you'd want to push. Thus, do `git push -f` instead.
+- If unsure what to do, please ask a JASP team member before executing anything to avoid difficult problems.
 
-This occurs because rebasing can reorder commits on your local branch, which makes it incompatible with the history of commits on your GitHub branch. `git` assumes you want to get the history from your GitHub repository first, whereas in the context of rebasing we actually want to overwrite the commit history on GitHub with the one on the local repository (`git push -f`).
-
-If you use `git pull`, your pull request may contain commits that are not part of your work, and if merged can break the commit history on the main repository. Solving this is often difficult so think twice before running `git pull` whether you really want to do it. In case you are not sure, ask one of the JASP Team members - Ideally before executing anything!
-
+When you have an open pull request (PR) and in the meantime new code developed by someone else (say Joris) is merged, your PR will be behind. The PR is "cloud-to-cloud", say, from your GitHub repository `userName/jaspRegressoin` to `jasp-stats/jaspRegression`. When you start a rebase you first reorder your local branch, then you update your own `userName/jaspRegression` by (force) **pushing** this reorder. During this process, however, `git` notices that your local branch and your branch, e.g., `userName/jaspRegression` diverged, and consequently recommend you to pull. In this case `git` assumes you want to get the history from your GitHub repository first. If you pull, then your PR gets filled with new code (by Joris) that you didn't write, which causes your PR to double up on code. This doubling up can break the commit history on the main repository. Solving this is often difficult so think twice before running `git pull`. In case you are not sure, ask one of the JASP Team members - Ideally before executing anything! To make things more concrete, we now discuss an example.
 
 <details>
 	<summary>Detailed explanation</summary>
@@ -133,111 +130,115 @@ If you use `git pull`, your pull request may contain commits that are not part o
 While rebasing, `git` may print out the following message after executing `git push`:
 
 ```
-Your branch and `origin/Branch` have diverged, and have x and y different commits each, respectivelly.
+Your branch and `origin/Branch` have diverged, and have x and y different commits each, respectively.
   (use "git pull" to merge the remote branch into yours)
 ```
 
-Do **not** execute `git pull` (that is, unless you absolutely know what you are doing)!
+Do **not** execute git pull (that is, unless you absolutely know what you are doing)!
 
 Here, we will describe one situation when this can happen and give an alternative solution.
 
 Imagine you work on a new feature. You rebase your `master` branch and switch to a feature branch (see below). The commit history on your branch now contains the following commits (ordered by "most recent"):
 
 ```
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
 You make some changes and add a commit. Now, the history on your local branch looks like
 
 ```
 commit (Thursday)  "My 1st commit"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-You push this to your GitHub repository and make a pull request to `jasp-stats/master` which proposes to take your new changes and add them to the main repo (see below). You were told to change something in your PR before it can be merged. However, some time passed by and other PRs were merged to the main repository, which now contains the following commits:
+You'd like to add your "My 1st commit" to `jasp-stats`. Firstly, you commit and push your "My 1st commit" code from your local work station to your own repository, say, `userName/jaspRegression`. You then make a pull request (PR) to `jasp-stats/jaspRegression/master`. Your code is being reviewed and you are asked to add a "2nd commit". Before your code is merged, however, someone else, say, Joris, got their code merged into `jasp-stats/jaspRegression` and the commit history on the target branch is now as follows:
 
 ```
-commit (Friday)  "The 4th commit from jasp-stats/master"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Friday)  "The 4th commit from jasp-stats/jaspRegression/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-And you notice that you need the code in commit "The 4th commit from jasp-stats/master" in order to make your changes. You decide to do a `rebase`. Rebase takes the commit history from the main repo and adds your commits *on top of them*. The commit history on your local branch now looks like:
+Because your local branch and your `userName/jaspRegression` repository is based on the code from the Wednesday commit, you'll be 1 commit behind. Before you can add your "2nd commit" you need to catch up by rebasing.  Firstly, you rebase your local work station with the new code from the commit "The 4th commit from jasp-stats/jaspRegression/master". Secondly, you update your `userName/jaspRegression` repository. Importantly, you want to avoid having Joris's code "The 4th commit from jasp-stats/jaspRegression/master" being added to your PR, as this leads to that code being merged into `jasp-stats/jaspRegression/master` twice.
+
+For the first step you `rebase`. Rebase takes the commit history from the main repo/the target branch and adds your commits *on top of them*. The commit history on your local branch (work station) now looks like:
 
 ```
 commit (Thursday)  "My 1st commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-Now you add your new commits to satisfy the code review, and the commit history on your local branch looks like:
+Now you add your new commits to satisfy the code review, and the commit history on your local branch looks like this:
 
 ```
 commit (Friday)    "My 2nd commit"
 commit (Thursday)  "My 1st commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-You are happy with the changes, so you decide to `git push` to your GitHub repository, which should update the PR. However, `git` tells you that the branches diverged and you should try `git pull`. This is because while you rebased you reordered the commit order in your local repository, but your GitHub repository remained unchainged:
+You are happy with the changes, so you decide to `git push` to your own GitHub repository `userName/jaspRegression`, which should update the PR. However, `git` tells you that the branches diverged and you should try `git pull`. This is because while you rebased, you reordered the commit order in your local work station, but your GitHub repository remained unchanged. Your PR and `userName/jaspRegression` branch's commit history still looks like this:
 
 ```
 commit (Thursday)  "My 1st commit"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-`git` does not know whether  "My 1st commit" should come ahead of "The 4th commit from jasp-stats/master" or the other way around. So it tells you to get the commit history from your GitHub repository *into* your local repository using `git pull`. If you do this, then the commit history on your local repository becomes:
+#### Problem: if you pull aka don't do this
+The correct solution is given in [the next subsection](#solution-pushing-instead-of-pulling). Here we describe what goes wrong. `git` does not know whether  "My 1st commit" should come ahead of "The 4th commit from jasp-stats/jaspRegression/master" or the other way around. So it tells you to get the commit history from your GitHub repository *into* your local work station using `git pull`. If you do this things get messed up, as the commit history on your local repository then becomes:
 
 ```
 commit (Friday)    "My 2nd commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
 commit (Thursday)  "My 1st commit"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
-And `git` is happy: Your local repository is just two commits ahead of your GitHub repository, so now you can call `git push` without problems. This makes your GitHub repository the same as our local repository:
+By pulling this commit history is copied over to your local work station, which thus looks like this:
 
 ```
 commit (Friday)    "My 2nd commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
 commit (Thursday)  "My 1st commit"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
 The problem is that the PR made from your GitHub branch now contains three commits:
 
 ```
 commit (Friday)    "My 2nd commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
 commit (Thursday)  "My 1st commit"
 ```
 
-This is wrong because "The 4th commit from jasp-stats/master" is already in `jasp-stats/master`! The only thing your PR should contain should be your two commits.
+This is wrong because "The 4th commit from jasp-stats/jaspRegression/master" is already in `jasp-stats/jaspRegression/master`! The only thing your PR should contain should be your own two commits.
 
-Solution: If you find yourself in the situation described above, do not use `git pull`. Instead, use `git push -f`. This option *forces* the push to GitHub and is akin to saying "I don't care what is the commit history on my GitHub repository, I am sure my local repository is the correct one.". If you do that, both your local and GitHub repositories will contain the following history:
+#### Solution pushing instead of pulling
+Solution: If you find yourself in the situation described above, do not use `git pull`. Instead, use `git push -f`. This option *forces* the push to GitHub and is akin to saying "I don't care what the commit history is on my GitHub repository "cloud", I am sure my local work station is the correct one.". If you do that, both your local and GitHub repositories will contain the following history:
 
 ```
 commit (Friday)    "My 2nd commit"
 commit (Thursday)  "My 1st commit"
-commit (Friday)    "The 4th commit from jasp-stats/master"
-commit (Wednesday) "The 3rd commit from jasp-stats/master"
-commit (Tuesday)   "The 2nd commit from jasp-stats/master" 
-commit (Monday)    "The 1st commit from jasp-stats/master"
+commit (Friday)    "The 4th commit from jasp-stats/jaspRegression/master"
+commit (Wednesday) "The 3rd commit from jasp-stats/jaspRegression/master"
+commit (Tuesday)   "The 2nd commit from jasp-stats/jaspRegression/master"
+commit (Monday)    "The 1st commit from jasp-stats/jaspRegression/master"
 ```
 
 And your PR will correctly contain only your two commits.
