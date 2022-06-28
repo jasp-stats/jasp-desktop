@@ -4,7 +4,6 @@
 #include "utilities/qutils.h"
 #include "log.h"
 #include "analysis/jaspcontrol.h"
-#include "data/columnsmodel.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	: ListModelTableViewBase(parent)
@@ -12,11 +11,11 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	_keepRowsOnReset = false;
 	setAcceptedRowsTrue();
 
-	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter				);
-	connect(DataSetTableModel::singleton(),	&DataSetTableModel::modelReset,		this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
-	connect(_tableView,			SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))								);
-	connect(_tableView,			SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
-	connect(_tableView,			SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
+	connect(this,					&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter				);
+	connect(infoProviderModel(),	&QAbstractItemModel::modelReset,				this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
+	connect(_tableView,				SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))								);
+	connect(_tableView,				SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
+	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
 
 }
 
@@ -48,7 +47,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return size_t(DataSetTableModel::singleton()->rowCount());
+	return requestInfo(VariableInfo::RowCount).toUInt();
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -164,11 +163,9 @@ void ListModelFilteredDataEntry::initialValuesChanged()
 		const Terms& terms = _tableView->initialValuesControl()->model()->terms();
 		if (terms.size() > 0)
 		{
-			std::string initColName = terms[0].asString();
-			DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
-			int colIndex = dataSetModel->getColumnIndex(initColName);
-			for (int i = 0; i < dataSetModel->rowCount(); i++)
-				_initialValues.push_back(dataSetModel->data(dataSetModel->index(i, colIndex)).toDouble());
+			QList<QVariant> values = requestInfo(VariableInfo::DoubleValues, terms[0].asQString()).toList();
+			for (const QVariant& value : values)
+				_initialValues.push_back(value.toDouble());
 		}
 	}
 	fillTable();
@@ -277,10 +274,7 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 
 	std::string colName = _tableTerms.colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
-	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
-	int colIndex = dataSetModel->getColumnIndex(colName);
-
-	return dataSetModel->data(dataSetModel->index(int(rowData), colIndex), role);
+	return requestInfo(VariableInfo::Value, tq(colName), rowData);
 }
 
 
@@ -292,15 +286,11 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
 
-	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
 
-	if (dataSetModel->columnCount() >= 0 && colIndex < _tableTerms.colNames.size() && colIndex >= 0)
+	if (colIndex < _tableTerms.colNames.size() && colIndex >= 0)
 	{
-		std::string colName		= _tableTerms.colNames[colIndex].toStdString();
-		int			colIndex	= dataSetModel->getColumnIndex(colName);
-
-		if (colIndex > -1)
-			return int(dataSetModel->getMaximumColumnWidthInCharacters(colIndex));
+		QString colName	= _tableTerms.colNames[colIndex];
+		return requestInfo(VariableInfo::MaxWidth, colName).toInt();
 	}
 
 

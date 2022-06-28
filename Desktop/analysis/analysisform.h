@@ -23,7 +23,6 @@
 #include <QQuickItem>
 
 #include "boundcontrol.h"
-#include "analysis/variableinfo.h"
 #include "analysis/analysisbase.h"
 #include "widgets/listmodel.h"
 #include "widgets/listmodeltermsavailable.h"
@@ -34,7 +33,6 @@
 class ListModelTermsAssigned;
 class JASPControl;
 class ExpanderButtonBase;
-class ColumnsModel;
 
 ///
 /// The backend for the `Form{}` used in all JASP's well, qml forms
@@ -44,7 +42,7 @@ class ColumnsModel;
 /// Each time a JASPControl is initialized, it is registered by the form, and when the form is initialized it sets up the JASPControls either by their default values, 
 /// or by the values stored in a JASP file (when a JASP file is loaded).
 /// The interface errors and warnings are managed by this class.
-class AnalysisForm : public QQuickItem, public VariableInfoProvider
+class AnalysisForm : public QQuickItem
 {
 	Q_OBJECT
 	Q_PROPERTY(QString		title				READ title				WRITE setTitle				NOTIFY titleChanged				)
@@ -102,9 +100,6 @@ signals:
 	void					analysisChanged();
 	void					rSourceChanged(const QString& name);
 	void					titleChanged();
-
-protected:
-	QVariant				requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
 
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet

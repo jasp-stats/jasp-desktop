@@ -35,11 +35,6 @@ void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControl
 	endResetModel();
 }
 
-QVariant ListModelAvailableInterface::requestInfo(const Term &term, VariableInfo::InfoType info) const
-{
-	return VariableInfoConsumer::requestInfo(term, info);
-}
-
 void ListModelAvailableInterface::sortItems(SortType sortType)
 {
 	beginResetModel();
@@ -80,7 +75,7 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 		QList<QPair<QString, int> > termsTypeList;
 
 		for (const QString& term : termsList)
-			termsTypeList.push_back(QPair<QString, int>(term, requestInfo(term, VariableInfo::VariableType).toInt()));
+			termsTypeList.push_back(QPair<QString, int>(term, requestInfo(VariableInfo::VariableType, term).toInt()));
 
 		std::sort(termsTypeList.begin(), termsTypeList.end(),
 				  [&](const QPair<QString, int>& a, const QPair<QString, int>& b) {

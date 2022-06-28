@@ -27,7 +27,7 @@
 
 class ListModelAssignedInterface;
 
-class ListModelAvailableInterface: public ListModelDraggable, public VariableInfoProvider, public Sortable
+class ListModelAvailableInterface: public ListModelDraggable, public Sortable
 {
 	Q_OBJECT
 public:
@@ -39,8 +39,6 @@ public:
 	virtual void resetTermsFromSources(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
-			QVariant requestInfo(const Term &term, VariableInfo::InfoType info)			const override;
-
 			void sortItems(SortType sortType)											override;
 
 			void										addAssignedModel(ListModelAssignedInterface* model);

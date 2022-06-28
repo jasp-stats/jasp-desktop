@@ -21,7 +21,6 @@
 #include "analysis/analysisform.h"
 #include "jasplistcontrol.h"
 #include "listmodellabelvalueterms.h"
-#include "data/columnsmodel.h"
 #include "log.h"
 #include <QQmlEngine>
 
@@ -48,14 +47,12 @@ SourceItem::SourceItem(
 	_rSources					= rSources;
 
 	_isValuesSource				= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isColumnsModel				= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
+	_isVariableInfoModel		= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
 	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
-	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt()) : JASPControl::CombinationType::NoCombination;
-	_onlyTermsWithXComponents	= map.contains("onlyTermsWithXComponents")	? map["onlyTermsWithXComponents"].toInt()	: 0;
 	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
 	if (!_controlName.isEmpty())											_usedControls.insert(_controlName);
-	if (_nativeModel == ColumnsModel::singleton())							_isColumnsModel = true;
+	if (isInfoProviderModel(_nativeModel))										_isVariableInfoModel = true;
 	if (_modelUse.contains("levels"))										_listControl->setUseSourceLevels(true);
 	if (_listControl->useSourceLevels() && !_modelUse.contains("levels"))	_modelUse.append("levels");
 
@@ -87,7 +84,7 @@ SourceItem::SourceItem(JASPListControl *listControl, const QString& rSourceName,
 }
 
 SourceItem::SourceItem(JASPListControl *listControl)
-	:  QObject(listControl), _listControl(listControl), _isColumnsModel(true)
+	:  QObject(listControl), _listControl(listControl), _isVariableInfoModel(true)
 {
 	_setUp();
 }
@@ -102,7 +99,6 @@ void SourceItem::connectModels()
 	if (_isRSource && form)
 		connect(form,	&AnalysisForm::rSourceChanged,				this, &SourceItem::_rSourceChanged);
 
-	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
 	if (_nativeModel)
 	{
 		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_dataChangedHandler);
@@ -112,13 +108,14 @@ void SourceItem::connectModels()
 		connect(_nativeModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
 	}
 
-	if (columnsModel)
+	if (_isVariableInfoModel)
 	{
-		connect(columnsModel,	&ColumnsModel::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
-		connect(columnsModel,	&ColumnsModel::columnTypeChanged,	controlModel, &ListModel::sourceColumnTypeChanged );
-		connect(columnsModel,	&ColumnsModel::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
-		connect(columnsModel,	&ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
-		connect(columnsModel,	&ColumnsModel::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
+		VariableInfo* variableInfo = VariableInfo::info();
+		connect(variableInfo,	&VariableInfo::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
+		connect(variableInfo,	&VariableInfo::columnTypeChanged,	controlModel, &ListModel::sourceColumnTypeChanged );
+		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
+		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 	}
 
 	if (_listModel)
@@ -146,9 +143,8 @@ void SourceItem::disconnectModels()
 	if (_nativeModel)
 		_nativeModel->disconnect(this);
 
-	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
-	if (columnsModel)
-		columnsModel->disconnect(controlModel);
+	if (_isVariableInfoModel)
+		infoProviderModel()->disconnect(controlModel);
 
 	if (_listModel)
 		_listModel->disconnect(controlModel);
@@ -159,9 +155,7 @@ void SourceItem::disconnectModels()
 
 void SourceItem::_resetModel()
 {
-	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
-
-	if (!columnsModel || !columnsModel->blockSignals())
+	if (!_isVariableInfoModel || !requestInfo(VariableInfo::SignalsBlocked).toBool())
 		_listControl->model()->sourceTermsReset();
 }
 
@@ -183,10 +177,10 @@ void SourceItem::_setUp()
 {
 	if (_isValuesSource)								_nativeModel = new ListModelLabelValueTerms(_listControl, _values);
 	else if (_listControl->form() && !_name.isEmpty())	_nativeModel = _listControl->form()->getModel(_name);
-	else if (_isColumnsModel)
+	else if (_isVariableInfoModel)
 	{
-		_nativeModel		= ColumnsModel::singleton();
-		_nativeModelRole	= ColumnsModel::NameRole;
+		_nativeModel		= infoProviderModel();
+		_nativeModelRole	= requestInfo(VariableInfo::NameRole).toInt();
 	}
 
 	if (_nativeModel || _isRSource)

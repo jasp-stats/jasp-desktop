@@ -21,51 +21,61 @@
 
 #include <QVariant>
 #include <QIcon>
-#include "term.h"
-#include "column.h"
-#include "qquick/jasptheme.h"
+#include <QAbstractItemModel>
+#include "columntype.h"
 
-///
-/// This is a mechanism to give some extra information about a variable in a VariablesList.
-/// There is a provider and a consumer.
-/// The provider is in fact always the form. It knows from which dataset comes the variable, and can tell which type it has, and which labels it uses.
-/// The consumer is usually the VariablesList, so that it can set for example the right type icon for each variable.
-///
-class VariableInfo
+class VariableInfoProvider;
+
+// The Provider/Consumer mechanism makes an interface so that the consumers (the QML models) get their data without having to know how the Provider furnishes this data
+// Typically, for a JASP application, the Provider will be the ColumnsModel, but if the QML forms are used somewhere else, another Provider should be instantiated.
+// We need a QObject class so that we can use the Qt signals.
+// The VariableInfoProvider and VariableInfoConsumer are classes used by ColumnsModel, ListModel or SourceItem, that are already QObject classes.
+// As a class cannot derive from 2 QObject classes, the VariableInfoProvider and VariableInfoConsumer cannot be QObject classes.
+// So we just use the VariableInfo class (which is a singleton intialized at the start of the application) to propagate the signals
+class VariableInfo : public QObject
 {
+	Q_OBJECT
 public:
-	enum InfoType { VariableType, Labels, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon };
+	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, RowCount, Labels, StringValues, DoubleValues, NameRole, Value, MaxWidth, SignalsBlocked };
+	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType };
+
+public:
+	VariableInfo(VariableInfoProvider* provider);
+
+	static VariableInfo*		info();
+	static QString				getIconFile(columnType colType, IconType type);
+
+	VariableInfoProvider*		provider()	{ return _provider; }
+
+signals:
+	void namesChanged(QMap<QString, QString> changedNames);
+	void columnsChanged(QStringList changedColumns);
+	void columnTypeChanged(QString colName);
+	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
+	void labelsReordered(QString columnName);
+
+private:
+	VariableInfoProvider *	_provider	= nullptr;
+
+	static VariableInfo *_singleton;
 };
 
 class VariableInfoProvider
 {
-	friend class VariableInfoConsumer;
-
-
-protected:
-	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const = 0;
+public:
+	virtual QVariant				provideInfo(VariableInfo::InfoType info, const QString& name = "", int row = 0)	const	= 0;
+	virtual QAbstractItemModel*		providerModel()																			{ return nullptr;			}
 };
 
 class VariableInfoConsumer
 {
 public:
-	VariableInfoConsumer() {}
+	VariableInfoConsumer() { _provider = (VariableInfo::info() ? VariableInfo::info()->provider() : nullptr);
+}
 
-	void setInfoProvider(VariableInfoProvider *provider)
-	{
-		_provider = provider;
-	}
-
-	QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const
-	{
-		if (_provider != nullptr)	return _provider->requestInfo(term, info);
-		else						return QVariant();
-	}
-
-	QVariant requestLabel(const Term &term) const
-	{
-		return requestInfo(term, VariableInfo::Labels);
-	}
+	QVariant				requestInfo(VariableInfo::InfoType info, const QString &name = "", int row = 0)	const	{ return _provider ? _provider->provideInfo(info, name, row)	: QVariant();	}
+	bool					isInfoProviderModel(QObject* model)												const	{ return _provider ? model == _provider->providerModel()		: false;		}
+	QAbstractItemModel*		infoProviderModel()																		{ return _provider ? _provider->providerModel()					: nullptr;		}
 
 private:
 	VariableInfoProvider *_provider = nullptr;

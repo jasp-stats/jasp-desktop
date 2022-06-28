@@ -199,6 +199,5 @@ void ListModelFactorsForm::factorAdded(int index, VariablesListBase* listView)
 	Terms terms(factor->initTerms);
 	ListModelDraggable* model = listView->draggableModel();
 	model->setCopyTermsWhenDropped(true);
-	model->setInfoProvider(listView->form());
 	model->initTerms(terms);
 }

@@ -498,7 +498,10 @@ DropArea
 					onMyFormChanged:
 					{
 						if(myForm != null)
+						{
 							myForm.backgroundForms = backgroundFlickable;
+							myForm.customMenu = customMenu
+						}
 					}
 
 					onMyAnalysisChanged:

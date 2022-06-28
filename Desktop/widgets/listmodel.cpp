@@ -29,8 +29,6 @@ ListModel::ListModel(JASPListControl* listView)
 	: QAbstractTableModel(listView)
 	, _listView(listView)
 {
-	setInfoProvider(listView->form());
-
 	// Connect all apecific signals to a general signal
 	connect(this,	&ListModel::modelReset,				this,	&ListModel::termsChanged);
 	connect(this,	&ListModel::rowsRemoved,			this,	&ListModel::termsChanged);
@@ -212,7 +210,7 @@ QStringList ListModel::termsTypes()
 
 	for (const Term& term : terms())
 	{
-		columnType type = columnType(requestInfo(term, VariableInfo::VariableType).toInt());
+		columnType type = columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt());
 		if (type != columnType::unknown)
 			types.insert(columnTypeToQString(type));
 	}
@@ -386,9 +384,9 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	{
 		const Term& term = myTerms.at(row_t);
 		if (!listView()->containsVariables() || term.size() != 1)	return "";
-		if (role == ListModel::ColumnTypeRole)						return requestInfo(term, VariableInfo::VariableTypeName);
-		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(term, VariableInfo::VariableTypeIcon);
-		else if (role == ListModel::ColumnTypeDisabledIconRole)		return requestInfo(term, VariableInfo::VariableTypeDisabledIcon);
+		if (role == ListModel::ColumnTypeRole)						return requestInfo(VariableInfo::VariableTypeName, term.asQString());
+		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(VariableInfo::VariableTypeIcon, term.asQString());
+		else if (role == ListModel::ColumnTypeDisabledIconRole)		return requestInfo(VariableInfo::VariableTypeDisabledIcon, term.asQString());
 		break;
 	}
 	}
@@ -433,7 +431,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 
 		for (const Term& term : terms)
 		{
-			columnType type = columnType(requestInfo(term, VariableInfo::VariableType).toInt());
+			columnType type = columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt());
 			if (types.contains(type))
 				result.add(term);
 		}
@@ -461,7 +459,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		Terms allLabels;
 		for (const Term& term : result)
 		{
-			Terms labels = requestInfo(term, VariableInfo::Labels).toStringList();
+			Terms labels = requestInfo(VariableInfo::Labels, term.asQString()).toStringList();
 			if (labels.size() > 0)	allLabels.add(labels);
 			else					allLabels.add(term);
 		}

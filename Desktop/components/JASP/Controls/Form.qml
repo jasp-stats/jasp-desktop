@@ -37,6 +37,7 @@ AnalysisForm
 	property int	minorVersion		: 0
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
 	property var	backgroundForms		: undefined
+	property var	customMenu			: undefined
 	property alias	columns				: contentArea.columns
 	property bool	runAnalysisWhenOptionChange : true
 

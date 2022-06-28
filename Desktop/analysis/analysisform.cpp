@@ -49,39 +49,6 @@ AnalysisForm::~AnalysisForm()
 	Log::log() << "~AnalysisForm " << this << std::endl;
 }
 
-QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
-{
-	ColumnsModel* colModel = ColumnsModel::singleton();
-	if (!colModel) return QVariant();
-
-	try
-	{
-		int i = colModel->getColumnIndex(term.asString());
-
-		if (i < 0)
-			return "";
-
-		QModelIndex index = colModel->index(i, 0);
-		switch(info)
-		{
-		case VariableInfo::VariableType:				return									colModel->data(index, ColumnsModel::ColumnTypeRole);
-		case VariableInfo::VariableTypeName:			return columnTypeToQString(columnType((	colModel->data(index, ColumnsModel::ColumnTypeRole)).toInt()));
-		case VariableInfo::VariableTypeIcon:			return									colModel->data(index, ColumnsModel::IconSourceRole);
-		case VariableInfo::VariableTypeDisabledIcon:	return									colModel->data(index, ColumnsModel::DisabledIconSourceRole);
-		case VariableInfo::VariableTypeInactiveIcon:	return									colModel->data(index, ColumnsModel::InactiveIconSourceRole);
-		case VariableInfo::Labels:						return									colModel->data(index, ColumnsModel::LabelsRole);
-		}
-	}
-	catch(columnNotFound & e) {} //just return an empty QVariant right?
-	catch(std::exception & e)
-	{
-		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
-		throw e;
-	}
-	return QVariant("");
-
-}
-
 void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
 	if(_analysis && !_removed)

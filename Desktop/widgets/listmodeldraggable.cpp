@@ -126,7 +126,7 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 	if (variableTypesAllowed == 0xff || term.size() > 1)
 		return true;
 	
-	QVariant	v				= requestInfo(term, VariableInfo::VariableType);
+	QVariant	v				= requestInfo(VariableInfo::VariableType, term.asQString());
 	int			variableType	= v.toInt();
 
 	return variableType == 0 || variableType & variableTypesAllowed;

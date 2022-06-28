@@ -24,6 +24,7 @@
 #include "utilities/qutils.h"
 #include "tableviewbase.h"
 #include "textinputbase.h"
+#include "gui/preferencesmodelbase.h"
 
 using namespace std;
 

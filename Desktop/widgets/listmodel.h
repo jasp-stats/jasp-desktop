@@ -23,9 +23,9 @@
 #include <QQmlComponent>
 
 #include "common.h"
-#include "analysis/variableinfo.h"
 #include "analysis/terms.h"
 #include <json/json.h>
+#include "analysis/variableinfo.h"
 
 class JASPListControl;
 class RowControls;

@@ -50,6 +50,8 @@ public:
 	std::string				getColumnName(size_t col)				const				{ return DataSetPackage::pkg()->getColumnName(col);									}
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
 	QStringList				getColumnLabelsAsStringList(int col)	const;
+	QStringList				getColumnValuesAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsStringList(col);					}
+	QList<QVariant>			getColumnValuesAsDoubleList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsDoubleList(col);					}
 	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
 	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}

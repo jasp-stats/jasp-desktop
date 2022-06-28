@@ -32,10 +32,10 @@
 #include "rowcontrols.h"
 #include "../analysis/analysisform.h"
 #include "sourceitem.h"
-#include "data/columnsmodel.h"
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
+#include "gui/preferencesmodelbase.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -385,13 +385,12 @@ void VariablesListBase::_setAllowedVariables()
 	if (allowedColumnsTypes >= 0)
 		_variableTypesAllowed = allowedColumnsTypes;
 
-	ColumnsModel* colModel = ColumnsModel::singleton();
 	QStringList iconList;
 	for (const QString& suggectedType : suggestedColumns())
 	{
 		columnType type = columnTypeFromQString(suggectedType, columnType::unknown);
 		if (type != columnType::unknown)
-			iconList.push_back(colModel->getIconFile(type, ColumnsModel::InactiveIconType));
+			iconList.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
 	}
 	setSuggestedColumnsIcons(iconList);
 }
