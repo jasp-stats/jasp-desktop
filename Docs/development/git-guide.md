@@ -116,7 +116,7 @@ In case that rebasing fails with git telling you it could not apply some commits
 
 Remember that the best solution of merge conflicts is to avoid them at all, and that involves rebasing your repository often to make sure you are always up to date. Even if you eventually hit some conflict, rebasing often can reduce the chance things get out of hand.
 
-### Git tells you to `git pull` when rebasing
+### Git tells you to `git pull` when rebasing your PR
 
 - When `git` tells you to `git pull` while you are rebasing, you probably do not want to do that.
 - Usually, instead of pulling you'd want to push. Thus, do `git push -f` instead.
@@ -134,7 +134,7 @@ Your branch and `origin/Branch` have diverged, and have x and y different commit
   (use "git pull" to merge the remote branch into yours)
 ```
 
-Do **not** execute git pull (that is, unless you absolutely know what you are doing)!
+Do **not** execute `git pull` (that is, unless you absolutely know what you are doing)!
 
 Here, we will describe one situation when this can happen and give an alternative solution.
 
