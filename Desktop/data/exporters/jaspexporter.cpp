@@ -51,11 +51,7 @@ void JASPExporter::saveDataSet(const std::string &path, boost::function<void(int
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
 
-#ifdef _WIN32
-	int errorCode = archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
-#else
 	int errorCode = archive_write_open_filename(a, path.c_str());
-#endif
 
 	if (errorCode != ARCHIVE_OK)
 		throw std::runtime_error("File could not be opened.");
@@ -265,7 +261,7 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 			for (size_t j = 0; j < paths.size(); j++)
 			{
 				// std::ios::ate seeks to the end of stream immediately after open
-				boost::nowide::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::ate | std::ios::binary);
+				std::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::ate | std::ios::binary);
 
 				if (readTempFile.is_open())
 				{

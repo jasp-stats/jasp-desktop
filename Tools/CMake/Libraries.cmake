@@ -31,8 +31,6 @@
 #   - In addition, I tap into the MSYS2 environment, and grab some files for later
 #     use in R-Interface build. If you ran into a problem, then you probably need
 #     to set your RTOOLS_PATH that CMake can navigate its way to it.
-#   - Boost::nowide is a library that needs to be linked statically to the executable.
-#     This is not necessary on macOS and Linux.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
 
@@ -80,8 +78,7 @@ find_package(
 if(WINDOWS)
   find_package(
     Boost 1.78 REQUIRED
-    COMPONENTS nowide
-               filesystem
+    COMPONENTS filesystem
                system
                date_time
                timer
@@ -301,7 +298,7 @@ if(WIN32)
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+        "Zlib is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
 
@@ -371,24 +368,6 @@ if(WIN32)
   if(EXISTS ${RTOOLS_LIBWINPTHREAD_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_LIBWINPTHREAD_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libboost_nowide-mt.dll")
-  find_file(
-    RTOOLS_LIB_BOOST_NOWIDE_DLL
-    NAMES libboost_nowide-mt.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIB_BOOST_NOWIDE_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIB_BOOST_NOWIDE_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(

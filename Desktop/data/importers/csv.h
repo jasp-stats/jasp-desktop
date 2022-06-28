@@ -20,10 +20,9 @@
 
 #include <vector>
 #include <map>
-
+#include <string>
 #include <stdint.h>
-
-#include <boost/nowide/fstream.hpp>
+#include <fstream>
 
 ///
 /// This files is used to read CSV files
@@ -69,7 +68,7 @@ private:
 	int _rawBufferStartPos, _rawBufferEndPos;
 	int _utf8BufferStartPos, _utf8BufferEndPos;
 	std::string _path;
-	boost::nowide::ifstream _stream;
+	std::ifstream _stream;
 	bool _eof;
 
 	char _rawBuffer[32768];

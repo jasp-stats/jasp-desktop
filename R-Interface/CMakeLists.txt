@@ -12,8 +12,6 @@
 #     then, it won't recompile things.
 #   - The output library, R-Interface.dll, and some of its artifact will be transferred
 #     to the Build/ directory and linked dynamically to the JASPEngine, etc.
-#   - Boost::nowide, `libboost_nowide`, needs to be linked to the R-Interface, and later on
-#     it needs to be copied to the Build/ and Install/ folder.
 #
 # On Linux/macOS,
 #   Here we are building a static library, and it will be link statically to the rest
@@ -136,21 +134,6 @@ if(WIN32)
     message(FATAL_ERROR "libjsoncpp-24.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
   endif()
 
-  message(CHECK_START "Checking for 'libboost_nowide-mt.dll.a'")
-  find_file(
-    RTOOLS_LIB_BOOST_NOWIDE_DLL_A
-    NAMES libboost_nowide-mt.dll.a
-    PATHS ${RTOOLS_PATH}/lib REQUIRED
-    NO_DEFAULT_PATH)
-
-  if(RTOOLS_LIB_BOOST_NOWIDE_DLL_A)
-    message(CHECK_PASS "found.")
-    message(STATUS "  ${RTOOLS_LIB_BOOST_NOWIDE_DLL_A}")
-  else()
-    message(CHECK_FAIL "not found in ${RTOOLS_PATH}/lib")
-    message(FATAL_ERROR "libboost_nowide-mt.dll.a is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-boost`.")
-  endif()
-
   add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
@@ -176,8 +159,7 @@ if(WIN32)
            # R
            ${_LIB_R}
            #
-           ${RTOOLS_LIB_JSONCPP_DLL} 
-           ${RTOOLS_LIB_BOOST_NOWIDE_DLL_A}
+           ${RTOOLS_LIB_JSONCPP_DLL}
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
@@ -217,8 +199,7 @@ else()
 
   target_link_libraries(
     R-Interface
-    PUBLIC $<$<PLATFORM_ID:Windows>:Boost::nowide>
-           Boost::filesystem
+    PUBLIC Boost::filesystem
            Boost::system
            Boost::date_time
            Boost::timer

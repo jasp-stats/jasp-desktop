@@ -40,7 +40,6 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/nowide/convert.hpp>
 
 #include "processinfo.h"
 #include "utils.h"
@@ -61,14 +60,14 @@ string Dirs::tempDir()
 	boost::filesystem::path pa;
 
 #ifdef _WIN32
-	TCHAR buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	char buffer[MAX_PATH];
+	if ( ! SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
 		throw Exception("App Data directory could not be retrieved");
 
-	dir = nowide::narrow(buffer);
+	dir = std::string(buffer);
 	dir += "/JASP/temp";
 
-	pa = nowide::widen(dir);
+	pa = (dir);
 
 #else
 
@@ -116,9 +115,9 @@ string Dirs::exeDir()
 
 #ifdef _WIN32
 	HMODULE hModule = GetModuleHandleW(NULL);
-	WCHAR path[MAX_PATH];
+	CHAR path[MAX_PATH];
 
-	int ret = GetModuleFileNameW(hModule, path, MAX_PATH);
+	int ret = GetModuleFileNameA(hModule, path, MAX_PATH);
 
 	if (ret == 0)
 	{
@@ -127,7 +126,7 @@ string Dirs::exeDir()
 		throw Exception(ss.str());
 	}
 
-	string r = nowide::narrow(path);
+	string r = (path);
 
 	char pathbuf[MAX_PATH];
 	r.copy(pathbuf, MAX_PATH);

@@ -19,7 +19,6 @@
 #include "tempfiles.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/nowide/convert.hpp>
 #include "log.h"
 
 using namespace std;
@@ -78,21 +77,21 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	}
 #elif defined _WIN32
 
-	wstring inName  = nowide::widen(_semaphoreInName);
-	wstring outName = nowide::widen(_semaphoreOutName);
+	string inName  = (_semaphoreInName);
+	string outName = (_semaphoreOutName);
 
-	LPCWSTR inLPCWSTR  = inName.c_str();
-	LPCWSTR outLPCWSTR = outName.c_str();
+	LPCSTR inLPCSTR  = inName.c_str();
+	LPCSTR outLPCSTR = outName.c_str();
 
 	if (isSlave == false)
 	{
-		_semaphoreIn  = CreateSemaphore(NULL, 0, 1, inLPCWSTR);
-		_semaphoreOut = CreateSemaphore(NULL, 0, 1, outLPCWSTR);
+		_semaphoreIn  = CreateSemaphoreA(NULL, 0, 1, inLPCSTR);
+		_semaphoreOut = CreateSemaphoreA(NULL, 0, 1, outLPCSTR);
 	}
 	else
 	{
-		_semaphoreIn  = OpenSemaphore(SYNCHRONIZE,							false, inLPCWSTR);
-		_semaphoreOut = OpenSemaphore(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	false, outLPCWSTR);
+		_semaphoreIn  = OpenSemaphoreA(SYNCHRONIZE,								false, inLPCSTR);
+		_semaphoreOut = OpenSemaphoreA(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	false, outLPCSTR);
 	}
 
 #else

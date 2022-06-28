@@ -79,8 +79,6 @@ set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                             ${CMAKE_BINARY_DIR}/Desktop)
 
 if(WINDOWS)
-  target_link_libraries(JASPEngine PUBLIC Boost::nowide)
-
   target_compile_definitions(
     JASPEngine
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
@@ -99,8 +97,6 @@ if(WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBWINPTHREAD_DLL}
-            ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIB_BOOST_NOWIDE_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBJSONCPP_DLL}
             ${CMAKE_BINARY_DIR}

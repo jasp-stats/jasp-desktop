@@ -65,7 +65,7 @@ After installing Rtool42, you will find a new program in your Start Menu. Search
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu toolchain boost jsoncpp bison flex make autoconf automake git wget cmake
+pacman -Syu toolchain boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  mingw-w64-ucrt-x86_64-libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
 ```
 
 #### Downloading and Building ReadStat (on Rtool42)
@@ -76,7 +76,7 @@ In addition to these libraries, you need to manually download and install the Re
 wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz
 tar xvf readstat-1.1.7.tar.gz
 cd readstat-1.1.7
-./configure
+./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install
 ```

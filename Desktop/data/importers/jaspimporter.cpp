@@ -19,7 +19,7 @@
 
 
 #include <boost/filesystem.hpp>
-#include <boost/nowide/fstream.hpp>
+#include <fstream>
 
 #include <sys/stat.h>
 
@@ -282,7 +282,7 @@ void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function
 			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 TempFiles::createSpecific);
 	
 			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream);
-			boost::nowide::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
+			std::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
 
 			static char streamBuff[8192 * 32];
 			file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770

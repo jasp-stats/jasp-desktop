@@ -20,8 +20,6 @@
 #include <iostream>
 #include <sstream>
 #include <boost/filesystem.hpp>
-#include <boost/nowide/convert.hpp>
-#include <boost/nowide/fstream.hpp>
 
 #include "columnencoder.h"
 #include "utils.h"
@@ -63,7 +61,7 @@ void TempFiles::createSessionDir()
 	boost::filesystem::remove_all(sessionPath, error);
 	boost::filesystem::create_directories(sessionPath, error);
 
-	nowide::fstream f;
+	std::fstream f;
 	f.open(_statusFileName.c_str(), ios_base::out);
 	f.close();
 
@@ -328,10 +326,6 @@ vector<string> TempFiles::retrieveList(int id)
 		{
 			boost::filesystem::path pad = itr->path();
 			string absPath = pad.generic_string();
-#ifdef _WIN32
-			wstring wtest = pad.generic_wstring();
-			absPath = nowide::narrow(wtest);
-#endif
 			string relPath = absPath.substr(_sessionDirName.size()+1);
 
 			files.push_back(relPath);
