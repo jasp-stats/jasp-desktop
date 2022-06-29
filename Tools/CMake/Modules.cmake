@@ -40,7 +40,7 @@ set(JASP_EXTRA_MODULES
     "jaspLearnBayes"
     "jaspMachineLearning"
     "jaspMetaAnalysis"
-    "jaspNetwork"
+    #"jaspNetwork" #gdata not available
     "jaspProcessControl"
     "jaspReliability"
     "jaspSem"
@@ -162,21 +162,32 @@ configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
 # TODO:
 #   - [ ] The following commands can be turned into a function or a macro, but
 #         for now, I would like to keep a granular control over differnt steps
-add_custom_command(
-  WORKING_DIRECTORY ${R_HOME_PATH}
-  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
-  USES_TERMINAL
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-  COMMAND
-    ${CMAKE_COMMAND} -D
-    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-    R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
-    SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
-    -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-  COMMENT "------ Installing 'jaspBase'")
-
+if(APPLE)
+	add_custom_command(
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+	  USES_TERMINAL
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+			  --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+	  COMMAND
+		${CMAKE_COMMAND} -D
+		NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+		-D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+		R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
+		SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
+		-P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+	  COMMENT "------ Installing 'jaspBase'")
+else()
+	add_custom_command(
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+	  USES_TERMINAL
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+	          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+	  COMMENT "------ Installing 'jaspBase'")
+endif()
+  
+  
 if(INSTALL_R_MODULES)
 
   # Cleaning the renv-path on Windows only, for now.
@@ -201,7 +212,8 @@ if(INSTALL_R_MODULES)
     make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
-
+			   
+if(APPLE)			   
     add_custom_target(
       ${MODULE}
       USES_TERMINAL
@@ -226,7 +238,20 @@ if(INSTALL_R_MODULES)
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
-
+else()
+	add_custom_target(
+      ${MODULE}
+      USES_TERMINAL
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing '${MODULE}'")
+endif()
     # install(
     #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
@@ -248,6 +273,7 @@ if(INSTALL_R_MODULES)
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
+if(APPLE)			   
     add_custom_target(
       ${MODULE}
       USES_TERMINAL
@@ -275,7 +301,24 @@ if(INSTALL_R_MODULES)
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
+else()
+	add_custom_target(
+      ${MODULE}
+      USES_TERMINAL
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS
+        ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
+        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
 
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing '${MODULE}'")
+endif()
     # install(
     #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/

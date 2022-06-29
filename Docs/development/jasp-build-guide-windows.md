@@ -76,6 +76,7 @@ In addition to these libraries, you need to manually download and install the Re
 wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz
 tar xvf readstat-1.1.7.tar.gz
 cd readstat-1.1.7
+export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install

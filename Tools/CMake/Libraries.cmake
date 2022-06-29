@@ -265,14 +265,14 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
+  
   message(CHECK_START "Looking for libreadstat-1.dll")
   find_file(
     RTOOLS_LIBREADSTAT_DLL
     NAMES libreadstat-1.dll
     PATHS ${RTOOLS_PATH}/bin
     NO_DEFAULT_PATH)
-
+ 
   if(EXISTS ${RTOOLS_LIBREADSTAT_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_LIBREADSTAT_DLL}")
@@ -283,6 +283,7 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
+  
 
   message(CHECK_START "Looking for zlib1.dll")
   find_file(
@@ -350,6 +351,24 @@ if(WIN32)
   if(EXISTS ${RTOOLS_LIBSTDCPP_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_LIBSTDCPP_DLL}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+  
+  message(CHECK_START "Looking for msys-2.0.dll")
+  find_file(
+    RTOOLS_MSYS_DLL
+    NAMES msys-2.0.dll
+    PATHS ${RTOOLS_PATH}/../usr/bin
+    NO_DEFAULT_PATH)
+
+  if(EXISTS ${RTOOLS_MSYS_DLL})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${RTOOLS_MSYS_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(

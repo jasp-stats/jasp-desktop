@@ -94,14 +94,16 @@ if(WINDOWS)
     POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBGCC_S_SEH_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}
-            ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}
+			${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_MSYS_DLL}
+			${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBWINPTHREAD_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBJSONCPP_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}
-            ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}
+			${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_ZLIB_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBICONV_DLL}
