@@ -42,6 +42,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 	connect(ColumnsModel::singleton(), &ColumnsModel::labelsChanged,	this,		&ListModelCustomContrasts::sourceLabelsChanged);
 	connect(ColumnsModel::singleton(), &ColumnsModel::labelsReordered,	this,		&ListModelCustomContrasts::sourceLabelsReordered);
 	connect(ColumnsModel::singleton(), &ColumnsModel::columnsChanged,	this,		&ListModelCustomContrasts::sourceColumnsChanged);
+	connect(ColumnsModel::singleton(), &ColumnsModel::modelReset	,	this,		&ListModelCustomContrasts::sourceTermsReset);
 }
 
 void ListModelCustomContrasts::sourceTermsReset()

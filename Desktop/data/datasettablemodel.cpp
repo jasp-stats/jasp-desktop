@@ -51,3 +51,23 @@ bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex & sou
 {
 	return (_showInactive || DataSetPackage::pkg()->getRowFilter(source_row));
 }
+
+QStringList DataSetTableModel::getColumnLabelsAsStringList(int col) const
+{
+	QStringList labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(col);
+	QStringList notUsedLabels = labels;
+	int max = rowCount();
+
+	for (int i = 0; i < max; i++)
+	{
+		QString value = data(index(i, col)).toString();
+		notUsedLabels.removeAll(value);
+		if (notUsedLabels.count() == 0) break;
+	}
+
+	// The order of the labels must be kept.
+	for (const QString& notUsedLabel : notUsedLabels)
+		labels.removeAll(notUsedLabel);
+
+	return labels;
+}
