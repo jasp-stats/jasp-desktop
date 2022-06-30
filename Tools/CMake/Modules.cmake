@@ -46,7 +46,7 @@ set(JASP_EXTRA_MODULES
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspVisualModeling"
-    "jaspProphet"
+    #"jaspProphet"
     )
 
 list(
