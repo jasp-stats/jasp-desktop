@@ -1133,6 +1133,11 @@ void DataSetPackage::writeDataSetToOStream(std::ostream & out, bool includeCompu
 {
 	std::vector<Column*> cols;
 
+	//Add a UTF-8 BOM
+	out.put(0xEF);
+	out.put(0xBB);
+	out.put(0xBF);
+
 	int columnCount = _dataSet->columnCount();
 	for (int i = 0; i < columnCount; i++)
 	{
