@@ -1445,7 +1445,7 @@ QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	cons
 	QStringList list;
 	if(columnIndex < 0 || columnIndex >= columnCount()) return list;
 
-	for(const Label & label : _dataSet->column(columnIndex).labels())
+	for (const Label & label : _dataSet->column(columnIndex).labels())
 		list.append(tq(label.text()));
 
 	return list;
