@@ -438,6 +438,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 	case int(specialRoles::columnIsComputed):				return isColumnComputed(section);
 	case int(specialRoles::computedColumnError):			return tq(getComputedColumnError(section));
 	case int(specialRoles::computedColumnIsInvalidated):	return isColumnInvalidated(section);
+	case int(specialRoles::columnType):						return int(getColumnType(section));
 	}
 
 	return QVariant();
