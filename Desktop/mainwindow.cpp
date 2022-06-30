@@ -1377,7 +1377,7 @@ void MainWindow::startDataEditorHandler()
 			}
 
 			QFileInfo pkgFile(_package->currentFile());
-			if (pkgFile.dir().exists() && !pkgFile.absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
+			if (pkgFile.dir().exists() && !pkgFile.absolutePath().startsWith(AppDirs::examples()) && !_package->dataFileReadOnly()) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
 				name = pkgFile.dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
 
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
