@@ -41,9 +41,7 @@ public:
 				int			columnsFilteredCount()					const				{ return DataSetPackage::pkg()->columnsFilteredCount();								}
 	Q_INVOKABLE bool		isColumnNameFree(QString name)								{ return DataSetPackage::pkg()->isColumnNameFree(name);								}
 	Q_INVOKABLE	QVariant	columnTitle(int column)					const				{ return DataSetPackage::pkg()->getColumnTitle(column);								}
-	Q_INVOKABLE QVariant	columnIcon(int column)					const				{ return DataSetPackage::pkg()->getColumnIcon(column);								}
 	Q_INVOKABLE QVariant	getColumnTypesWithCorrespondingIcon()	const				{ return DataSetPackage::pkg()->getColumnTypesWithCorrespondingIcon();				}
-	Q_INVOKABLE bool		columnHasFilter(int column)				const				{ return DataSetPackage::pkg()->getColumnHasFilter(column);							}
 	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const				{ return DataSetPackage::pkg()->isColumnUsedInEasyFilter(column);					}
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
 	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType)	{ return DataSetPackage::pkg()->setColumnTypeFromQML(columnIndex, newColumnType);	}

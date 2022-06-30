@@ -94,9 +94,7 @@ FocusScope
 					anchors.left:			parent.left
 					anchors.margins:		4
 
-					function myColumnType() {return dataSetModel.columnIcon(columnIndex)}
-
-					source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
+					source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[columnType]
 					width:	headerRoot.__iconDim
 					height: headerRoot.__iconDim
 
@@ -104,11 +102,11 @@ FocusScope
 									height:	height * 2 }
 
 
-					function setColumnType(columnType)
+					function setColumnType(newColumnType)
 					{
-						dataSetModel.setColumnTypeFromQML(columnIndex, columnType)
+						dataSetModel.setColumnTypeFromQML(columnIndex, newColumnType)
 
-						if(labelModel.chosenColumn === columnIndex && colIcon.myColumnType() === columnTypeScale)
+						if(labelModel.chosenColumn === columnIndex && columnType === columnTypeScale)
 							labelModel.visible = false;
 					}
 
@@ -204,12 +202,29 @@ FocusScope
 				{
 					id:			colIsInvalidated
 
-					width:		headerRoot.__iconDim
+
+					width:		columnIsInvalidated ? headerRoot.__iconDim : 0
 					visible:	columnIsInvalidated
 
 					anchors.right:			colFilterOn.left
 					anchors.verticalCenter:	parent.verticalCenter
 					anchors.margins:		visible ? 1 : 0
+				}
+
+				Image
+				{
+					id:						colFilterOn
+
+					width:					columnIsFiltered ? headerRoot.__iconDim : 0
+					height:					headerRoot.__iconDim
+
+					source:					jaspTheme.iconPath + "filter.png"
+					sourceSize {	width:	headerRoot.__iconDim * 2
+									height:	headerRoot.__iconDim * 2 }
+
+					anchors.right:			colHasError.left
+					anchors.margins:		columnIsFiltered ? 1 : 0
+					anchors.verticalCenter:	parent.verticalCenter
 				}
 
 				Image
@@ -224,7 +239,7 @@ FocusScope
 					sourceSize {	width:	headerRoot.__iconDim * 2
 									height:	headerRoot.__iconDim * 2 }
 
-					anchors.right:			colIsInvalidated.left
+					anchors.right:			parent.right
 					anchors.verticalCenter:	parent.verticalCenter
 					anchors.margins:		visible ? 1 : 0
 
@@ -244,22 +259,6 @@ FocusScope
 
 				}
 
-				Image
-				{
-					id:						colFilterOn
-
-					width:					columnIsFiltered ? headerRoot.__iconDim : 0
-					height:					headerRoot.__iconDim
-
-					source:					jaspTheme.iconPath + "filter.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					anchors.right:			parent.right
-					anchors.margins:		columnIsFiltered ? 1 : 0
-					anchors.verticalCenter:	parent.verticalCenter
-				}
-
 				MouseArea
 				{
 					anchors.left:	colIsComputed.right
@@ -271,7 +270,7 @@ FocusScope
 						if(columnIndex >= 0)
 						{
 
-							if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
+							if(columnType  !== columnTypeScale)
 							{
 								var changedIndex		= labelModel.chosenColumn	!== columnIndex
 								labelModel.chosenColumn	= columnIndex;
@@ -286,11 +285,11 @@ FocusScope
 						}
 
 					hoverEnabled:		true
-					ToolTip.visible:	containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
+					ToolTip.visible:	containsMouse && (columnType !== columnTypeScale)
 					ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
 					ToolTip.timeout:	3000
 					ToolTip.delay:		500
-					cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+					cursorShape:		(columnType !== columnTypeScale) || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
 				}
 			}
 		}
