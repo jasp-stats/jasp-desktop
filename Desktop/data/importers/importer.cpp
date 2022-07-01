@@ -1,6 +1,6 @@
 #include "importer.h"
-#include "utilities/qutils.h"
-#include "utilities/settings.h"
+#include "qutils.h"
+#include "settings.h"
 #include "log.h"
 #include <QVariant>
 

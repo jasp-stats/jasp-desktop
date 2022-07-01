@@ -22,7 +22,7 @@
 #include <QStandardPaths>
 #include <QDir>
 
-#include "utilities/settings.h"
+#include "settings.h"
 #include "log.h"
 
 ComputerFileSystem::ComputerFileSystem(QObject *parent)

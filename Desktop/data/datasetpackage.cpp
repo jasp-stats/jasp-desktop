@@ -17,16 +17,16 @@
 
 #include "datasetpackage.h"
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "sharedmemory.h"
 #include <QThread>
 #include "engine/enginesync.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include "columnencoder.h"
 #include "timers.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 #include "utils.h"
-#include "gui/messageforwarder.h"
+#include "messageforwarder.h"
 #include "datasetpackagesubnodemodel.h"
 
 

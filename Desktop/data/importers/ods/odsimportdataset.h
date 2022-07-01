@@ -23,9 +23,6 @@
 #define ODSIMPORTDATASET_H
 
 #include "../importdataset.h"
-#include "../odsimporter.h"
-#include "odsimportcolumn.h"
-
 #include <qstring.h>
 
 

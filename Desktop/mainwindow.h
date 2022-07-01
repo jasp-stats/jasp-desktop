@@ -25,7 +25,7 @@
 #include <QFileSystemWatcher>
 
 #include "analysis/analyses.h"
-#include "analysis/analysisform.h"
+#include "analysisform.h"
 #include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
@@ -45,12 +45,12 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonmodel.h"
 #include "modules/upgrader/upgrader.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include "results/ploteditormodel.h"
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "widgets/filemenu/filemenu.h"
 

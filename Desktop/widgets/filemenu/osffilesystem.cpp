@@ -34,10 +34,10 @@
 #include "osf/onlinedatamanager.h"
 #include "osf/onlineusernodeosf.h"
 #include "widgets/filemenu/osf.h"
-#include "utilities/simplecrypt.h"
-#include "utilities/settings.h"
-#include "utilities/qutils.h"
-#include <gui/messageforwarder.h>
+#include "simplecrypt.h"
+#include "settings.h"
+#include "qutils.h"
+#include <messageforwarder.h>
 #include <iostream>
 
 const QString OSFFileSystem::rootelementname = "Projects";

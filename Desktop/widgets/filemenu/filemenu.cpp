@@ -19,8 +19,8 @@
 #include "filemenu.h"
 
 #include <QFileInfo>
-#include "utilities/settings.h"
-#include "gui/messageforwarder.h"
+#include "settings.h"
+#include "messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"

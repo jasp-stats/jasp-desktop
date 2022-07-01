@@ -1,7 +1,7 @@
 #include "processhelper.h"
 #include "appdirs.h"
 #include "tempfiles.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utils.h"
 #include "log.h"
 

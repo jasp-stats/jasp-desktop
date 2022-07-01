@@ -2,7 +2,7 @@
 #define ENTRYBASE_H
 
 #include <QQuickItem>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "description.h"
 #include "descriptionchildbase.h"
 

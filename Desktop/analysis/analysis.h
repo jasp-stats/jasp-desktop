@@ -30,7 +30,7 @@
 #include "analysisbase.h"
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "modules/upgrader/upgradechange.h"
 #include <QFileSystemWatcher>
 #include <QQuickItem>
@@ -48,7 +48,7 @@ class AnalysisForm;
 class Analysis : public AnalysisBase
 {
 	Q_OBJECT
-\
+
 	friend class Analyses;
 
 	typedef std::map<std::string, std::set<std::string>> optionColumns;

@@ -22,7 +22,7 @@
 #include "filemenuobject.h"
 #include "osflistmodel.h"
 #include "osfbreadcrumbslistmodel.h"
-#include "../sortmenumodel.h"
+#include "sortmenumodel.h"
 
 #include <QQmlContext>
 #include <QNetworkReply>

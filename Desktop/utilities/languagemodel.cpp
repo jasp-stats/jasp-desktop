@@ -1,6 +1,6 @@
 #include "languagemodel.h"
 #include "log.h"
-#include "utilities/settings.h"
+#include "settings.h"
 #include <QDebug>
 #include <QDir>
 #include "dirs.h"

@@ -31,14 +31,13 @@
 #include "processinfo.h"
 #include "common.h"
 #include "appinfo.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utils.h"
 #include "tempfiles.h"
 #include "timers.h"
 #include "gui/preferencesmodel.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 #include "log.h"
-#include "utilities/qutils.h"
 #include "utilities/processhelper.h"
 
 using namespace boost::interprocess;

@@ -22,11 +22,10 @@
 #include "dirs.h"
 #include "analyses.h"
 #include "analysisform.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 #include "utils.h"
-#include "utilities/settings.h"
-#include "utilities/qutils.h"
+#include "settings.h"
 #include "gui/preferencesmodel.h"
 
 

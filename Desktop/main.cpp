@@ -21,7 +21,7 @@
 
 #include "utilities/application.h"
 #include <QQuickWindow>
-#include "utilities/settings.h"
+#include "settings.h"
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <boost/filesystem.hpp>
 #include <codecvt>

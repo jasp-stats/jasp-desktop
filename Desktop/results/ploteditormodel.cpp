@@ -1,11 +1,11 @@
 #include "ploteditormodel.h"
 #include "analysis/analyses.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "gui/preferencesmodel.h"
 #include "log.h"
 #include "tempfiles.h"
 #include <QDir>
-#include "gui/messageforwarder.h"
+#include "messageforwarder.h"
 
 namespace PlotEditor
 {

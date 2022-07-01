@@ -22,9 +22,9 @@
 #include <QFileInfo>
 
 
-#include "utilities/settings.h"
-#include "utilities/qutils.h"
-#include "gui/messageforwarder.h"
+#include "settings.h"
+#include "qutils.h"
+#include "messageforwarder.h"
 #include "osf/onlineusernodeosf.h"
 
 OSF::OSF(QObject *parent): FileMenuObject(parent)

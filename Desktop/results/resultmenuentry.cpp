@@ -17,7 +17,7 @@
 //
 
 #include "resultmenuentry.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 
 //the window.blabla() functions are defined main.js and the hasBlabla are defined jaspwidgets.js
 

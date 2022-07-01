@@ -21,7 +21,7 @@
 #include <QFileInfo>
 #include <QEvent>
 #include "log.h"
-#include "utilities/settings.h"
+#include "settings.h"
 
 RecentFilesFileSystem::RecentFilesFileSystem(QObject *parent)
 	: FileSystem(parent)

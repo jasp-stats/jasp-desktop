@@ -18,10 +18,10 @@
 
 #include "jaspversionchecker.h"
 
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "gui/aboutmodel.h"
 #include "appinfo.h"
-#include "analysis/knownissues.h"
+#include "knownissues.h"
 #include "log.h"
 
 JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)

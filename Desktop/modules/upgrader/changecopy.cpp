@@ -1,5 +1,5 @@
 #include "changecopy.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 namespace Modules
 {

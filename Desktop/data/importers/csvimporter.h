@@ -20,7 +20,7 @@
 
 #include "importer.h"
 #include <QCoreApplication>
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 ///
 /// This description is never going to be more useful than the name of the class

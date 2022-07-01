@@ -3,7 +3,7 @@
 #include "analysis/analysis.h"
 #include "../dynamicmodule.h"
 #include <QFile>
-#include "gui/messageforwarder.h"
+#include "messageforwarder.h"
 #include <QTimer>
 
 namespace Modules
