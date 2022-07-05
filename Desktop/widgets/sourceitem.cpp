@@ -36,21 +36,23 @@ SourceItem::SourceItem(
 		)
 		: QObject(listControl), _listControl(listControl)
 {
-	QString modelUse = map["use"].toString().trimmed();
+	QString modelUse			= map["use"].toString().trimmed();
 
-	_name					= map["name"].toString();
-	_controlName			= map["controlName"].toString();
-	_modelUse				= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
-	_conditionExpression	= map["condition"].toString();
-	_values					= values;
-	_nativeModel			= nativeModel;
-	_discardSources			= discardSources;
-	_rSources				= rSources;
+	_name						= map["name"].toString();
+	_controlName				= map["controlName"].toString();
+	_modelUse					= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
+	_conditionExpression		= map["condition"].toString();
+	_values						= values;
+	_nativeModel				= nativeModel;
+	_discardSources				= discardSources;
+	_rSources					= rSources;
 
-	_isValuesSource			= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isColumnsModel			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
-	_combineWithOtherModels	= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
-	_nativeModelRole		= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
+	_isValuesSource				= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
+	_isColumnsModel				= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
+	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
+	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt()) : JASPControl::CombinationType::NoCombination;
+	_onlyTermsWithXComponents	= map.contains("onlyTermsWithXComponents")	? map["onlyTermsWithXComponents"].toInt()	: 0;
+	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
 	if (!_controlName.isEmpty())											_usedControls.insert(_controlName);
 	if (_nativeModel == ColumnsModel::singleton())							_isColumnsModel = true;
@@ -494,6 +496,19 @@ Terms SourceItem::_readAllTerms()
 			// of the variables of this 'native' model (probably the columnsModel),
 			// then just use the filterTerms method of the model object of the current control.
 			terms = _listControl->model()->filterTerms(terms, _modelUse);
+	}
+
+	if (_combineTerms != JASPControl::CombinationType::NoCombination)
+		terms = terms.combineTerms(_combineTerms);
+
+	if (_onlyTermsWithXComponents > 0)
+	{
+		Terms termsWithOnlyXComponents;
+		for (const Term & term : terms)
+			if (term.size() == _onlyTermsWithXComponents)
+				termsWithOnlyXComponents.add(term);
+
+		terms = termsWithOnlyXComponents;
 	}
 
 	return terms;

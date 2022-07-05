@@ -50,6 +50,7 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QString			valueRole				READ valueRole				WRITE setValueRole				NOTIFY valueRoleChanged				)
 	Q_PROPERTY( bool			containsVariables		READ containsVariables										NOTIFY containsVariablesChanged		)
 	Q_PROPERTY( bool			containsInteractions	READ containsInteractions									NOTIFY containsInteractionsChanged	)
+	Q_PROPERTY( double			maxTermsWidth			READ maxTermsWidth											NOTIFY maxTermsWidthChanged			)
 
 
 public:
@@ -92,6 +93,7 @@ public:
 			bool				encodeValue()				const override	{ return containsVariables() || containsInteractions();	}
 			bool				useSourceLevels()			const			{ return _useSourceLevels;		}
 			void				setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
+			double				maxTermsWidth();
 	virtual stringvec			usedVariables()				const;
 
 signals:
@@ -104,6 +106,7 @@ signals:
 			void				valueRoleChanged();
 			void				containsVariablesChanged();
 			void				containsInteractionsChanged();
+			void				maxTermsWidthChanged();
 
 public slots:
 			void				setContainsVariables();

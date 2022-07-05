@@ -103,7 +103,7 @@ void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValue
 	{
 		const QString& label = labelValue.first;
 		const QString& value = labelValue.second;
-		newTerms.add(label);
+		newTerms.add(Term::readTerm(label)); // The string can be an interaction between different variables (eg: a * b)
 		_valueToLabelMap[value] = label;
 		_labelToValueMap[label] = value;
 	}
