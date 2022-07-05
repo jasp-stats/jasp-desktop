@@ -28,6 +28,7 @@
 #include <QByteArray>
 
 #include "term.h"
+#include "jaspcontrol.h"
 
 ///
 /// Terms is a list of Term. They are used in VariablesList
@@ -106,6 +107,7 @@ public:
 	Terms crossCombinations()					const;
 	Terms wayCombinations(int ways)				const;
 	Terms ffCombinations(const Terms &terms);
+	Terms combineTerms(JASPControl::CombinationType type);
 
 	std::string asString() const;
 	bool hasDuplicate() const	{ return _hasDuplicate; }

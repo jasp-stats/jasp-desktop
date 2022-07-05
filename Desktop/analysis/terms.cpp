@@ -391,6 +391,42 @@ Terms Terms::ffCombinations(const Terms &terms)
 	return newTerms;
 }
 
+Terms Terms::combineTerms(JASPControl::CombinationType type)
+{
+	Terms combinedTerms;
+
+	size_t nbTerms = size();
+
+	switch (type)
+	{
+	case JASPControl::CombinationType::CombinationCross:
+		combinedTerms = crossCombinations();
+		break;
+	case JASPControl::CombinationType::CombinationInteraction:
+		combinedTerms = wayCombinations(nbTerms);
+		break;
+	case JASPControl::CombinationType::Combination2Way:
+		combinedTerms = nbTerms < 2 ? Terms() : wayCombinations(2);
+		break;
+	case JASPControl::CombinationType::Combination3Way:
+		combinedTerms = nbTerms < 3 ? Terms() : wayCombinations(3);
+		break;
+	case JASPControl::CombinationType::Combination4Way:
+		combinedTerms = nbTerms < 4 ? Terms() : wayCombinations(4);
+		break;
+	case JASPControl::CombinationType::Combination5Way:
+		combinedTerms = nbTerms < 5 ? Terms() : wayCombinations(5);
+		break;
+	case JASPControl::CombinationType::NoCombination:
+	default:
+		combinedTerms = *this;
+		break;
+	}
+
+	return combinedTerms;
+}
+
+
 string Terms::asString() const
 {
 	if (_terms.size() == 0)

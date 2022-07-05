@@ -166,59 +166,21 @@ Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
 	return terms;
 }
 
-void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType)
+
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const RowControlsValues&)
 {
+	if (terms.size() == 0)
+		return Terms();
+	
 	Terms dropped;
 	dropped.setSortParent(availableModel()->allTerms());
 	dropped.set(terms);
 
-	int nbTerms = int(dropped.size());
-	
-	Terms newTerms;
+	Terms newTerms = dropped.combineTerms(JASPControl::CombinationType::CombinationCross);
 
-	switch (assignType)
-	{
-	case JASPControl::AssignType::AssignDefault:
-	case JASPControl::AssignType::AssignCross:
-		newTerms = dropped.crossCombinations();
-		break;
-	case JASPControl::AssignType::AssignInteraction:
-		newTerms = dropped.wayCombinations(nbTerms);
-		break;
-	case JASPControl::AssignType::AssignMainEffects:
-		newTerms = dropped.wayCombinations(1);
-		break;
-	case JASPControl::AssignType::AssignAll2Way:
-		newTerms = dropped.wayCombinations(nbTerms < 2 ? nbTerms : 2);
-		break;
-	case JASPControl::AssignType::AssignAll3Way:
-		newTerms = dropped.wayCombinations(nbTerms < 3 ? nbTerms : 3);
-		break;
-	case JASPControl::AssignType::AssignAll4Way:
-		newTerms = dropped.wayCombinations(nbTerms < 4 ? nbTerms : 4);
-		break;
-	case JASPControl::AssignType::AssignAll5Way:
-		newTerms = dropped.wayCombinations(nbTerms < 5 ? nbTerms : 5);
-		break;
-	default:
-		(void)newTerms;
-	}
-
-	_addTerms(newTerms, false);	
+	_addTerms(newTerms, false);
 	setTerms();
-}
 
-Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
-{
-	Q_UNUSED(dropItemIndex);
-
-	Terms result;
-	
-	if (terms.size() == 0)
-		return result;
-	
-	addCombinedTerms(terms, JASPControl::AssignType::AssignCross);
-	
 	return Terms();
 }
 

@@ -66,6 +66,7 @@ public:
 	const QString&			controlName()				const	{ return _controlName;				}
 	const QStringList&		modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
+	bool					generateInteractions()		const	{ return _combineWithOtherModels || (_combineTerms != JASPControl::CombinationType::NoCombination); }
 	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
 	bool					isColumnsModel()			const	{ return _isColumnsModel;			}
 	bool					isNativeModel()				const	{ return _nativeModel != nullptr;	}
@@ -94,24 +95,26 @@ private slots:
 	void									_rSourceChanged(const QString& name);
 
 private:
-	JASPListControl		*			_listControl			= nullptr;
+	JASPListControl		*			_listControl				= nullptr;
 	QString							_name,
 									_controlName;
 	QStringList						_modelUse;
 	QVector<SourceItem*>			_discardSources;
 	QVector<SourceItem*>			_rSources;
 	JASPListControl::LabelValueMap	_values;
-	bool							_isValuesSource			= false;
-	bool							_isRSource				= false;
-	ListModel			*			_listModel				= nullptr;
-	QAbstractItemModel	*			_nativeModel			= nullptr;
-	int								_nativeModelRole		= Qt::DisplayRole;
-	bool							_isColumnsModel			= false;
-	bool							_combineWithOtherModels	= false;
+	bool							_isValuesSource				= false;
+	bool							_isRSource					= false;
+	ListModel			*			_listModel					= nullptr;
+	QAbstractItemModel	*			_nativeModel				= nullptr;
+	int								_nativeModelRole			= Qt::DisplayRole;
+	bool							_isColumnsModel				= false;
+	bool							_combineWithOtherModels		= false;
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;
 	QSet<QString>					_usedControls;
-	bool							_connected				= false;
+	bool							_connected					= false;
+	JASPControl::CombinationType	_combineTerms				= JASPControl::CombinationType::NoCombination;
+	int								_onlyTermsWithXComponents	= 0;
 };
 
 #endif // SOURCEITEM_H

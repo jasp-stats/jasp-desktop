@@ -44,7 +44,6 @@ public slots:
 	void sourceNamesChanged(QMap<QString, QString> map)												override;
 	
 protected:
-	void addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType);
 	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
 	
 	void setTerms();

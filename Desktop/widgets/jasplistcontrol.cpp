@@ -121,7 +121,7 @@ void JASPListControl::setContainsInteractions()
 			if (sourceItem->listModel())
 			{
 				JASPListControl* sourceControl = sourceItem->listModel()->listView();
-				if (sourceControl->containsInteractions() || sourceItem->combineWithOtherModels())
+				if (sourceControl->containsInteractions() || sourceItem->generateInteractions())
 					containsInteractions = true;
 			}
 		}
@@ -148,6 +148,10 @@ void JASPListControl::setUp()
 	connect(this,		&JASPListControl::sourceChanged,	this,	&JASPListControl::sourceChangedHandler);
 	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
 	connect(listModel,	&ListModel::termsChanged,			[this]() { emit countChanged(); });
+	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::maxTermsWidthChanged);
+	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &JASPListControl::maxTermsWidthChanged);
+	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged, this, &JASPListControl::maxTermsWidthChanged);
+
 }
 
 void JASPListControl::cleanUp()
@@ -230,6 +234,21 @@ QString JASPListControl::getSourceType(QString name)
 int JASPListControl::count()
 {
 	return model() ? model()->rowCount() : 0;
+}
+
+double JASPListControl::maxTermsWidth()
+{
+	if (!model()) return 0;
+	double maxWidth = 0;
+
+	QFontMetricsF& metrics = JaspTheme::fontMetrics();
+	for (const Term& term : model()->terms())
+	{
+		double width = metrics.horizontalAdvance(term.asQString());
+		if (width > maxWidth) maxWidth = width;
+	}
+
+	return maxWidth;
 }
 
 std::vector<std::string> JASPListControl::usedVariables() const
