@@ -138,10 +138,6 @@ message(STATUS "Installing Required R Modules...")
 
 execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/writeImage.R
-          ${MODULES_BINARY_PATH}/
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/zzzWrappers.R
-          ${MODULES_BINARY_PATH}/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
           ${MODULES_BINARY_PATH}/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R

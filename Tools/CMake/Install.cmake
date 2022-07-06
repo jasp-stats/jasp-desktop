@@ -314,9 +314,7 @@ if(WIN32)
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
   install(
-    FILES ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
-          ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
-          ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
+    FILES ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
           ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
     DESTINATION Modules/)
 
