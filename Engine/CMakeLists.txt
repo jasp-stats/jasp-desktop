@@ -18,6 +18,12 @@ endif()
 file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
+file(GLOB JASPRESULTS_HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspBase/src/*.h")
+file(GLOB JASPRESULTS_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspBase/src/*.cpp")
+
+# this target is not compiled and only exists so that the sources and headers of jaspResults show up in the project and can be opened with Ctrl+k
+add_custom_target(jaspResults ALL SOURCES ${JASPRESULTS_SOURCE_FILES} ${JASPRESULTS_HEADER_FILES})
+
 add_executable(JASPEngine ${SOURCE_FILES} ${HEADER_FILES})
 
 add_dependencies(JASPEngine R-Interface jaspBase)
