@@ -45,12 +45,12 @@ public:
 
 signals:
 	void currentQMLChanged(QString currentQML);
-	void selectedButtonChanged(ButtonType selectedButton);
+	void selectedButtonChanged(ResourceButtons::ButtonType selectedButton);
 
 public slots:
 	void setVisible(ResourceButtons::ButtonType button, bool visibility);
 	void setCurrentQML(QString currentQML);
-	void setSelectedButton(ButtonType selectedButton);
+	void setSelectedButton(ResourceButtons::ButtonType selectedButton);
 
 private:
 	void loadButtonData(std::vector<DataRow> & data);

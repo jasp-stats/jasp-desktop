@@ -36,12 +36,12 @@ public:
 	void refresh();
 
 signals:
-	void selectedActionChanged(FileOperation selectedAction);
-	void buttonClicked(FileOperation selectedAction);
+	void selectedActionChanged(	ActionButtons::FileOperation selectedAction);
+	void buttonClicked(			ActionButtons::FileOperation selectedAction);
 
 public slots:
-	void setEnabled(ActionButtons::FileOperation operation, bool enabledState);
-	void setSelectedAction(FileOperation selectedAction);
+	void setEnabled(			ActionButtons::FileOperation operation, bool enabledState);
+	void setSelectedAction(		ActionButtons::FileOperation selectedAction);
 
 
 private:

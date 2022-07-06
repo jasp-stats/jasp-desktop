@@ -52,7 +52,7 @@ QC.ScrollView
         {
 			id:						warning
 			warning:				true
-			visible:				preferencesModel.dbShowWarning
+			visible:				preferencesModel.dbShowWarning && preferencesModel.dbRememberMe
 			dontShowAgain:			preferencesModel.dbShowWarning
 			onDontShowAgainClicked: preferencesModel.dbShowWarning = false
 			text:					qsTr(
@@ -250,7 +250,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 PrefsTextInput
                 {
                     id:						dbPasswordInput
-                    nextEl:					connectButton
+					nextEl:					rememberMe
                     text:					fileMenuModel.database.password
                     onTextChanged:			fileMenuModel.database.password = text;
 
@@ -261,14 +261,32 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 }
             }
 
-            RoundedButton
-            {
-                id:					connectButton
-                text:				qsTr("Connect to database")
-                onClicked:			fileMenuModel.database.connect();
-                KeyNavigation.tab:	dbQuery.textInput
-            }
+			Item
+			{
+				anchors.left:		parent.left;
+				anchors.leftMargin: dbPasswordInput.x
+				anchors.right:		parent.right;
+				height:				Math.max(rememberMe.height, connectButton.height)
 
+				CheckBox
+				{
+					id:					rememberMe
+					KeyNavigation.tab:	connectButton
+					label:				qsTr("Remember me")
+					checked:			preferencesModel.dbRememberMe
+					onCheckedChanged:	preferencesModel.dbRememberMe = checked;
+				}
+
+				RoundedButton
+				{
+					id:					connectButton
+					text:				qsTr("Connect to database")
+					onClicked:			fileMenuModel.database.connect();
+					KeyNavigation.tab:	dbQuery.textInput
+
+					anchors.right:		parent.right
+				}
+			}
 
             RowLayout
             {
