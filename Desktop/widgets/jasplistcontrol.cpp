@@ -243,10 +243,7 @@ double JASPListControl::maxTermsWidth()
 
 	QFontMetricsF& metrics = JaspTheme::fontMetrics();
 	for (const Term& term : model()->terms())
-	{
-		double width = metrics.horizontalAdvance(term.asQString());
-		if (width > maxWidth) maxWidth = width;
-	}
+		maxWidth = std::max(maxWidth, metrics.horizontalAdvance(term.asQString()));
 
 	return maxWidth;
 }
