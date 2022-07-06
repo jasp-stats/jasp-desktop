@@ -12,7 +12,7 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, boost::fu
 		throw std::runtime_error("DatabaseImporter::loadFile received illegal locator!"); //shouldnt occur normally
 	
 	_info = DatabaseConnectionInfo(json);
-	
+
 	if(!_info.connect())
 		throw std::runtime_error(fq(tr("Failed to connect to database %1 at %2 with user %3, last error was: '%4'")
 										.arg(_info._database)

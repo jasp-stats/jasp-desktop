@@ -34,6 +34,7 @@
 #include "appinfo.h"
 #include "log.h"
 #include "utilenums.h"
+#include "data/databaseconnectioninfo.h"
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
@@ -88,7 +89,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	metaData["dataFilePath"]		= package->dataFilePath();
 	metaData["dataFileReadOnly"]	= package->dataFileReadOnly();
 	metaData["dataFileTimestamp"]	= package->dataFileTimestamp();
-	metaData["database"]			= package->databaseJson();
+	metaData["database"]			= DatabaseConnectionInfo(package->databaseJson()).toJson(true); //Convert again to drop password if not remembering "me"
 	Json::Value emptyValuesJson		= Json::arrayValue;
 
 	const std::vector<std::string>& emptyValuesVector = Utils::getEmptyValues();

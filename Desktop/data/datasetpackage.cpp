@@ -28,7 +28,7 @@
 #include "utils.h"
 #include "gui/messageforwarder.h"
 #include "datasetpackagesubnodemodel.h"
-
+#include "databaseconnectioninfo.h"
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
 
@@ -1574,12 +1574,17 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 		throw std::runtime_error("Cannot start synching with a database if we arent connected to a database...");
 	
 	_databaseIntervalSyncher.stop(); //Is this even necessary? Probaly not but lets do it just in case
+
+	DatabaseConnectionInfo dbCI(_database);
 	
-	int interval = _database["interval"].asInt();
-	
-	if(interval > 0)
+	if(dbCI._interval > 0)
 	{
-		_databaseIntervalSyncher.setInterval(1000 * 60 * _database["interval"].asInt());
+		if(dbCI._hadPassword && !dbCI._rememberMe && dbCI._password == "")
+		{
+			MessageForwarder::
+		}
+
+		_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);
 		_databaseIntervalSyncher.start();
 	}
 	

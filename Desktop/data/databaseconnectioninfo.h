@@ -13,7 +13,7 @@ public:
 	DatabaseConnectionInfo(const Json::Value & json) { fromJson(json); }
 	
 	void		fromJson(const Json::Value & json);
-	Json::Value	toJson() const;
+	Json::Value	toJson(bool forJaspFile = false) const;
 
 	bool		connect()	const;
 	void		close()		const;
@@ -30,6 +30,8 @@ public:
 			_query			= "";
 	int		_port			= 0,
 			_interval		= 0;
+	bool	_rememberMe		= false,
+			_hadPassword	= false;
 	
 };
 

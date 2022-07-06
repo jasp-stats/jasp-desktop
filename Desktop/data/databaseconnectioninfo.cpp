@@ -4,18 +4,20 @@
 #include <QSqlError>
 #include "log.h"
 
-Json::Value DatabaseConnectionInfo::toJson() const
+Json::Value DatabaseConnectionInfo::toJson(bool forJaspFile) const
 {
 	Json::Value out = Json::objectValue;
-	
-	out["dbType"]	= DbTypeToString(_dbType);
-	out["username"]	= fq(_username);
-	out["password"]	= fq(_password);
-	out["database"]	= fq(_database);
-	out["hostname"]	= fq(_hostname);
-	out["query"]	= fq(_query);
-	out["port"]		= _port;
-	out["interval"]	= _interval;
+
+	out["dbType"]		= DbTypeToString(_dbType);
+	out["username"]		= fq(_username);
+	out["password"]		= !forJaspFile || _rememberMe ? fq(_password) : "";
+	out["database"]		= fq(_database);
+	out["hostname"]		= fq(_hostname);
+	out["query"]		= fq(_query);
+	out["port"]			= _port;
+	out["interval"]		= _interval;
+	out["rememberMe"]	= _rememberMe;
+	out["hadPassword"]	= _hadPassword;
 
 	return out;
 }
@@ -24,14 +26,16 @@ void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 {
 	//Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
 	
-	_dbType		= DbTypeFromString(	json["dbType"]		.asString() )	;
-	_username	= tq(				json["username"]	.asString() )	;
-	_password	= tq(				json["password"]	.asString() )	;
-	_database	= tq(				json["database"]	.asString() )	;
-	_hostname	= tq(				json["hostname"]	.asString() )	;
-	_query		= tq(				json["query"]		.asString() )	;
-	_port		=					json["port"]		.asUInt()		;
-	_interval	=					json["interval"]	.asInt()		;
+	_dbType			= DbTypeFromString(	json["dbType"]		.asString() )	;
+	_username		= tq(				json["username"]	.asString() )	;
+	_password		= tq(				json["password"]	.asString() )	;
+	_database		= tq(				json["database"]	.asString() )	;
+	_hostname		= tq(				json["hostname"]	.asString() )	;
+	_query			= tq(				json["query"]		.asString() )	;
+	_port			=					json["port"]		.asUInt()		;
+	_interval		=					json["interval"]	.asInt()		;
+	_rememberMe		=					json["rememberMe"]	.asBool()		;
+	_hadPassword	=					json["hadPassword"]	.asBool()		;
 
 }
 
