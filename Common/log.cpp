@@ -1,6 +1,6 @@
 #define ENUM_DECLARATION_CPP
 #include "log.h"
-#include <boost/nowide/cstdio.hpp>
+#include <cstdio>
 #include <iostream>
 #include <chrono>
 #ifdef WIN32
@@ -10,12 +10,9 @@
 #include "utils.h"
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/null.hpp>
-#include <boost/nowide/fstream.hpp>
 #include <codecvt>
 
-typedef boost::nowide::ofstream bofstream; //Use this to work around problems on Windows with utf8 conversion
-
-static bofstream _logFile;// = bofstream();
+static std::ofstream _logFile;// = bofstream();
 
 std::string Log::logFileNameBase	= "";
 

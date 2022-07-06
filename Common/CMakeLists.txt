@@ -59,7 +59,6 @@ target_compile_definitions(
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
 elseif(WINDOWS)
-  target_link_libraries(Common PUBLIC Boost::nowide)
 
   target_compile_definitions(
     Common

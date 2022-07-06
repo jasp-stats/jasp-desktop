@@ -17,7 +17,6 @@
 
 #include "resultexporter.h"
 #include "utils.h"
-#include <boost/nowide/fstream.hpp>
 #include <QFile>
 #include <QTextDocument>
 #include <QPrinter>
@@ -72,7 +71,7 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void(i
 	}
 	else
 	{
-		boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
+		std::ofstream outfile(path.c_str(), std::ios::out);
 
 		outfile << DataSetPackage::pkg()->analysesHTML() << std::flush;
 		outfile.close();

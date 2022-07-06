@@ -3,45 +3,33 @@ name: Windows
 on:
   push:
     branches:
-      - wip-windows-cmake-build
+      - github-action-debug
 
 jobs:
   qt:
     name: Windows Build
-    if: false
     runs-on: windows-latest
-    env:
-      CONAN_REVISIONS_ENABLED: 1
 
     steps:
-      - uses: msys2/setup-msys2@v2
-        name: Preparing the MSYS2 Environment
+      - name: Cache Qt
+        uses: actions/cache@v1  # not v2!
         with:
-          msystem: mingw64
-          update: true
-          install: >-
-            mingw-w64-x86_64-boost
-            mingw-w64-x86_64-jsoncpp
-            bison
-            flex
-            libtool
-            mercurial
-      - shell: msys2 {0}
-        run: |
-           echo "Preparing ReadStat"
-           git clone https://github.com/WizardMac/ReadStat.git
-           cd ReadStat
-           autoreconf -fi
-           autoupdate
-           ./configure
-           make install
-           echo "Preparing JAGS"
-           hg clone http://hg.code.sf.net/p/mcmc-jags/code-0
-           cd code-0
-           aclocal
-           autoreconf -fi
-           ./configure
-           make install
+          path: ../Qt/6.2.4
+          key: ${{ runner.os }}-QtCache-Qt6-2
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '6.2.4'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          install-deps: 'true'
+          modules: 'qtwebengine'
+          cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+          setup-python: 'true'
+          tools: ''
+          set-env: 'true'
+          tools-only: 'false'
       - name: Installing Conan
         run: |
           pip install wheel setuptools
@@ -51,17 +39,10 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile show default
-          conan profile update settings.compiler.version=16 default
-          conan profile update settings.compiler.runtime=MDd default
-          conan profile update settings.build_type=Debug default
-          conan profile show default
       - uses: actions/checkout@v2
-        name: Cloning JASP
-      - name: Configuring Conan
+      - name: Configure
         run: |
-          conan install .
-          conan install conanfile.qt.txt
-      - name: Pre-configuring the JASP Desktop
-        run: cmake -S . -B build -DGITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_R_MODULES=ON -DCONAN_DISABLE_CHECK_COMPILER=ON
+          git submodule update --init
+          cmake -S . -B build -DGITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DGITHUB_BUILD=ON
       - name: Building JASP
         run: cmake --build build

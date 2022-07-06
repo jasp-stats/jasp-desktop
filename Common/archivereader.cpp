@@ -42,15 +42,13 @@ ArchiveReader::~ArchiveReader()
 
 #ifdef _WIN32
 #define ARCHIVE_OPEN_FILENAME_FUNC archive_read_open_filename_w
-#define PATH_CONVERSION	boost::nowide::widen
 #else
 #define ARCHIVE_OPEN_FILENAME_FUNC archive_read_open_filename
-#define PATH_CONVERSION
 #endif
 
 void ArchiveReader::openEntry(const string &archivePath, const string &entryPath)
 {
-	boost::filesystem::path pathArchive = PATH_CONVERSION(archivePath);
+	boost::filesystem::path pathArchive = archivePath;
 	
 	_archiveExists = boost::filesystem::exists(pathArchive);
 
@@ -190,7 +188,7 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 {
 	vector<string> files = vector<string>();
 
-	boost::filesystem::path pathArchive = PATH_CONVERSION(archivePath);
+	boost::filesystem::path pathArchive = (archivePath);
 
 	bool archiveExists = boost::filesystem::exists(pathArchive);
 

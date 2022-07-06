@@ -3,7 +3,7 @@
 #include "rbridge.h"
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include <boost/nowide/fstream.hpp>
+#include <fstream>
 #include <boost/algorithm/string/predicate.hpp>
 #include "utils.h"
 #include "appinfo.h"
@@ -26,7 +26,7 @@ std::string _system(std::string cmd)
 
 	system(cmd.c_str());
 
-	boost::nowide::ifstream readLog(path);
+	std::ifstream readLog(path);
 	std::stringstream out;
 
 	if(readLog)

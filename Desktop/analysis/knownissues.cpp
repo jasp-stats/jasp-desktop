@@ -5,7 +5,6 @@
 #include "log.h"
 #include "utilities/appdirs.h"
 #include "utils.h"
-#include <boost/nowide/fstream.hpp>
 
 //Check every day?
 #define EXPIRATION_TIME_SEC 60 * 60 * 24
@@ -21,7 +20,7 @@ KnownIssues::KnownIssues(QObject * parent) : QObject(parent)
 
 void KnownIssues::loadLocalJson(const std::string & filePath, bool saveIt)
 {
-	boost::nowide::ifstream readMe(filePath);
+	std::ifstream readMe(filePath);
 
 	Json::Value json;
 	Json::Reader().parse(readMe, json);
@@ -69,7 +68,7 @@ void KnownIssues::loadJson(const Json::Value & json, bool saveIt)
 
 	if(saveIt)
 	{
-		boost::nowide::ofstream saveHere(knownJsonPath());
+		std::ofstream saveHere(knownJsonPath());
 		saveHere << json;
 		saveHere.close();
 	}

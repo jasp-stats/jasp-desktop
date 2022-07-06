@@ -30,7 +30,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <boost/filesystem.hpp>
-#include <boost/nowide/convert.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #endif
 
@@ -87,8 +86,7 @@ long Utils::getFileModificationTime(const std::string &filename)
 {
 #ifdef _WIN32
 
-	wstring wfilename = nowide::widen(filename);
-	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE file = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (file == INVALID_HANDLE_VALUE)
 		return -1;
@@ -131,15 +129,8 @@ long Utils::getFileSize(const string &filename)
 	system::error_code ec;
 	boost::filesystem::path path;
 
-#ifdef _WIN32
-
-	path = boost::nowide::widen(filename);
-
-#else
-
 	path = filename;
 
-#endif
 
 	uintmax_t fileSize = boost::filesystem::file_size(path, ec);
 
@@ -152,8 +143,7 @@ void Utils::touch(const string &filename)
 {
 #ifdef _WIN32
 
-	wstring wfilename = nowide::widen(filename);
-	HANDLE file = CreateFile(wfilename.c_str(), FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE file = CreateFileA(filename.c_str(), FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (file == INVALID_HANDLE_VALUE)
 		return;
@@ -215,20 +205,12 @@ bool Utils::removeFile(const string &path)
 
 boost::filesystem::path Utils::osPath(const string &path)
 {
-#ifdef _WIN32
-	return boost::filesystem::path(nowide::widen(path));
-#else
 	return boost::filesystem::path(path);
-#endif
 }
 
 string Utils::osPath(const boost::filesystem::path &path)
 {
-#ifdef _WIN32
-	return nowide::narrow(path.generic_wstring());
-#else
 	return path.generic_string();
-#endif
 }
 
 void Utils::remove(vector<string> &target, const vector<string> &toRemove)

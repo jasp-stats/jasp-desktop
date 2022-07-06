@@ -3,8 +3,7 @@
 
 #ifdef _WIN32
 
-#include <boost/nowide/cstdio.hpp>
-#include <boost/nowide/stackstring.hpp>
+#include <cstdio>
 #include <fcntl.h>
 #include <io.h>
 
@@ -43,14 +42,8 @@ void io_cleanup()
 
 int handle_open(const char *path, void * io_ctx)
 {
-	boost::nowide::wstackstring wname;
-
-	if(!wname.convert(path)) {
-		errno = EINVAL;
-		return 0;
-	}
-
-    int fd = _wopen(wname.get(), O_RDONLY | O_BINARY);
+	
+    int fd = _open(path, O_RDONLY | O_BINARY);
 
 	static_cast<jasp_io_ctx*>(io_ctx)->fd = fd;
 

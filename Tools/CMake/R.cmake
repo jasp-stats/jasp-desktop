@@ -9,47 +9,58 @@
 #   - Installing RInside, and Rcpp
 #   - Interpolating all the necessary paths and passing them to the rest of the CMake
 #
-# On macOS,
+# on macOS,
+#   - Because we are cross-building, I am downloading the right Fortran, place it inside the
+#     R.framework, and make sure that R can find it. Most of this is being done in the
+#     PatchR.cmake were I modify the `etc/Makeconf`. On ARM, R uses the Fortran 11, or so; and
+#     on x86_64, it is using the Fortran 8.
 #
-#
-# On Windows,
-#
-#
-# On Linux,
+# Notes:
+#   - Be aware that at some point, R will move to use a different Fortran, and 
+#     when that happens, someone needs to make sure that the right Fortran is being
+#     download, unpacked, and placed in the right location. You can find the 
+#     appropriate version in `etc/Makeconf` and the binary here,
+#     https://github.com/fxcoudert/gfortran-for-macOS/releases
+#   - On GitHub Action,
+#     - You probably want to unpack the `https://static.jasp-stats.org/development/gfortran-8.2-Mojave.dmg`
+#       into a `.tar.gz`. I think this might elimite some possible issues with the unpacking on
+#       their environment. If you have decided to do this, make sure that the structure of the 
+#       archive is similiar and things land where they are expected.
 #
 # Todos:
 #
-# - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
-#       is that it can be triggered independently, however, it will only be
-#       done during the build stage and not configuration
-# - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
+#   - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
 #       a CMake module. I leave this for later cleanup
-# - [ ] Both R package installer can be improved by some caching, now cleaning can be
-#       a bit brutal
 #
 
 set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development")
 set(AVAILABLE_R_VERSIONS
     "R-4.1.2"
     "R-4.1.2-arm64"
+    "R-4.1.2-win"
     "R-4.1.3"
     "R-4.1.3-arm64"
-    "R-4.1.2-win"
-    "R-4.1.3-win")
+    "R-4.1.3-win"
+	"R-4.2.1"
+	"R-4.2.1-arm64"
+	"R-4.2.1-win")
 set(R_BINARY_HASHES
     "61d3909bc070f7fb86c5a2bd67209fda9408faaa"
     "69e8845ffa134c822d4bdcf458220e841a9eeaa5"
+    "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
     "45121f2c830b0cd7d180aee3fc4cd80d0de1e582"
     "dad405d4f58349403c4976ba50e944502070b209"
-    "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
-    "d4068fdc75334c850d5948a0dc8356d34d3512e1")
+    "d4068fdc75334c850d5948a0dc8356d34d3512e1"
+	"f83a6c96cedd19193255f94cb01381a273073a3a"
+	"05370dd000f0fded68594fc95334808ee25a8e91"
+	"37cfb7702a7be00abd64bef8e2ae4252821e5cfc")
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 set(R_VERSION
-    "4.1.3"
+	"4.2.1"
     CACHE STRING "R version to be used")
-set(R_VERSION_MAJOR_MINOR "4.1")
+set(R_VERSION_MAJOR_MINOR "4.2")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
@@ -205,9 +216,9 @@ if(APPLE)
 
           fetchcontent_declare(
             gfortran_tar_gz
-            URL "https://mac.r-project.org/libs-arm64/gfortran-f51f1da0-darwin20.0-arm64.tar.gz"
+            URL "https://static.jasp-stats.org/development/gfortran-12.0.1-20220312-is-darwin20-arm64.tar.xz"
             URL_HASH
-              SHA256=e7a5272fcbe002e9e22effc18bba01c352ca95f63dc3264865d9f8020ac55821
+              SHA256=a2ab8be30a7d92a24f53e1509c8c0804f8502f0bc35469750e3f1e233d1c64b8
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.tar.gz)
 
@@ -244,9 +255,10 @@ if(APPLE)
           # Downloading the gfortran
           message(CHECK_START "Downloading gfortran")
 
+          # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
           fetchcontent_declare(
             gfortran_dmg
-            URL "https://mac.r-project.org/tools/gfortran-8.2-Mojave.dmg"
+            URL "https://static.jasp-stats.org/development/gfortran-8.2-Mojave.dmg"
             URL_HASH
               SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
             DOWNLOAD_NO_EXTRACT ON

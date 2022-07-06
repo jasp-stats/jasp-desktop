@@ -7,8 +7,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
     - Qt Creator 7
-- [MSYS2](https://www.msys2.org/), for building some of the dependencies
-- [RTools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html), for building R modules
+- [RTools42](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html), for building R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
@@ -53,23 +52,23 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] CMake
 			- [x] Ninja
 
-### Installing MSYS2 
+### Installing Rtools42 
 
-Download the MSYS2 from [here](https://www.msys2.org/) and install it in the **default** path, i.e., `C:\msys64`.
+Download the Rtool42 from [here](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html) and *preferably* install it in the **default** path, i.e., `C:\rtools42`.
 
-> ⚠️ This is important because JASP build system expect to find the MSYS2 in the following default path, otherwise you need to specify your custom path to CMake, using the `MINGW_PATH` variable, e.g., `-DMINGW_PATH=D:\msys64`.
+> ⚠️ This is important because JASP build system expect to find the Rtool42 in the following default path, otherwise you need to specify your custom path to CMake, using the `RTOOLS_PATH` variable, e.g., `-DRTOOLS_PATH=D:\rtools42\ucrt64`.
 
-#### Installing MSYS2 Libraries and Packages
+#### Installing Rtool42 Libraries and Packages
 
-After installing MSYS2, you will find a new program in your Start Menu. Search for "MSYS2" in your Start Menu, and from the selection of applications that are showing up, run the one name "MSYS2 MinGW x64". At this point, you should be welcomed with a command prompt.
+After installing Rtool42, you will find a new program in your Start Menu. Search for "Rtool42" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools42 installed, so, to make sure that you are running the right console, you can navigate to your Rtools42 installation folder, and find the `ucrt64` executable.
 
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-jsoncpp bison flex make autoconf automake git
+pacman -Syu toolchain boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  mingw-w64-ucrt-x86_64-libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
 ```
 
-#### Downloading and Building ReadStat (on MSYS2)
+#### Downloading and Building ReadStat (on Rtool42)
 
 In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the command line.
 
@@ -77,12 +76,19 @@ In addition to these libraries, you need to manually download and install the Re
 wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz
 tar xvf readstat-1.1.7.tar.gz
 cd readstat-1.1.7
-./configure
+export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
+./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install
 ```
 
-This will build and install these libraries inside the MSYS environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+This will build and install these libraries inside the Rtool42 environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+
+#### Adding Rtools42 to your PATH
+
+It's important that Rtool42 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools42\ucrt64\bin`.
+
+> ⚠️ **I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path. Moreover, please make sure that both Qt, and Rtools42 are the first two items after the last item mentioning the `SYSTEM`, or `WINDOWS`.** 
 
 ### Installing Conan
 
@@ -122,7 +128,7 @@ build_type=Debug
 
 At this point, you are ready to start configuring and building JASP. Open the Qt Creator, and select "File → Open Project", then find and open the `CMakeLists.txt` file inside the `jasp-desktop` folder. By opening this file, you are opening the entire JASP project, and and you will be prompted to "Manage Kits". Here you want to select the "Desktop Qt 6.2.3 MSVC2019 64bit" kit by checking the checkbox next to it. 
 
-> ⚠️ This is an important step, and if you miss selecting the **Desktop** kit, you will not be able to build JASp.
+> ⚠️ This is an important step, and if you miss selecting the **Desktop** kit, you will not be able to build JASP.
 
 After selecting your kit, you can select the "Create Configuration", and observe the Qt Creator starting to configure your project. You can see the progress of the CMake configuration in the "General Messages" output panel, usually Ctrl+6.
 
@@ -134,11 +140,13 @@ If this is your first time preparing your project, CMake is going to configure *
 -- Build files have been written to: <path-to-your-build-folder>
 ```
 
-#### ⚠️ R-Interface 
+#### R-Interface 
 
-CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\msys64\mingw64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
+CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\rtools42\ucrt64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
 
 Find the "Build Environment" section under the "Projects -> Build", and expand its details by clicking the "Details". Here, you need to find the `Path` variable, select it, press "Edit", and add the mentioned path to the list.
+
+> ⚠️ One of the most common issues that you may run into is that Qt Creator, and CMake cannot figure out where compiler binaries are, and you'll get an error like this, `The C compiler "C:/rtools42/ucrt64/bin/qcc.exe"is not able to compile a simple test program`. In order to resolve this, you need to make sure that the order of items in `Qt Creator → Projects → Build Environment → Path` is similiar to your environment variables, as described above.
 
 #### Configuring the CMake Variables
 

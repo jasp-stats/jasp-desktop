@@ -10,14 +10,12 @@
 #     in the Config module. JASP's CMake triggers the R-Interface build during every build
 #     however, it just asks this file whether things need to be recompiled or not, if not
 #     then, it won't recompile things.
-#   - The output library, R-Interface.dll, and some of its artifact will be transfered
+#   - The output library, R-Interface.dll, and some of its artifact will be transferred
 #     to the Build/ directory and linked dynamically to the JASPEngine, etc.
-#   - Boost::nowide, `libboost_nowide`, needs to be linked to the R-Interface, and later on
-#     it needs to be copied to the Build/ and Install/ folder.
 #
 # On Linux/macOS,
 #   Here we are building a static library, and it will be link statically to the rest
-#   of the libraries and executables.
+#   of the libraries and executable.
 #
 # -----------------------------------------------------------------------------------
 #
@@ -25,6 +23,18 @@
 #   - There are overlap between these two scripts, however I have not got to fully
 #     simplify it, that's maybe for later...
 #
+#
+# Todos:
+#   - [ ] On Windows, Qt Creator and CMake can still get confused, and
+#     as a result R-Interface's build might fail with this, 
+#     `The C compiler "C:/rtools42/ucrt64/bin/qcc.exe"is not able to compile a simple test program`.
+#     This happens because CMake cannot navigate its way to the compiler toolset, 
+#     and the solution for it is to set the PATH correctly. However, that's not
+#     great, and the ultimate solution for it is to use a CMake Toolchain file, 
+#     such that CMake knows that R-Interface is going to be build with set of 
+#     different tools. I've tried to get the Toolchain working, but it was very
+#     stubborn, if you feel working on it, you can read more about it here,
+#     https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
@@ -48,9 +58,11 @@ if(WIN32)
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Tools/CMake")
 
-  set(MINGW_PATH
-      "C:/msys64/mingw64"
-      CACHE PATH "Path to MinGW x64 folder")
+  # This is a variable and it's provided by the main CMakeFiles.txt.
+  # It is here only if we someone wants to build the R-Interface separately.
+  set(RTOOLS_PATH
+      "C:/rtools42/ucrt64"
+      CACHE PATH "Path to Rtools42 ucrt64 folder")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
@@ -80,7 +92,8 @@ if(WIN32)
     _LIB_R
     NAMES R.dll
     PATHS ${_LIB_R_PATH}/bin
-    PATH_SUFFIXES x64 x32)
+    PATH_SUFFIXES x64 x32
+    NO_DEFAULT_PATH)
 
   if(_LIB_R)
     message(CHECK_PASS "found.")
@@ -95,7 +108,8 @@ if(WIN32)
     _LIB_RINSIDE
     NAMES RInside
     PATHS ${RINSIDE_PATH}/lib
-    PATH_SUFFIXES x64 x32 NO_CACHE)
+    PATH_SUFFIXES x64 x32 NO_CACHE
+    NO_DEFAULT_PATH)
 
   if(_LIB_RINSIDE)
     message(CHECK_PASS "found.")
@@ -105,16 +119,20 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
+  message(CHECK_START "Checking for 'libjsoncpp-24.dll'")
   find_file(
-    _LIB_JSONCPP
+    RTOOLS_LIB_JSONCPP_DLL
     NAMES libjsoncpp-24.dll
-    PATHS ${MINGW_PATH}/bin REQUIRED)
+    PATHS ${RTOOLS_PATH}/bin REQUIRED
+    NO_DEFAULT_PATH)
 
-  find_package(
-    Boost
-    1.78
-    REQUIRED
-    nowide)
+  if(RTOOLS_LIB_JSONCPP_DLL)
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
+  else()
+    message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
+    message(FATAL_ERROR "libjsoncpp-24.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
+  endif()
 
   add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
@@ -132,19 +150,16 @@ if(WIN32)
            ${RCPP_PATH}/include
            ${RINSIDE_PATH}/include
            # Boost and jsoncpp
-           ${MINGW_PATH}/include)
+           ${RTOOLS_PATH}/include)
 
   target_link_libraries(
     R-Interface
-    PUBLIC # jsoncpp
-           ${_LIB_JSONCPP} # MinGW's libjsoncpp-24.dll
-           # RInside
+    PUBLIC # RInside
            ${_LIB_RINSIDE}
            # R
-           $<$<NOT:$<PLATFORM_ID:Darwin>>:${_LIB_R}>
-           $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+           ${_LIB_R}
            #
-           Boost::nowide
+           ${RTOOLS_LIB_JSONCPP_DLL}
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
@@ -184,8 +199,7 @@ else()
 
   target_link_libraries(
     R-Interface
-    PUBLIC $<$<PLATFORM_ID:Windows>:Boost::nowide>
-           Boost::filesystem
+    PUBLIC Boost::filesystem
            Boost::system
            Boost::date_time
            Boost::timer

@@ -40,13 +40,13 @@ set(JASP_EXTRA_MODULES
     "jaspLearnBayes"
     "jaspMachineLearning"
     "jaspMetaAnalysis"
-    "jaspNetwork"
+    #"jaspNetwork" #gdata not available
     "jaspProcessControl"
     "jaspReliability"
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspVisualModeling"
-    "jaspProphet"
+    #"jaspProphet"
     )
 
 list(
@@ -162,21 +162,32 @@ configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
 # TODO:
 #   - [ ] The following commands can be turned into a function or a macro, but
 #         for now, I would like to keep a granular control over differnt steps
-add_custom_command(
-  WORKING_DIRECTORY ${R_HOME_PATH}
-  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
-  USES_TERMINAL
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-  COMMAND
-    ${CMAKE_COMMAND} -D
-    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-    R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
-    SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
-    -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-  COMMENT "------ Installing 'jaspBase'")
-
+if(APPLE)
+	add_custom_command(
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+	  USES_TERMINAL
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+			  --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+	  COMMAND
+		${CMAKE_COMMAND} -D
+		NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+		-D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+		R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
+		SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
+		-P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+	  COMMENT "------ Installing 'jaspBase'")
+else()
+	add_custom_command(
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+	  USES_TERMINAL
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+	          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+	  COMMENT "------ Installing 'jaspBase'")
+endif()
+  
+  
 if(INSTALL_R_MODULES)
 
   # Cleaning the renv-path on Windows only, for now.
@@ -201,7 +212,8 @@ if(INSTALL_R_MODULES)
     make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
-
+			   
+if(APPLE)			   
     add_custom_target(
       ${MODULE}
       USES_TERMINAL
@@ -226,7 +238,20 @@ if(INSTALL_R_MODULES)
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
-
+else()
+	add_custom_target(
+      ${MODULE}
+      USES_TERMINAL
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing '${MODULE}'")
+endif()
     # install(
     #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
@@ -248,6 +273,7 @@ if(INSTALL_R_MODULES)
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
+if(APPLE)			   
     add_custom_target(
       ${MODULE}
       USES_TERMINAL
@@ -275,7 +301,24 @@ if(INSTALL_R_MODULES)
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
+else()
+	add_custom_target(
+      ${MODULE}
+      USES_TERMINAL
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS
+        ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
+        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
 
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing '${MODULE}'")
+endif()
     # install(
     #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
@@ -313,9 +356,9 @@ if(INSTALL_R_MODULES)
           message(STATUS "Downloading `jags`")
           fetchcontent_declare(
             jags_win
-            URL "https://static.jasp-stats.org/development/JAGS-4.3.0-Windows.zip"
+            URL "https://static.jasp-stats.org/development/JAGS-4.3.1-Windows.zip"
             URL_HASH
-              SHA256=dd2429f44526643074bc65bf98c3a445c50513c051c5f7f5ec51e270ee465aeb
+              SHA256=4b168ddcc29a22c02e5c8dd61e3240ec8f940fee239b1563f63fc5b0bea60796
           )
 
           fetchcontent_makeavailable(jags_win)
@@ -353,28 +396,28 @@ if(INSTALL_R_MODULES)
           #   # bin
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS} ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_BAT} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_JRMATH} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_BLAS} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_LAPACK} ${jags_HOME}/x64/bin
           #   # headers
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include
           #   # libs
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS_DLL_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK_DLL_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJAGS_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_BLAS_DLL_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_LAPACK_DLL_A} ${jags_HOME}/x64/lib
           #   # modules
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/modules
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_MODULES_PATH} ${jags_HOME}/x64/modules
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_MODULES_PATH} ${jags_HOME}/x64/modules
           #   # pkgconfig
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
           #   )
 
         endif()

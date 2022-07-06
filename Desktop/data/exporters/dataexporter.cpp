@@ -19,7 +19,7 @@
 #include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include "dataset.h"
-#include <boost/nowide/fstream.hpp>
+#include <fstream>
 #include "stringutils.h"
 #include "utilenums.h"
 
@@ -38,7 +38,7 @@ void DataExporter::saveDataSet(const std::string &path, boost::function<void(int
 {
 	progressCallback(0);
 
-	boost::nowide::ofstream outfile(path.c_str(), ios::out);
+	std::ofstream outfile(path.c_str(), ios::out);
 
 	DataSetPackage::pkg()->writeDataSetToOStream(outfile, _includeComputeColumns);
 

@@ -30,9 +30,7 @@
 #   - Conan does the most work,
 #   - In addition, I tap into the MSYS2 environment, and grab some files for later
 #     use in R-Interface build. If you ran into a problem, then you probably need
-#     to set your MINGW_PATH that CMake can navigate its way to it.
-#   - Boost::nowide is a library that needs to be linked statically to the executable.
-#     This is not necessary on macOS and Linux.
+#     to set your RTOOLS_PATH that CMake can navigate its way to it.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
 
@@ -80,8 +78,7 @@ find_package(
 if(WINDOWS)
   find_package(
     Boost 1.78 REQUIRED
-    COMPONENTS nowide
-               filesystem
+    COMPONENTS filesystem
                system
                date_time
                timer
@@ -235,13 +232,14 @@ if(WIN32)
 
   message(CHECK_START "Looking for libreadstat.dll.a")
   find_file(
-    MINGW_LIBREADSTAT_DLL_A
+    RTOOLS_LIBREADSTAT_DLL_A
     NAMES libreadstat.dll.a
-    PATHS ${MINGW_PATH}/lib)
+    PATHS ${RTOOLS_PATH}/lib
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBREADSTAT_DLL_A})
+  if(EXISTS ${RTOOLS_LIBREADSTAT_DLL_A})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBREADSTAT_DLL_A}")
+    message(STATUS "  ${RTOOLS_LIBREADSTAT_DLL_A}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -252,13 +250,14 @@ if(WIN32)
 
   message(CHECK_START "Looking for readstat.h")
   find_file(
-    MINGW_LIBREADSTAT_H
+    RTOOLS_LIBREADSTAT_H
     NAMES readstat.h
-    PATHS ${MINGW_PATH}/include)
+    PATHS ${RTOOLS_PATH}/include
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBREADSTAT_H})
+  if(EXISTS ${RTOOLS_LIBREADSTAT_H})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBREADSTAT_H}")
+    message(STATUS "  ${RTOOLS_LIBREADSTAT_H}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -266,16 +265,17 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
+  
   message(CHECK_START "Looking for libreadstat-1.dll")
   find_file(
-    MINGW_LIBREADSTAT_DLL
+    RTOOLS_LIBREADSTAT_DLL
     NAMES libreadstat-1.dll
-    PATHS ${MINGW_PATH}/bin)
-
-  if(EXISTS ${MINGW_LIBREADSTAT_DLL})
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
+ 
+  if(EXISTS ${RTOOLS_LIBREADSTAT_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBREADSTAT_DLL}")
+    message(STATUS "  ${RTOOLS_LIBREADSTAT_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -283,33 +283,36 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
+  
 
   message(CHECK_START "Looking for zlib1.dll")
   find_file(
-    MINGW_ZLIB_DLL
+    RTOOLS_ZLIB_DLL
     NAMES zlib1.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_ZLIB_DLL})
+  if(EXISTS ${RTOOLS_ZLIB_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_ZLIB_DLL}")
+    message(STATUS "  ${RTOOLS_ZLIB_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+        "Zlib is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
 
   message(CHECK_START "Looking for libiconv-2.dll")
   find_file(
-    MINGW_LIBICONV_DLL
+    RTOOLS_LIBICONV_DLL
     NAMES libiconv-2.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBICONV_DLL})
+  if(EXISTS ${RTOOLS_LIBICONV_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBICONV_DLL}")
+    message(STATUS "  ${RTOOLS_LIBICONV_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -322,13 +325,14 @@ if(WIN32)
 
   message(CHECK_START "Looking for libgcc_s_seh-1.dll")
   find_file(
-    MINGW_LIBGCC_S_SEH_DLL
+    RTOOLS_LIBGCC_S_SEH_DLL
     NAMES libgcc_s_seh-1.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBGCC_S_SEH_DLL})
+  if(EXISTS ${RTOOLS_LIBGCC_S_SEH_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBGCC_S_SEH_DLL}")
+    message(STATUS "  ${RTOOLS_LIBGCC_S_SEH_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -339,13 +343,32 @@ if(WIN32)
 
   message(CHECK_START "Looking for libstdc++-6.dll")
   find_file(
-    MINGW_LIBSTDCPP_DLL
+    RTOOLS_LIBSTDCPP_DLL
     NAMES libstdc++-6.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBSTDCPP_DLL})
+  if(EXISTS ${RTOOLS_LIBSTDCPP_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBSTDCPP_DLL}")
+    message(STATUS "  ${RTOOLS_LIBSTDCPP_DLL}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+  
+  message(CHECK_START "Looking for msys-2.0.dll")
+  find_file(
+    RTOOLS_MSYS_DLL
+    NAMES msys-2.0.dll
+    PATHS ${RTOOLS_PATH}/../usr/bin
+    NO_DEFAULT_PATH)
+
+  if(EXISTS ${RTOOLS_MSYS_DLL})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${RTOOLS_MSYS_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -356,30 +379,14 @@ if(WIN32)
 
   message(CHECK_START "Looking for libwinpthread-1.dll")
   find_file(
-    MINGW_LIBWINPTHREAD_DLL
+    RTOOLS_LIBWINPTHREAD_DLL
     NAMES libwinpthread-1.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBWINPTHREAD_DLL})
+  if(EXISTS ${RTOOLS_LIBWINPTHREAD_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBWINPTHREAD_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libboost_nowide-mt.dll")
-  find_file(
-    MINGW_LIB_BOOST_NOWIDE_DLL
-    NAMES libboost_nowide-mt.dll
-    PATHS ${MINGW_PATH}/bin)
-
-  if(EXISTS ${MINGW_LIB_BOOST_NOWIDE_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIB_BOOST_NOWIDE_DLL}")
+    message(STATUS "  ${RTOOLS_LIBWINPTHREAD_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -390,13 +397,14 @@ if(WIN32)
 
   message(CHECK_START "Looking for libjsoncpp-24.dll")
   find_file(
-    MINGW_LIBJSONCPP_DLL
+    RTOOLS_LIBJSONCPP_DLL
     NAMES libjsoncpp-24.dll
-    PATHS ${MINGW_PATH}/bin)
+    PATHS ${RTOOLS_PATH}/bin
+    NO_DEFAULT_PATH)
 
-  if(EXISTS ${MINGW_LIBJSONCPP_DLL})
+  if(EXISTS ${RTOOLS_LIBJSONCPP_DLL})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBJSONCPP_DLL}")
+    message(STATUS "  ${RTOOLS_LIBJSONCPP_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -411,76 +419,76 @@ if(WIN32)
   # because I'm uncertain about CMake variable scopping
   # message(CHECK_START "Looking for jags files")
   # find_file(
-  #   MINGW_LIBJAGS_BAT
+  #   RTOOLS_LIBJAGS_BAT
   #   NAMES jags.bat
-  #   PATHS ${MINGW_PATH}/bin REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_BAT}")
+  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_BAT}")
   # find_file(
-  #   MINGW_LIBJAGS
+  #   RTOOLS_LIBJAGS
   #   NAMES libjags-4.dll
-  #   PATHS ${MINGW_PATH}/bin REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS}")
+  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS}")
   # find_file(
-  #   MINGW_LIBJAGS_JRMATH
+  #   RTOOLS_LIBJAGS_JRMATH
   #   NAMES libjrmath-0.dll
-  #   PATHS ${MINGW_PATH}/bin REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_JRMATH}")
+  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_JRMATH}")
   # find_file(
-  #   MINGW_LIB_BLAS
+  #   RTOOLS_LIB_BLAS
   #   NAMES libblas.dll
-  #   PATHS ${MINGW_PATH}/bin REQUIRED)
-  # message(STATUS "  ${MINGW_LIB_BLAS}")
+  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIB_BLAS}")
   # find_file(
-  #   MINGW_LIB_LAPACK
+  #   RTOOLS_LIB_LAPACK
   #   NAMES liblapack.dll
-  #   PATHS ${MINGW_PATH}/bin REQUIRED)
-  # message(STATUS "  ${MINGW_LIB_LAPACK}")
+  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIB_LAPACK}")
 
-  # set(MINGW_LIBJAGS_HEADERS_PATH "${MINGW_PATH}/include/JAGS")
-  # message(STATUS "  ${MINGW_LIBJAGS_HEADERS_PATH}")
-  # set(MINGW_LIBJAGS_LIBRARIES_PATH "${MINGW_PATH}/lib/JAGS")
-  # message(STATUS "  ${MINGW_LIBJAGS_LIBRARIES_PATH}")
-  # set(MINGW_LIBJAGS_PKGCONFIG_PATH "${MINGW_PATH}/lib/pkgconfig")
-  # message(STATUS "  ${MINGW_LIBJAGS_PKGCONFIG_PATH}")
-  # set(MINGW_LIBJAGS_MODULES_PATH "${MINGW_PATH}/lib/JAGS/modules-4")
-  # message(STATUS "  ${MINGW_LIBJAGS_MODULES_PATH}")
+  # set(RTOOLS_LIBJAGS_HEADERS_PATH "${RTOOLS_PATH}/include/JAGS")
+  # message(STATUS "  ${RTOOLS_LIBJAGS_HEADERS_PATH}")
+  # set(RTOOLS_LIBJAGS_LIBRARIES_PATH "${RTOOLS_PATH}/lib/JAGS")
+  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBRARIES_PATH}")
+  # set(RTOOLS_LIBJAGS_PKGCONFIG_PATH "${RTOOLS_PATH}/lib/pkgconfig")
+  # message(STATUS "  ${RTOOLS_LIBJAGS_PKGCONFIG_PATH}")
+  # set(RTOOLS_LIBJAGS_MODULES_PATH "${RTOOLS_PATH}/lib/JAGS/modules-4")
+  # message(STATUS "  ${RTOOLS_LIBJAGS_MODULES_PATH}")
 
   # find_file(
-  #   MINGW_LIBJAGS_LIBJAGS_A
+  #   RTOOLS_LIBJAGS_LIBJAGS_A
   #   NAMES libjags.dll.a
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_A}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJAGS_A}")
   # find_file(
-  #   MINGW_LIBJAGS_LIBJAGS_LA
+  #   RTOOLS_LIBJAGS_LIBJAGS_LA
   #   NAMES libjags.la
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_LA}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJAGS_LA}")
   # find_file(
-  #   MINGW_LIBJAGS_LIBJRMATH_A
+  #   RTOOLS_LIBJAGS_LIBJRMATH_A
   #   NAMES libjrmath.dll.a
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_A}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJRMATH_A}")
   # find_file(
-  #   MINGW_LIBJAGS_LIBJRMATH_LA
+  #   RTOOLS_LIBJAGS_LIBJRMATH_LA
   #   NAMES libjrmath.la
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_LA}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJRMATH_LA}")
   # find_file(
-  #   MINGW_LIB_BLAS_DLL_A
+  #   RTOOLS_LIB_BLAS_DLL_A
   #   NAMES libblas.dll.a
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIB_BLAS_DLL_A}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIB_BLAS_DLL_A}")
   # find_file(
-  #   MINGW_LIB_LAPACK_DLL_A
+  #   RTOOLS_LIB_LAPACK_DLL_A
   #   NAMES liblapack.dll.a
-  #   PATHS ${MINGW_PATH}/lib REQUIRED)
-  # message(STATUS "  ${MINGW_LIB_LAPACK_DLL_A}")
+  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIB_LAPACK_DLL_A}")
 
   # find_file(
-  #   MINGW_LIBJAGS_JAGS_TERMINAL_EXE
+  #   RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE
   #   NAMES jags-terminal.exe
-  #   PATHS ${MINGW_PATH}/libexec REQUIRED)
-  # message(STATUS "  ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}")
+  #   PATHS ${RTOOLS_PATH}/libexec REQUIRED)
+  # message(STATUS "  ${RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE}")
 
   # message(CHECK_PASS "found")
 
