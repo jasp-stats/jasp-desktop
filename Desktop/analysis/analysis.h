@@ -262,7 +262,7 @@ private:
 	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
 	void					checkForRSources();
 	void					clearRSources();
-	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, bool & found, bool createAnyway = false);
+	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string>& parentNames, bool & found, bool createAnyway = false);
 	void					initAnalysis();
 	void					setAnalysisForm(AnalysisForm	* analysisForm);
 	bool					readyToCreateForm() const;

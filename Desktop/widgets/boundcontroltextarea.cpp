@@ -48,6 +48,7 @@ void BoundControlTextArea::checkSyntax()
 
 	if (textType == JASPControl::TextType::TextTypeRcode)
 	{
+		setIsRCode();
 		try
 		{
 			R_FunctionWhiteList::scriptIsSafe(text.toStdString());
