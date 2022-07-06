@@ -132,11 +132,11 @@ bool Analysis::checkAnalysisEntry()
 			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
 
 		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedAnalysisEntry);
-		
+
 		bool updateTitleToDefault = _title == _titleDefault;
-		
+
 		_titleDefault = _moduleData->title();
-		
+
 		if(updateTitleToDefault)
 			setTitle(_titleDefault);
 
@@ -386,26 +386,28 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	return analysisAsJson;
 }
 
-Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, bool& found, bool createAnyway)
+// This method tries to find the parent keys in _boundValues Json object
+// If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
+Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
 {
 	found = (parentKeys.size() == 0);
-	Json::Value* result = &_boundValues;
+	Json::Value* parentBoundValue = &_boundValues;
 
-	// A parentKey has a 'name', a 'key' and a 'value': it assumes that the json boundValue is an abject, one of its member is 'name',
-	// whom value is an array of json objects. These objects have member 'key', and one of them has for value 'value': this method returns
-	// this json object (if there are several parentKeys, it repeats this operation, and returns the last json object)
+	// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
+	// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
+	// if there are several parentKeys, it repeats this operation
 	//
 	// {
-	//		a : "one"
+	//		anOptionName : "one"
 	//		...
-	//		name: [
+	//		<name>: [
 	//			{
-	//				key: "anothervalue"
-	//				b: "xxx"
+	//				<key>: "anothervalue"
+	//				anotherKey: "xxx"
 	//			},
 	//			{
-	//				key: "value"  // This object is returned.
-	//				b: "yyy"
+	//				<key>: "<value>"
+	//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
 	//			}
 	//		]
 	// }
@@ -413,11 +415,11 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 	for (const auto& parent : parentKeys)
 	{
 		found = false;
-		if (createAnyway && !result->isMember(parent.name))	(*result)[parent.name] = Json::Value(Json::arrayValue);
+		if (createAnyway && !parentBoundValue->isMember(parent.name))	(*parentBoundValue)[parent.name] = Json::Value(Json::arrayValue);
 
-		if (result->isMember(parent.name))
+		if (parentBoundValue->isMember(parent.name))
 		{
-			Json::Value& parentBoundValues = (*result)[parent.name];
+			Json::Value& parentBoundValues = (*parentBoundValue)[parent.name];
 			if (!parentBoundValues.isNull() && parentBoundValues.isArray())
 			{
 				for (Json::Value & boundValue : parentBoundValues)
@@ -442,7 +444,8 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 						}
 						if (found)
 						{
-							result = &boundValue;
+							parentBoundValue = &boundValue;
+							parentNames.append(parent.name);
 							break;
 						}
 					}
@@ -461,45 +464,53 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 						row[parent.key] = newValue;
 					}
 					parentBoundValues.append(row);
-					result = &(parentBoundValues[parentBoundValues.size() - 1]);
+					parentBoundValue = &(parentBoundValues[parentBoundValues.size() - 1]);
 					found = true;
 				}
 			}
 		}
 	}
 
-	return *result;
+	return *parentBoundValue;
 }
 
 bool Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
 {
 	bool found = false;
-	Json::Value &	parentBoundValue	= _getParentBoundValue(parentKeys, found, true),
-					copyPBV				= parentBoundValue; 
+	QVector<std::string> parents;
+	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parents, found, true);
+	Json::Value copyPBV				= parentBoundValue;
 
 	if (found && parentBoundValue.isObject())
 	{
 		parentBoundValue[name] = value;
 
 		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
-			_boundValues[".meta"][name] = meta;
+		{
+			Json::Value* metaBoundValue = &_boundValues[".meta"];
+			for (const std::string& parent : parents)
+				metaBoundValue = &((*metaBoundValue)[parent]);
+			(*metaBoundValue)[name] = meta;
+		}
 	}
-	
+
 	return copyPBV != parentBoundValue;
 }
 
-bool Analysis::setBoundValues(const Json::Value &boundValues)		
+bool Analysis::setBoundValues(const Json::Value &boundValues)
 {
 	bool changed = _boundValues != boundValues;
-	_boundValues = boundValues; 
-	
+	_boundValues = boundValues;
+
 	return changed;
 }
 
 const Json::Value &Analysis::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
 {
 	bool found = false;
-	const Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, found);
+	QVector<std::string> parentNames;
+	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parentNames, found);
+
 
 	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
 	else																	return Json::Value::null;
@@ -509,11 +520,11 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 {
 	//Lets make sure the title changes if the default changed compared with last time. (and the user didnt change it manually of course)
 	std::string oldTitleDefault = analysisData.get("titleDef", _titleDefault).asString();
-	
+
 	if(_title == oldTitleDefault && _titleDefault != oldTitleDefault)
 		_title = _titleDefault;
-	
-	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();	
+
+	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
 }
 
 void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData)
@@ -536,7 +547,7 @@ void Analysis::setStatus(Analysis::Status status)
 
 	if(_status == status)
 		return;
-	
+
 	Log::log() << "Analysis " << title() << " (" << id() << ") changes status from: " << statusToString(_status);
 
 	//Make sure old notes etc aren't lost on table/plot-renames, see: https://github.com/jasp-stats/jasp-test-release/issues/469
@@ -664,7 +675,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();
-		
+
 		json["options"]		= _boundValues;
 	}
 
@@ -692,7 +703,7 @@ void Analysis::setHelpFile(QString helpFile)
 void Analysis::setTitleQ(QString title)
 {
 	//Log::log() << "void Analysis::setTitleQ('" << title << "')" << std::endl;
-	
+
 	std::string strippedTitle	= title.simplified().toStdString();
 
 	if(strippedTitle == "")
@@ -703,7 +714,7 @@ void Analysis::setTitleQ(QString title)
 
 	_results["title"] = strippedTitle;
 	_title = strippedTitle;
-	
+
 	emit titleChanged();
 }
 
