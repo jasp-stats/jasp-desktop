@@ -71,7 +71,15 @@ bool shouldCrashSoon = false; //Simply here to allow a developer to force a cras
 
 std::string jaspNativeToUtf8(const Rcpp::String & in)
 {
+#ifdef _WIN32
+	#ifdef JASP_R_INTERFACE_LIBRARY
+		return jaspRCPP_nativeToUtf8(in);
+	#else
+		return in; //If running in R then it's the users problem really.
+	#endif
+#else
 	return in;
+#endif
 }
 
 
