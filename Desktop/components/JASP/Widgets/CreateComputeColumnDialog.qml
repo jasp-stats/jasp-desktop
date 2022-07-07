@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import JASP.Controls as JaspControls
 
 
 Popup
@@ -180,7 +181,7 @@ Popup
 				anchors.horizontalCenter:	parent.horizontalCenter
 				height:						45 * preferencesModel.uiScale
 
-				RoundedButton
+				JaspControls.RoundedButton
 				{
 					id:						rCodeSelectah
 
@@ -199,7 +200,7 @@ Popup
 					toolTip:				qsTr("Define column through R code")
 				}
 
-				RoundedButton
+				JaspControls.RoundedButton
 				{
 					id:					jsonSelectah
 
@@ -304,7 +305,7 @@ Popup
 				}
 			}
 
-			RoundedButton
+			JaspControls.RoundedButton
 			{
 				id:				helpButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -320,7 +321,7 @@ Popup
 				}
 			}
 
-			RoundedButton
+			JaspControls.RoundedButton
 			{
 				id:			createButton
 				text:		qsTr("Create Column")
@@ -336,7 +337,7 @@ Popup
 				}
 			}
 
-			RoundedButton
+			JaspControls.RoundedButton
 			{
 				id:				closeButtonCross
 				iconSource:		jaspTheme.iconPath + "cross.png"

@@ -29,18 +29,11 @@ target_link_libraries(
   CommonQt
   PUBLIC
          Qt::Core
-         Qt::Gui
          Qt::Widgets
          Qt::Qml
          Qt::Quick
-         Qt::QuickLayouts
-         Qt::QuickControls2
-         Qt::QuickControls2Impl
-         Qt::QuickWidgets
-         Qt::QuickTemplates2
          $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
          $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
-         Boost::filesystem
      )
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

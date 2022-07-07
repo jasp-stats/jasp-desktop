@@ -18,7 +18,6 @@
 
 #include "appdirs.h"
 
-#include <QApplication>
 #include <QDir>
 
 

@@ -40,4 +40,15 @@ target_link_libraries(
          $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
      )
 
+ file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
+ qt_add_resources(
+   QMLForm
+   "qml"
+   PREFIX
+   "/"
+   BASE
+   ${CMAKE_CURRENT_LIST_DIR}
+   FILES
+   ${QML_RESOURCE_FILES})
+
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
