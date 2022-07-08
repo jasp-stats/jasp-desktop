@@ -200,7 +200,6 @@ signals:
 	void cranRepoURLChanged(			QString		cranRepoURL);
 	void githubPatUseDefaultChanged(	bool		githubPatUseDefault);
 	void githubPatCustomChanged();
-	void interfaceFontChanged(			QString		interfaceFont);
 	void codeFontChanged(				QString		codeFont);
 	void resultFontChanged(				QString		resultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);

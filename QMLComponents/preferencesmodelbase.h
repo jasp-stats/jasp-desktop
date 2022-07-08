@@ -24,6 +24,7 @@ signals:
 	void maxFlickVelocityChanged();
 	void currentJaspThemeChanged();
 	void currentThemeReady();
+	void interfaceFontChanged();
 
 
 protected:

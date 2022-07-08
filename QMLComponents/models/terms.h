@@ -28,7 +28,7 @@
 #include <QByteArray>
 
 #include "term.h"
-#include "jaspcontrol.h"
+#include "controls/jaspcontrol.h"
 
 ///
 /// Terms is a list of Term. They are used in VariablesList

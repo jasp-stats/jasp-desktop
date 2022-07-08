@@ -263,7 +263,7 @@ SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroun
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
-SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
+SET_PREF_FUNCTION_EMIT_NO_ARG(QString,	setInterfaceFont,	interfaceFont,			interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)

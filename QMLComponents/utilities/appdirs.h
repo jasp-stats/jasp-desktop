@@ -53,7 +53,7 @@ private:
 
 #ifdef linux
 	static QString rHomeDir() {
-		return QString("/Users/brunoboutin/JASP/source/build-jasp-desktop-Qt_6_2_4_for_macOS-Debug_arm/Frameworks/R.framework/Versions/4.1-arm64/Resources");
+		return QString("/Users/brunoboutin/JASP/source/build-jasp-desktop-Qt_6_2_4_for_macOS-Debug_arm/Frameworks/R.framework/Versions/4.2-arm64/Resources");
 	} 
 #endif
 };
