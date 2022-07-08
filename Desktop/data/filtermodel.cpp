@@ -1,5 +1,5 @@
 #include "filtermodel.h"
-#include "jsonutilities.h"
+#include "utilities/jsonutilities.h"
 #include "columnencoder.h"
 
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)

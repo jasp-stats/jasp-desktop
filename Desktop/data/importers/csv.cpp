@@ -24,8 +24,8 @@
 #include <stdexcept>
 
 #include "utils.h"
-#include "qutils.h"
-#include "settings.h"
+#include "utilities/qutils.h"
+#include "utilities/settings.h"
 
 using namespace std;
 using boost::algorithm::trim;

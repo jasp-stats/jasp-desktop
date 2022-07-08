@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 #include <QCoreApplication>
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 ///
 /// Loads a jasp file

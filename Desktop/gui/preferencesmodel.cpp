@@ -1,14 +1,14 @@
 #include "preferencesmodel.h"
 #include "utils.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 
-#include "settings.h"
-#include "messageforwarder.h"
+#include "utilities/settings.h"
+#include "utilities/messageforwarder.h"
 #include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
-#include "appdirs.h"
+#include "utilities/appdirs.h"
 #include "enginedefinitions.h"
 
 using namespace std;

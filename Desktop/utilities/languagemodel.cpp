@@ -1,10 +1,10 @@
 #include "languagemodel.h"
 #include "log.h"
-#include "settings.h"
+#include "utilities/settings.h"
 #include <QDebug>
 #include <QDir>
 #include "dirs.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include <QDirIterator>
 #include "results/resultsjsinterface.h"
 #include "modules/dynamicmodule.h"

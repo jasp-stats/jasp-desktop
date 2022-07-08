@@ -10,7 +10,7 @@
 
 #include <map>
 #include <QtQml>
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "gui/preferencesmodel.h"
 
 

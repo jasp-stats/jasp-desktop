@@ -18,8 +18,8 @@
 
 
 #include "ribbonmodel.h"
-#include "appdirs.h"
-#include "messageforwarder.h"
+#include "utilities/appdirs.h"
+#include "utilities/messageforwarder.h"
 #include "log.h"
 
 using namespace Modules;

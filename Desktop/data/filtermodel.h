@@ -2,7 +2,7 @@
 #define FILTERMODEL_H
 
 #include <QObject>
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "datasetpackage.h"
 #include "labelfiltergenerator.h"
 

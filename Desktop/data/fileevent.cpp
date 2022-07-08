@@ -22,7 +22,7 @@
 #include "exporters/jaspexporter.h"
 
 #include <QTimer>
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)

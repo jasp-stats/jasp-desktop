@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QFont>
 #include "column.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "preferencesmodelbase.h"
 
 class JaspTheme;

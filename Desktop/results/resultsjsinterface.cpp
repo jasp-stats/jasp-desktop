@@ -24,16 +24,16 @@
 #include <QPainter>
 #endif
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "gui/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include <functional>
 #include "timers.h"
-#include "settings.h"
+#include "utilities/settings.h"
 #include <QMimeData>
 #include <QAction>
-#include "messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include <QApplication>
 #include "gui/preferencesmodel.h"
 #include <QThread>

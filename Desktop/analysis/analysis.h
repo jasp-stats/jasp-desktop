@@ -24,13 +24,13 @@
 #include "version.h"
 
 #include "enginedefinitions.h"
-#include "jaspcontrol.h"
+#include "controls/jaspcontrol.h"
 
 #include <set>
 #include "analysisbase.h"
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "modules/upgrader/upgradechange.h"
 #include <QFileSystemWatcher>
 #include <QQuickItem>

@@ -17,8 +17,8 @@
 //
 
 #include "analyses.h"
-#include "appdirs.h"
-#include "settings.h"
+#include "utilities/appdirs.h"
+#include "utilities/settings.h"
 #include "processinfo.h"
 #include "modules/ribbonmodel.h"
 #include "analysisform.h"

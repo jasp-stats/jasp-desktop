@@ -6,7 +6,7 @@
 #include <QUrl>
 
 #include "version.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include <json/json.h>
 
 #include "modules/dynamicmodule.h"

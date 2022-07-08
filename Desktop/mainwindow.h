@@ -50,7 +50,7 @@
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
-#include "jsonutilities.h"
+#include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "widgets/filemenu/filemenu.h"
 

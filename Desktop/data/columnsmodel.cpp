@@ -1,7 +1,7 @@
 #include "columnsmodel.h"
 #include "jasptheme.h"
 #include "log.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 ColumnsModel* ColumnsModel::_singleton = nullptr;
 

@@ -1,5 +1,5 @@
 #include "currentdatafile.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QFileInfo>

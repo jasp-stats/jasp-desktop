@@ -27,16 +27,16 @@
 #include "dynamicmodule.h"
 #include "dynamicmodules.h"
 #include <QRegularExpression>
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "upgrader/upgrades.h"
-#include "appdirs.h"
-#include "settings.h"
+#include "utilities/appdirs.h"
+#include "utilities/settings.h"
 #include <boost/filesystem.hpp>
-#include "messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utilities/languagemodel.h"
 #include "description/description.h"
 #include "utilities/extractarchive.h"
-#include "qmlutils.h"
+#include "utilities/qmlutils.h"
 #include "mainwindow.h"
 
 namespace Modules

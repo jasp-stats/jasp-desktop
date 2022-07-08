@@ -76,8 +76,7 @@ target_include_directories(
   JASP
   PUBLIC 	${CMAKE_CURRENT_LIST_DIR}
                         ${PROJECT_SOURCE_DIR}/Common
-                        ${PROJECT_SOURCE_DIR}/CommonQt
-                        ${PROJECT_SOURCE_DIR}/QMLForm
+                        ${PROJECT_SOURCE_DIR}/QMLComponents
                         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 			# ReadStat
 			$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
@@ -92,8 +91,7 @@ target_include_directories(
 target_link_libraries(
   JASP
   PUBLIC Common
-         CommonQt
-         QMLForm
+         QMLComponents
          Qt::Core
          Qt::Gui
          Qt::OpenGL

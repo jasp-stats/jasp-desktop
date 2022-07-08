@@ -26,7 +26,7 @@
 #include <QNetworkReply>
 #include <queue>
 
-#include "jsonutilities.h"
+#include "utilities/jsonutilities.h"
 #include "analysis/analysis.h"
 
 /// Interface between C++/Qt and Qml/WebEngine+JS

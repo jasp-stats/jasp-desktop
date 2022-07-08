@@ -1,5 +1,5 @@
 #include "gui/preferencesmodel.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "changebase.h"
 #include "upgrades.h"
 #include "upgrade.h"

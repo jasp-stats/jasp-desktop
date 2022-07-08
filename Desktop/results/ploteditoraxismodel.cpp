@@ -1,9 +1,9 @@
 #include "ploteditoraxismodel.h"
 #include "ploteditormodel.h"
-#include "qutils.h"
-#include "jsonutilities.h"
+#include "utilities/qutils.h"
+#include "utilities/jsonutilities.h"
 #include "log.h"
-#include "messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utils.h"
 
 namespace PlotEditor

@@ -20,7 +20,7 @@
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "log.h"
 
 using namespace Modules;

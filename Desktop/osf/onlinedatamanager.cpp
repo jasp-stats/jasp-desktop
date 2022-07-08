@@ -21,13 +21,13 @@
 
 #include <QCryptographicHash>
 #include "tempfiles.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
-#include "messageforwarder.h"
-#include "simplecrypt.h"
-#include "settings.h"
+#include "utilities/messageforwarder.h"
+#include "utilities/simplecrypt.h"
+#include "utilities/settings.h"
 #include "appinfo.h"
 
 

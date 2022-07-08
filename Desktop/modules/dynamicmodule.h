@@ -31,7 +31,7 @@
 #include <QQmlEngine>
 #include <json/json.h>
 #include "analysisentry.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "enginedefinitions.h"
 #include "upgrader/upgradeDefinitions.h"
 

@@ -1,6 +1,6 @@
 #include "aboutmodel.h"
 #include "appinfo.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "mainwindow.h"
 
 bool AboutModel::visible() const
