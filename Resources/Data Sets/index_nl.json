@@ -871,8 +871,24 @@
       ]
     },
     {
-      "name": "17. Overig",
-      "path": "17. Miscellaneous",
+      "name": "17. Mixed Models",
+      "path": "17. Mixed Models",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Larks and Owls",
+          "path": "Larks and Owls.jasp",
+          "description": "Gedachtewisselingen in de volgehouden aandachtstaak op verschillende tijdstippen van de dag en chronotype-indeling verkregen via de ochtend-avondvragenlijst.<br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een Generalized Linear Mixed Models.<br><br> <i>Dataset overgenomen van Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Larks and Owls.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "18. Overig",
+      "path": "18. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
