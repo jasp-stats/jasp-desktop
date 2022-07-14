@@ -100,19 +100,29 @@ if(APPLE)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.mac.cmake)
 
+  set(R_PROGRAMS_PATTERN ".*/bin/(BATCH|build|check|COMPILE|config|exec/R|fc-cache|INSTALL|javareconf|libtool|LINK|mkinstalldirs|pager|qpdf|R|Rcmd|Rd2pdf|Rdconv|Rdiff|REMOVE|Rprof|Rscript|rtags|SHLIB|Stangle|Sweave)")
+
   install(
     DIRECTORY ${_R_Framework}
     DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE
-    REGEX ".*/bin/R(Script)?$" EXCLUDE
-    )
+    REGEX ${R_PROGRAMS_PATTERN} EXCLUDE
+  )
 
-    #copy R(Script) separately as a program so they have execution permissions
-    install(
-      PROGRAMS ${_R_Framework}/Resources/bin/R ${_R_Framework}/Resources/bin/RScript
-      DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/
-    )
+    #copy R executables separately as PROGRAMS so they have execution permissions
+	file(GLOB R_EXECUTABLES LIST_DIRECTORIES false "${_R_Framework}/Resources/bin/*")
+  install(
+    PROGRAMS ${R_EXECUTABLES} 
+    DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/
+  )
+
+  install(
+    PROGRAMS ${_R_Framework}/Resources/bin/exec/R
+    DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/exec/
+  )
+
+    
 
   # I had to do this manually, since `macdeployqt` misses it.
   # See here: https://bugreports.qt.io/browse/QTBUG-100686

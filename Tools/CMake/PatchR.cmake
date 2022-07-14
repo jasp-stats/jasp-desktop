@@ -30,7 +30,12 @@ macro(patch_r)
   execute_process(
     WORKING_DIRECTORY ${R_HOME_PATH}/bin
     COMMAND sed -i.bak -e
-            "s/R_HOME_DIR=.*/R_HOME_DIR=${build_r_home_for_sed}/g" R)
+            "s/R_HOME_DIR=.*/R_HOME_DIR=$JASP_R_HOME/g" R)
+
+  execute_process(
+    WORKING_DIRECTORY ${R_HOME_PATH}/bin
+    COMMAND sed -i.bak -e
+            "s|echo \\\"WARNING: ignoring environment value of R_HOME\\\"|echo \\\"Dont show a warning please\\\" > /dev/null|g" R)
 
   execute_process(
     WORKING_DIRECTORY ${R_HOME_PATH}/bin
@@ -48,8 +53,8 @@ macro(patch_r)
             R)
 
   # Commenting all instances of ldpaths call
-  execute_process(WORKING_DIRECTORY ${R_HOME_PATH}/bin
-                  COMMAND sed -i.bak "/ldpaths/s/^/#/g" R)
+ # execute_process(WORKING_DIRECTORY ${R_HOME_PATH}/bin
+ #                 COMMAND sed -i.bak "/ldpaths/s/^/#/g" R)
 
   execute_process(
     WORKING_DIRECTORY ${R_HOME_PATH}/etc
