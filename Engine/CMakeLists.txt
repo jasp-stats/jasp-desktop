@@ -26,7 +26,7 @@ add_custom_target(jaspResults ALL SOURCES ${JASPRESULTS_SOURCE_FILES} ${JASPRESU
 
 add_executable(JASPEngine ${SOURCE_FILES} ${HEADER_FILES})
 
-add_dependencies(JASPEngine R-Interface jaspBase)
+add_dependencies(JASPEngine R-Interface)
 
 target_include_directories(
   JASPEngine

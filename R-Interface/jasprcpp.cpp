@@ -1102,7 +1102,7 @@ std::string __sinkMe(const std::string code)
 void jaspRCPP_setWorkingDirectory()
 {
 	std::string root = requestTempRootNameCB();
-	std::string code = "setwd(\"" + root + "\")";
+	std::string code = "setwd(\"" + root + "\"); sink();";
 	rinside->parseEvalQNT(__sinkMe(code));
 }
 

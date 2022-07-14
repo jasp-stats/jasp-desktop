@@ -5,6 +5,11 @@ Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
 Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 
+#Load the post-install fixes from jaspBase. Think Baron von Munchausen ;)
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/utility.R")
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/assignFunctionInPackage.R")
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
+
 # The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y.
@@ -36,7 +41,9 @@ if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical
     renv.cache.linkable = FALSE,
     configure.vars = c(jaspResults = "INCLUDE_DIR='-I@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder -I@PROJECT_SOURCE_DIR@/Common'")
   )
-  options()
+  
+  setupRenv("@R_LIBRARY_PATH@")
+
   renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase", repos=NULL, library="@R_LIBRARY_PATH@")
 
 }

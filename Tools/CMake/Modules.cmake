@@ -106,7 +106,7 @@ message(STATUS "If necessary, 'jags' will be installed at ${jags_HOME}")
 
 if(NOT EXISTS ${MODULES_SOURCE_PATH})
   message(WARNING "Modules sources are not available. If you are planning
-       to install them during the build, make sure that they are avialble in
+	   to install them during the build, make sure that they are available in
        the jasp-desktop folder.")
 endif()
 
@@ -159,12 +159,13 @@ configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
 #   - [ ] The following commands can be turned into a function or a macro, but
 #         for now, I would like to keep a granular control over differnt steps
 if(APPLE)
+	add_dependencies(jaspBase JASPEngine)
+
 	add_custom_command(
 	  WORKING_DIRECTORY ${R_HOME_PATH}
 	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
 	  USES_TERMINAL
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-			  --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+	  COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
 	  COMMAND
 		${CMAKE_COMMAND} -D
 		NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -214,9 +215,8 @@ if(APPLE)
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
-      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+	  DEPENDS	${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+	  COMMAND  ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -234,6 +234,9 @@ if(APPLE)
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
+
+    add_dependencies(${MODULE} JASPEngine)
+
 else()
 	add_custom_target(
       ${MODULE}
@@ -275,11 +278,11 @@ if(APPLE)
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
+	    JASPEngine
         ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
         $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
-      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+		COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -320,18 +323,12 @@ endif()
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
     #   COMPONENT ${MODULE})
 
-    # To fix the Rpath stuff
-    if(APPLE)
-      add_dependencies(${MODULE} JASPEngine)
-    endif()
-
     # Making sure that CMake doesn't parallelize the installation of the modules
 
     add_dependencies(Modules ${MODULE})
 
     # We can add other specific dependencies here:
-    if((${MODULE} STREQUAL "jaspMetaAnalysis") OR (${MODULE} STREQUAL "jaspJags"
-                                                  ))
+	if((${MODULE} STREQUAL "jaspMetaAnalysis") OR (${MODULE} STREQUAL "jaspJags"))
       # ----- jags -----
       #
       # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.

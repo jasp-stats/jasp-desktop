@@ -55,6 +55,7 @@ set(R_BINARY_HASHES
 	"05370dd000f0fded68594fc95334808ee25a8e91"
 	"37cfb7702a7be00abd64bef8e2ae4252821e5cfc")
 
+
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 set(R_VERSION
@@ -123,6 +124,8 @@ if(APPLE)
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
   set(RENV_PATH "${R_LIBRARY_PATH}/renv")
+  set(ENV{JASP_R_HOME} ${R_HOME_PATH})
+  set(ENV{R_HOME} ${R_HOME_PATH})
 
   cmake_print_variables(R_FRAMEWORK_PATH)
   cmake_print_variables(R_HOME_PATH)
@@ -481,12 +484,13 @@ if(APPLE)
     configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
                    ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
 
+    set(ENV{JASP_R_HOME} ${R_HOME_PATH})
+
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+	  #COMMAND_ECHO STDERR
+	  ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
       message(CHECK_FAIL "unsuccessful.")
@@ -573,6 +577,7 @@ elseif(WIN32)
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
   set(RENV_PATH "${R_LIBRARY_PATH}/renv")
+  
 
   # This will be added to the install.packages calls
   set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
