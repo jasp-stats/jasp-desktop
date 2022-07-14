@@ -387,16 +387,16 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 std::string DynamicModule::getLibPathsToUse()
 {
-	std::string libPathsToUse = "c('" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "'";
+	std::string libPathsToUse = "c('" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "')";
 
 	/*std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
 
 	for(const std::string & path : requiredLibPaths)
 		libPathsToUse += ", '" + path + "'";*/
 
-	libPathsToUse += ", '" + AppDirs::rHome().toStdString() + "/library" + "'";
+	//libPathsToUse += ", '" + AppDirs::rHome().toStdString() + "/library" + "'";
 
-	libPathsToUse += ", .libPaths())";
+	//libPathsToUse += ", .libPaths())";
 
 	return libPathsToUse;
 }
