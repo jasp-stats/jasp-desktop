@@ -3,7 +3,7 @@
 #include "utilities/qutils.h"
 #include "utilities/jsonutilities.h"
 #include "log.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utils.h"
 
 namespace PlotEditor
