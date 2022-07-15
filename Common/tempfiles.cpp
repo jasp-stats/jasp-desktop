@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <boost/filesystem.hpp>
+#include <fstream>
 
 #include "columnencoder.h"
 #include "utils.h"

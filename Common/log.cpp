@@ -11,6 +11,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/null.hpp>
 #include <codecvt>
+#include <fstream>
 
 static std::ofstream _logFile;// = bofstream();
 

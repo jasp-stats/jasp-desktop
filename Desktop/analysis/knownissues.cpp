@@ -5,6 +5,7 @@
 #include "log.h"
 #include "utilities/appdirs.h"
 #include "utils.h"
+#include <fstream>
 
 //Check every day?
 #define EXPIRATION_TIME_SEC 60 * 60 * 24
