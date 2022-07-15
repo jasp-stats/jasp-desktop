@@ -5,13 +5,13 @@
 #include <QFont>
 #include "column.h"
 #include "utilities/qutils.h"
+#include "preferencesmodelbase.h"
 
 class JaspTheme;
 
-
 ///
 /// Interface between QML and Settings, mostly templated functions to link through directly.
-class PreferencesModel : public QObject
+class PreferencesModel : public PreferencesModelBase
 {
 	Q_OBJECT
 
@@ -63,11 +63,10 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 
-public:
-	static PreferencesModel * prefs() { return _singleton; }
-	
+public:	
+	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
+
 	explicit	 PreferencesModel(QObject *parent = 0);
-	~PreferencesModel() { _singleton = nullptr;}
 
 	int			customPPI()					const;
 	int			numDecimals()				const;
@@ -82,7 +81,7 @@ public:
 	bool		whiteBackground()			const;
 	QString		plotBackground()			const;
 	bool		developerMode()				const;
-	double		uiScale()						 ;
+	double		uiScale()					override;
 	QString		customEditor()				const;
 	QString		developerFolder()			const;
 	QString		fixedDecimalsForJS()		const;
@@ -91,7 +90,7 @@ public:
 	int			thresholdScale()			const;
 	bool		logToFile()					const;
 	int			logFilesMax()				const;
-	int			maxFlickVelocity()			const;
+	int			maxFlickVelocity()			const override;
 	bool		modulesRemember()			const;
 	QStringList	modulesRemembered()			const;
 	bool		safeGraphics()				const;
@@ -162,15 +161,13 @@ public slots:
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
 	void onDefaultPPIChanged(			int);
-	void setCurrentThemeName(			QString		currentThemeName);
-	void setCurrentThemeNameFromClass(	JaspTheme * theme);
+	void setCurrentThemeName(			QString		currentThemeName) override;
 	void setInterfaceFont(				QString		interfaceFont);
 	void setCodeFont(					QString		codeFont);
 	void setResultFont(					QString		resultFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
 	void setGenerateMarkdown(			bool		generateMarkdown);
-	void onCurrentThemeNameChanged(		QString		newThemeName);
 	void resetRememberedModules(		bool		clear);
 	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
@@ -179,7 +176,6 @@ public slots:
 	
 	
 signals:
-	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
 	void fixedDecimalsChangedString(	QString		fixedDecimals);
 	void numDecimalsChanged(			int			numDecimals);
@@ -190,7 +186,6 @@ signals:
 	void customEditorChanged(			QString		customEditor);
 	void useDefaultPPIChanged(			bool		useDefaultPPI);
 	void whiteBackgroundChanged();
-	void uiScaleChanged(				double		uiScale);
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
 	void missingValuesChanged();
@@ -202,14 +197,12 @@ signals:
 	void thresholdScaleChanged(			int			thresholdScale);
 	void logToFileChanged(				bool		logToFile);
 	void logFilesMaxChanged(			int			logFilesMax);
-	void maxFlickVelocityChanged(		int			maxFlickVelocity);
 	void modulesRememberChanged(		bool		modulesRemember);
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
 	void githubPatUseDefaultChanged(	bool		githubPatUseDefault);
 	void githubPatCustomChanged();
-	void interfaceFontChanged(			QString		interfaceFont);
 	void codeFontChanged(				QString		codeFont);
 	void resultFontChanged(				QString		resultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
@@ -226,7 +219,6 @@ signals:
 	void dbShowWarningChanged(			bool		dbShowWarning);
 	
 private:
-	static PreferencesModel * _singleton;
 
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
