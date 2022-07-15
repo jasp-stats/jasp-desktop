@@ -32,10 +32,12 @@
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include <boost/filesystem.hpp>
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utilities/languagemodel.h"
 #include "description/description.h"
 #include "utilities/extractarchive.h"
+#include "utilities/qmlutils.h"
+#include "mainwindow.h"
 
 namespace Modules
 {
@@ -263,7 +265,7 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 
 Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
 {
-	Description * description = qobject_cast<Description*>(instantiateQml(descriptionTxt, url, moduleName, "Description", getQmlDescriptionFilename()));
+	Description * description = qobject_cast<Description*>(instantiateQml(descriptionTxt, url, moduleName, "Description", getQmlDescriptionFilename(), MainWindow::singleton()->giveRootQmlContext()));
 
 	return description;
 }
@@ -271,7 +273,7 @@ Description * DynamicModule::instantiateDescriptionQml(const QString & descripti
 
 Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, const QUrl & url, const std::string & moduleName)
 {
-	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename()));
+	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename(), MainWindow::singleton()->giveRootQmlContext()));
 
 	return upgrades;
 }

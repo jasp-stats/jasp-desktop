@@ -1,5 +1,5 @@
 #include "odsxmlcontentshandler.h"
-
+#include "odsimportcolumn.h"
 #include "log.h"
 
 using namespace std;

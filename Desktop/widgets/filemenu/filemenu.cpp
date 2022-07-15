@@ -20,7 +20,7 @@
 
 #include <QFileInfo>
 #include "utilities/settings.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"

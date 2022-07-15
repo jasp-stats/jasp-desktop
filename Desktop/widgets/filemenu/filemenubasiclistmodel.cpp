@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QTimer>
 #include "log.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {

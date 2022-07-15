@@ -27,7 +27,7 @@
 #include "filesystem.h"
 #include "common.h"
 #include "osf/onlinedatamanager.h"
-#include "../sortable.h"
+#include "sortable.h"
 
 class OSFFileSystem : public FileSystem, public Sortable
 {
