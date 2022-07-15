@@ -24,9 +24,6 @@ if(APPLE)
                  ${CMAKE_BINARY_DIR}/Info.plist)
 endif()
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
-               ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
-message(STATUS "appdirs.h is successfully generated...")
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -78,8 +75,9 @@ endif()
 target_include_directories(
   JASP
   PUBLIC 	${CMAKE_CURRENT_LIST_DIR}
-			${PROJECT_SOURCE_DIR}/Common
-			${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+                        ${PROJECT_SOURCE_DIR}/Common
+                        ${PROJECT_SOURCE_DIR}/QMLComponents
+                        ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 			# ReadStat
 			$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
 			${LIBREADSTAT_INCLUDE_DIRS}
@@ -93,6 +91,7 @@ target_include_directories(
 target_link_libraries(
   JASP
   PUBLIC Common
+         QMLComponents
          Qt::Core
          Qt::Gui
          Qt::OpenGL
@@ -101,7 +100,7 @@ target_link_libraries(
          $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::WebEngineQuick>
          $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineQuick.so>
 		 $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineCore.so>
-		 $<$<BOOL:${FLATPAK_USED}>:/app/qml/QtWebEngine/libqtwebenginequickplugin.so>
+                 $<$<BOOL:${FLATPAK_USED}>:/app/qml/QtWebEngine/libqtwebenginequickplugin.so>
          Qt::WebChannel
          Qt::Svg
          Qt::Network
@@ -195,7 +194,7 @@ qt_add_resources(
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
 qt_add_resources(
   JASP
-  "qml"
+  "widgets"
   PREFIX
   "/"
   BASE

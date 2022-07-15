@@ -21,12 +21,12 @@
 #include "sharedmemory.h"
 #include <QThread>
 #include "engine/enginesync.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include "columnencoder.h"
 #include "timers.h"
 #include "utilities/appdirs.h"
 #include "utils.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "datasetpackagesubnodemodel.h"
 #include "databaseconnectioninfo.h"
 
@@ -1450,6 +1450,34 @@ QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	cons
 
 	return list;
 }
+
+QStringList DataSetPackage::getColumnValuesAsStringList(size_t columnIndex)	const
+{
+	QStringList list;
+	if(columnIndex < 0 || columnIndex >= columnCount()) return list;
+
+	size_t rows = rowCount();
+	Column& col = _dataSet->column(columnIndex);
+
+	for(size_t i = 0; i < rows; i++)
+		list.append(tq(col.getOriginalValue(i)));
+
+	return list;
+}
+
+QList<QVariant> DataSetPackage::getColumnValuesAsDoubleList(size_t columnIndex)	const
+{
+	QList<QVariant> list;
+	if(columnIndex < 0 || columnIndex >= columnCount()) return list;
+
+	Column& col = _dataSet->column(columnIndex);
+
+	for (double value : col.AsDoubles)
+		list.append(value);
+
+	return list;
+}
+
 
 void DataSetPackage::labelMoveRows(size_t column, std::vector<size_t> rows, bool up)
 {
