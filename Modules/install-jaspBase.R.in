@@ -33,9 +33,10 @@ currentHash <- computeHash("@PROJECT_SOURCE_DIR@/Engine/jaspBase/")
 if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
   options(
     install_opts = "--no-multiarch --no-docs --no-test-load",
-    renv.cache.linkable = FALSE
+    renv.cache.linkable = FALSE,
+    configure.vars = c(jaspResults = "INCLUDE_DIR='-I@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder -I@PROJECT_SOURCE_DIR@/Common'")
   )
-  
+  options()
   renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase", repos=NULL, library="@R_LIBRARY_PATH@")
 
 }
