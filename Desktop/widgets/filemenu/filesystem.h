@@ -24,7 +24,7 @@
 #include <QStringList>
 
 #include "filesystementry.h"
-#include "../sortable.h"
+#include "sortable.h"
 
 class FileSystem : public QObject
 {

@@ -38,7 +38,6 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/appdirs.h"
 #include "log.h"
-#include "utilities/qutils.h"
 #include "utilities/processhelper.h"
 
 using namespace boost::interprocess;

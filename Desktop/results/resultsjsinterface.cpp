@@ -33,7 +33,7 @@
 #include "utilities/settings.h"
 #include <QMimeData>
 #include <QAction>
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include <QApplication>
 #include "gui/preferencesmodel.h"
 #include <QThread>
@@ -50,6 +50,11 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	
 
 	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
+}
+
+void ResultsJsInterface::uiScaleChangedHandler()
+{
+	setZoom(PreferencesModel::prefs()->uiScale());
 }
 
 void ResultsJsInterface::setZoom(double zoom)
@@ -258,7 +263,7 @@ void ResultsJsInterface::setStatus(Analysis *analysis)
 void ResultsJsInterface::changeTitle(Analysis *analysis)
 {
     int id = analysis->id();
-    QString title = analysis->titleQ();
+	QString title = tq(analysis->title());
 	
 	Log::log() << " void ResultsJsInterface::changeTitle(Analysis *analysis)" << std::endl;
 

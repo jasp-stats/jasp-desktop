@@ -7,7 +7,7 @@
 #include "timers.h"
 #include "log.h"
 #include "gui/preferencesmodel.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include <QScreen>
 #include "data/datasetpackage.h"
 #include <iostream>

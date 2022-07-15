@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 import JASP.Widgets 1.0
+import JASP.Controls 1.0
 
 Item
 {

@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.5
-import JASP.Widgets		1.0
+import JASP.Controls	1.0 as JaspControls
 import JASP				1.0
 
 Item
@@ -78,7 +78,7 @@ Item
 		}
 	}
 
-	RectangularButton
+	JaspControls.RectangularButton
 	{
 		id:						minus
 		iconSource:				jaspTheme.iconPath + "/subtraction-sign-small.svg" //jaspTheme.iconPath + "/addition-sign-small.svg"
@@ -139,7 +139,7 @@ Item
 		}
 	}
 
-	RectangularButton
+	JaspControls.RectangularButton
 	{
 		id:					plus
 		iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
