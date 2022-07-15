@@ -24,7 +24,7 @@
 
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "osf/onlineusernodeosf.h"
 
 OSF::OSF(QObject *parent): FileMenuObject(parent)

@@ -25,7 +25,7 @@
 #include <QFileSystemWatcher>
 
 #include "analysis/analyses.h"
-#include "analysis/analysisform.h"
+#include "analysisform.h"
 #include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
@@ -45,7 +45,7 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonmodel.h"
 #include "modules/upgrader/upgrader.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include "results/ploteditormodel.h"
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
@@ -234,7 +234,7 @@ private slots:
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
 	void resetQmlCache();
-	void jaspThemeChanged(JaspTheme * newTheme);
+	void setCurrentJaspTheme();
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
 

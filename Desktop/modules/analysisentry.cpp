@@ -18,7 +18,7 @@
 
 
 #include "dynamicmodule.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 
 namespace Modules
 {

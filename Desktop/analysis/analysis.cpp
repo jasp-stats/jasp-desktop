@@ -26,11 +26,11 @@
 #include "log.h"
 #include "utils.h"
 #include "utilities/settings.h"
-#include "utilities/qutils.h"
+#include "gui/preferencesmodel.h"
 
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
-	  QObject(			Analyses::analyses()),
+	  AnalysisBase(Analyses::analyses()),
 	  _id(				id),
 	  _name(			analysisEntry->function()),
 	  _qml(				analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
@@ -48,13 +48,13 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 		_optionsDotJASP = *data; //Same story as other constructor
 
 	_codedAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
-	setHelpFile(dynamicModule()->helpFolderPath() + tq(analysisEntry->function()));
+	_helpFile = dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
 
 	initAnalysis();
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
-	: QObject(				Analyses::analyses()					)
+	: AnalysisBase(			Analyses::analyses()					)
 	, _status(				duplicateMe->_status					)
 	, _boundValues(			duplicateMe->boundValues()				)
 	, _optionsDotJASP(		duplicateMe->_optionsDotJASP			)
@@ -165,9 +165,18 @@ bool Analysis::checkAnalysisEntry()
 	}
 }
 
-QString Analysis::helpMD() const
+void Analysis::setTitle(const std::string& title)
 {
-	return _analysisForm ? _analysisForm->helpMD() : "";
+	if (_title != title)
+	{
+		_title = title;
+		if(_title == "")
+			_title = _titleDefault;
+
+		_results["title"] = _title;
+
+		emit titleChanged();
+	}
 }
 
 void Analysis::abort()
@@ -318,11 +327,25 @@ Analysis::Status Analysis::parseStatus(std::string name)
 	else								return Analysis::FatalError;
 }
 
-void Analysis::formConnect()
+void Analysis::createForm(QQuickItem* parentItem)
 {
-	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
-	connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisForm::rSourceChanged				);
-	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
+	AnalysisBase::createForm(parentItem);
+
+	if (_analysisForm)
+	{
+		connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisForm::rSourceChanged				);
+		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
+		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
+		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
+	}
+}
+
+void Analysis::destroyForm()
+{
+	AnalysisBase::destroyForm();
+
+	if (_analysisForm)
+		_optionsDotJASP = _boundValues;  //So that we can later reload the controls to what we currently have
 }
 
 
@@ -589,19 +612,17 @@ void Analysis::boundValueChangedHandler()
 	run();
 }
 
-ComputedColumn *Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
+void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
 	ComputedColumn *result = requestComputedColumnCreation(columnName, this);
 
 	if (result)
 		addOwnComputedColumn(columnName);
-
-	return result;
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
-	requestComputedColumnDestruction(columnName);
+	emit requestComputedColumnDestruction(columnName);
 
 	removeOwnComputedColumn(columnName);
 }
@@ -618,16 +639,6 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	case Analysis::Aborting:	return(performType::abort);
 	default:					return(performType::run);
 	}
-}
-
-std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) const
-{
-	if(!ignoreReadyForUse && !dynamicModule()->readyForUse())
-		return "";
-
-	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
-				_moduleData->qmlFilePath()	:
-				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
 
 std::set<std::string> Analysis::usedVariables()
@@ -681,42 +692,6 @@ Json::Value Analysis::createAnalysisRequestJson()
 	return json;
 }
 
-void Analysis::setName(std::string name)
-{
-	if (_name == name)
-		return;
-
-	_name = name;
-	emit nameChanged();
-}
-
-void Analysis::setHelpFile(QString helpFile)
-{
-	if (_helpFile == helpFile)
-		return;
-
-	_helpFile = helpFile;
-	emit helpFileChanged();
-}
-
-void Analysis::setTitleQ(QString title)
-{
-	//Log::log() << "void Analysis::setTitleQ('" << title << "')" << std::endl;
-
-	std::string strippedTitle	= title.simplified().toStdString();
-
-	if(strippedTitle == "")
-		strippedTitle = _titleDefault;
-
-	if (_title == strippedTitle && strippedTitle == title.toStdString())
-		return;
-
-	_results["title"] = strippedTitle;
-	_title = strippedTitle;
-
-	emit titleChanged();
-}
-
 void Analysis::emitDuplicationSignals()
 {
 	emit resultsChangedSignal(this);
@@ -737,15 +712,6 @@ void Analysis::showDependenciesOnQMLForObject(QString uniqueName)
 {
 	_showDepsName = uniqueName.toStdString();
 	processResultsForDependenciesToBeShown();
-}
-
-void Analysis::setOptionsBound(bool optionsBound)
-{
-	if (_optionsBound == optionsBound)
-		return;
-
-	_optionsBound = optionsBound;
-	emit optionsBoundChanged(_optionsBound);
 }
 
 bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array)
@@ -877,116 +843,9 @@ void Analysis::setErrorInResults(const std::string & msg)
 	setResults(errorResults, Status::FatalError);
 }
 
-void Analysis::setFormParent(QQuickItem *formParent)
-{
-	if(_formParent == formParent)
-		return;
-
-	//Log::log() << "Analysis::setFormParent(" << formParent << ") " << name() << std::endl;
-
-	_formParent = formParent;
-
-	emit formParentChanged();
-
-	if(_formParent)
-	{
-		if(_analysisForm)				_analysisForm->setParentItem(_formParent);
-		else if(readyToCreateForm())	createForm();
-	}
-}
-
 bool Analysis::readyToCreateForm() const
 {
-	return _formParent && dynamicModule() && dynamicModule()->readyForUse();
-}
-
-void Analysis::createForm()
-{
-	Log::log() << "Analysis(" << this << ")::createForm() called ";
-
-	setQmlError("");
-
-	if(!_formParent)
-	{
-		Log::log() << "There is no formParent..." << std::endl;
-		return;
-	}
-
-	if(_analysisForm)
-	{
-		Log::log() << "It already has a form, so we destroy it.";
-		destroyForm();
-	}
-
-	try
-	{
-		Log::log()  << std::endl << "Loading QML form from: " << qmlFormPath(false, false) << std::endl;
-
-		QObject * newForm = instantiateQml(QUrl::fromLocalFile(tq(qmlFormPath(false, false))), module(), qmlContext(_formParent));
-
-		Log::log() << "Created a form, got pointer " << newForm << std::endl;
-
-		AnalysisForm * formItem = qobject_cast<AnalysisForm *>(newForm);
-
-		if(!formItem)
-			throw Modules::ModuleException(module(), "QML file '" + qmlFormPath(false, false) + "' didn't spawn into AnalysisForm, but into: " + (newForm ? fq(newForm->objectName()) : "null"));
-
-		setAnalysisForm(formItem);
-
-		formConnect();
-	}
-	catch(Modules::ModuleException me)
-	{
-		Log::log() << "Had an error loading qml: " << me.what() << std::endl;
-		setQmlError(me.what());
-		_analysisForm = nullptr;
-	}
-	catch(std::exception e)
-	{
-		setQmlError(e.what());
-		_analysisForm = nullptr;
-	}
-}
-
-void Analysis::destroyForm()
-{
-	Log::log() << "Analysis(" << this << ")::destroyForm() called";
-
-	if(_analysisForm)
-	{
-		Log::log(false) << " it has a AnalysisForm " << _analysisForm << " so let's destroy it" << std::endl;
-
-		_optionsDotJASP = _boundValues;  //So that we can later reload the controls to what we currently have
-
-		_analysisForm->setParent(		nullptr);
-		_analysisForm->setParentItem(	nullptr);
-
-		delete _analysisForm;
-		_analysisForm = nullptr;
-
-		emit formItemChanged();
-	}
-	else
-		Log::log(false) << " it has no AnalysisForm." << std::endl;
-}
-
-
-
-void Analysis::setAnalysisForm(AnalysisForm * analysisForm)
-{
-	if(_analysisForm == analysisForm)
-		return;
-
-	_analysisForm = analysisForm;
-	_analysisForm->setAnalysis(this);
-	_analysisForm->setParent(this);
-
-	if(formParent())
-		_analysisForm->setParentItem(formParent());
-
-	Log::log() << "AnalysisForm (" << _analysisForm << ") assigned to  " << name() << " (" << id() << ") " << std::endl;
-
-	emit formItemChanged();
+	return dynamicModule() && dynamicModule()->readyForUse();
 }
 
 std::string Analysis::upgradeMsgsForOption(const std::string & name) const
@@ -1235,16 +1094,6 @@ bool Analysis::isWaitingForModule()
 }
 
 
-void Analysis::setHasVolatileNotes(bool hasVolatileNotes)
-{
-	if (_hasVolatileNotes == hasVolatileNotes)
-		return;
-
-	_hasVolatileNotes = hasVolatileNotes;
-	emit hasVolatileNotesChanged(_hasVolatileNotes);
-}
-
-
 void Analysis::setUserData(Json::Value userData)
 {
 	_userData = userData;
@@ -1261,7 +1110,7 @@ void Analysis::setUserData(Json::Value userData)
 		return false;
 	};
 
-	setHasVolatileNotes(checkForVolatileNotes(_userData));
+	if (_analysisForm) _analysisForm->setHasVolatileNotes(checkForVolatileNotes(_userData));
 }
 
 void Analysis::setRSources(const Json::Value &rSources)
@@ -1278,9 +1127,6 @@ void Analysis::setDynamicModule(Modules::DynamicModule * module)
 	Log::log() << "Replacing module connected to analysis " << title() << " (" << id() << ") for module " << module->name() << std::endl;
 	if(_dynamicModule != module)
 	{
-		if(_analysisForm)
-			destroyForm();
-
 		_dynamicModule = module;
 		emit dynamicModuleChanged();
 	}
@@ -1292,7 +1138,7 @@ void Analysis::watchQmlForm()
 {
 	if(PreferencesModel::prefs()->developerMode())
 	{
-		QString		filePath		= tq(qmlFormPath(false, true));
+		QString		filePath		= tq(Analysis::qmlFormPath(false, true));
 
 		if(_QMLFileWatcher.files().size())
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
@@ -1305,8 +1151,9 @@ void Analysis::watchQmlForm()
 
 void Analysis::reloadForm()
 {
-	if(form())
-		destroyForm();
+	clearOptions();
+
+	QQuickItem* parentForm = nullptr;
 
 	if(readyToCreateForm())
 	{
@@ -1420,25 +1267,12 @@ void Analysis::clearRSources()
 	_rSources.clear();
 }
 
-QQuickItem *Analysis::formParent() const
+std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) const
 {
-	return _formParent;
-}
+	if(!ignoreReadyForUse && !dynamicModule()->readyForUse())
+		return "";
 
-QQuickItem *Analysis::formItem() const
-{
-	return _analysisForm;
-}
-
-const QString &Analysis::qmlError() const
-{
-	return _qmlError;
-}
-
-void Analysis::setQmlError(const QString &newQmlError)
-{
-	if (_qmlError == newQmlError)
-		return;
-	_qmlError = newQmlError;
-	emit qmlErrorChanged();
+	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
+				_moduleData->qmlFilePath()	:
+				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }

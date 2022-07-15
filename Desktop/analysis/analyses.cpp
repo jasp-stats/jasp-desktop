@@ -331,7 +331,7 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 			{
 				Analysis * a = keyval.second;
 
-				if(!a->form() && a->readyToCreateForm())
+				if(a->readyToCreateForm())
 					a->createForm();
 			}
 		}
@@ -527,8 +527,9 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		Log::log()  << "Unknown Returned Rcode request ID " << requestId << std::endl;
 }
 
-void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion)
+void Analyses::sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion)
 {
+	Analysis* analysis = qobject_cast<Analysis*>(sender());
 	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
 
 	emit sendRScript(script, _scriptRequestID++, whiteListedVersion);
@@ -693,7 +694,7 @@ void Analyses::analysisTitleChangedInResults(int id, QString title)
 	Analysis * analysis = get(id);
 
 	if(analysis != nullptr)
-		analysis->setTitleQ(title);
+		analysis->setTitle(fq(title));
 }
 
 void Analyses::setChangedAnalysisTitle()
