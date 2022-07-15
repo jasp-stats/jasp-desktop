@@ -19,7 +19,7 @@
 #include "columntypesmodel.h"
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 
 QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 {

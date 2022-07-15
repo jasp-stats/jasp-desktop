@@ -170,7 +170,7 @@ signals:
 	void currentFormPrevHChanged(double currentFormPrevH);
 
 private slots:
-	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion);
+	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);

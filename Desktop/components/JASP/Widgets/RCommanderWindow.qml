@@ -255,7 +255,7 @@ Window
 				}
 			}
 
-			JW.RoundedButton
+			JC.RoundedButton
 			{
 				id:				runButton
 				text:			qsTr("Run Code")
@@ -295,7 +295,7 @@ Window
 				}
 			}
 
-			JW.RoundedButton
+			JC.RoundedButton
 			{
 				id:			clearOutput
 				text:		qsTr("Clear Output")
