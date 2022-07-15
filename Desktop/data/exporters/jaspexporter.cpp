@@ -27,6 +27,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <json/json.h>
+#include <fstream>
 #include "archivereader.h"
 #include "version.h"
 #include "tempfiles.h"
