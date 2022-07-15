@@ -328,7 +328,7 @@ Popup
 								}
 							}
 
-							JASPW.MenuButton
+							JASPC.MenuButton
 							{
 								id:				helpButton
 								iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -348,7 +348,7 @@ Popup
 					}
 
 					/* Redo/Undo buttons: let's do that later.
-					JASPW.MenuButton
+					JASPC.MenuButton
 					{
 						id:					redoButton
 						iconSource:			jaspTheme.iconPath + "/redo.svg"
@@ -368,7 +368,7 @@ Popup
 						onClicked:			plotEditorModel.redoSomething()
 					}
 
-					JASPW.MenuButton
+					JASPC.MenuButton
 					{
 						id:					undoButton
 						iconSource:			jaspTheme.iconPath + "/undo.svg"
@@ -461,7 +461,7 @@ Popup
 				}
 			}
 
-			JASPW.RoundedButton
+			JASPC.RoundedButton
 			{
 				id:					exitButton
 				anchors
@@ -476,7 +476,7 @@ Popup
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 
-			JASPW.RoundedButton
+			JASPC.RoundedButton
 			{
 				id:					cancelButton
 				anchors
@@ -490,7 +490,7 @@ Popup
 				on_PressedChanged:	cancel()
 			}
 
-			JASPW.RoundedButton
+			JASPC.RoundedButton
 			{
 				id:					resetDefaultButton
 				anchors
@@ -503,7 +503,7 @@ Popup
 				onClicked:			plotEditorModel.resetDefaults()
 			}
 
-			JASPW.RoundedButton
+			JASPC.RoundedButton
 			{
 				id:					saveButton
 				anchors

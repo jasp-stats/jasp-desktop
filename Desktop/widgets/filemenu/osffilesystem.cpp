@@ -37,7 +37,7 @@
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
-#include <gui/messageforwarder.h>
+#include "utilities/messageforwarder.h"
 #include <iostream>
 
 const QString OSFFileSystem::rootelementname = "Projects";

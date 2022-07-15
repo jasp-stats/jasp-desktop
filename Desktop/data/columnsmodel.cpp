@@ -1,5 +1,7 @@
 #include "columnsmodel.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
+#include "log.h"
+#include "utilities/qutils.h"
 
 ColumnsModel* ColumnsModel::_singleton = nullptr;
 
@@ -11,7 +13,16 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QTransposeProxyModel
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
-	if (_singleton == nullptr) _singleton = this;
+	if (_singleton == nullptr)
+	{
+		_singleton = this;
+		VariableInfo* info = new VariableInfo(this);
+		connect(this, &ColumnsModel::namesChanged,		info, &VariableInfo::namesChanged		);
+		connect(this, &ColumnsModel::columnsChanged,	info, &VariableInfo::columnsChanged		);
+		connect(this, &ColumnsModel::columnTypeChanged, info, &VariableInfo::columnTypeChanged	);
+		connect(this, &ColumnsModel::labelsChanged,		info, &VariableInfo::labelsChanged		);
+		connect(this, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
+	}
 }
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
@@ -23,9 +34,7 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 	case NameRole:					return _tableModel->columnTitle(index.row());
 	case TypeRole:					return "column";
 	case ColumnTypeRole:			return int(_tableModel->getColumnType(size_t(index.row())));
-	case IconSourceRole:			return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::DefaultIconType);
-	case DisabledIconSourceRole:	return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::DisabledIconType);
-	case InactiveIconSourceRole:	return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::InactiveIconType);
+	case IconSourceRole:			return VariableInfo::getIconFile(_tableModel->getColumnType(size_t(index.row())), VariableInfo::DefaultIconType);
 	case ToolTipRole:
 	{
 		columnType	colType = _tableModel->getColumnType(size_t(index.row()));
@@ -33,7 +42,6 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 
 		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
 	}
-	case LabelsRole:				return _tableModel->getColumnLabelsAsStringList(index.row());
 	}
 
 	return QVariant();
@@ -47,10 +55,7 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 		{ TypeRole,					"type"					},
 		{ ColumnTypeRole,			"columnType"			},
 		{ IconSourceRole,			"columnIcon"			},
-		{ DisabledIconSourceRole,	"columnDisabledIcon"	},
-		{ InactiveIconSourceRole,	"columnInactiveIcon"	},
-		{ ToolTipRole,				"toolTip"				},
-		{ LabelsRole,				"labels"				}
+		{ ToolTipRole,				"toolTip"				}
 	};
 
 	return roles;
@@ -87,39 +92,41 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 	}
 }
 
-QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType type) const
+QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
 {
-	QString path = JaspTheme::currentIconPath();
-	switch(type)
+	ColumnsModel* colModel = ColumnsModel::singleton();
+	if (!colModel) return QVariant();
+
+	try
 	{
-	case ColumnsModel::DefaultIconType:
-		switch(colType)
+		int colIndex = colName.isEmpty() ? 0 : colModel->getColumnIndex(fq(colName));
+
+		if (colIndex < 0)
+			return "";
+
+		switch(info)
 		{
-		case columnType::scale:			return path + "variable-scale.png";
-		case columnType::ordinal:		return path + "variable-ordinal.png";
-		case columnType::nominal:		return path + "variable-nominal.png";
-		case columnType::nominalText:	return path + "variable-nominal-text.png";
-		default:						return "";
-		}
-	case ColumnsModel::DisabledIconType:
-		switch(colType)
-		{
-		case columnType::scale:			return path + "variable-scale-disabled.png";
-		case columnType::ordinal:		return path + "variable-ordinal-disabled.png";
-		case columnType::nominal:		return path + "variable-nominal-disabled.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
-		default:						return "";
-		}
-	case ColumnsModel::InactiveIconType:
-		switch(colType)
-		{
-		case columnType::scale:			return path + "variable-scale-inactive.png";
-		case columnType::ordinal:		return path + "variable-ordinal-inactive.png";
-		case columnType::nominal:		return path + "variable-nominal-inactive.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
-		default:						return "";
+		case VariableInfo::VariableType:				return	int(_tableModel->getColumnType(colIndex));
+		case VariableInfo::VariableTypeName:			return	columnTypeToQString(_tableModel->getColumnType(colIndex));
+		case VariableInfo::VariableTypeIcon:			return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::DefaultIconType);
+		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::DisabledIconType);
+		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::InactiveIconType);
+		case VariableInfo::Labels:						return	_tableModel->getColumnLabelsAsStringList(colIndex);
+		case VariableInfo::StringValues:				return	_tableModel->getColumnValuesAsStringList(colIndex);
+		case VariableInfo::DoubleValues:				return	_tableModel->getColumnValuesAsDoubleList(colIndex);
+		case VariableInfo::NameRole:					return	ColumnsModel::NameRole;
+		case VariableInfo::RowCount:					return	_tableModel->rowCount();
+		case VariableInfo::Value:						return	_tableModel->data(_tableModel->index(row, colIndex));
+		case VariableInfo::MaxWidth:					return	int(_tableModel->getMaximumColumnWidthInCharacters(colIndex));
+		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
+
 		}
 	}
-
-	return ""; //We are never getting here but GCC isn't convinced
+	catch(columnNotFound & e) {} //just return an empty QVariant right?
+	catch(std::exception & e)
+	{
+		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
+		throw e;
+	}
+	return QVariant("");
 }

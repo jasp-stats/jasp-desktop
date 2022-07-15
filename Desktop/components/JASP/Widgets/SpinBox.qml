@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.5
-import JASP.Widgets		1.0
+import JASP.Controls	1.0 as JaspControls
 import JASP				1.0
 
 FocusScope
@@ -79,7 +79,7 @@ FocusScope
 		}
 	}
 
-	RectangularButton
+	JaspControls.RectangularButton
 	{
 		id:						minus
 		iconSource:				jaspTheme.iconPath + "/subtraction-sign-small.svg" //jaspTheme.iconPath + "/addition-sign-small.svg"
@@ -137,7 +137,7 @@ FocusScope
 		}
 	}
 
-	RectangularButton
+	JaspControls.RectangularButton
 	{
 		id:					plus
 		iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"

@@ -1,6 +1,7 @@
 import QtQuick			2.7
 import QtQuick.Controls 2.12
 import QtQuick.Layouts	1.3
+import JASP.Controls	1.0 as JaspControls
 
 import "FilterConstructor"
 
@@ -295,7 +296,7 @@ FocusScope
 				margins:	1
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				removeColumnButton
 				iconSource:		jaspTheme.iconPath + "square_trashcan.png"
@@ -310,7 +311,7 @@ FocusScope
 				}
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:			showGeneratedRCode
 				visible:	!computedColumnsInterface.computeColumnUsesRCode
@@ -327,7 +328,7 @@ FocusScope
 
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				applycomputeColumn
 
@@ -341,7 +342,7 @@ FocusScope
 				toolTip:		computeColumnEdit.changedSinceLastApply ? qsTr("Click to compute column") : qsTr("Column (in line to be) computed")
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				helpButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -353,7 +354,7 @@ FocusScope
 			}
 
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				closeColumnEditorButton
 				iconSource:		jaspTheme.iconPath + "cross.png"

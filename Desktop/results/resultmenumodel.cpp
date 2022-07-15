@@ -19,7 +19,7 @@
 #include "resultmenumodel.h"
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 #include "gui/preferencesmodel.h"
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),

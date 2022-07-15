@@ -19,7 +19,7 @@
 
 #include "ribbonmodel.h"
 #include "utilities/appdirs.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "log.h"
 
 using namespace Modules;

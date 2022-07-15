@@ -3,25 +3,19 @@
 #include "utilities/qutils.h"
 
 #include "utilities/settings.h"
-#include "gui/messageforwarder.h"
-#include "qquick/jasptheme.h"
+#include "utilities/messageforwarder.h"
+#include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
-#include "utilities/qutils.h"
 #include "utilities/appdirs.h"
 #include "enginedefinitions.h"
 
 using namespace std;
 
-PreferencesModel * PreferencesModel::_singleton = nullptr;
-
 PreferencesModel::PreferencesModel(QObject *parent) :
-	QObject(parent)
-{
-	if(_singleton) throw std::runtime_error("PreferencesModel can only be instantiated once!");
-	_singleton = this;
-	
+	PreferencesModelBase(parent)
+{	
 	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
@@ -32,10 +26,7 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
 	connect(this,					&PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
 	connect(this,					&PreferencesModel::modulesRememberChanged,		this, &PreferencesModel::resetRememberedModules			);
-
-	connect(this,					&PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
-	connect(this,					&PreferencesModel::currentThemeNameChanged,		this, &PreferencesModel::onCurrentThemeNameChanged		);
-
+	connect(this,					&PreferencesModel::currentThemeReady,			this, &PreferencesModel::currentJaspThemeChanged,	Qt::QueuedConnection);
 	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 
@@ -235,6 +226,23 @@ void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 	emit NOTIFY(newVal);												\
 }
 
+#define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
+void PreferencesModel::FUNC_NAME(TYPE newVal)							\
+{																		\
+	if(GET_FUNC() == newVal) return;									\
+	Settings::setValue(SETTING, newVal);								\
+	emit NOTIFY();														\
+}
+
+void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
+{
+	if (currentThemeName() == _currentThemeName) return;
+
+	Settings::setValue(Settings::THEME_NAME, _currentThemeName);
+	JaspTheme::setCurrentThemeFromName(_currentThemeName);
+
+	emit currentThemeNameChanged(_currentThemeName);
+}
 
 SET_PREF_FUNCTION(bool,		setExactPValues,			exactPValues,				exactPValuesChanged,			Settings::EXACT_PVALUES								)
 SET_PREF_FUNCTION(bool,		setNormalizedNotation,		normalizedNotation,			normalizedNotationChanged,		Settings::NORMALIZED_NOTATION						)
@@ -247,17 +255,16 @@ SET_PREF_FUNCTION(QString,	setDeveloperFolder,			developerFolder,			developerFol
 SET_PREF_FUNCTION(int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
 SET_PREF_FUNCTION(bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
 SET_PREF_FUNCTION(int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,				Settings::LOG_FILES_MAX								)
-SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
+SET_PREF_FUNCTION_EMIT_NO_ARG(int,	setMaxFlickVelocity,	maxFlickVelocity,		maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
 SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
-//SET_PREF_FUNCTION(QString,	setGithubPatCustom,			githubPatCustom,			githubPatCustomChanged,			Settings::GITHUB_PAT_CUSTOM							)
+//SET_PREF_FUNCTION(QString,	setGithubPatCustom,			githubPatCustom,			githubPatCustomChanged,			Settings::GITHUB_PAT_CUSTOM						)
 SET_PREF_FUNCTION(bool,		setGithubPatUseDefault,		githubPatUseDefault,		githubPatUseDefaultChanged,		Settings::GITHUB_PAT_USE_DEFAULT					)
-SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
-SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
+SET_PREF_FUNCTION_EMIT_NO_ARG(QString,	setInterfaceFont,	interfaceFont,			interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
@@ -301,7 +308,7 @@ void PreferencesModel::setUiScale(double newUiScale)
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	_uiScale = newUiScale;
 
-	emit uiScaleChanged(newUiScale);
+	emit uiScaleChanged();
 }
 
 void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
@@ -399,18 +406,6 @@ void PreferencesModel::updateUtilsMissingValues()
 	Utils::_currentEmptyValues = fq(missingValues());
 	Utils::processEmptyValues();
 }
-
-void PreferencesModel::setCurrentThemeNameFromClass(JaspTheme * theme)
-{
-	if(theme)
-		setCurrentThemeName(theme->themeName());
-}
-
-void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
-{
-	JaspTheme::setCurrentThemeFromName(currentThemeName());
-}
-
 
 void PreferencesModel::_loadDatabaseFont()
 {

@@ -1,6 +1,6 @@
 #include "labelmodel.h"
 #include "log.h"
-#include "qquick/jasptheme.h"
+#include "jasptheme.h"
 
 LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
