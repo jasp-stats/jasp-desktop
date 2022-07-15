@@ -19,9 +19,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 
+import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
-//import JASP.Controls    1.0
 //import QtQuick.Layouts  1.3
 
 Item

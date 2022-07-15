@@ -5,7 +5,7 @@
 #include "log.h"
 #include "tempfiles.h"
 #include <QDir>
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 
 namespace PlotEditor
 {

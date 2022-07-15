@@ -25,7 +25,7 @@
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
 #include "appinfo.h"

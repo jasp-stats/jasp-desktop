@@ -248,6 +248,8 @@ public:
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex) const;
 				QStringList					getColumnLabelsAsStringList(std::string columnName)		const;
 				QStringList					getColumnLabelsAsStringList(size_t columnIndex)			const;
+				QStringList					getColumnValuesAsStringList(size_t columnIndex)			const;
+				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)			const;
 
 				bool						setFilterData(std::string filter, std::vector<bool> filterResult);
 				void						resetFilterAllows(size_t columnIndex);

@@ -74,7 +74,6 @@ Frameworks/
 R.framework/
 .cache/
 Modules/renv-root/
-Desktop/utilities/appdirs.h
 Desktop/utilities/simplecryptkey.h
 Desktop/modules/activemodules.h
 Common/appinfo.cpp

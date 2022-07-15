@@ -21,6 +21,9 @@
 
 #include "odsimportdataset.h"
 #include "log.h"
+#include "../importdataset.h"
+#include "odsimportcolumn.h"
+#include "../odsimporter.h"
 
 using namespace std;
 using namespace ods;

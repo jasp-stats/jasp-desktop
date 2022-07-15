@@ -1,6 +1,7 @@
 import QtQuick				2.9
 //import QtQuick.Controls		1.4 as Old
 import QtQuick.Controls		2.2
+import JASP.Controls		1.0 as JaspControls
 
 
 FocusScope
@@ -43,7 +44,7 @@ FocusScope
 				}
 
 			leftTopCornerItem:
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:				filterToggleButton
 					width:			dataTableView.rowNumberWidth
@@ -54,7 +55,7 @@ FocusScope
 				}
 
 			extraColumnItem:
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:				addColumnButton
 					width:			height

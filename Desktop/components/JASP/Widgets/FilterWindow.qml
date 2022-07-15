@@ -1,6 +1,6 @@
 import QtQuick			2.12
 import QtQuick.Controls 2.12
-
+import JASP.Controls	1.0 as JaspControls
 import "FilterConstructor"
 
 FocusScope
@@ -155,7 +155,7 @@ FocusScope
 				}
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:			rRectangularButton
 				iconSource: jaspTheme.iconPath + "/R.png"
@@ -170,7 +170,7 @@ FocusScope
 				}
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:			showInactiveFilteredButtonEasy
 				iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
@@ -185,7 +185,7 @@ FocusScope
 				}
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
 
@@ -204,7 +204,7 @@ FocusScope
 
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				helpEasyRectangularButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -219,7 +219,7 @@ FocusScope
 				}
 			}
 
-			RectangularButton
+			JaspControls.RectangularButton
 			{
 				id:				closeEasyRectangularButton
 				iconSource:		jaspTheme.iconPath + "cross.png"
@@ -313,7 +313,7 @@ FocusScope
 
 						}
 
-						RectangularButton
+						JaspControls.RectangularButton
 						{
 							id:						resetAllGeneratedFilters
 							width:					dataSetModel.columnsFilteredCount > 0 ? height : 0
@@ -440,7 +440,7 @@ FocusScope
 					bottom:		parent.bottom
 				}
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:				easyRectangularButton
 					iconSource:		jaspTheme.iconPath + "/NotR.png"
@@ -455,7 +455,7 @@ FocusScope
 					}
 				}
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:			showInactiveFilteredButtonR
 					iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
@@ -470,7 +470,7 @@ FocusScope
 					}
 				}
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:			clearRectangularButton
 					iconSource: jaspTheme.iconPath + "eraser.png"
@@ -488,7 +488,7 @@ FocusScope
 					}
 				}
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id: applyFilter
 
@@ -506,7 +506,7 @@ FocusScope
 					toolTip:		filterEdit.changedSinceLastApply ? qsTr("Click to apply filter") : filterIsDefault ? qsTr("Filter is unchanged from default") : qsTr("Filter is already applied")
 				}
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:				helpButton
 					iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -519,7 +519,7 @@ FocusScope
 				}
 
 
-				RectangularButton
+				JaspControls.RectangularButton
 				{
 					id:				closeRectangularButton
 					iconSource:		jaspTheme.iconPath + "cross.png"

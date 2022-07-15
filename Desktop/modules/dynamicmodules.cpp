@@ -21,7 +21,7 @@
 #include "dynamicmodules.h"
 #include "utilities/extractarchive.h"
 #include "utilities/settings.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 #include "log.h"
