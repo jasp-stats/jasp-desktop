@@ -21,8 +21,6 @@ import QtQuick			2.15
 import QtQuick.Controls	2.12 as QTC
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
-import JASP.Widgets		1.0
-
 import QtQuick.Window	2.3
 import JASP				1.0
 

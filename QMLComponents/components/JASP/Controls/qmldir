@@ -17,6 +17,7 @@ ComponentsList                      1.0 ComponentsList.qml
 ComputedColumnField                 1.0 ComputedColumnField.qml
 ContrastsList                       1.0 ContrastsList.qml
 ControlErrorMessage                 1.0 ControlErrorMessage.qml
+CrossButton			    1.0 CrossButton.qml
 CustomContrastsTableView            1.0 CustomContrastsTableView.qml
 Divider                             1.0 Divider.qml
 DoubleField                         1.0 DoubleField.qml
