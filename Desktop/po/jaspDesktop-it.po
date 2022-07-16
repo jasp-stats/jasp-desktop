@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-06-19 10:16+0000\n"
+"PO-Revision-Date: 2022-07-10 23:21+0000\n"
 "Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
@@ -144,125 +144,155 @@ msgctxt "AboutWindow|"
 msgid "Close"
 msgstr "Chiudi"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "Trascinare per riordinare le analisi"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
 msgstr "Modifica il titolo di questa analisi"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "Duplica questa analisi"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "Mostra informazioni su questa analisi"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Elimina questa analisi"
 
+#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "Ridimensiona dati/risultati"
 
+#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "Trascina per mostrare i dati"
 
+#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr ""
+msgstr "Nascondi le opzioni di input"
 
+#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr ""
+msgstr "Mostra le opzioni di input"
 
+#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
+#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
+#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Ripristina"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "Fattore di Bayes"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"Fattore di Bayes per quantificare l'evidenza dell'ipotesi alternativa "
+"rispetto all'ipotesi nulla."
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"Fattore di Bayes per quantificare l'evidenza dell'ipotesi nulla rispetto "
+"all'ipotesi alternativa."
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "Logaritmo naturale di BF10."
 
+#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Aggiungi colonna"
 
+#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Elimina colonna"
 
+#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Ripristina"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "Seleziona una colonna"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "valore assoluto"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "deviazione standard"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "varianza"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "somma"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "prodotto di valori"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
@@ -272,41 +302,49 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "media"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "arrotonda y a n decimali"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "restituisce il numero di elementi in y"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "mediana"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "logaritmo naturale"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "logaritmo in base 2"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "logaritmo in base 10"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "esponenziale"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -320,9 +358,10 @@ msgid ""
 "real numbers to numbers between -1 and 1"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "suddividi i dati in livelli numBreaks"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
