@@ -274,7 +274,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	catch(std::runtime_error & e)
 	{
 		rInside["errorJaspResultsCrash"] = e.what();
-		jaspRCPP_parseEvalQNT("initJaspResults(); jaspResults$title <- title; jaspResults$setErrorMessage(errorJaspResultsCrash); jaspResults$send();");
+		jaspRCPP_parseEvalQNT("jaspBase:::sendFatalErrorMessage(name=name, title=title, msg=errorJaspResultsCrash);");
 	}
 
 #ifdef PRINT_ENGINE_MESSAGES
