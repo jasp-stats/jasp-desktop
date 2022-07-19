@@ -24,6 +24,8 @@
 #include "appinfo.h"
 #include "simplecrypt.h"
 #include "log.h"
+#include "utils.h"
+
 
 using namespace std;
 
