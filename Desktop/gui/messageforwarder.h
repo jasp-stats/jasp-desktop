@@ -46,6 +46,8 @@ public:
 	static QString browseOpenFileDocuments(	QString caption,						QString filter);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);
 
+	static QString askPassword(QString message);
+
 	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
 	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }

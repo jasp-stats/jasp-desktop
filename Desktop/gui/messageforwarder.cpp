@@ -78,7 +78,7 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 
 QString MessageForwarder::askPassword(QString message)
 {
-	here we can open a nice QInputDialog with a password field etc (modally)
+//	here we can open a nice QInputDialog with a password field etc (modally)
 }
 
 QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)

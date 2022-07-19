@@ -1581,7 +1581,19 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 	{
 		if(dbCI._hadPassword && !dbCI._rememberMe && dbCI._password == "")
 		{
-			MessageForwarder::
+			bool tryAgain = true, couldConnect;
+
+			while(tryAgain)
+			{
+				dbCI._password	= MessageForwarder::askPassword(dbCI._username != "" ? tr("The databaseconnection needs a password for user '%1'").arg(dbCI._username) : tr("The databaseconnection needs a password"));
+				tryAgain		= dbCI.connect() ? false : MessageForwarder::showYesNo(tr("Connection failed"), tr("Could not connect to database because of '%1', want to try a different password?").arg(dbCI.lastError()));
+			}
+
+			if(!dbCI.connected())
+			{
+				MessageForwarder::showWarning(tr("Could not connect to the database so synchronizing will be disabled."));
+				return;
+			}
 		}
 
 		_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);

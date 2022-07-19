@@ -16,6 +16,7 @@ public:
 	Json::Value	toJson(bool forJaspFile = false) const;
 
 	bool		connect()	const;
+	bool		connected()	const;
 	void		close()		const;
 	
 	QString		lastError() const;

@@ -55,6 +55,11 @@ bool DatabaseConnectionInfo::connect() const
 	return db.open();
 }
 
+bool DatabaseConnectionInfo::connected() const
+{
+	return QSqlDatabase::database().isOpen();
+}
+
 void DatabaseConnectionInfo::close() const
 {
 	QSqlDatabase::database().close();

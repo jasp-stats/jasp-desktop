@@ -17,6 +17,8 @@
 //
 import QtQuick
 import JASP
+import JASP.Widgets
+import JASP.Controls
 
 //copied from ControlErrorMessage, but without all the JS
 Rectangle
