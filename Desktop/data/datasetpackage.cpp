@@ -89,6 +89,7 @@ void DataSetPackage::resumeEngines()
 
 void DataSetPackage::reset()
 {
+	Log::log() << "DataSetPackage::reset()" << std::endl;
 	_databaseIntervalSyncher.stop();
 	
 	beginLoadingData();
@@ -1597,10 +1598,10 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 			else
 				_database = dbCI.toJson();
 		}
-
-		_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);
-		_databaseIntervalSyncher.start();
 	}
+
+	_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);
+	_databaseIntervalSyncher.start();
 	
 	if(syncImmediately)
 		emit synchingIntervalPassed();
@@ -1675,6 +1676,12 @@ QString DataSetPackage::windowTitle() const
 	folder = folder == "" ? "" : "      (" + folder + ")";
 
 	return name + (isModified() ? "*" : "") + folder;
+}
+
+void DataSetPackage::setDatabaseJson(const Json::Value &dbInfo)		
+{
+	_database						= dbInfo;			
+	Log::log() << "DataSetPackage::setDatabaseJson got:" << dbInfo << std::endl;
 }
 
 // This function can be called from a different thread then where the underlying value for isReady() is set, but I don't think a mutex or whatever is necessary here. What could go wrong with checking a boolean?

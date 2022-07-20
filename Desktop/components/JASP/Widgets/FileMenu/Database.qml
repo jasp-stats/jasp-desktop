@@ -52,7 +52,7 @@ QC.ScrollView
         {
 			id:						warning
 			warning:				true
-			visible:				preferencesModel.dbShowWarning && preferencesModel.dbRememberMe
+			visible:				preferencesModel.dbShowWarning && fileMenuModel.database.rememberMe
 			dontShowAgain:			preferencesModel.dbShowWarning
 			onDontShowAgainClicked: preferencesModel.dbShowWarning = false
 			text:					qsTr(
@@ -273,8 +273,8 @@ For a local or toy database this is probably overkill, but use your own judgemen
 					id:					rememberMe
 					KeyNavigation.tab:	connectButton
 					label:				qsTr("Remember me")
-					checked:			preferencesModel.dbRememberMe
-					onCheckedChanged:	preferencesModel.dbRememberMe = checked;
+					checked:			fileMenuModel.database.rememberMe
+					onCheckedChanged:	fileMenuModel.database.rememberMe = checked;
 				}
 
 				RoundedButton

@@ -23,6 +23,7 @@
 
 #include <QTimer>
 #include "utilities/qutils.h"
+#include "log.h"
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)
@@ -50,6 +51,7 @@ void FileEvent::setDataFilePath(const QString & path)
 
 void FileEvent::setDatabase(const Json::Value & dbInfo)
 {
+	Log::log() << "FileEvent::setDatabase got: " << dbInfo << std::endl;
 	setReadOnly();
 	
 	_database = dbInfo;

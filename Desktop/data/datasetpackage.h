@@ -170,7 +170,7 @@ public:
 				void				setArchiveVersion(Version archiveVersion)			{ _archiveVersion				= archiveVersion;	}
 				void				setWarningMessage(std::string message)				{ _warningMessage				= message;			}
 				void				setDataFilePath(std::string filePath)				{ _dataFilePath					= filePath;			}
-				void				setDatabaseJson(const Json::Value & dbInfo)			{ _database						= dbInfo;			}
+				void				setDatabaseJson(const Json::Value & dbInfo);
 				void				setInitialMD5(std::string initialMD5)				{ _initialMD5					= initialMD5;		}
 				void				setDataFileTimestamp(uint timestamp)				{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}

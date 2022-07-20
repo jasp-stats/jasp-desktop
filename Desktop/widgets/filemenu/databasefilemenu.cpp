@@ -29,14 +29,15 @@ const QStringList DatabaseFileMenu::dbTypes()
 DatabaseFileMenu::DatabaseFileMenu(QObject *parent)
 	: FileMenuObject{parent}
 {
-	_info._dbType	= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
-	_info._database	=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
-	_info._hostname	=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
-	_info._port		=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
-	_info._username	=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
-	_info._password	= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
-	_info._query	=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
-	_info._interval	=						Settings::value( Settings::DB_IMPORT_INTERVAL	).toInt();
+	_info._dbType		= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
+	_info._database		=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
+	_info._hostname		=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
+	_info._port			=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
+	_info._username		=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
+	_info._password		= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
+	_info._query		=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
+	_info._interval		=						Settings::value( Settings::DB_IMPORT_INTERVAL	).toInt();
+	_info._rememberMe	=						Settings::value( Settings::DB_REMEMBER_ME		).toBool();
 }
 
 void DatabaseFileMenu::connect()
@@ -61,9 +62,9 @@ void DatabaseFileMenu::importResults()
 	_info.close();
 	
 	FileEvent *event = new FileEvent(this, _mode);
-	event->setReadOnly();
 
 	event->setDatabase(_info.toJson());
+
 	emit dataSetIORequest(event);
 }
 
@@ -153,9 +154,25 @@ void DatabaseFileMenu::setPassword(const QString &newPassword)
 		return;
 	
 	_info._password = newPassword;
-	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
+	
+	if(_info._rememberMe)
+		Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
 	
 	emit passwordChanged();
+}
+
+void DatabaseFileMenu::setRememberMe(bool rememberMe)
+{
+	if (_info._rememberMe == rememberMe)
+		return;
+	
+	_info._rememberMe = rememberMe;
+	Settings::setValue(Settings::DB_REMEMBER_ME, _info._rememberMe);
+	
+	if(_info._rememberMe)	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
+	else					Settings::setValue(Settings::DB_IMPORT_PASSWORD, "");
+	
+	emit rememberMeChanged();
 }
 
 void DatabaseFileMenu::setDatabase(const QString &newDatabase)
@@ -259,4 +276,5 @@ void DatabaseFileMenu::setInterval(int newInterval)
 	
 	emit intervalChanged();
 }
+
 

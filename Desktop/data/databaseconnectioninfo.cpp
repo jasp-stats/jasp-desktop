@@ -8,11 +8,12 @@ Json::Value DatabaseConnectionInfo::toJson(bool forJaspFile) const
 {
 	Json::Value out = Json::objectValue;
 	
-	//Log::log() << "DatabaseConnectionInfo::toJson has dbType :\n" << _dbType << std::endl;
-
+	Log::log() << "DatabaseConnectionInfo::toJson has dbType :\n" << _dbType << std::endl;
+	Log::log() << "DatabaseConnectionInfo::toJson has DbTypeToString(_dbType) :\n" << DbTypeToString(_dbType) << std::endl;
+	
 	out["dbType"]		= DbTypeToString(_dbType);
 	out["username"]		= fq(_username);
-	out["password"]		= !forJaspFile || _rememberMe ? fq(_password) : "";
+	out["password"]		= (!forJaspFile || _rememberMe) ? fq(_password) : "";
 	out["database"]		= fq(_database);
 	out["hostname"]		= fq(_hostname);
 	out["query"]		= fq(_query);
@@ -26,7 +27,7 @@ Json::Value DatabaseConnectionInfo::toJson(bool forJaspFile) const
 
 void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 {
-	//Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
+	Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
 	
 	_dbType			= DbTypeFromString(	json["dbType"]		.asString() )	;
 	_username		= tq(				json["username"]	.asString() )	;

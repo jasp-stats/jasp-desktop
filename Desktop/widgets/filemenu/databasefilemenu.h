@@ -25,6 +25,7 @@ class DatabaseFileMenu : public FileMenuObject
 	Q_PROPERTY(bool			resultsOK	READ resultsOK		WRITE setResultsOK		NOTIFY resultsOKChanged		)
 	Q_PROPERTY(int			interval	READ interval		WRITE setInterval		NOTIFY intervalChanged		)
 	Q_PROPERTY(bool			dbMaybeFile	READ dbMaybeFile							NOTIFY dbTypeChanged		)
+	Q_PROPERTY(bool			rememberMe	READ rememberMe		WRITE setRememberMe		NOTIFY rememberMeChanged	)
 
 public:
 	explicit DatabaseFileMenu(QObject *parent = nullptr);
@@ -48,6 +49,7 @@ public:
 	bool					resultsOK()			const { return _resultsOK;		}
 	int						interval()			const { return _info._interval; }
 	bool					dbMaybeFile()		const { return _info._dbType == DbType::QSQLITE;}
+	const bool				rememberMe()		const { return _info._rememberMe; }
 
 	bool					readyForImport()	const;
 
@@ -65,6 +67,7 @@ public:
 	void setLastError(	const QString &	newLastError	);
 	void setResultsOK(	bool			newResultsOK	);
 	void setInterval(	int				newInterval		);
+	void setRememberMe(	bool			rememberMe		);
 
 signals:
 	void dbTypeChanged();
@@ -79,8 +82,8 @@ signals:
 	void portChanged();
 	void queryChanged();
 	void resultsOKChanged();
-	
 	void intervalChanged();
+	void rememberMeChanged();
 	
 private:
 	QString	_runQuery();
