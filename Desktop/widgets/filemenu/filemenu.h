@@ -28,7 +28,7 @@
 #include "widgets/filemenu/currentdatafile.h"
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
-#include "widgets/filemenu/database.h"
+#include "widgets/filemenu/databasefilemenu.h"
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
@@ -52,7 +52,7 @@ class FileMenu : public QObject
 	Q_PROPERTY(RecentFiles				*	recentFiles				READ recentFiles													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(Computer					*	computer				READ computer														NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(OSF						*	osf						READ osf															NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(Database					*	database				READ database														NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(DatabaseFileMenu			*	database				READ database														NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(bool							visible					READ visible					WRITE setVisible					NOTIFY visibleChanged			)
 	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												NOTIFY dummyChangedNotifier		)
@@ -75,8 +75,6 @@ public:
 	FileEvent *	save();
 	void		sync();
 
-			
-	void			setCurrentDatabase(const Json::Value	& dbInfo);
 	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);
 	
@@ -96,7 +94,7 @@ public:
 	RecentFiles						*	recentFiles()				const	{ return _recentFiles;				}
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
-	Database						*	database()					const	{ return _database;					}
+	DatabaseFileMenu						*	database()					const	{ return _database;					}
 	bool								visible()					const	{ return _visible;					}
 	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
@@ -144,11 +142,10 @@ private:
 private:
 	OnlineDataManager			*	_odm						= nullptr;
 	CurrentDataFile				*	_currentDataFile			= nullptr;
-	Json::Value						_currentDatabase			= Json::nullValue;
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
-	Database					*	_database					= nullptr;
+	DatabaseFileMenu					*	_database					= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;

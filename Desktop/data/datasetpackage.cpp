@@ -1585,7 +1585,7 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 
 			while(tryAgain)
 			{
-				dbCI._password	= MessageForwarder::askPassword(dbCI._username != "" ? tr("The databaseconnection needs a password for user '%1'").arg(dbCI._username) : tr("The databaseconnection needs a password"));
+				dbCI._password	= MessageForwarder::askPassword(tr("Database Password"), dbCI._username != "" ? tr("The databaseconnection needs a password for user '%1'").arg(dbCI._username) : tr("The databaseconnection needs a password"));
 				tryAgain		= dbCI.connect() ? false : MessageForwarder::showYesNo(tr("Connection failed"), tr("Could not connect to database because of '%1', want to try a different password?").arg(dbCI.lastError()));
 			}
 
@@ -1594,6 +1594,8 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 				MessageForwarder::showWarning(tr("Could not connect to the database so synchronizing will be disabled."));
 				return;
 			}
+			else
+				_database = dbCI.toJson();
 		}
 
 		_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);

@@ -1,11 +1,11 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#ifndef DATABASEFILEMENU_H
+#define DATABASEFILEMENU_H
 
 #include "filemenuobject.h"
 #include "utilenums.h"
 #include "data/databaseconnectioninfo.h"
 
-class Database : public FileMenuObject
+class DatabaseFileMenu : public FileMenuObject
 {
 	typedef DatabaseConnectionInfo Info;
 	
@@ -27,7 +27,7 @@ class Database : public FileMenuObject
 	Q_PROPERTY(bool			dbMaybeFile	READ dbMaybeFile							NOTIFY dbTypeChanged		)
 
 public:
-	explicit Database(QObject *parent = nullptr);
+	explicit DatabaseFileMenu(QObject *parent = nullptr);
 
 	Q_INVOKABLE void	connect();
 	Q_INVOKABLE void	runQuery();
@@ -93,4 +93,4 @@ private:
 			_resultsOK		= false;
 };
 
-#endif // DATABASE_H
+#endif // DATABASEFILEMENU_H

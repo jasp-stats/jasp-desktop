@@ -32,7 +32,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_currentDataFile		= new CurrentDataFile		(this);
 	_computer				= new Computer				(this);
 	_OSF					= new OSF					(this);
-	_database				= new Database				(this);
+	_database				= new DatabaseFileMenu				(this);
 	_dataLibrary			= new DataLibrary			(this);
 	_actionButtons			= new ActionButtons			(this);
 	_resourceButtons		= new ResourceButtons		(this);
@@ -129,11 +129,11 @@ FileEvent *FileMenu::save()
 void FileMenu::sync()
 {
 	
-	if(_currentDatabase != Json::nullValue)
+	if(DataSetPackage::pkg()->databaseJson() != Json::nullValue)
 	{
 		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 	
-		event->setDatabase(_currentDatabase);
+		event->setDatabase(DataSetPackage::pkg()->databaseJson());
 		dataSetIORequestHandler(event);
 	}
 	else
@@ -162,13 +162,6 @@ void FileMenu::close()
 	setSaveMode(FileEvent::FileOpen);
 	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 }
-
-
-void FileMenu::setCurrentDatabase(const Json::Value &dbInfo)
-{
-	_currentDatabase = dbInfo;
-}
-
 
 void FileMenu::setCurrentDataFile(const QString &path)
 {
@@ -248,9 +241,6 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				setCurrentDataFile(datafile);
 			}
 			
-			if(event->isDatabase())
-				setCurrentDatabase(event->database());
-
 			// all this stuff is a hack
 			QFileInfo info(event->path());
 			_computer->setFileName(info.completeBaseName());
@@ -460,7 +450,6 @@ void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_currentDataFile->setCurrentFilePath(QString());
-	_currentDatabase = Json::nullValue;
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)

@@ -1054,10 +1054,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				}
 				
 				if(_package->databaseJson() != Json::nullValue)
-				{
-					_fileMenu->setCurrentDatabase(_package->databaseJson());
 					_package->databaseStartSynching(true);
-				}
 			}
 			else if(event->isDatabase()) //Not a jasp file, but a direct load from a database, make sure it starts synching if the user wants it to:
 				_package->databaseStartSynching(false);

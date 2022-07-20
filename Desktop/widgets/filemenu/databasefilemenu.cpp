@@ -1,13 +1,13 @@
-#include "database.h"
+#include "databasefilemenu.h"
 #include "utilities/settings.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
 #include "log.h"
 #include "utilities/qutils.h"
-#include "utilities/messageforwarder.h"
+#include "gui/messageforwarder.h"
 
-const QStringList Database::dbTypes()
+const QStringList DatabaseFileMenu::dbTypes()
 {
 	//Should be the *exact* same as DbType definition!
 	return {	tr("Choose a database driver..."					),
@@ -26,7 +26,7 @@ const QStringList Database::dbTypes()
 				tr("Sybase Adaptive Server"							)*/ };
 }
 
-Database::Database(QObject *parent)
+DatabaseFileMenu::DatabaseFileMenu(QObject *parent)
 	: FileMenuObject{parent}
 {
 	_info._dbType	= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
@@ -39,45 +39,46 @@ Database::Database(QObject *parent)
 	_info._interval	=						Settings::value( Settings::DB_IMPORT_INTERVAL	).toInt();
 }
 
-void Database::connect()
+void DatabaseFileMenu::connect()
 {
 	setConnected(_info.connect());
 	setLastError(connected() ? "Connected!" : "Error: " + _info.lastError());
 }
 
-bool Database::readyForImport() const
+bool DatabaseFileMenu::readyForImport() const
 {
 	return connected() && resultsOK();
 }
 
-void Database::importResults()
+void DatabaseFileMenu::importResults()
 {
 	if(!readyForImport())
 	{
-		Log::log() << "Database::importResults() called without it being ready for import... Should not be possible but ok..." << std::endl;
+		Log::log() << "DatabaseFileMenu::importResults() called without it being ready for import... Should not be possible but ok..." << std::endl;
 		return;
 	}
 	
 	_info.close();
 	
 	FileEvent *event = new FileEvent(this, _mode);
+	event->setReadOnly();
 
 	event->setDatabase(_info.toJson());
 	emit dataSetIORequest(event);
 }
 
-void Database::setDbTypeFromIndex(int dbTypeIdx)
+void DatabaseFileMenu::setDbTypeFromIndex(int dbTypeIdx)
 {
 	if(dbTypeIdx > 0 && dbTypeIdx <= int(DbType::QSQLITE)) //is it really a DbType?
 		setDbType(static_cast<DbType>(dbTypeIdx));
 }
 
-void Database::runQuery()
+void DatabaseFileMenu::runQuery()
 {
 	setQueryResult(_runQuery());
 }
 
-QString	Database::_runQuery()
+QString	DatabaseFileMenu::_runQuery()
 {
 	setResultsOK(false);
 	
@@ -126,7 +127,7 @@ QString	Database::_runQuery()
 }
 
 
-void Database::browseDbFile()
+void DatabaseFileMenu::browseDbFile()
 {
 	QString file = MessageForwarder::msgForwarder()->browseOpenFileDocuments("Select your database file", "*");
 
@@ -135,7 +136,7 @@ void Database::browseDbFile()
 
 }
 
-void Database::setUsername(const QString &newUsername)
+void DatabaseFileMenu::setUsername(const QString &newUsername)
 {
 	if (_info._username == newUsername)
 		return;
@@ -146,7 +147,7 @@ void Database::setUsername(const QString &newUsername)
 	emit usernameChanged();
 }
 
-void Database::setPassword(const QString &newPassword)
+void DatabaseFileMenu::setPassword(const QString &newPassword)
 {
 	if (_info._password == newPassword)
 		return;
@@ -157,7 +158,7 @@ void Database::setPassword(const QString &newPassword)
 	emit passwordChanged();
 }
 
-void Database::setDatabase(const QString &newDatabase)
+void DatabaseFileMenu::setDatabase(const QString &newDatabase)
 {
 	if (_info._database == newDatabase)
 		return;
@@ -168,7 +169,7 @@ void Database::setDatabase(const QString &newDatabase)
 	emit databaseChanged();
 }
 
-void Database::setHostname(const QString &newHostname)
+void DatabaseFileMenu::setHostname(const QString &newHostname)
 {
 	if (_info._hostname == newHostname)
 		return;
@@ -179,7 +180,7 @@ void Database::setHostname(const QString &newHostname)
 	emit hostnameChanged();
 }
 
-void Database::setDbType(const DbType newDbType)
+void DatabaseFileMenu::setDbType(const DbType newDbType)
 {
 	if (_info._dbType == newDbType)
 		return;
@@ -190,7 +191,7 @@ void Database::setDbType(const DbType newDbType)
 	emit dbTypeChanged();
 }
 
-void Database::setConnected(bool newConnected)
+void DatabaseFileMenu::setConnected(bool newConnected)
 {
 	if (_connected == newConnected)
 		return;
@@ -198,7 +199,7 @@ void Database::setConnected(bool newConnected)
 	emit connectedChanged();
 }
 
-void Database::setQueryResult(const QString &newQueryResult)
+void DatabaseFileMenu::setQueryResult(const QString &newQueryResult)
 {
 	if (_queryResult == newQueryResult)
 		return;
@@ -208,7 +209,7 @@ void Database::setQueryResult(const QString &newQueryResult)
 	emit queryResultChanged();
 }
 
-void Database::setLastError(const QString &newLastError)
+void DatabaseFileMenu::setLastError(const QString &newLastError)
 {
 	if (_lastError == newLastError)
 		return;
@@ -218,7 +219,7 @@ void Database::setLastError(const QString &newLastError)
 	emit lastErrorChanged();
 }
 
-void Database::setPort(int newPort)
+void DatabaseFileMenu::setPort(int newPort)
 {
 	if (_info._port == newPort)
 		return;
@@ -229,7 +230,7 @@ void Database::setPort(int newPort)
 	emit portChanged();
 }
 
-void Database::setQuery(const QString &newQuery)
+void DatabaseFileMenu::setQuery(const QString &newQuery)
 {
 	if (_info._query == newQuery)
 		return;
@@ -240,7 +241,7 @@ void Database::setQuery(const QString &newQuery)
 	emit queryChanged();
 }
 
-void Database::setResultsOK(bool newResultsOK)
+void DatabaseFileMenu::setResultsOK(bool newResultsOK)
 {
 	if (_resultsOK == newResultsOK)
 		return;
@@ -248,7 +249,7 @@ void Database::setResultsOK(bool newResultsOK)
 	emit resultsOKChanged();
 }
 
-void Database::setInterval(int newInterval)
+void DatabaseFileMenu::setInterval(int newInterval)
 {
 	if (_info._interval == newInterval)
 		return;

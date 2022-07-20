@@ -46,7 +46,7 @@ public:
 	static QString browseOpenFileDocuments(	QString caption,						QString filter);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);
 
-	static QString askPassword(QString message);
+	static QString askPassword(QString title, QString message);
 
 	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
