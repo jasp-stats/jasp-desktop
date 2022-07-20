@@ -11,12 +11,17 @@ The configuration is roughly the arguments going into [QSqlDatabase](https://doc
 
 The JASP specifics are basically that you first set "Name", "Hostname", etc to the desired settings. Then you connect to your database and write a query that selects the right data. This could also be a procedure-call or from a view instead of a table.
 
+As far as the username and password go, you can check "Remember Me" and it will then keep the password stored in the jasp-file (obfuscated a bit but reversible with enough effort). This can be used to have easy connection to the database, for instance when you want to run JASP unattended for reporting or something. If you *do* store the password in the file it is highly recommended to make a specific user for your database that only has read-access to the necessary tables/views.
+If you do not check "Remember Me" whoever loads the database will be prompted for the password when they load the jasp-file, but only if the database connection is set to synchronize at a certain interval.
+
 Using the preview window to verify that it is the expected data you can then load the data into JASP using the button.
 
 This however only gets the data as it is at the moment of importing. It is also reloaded when loading a jaspfile containing database info. But to get updates while you are working in JASP you can set the "Synching interval in minutes" to something other than 0.
 This will make sure JASP checks for new data at that time interval whenever the file is loaded.
 
 ## Examples
+
+Below are shown an example for [Sqlite](#sqlite) and for [SQL server](#sql-server).
 
 ### Sqlite
 
@@ -54,3 +59,29 @@ The output (a few lines) will be shown below in the preview panel and if you're 
 
 That will give you the data from the database:
 ![JASP showing the loaded data from the helloWorld table](filemenu/SqliteImported.png)
+
+### SQL Server
+
+Here an example will be shown on how to read data from SQL Server, where the assumption is made you already have that up and running.
+In this case the database is called `TestDB` and contains a table called `TestTafel` that is accessible to a database user called `JASP`.
+It is running locally and a password is required to connect.
+
+You might need to install [SQL Server Native Client](https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/installing-sql-server-native-client?view=sql-server-ver16) to get this example to work.
+
+Select the `ODBC` driver in the dropdownmenu, it doesn't really matter what you enter for `hostname` and `port` as it is ignored by the odbc it seems.
+
+Then for the database "name" you enter something like:
+`DRIVER={SQL Server Native Client 11.0};SERVER=DESKTOP-C7VK7RJ\SQLEXPRESS;DATABASE=TestDB`
+
+As you can see only a small part of that is the name of the database and the rest is specifying which particular driver should be used to connect to the database (in this case `SQL Server Native Client`) and the server is the same as "Server name" in the connection dialog of Sql Server Management Studio (SSMS).
+
+If you use a different driver from Sql Server Native Client you will have to replace `SQL Server Native Client 11.0` with the appropriate string.
+
+You then enter username and password and press `Connect to database".
+
+The "Query" textinput should then be enabled (or you see an error below in "Preview data") and you can enter a `SELECT` sql statement, or something else that returns data.
+
+"Execute" the runs the query and if everything went alright then you should see something like this:
+![JASP showing how to connect to a SQL Server database](filemenu/SqlServerConnectionExample.png)
+
+The output (a few lines) will be shown below in the preview panel and if you're satisfied simply choose "Load into JASP".
