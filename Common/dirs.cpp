@@ -38,7 +38,6 @@
 #endif
 
 
-#include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
 #include "processinfo.h"
@@ -57,7 +56,7 @@ string Dirs::tempDir()
 		return p;
 
 	string dir;
-	boost::filesystem::path pa;
+	std::filesystem::path pa;
 
 #ifdef _WIN32
 	char buffer[MAX_PATH];
@@ -78,10 +77,10 @@ string Dirs::tempDir()
 
 #endif
 
-	if (!boost::filesystem::exists(pa))
+	if (!std::filesystem::exists(pa))
 	{
 		system::error_code ec;
-		boost::filesystem::create_directories(pa, ec);
+		std::filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
@@ -91,7 +90,7 @@ string Dirs::tempDir()
 		}
 	}
 
-	p = boost::filesystem::path(dir).generic_string();
+	p = std::filesystem::path(dir).generic_string();
 
 	return p;
 }

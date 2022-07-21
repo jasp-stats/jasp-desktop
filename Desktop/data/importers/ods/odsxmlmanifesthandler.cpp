@@ -1,4 +1,4 @@
-#include <QRegExp>
+#include <QRegularExpression>>
 #include "odsxmlmanifesthandler.h"
 
 using namespace std;
@@ -29,12 +29,12 @@ bool XmlManifestHandler::startElement(const QString &namespaceURI, const QString
 	static const QString attNameFullPath("manifest:full-path");
 	static const QString sheetMediaType("application/vnd.oasis.opendocument.spreadsheet");
 	static const QString root("/");
+	static const QRegularExpression rx(_dataSet->contentRegExpression, QRegularExpression::CaseInsensitiveOption);
 
 	if (localName == localNameFileEntry)
 	{
 		QString fullPath = atts.value(attNameFullPath);
 		QString mediaType = atts.value(attNamemediaType);
-		QRegExp rx(_dataSet->contentRegExpression, Qt::CaseInsensitive);
 
 		// are we a spread-sheet?
 		if ((fullPath == root) && (!_foundRoot))
@@ -44,8 +44,7 @@ bool XmlManifestHandler::startElement(const QString &namespaceURI, const QString
 				throw runtime_error("File is not a ODS spreadsheet.");
 
 		}
-		// Got contents file?
-		else if ((rx.indexIn(fullPath) != -1) && (_foundRoot))
+		else if (rx.match(fullPath).hasMatch() && _foundRoot)
 		{ // Found a content file name.
 			_dataSet->setContentFilename(fullPath.toStdString());
 		}
