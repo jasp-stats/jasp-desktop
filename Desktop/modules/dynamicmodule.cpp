@@ -31,7 +31,6 @@
 #include "upgrader/upgrades.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
-#include <boost/filesystem.hpp>
 #include "utilities/messageforwarder.h"
 #include "utilities/languagemodel.h"
 #include "description/description.h"

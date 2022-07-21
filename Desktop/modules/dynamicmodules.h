@@ -22,11 +22,11 @@
 
 #include <map>
 #include <set>
+#include <filesystem>
 #include <QObject>
 #include "version.h"
 #include "dynamicmodule.h"
 #include <QFileSystemWatcher>
-#include <boost/filesystem.hpp>
 #include "upgrader/upgradeDefinitions.h"
 
 namespace Modules
@@ -64,7 +64,7 @@ public:
 	std::wstring			moduleDirectoryW(			const	std::string & moduleName)	const;
 	QString					moduleDirectoryQ(			const	QString     & moduleName)	const;
 
-	bool					moduleIsInstalledByUser(	const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+	bool					moduleIsInstalledByUser(	const	std::string & moduleName)	const { return std::filesystem::exists(moduleDirectoryW(moduleName));	}
 
 	bool					moduleHasUpgradesToApply(	const	 std::string & module,		const std::string & function, const Version & version);
 	void					applyUpgrade(				const	 std::string & module,		const std::string & function, const Version	& version, Json::Value & analysesJson, Modules::UpgradeMsgs & msgs, Modules::StepsTaken & stepsTaken);
@@ -152,7 +152,7 @@ private:
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
 	std::map<std::string, bool>								_modulesInstallPackagesNeeded; //bool true ==> only modPkg
-	boost::filesystem::path									_modulesInstallDirectory;
+	std::filesystem::path									_modulesInstallDirectory;
 	QString													_currentInstallMsg			= "",
 															_currentInstallName			= "";
 	bool													_currentInstallDone			= false,

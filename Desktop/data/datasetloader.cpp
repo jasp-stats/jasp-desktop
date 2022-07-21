@@ -17,7 +17,6 @@
 
 #include "datasetloader.h"
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "sharedmemory.h"
@@ -40,7 +39,7 @@ using namespace boost;
 
 string DataSetLoader::getExtension(const string &locator, const string &extension)
 {
-    boost::filesystem::path path(locator);
+	std::filesystem::path path(locator);
 	string ext = path.extension().generic_string();
 
 	if (!ext.length()) ext=extension;

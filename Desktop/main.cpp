@@ -23,7 +23,6 @@
 #include <QQuickWindow>
 #include "utilities/settings.h"
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
-#include <boost/filesystem.hpp>
 #include <codecvt>
 #include "appinfo.h"
 #include <iostream>
@@ -347,7 +346,7 @@ int main(int argc, char *argv[])
 	//Now, to allow us to add some arguments we store the ones we got in a vector
 	std::vector<std::string> args(argv, argv + argc);
 
-	boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
+//	boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) ); This is not needed anymore since we set the locale to UTF8
 	
 	if(!dirTest)
 		//try
