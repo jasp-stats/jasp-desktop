@@ -50,8 +50,8 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 	_modulesInstallDirectory = AppDirs::userModulesDir().toStdWString();
 
-	if(!boost::filesystem::exists(_modulesInstallDirectory))
-		boost::filesystem::create_directories(_modulesInstallDirectory);
+	if(!std::filesystem::exists(_modulesInstallDirectory))
+		std::filesystem::create_directories(_modulesInstallDirectory);
 }
 
 DynamicModules::~DynamicModules()
@@ -63,8 +63,8 @@ DynamicModules::~DynamicModules()
 
 void DynamicModules::initializeInstalledModules()
 {
-	boost::system::error_code error;
-	for (boost::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != boost::filesystem::directory_iterator(); itr++)
+	std::error_code error;
+	for (std::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != std::filesystem::directory_iterator(); itr++)
 	{
 		std::string path			= itr->path().generic_string(),
 					name			= itr->path().filename().generic_string(),
@@ -73,7 +73,7 @@ void DynamicModules::initializeInstalledModules()
 
 		//Development Module should always be fresh!
 		if(name == defaultDevelopmentModuleName())	
-			boost::filesystem::remove_all(itr->path());
+			std::filesystem::remove_all(itr->path());
 		
 		else if(name.size() > 0 && name[0] != '.' && QFileInfo(tq(path)).isDir())	
 			try
@@ -88,7 +88,7 @@ void DynamicModules::initializeInstalledModules()
 			}
 		
 		if(askForCleanup && MessageForwarder::showYesNo(tr("Initializing module %1 failed").arg(tq(name)), tq(problem)))
-			boost::filesystem::remove_all(itr->path());
+			std::filesystem::remove_all(itr->path());
 	}
 }
 
@@ -323,11 +323,11 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 
 	try
 	{
-		if(boost::filesystem::exists(modulePath))
-			boost::filesystem::remove_all(modulePath); //Can fail because R might have a library from this folder still loaded. On Windows (and perhaps other OSs) these opened files can't be removed.
+		if(std::filesystem::exists(modulePath))
+			std::filesystem::remove_all(modulePath); //Can fail because R might have a library from this folder still loaded. On Windows (and perhaps other OSs) these opened files can't be removed.
 
 	}
-	catch (boost::filesystem::filesystem_error & e)
+	catch (std::filesystem::filesystem_error & e)
 	{
 		MessageForwarder::showWarning(tr("Something went wrong removing files for module %1 at path '%2' and the error was: %3").arg(tq(moduleName)).arg(tq(moduleDirectory(moduleName))).arg(e.what()));
 		return;

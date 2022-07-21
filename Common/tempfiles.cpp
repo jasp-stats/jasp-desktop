@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <boost/filesystem.hpp>
 #include <fstream>
 
 #include "columnencoder.h"
@@ -28,7 +27,6 @@
 #include "dirs.h"
 #include "log.h"
 using namespace std;
-using namespace boost;
 
 long					TempFiles::_sessionId		= 0;
 std::string				TempFiles::_sessionDirName	= "";
@@ -52,39 +50,39 @@ void TempFiles::createSessionDir()
 {
 	std::cout << "TempFiles::createSessionDir(): ";
 	
-	system::error_code error;
+	std::error_code error;
 
-	boost::filesystem::path sessionPath = Utils::osPath(_sessionDirName);
+	std::filesystem::path sessionPath = Utils::osPath(_sessionDirName);
 	
 	std::cout<< "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
 
-	boost::filesystem::remove_all(sessionPath, error);
-	boost::filesystem::create_directories(sessionPath, error);
+	std::filesystem::remove_all(sessionPath, error);
+	std::filesystem::create_directories(sessionPath, error);
 
 	std::fstream f;
 	f.open(_statusFileName.c_str(), ios_base::out);
 	f.close();
 
-	//boost::filesystem::path clipboardPath = Utils::osPath(clipboard);
-	//if ( ! boost::filesystem::exists(clipboardPath, error))
-	//	boost::filesystem::create_directories(clipboardPath, error);
+	//std::filesystem::path clipboardPath = Utils::osPath(clipboard);
+	//if ( ! std::filesystem::exists(clipboardPath, error))
+	//	std::filesystem::create_directories(clipboardPath, error);
 }
 
 void TempFiles::clearSessionDir()
 {
-	boost::filesystem::path sessionPath = Utils::osPath(_sessionDirName);
-	system::error_code error;
+	std::filesystem::path sessionPath = Utils::osPath(_sessionDirName);
+	std::error_code error;
 	
-	if(!boost::filesystem::exists(sessionPath, error) || error)
+	if(!std::filesystem::exists(sessionPath, error) || error)
 		return;
 
-	std::vector<boost::filesystem::path> deleteUs;
+	std::vector<std::filesystem::path> deleteUs;
 
-	for(boost::filesystem::directory_entry & it : boost::filesystem::directory_iterator{sessionPath})
+	for(const std::filesystem::directory_entry & it : std::filesystem::directory_iterator{sessionPath})
 	{
 		bool leaveMeBe = false;
 
-		for (const boost::filesystem::path & pp : it.path())
+		for (const std::filesystem::path & pp : it.path())
 		{
 			std::string pathComp = pp.generic_string();
 			if(pathComp.find("tmp") != std::string::npos || pathComp == "status")
@@ -96,7 +94,7 @@ void TempFiles::clearSessionDir()
 	}
 
 	for(auto dir : deleteUs)
-		boost::filesystem::remove_all(dir);
+		std::filesystem::remove_all(dir);
 }
 
 void TempFiles::attach(long sessionId)
@@ -110,9 +108,9 @@ void TempFiles::attach(long sessionId)
 
 void TempFiles::deleteAll(int id)
 {
-	system::error_code error;
-	boost::filesystem::path dir = id >= 0 ? _sessionDirName + "/resources/" + std::to_string(id) : Utils::osPath(_sessionDirName);
-	boost::filesystem::remove_all(dir, error);
+	std::error_code error;
+	std::filesystem::path dir = id >= 0 ? std::filesystem::path(_sessionDirName + "/resources/" + std::to_string(id)) : Utils::osPath(_sessionDirName);
+	std::filesystem::remove_all(dir, error);
 }
 
 
@@ -120,15 +118,15 @@ void TempFiles::deleteOrphans()
 {
 	Log::log() << "TempFiles::deleteOrphans started" << std::endl;
 
-	system::error_code error;
+	std::error_code error;
 
 	try
 	{
 
-		boost::filesystem::path tempPath		= Utils::osPath(Dirs::tempDir());
-		boost::filesystem::path sessionPath	= Utils::osPath(_sessionDirName);
+		std::filesystem::path tempPath		= Utils::osPath(Dirs::tempDir());
+		std::filesystem::path sessionPath	= Utils::osPath(_sessionDirName);
 
-		boost::filesystem::directory_iterator itr(tempPath, error);
+		std::filesystem::directory_iterator itr(tempPath, error);
 
 		if (error)
 		{
@@ -136,9 +134,9 @@ void TempFiles::deleteOrphans()
 			return;
 		}
 
-		for (; itr != boost::filesystem::directory_iterator(); itr++)
+		for (; itr != std::filesystem::directory_iterator(); itr++)
 		{
-			boost::filesystem::path p = itr->path();
+			std::filesystem::path p = itr->path();
 
 			Log::log() << "looking at file " << p.string() << std::endl;
 
@@ -146,7 +144,7 @@ void TempFiles::deleteOrphans()
 				continue;
 
 			string fileName		= Utils::osPath(p.filename());
-			bool is_directory	= boost::filesystem::is_directory(p, error);
+			bool is_directory	= std::filesystem::is_directory(p, error);
 
 			if (error)
 				continue;
@@ -161,7 +159,7 @@ void TempFiles::deleteOrphans()
 					if (now - modTime > 70)
 					{
 						Log::log() << "Try to delete: " << fileName << std::endl;
-						boost::filesystem::remove(p, error);
+						std::filesystem::remove(p, error);
 
 						if (error)
 							Log::log() << "Error when deleting file: " << error.message() << std::endl;
@@ -174,16 +172,16 @@ void TempFiles::deleteOrphans()
 				if (std::atoi(fileName.c_str()) == 0)
 					continue;
 
-				boost::filesystem::path statusFile = Utils::osPath(Utils::osPath(p) + "/status");
+				std::filesystem::path statusFile = Utils::osPath(Utils::osPath(p) + "/status");
 
-				if (boost::filesystem::exists(statusFile, error))
+				if (std::filesystem::exists(statusFile, error))
 				{
 					long modTime	= Utils::getFileModificationTime(Utils::osPath(statusFile));
 					long now		= Utils::currentSeconds();
 
 					if (now - modTime > 70)
 					{
-						boost::filesystem::remove_all(p, error);
+						std::filesystem::remove_all(p, error);
 
 						if (error)
 							Log::log() << "Error when deleting directory: " << error.message() << std::endl;
@@ -191,7 +189,7 @@ void TempFiles::deleteOrphans()
 				}
 				else // no status file
 				{
-					boost::filesystem::remove_all(p, error);
+					std::filesystem::remove_all(p, error);
 
 					if (error)
 						Log::log() << "Error when deleting directory, had no status file and " << error.message() << std::endl;
@@ -215,32 +213,32 @@ void TempFiles::heartbeat()
 
 void TempFiles::purgeClipboard()
 {
-	system::error_code error;
-	boost::filesystem::remove_all(Utils::osPath(_clipboard), error);
+	std::error_code error;
+	std::filesystem::remove_all(Utils::osPath(_clipboard), error);
 }
 
 string TempFiles::createSpecific_clipboard(const string &filename)
 {
-	system::error_code error;
+	std::error_code error;
 
 	string fullPath				= _clipboard + "/" + filename;
-	boost::filesystem::path	path	= Utils::osPath(fullPath),
+	std::filesystem::path	path	= Utils::osPath(fullPath),
 						dirPath	= path.parent_path();
 
-	if (!boost::filesystem::exists(dirPath, error) || error)
-		 boost::filesystem::create_directories(dirPath, error);
+	if (!std::filesystem::exists(dirPath, error) || error)
+		 std::filesystem::create_directories(dirPath, error);
 
 	return fullPath;
 }
 
 string TempFiles::createSpecific(const string &dir, const string &filename)
 {
-	system::error_code error;
+	std::error_code error;
 	string fullPath			= _sessionDirName + "/" + dir;
-	boost::filesystem::path path	= Utils::osPath(fullPath);
+	std::filesystem::path path	= Utils::osPath(fullPath);
 
-	if (!boost::filesystem::exists(path, error) || error)
-		 boost::filesystem::create_directories(path, error);
+	if (!std::filesystem::exists(path, error) || error)
+		 std::filesystem::create_directories(path, error);
 
 	return fullPath + "/" + filename;
 }
@@ -249,26 +247,26 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 {
 	root					= _sessionDirName;
 	relativePath			= "resources" + (id >= 0 ? "/" + std::to_string(id) : "");
-	boost::filesystem::path path	= Utils::osPath(root + "/" + relativePath);
+	std::filesystem::path path	= Utils::osPath(root + "/" + relativePath);
 
-	system::error_code error;
-	if (!boost::filesystem::exists(path, error) || error)
-		 boost::filesystem::create_directories(path, error);
+	std::error_code error;
+	if (!std::filesystem::exists(path, error) || error)
+		 std::filesystem::create_directories(path, error);
 
 	relativePath += "/" + name;
 }
 
 void TempFiles::create(const string &extension, int id, string &root, string &relativePath)
 {
-	system::error_code error;
+	std::error_code error;
 
 	root					= _sessionDirName;
 	string resources		= root +  "/resources" + (id >= 0 ? "/" + std::to_string(id) : "");
 
-	boost::filesystem::path path	= Utils::osPath(resources);
+	std::filesystem::path path	= Utils::osPath(resources);
 
-	if (!boost::filesystem::exists(resources, error) || error)
-		 boost::filesystem::create_directories(resources, error);
+	if (!std::filesystem::exists(resources, error) || error)
+		 std::filesystem::create_directories(resources, error);
 
 	string suffix = extension == "" ? "" : "." + extension;
 
@@ -277,21 +275,21 @@ void TempFiles::create(const string &extension, int id, string &root, string &re
 		relativePath	= "resources/" + (id >= 0 ? std::to_string(id) + "/" : "") + "_" + std::to_string(_nextFileId++) + "_t" + std::to_string(Utils::currentMillis()) + suffix;
 		path			= Utils::osPath(root + "/" + relativePath);
 	}
-	while (boost::filesystem::exists(path));
+	while (std::filesystem::exists(path));
 }
 
 std::string TempFiles::createTmpFolder()
 {
-	system::error_code error;
+	std::error_code error;
 
 	while(true)
 	{
 		std::string tmpFolder	= _sessionDirName + "/tmp" + std::to_string(_nextTmpFolderId++) + "/";
-		boost::filesystem::path path	= Utils::osPath(tmpFolder);
+		std::filesystem::path path	= Utils::osPath(tmpFolder);
 
-		if (!boost::filesystem::exists(path, error) || error)
+		if (!std::filesystem::exists(path, error) || error)
 		{
-			boost::filesystem::create_directories(path, error);
+			std::filesystem::create_directories(path, error);
 			return tmpFolder;
 		}
 	}
@@ -301,24 +299,24 @@ vector<string> TempFiles::retrieveList(int id)
 {
 	vector<string> files;
 
-	system::error_code error;
+	std::error_code error;
 
 	string dir = _sessionDirName;
 
 	if (id >= 0)
 		dir += "/resources/" + std::to_string(id);
 
-	boost::filesystem::path path = Utils::osPath(dir);
+	std::filesystem::path path = Utils::osPath(dir);
 
-	boost::filesystem::directory_iterator itr(path, error);
+	std::filesystem::directory_iterator itr(path, error);
 
 	if (error)
 		return files;
 
-	for (; itr != boost::filesystem::directory_iterator(); itr++)
-		if (boost::filesystem::is_regular_file(itr->status()))
+	for (; itr != std::filesystem::directory_iterator(); itr++)
+		if (std::filesystem::is_regular_file(itr->status()))
 		{
-			boost::filesystem::path pad = itr->path();
+			std::filesystem::path pad = itr->path();
 			string absPath = pad.generic_string();
 			string relPath = absPath.substr(_sessionDirName.size()+1);
 
@@ -330,14 +328,14 @@ vector<string> TempFiles::retrieveList(int id)
 
 void TempFiles::deleteList(const vector<string> &files)
 {
-	system::error_code error;
+	std::error_code error;
 
 	for(const string &file : files)
 	{
 		string absPath		= _sessionDirName + "/" + file;
-		boost::filesystem::path p	= Utils::osPath(absPath);
+		std::filesystem::path p	= Utils::osPath(absPath);
 
-		boost::filesystem::remove(p, error);
+		std::filesystem::remove(p, error);
 	}
 }
 

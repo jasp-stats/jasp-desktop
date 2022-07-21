@@ -16,7 +16,6 @@
 //
 
 #include "dataexporter.h"
-#include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include "dataset.h"
 #include <fstream>
