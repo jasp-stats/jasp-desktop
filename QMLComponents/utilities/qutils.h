@@ -26,7 +26,7 @@
 #include <QJSValue>
 #include <QString>
 #include <QVector>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QMap>
 #include <map>
 #include <set>
