@@ -353,7 +353,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     value:				fileMenuModel.database.interval
                     onValueChanged:		if(value != "") fileMenuModel.database.interval = value
                     from:				0
-                    to:					24 * 60 * 7 // do we want to allow for an interval bigger than a week?
+                    //to:					24 * 60 * 7 // do we want to allow for an interval bigger than a week?
                     defaultValue:		0
                     stepSize:			1
                     text:				qsTr("Synching interval in minutes: ")
