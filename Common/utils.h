@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "timers.h"
 
 enum class FileTypeBase;
@@ -46,8 +46,8 @@ public:
 	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
 	static bool removeFile(				const std::string &path);
 
-	static boost::filesystem::path osPath(const std::string &path);
-	static std::string osPath(const boost::filesystem::path &path);
+	static std::filesystem::path osPath(const std::string &path);
+	static std::string osPath(const std::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);

@@ -29,7 +29,6 @@
 #ifndef IGNORE_BOOST
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #endif
 
@@ -134,13 +133,13 @@ long Utils::getFileModificationTime(const std::string &filename)
 
 long Utils::getFileSize(const string &filename)
 {
-	system::error_code ec;
-	boost::filesystem::path path;
+	std::error_code ec;
+	std::filesystem::path path;
 
 	path = filename;
 
 
-	uintmax_t fileSize = boost::filesystem::file_size(path, ec);
+	uintmax_t fileSize = std::filesystem::file_size(path, ec);
 
 	if (!ec)
 		return fileSize;
@@ -180,43 +179,43 @@ void Utils::touch(const string &filename)
 
 bool Utils::renameOverwrite(const string &oldName, const string &newName)
 {
-	boost::filesystem::path o = osPath(oldName);
-	boost::filesystem::path n = osPath(newName);
-	system::error_code ec;
+	std::filesystem::path o = osPath(oldName);
+	std::filesystem::path n = osPath(newName);
+	std::error_code ec;
 
 #ifdef _WIN32
 	system::error_code er;
-	if (boost::filesystem::exists(n, er)) 
+	if (std::filesystem::exists(n, er))
 	{
-		boost::filesystem::file_status s = boost::filesystem::status(n);
+		std::filesystem::file_status s = std::filesystem::status(n);
 		
-		bool readOnly = (s.permissions() & boost::filesystem::owner_write) == 0;
+		bool readOnly = (s.permissions() & std::filesystem::owner_write) == 0;
 		if (readOnly)
-			boost::filesystem::permissions(n, boost::filesystem::owner_write);
+			std::filesystem::permissions(n, std::filesystem::owner_write);
 	}
 #endif
 
-	boost::filesystem::rename(o, n, ec);
+	std::filesystem::rename(o, n, ec);
 
 	return !ec;
 }
 
 bool Utils::removeFile(const string &path)
 {
-	boost::filesystem::path p = osPath(path);
-	system::error_code ec;
+	std::filesystem::path p = osPath(path);
+	std::error_code ec;
 
-	boost::filesystem::remove(p, ec);
+	std::filesystem::remove(p, ec);
 
 	return !ec;
 }
 
-boost::filesystem::path Utils::osPath(const string &path)
+std::filesystem::path Utils::osPath(const string &path)
 {
-	return boost::filesystem::path(path);
+	return std::filesystem::path(path);
 }
 
-string Utils::osPath(const boost::filesystem::path &path)
+string Utils::osPath(const std::filesystem::path &path)
 {
 	return path.generic_string();
 }

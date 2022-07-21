@@ -2,8 +2,6 @@
 #include "stringutils.h"
 #include "rbridge.h"
 #include <fstream>
-#include <boost/filesystem.hpp>
-#include <fstream>
 #include <boost/algorithm/string/predicate.hpp>
 #include "utils.h"
 #include "appinfo.h"
@@ -46,7 +44,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	printStuff = true; // If debugging please always print stuff
 #endif
 
-	filesystem::path	modLibpath	= Utils::osPath(moduleLibraryPath);
+	std::filesystem::path	modLibpath	= Utils::osPath(moduleLibraryPath);
 
 	std::cout << "modLibpath: " << modLibpath << std::endl;
 
@@ -64,21 +62,22 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 #ifdef __APPLE__
 	std::cout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
-	typedef filesystem::recursive_directory_iterator	recIt;
+	typedef std::filesystem::recursive_directory_iterator	recIt;
 	
-	filesystem::path path;
+	std::filesystem::path path;
 	std::string framework_resources = "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/";
+
 	try
 	{
 		// Follow symlinks so that we may fix pkgs installed by renv 
 		// (where the actual files are in cacche and only symlinked in library)
-		for(recIt dir(modLibpath, filesystem::symlink_option::recurse); dir != recIt(); dir++) 
+		for(recIt dir(modLibpath, std::filesystem::directory_options::follow_directory_symlink); dir != recIt(); dir++)
 		{
 			path = dir->path();
 	
 			// We only want files that have dylib or so as extension and don't have dSYM 
 			// anywhere in the path (because those are some kind of debugsymbols)
-			if(	! (	filesystem::is_regular_file(path)							&&
+			if(	! (	std::filesystem::is_regular_file(path)							&&
 					(path.extension() == ".dylib" || path.extension() == ".so")	&&
 					path.string().find("dSYM") == std::string::npos				))
 				continue;
@@ -185,7 +184,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 			_system(sign_command);
 		}
 	}
-	catch(boost::filesystem::filesystem_error & error)
+	catch(std::filesystem::filesystem_error & error)
 	{
 		std::cout << "Filesystem iterating had error: '" << error.what() << "' last path was: '" << path.string() << "'" << std::endl;
 	}

@@ -30,7 +30,6 @@
 #include <QMenuBar>
 
 #include <iostream>
-#include <boost/filesystem.hpp>
 
 #include "log.h"
 #include "dirs.h"

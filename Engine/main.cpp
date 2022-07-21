@@ -20,7 +20,6 @@
 #include "log.h"
 #include <iostream>
 #include <fstream>
-#include <boost/filesystem.hpp>
 #include <codecvt>
 #include "otoolstuff.h"
 #include "rbridge.h"
@@ -78,12 +77,8 @@ int main(int argc, char *argv[])
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
-		Log::log() << "Current directory is: '" << boost::filesystem::current_path().string() << "'" << std::endl;
+		Log::log() << "Current directory is: '" << std::filesystem::current_path().string() << "'" << std::endl;
 
-#ifdef _WIN32
-		//Should help with converting korean/japanese/etc to utf-8.
-		boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
-#endif
 		try
 		{
 			JASPTIMER_START(Engine Starting);
@@ -127,17 +122,17 @@ int main(int argc, char *argv[])
 		if(arg1 == junctionRemoveArg || arg1 == junctionRecreateArg) //Also remove the old modules if it already exists and we are asked to recreate them, because it might be the old ones (previous install)
 		{
 			std::string junctionsCreationLog("junctions-recreated-successfully.log");
-			boost::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
+			std::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
 			
 			if(exists(junctionsCreationLogPath))
 				remove(junctionsCreationLogPath);
 
 			std::string modulesFolder("Modules");
 			std::cout << "Engine started to remove the Modules folder" << std::endl;
-			boost::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
+			std::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
 			
 			if(exists(modulesPath)) {
-				for(boost::filesystem::directory_entry& entry : boost::filesystem::directory_iterator(modulesPath))
+				for(std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(modulesPath))
 					if(entry.path().string().find("\\jasp") != std::string::npos)
 						remove_all(entry);
 				

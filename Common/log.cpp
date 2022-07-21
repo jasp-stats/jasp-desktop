@@ -7,6 +7,7 @@
 #include <io.h>
 #endif
 
+#include <fstream>
 #include "utils.h"
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/null.hpp>

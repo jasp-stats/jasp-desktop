@@ -17,9 +17,6 @@
 
 #include "jaspexporter.h"
 
-
-#include <boost/filesystem.hpp>
-
 #include <sys/stat.h>
 
 #include "dataset.h"
@@ -36,6 +33,7 @@
 #include "utilenums.h"
 #include "utilities/qutils.h"
 #include "data/databaseconnectioninfo.h"
+#include <fstream>
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
