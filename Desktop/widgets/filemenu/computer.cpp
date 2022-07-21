@@ -21,7 +21,7 @@
 #include "gui/messageforwarder.h"
 #include "log.h"
 
-Computer::Computer(QObject *parent): FileMenuObject(parent)
+Computer::Computer(FileMenu *parent): FileMenuObject(parent)
 {
 	setListModel(new ComputerListModel(this));
 
@@ -40,14 +40,14 @@ FileEvent *Computer::browseOpen(const QString &path)
 		browsePath = path;
 
 	QString filter = "Data Sets (*.jasp *.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
-	if (_mode == FileEvent::FileSyncData)
+	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods)";
 
 	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
 	Log::log() << "Chosen path: \"" << finalPath.toStdString() << "\"" << std::endl;
 
-	FileEvent *event = new FileEvent(this, _mode);
+	FileEvent *event = new FileEvent(this, mode());
 
 	if (finalPath != "")
 	{
@@ -131,7 +131,7 @@ void Computer::addRecentFolder(const QString &path)
 
 void Computer::analysesExportResults()
 {
-    _mode = FileEvent::FileExportResults;
+    setMode(FileEvent::FileExportResults);
     browseMostRecent();
 }
 
@@ -150,12 +150,12 @@ void Computer::clearFileName()
 void Computer::browsePath(QString path)
 {
 
-	Log::log() << "void Computer::browsePath(\"" << path.toStdString() << "\") called, now sending out signal to show " << (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData ? "Open " : "Save ") << "file dialog." << std::endl;
+	Log::log() << "void Computer::browsePath(\"" << path.toStdString() << "\") called, now sending out signal to show " << (mode() == FileEvent::FileOpen || mode() == FileEvent::FileSyncData ? "Open " : "Save ") << "file dialog." << std::endl;
 
-	if (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData)
+	if (mode() == FileEvent::FileOpen || mode() == FileEvent::FileSyncData)
 		emit browseOpenSignal(path);
 	else
-		emit browseSaveSignal(path, _mode);
+		emit browseSaveSignal(path, mode());
 }
 
 void Computer::browseMostRecent()

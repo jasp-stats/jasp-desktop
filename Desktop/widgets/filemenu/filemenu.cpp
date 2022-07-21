@@ -75,13 +75,9 @@ void FileMenu::setResourceButtonsVisibleFor(ActionButtons::FileOperation fo)
 	_resourceButtons->setOnlyTheseButtonsVisible(_actionButtons->resourceButtonsForButton(fo));
 }
 
-void FileMenu::setSaveMode(FileEvent::FileMode mode)
+void FileMenu::setMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
-
-	_computer->setMode(_mode);
-	
-	_OSF->setMode(_mode);
 	_OSF->setCurrentFileName(getDefaultOutFileName());
 }
 
@@ -169,7 +165,7 @@ void FileMenu::close()
 	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
-	setSaveMode(FileEvent::FileOpen);
+	setMode(FileEvent::FileOpen);
 	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 }
 
@@ -299,7 +295,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			_actionButtons->setEnabled(ActionButtons::ExportData,		false);
 			_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 			_actionButtons->setEnabled(ActionButtons::Close,			false);
-			_computer->setMode(FileEvent::FileOpen);
+			setMode(FileEvent::FileOpen);
 			break;
 
 		default:
@@ -376,17 +372,17 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 {	
 	switch (action)
 	{
-	case ActionButtons::FileOperation::Open:				setSaveMode(FileEvent::FileOpen);			break;
-	case ActionButtons::FileOperation::SaveAs:				setSaveMode(FileEvent::FileSave);			break;
-	case ActionButtons::FileOperation::ExportResults:		setSaveMode(FileEvent::FileExportResults);	break;
-	case ActionButtons::FileOperation::ExportData:  		setSaveMode(FileEvent::FileExportData);		break;
-	case ActionButtons::FileOperation::SyncData:			setSaveMode(FileEvent::FileSyncData);		break;
+	case ActionButtons::FileOperation::Open:				setMode(FileEvent::FileOpen);			break;
+	case ActionButtons::FileOperation::SaveAs:				setMode(FileEvent::FileSave);			break;
+	case ActionButtons::FileOperation::ExportResults:		setMode(FileEvent::FileExportResults);	break;
+	case ActionButtons::FileOperation::ExportData:  		setMode(FileEvent::FileExportData);		break;
+	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();									break;
 	case ActionButtons::FileOperation::Save:
 		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
 			save();
 		else
-			setSaveMode(FileEvent::FileSave);			
+			setMode(FileEvent::FileSave);			
 		break;
 
 

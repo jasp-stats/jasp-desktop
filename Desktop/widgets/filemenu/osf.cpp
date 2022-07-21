@@ -26,8 +26,9 @@
 #include "utilities/qutils.h"
 #include "gui/messageforwarder.h"
 #include "osf/onlineusernodeosf.h"
+#include "filemenu.h"
 
-OSF::OSF(QObject *parent): FileMenuObject(parent)
+OSF::OSF(FileMenu *parent): FileMenuObject(parent)
 {
 
 	setBreadCrumbs(new OSFBreadCrumbsListModel(this, QChar('/')));
@@ -272,9 +273,9 @@ void OSF::saveClicked()
 
 void OSF::openSaveFile(const QString & nodePath, const QString & filename, const QString & osfPath)
 {
-	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
+	bool storedata = (mode() == FileEvent::FileSave || mode() == FileEvent::FileExportResults || mode() == FileEvent::FileExportData);
 
-	FileEvent *event = new FileEvent(this, _mode);
+	FileEvent *event = new FileEvent(this, mode());
 
 	event->setOsfPath(osfPath);
 

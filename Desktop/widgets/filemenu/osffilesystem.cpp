@@ -43,7 +43,7 @@
 const QString OSFFileSystem::rootelementname = "Projects";
 
 OSFFileSystem::OSFFileSystem(QObject *parent, QString root)
-	:FileSystem (parent)
+	: FileSystem (parent)
 {
 	_dataManager = NULL;
 	_manager = NULL;

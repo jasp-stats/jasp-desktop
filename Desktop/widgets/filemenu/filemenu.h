@@ -79,7 +79,7 @@ public:
 	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);
 	
-	void			setSaveMode(FileEvent::FileMode mode);
+	void			setMode(FileEvent::FileMode mode);
 	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
 	QString			getCurrentFilePath()	const { return _currentFilePath; }
 	QString			getDefaultOutFileName();
@@ -131,7 +131,7 @@ public slots:
 
 
 private slots:
-	void dataSetIORequestHandler(FileEvent *event);
+			void dataSetIORequestHandler(FileEvent *event);
 
 private:
 			bool checkSyncFileExists(const QString &path, bool waitForExistence = false);

@@ -29,7 +29,7 @@ class CurrentDataFile : public FileMenuObject
 	Q_PROPERTY(CurrentFileListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit CurrentDataFile(QObject *parent = nullptr);
+	explicit CurrentDataFile(FileMenu *parent = nullptr);
 	~CurrentDataFile();
 	
 	void setCurrentFilePath(const QString &path);	

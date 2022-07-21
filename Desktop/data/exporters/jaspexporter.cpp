@@ -82,14 +82,15 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	int progress,
 		lastProgress = -1;
 
-	Json::Value labelsData	= Json::objectValue;
-	Json::Value metaData	= Json::objectValue;
+	Json::Value labelsData	= Json::objectValue,
+				metaData	= Json::objectValue,
+				db			= package->databaseJson();
 
 	Json::Value &dataSet			= metaData["dataSet"];
 	metaData["dataFilePath"]		= package->dataFilePath();
 	metaData["dataFileReadOnly"]	= package->dataFileReadOnly();
 	metaData["dataFileTimestamp"]	= package->dataFileTimestamp();
-	metaData["database"]			= DatabaseConnectionInfo(package->databaseJson()).toJson(true); //Convert again to drop password if not remembering "me"
+	metaData["database"]			= db.isNull() ? db : DatabaseConnectionInfo(db).toJson(true); //Convert again to drop password if not remembering "me"
 	Json::Value emptyValuesJson		= Json::arrayValue;
 
 	const std::vector<std::string>& emptyValuesVector = Utils::getEmptyValues();

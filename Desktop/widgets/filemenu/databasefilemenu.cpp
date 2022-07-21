@@ -26,7 +26,7 @@ const QStringList DatabaseFileMenu::dbTypes()
 				tr("Sybase Adaptive Server"							)*/ };
 }
 
-DatabaseFileMenu::DatabaseFileMenu(QObject *parent)
+DatabaseFileMenu::DatabaseFileMenu(FileMenu *parent)
 	: FileMenuObject{parent}
 {
 	_info._dbType		= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
@@ -61,7 +61,7 @@ void DatabaseFileMenu::importResults()
 	
 	_info.close();
 	
-	FileEvent *event = new FileEvent(this, _mode);
+	FileEvent *event = new FileEvent(this, mode());
 	
 	event->setFileType(FileTypeBase::database);
 

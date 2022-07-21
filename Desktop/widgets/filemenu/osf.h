@@ -44,7 +44,7 @@ class OSF: public FileMenuObject
 	Q_PROPERTY(SortMenuModel			*	sortedMenuModel	READ sortedMenuModel							NOTIFY sortedMenuModelChanged	)
 
 public:
-	explicit OSF(QObject *parent = nullptr);
+	explicit OSF(FileMenu *parent = nullptr);
 
 	bool loggedin()				const { return _mLoggedin;			}
 	bool rememberme()			const { return _mRememberMe;		}
@@ -68,7 +68,7 @@ public:
 	void setOnlineDataManager(OnlineDataManager *odm);
 	Q_INVOKABLE void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
-	void setMode(FileEvent::FileMode mode) OVERRIDE;
+	void setMode(FileEvent::FileMode mode) override;
 
 	OSFListModel * listModel()				const	{ return _osfListModel;	}
 	OSFBreadCrumbsListModel * breadCrumbs() const	{ return _osfBreadCrumbsListModel;	}

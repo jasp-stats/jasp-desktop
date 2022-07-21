@@ -23,18 +23,22 @@
 
 #include "data/fileevent.h"
 
+class FileMenu;
+
 class FileMenuObject : public QObject
 {
 	Q_OBJECT
 public:
-	explicit FileMenuObject(QObject *parent); ///< parent should be FileMenu *
-	virtual void setMode(FileEvent::FileMode mode);
+	explicit			FileMenuObject(FileMenu *parent);
 
 signals:
-	void dataSetIORequest(FileEvent *event);
+	void				dataSetIORequest(FileEvent *event);
 
 protected:
-	FileEvent::FileMode _mode = FileEvent::FileOpen;
+	FileEvent::FileMode mode();
+	virtual void		setMode(FileEvent::FileMode mode);
+	
+	FileMenu		*	_filemenu = nullptr;
 
 };
 
