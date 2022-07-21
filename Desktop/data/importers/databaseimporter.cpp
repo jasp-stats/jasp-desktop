@@ -28,9 +28,6 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, boost::fu
 	
 	ImportDataSet * data = new ImportDataSet(this);
 
-	if(_info._dbType == DbType::QSQLITE)
-		query.next(); //skip first empy line
-	
 	for(int i=0; i<record.count(); i++)
 		data->addColumn(new DatabaseImportColumn(data, fq(record.fieldName(i)), record.field(i).metaType()));
 												
@@ -44,12 +41,15 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, boost::fu
 			lastProgress = Utils::currentMillis();	
 		}
 
-		for(int i=0; i<record.count(); i++)
-			static_cast<DatabaseImportColumn*>(data->getColumn(i))->addValue(query.value(i));
+		if(query.isValid())
+			for(int i=0; i<record.count(); i++)
+				static_cast<DatabaseImportColumn*>(data->getColumn(i))->addValue(query.value(i));
 	}
 	while(query.next());
 
 	_info.close();
+	
+	data->buildDictionary(); //Not necessary for reading from database but synching will break otherwise...
 	
 	return data;
 }

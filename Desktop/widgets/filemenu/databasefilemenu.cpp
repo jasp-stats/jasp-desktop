@@ -6,6 +6,7 @@
 #include "log.h"
 #include "utilities/qutils.h"
 #include "gui/messageforwarder.h"
+#include "filemenu.h"
 
 const QStringList DatabaseFileMenu::dbTypes()
 {
@@ -29,6 +30,29 @@ const QStringList DatabaseFileMenu::dbTypes()
 DatabaseFileMenu::DatabaseFileMenu(FileMenu *parent)
 	: FileMenuObject{parent}
 {
+	QObject::connect(_filemenu, &FileMenu::fileoperationChanged, this, &DatabaseFileMenu::resetEphemeralFields);
+	
+	loadFromSettings();
+	
+	//connect now, after setting initial values	
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::dbTypeChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::usernameChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::passwordChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::databaseChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::hostnameChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::connectedChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::queryResultChanged	);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::dbTypesChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::lastErrorChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::portChanged			);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::queryChanged			);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::resultsOKChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::intervalChanged		);
+	QObject::connect(this, &DatabaseFileMenu::allChanged, this, &DatabaseFileMenu::rememberMeChanged	);
+}
+
+void DatabaseFileMenu::loadFromSettings()
+{
 	_info._dbType		= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
 	_info._database		=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
 	_info._hostname		=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
@@ -38,6 +62,15 @@ DatabaseFileMenu::DatabaseFileMenu(FileMenu *parent)
 	_info._query		=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
 	_info._interval		=						Settings::value( Settings::DB_IMPORT_INTERVAL	).toInt();
 	_info._rememberMe	=						Settings::value( Settings::DB_REMEMBER_ME		).toBool();
+	
+	emit allChanged();
+}
+
+void DatabaseFileMenu::loadFromDataSetPackage()
+{
+	_info = DataSetPackage::pkg()->databaseJson();
+	
+	emit allChanged();
 }
 
 void DatabaseFileMenu::connect()
@@ -115,17 +148,17 @@ QString	DatabaseFileMenu::_runQuery()
 			fewLines.push_back(names.join(", "));
 		}
 		
-		if(_info._dbType == DbType::QSQLITE)
-			query.next(); //skip first empy line
-
 		do
 		{
-			QStringList values;
-	
-			for(int i=0; i<record.count(); i++)
-				values.push_back(query.value(i).toString());
-	
-			fewLines.push_back(values.join(", "));
+			if(query.isValid())
+			{
+				QStringList values;
+		
+				for(int i=0; i<record.count(); i++)
+					values.push_back(query.value(i).toString());
+		
+				fewLines.push_back(values.join(", "));
+			}
 		}
 		while(query.next() && fewLines.size() < 4);
 	
@@ -155,7 +188,10 @@ void DatabaseFileMenu::setUsername(const QString &newUsername)
 		return;
 	
 	_info._username = newUsername;
-	Settings::setValue(Settings::DB_IMPORT_USERNAME, _info._username);
+	
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_USERNAME, _info._username);
+	
 	
 	emit usernameChanged();
 }
@@ -167,8 +203,8 @@ void DatabaseFileMenu::setPassword(const QString &newPassword)
 	
 	_info._password = newPassword;
 	
-	if(_info._rememberMe)
-		Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
+	if(useDataSetPackage())		DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else if(_info._rememberMe)	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
 	
 	emit passwordChanged();
 }
@@ -179,10 +215,15 @@ void DatabaseFileMenu::setRememberMe(bool rememberMe)
 		return;
 	
 	_info._rememberMe = rememberMe;
-	Settings::setValue(Settings::DB_REMEMBER_ME, _info._rememberMe);
 	
-	if(_info._rememberMe)	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
-	else					Settings::setValue(Settings::DB_IMPORT_PASSWORD, "");
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					
+	{
+		Settings::setValue(Settings::DB_REMEMBER_ME, _info._rememberMe);
+	
+		if(_info._rememberMe)	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
+		else					Settings::setValue(Settings::DB_IMPORT_PASSWORD, "");
+	}
 	
 	emit rememberMeChanged();
 }
@@ -193,7 +234,8 @@ void DatabaseFileMenu::setDatabase(const QString &newDatabase)
 		return;
 	
 	_info._database = newDatabase;
-	Settings::setValue(Settings::DB_IMPORT_DBNAME, _info._database);
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_DBNAME, _info._database);
 	
 	emit databaseChanged();
 }
@@ -204,7 +246,8 @@ void DatabaseFileMenu::setHostname(const QString &newHostname)
 		return;
 	
 	_info._hostname = newHostname;
-	Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _info._hostname);
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _info._hostname);
 	
 	emit hostnameChanged();
 }
@@ -215,7 +258,8 @@ void DatabaseFileMenu::setDbType(const DbType newDbType)
 		return;
 
 	_info._dbType = newDbType;
-	Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_info._dbType));
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_info._dbType));
 	
 	emit dbTypeChanged();
 }
@@ -254,7 +298,8 @@ void DatabaseFileMenu::setPort(int newPort)
 		return;
 	
 	_info._port = newPort;
-	Settings::setValue(Settings::DB_IMPORT_PORT, _info._port);
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_PORT, _info._port);
 	
 	emit portChanged();
 }
@@ -265,7 +310,8 @@ void DatabaseFileMenu::setQuery(const QString &newQuery)
 		return;
 	
 	_info._query = newQuery;
-	Settings::setValue(Settings::DB_IMPORT_QUERY, _info._query);
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_QUERY, _info._query);
 	
 	emit queryChanged();
 }
@@ -283,10 +329,20 @@ void DatabaseFileMenu::setInterval(int newInterval)
 	if (_info._interval == newInterval)
 		return;
 	
+	int previousInterval = _info._interval;
+	
 	_info._interval = newInterval;
-	Settings::setValue(Settings::DB_IMPORT_INTERVAL, _info._interval);
+	
+	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	else					Settings::setValue(Settings::DB_IMPORT_INTERVAL, _info._interval);
 	
 	emit intervalChanged();
+	
+	if(useDataSetPackage())
+	{
+		if(_info._interval == 0)	DataSetPackage::pkg()->databaseStopSynching();
+		else						DataSetPackage::pkg()->databaseStartSynching(previousInterval == 0);
+	}
 }
 
 

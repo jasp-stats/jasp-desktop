@@ -52,7 +52,6 @@ public:
 	const bool					rememberMe()		const { return _info._rememberMe;					}
 
 	bool						readyForImport()	const;
-	void						resetEphemeralFields();
 
 	static const QStringList	dbTypes();
 
@@ -64,13 +63,17 @@ public:
 	void						setQuery(		const QString &	newQuery		);
 	void						setPort(		int				newPort			);
 	void						setConnected(	bool			newConnected	);
-	void						setQueryResult(const QString & newQueryResult	);
+	void						setQueryResult(	const QString & newQueryResult	);
 	void						setLastError(	const QString &	newLastError	);
 	void						setResultsOK(	bool			newResultsOK	);
 	void						setInterval(	int				newInterval		);
 	void						setRememberMe(	bool			rememberMe		);
+	
+private slots:
+	void						resetEphemeralFields();
 
 signals:
+	void						allChanged();
 	void						dbTypeChanged();
 	void						usernameChanged();
 	void						passwordChanged();
@@ -88,6 +91,9 @@ signals:
 	
 private:
 	QString						_runQuery();
+	void						loadFromSettings();
+	void						loadFromDataSetPackage();
+	bool						useDataSetPackage() { return mode() == FileEvent::FileSyncData; }
 
 private:
 	Info						_info;

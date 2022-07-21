@@ -260,6 +260,7 @@ public:
 
 
 				void						databaseStartSynching(bool syncImmediately);
+				void						databaseStopSynching();
 
 
 

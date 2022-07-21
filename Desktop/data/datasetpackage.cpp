@@ -1569,6 +1569,11 @@ std::vector<bool> DataSetPackage::filterVector()
 	return out;
 }
 
+void DataSetPackage::databaseStopSynching()
+{
+	_databaseIntervalSyncher.stop();	
+}
+
 void DataSetPackage::databaseStartSynching(bool syncImmediately)
 {
 	if(_database == Json::nullValue)
