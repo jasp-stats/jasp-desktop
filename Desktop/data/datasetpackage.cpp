@@ -1598,13 +1598,13 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 			else
 				_database = dbCI.toJson();
 		}
-	}
-
-	_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);
-	_databaseIntervalSyncher.start();
 	
-	if(syncImmediately)
-		emit synchingIntervalPassed();
+		_databaseIntervalSyncher.setInterval(1000 * 60 * dbCI._interval);
+		_databaseIntervalSyncher.start();
+		
+		if(syncImmediately)
+			emit synchingIntervalPassed();
+	}
 }
 
 
