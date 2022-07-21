@@ -30,6 +30,7 @@
 #include "timers.h"
 #include <QMessageBox>
 #include "utilities/plotschemehandler.h"
+#include <json/json.h>
 
 const std::string	jaspExtension		= ".jasp",
 					unitTestArg			= "--unitTest",
@@ -84,7 +85,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 #define QSTRING_FILE_ARG QString::fromStdString
 #endif
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system, Json::Value & dbJson)
 {
 	filePath		= "";
 	unitTest		= false;
@@ -96,6 +97,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	LC_CTYPE_C		= false;
 	LC_CTYPE_system	= false;
 	timeOut			= 10;
+	dbJson			= Json::nullValue;
 
 	bool letsExplainSomeThings = false;
 
@@ -195,6 +197,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				{
 					//if it isn't anything else it must be a file to open right?
 					// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
+					// And also, it might be a "database json" which needs to be handled a bit more involved
 
 					QFileInfo openMe(QSTRING_FILE_ARG(args[arg].c_str()));
 
@@ -202,8 +205,15 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 						filePath = args[arg];
 					else
 					{
-						std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
-						letsExplainSomeThings = true;
+						//Check whether it can be parsed as a json and if so assume it is a database connection json as returned by DatabaseConnectionInfo
+						
+						Json::Reader jsonReader;
+						
+						if(!jsonReader.parse(args[arg], dbJson))
+						{
+							std::cerr << "File to open " << args[arg] << " does not exist (and also is not a (database) json)!" << std::endl;
+							letsExplainSomeThings = true;
+						}
 					}
 				}
 			}
@@ -328,12 +338,13 @@ int main(int argc, char *argv[])
 				setLC_CTYPE_C,
 				setLC_CTYPE_system;
 	int			timeOut;
+	Json::Value	dbJson;
 
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 	
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system, dbJson);
 	
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
@@ -423,7 +434,7 @@ int main(int argc, char *argv[])
 			}
 #endif
 			
-			a.init(filePathQ, unitTest, timeOut, save, logToFile);
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson);
 			
 			try 
 			{

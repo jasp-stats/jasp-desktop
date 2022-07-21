@@ -51,7 +51,6 @@ void FileEvent::setDataFilePath(const QString & path)
 
 void FileEvent::setDatabase(const Json::Value & dbInfo)
 {
-	Log::log() << "FileEvent::setDatabase got: " << dbInfo << std::endl;
 	setReadOnly();
 	
 	_database = dbInfo;

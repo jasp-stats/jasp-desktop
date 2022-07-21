@@ -100,6 +100,16 @@ FileEvent *FileMenu::open(const QString &path)
 	return event;
 }
 
+FileEvent *FileMenu::open(const Json::Value & dbJson)
+{
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
+	event->setDatabase(dbJson);
+	event->setFileType(Utils::FileType::database);
+	dataSetIORequestHandler(event);
+
+	return event;
+}
+
 FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;

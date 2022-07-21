@@ -72,6 +72,7 @@ public:
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
 	FileEvent *	open(const QString &filepath);
+	FileEvent * open(const Json::Value & databaseInfo);
 	FileEvent *	save();
 	void		sync();
 

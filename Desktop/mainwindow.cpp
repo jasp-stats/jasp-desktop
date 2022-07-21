@@ -642,6 +642,14 @@ void MainWindow::open(QString filepath)
 	else					_openOnLoadFilename = filepath;
 }
 
+
+void MainWindow::open(const Json::Value & dbJson)
+{
+	_openedUsingArgs = true;
+	if (_resultsViewLoaded)	_fileMenu->open(dbJson);
+	else					_openOnLoadDbJson = dbJson;
+}
+
 /*
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -891,7 +899,9 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
-			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
+			
+			if(event->isDatabase())		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(tq(event->databaseStr())));
+			else						QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
 		else
 		{
@@ -1202,12 +1212,21 @@ void MainWindow::resultsPageLoaded()
 
 	if (_openOnLoadFilename != "")
 		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
+	
+	if(!_openOnLoadDbJson.isNull())
+		QTimer::singleShot(0, this, &MainWindow::_openDbJson);
 }
 
 void MainWindow::_openFile()
 {
     _fileMenu->open(_openOnLoadFilename);
     _openOnLoadFilename = "";
+}
+
+void MainWindow::_openDbJson()
+{
+    _fileMenu->open(_openOnLoadDbJson);
+    _openOnLoadDbJson = Json::nullValue;
 }
 
 void MainWindow::openGitHubBugReport() const

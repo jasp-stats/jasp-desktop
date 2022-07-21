@@ -8,8 +8,8 @@ Json::Value DatabaseConnectionInfo::toJson(bool forJaspFile) const
 {
 	Json::Value out = Json::objectValue;
 	
-	Log::log() << "DatabaseConnectionInfo::toJson has dbType :\n" << _dbType << std::endl;
-	Log::log() << "DatabaseConnectionInfo::toJson has DbTypeToString(_dbType) :\n" << DbTypeToString(_dbType) << std::endl;
+	//Log::log() << "DatabaseConnectionInfo::toJson has dbType :\n" << _dbType << std::endl;
+	//Log::log() << "DatabaseConnectionInfo::toJson has DbTypeToString(_dbType) :\n" << DbTypeToString(_dbType) << std::endl;
 	
 	out["dbType"]		= DbTypeToString(_dbType);
 	out["username"]		= fq(_username);
@@ -27,7 +27,7 @@ Json::Value DatabaseConnectionInfo::toJson(bool forJaspFile) const
 
 void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 {
-	Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
+	//Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
 	
 	_dbType			= DbTypeFromString(	json["dbType"]		.asString() )	;
 	_username		= tq(				json["username"]	.asString() )	;
@@ -45,7 +45,7 @@ void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 bool DatabaseConnectionInfo::connect() const
 {
 	QString			dbTypeString	= DbTypeToQString(_dbType);
-	Log::log() << "dbTypeString is '" << dbTypeString << "'" << std::endl;
+	//Log::log() << "dbTypeString is '" << dbTypeString << "'" << std::endl;
 	
 	QSqlDatabase	db				= QSqlDatabase::addDatabase(dbTypeString);
 
