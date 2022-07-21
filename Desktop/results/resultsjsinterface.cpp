@@ -340,14 +340,15 @@ void ResultsJsInterface::exportHTML()
 QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 {
 	QString out;
-	QRegExp rx("(\\r|\\n|\\\\|\"|\')");
+	static QRegularExpression rx("(\\r|\\n|\\\\|\"|\')");
 	int pos = 0, lastPos = 0;
 
-	while ((pos = rx.indexIn(str, pos)) != -1)
+	for (const QRegularExpressionMatch &match : rx.globalMatch(str))
 	{
+		QString matched = match.captured(1);
+		pos = match.capturedStart(1);
 		out += str.mid(lastPos, pos - lastPos);
-
-		switch (rx.cap(1).at(0).unicode())
+		switch (matched.at(0).unicode())
 		{
 		case '\r':
 			out += "\\r";

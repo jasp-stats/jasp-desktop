@@ -17,10 +17,10 @@
 
 #include "archivereader.h"
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <sstream>
+#include <filesystem>
 
 #include <archive_entry.h>
 
@@ -48,9 +48,9 @@ ArchiveReader::~ArchiveReader()
 
 void ArchiveReader::openEntry(const string &archivePath, const string &entryPath)
 {
-	boost::filesystem::path pathArchive = archivePath;
+	std::filesystem::path pathArchive = archivePath;
 	
-	_archiveExists = boost::filesystem::exists(pathArchive);
+	_archiveExists = std::filesystem::exists(pathArchive);
 
 	if (_archiveExists)
 	{
@@ -188,9 +188,9 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 {
 	vector<string> files = vector<string>();
 
-	boost::filesystem::path pathArchive = (archivePath);
+	std::filesystem::path pathArchive = (archivePath);
 
-	bool archiveExists = boost::filesystem::exists(pathArchive);
+	bool archiveExists = std::filesystem::exists(pathArchive);
 
 	if (archiveExists)
 	{

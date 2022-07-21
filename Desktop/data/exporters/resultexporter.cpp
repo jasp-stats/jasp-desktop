@@ -25,6 +25,7 @@
 #include "results/resultsjsinterface.h"
 #include <QThread>
 #include "log.h"
+#include <fstream>
 
 
 ResultExporter::ResultExporter()
