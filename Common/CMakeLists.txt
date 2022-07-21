@@ -45,7 +45,6 @@ target_link_libraries(
          #
          LibArchive::LibArchive
          # Boost
-         Boost::filesystem
          Boost::system
          Boost::date_time
          Boost::timer

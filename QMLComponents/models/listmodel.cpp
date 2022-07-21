@@ -22,7 +22,6 @@
 #include "boundcontrols/boundcontrolterms.h"
 #include "controls/rowcontrols.h"
 #include "controls/sourceitem.h"
-#include <boost/bind.hpp>
 #include "log.h"
 
 ListModel::ListModel(JASPListControl* listView) 

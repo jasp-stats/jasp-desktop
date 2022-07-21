@@ -17,8 +17,6 @@
 
 #include "jaspimporter.h"
 
-
-#include <boost/filesystem.hpp>
 #include <fstream>
 
 #include <sys/stat.h>

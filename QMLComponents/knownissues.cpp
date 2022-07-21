@@ -91,9 +91,9 @@ void KnownIssues::loadKnownJson()
 
 bool KnownIssues::knownJsonExpired() const
 {
-	boost::filesystem::path knownJson = boost::filesystem::path(knownJsonPath());
+	std::filesystem::path knownJson = std::filesystem::path(knownJsonPath());
 
-	if(!boost::filesystem::exists(knownJson))
+	if(!std::filesystem::exists(knownJson))
 		return true;
 
 	long modTime	= Utils::getFileModificationTime(Utils::osPath(knownJson));
