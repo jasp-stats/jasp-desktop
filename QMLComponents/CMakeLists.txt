@@ -42,7 +42,6 @@ target_link_libraries(
          $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
          $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
 		 # Boost
-         Boost::filesystem
          Boost::system
          Boost::date_time
          Boost::timer

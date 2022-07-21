@@ -18,7 +18,6 @@
 
 #include "terms.h"
 
-#include <boost/bind.hpp>
 #include <sstream>
 
 #include <QDataStream>
@@ -475,7 +474,7 @@ void Terms::set(const QByteArray & array)
 Term Terms::sortComponents(const Term &term) const
 {
 	QStringList components = term.components();
-    std::sort(components.begin(), components.end(), boost::bind(&Terms::componentLessThan, this, _1, _2));
+	std::sort(components.begin(), components.end(), [&](const QString & l, const QString & r)->bool{ return componentLessThan(l,r); });
 	return Term(components);
 }
 
