@@ -59,7 +59,7 @@ QC.ScrollView
 "<i>Warning!</i>
 <br><br>
 JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
-If you <b>share this file</b> that means the recipients and however they share the file with could extract the password with some effort.
+If you <b>share this file</b> that means the recipients and whoever they share the file with could extract the password with some effort.
 <br><br>
 In case you are trying to connect to a production or even just network-accessible database:
 <br>

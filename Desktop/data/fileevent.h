@@ -40,8 +40,9 @@ public:
 
 	bool				setPath(		const QString & path);
 	void				setDataFilePath(const QString & path);
-	void				setOsfPath(		const QString & path) { _osfPath = path; }
+	void				setOsfPath(		const QString & path)			{ _osfPath = path; }
 	void				setDatabase(	const Json::Value & dbInfo);
+	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 
 	void				setComplete(bool success = true, const QString &message = "");
 	void				chain(FileEvent *event);
@@ -76,7 +77,7 @@ private slots:
 
 private:
 	FileMode			_operation;
-	Utils::FileType		_type;
+	Utils::FileType		_type			= Utils::FileType::unknown;
 	QString				_path,
 						_osfPath		= "", //To show the user a friendly path
 						_dataFilePath,

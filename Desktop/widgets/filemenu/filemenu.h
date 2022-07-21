@@ -94,7 +94,7 @@ public:
 	RecentFiles						*	recentFiles()				const	{ return _recentFiles;				}
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
-	DatabaseFileMenu						*	database()					const	{ return _database;					}
+	DatabaseFileMenu				*	database()					const	{ return _database;					}
 	bool								visible()					const	{ return _visible;					}
 	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}

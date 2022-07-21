@@ -62,10 +62,22 @@ void DatabaseFileMenu::importResults()
 	_info.close();
 	
 	FileEvent *event = new FileEvent(this, _mode);
+	
+	event->setFileType(FileTypeBase::database);
 
 	event->setDatabase(_info.toJson());
 
 	emit dataSetIORequest(event);
+	
+	resetEphemeralFields();
+}
+
+void DatabaseFileMenu::resetEphemeralFields()
+{
+	setConnected(	false);
+	setQueryResult(	"");
+	setLastError(	"");
+	setResultsOK(	false);
 }
 
 void DatabaseFileMenu::setDbTypeFromIndex(int dbTypeIdx)

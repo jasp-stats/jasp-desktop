@@ -325,7 +325,8 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 
 	emit dataSetIORequest(event);
 
-	setVisible(false); //If we just did something we are now done with the filemenu right?
+	if(event->operation() != FileEvent::FileClose)
+		setVisible(false); //If we just did something we are now done with the filemenu right? Except if we just closed a file
 }
 
 void FileMenu::analysisAdded(Analysis *analysis)

@@ -28,72 +28,73 @@ class DatabaseFileMenu : public FileMenuObject
 	Q_PROPERTY(bool			rememberMe	READ rememberMe		WRITE setRememberMe		NOTIFY rememberMeChanged	)
 
 public:
-	explicit DatabaseFileMenu(QObject *parent = nullptr);
+	explicit					DatabaseFileMenu(QObject *parent = nullptr);
 
-	Q_INVOKABLE void	connect();
-	Q_INVOKABLE void	runQuery();
-	Q_INVOKABLE void	importResults();
-	Q_INVOKABLE void	setDbTypeFromIndex(int dbTypeIdx);
-	Q_INVOKABLE void	browseDbFile();
+	Q_INVOKABLE void			connect();
+	Q_INVOKABLE void			runQuery();
+	Q_INVOKABLE void			importResults();
+	Q_INVOKABLE void			setDbTypeFromIndex(int dbTypeIdx);
+	Q_INVOKABLE void			browseDbFile();
 
-	const DbType			dbType()			const { return _info._dbType;	}
-	const QString		&	hostname()			const { return _info._hostname;	}
-	const QString		&	database()			const { return _info._database;	}
-	const QString		&	username()			const { return _info._username;	}
-	const QString		&	password()			const { return _info._password;	}
-	bool					connected()			const { return _connected;		}
-	const QString		&	queryResult()		const { return _queryResult;	}
-	const QString		&	lastError()			const { return _lastError;		}
-	int						port()				const { return _info._port;		}
-	const QString		&	query()				const { return _info._query;	}
-	bool					resultsOK()			const { return _resultsOK;		}
-	int						interval()			const { return _info._interval; }
-	bool					dbMaybeFile()		const { return _info._dbType == DbType::QSQLITE;}
-	const bool				rememberMe()		const { return _info._rememberMe; }
+	const DbType				dbType()			const { return _info._dbType;						}
+	const QString		&		hostname()			const { return _info._hostname;						}
+	const QString		&		database()			const { return _info._database;						}
+	const QString		&		username()			const { return _info._username;						}
+	const QString		&		password()			const { return _info._password;						}
+	bool						connected()			const { return _connected;							}
+	const QString		&		queryResult()		const { return _queryResult;						}
+	const QString		&		lastError()			const { return _lastError;							}
+	int							port()				const { return _info._port;							}
+	const QString		&		query()				const { return _info._query;						}
+	bool						resultsOK()			const { return _resultsOK;							}
+	int							interval()			const { return _info._interval;						}
+	bool						dbMaybeFile()		const { return _info._dbType == DbType::QSQLITE;	}
+	const bool					rememberMe()		const { return _info._rememberMe;					}
 
-	bool					readyForImport()	const;
+	bool						readyForImport()	const;
+	void						resetEphemeralFields();
 
-	static const QStringList		dbTypes();
+	static const QStringList	dbTypes();
 
-	void setDbType(		const DbType	newDbType		);
-	void setHostname(	const QString & newHostname		);
-	void setDatabase(	const QString & newDatabase		);
-	void setUsername(	const QString & newUsername		);
-	void setPassword(	const QString & newPassword		);
-	void setQuery(		const QString &	newQuery		);
-	void setPort(		int				newPort			);
-	void setConnected(	bool			newConnected	);
-	void setQueryResult(const QString & newQueryResult	);
-	void setLastError(	const QString &	newLastError	);
-	void setResultsOK(	bool			newResultsOK	);
-	void setInterval(	int				newInterval		);
-	void setRememberMe(	bool			rememberMe		);
+	void						setDbType(		const DbType	newDbType		);
+	void						setHostname(	const QString & newHostname		);
+	void						setDatabase(	const QString & newDatabase		);
+	void						setUsername(	const QString & newUsername		);
+	void						setPassword(	const QString & newPassword		);
+	void						setQuery(		const QString &	newQuery		);
+	void						setPort(		int				newPort			);
+	void						setConnected(	bool			newConnected	);
+	void						setQueryResult(const QString & newQueryResult	);
+	void						setLastError(	const QString &	newLastError	);
+	void						setResultsOK(	bool			newResultsOK	);
+	void						setInterval(	int				newInterval		);
+	void						setRememberMe(	bool			rememberMe		);
 
 signals:
-	void dbTypeChanged();
-	void usernameChanged();
-	void passwordChanged();
-	void databaseChanged();
-	void hostnameChanged();
-	void connectedChanged();
-	void queryResultChanged();
-	void dbTypesChanged();
-	void lastErrorChanged();
-	void portChanged();
-	void queryChanged();
-	void resultsOKChanged();
-	void intervalChanged();
-	void rememberMeChanged();
+	void						dbTypeChanged();
+	void						usernameChanged();
+	void						passwordChanged();
+	void						databaseChanged();
+	void						hostnameChanged();
+	void						connectedChanged();
+	void						queryResultChanged();
+	void						dbTypesChanged();
+	void						lastErrorChanged();
+	void						portChanged();
+	void						queryChanged();
+	void						resultsOKChanged();
+	void						intervalChanged();
+	void						rememberMeChanged();
 	
 private:
-	QString	_runQuery();
+	QString						_runQuery();
 
 private:
-	Info	_info;
-	QString _queryResult	= "",
-			_lastError		= "";
-	bool	_connected		= false,
-			_resultsOK		= false;
+	Info						_info;
+	QString						_queryResult	= "",
+								_lastError		= "";
+	bool						_connected		= false,
+								_resultsOK		= false;
 };
 
 #endif // DATABASEFILEMENU_H
