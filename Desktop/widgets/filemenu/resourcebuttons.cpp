@@ -16,6 +16,7 @@ void ResourceButtons::loadButtonData(std::vector<ResourceButtons::DataRow> &data
 		{ButtonType::CurrentFile,	tr("Current File"),	false,	"./CurrentFile.qml"		, false},
 		{ButtonType::Computer,		tr("Computer"),		false,	"./Computer.qml"		, true},
 		{ButtonType::OSF,			tr("OSF"),			false,	"./OSF.qml"				, true},
+		{ButtonType::Database,		tr("Database"),		false,	"./Database.qml"		, true},
 		{ButtonType::DataLibrary,	tr("Data Library"),	false,	"./DataLibrary.qml"		, true},
 		{ButtonType::PrefsData,		tr("Data"),			false,	"./PrefsData.qml"		, true},
 		{ButtonType::PrefsResults,	tr("Results"),		false,	"./PrefsResults.qml"	, true},

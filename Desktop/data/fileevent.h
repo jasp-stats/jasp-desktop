@@ -38,31 +38,36 @@ public:
 					FileEvent(QObject *parent = nullptr, FileMode fileMode = FileEvent::FileOpen);
 	virtual			~FileEvent();
 
-	bool			setPath(		const QString & path);
-	void			setDataFilePath(const QString & path);
-	void			setOsfPath(		const QString & path) { _osfPath = path; }
+	bool				setPath(		const QString & path);
+	void				setDataFilePath(const QString & path);
+	void				setOsfPath(		const QString & path)			{ _osfPath = path; }
+	void				setDatabase(	const Json::Value & dbInfo);
+	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 
-	void			setComplete(bool success = true, const QString &message = "");
-	void			chain(FileEvent *event);
+	void				setComplete(bool success = true, const QString &message = "");
+	void				chain(FileEvent *event);
 
-	void			setReadOnly()		  { _readOnly = true;		}
+	void				setReadOnly()		  { _readOnly = true;		}
 
-	bool			isOnlineNode()	const { return _path.startsWith("http");		}
-	bool			isReadOnly()	const { return _readOnly;						}
-	bool			isCompleted()	const { return _completed;						}
-	bool			isSuccessful()	const { return _success;						}
+	bool				isDatabase()	const { return _database != Json::nullValue;	}
+	bool				isOnlineNode()	const { return _path.startsWith("http");		}
+	bool				isReadOnly()	const { return _readOnly;						}
+	bool				isCompleted()	const { return _completed;						}
+	bool				isSuccessful()	const { return _success;						}
 
-	Exporter *		exporter()		const { return _exporter;		}
-	FileMode		operation()		const { return _operation;		}
-	Utils::FileType	type()			const { return _type;			}
+	Exporter *			exporter()		const { return _exporter;		}
+	FileMode			operation()		const { return _operation;		}
+	Utils::FileType		type()			const { return _type;			}
 
-	const QString &	path()			const { return _path;			}
-	const QString &	osfPath()		const { return _osfPath;		}
-	const QString &	dataFilePath()	const { return _dataFilePath;	}
-	const QString &	message()		const { return _message;		}
-	const QString & getLastError()	const { return _last_error;		}
+	const QString &		path()			const { return _path;			}
+	const std::string	databaseStr()	const;
+	const Json::Value &	database()		const { return _database;		}
+	const QString &		osfPath()		const { return _osfPath;		}
+	const QString &		dataFilePath()	const { return _dataFilePath;	}
+	const QString &		message()		const { return _message;		}
+	const QString &		getLastError()	const { return _last_error;		}
 
-	QString			getProgressMsg() const;
+	QString				getProgressMsg() const;
 
 signals:
 	void completed(FileEvent *event);
@@ -72,7 +77,7 @@ private slots:
 
 private:
 	FileMode			_operation;
-	Utils::FileType		_type;
+	Utils::FileType		_type			= Utils::FileType::unknown;
 	QString				_path,
 						_osfPath		= "", //To show the user a friendly path
 						_dataFilePath,
@@ -83,6 +88,7 @@ private:
 						_success		= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;
+	Json::Value			_database		= Json::nullValue;
 };
 
 Q_DECLARE_METATYPE(FileEvent *)

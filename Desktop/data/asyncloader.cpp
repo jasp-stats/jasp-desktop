@@ -223,7 +223,13 @@ void AsyncLoader::loadPackage(QString id)
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
 			}
 
-			extension = _loader.getExtension(path, extension); //Because it might still be ""...
+			if(!_currentEvent->isDatabase())
+				extension = _loader.getExtension(path, extension); //Because it might still be ""...
+			else
+			{
+				extension = "DATABASE"; //Lets be clear what this is ;)
+				path = _currentEvent->databaseStr();
+			}
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
@@ -250,6 +256,7 @@ void AsyncLoader::loadPackage(QString id)
 			{
 				pkg->setDataFilePath(_currentEvent->path().toStdString());
                 pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toSecsSinceEpoch());
+				pkg->setDatabaseJson(_currentEvent->database());
 			}
 			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
 			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));

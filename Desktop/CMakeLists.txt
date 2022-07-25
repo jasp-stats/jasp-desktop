@@ -107,6 +107,7 @@ target_link_libraries(
          Qt::Network
          Qt::PrintSupport
          Qt::Xml
+         Qt::Sql
          Qt::Quick
          Qt::QuickLayouts
          Qt::QuickControls2

@@ -15,7 +15,7 @@ class ResourceButtons : public QAbstractListModel
 
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	enum ButtonType {None, RecentFiles, CurrentFile, Computer, OSF, DataLibrary, PrefsData, PrefsResults, PrefsUI, PrefsAdvanced};
+	enum ButtonType {None, RecentFiles, CurrentFile, Computer, OSF, Database, DataLibrary, PrefsData, PrefsResults, PrefsUI, PrefsAdvanced};
 	Q_ENUM(ButtonType)
 
 	struct DataRow { ButtonType button; QString name; bool visible; QString qml; bool enabled; };
@@ -45,12 +45,12 @@ public:
 
 signals:
 	void currentQMLChanged(QString currentQML);
-	void selectedButtonChanged(ButtonType selectedButton);
+	void selectedButtonChanged(ResourceButtons::ButtonType selectedButton);
 
 public slots:
 	void setVisible(ResourceButtons::ButtonType button, bool visibility);
 	void setCurrentQML(QString currentQML);
-	void setSelectedButton(ButtonType selectedButton);
+	void setSelectedButton(ResourceButtons::ButtonType selectedButton);
 
 private:
 	void loadButtonData(std::vector<DataRow> & data);

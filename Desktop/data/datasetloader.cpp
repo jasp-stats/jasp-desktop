@@ -23,6 +23,7 @@
 #include "sharedmemory.h"
 #include "dataset.h"
 
+#include "importers/databaseimporter.h"
 #include "importers/csvimporter.h"
 #include "importers/jaspimporter.h"
 #include "importers/odsimporter.h"
@@ -49,10 +50,12 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 
 Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 {
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt") ||
-		boost::iequals(ext,".tsv"))									return new CSVImporter();
-	else if(boost::iequals(ext,".ods"))								return new ODSImporter();
-	else if(ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
+	if(	ext == "DATABASE")										return new DatabaseImporter();
+	if(	boost::iequals(ext,".csv") || 
+		boost::iequals(ext,".txt") ||
+		boost::iequals(ext,".tsv"))								return new CSVImporter();
+	if(	boost::iequals(ext,".ods"))								return new ODSImporter();
+	if(	ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }

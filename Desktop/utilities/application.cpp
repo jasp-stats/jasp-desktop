@@ -25,7 +25,7 @@
 #include "settings.h"
 #include <iostream>
 
-void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile)
+void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson)
 {	
 	std::cout << "Application init entered" << std::endl;
 	
@@ -39,6 +39,10 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 
 	if(filePath.size() > 0)
 		_mainWindow->open(filePath);
+	
+	if(!dbJson.isNull())
+		_mainWindow->open(dbJson);
+		
 }
 
 Application::~Application()

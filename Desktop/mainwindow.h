@@ -86,6 +86,7 @@ class MainWindow : public QObject
 public:
 	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
+	void open(const Json::Value & dbJson);
 	void testLoadedJaspFile(int timeOut, bool save);
 
 	~MainWindow() override;
@@ -182,6 +183,7 @@ private:
 	void resumeEngines();
 
 	void _openFile();
+	void _openDbJson();
 	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 
@@ -283,6 +285,7 @@ private:
 									_fatalError				= "The engine crashed...",
 									_progressBarStatus,
 									_downloadNewJASPUrl		= "";
+	Json::Value						_openOnLoadDbJson		= Json::nullValue;
 
 	AsyncLoader					*	_loader					= nullptr;
 	AsyncLoaderThread				_loaderThread;

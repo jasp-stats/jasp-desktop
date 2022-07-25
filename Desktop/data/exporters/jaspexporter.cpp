@@ -34,6 +34,7 @@
 #include "appinfo.h"
 #include "log.h"
 #include "utilenums.h"
+#include "data/databaseconnectioninfo.h"
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
@@ -81,25 +82,27 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	int progress,
 		lastProgress = -1;
 
-	Json::Value labelsData	= Json::objectValue;
-	Json::Value metaData	= Json::objectValue;
+	Json::Value labelsData	= Json::objectValue,
+				metaData	= Json::objectValue,
+				db			= package->databaseJson();
 
 	Json::Value &dataSet			= metaData["dataSet"];
-	metaData["dataFilePath"]		= Json::Value(package->dataFilePath());
-	metaData["dataFileReadOnly"]	= Json::Value(package->dataFileReadOnly());
-	metaData["dataFileTimestamp"]	= Json::Value(package->dataFileTimestamp());
+	metaData["dataFilePath"]		= package->dataFilePath();
+	metaData["dataFileReadOnly"]	= package->dataFileReadOnly();
+	metaData["dataFileTimestamp"]	= package->dataFileTimestamp();
+	metaData["database"]			= db.isNull() ? db : DatabaseConnectionInfo(db).toJson(true); //Convert again to drop password if not remembering "me"
 	Json::Value emptyValuesJson		= Json::arrayValue;
 
 	const std::vector<std::string>& emptyValuesVector = Utils::getEmptyValues();
-	for (auto it : emptyValuesVector)
-		emptyValuesJson.append(it);
+	for (const auto & emptyVal : emptyValuesVector)
+		emptyValuesJson.append(emptyVal);
 
 	metaData["emptyValues"]				= emptyValuesJson;
-	metaData["filterData"]				= Json::Value(package->dataFilter());
+	metaData["filterData"]				= package->dataFilter();
 	metaData["filterConstructorJSON"]	= package->filterConstructorJson();
 	metaData["computedColumns"]			= ComputedColumns::singleton()->convertToJson();
-	dataSet["rowCount"]					= Json::Value(package->rowCount());
-	dataSet["columnCount"]				= Json::Value(package->columnCount());
+	dataSet["rowCount"]					= package->rowCount();
+	dataSet["columnCount"]				= package->columnCount();
 
 	dataSet["filterVector"]				= Json::arrayValue;
 
@@ -108,13 +111,13 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 
 	dataSet["emptyValuesMap"]			= Json::objectValue;
 
-	for (auto it : package->emptyValuesMap())
+	for (const auto & it : package->emptyValuesMap())
 	{
 		std::string colName		= it.first;
 		auto		map			= it.second;
 		Json::Value mapJson		= Json::objectValue;
 
-		for (auto it2 : map)
+		for (const auto & it2 : map)
 			mapJson[std::to_string(it2.first)] = it2.second;
 
 		dataSet["emptyValuesMap"][colName] = mapJson;
@@ -207,15 +210,15 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	DataSetPackage::pkg()->waitForExportResultsReady();
 
 	//Create new entry for archive: HTML results
-	std::string html = package->analysesHTML();
-	size_t htmlSize = html.size();
-	entry = archive_entry_new();
-	std::string dd3 = std::string("index.html");
-	archive_entry_set_pathname(entry, dd3.c_str());
-	archive_entry_set_size(entry, int(htmlSize));
-	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); // Not sure what this does
-	archive_write_header(a, entry);
+	std::string html		= package->analysesHTML();
+	size_t		htmlSize	= html.size();
+				entry		= archive_entry_new();
+	
+	archive_entry_set_pathname(	entry,	"index.html");
+	archive_entry_set_size(		entry,	int(htmlSize));
+	archive_entry_set_filetype(	entry,	AE_IFREG);
+	archive_entry_set_perm(		entry,	0644); // Not sure what this does
+	archive_write_header(		a,		entry);
 
 	size_t ws = archive_write_data(a, html.c_str(), htmlSize);
 	if (ws != size_t(htmlSize))
@@ -234,16 +237,15 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 		const Json::Value &analysesJson = DataSetPackage::pkg()->analysesData();
 
 		//Create new entry for archive NOTE: must be done before data is added
-		std::string analysesString = analysesJson.toStyledString();
-		size_t sizeOfAnalysesString = analysesString.size();
-
-		entry = archive_entry_new();
-		std::string dd4 = std::string("analyses.json");
-		archive_entry_set_pathname(entry, dd4.c_str());
-		archive_entry_set_size(entry, int(sizeOfAnalysesString));
-		archive_entry_set_filetype(entry, AE_IFREG);
-		archive_entry_set_perm(entry, 0644); // Not sure what this does
-		archive_write_header(a, entry);
+		std::string analysesString			= analysesJson.toStyledString();
+		size_t		sizeOfAnalysesString	= analysesString.size();
+					entry					= archive_entry_new();
+					
+		archive_entry_set_pathname(	entry,	"analyses.json");
+		archive_entry_set_size(		entry,	int(sizeOfAnalysesString));
+		archive_entry_set_filetype(	entry,	AE_IFREG);
+		archive_entry_set_perm(		entry,	0644); // Not sure what this does
+		archive_write_header(		a,		entry);
 
 		archive_write_data(a, analysesString.c_str(), sizeOfAnalysesString);
 
@@ -269,12 +271,12 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 					int imageSize = readTempFile.tellg();		// get size from curpos
 
 					entry = archive_entry_new();
-					std::string dd4 = paths[j];
-					archive_entry_set_pathname(entry, dd4.c_str());
-					archive_entry_set_size(entry, imageSize);
-					archive_entry_set_filetype(entry, AE_IFREG);
-					archive_entry_set_perm(entry, 0644); // Not sure what this does
-					archive_write_header(a, entry);
+					archive_entry_set_pathname(entry, paths[j].c_str());
+					
+					archive_entry_set_size(		entry,	imageSize);
+					archive_entry_set_filetype(	entry,	AE_IFREG);
+					archive_entry_set_perm(		entry,	0644); // Not sure what this does
+					archive_write_header(		a,		entry);
 
 					int	bytes = 0;
 					readTempFile.seekg(0, std::ios::beg);		// move back to begin
@@ -315,12 +317,11 @@ void JASPExporter::createJARContents(archive *a)
 	size_t manifestSize		= tmp.size();
 	const char* manifest	= tmp.c_str();
 
-	std::string f1 = std::string("META-INF/MANIFEST.MF");
-	archive_entry_set_pathname(entry, f1.c_str());
-	archive_entry_set_size(entry, int(manifestSize));
-	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); // Not sure what this does
-	archive_write_header(a, entry);
+	archive_entry_set_pathname(	entry,	"META-INF/MANIFEST.MF");
+	archive_entry_set_size(		entry,	int(manifestSize));
+	archive_entry_set_filetype(	entry,	AE_IFREG);
+	archive_entry_set_perm(		entry,	0644); // Not sure what this does
+	archive_write_header(		a,		entry);
 
 	archive_write_data(a, manifest, manifestSize);
 

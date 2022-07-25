@@ -130,7 +130,7 @@ Rectangle
 		color					: controlErrorMessage.foreCol
 		anchors.verticalCenter	: parent.verticalCenter
 		anchors.left			: parent.left
-		anchors.leftMargin		: 5
+		anchors.leftMargin		: 5 * jaspTheme.uiScale
 		textFormat				: Text.RichText
 	}
 }

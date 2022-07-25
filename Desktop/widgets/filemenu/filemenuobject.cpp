@@ -17,14 +17,20 @@
 //
 
 #include "filemenuobject.h"
+#include "filemenu.h"
 
-FileMenuObject::FileMenuObject(QObject *parent) : QObject(parent)
+FileMenuObject::FileMenuObject(FileMenu * parent) : QObject(parent)
 {
-	_mode = FileEvent::FileOpen;
+	_filemenu = parent;
+	connect(this, &FileMenuObject::dataSetIORequest, parent, &FileMenu::dataSetIORequestHandler);
+}
+
+FileEvent::FileMode FileMenuObject::mode() 
+{ 
+	return _filemenu->_mode;
 }
 
 void FileMenuObject::setMode(FileEvent::FileMode mode)
 {
-	_mode = mode;
+	_filemenu->_mode = mode;	
 }
-

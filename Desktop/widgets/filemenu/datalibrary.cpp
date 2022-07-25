@@ -22,7 +22,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 
-DataLibrary::DataLibrary(QObject *parent) : FileMenuObject(parent)
+DataLibrary::DataLibrary(FileMenu *parent) : FileMenuObject(parent)
 {
 	setBreadcrumbsmodel(new DataLibraryBreadCrumbsListModel(this, QDir::separator()));
 	setListModel(new DataLibraryListModel(this, breadcrumbsmodel()));

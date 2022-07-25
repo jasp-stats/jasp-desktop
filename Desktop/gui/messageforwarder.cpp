@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QRegularExpression>
 #include "utilities/settings.h"
 #include "utilities/appdirs.h"
@@ -74,6 +75,12 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 	case QMessageBox::Discard:		return DialogResponse::Discard;
 	default:						return DialogResponse::Cancel;
 	}
+}
+
+QString MessageForwarder::askPassword(QString title, QString message)
+{
+//	here we can open a nice QInputDialog with a password field etc (modally)
+	return QInputDialog::getText(nullptr, title, message, QLineEdit::Password);
 }
 
 QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)

@@ -27,26 +27,24 @@
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
-	_mainWindow				= dynamic_cast<MainWindow*>(parent);
-	_recentFiles			= new RecentFiles(parent);
-	_currentDataFile		= new CurrentDataFile(parent);
-	_computer				= new Computer(parent);
-	_OSF					= new OSF(parent);
-	_dataLibrary			= new DataLibrary(parent);
-	_actionButtons			= new ActionButtons(this);
-	_resourceButtons		= new ResourceButtons(this);
+	_mainWindow				= qobject_cast<MainWindow*>(parent);
+	_recentFiles			= new RecentFiles			(this);
+	_currentDataFile		= new CurrentDataFile		(this);
+	_computer				= new Computer				(this);
+	_OSF					= new OSF					(this);
+	_database				= new DatabaseFileMenu				(this);
+	_dataLibrary			= new DataLibrary			(this);
+	_actionButtons			= new ActionButtons			(this);
+	_resourceButtons		= new ResourceButtons		(this);
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
 
-	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_computer,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_OSF,				&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this, &FileMenu::dataFileModifiedHandler);
-	connect(_actionButtons,		&ActionButtons::buttonClicked,				this, &FileMenu::actionButtonClicked	);
-	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this, &FileMenu::setFileoperation		);
-	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this, &FileMenu::resourceButtonClicked	);
-	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow, &MainWindow::setCheckAutomaticSync	);
+	
+
+	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this,			&FileMenu::dataFileModifiedHandler	);
+	connect(_actionButtons,		&ActionButtons::buttonClicked,				this,			&FileMenu::actionButtonClicked		);
+	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this,			&FileMenu::setFileoperation			);
+	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
+	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow,	&MainWindow::setCheckAutomaticSync	);
 
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
 	_actionButtons->setEnabled(ActionButtons::Save,				false);
@@ -77,13 +75,9 @@ void FileMenu::setResourceButtonsVisibleFor(ActionButtons::FileOperation fo)
 	_resourceButtons->setOnlyTheseButtonsVisible(_actionButtons->resourceButtonsForButton(fo));
 }
 
-void FileMenu::setSaveMode(FileEvent::FileMode mode)
+void FileMenu::setMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
-
-	_computer->setMode(_mode);
-	
-	_OSF->setMode(_mode);
 	_OSF->setCurrentFileName(getDefaultOutFileName());
 }
 
@@ -97,6 +91,16 @@ FileEvent *FileMenu::open(const QString &path)
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
+	dataSetIORequestHandler(event);
+
+	return event;
+}
+
+FileEvent *FileMenu::open(const Json::Value & dbJson)
+{
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
+	event->setDatabase(dbJson);
+	event->setFileType(Utils::FileType::database);
 	dataSetIORequestHandler(event);
 
 	return event;
@@ -130,20 +134,30 @@ FileEvent *FileMenu::save()
 
 void FileMenu::sync()
 {
-	QString path = _currentDataFile->getCurrentFilePath();
-
-	if (path.isEmpty())
-	{
-		if(!MessageForwarder::showYesNo(tr("No associated data file"),
-					tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
-			return;
-
-		path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
-	}
-
-	_mainWindow->setCheckAutomaticSync(false);
-	setSyncRequest(path);
 	
+	if(DataSetPackage::pkg()->databaseJson() != Json::nullValue)
+	{
+		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
+	
+		event->setDatabase(DataSetPackage::pkg()->databaseJson());
+		dataSetIORequestHandler(event);
+	}
+	else
+	{
+		QString path = _currentDataFile->getCurrentFilePath();
+	
+		if (path.isEmpty())
+		{
+			if(!MessageForwarder::showYesNo(tr("No associated data file"),
+						tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
+				return;
+	
+			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
+		}
+	
+		_mainWindow->setCheckAutomaticSync(false);
+		setSyncRequest(path);
+	}	
 }
 
 void FileMenu::close()
@@ -151,7 +165,7 @@ void FileMenu::close()
 	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
-	setSaveMode(FileEvent::FileOpen);
+	setMode(FileEvent::FileOpen);
 	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 }
 
@@ -232,7 +246,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
 			}
-
+			
 			// all this stuff is a hack
 			QFileInfo info(event->path());
 			_computer->setFileName(info.completeBaseName());
@@ -281,7 +295,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			_actionButtons->setEnabled(ActionButtons::ExportData,		false);
 			_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 			_actionButtons->setEnabled(ActionButtons::Close,			false);
-			_computer->setMode(FileEvent::FileOpen);
+			setMode(FileEvent::FileOpen);
 			break;
 
 		default:
@@ -317,7 +331,8 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 
 	emit dataSetIORequest(event);
 
-	setVisible(false); //If we just did something we are now done with the filemenu right?
+	if(event->operation() != FileEvent::FileClose)
+		setVisible(false); //If we just did something we are now done with the filemenu right? Except if we just closed a file
 }
 
 void FileMenu::analysisAdded(Analysis *analysis)
@@ -357,17 +372,17 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 {	
 	switch (action)
 	{
-	case ActionButtons::FileOperation::Open:				setSaveMode(FileEvent::FileOpen);			break;
-	case ActionButtons::FileOperation::SaveAs:				setSaveMode(FileEvent::FileSave);			break;
-	case ActionButtons::FileOperation::ExportResults:		setSaveMode(FileEvent::FileExportResults);	break;
-	case ActionButtons::FileOperation::ExportData:  		setSaveMode(FileEvent::FileExportData);		break;
-	case ActionButtons::FileOperation::SyncData:			setSaveMode(FileEvent::FileSyncData);		break;
+	case ActionButtons::FileOperation::Open:				setMode(FileEvent::FileOpen);			break;
+	case ActionButtons::FileOperation::SaveAs:				setMode(FileEvent::FileSave);			break;
+	case ActionButtons::FileOperation::ExportResults:		setMode(FileEvent::FileExportResults);	break;
+	case ActionButtons::FileOperation::ExportData:  		setMode(FileEvent::FileExportData);		break;
+	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();									break;
 	case ActionButtons::FileOperation::Save:
 		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
 			save();
 		else
-			setSaveMode(FileEvent::FileSave);			
+			setMode(FileEvent::FileSave);			
 		break;
 
 

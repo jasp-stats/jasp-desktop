@@ -273,6 +273,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
+	connect(_package,				&DataSetPackage::synchingIntervalPassed,			this,					&MainWindow::syncKeyPressed									);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -287,6 +288,7 @@ void MainWindow::makeConnections()
 
 	qRegisterMetaType<columnType>();
 	qRegisterMetaType<ListModel*>();
+	qRegisterMetaType<DbType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
@@ -640,6 +642,14 @@ void MainWindow::open(QString filepath)
 	else					_openOnLoadFilename = filepath;
 }
 
+
+void MainWindow::open(const Json::Value & dbJson)
+{
+	_openedUsingArgs = true;
+	if (_resultsViewLoaded)	_fileMenu->open(dbJson);
+	else					_openOnLoadDbJson = dbJson;
+}
+
 /*
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -889,7 +899,9 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
-			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
+			
+			if(event->isDatabase())		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(tq(event->databaseStr())));
+			else						QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
 		else
 		{
@@ -1031,23 +1043,31 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
-			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
+			if (event->type() == Utils::FileType::jasp)
 			{
-				QString dataFilePath = QString::fromStdString(_package->dataFilePath());
-				if (QFileInfo::exists(dataFilePath))
+				if(!_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
 				{
-                    uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
-					if (currentDataFileTimestamp > _package->dataFileTimestamp())
+					QString dataFilePath = QString::fromStdString(_package->dataFilePath());
+					if (QFileInfo::exists(dataFilePath))
 					{
-						setCheckAutomaticSync(true);
-						_fileMenu->syncDataFile(dataFilePath);
+						uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
+						if (currentDataFileTimestamp > _package->dataFileTimestamp())
+						{
+							setCheckAutomaticSync(true);
+							_fileMenu->syncDataFile(dataFilePath);
+						}
+					}
+					else
+					{
+						_package->setDataFilePath("");
 					}
 				}
-				else
-				{
-					_package->setDataFilePath("");
-				}
+				
+				if(_package->databaseJson() != Json::nullValue)
+					_package->databaseStartSynching(true);
 			}
+			else if(event->isDatabase()) //Not a jasp file, but a direct load from a database, make sure it starts synching if the user wants it to:
+				_package->databaseStartSynching(false);
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 			{
@@ -1192,12 +1212,21 @@ void MainWindow::resultsPageLoaded()
 
 	if (_openOnLoadFilename != "")
 		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
+	
+	if(!_openOnLoadDbJson.isNull())
+		QTimer::singleShot(0, this, &MainWindow::_openDbJson);
 }
 
 void MainWindow::_openFile()
 {
     _fileMenu->open(_openOnLoadFilename);
     _openOnLoadFilename = "";
+}
+
+void MainWindow::_openDbJson()
+{
+    _fileMenu->open(_openOnLoadDbJson);
+    _openOnLoadDbJson = Json::nullValue;
 }
 
 void MainWindow::openGitHubBugReport() const
@@ -1406,8 +1435,8 @@ void MainWindow::startDataEditorHandler()
 		}
 
 		}
-		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
+		connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
+		connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
 		event->setPath(path);
 		_loader->io(event);
 		showProgress();

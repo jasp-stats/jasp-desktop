@@ -28,7 +28,7 @@ class RecentFiles : public FileMenuObject
 	Q_PROPERTY(RecentFilesListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit RecentFiles(QObject *parent = nullptr);
+	explicit RecentFiles(FileMenu *parent = nullptr);
 
 	void pushRecentFilePath(const QString & newrecent);
 

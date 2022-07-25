@@ -90,11 +90,12 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 
 	Json::Value &dataSetDesc			= metaData["dataSet"];
 
-	packageData->setDataFilePath(		metaData.get("dataFilePath", "").asString());
-	packageData->setDataFileReadOnly(	metaData.get("dataFileReadOnly", false).asBool());
-	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp", 0).asUInt());
+	packageData->setDataFilePath(		metaData.get("dataFilePath",		"")				.asString());
+	packageData->setDataFileReadOnly(	metaData.get("dataFileReadOnly",	false)			.asBool());
+	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp",	0)				.asUInt());
+	packageData->setDatabaseJson(		metaData.get("database",			Json::nullValue));
 
-	packageData->setDataFilter(			metaData.get("filterData", DEFAULT_FILTER).asString());
+	packageData->setDataFilter(			metaData.get("filterData",			DEFAULT_FILTER)	.asString());
 
 	Json::Value jsonFilterConstructor = metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);
 	packageData->setFilterConstructorJson(jsonFilterConstructor.isObject() ? jsonFilterConstructor.toStyledString() : jsonFilterConstructor.asString());
@@ -112,7 +113,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	else
 	{
 		std::vector<std::string> emptyValues;
-		for (Json::Value emptyValueJson  : emptyValuesJson)
+		for (const Json::Value & emptyValueJson  : emptyValuesJson)
 			emptyValues.push_back(emptyValueJson.asString());
 		Utils::setEmptyValues(emptyValues);
 	}
@@ -154,7 +155,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	int i = 0;
 	std::map<std::string, std::map<int, int> > mapNominalTextValues;
 
-	for (Json::Value columnDesc : columnsDesc)
+	for (const Json::Value & columnDesc : columnsDesc)
 	{
 		packageData->columnLabelsFromJsonForJASPFile(xData, columnDesc, i, mapNominalTextValues);
 
@@ -224,8 +225,8 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 		//Read the results from when the JASP file was saved and store them in compareResults field
 
 		ArchiveReader	resultsEntry	= ArchiveReader(path, "index.html");
-		int			errorCode		= 0;
-		std::string	html			= resultsEntry.readAllData(sizeof(char), errorCode);
+		int				errorCode		= 0;
+		std::string		html			= resultsEntry.readAllData(sizeof(char), errorCode);
 
 		if (errorCode != 0)
 			throw std::runtime_error("Could not read result from 'index.html' in JASP archive.");
@@ -379,7 +380,10 @@ void JASPImporter::readManifest(const std::string &path)
 
 bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  const std::string &entry, bool required)
 {
-	ArchiveReader* dataEntry = NULL;
+	//Not particularly happy about the way we need to add a delete at every return here. Would be better to not use `new` and just instantiate a scoped var
+	//But that would require removing some `std::runtime_error` from `openEntry` in the `ArchiveReader` constructor. 
+	// And this is not the time to rewrite too many things.
+	ArchiveReader * dataEntry = NULL;
 	try
 	{
 		dataEntry = new ArchiveReader(path, entry);
@@ -388,11 +392,17 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  c
 	{
 		return false;
 	}
+	
 	if (!dataEntry->archiveExists())
+	{
+		delete dataEntry;
 		throw std::runtime_error("The selected JASP archive '" + path + "' could not be found.");
+	}
 
 	if (!dataEntry->exists())
 	{
+		delete dataEntry;
+		
 		if (required)
 			throw std::runtime_error("Entry '" + entry + "' could not be found in JASP archive.");
 
@@ -408,7 +418,10 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  c
 		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
 		if (errorCode < 0)
+		{
+			delete dataEntry;
 			throw std::runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
+		}
 
 		Json::Reader jsonReader;
 		jsonReader.parse(data, (char*)(data + (size * sizeof(char))), root);

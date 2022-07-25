@@ -61,6 +61,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	allResultFonts			READ allResultFonts				CONSTANT																	)
 	Q_PROPERTY(int			maxEngines				READ maxEngines					WRITE setMaxEngines					NOTIFY maxEnginesChanged				)
 	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
+	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -117,6 +118,7 @@ public:
 	int			lcCtypeWin()				const;
 	int			maxEngines()				const;
 	bool		windowsNoBomNative()		const;
+	bool		dbShowWarning()				const;
 
 	void		zoomIn();
 	void		zoomOut();
@@ -173,6 +175,7 @@ public slots:
 	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
 	void setWindowsNoBomNative(			bool		windowsNoBomNative);
+	void setDbShowWarning(				bool		dbShowWarning);
 	
 	
 signals:
@@ -220,6 +223,7 @@ signals:
 	void restartAllEngines();
 	void maxEnginesChanged(				int			maxEngines);
 	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
+	void dbShowWarningChanged(			bool		dbShowWarning);
 	
 private:
 	static PreferencesModel * _singleton;

@@ -5,7 +5,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-CurrentDataFile::CurrentDataFile(QObject *parent): FileMenuObject(parent)
+CurrentDataFile::CurrentDataFile(FileMenu *parent): FileMenuObject(parent)
 {	
 	setListModel(new CurrentFileListModel(this));
 	

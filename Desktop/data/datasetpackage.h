@@ -29,6 +29,7 @@
 #include <json/json.h>
 #include "computedcolumns.h"
 #include "datasetdefinitions.h"
+#include <QTimer>
 
 class EngineSync;
 class DataSetPackageSubNodeModel;
@@ -76,7 +77,7 @@ public:
 	static DataSetPackage *	pkg() { return _singleton; }
 
 							DataSetPackage(QObject * parent);
-							~DataSetPackage() { _singleton = nullptr; }
+							~DataSetPackage();
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset();
 		void				setDataSetSize(size_t columnCount, size_t rowCount);
@@ -148,6 +149,7 @@ public:
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
 				bool				synchingData()						const	{ return _synchingData;						  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
+		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	std::string		&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							 }
 		const	std::string		&	warningMessage()					const	{ return _warningMessage;						  }
@@ -161,25 +163,26 @@ public:
 		const	std::string		&	filterConstructorJson()				const	{ return _filterConstructorJSON;					    }
 
 
-				void				setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
-				void				setFilterShouldRunInit(bool shouldIt)			{ _filterShouldRunInit			= shouldIt;			}
-				void				setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				}
-				void				setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		}
-				void				setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	}
-				void				setWarningMessage(std::string message)			{ _warningMessage				= message;			}
-				void				setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			}
-				void				setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		}
-				void				setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		}
-				void				setDataFileReadOnly(bool readOnly)				{ _dataFileReadOnly				= readOnly;			}
-				void				setAnalysesHTML(std::string html)				{ _analysesHTML					= html;				}
-				void				setDataFilter(std::string filter)				{ _dataFilter					= filter;			}
+				void				setDataArchiveVersion(Version archiveVersion)		{ _dataArchiveVersion			= archiveVersion;	}
+				void				setFilterShouldRunInit(bool shouldIt)				{ _filterShouldRunInit			= shouldIt;			}
+				void				setFilterConstructorJson(std::string json)			{ _filterConstructorJSON		= json;				}
+				void				setAnalysesData(const Json::Value & analysesData)	{ _analysesData					= analysesData;		}
+				void				setArchiveVersion(Version archiveVersion)			{ _archiveVersion				= archiveVersion;	}
+				void				setWarningMessage(std::string message)				{ _warningMessage				= message;			}
+				void				setDataFilePath(std::string filePath)				{ _dataFilePath					= filePath;			}
+				void				setDatabaseJson(const Json::Value & dbInfo);
+				void				setInitialMD5(std::string initialMD5)				{ _initialMD5					= initialMD5;		}
+				void				setDataFileTimestamp(uint timestamp)				{ _dataFileTimestamp			= timestamp;		}
+				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
+				void				setAnalysesHTML(std::string html)					{ _analysesHTML					= html;				}
+				void				setDataFilter(std::string filter)					{ _dataFilter					= filter;			}
 				void				setDataSet(DataSet * dataSet);
-				void				setIsArchive(bool isArchive)					{ _isArchive					= isArchive;		}
-				void				setHasAnalysesWithoutData()						{ _hasAnalysesWithoutData		= true;				}
+				void				setIsArchive(bool isArchive)						{ _isArchive					= isArchive;		}
+				void				setHasAnalysesWithoutData()							{ _hasAnalysesWithoutData		= true;				}
 				void				setModified(bool value);
-				void				setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
-				void				setId(std::string id)							{ _id							= id;				}
-				void				setWaitingForReady()							{ _analysesHTMLReady			= false;			}
+				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
+				void				setId(std::string id)								{ _id							= id;				}
+				void				setWaitingForReady()								{ _analysesHTMLReady			= false;			}
 				void				setLoaded(bool loaded = true);
 
 				bool						initColumnAsScale(				size_t colNo,			std::string newName, const std::vector<double>		& values);
@@ -256,7 +259,8 @@ public:
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
 
-
+				void						databaseStartSynching(bool syncImmediately);
+				void						databaseStopSynching();
 
 
 
@@ -290,6 +294,7 @@ signals:
 				void				windowTitleChanged();
 				void				loadedChanged();
 				void				currentFileChanged();
+				void				synchingIntervalPassed();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -333,7 +338,8 @@ private:
 								_filterShouldRunInit		= false,
 								_enginesLoadedAtBeginSync;
 
-	Json::Value					_analysesData;
+	Json::Value					_analysesData,
+								_database					= Json::nullValue;
 	Version						_archiveVersion,
 								_dataArchiveVersion;
 
@@ -347,6 +353,8 @@ private:
 	SubNodeModel			*	_dataSubModel,
 							*	_filterSubModel,
 							*	_labelsSubModel;
+	
+	QTimer						_databaseIntervalSyncher;
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway
 };

@@ -2,7 +2,7 @@
 #include <QQmlEngine>
 
 
-RecentFiles::RecentFiles(QObject *parent): FileMenuObject(parent)
+RecentFiles::RecentFiles(FileMenu *parent): FileMenuObject(parent)
 {	
 	setListModel(new RecentFilesListModel(this));
 }

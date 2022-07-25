@@ -23,6 +23,7 @@
 
 #include <QTimer>
 #include "utilities/qutils.h"
+#include "log.h"
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)
@@ -43,12 +44,19 @@ FileEvent::~FileEvent()
 	   _exporter = nullptr;
 }
 
-void FileEvent::setDataFilePath(const QString &path)
+void FileEvent::setDataFilePath(const QString & path)
 {
 	_dataFilePath = path;
 }
 
-bool FileEvent::setPath(const QString &path)
+void FileEvent::setDatabase(const Json::Value & dbInfo)
+{
+	setReadOnly();
+	
+	_database = dbInfo;
+}
+
+bool FileEvent::setPath(const QString & path)
 {
 	_path = path;
 	_type = Utils::getTypeFromFileName(path.toStdString());
@@ -100,6 +108,11 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+}
+
+const std::string FileEvent::databaseStr() const 
+{ 
+	return _database.toStyledString();
 }
 
 QString FileEvent::getProgressMsg() const

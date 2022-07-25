@@ -84,20 +84,7 @@ private:
 	void setAuthenticated(bool value);
 
 	QString getRelationshipUrl(QJsonObject nodeObject, QString name);
-
-	QMap<QString, OnlineNodeData> _pathUrls;
-
-	OnlineDataManager *_dataManager = nullptr;
-	QNetworkAccessManager *_manager = nullptr;
-
-	QString _userId;
-	QString _filesPath;
-	QString _fullname;
-
-	bool _isAuthenticated;
-	bool _isPaginationCall = false;
-	bool _isProjectPaginationCall = false;
-
+	
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url, int level);
 	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
@@ -105,10 +92,24 @@ private:
 	void handleNetworkReplyError(QNetworkReply* reply);
 
 	QDateTime osfJsonToDateTime(const QString &input);
+	
 
-	FileSystemEntryList _unsortedEntries;
+	QMap<QString, OnlineNodeData>	_pathUrls;
 
-	int _level = 0;
+	OnlineDataManager			*	_dataManager				= nullptr;
+	QNetworkAccessManager		*	_manager					= nullptr;
+
+	QString							_userId,
+									_filesPath,
+									_fullname;
+
+	bool							_isAuthenticated			= false,
+									_isPaginationCall			= false,
+									_isProjectPaginationCall	= false;
+
+	FileSystemEntryList				_unsortedEntries;
+
+	int								_level = 0;
 
 };
 

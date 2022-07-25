@@ -10,9 +10,11 @@ Rectangle
 	signal onTextChanged();
 	
 	id:					root
-	height:				textInput.implicitHeight + jaspTheme.generalAnchorMargin * 2
-	width:				textInput.implicitWidth  + jaspTheme.generalAnchorMargin * 2
-
+	implicitHeight:		textInput.implicitHeight + jaspTheme.generalAnchorMargin * 2
+	implicitWidth:		textInput.implicitWidth  + jaspTheme.generalAnchorMargin * 2
+	height:				implicitHeight
+	width:				implicitWidth
+	
 	color:				enabled ? jaspTheme.controlBackgroundColor : jaspTheme.controlDisabledBackgroundColor
 	border.color:		jaspTheme.buttonBorderColor
 	border.width:		1
