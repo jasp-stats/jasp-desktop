@@ -5,7 +5,7 @@
 #include <QtSql/QSqlRecord>
 #include "log.h"
 #include "utilities/qutils.h"
-#include "gui/messageforwarder.h"
+#include "utilities/messageforwarder.h"
 #include "filemenu.h"
 
 const QStringList DatabaseFileMenu::dbTypes()
