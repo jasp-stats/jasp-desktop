@@ -36,15 +36,16 @@ ListView
 
 			//console.log("alternativeDropFunctionDef(",caller.__debugName,") type == ", type)
 
-			var _operator = undefined, _functionName = undefined, _parameterNames = undefined, _parameterDropKeys = undefined, _value = undefined, _text = undefined, _columnName = undefined, _columnIcon = undefined;
+			var _operator = undefined, _functionName = undefined, _friendlyFunctionName = undefined, _parameterNames = undefined, _parameterDropKeys = undefined, _value = undefined, _text = undefined, _columnName = undefined, _columnIcon = undefined;
 
 			if(type == "operator")			{ _operator = operator }
 			else if(type == "operatorvert")	{ _operator = operator }
 			else if(type == "function")
 			{
-				_functionName		= functionName;
-				_parameterNames		= functionParameters.split(",");
-				_parameterDropKeys	= functionParamTypes.split(",");
+				_functionName			= functionName;
+				_friendlyFunctionName	= friendlyFunctionName != "" ? friendlyFunctionName : functionName;
+				_parameterNames			= functionParameters.split(",");
+				_parameterDropKeys		= functionParamTypes.split(",");
 
 				for(var param=0; param<_parameterDropKeys.length; param++)
 					_parameterDropKeys[param] = _parameterDropKeys[param].split(":");
@@ -56,7 +57,7 @@ ListView
 
 			if(type == "operator")			obj = operatorCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "operator": _operator,			"acceptsDrops": true})
 			else if(type == "operatorvert")	obj = operatorvertCompBetterContext.createObject(scriptColumn,	{ "toolTipText": toolTip, "alternativeDropFunction": null, "operator": _operator,			"acceptsDrops": true})
-			else if(type == "function")		obj = functionCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "functionName": _functionName,	"acceptsDrops": true, "parameterNames": _parameterNames, "parameterDropKeys": _parameterDropKeys })
+			else if(type == "function")		obj = functionCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "functionName": _functionName,	"acceptsDrops": true, "parameterNames": _parameterNames, "parameterDropKeys": _parameterDropKeys, "friendlyFunctionName": _friendlyFunctionName })
 			else if(type == "number")		obj = numberCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "value": _value,					"acceptsDrops": true})
 			else if(type == "string")		obj = stringCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "text": _text,					"acceptsDrops": true})
 			else if(type == "column")		obj = columnCompBetterContext.createObject(scriptColumn,		{ "toolTipText": toolTip, "alternativeDropFunction": null, "columnName": _columnName,		"acceptsDrops": true,	"columnIcon": columnIcon})
@@ -71,7 +72,7 @@ ListView
 			property bool isColumn:				type === "column"
 			property bool isOperator:			type !== undefined && type.indexOf("operator") >=0
 			property string listOperator:		isOperator			?	operator			: "???"
-			property string listFunction:		type === "function"	?	functionName		: "???"
+			property string listFunction:		type !== "function"	?	"???"				: friendlyFunctionName != "" ? friendlyFunctionName : functionName
 			property real	listNumber:			type === "number"	?	number				: -1
 			property string	listText:			type === "string"	?	text				: "???"
 			property real	listWidth:			parent.width

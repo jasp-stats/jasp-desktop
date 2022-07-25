@@ -9,6 +9,7 @@ Item
 
 	property int initialWidth: filterConstructor.blockDim * 3
 	property string functionName: "sum"
+	property string friendlyFunctionName: functionName //By default exactly the same unless we need to add some fancy unicode
 	property bool acceptsDrops: true
 
 	property var parameterNames: []
@@ -107,7 +108,7 @@ Item
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
 
-			text: funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : functionName
+			text: funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
 			font.pixelSize: filterConstructor.fontPixelSize
 
 			visible: !functionImg.visible

@@ -197,57 +197,57 @@ FocusScope
 				functionModel: ListModel
 				{
 
-					ListElement	{ type: "function";	functionName: "abs";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("absolute value") }
-					ListElement	{ type: "function";	functionName: "sd";			functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("standard deviation") }
-					ListElement	{ type: "function";	functionName: "var";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("variance") }
-					ListElement	{ type: "function";	functionName: "sum";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("summation") }
-					ListElement	{ type: "function";	functionName: "prod";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("product of values") }
-					ListElement	{ type: "function";	functionName: "zScores";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("Standardizes the variable") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "abs";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("absolute value") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sd";			functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("standard deviation") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "var";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("variance") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sum";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("summation") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "prod";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("product of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "zScores";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("Standardizes the variable") }
 
 
-					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns minimum of values") }
-					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns maximum of values") }
-					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("mean") }
-					ListElement	{ type: "function";	functionName: "sign";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns the sign of values") }
-					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: qsTr("rounds y to n decimals") }
-					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: qsTr("returns number of elements in y") }
-					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("median") }
-
-					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("natural logarithm") }
-					ListElement	{ type: "function";	functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 2 logarithm") }
-					ListElement	{ type: "function";	functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 10 logarithm") }
-					ListElement	{ type: "function";	functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: qsTr("logarithm of y in 'base'") }
-					ListElement	{ type: "function";	functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("exponential") }
-					ListElement	{ type: "function";	functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line") }
-					ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns minimum of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns maximum of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("mean") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sign";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns the sign of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: qsTr("rounds y to n decimals") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: qsTr("returns number of elements in y") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("median") }
 
 					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "cut";			functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: qsTr("break your data up in numBreaks levels") }
-					ListElement	{ type: "function";	functionName: "replaceNA";		functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";              toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
-					ListElement	{ type: "function";	functionName: "ifElse";			functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
-					ListElement	{ type: "function";	functionName: "hasSubstring";	functionParameters: "string,substring";		functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("natural logarithm") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"log²";			functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 2 logarithm") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"log¹⁰";		functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 10 logarithm") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: qsTr("logarithm of y in 'base'") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("exponential") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1") }
 
 					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Gaussian distribution with specified mean and standard deviation sd") }
-					ListElement	{ type: "function";	functionName: "tDist";          functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from t distribution with degrees of freedom df and non-centrality parameter ncp") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "cut";			functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: qsTr("break your data up in numBreaks levels") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "replaceNA";		functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";              toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "ifElse";			functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "hasSubstring";	functionParameters: "string,substring";		functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
 
-					ListElement	{ type: "function";	functionName: "chiSqDist";      functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp") }
-					ListElement	{ type: "function";	functionName: "fDist";          functionParameters: "df1,df2,ncp";              functionParamTypes: "number,number,number";     toolTip: qsTr("generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp") }
+					ListElement	{ type: "separator" }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Gaussian distribution with specified mean and standard deviation sd") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "tDist";          functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from t distribution with degrees of freedom df and non-centrality parameter ncp") }
 
-					ListElement	{ type: "function";	functionName: "binomDist";      functionParameters: "trials,prob";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a binomial distribution with specified trials and probability prob") }
-					ListElement	{ type: "function";	functionName: "negBinomDist";	functionParameters: "targetTrial,prob";         functionParamTypes: "number,number";            toolTip: qsTr("generates data from a negative binomial distribution with specified trials and probability prob") }
-					ListElement	{ type: "function";	functionName: "geomDist";		functionParameters: "prob";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from a geometric distribution with specified probability prob") }
-					ListElement	{ type: "function";	functionName: "poisDist";		functionParameters: "lambda";                   functionParamTypes: "number";                   toolTip: qsTr("generates data from a Poisson distribution with specified rate lambda") }
-					//ListElement	{ type: "function";	functionName: "integerDist";	functionParameters: "categories,replace,prob";  functionParamTypes: "number,bool,number";       toolTip: qsTr("generates data between 1 and the specified number of categories either with replacement or without and a vector of specified probabilities prob") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "chiSqDist";      functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "fDist";          functionParameters: "df1,df2,ncp";              functionParamTypes: "number,number,number";     toolTip: qsTr("generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp") }
 
-					ListElement	{ type: "function";	functionName: "betaDist";       functionParameters: "alpha,beta";               functionParamTypes: "number,number";            toolTip: qsTr("generates data from a beta distribution with specified shapes alpha and beta") }
-					ListElement	{ type: "function";	functionName: "unifDist";       functionParameters: "min,max";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a uniform distribution between min and max") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "binomDist";      functionParameters: "trials,prob";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a binomial distribution with specified trials and probability prob") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "negBinomDist";	functionParameters: "targetTrial,prob";         functionParamTypes: "number,number";            toolTip: qsTr("generates data from a negative binomial distribution with specified trials and probability prob") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "geomDist";		functionParameters: "prob";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from a geometric distribution with specified probability prob") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "poisDist";		functionParameters: "lambda";                   functionParamTypes: "number";                   toolTip: qsTr("generates data from a Poisson distribution with specified rate lambda") }
+					//ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "integerDist";	functionParameters: "categories,replace,prob";  functionParamTypes: "number,bool,number";       toolTip: qsTr("generates data between 1 and the specified number of categories either with replacement or without and a vector of specified probabilities prob") }
 
-					ListElement	{ type: "function";	functionName: "gammaDist";      functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a gamma distribution with specified shape and scale") }
-					ListElement	{ type: "function";	functionName: "expDist";		functionParameters: "rate";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from an exponential distribution with specified rate") }
-					ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: qsTr("generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog") }
-					ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Weibull distribution with specified shape and scale") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "betaDist";       functionParameters: "alpha,beta";               functionParamTypes: "number,number";            toolTip: qsTr("generates data from a beta distribution with specified shapes alpha and beta") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "unifDist";       functionParameters: "min,max";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a uniform distribution between min and max") }
+
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "gammaDist";      functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a gamma distribution with specified shape and scale") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "expDist";		functionParameters: "rate";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from an exponential distribution with specified rate") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: qsTr("generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Weibull distribution with specified shape and scale") }
 
 					//cut?
 					//match?

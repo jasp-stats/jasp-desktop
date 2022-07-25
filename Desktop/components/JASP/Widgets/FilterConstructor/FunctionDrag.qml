@@ -5,6 +5,7 @@ DragGeneric {
 	property string __debugName: "FunctionDrag"
 
 	property string functionName: "sum"
+	property string friendlyFunctionName: functionName
 	property var parameterNames: functionName != "!" ? ["y"] : []
 	property var parameterDropKeys: ["???"]
 
@@ -15,15 +16,16 @@ DragGeneric {
 
 	Function
 	{
-		id: showMe
-		functionName:		parent.functionName
-		parameterNames:		parent.parameterNames
-		parameterDropKeys:	parent.parameterDropKeys //parent.convertedParameterDropKeys //parameterDropKeys.indexOf("any") >= 0 ? [filterConstructor.allKeys] : parent.parameterDropKeys
+		id:						showMe
+		functionName:			parent.functionName
+		friendlyFunctionName:	parent.friendlyFunctionName
+		parameterNames:			parent.parameterNames
+		parameterDropKeys:		parent.parameterDropKeys //parent.convertedParameterDropKeys //parameterDropKeys.indexOf("any") >= 0 ? [filterConstructor.allKeys] : parent.parameterDropKeys
 
-		x: parent.dragX
-		y: parent.dragY
+		x:						parent.dragX
+		y:						parent.dragY
 
-		isNested: parent.nested
-		acceptsDrops: parent.acceptsDrops
+		isNested:				parent.nested
+		acceptsDrops:			parent.acceptsDrops
 	}
 }
