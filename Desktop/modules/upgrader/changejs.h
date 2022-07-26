@@ -12,8 +12,10 @@ namespace Modules
 class ChangeJS : public ChangeBase
 {
 	Q_OBJECT
-	Q_PROPERTY(QString	name		READ name		WRITE setName		NOTIFY nameChanged)
-	Q_PROPERTY(QJSValue jsFunction	READ jsFunction	WRITE setJsFunction	NOTIFY jsFunctionChanged)
+	Q_PROPERTY(QString	name			READ name		WRITE setName		NOTIFY nameChanged)
+	Q_PROPERTY(QJSValue jsFunction		READ jsFunction	WRITE setJsFunction	NOTIFY jsFunctionChanged)
+	Q_PROPERTY(QJSValue jsonFunction	READ jsFunction	WRITE setJsFunction	NOTIFY jsFunctionChanged) //lets make things robust
+
 public:
 	ChangeJS();
 
