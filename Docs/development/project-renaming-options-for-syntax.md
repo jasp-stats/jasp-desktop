@@ -53,6 +53,8 @@ After you have made all your changes, run the tests using `jaspTools::testAll()`
 
 Renaming options means that .jasp files saved with an older JASP version will no longer be compatible. To ensure backwards compatibility, the changes made to the option names need to be listed in the upgrades file in `inst/Upgrades.qml`. Follow the [guide for option ugrades](jasp-upgrade-qml.md).
 
+Be careful when specifying the version numbers of the upgrade. The current version of the module is specified in the `DESCRIPTION` and `inst/Description.qml` files.
+
 #### Test upgrades
 
 After you specified the upgrades in the `Upgrades.qml`, test whether they work. 
@@ -69,6 +71,19 @@ After you specified the upgrades in the `Upgrades.qml`, test whether they work.
 Follow the [git guide](git-guide.md) to make a clean PR. Assign @Kucharssim or @AlexanderLy as reviewers.
 
 
+## Tips
+
+### Workflow
+
+Steps 2-4 need not be done in the sequence as written in this document. On contrary, it may be helpful to edit the `Upgrades.qml` file already while renaming the options in the analysis form. For example, if you change an option name in `Analysis.qml` file, it is recommended to already write the corresponding upgrade in the `Upgrades.qml` file. This way, you are documenting the changes what you have done so far and make sure you do not forget anything.
+
+### Code duplication between analyses
+
+Sometimes, different analyses come with similar (or even the same) chunks of options. An example of this is ANOVA and ANCOVA analyses which are almost identical, barring just a couple of small differences. To reduce the need to duplicate the work when renaming the option names, and to make sure that the options are indeed consistent between the analyses, we recommend trying to reduce code duplication between the analyses by writting common parts of the QML forms as reusable QML components (see section 'Advanced Usage' in the [QML guide](jasp-qml-guide.md)).
+
+If you decide to refactor some of the QML code to reduce code duplication, first make a separate PR introducing these changes, and only after this PR is merged, make another PR that renames the options. This way it is easier to catch potential issues with both the refactor and renaming options. PRs that introduce renaming options should only rename options and nothing else.
+
+And example of this can be found in ANOVA module where we first refactored the QML forms in one PR ([https://github.com/jasp-stats/jaspAnova/pull/173](https://github.com/jasp-stats/jaspAnova/pull/173)), and only then renamed the options in another PR ([https://github.com/jasp-stats/jaspAnova/pull/180](https://github.com/jasp-stats/jaspAnova/pull/180)).
 
 
 
