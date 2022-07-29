@@ -572,7 +572,7 @@
         {
           "name": "Mental Ability",
           "path": "Mental Ability.jasp",
-          "description": "Classic Holzinger and Swineford (1939) dataset provides mental ability test scores of seventh- and eighth-grade children from two different schools. <br><br> The example JASP file demonstrates the use of a confirmatory factor analysis.<br><br> <i>Data reported in Holzinger and Swineford (1939) are available in the R package lavaan (Rosseel, 2012).<\/i>",
+          "description": "Classic Holzinger and Swineford (1939) data set provides mental ability test scores of seventh- and eighth-grade children from two different schools. <br><br> The example JASP file demonstrates the use of confirmatory factor analysis.<br><br> <i>Data reported in Holzinger and Swineford (1939) are available in the R package lavaan (Rosseel, 2012).<\/i>",
           "kind": "file",
           "associated_datafile": "Mental Ability.csv"
         }
