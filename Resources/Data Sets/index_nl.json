@@ -568,6 +568,13 @@
           "description": "Charles Spearman's data van leerlingen hun schoolcijfers en sensorisch onderscheidingsvermogen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een exploratorische factoranalyse kan worden toegepast. <br><br> <i>Data gerapporteerd in Spearman (1904).<\/i>",
           "kind": "file",
           "associated_datafile": "G Factor.csv"
+        },
+        {
+          "name": "Mental Ability",
+          "path": "Mental Ability.jasp",
+          "description": "De klassieke dataset van Holzinger en Swineford (1939) bevat mentale vaardigheidstestscores van kinderen uit groep 7 en 8 van twee verschillende scholen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een confirmatieve factoranalyse kan worden toegepast. <br><br> <i>De gegevens uit Holzinger en Swineford (1939) zijn beschikbaar in het R-package lavaan (Rosseel, 2012).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Mental Ability.csv"
         }
       ],
       "debug": false

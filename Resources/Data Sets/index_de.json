@@ -568,6 +568,13 @@
           "description": "Charles Spearman's data of pupils' school grades and sensory discrimination scores. <br><br> The example JASP file demonstrates the use of an exploratory factor analysis.<br><br> <i>Data reported in Spearman (1904).<\/i>",
           "kind": "file",
           "associated_datafile": "G Factor.csv"
+        },
+        {
+          "name": "Mental Ability",
+          "path": "Mental Ability.jasp",
+          "description": "Der klassische Datensatz von Holzinger und Swineford (1939) enthält Testergebnisse zu geistigen Fähigkeiten von Kindern der Klassen 7 und 8 aus zwei verschiedenen Schulen. <br><br> Die Beispieldatei in JASP zeigt, wie eine konfirmatorische Faktorenanalyse angewendet werden kann.<br><br> <i>Die Daten von Holzinger und Swineford (1939) sind im R-Paket lavaan (Rosseel, 2012) verfügbar.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Mental Ability.csv"
         }
       ],
       "debug": false
