@@ -3827,3 +3827,183 @@ msgstr "Pulsa aquí para instalar el Módulo seleccionado"
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module to install"
 msgstr "Selecciona un Módulo de JASP para instalar"
+
+msgctxt "ErrorMessage|"
+msgid "Don't show again"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Database"
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"<i>Warning!</i>\n"
+"<br><br>\n"
+"JASP stores the password to your database in jasp-files, while not directly "
+"readable it is easy to extract.\n"
+"If you <b>share this file</b> that means the recipients and whoever they "
+"share the file with could extract the password with some effort.\n"
+"<br><br>\n"
+"In case you are trying to connect to a production or even just network-"
+"accessible database:\n"
+"<br>\n"
+"We <b>strongly urge</b> you to make a special user for JASP in your database "
+"with as <i>few permissions</i> as needed.\n"
+"<br><br>\n"
+"For a local or toy database this is probably overkill, but use your own "
+"judgement."
+msgstr ""
+
+msgctxt "Database|"
+msgid "Choose DB driver"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Hostname"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Port"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Name"
+msgstr ""
+
+#, fuzzy
+msgctxt "Database|"
+msgid "Browse"
+msgstr "Buscar"
+
+msgctxt "Database|"
+msgid "Username"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Password"
+msgstr ""
+
+#, fuzzy
+msgctxt "Database|"
+msgid "Remember me"
+msgstr "Recordame"
+
+msgctxt "Database|"
+msgid "Connect to database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Query"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Execute"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Preview data"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Load into JASP"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Synching interval in minutes: "
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"0 means no automatic synching, but you can still synch manually by pressing "
+"Ctrl/Cmd+Y"
+msgstr ""
+
+msgctxt "QObject|"
+msgid ""
+"JASP thinks it's connected to the database but the QSqlDatabase isn't "
+"opened..."
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Query failed with: '%1'"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Query wasn't a SELECT-like statement and returned nothing."
+msgstr ""
+
+msgctxt "QObject|"
+msgid "No active result found, maybe there is something wrong with your query?"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Database Password"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password for user '%1'"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Connection failed"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"Could not connect to database because of '%1', want to try a different "
+"password?"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Could not connect to the database so synchronizing will be disabled."
+msgstr ""
+
+#, qt-format
+msgctxt "DatabaseImporter|"
+msgid ""
+"Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Choose a database driver..."
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "IBM DB2"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "MySQL Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Oracle Call Interface Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "ODBC Driver (includes Microsoft SQL Server)"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "PostgreSQL Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "SQLite version 3 or above"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Not connected to database!"
+msgstr ""
+
+msgctxt "ResourceButtons|"
+msgid "Database"
+msgstr ""
