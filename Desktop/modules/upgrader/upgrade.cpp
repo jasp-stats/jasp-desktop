@@ -30,6 +30,9 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 	analysesJson["dynamicModule"]["analysisEntry"]	= fq(newFunctionName());
 	analysesJson["dynamicModule"]["moduleVersion"]	= toVersion().asString();
 
+	if(_msg.size())
+		msgs[""].push_back(fq(_msg));
+
 	//No loop so far, lets apply some changes for this step
 	for(ChangeBase * change : _changes)
 		try
@@ -66,7 +69,7 @@ Version Upgrade::fromVersion() const
 	}
 	catch(Version::encodingError & e)
 	{
-		throw upgradeError("Incorrect from version: '" + fq(_fromVersion) + "' supplied to Upgrade...");
+		throw upgradeError("Incorrect from-version: '" + fq(_fromVersion) + "' supplied to Upgrade...");
 	}
 }
 
@@ -78,7 +81,7 @@ Version Upgrade::toVersion() const
 	}
 	catch(Version::encodingError & e)
 	{
-		throw upgradeError("Incorrect to version: '" + fq(_toVersion) + "' supplied to Upgrade...");
+		throw upgradeError("Incorrect to-version: '" + fq(_toVersion) + "' supplied to Upgrade...");
 	}
 }
 
@@ -162,6 +165,19 @@ void Upgrade::setNewFunctionName(QString newFunctionName)
 
 	_newFunctionName = newFunctionName;
 	emit newFunctionNameChanged(_newFunctionName);
+}
+
+const QString &Upgrade::msg() const
+{
+	return _msg;
+}
+
+void Upgrade::setMsg(const QString &newMsg)
+{
+	if (_msg == newMsg)
+		return;
+	_msg = newMsg;
+	emit msgChanged();
 }
 
 }

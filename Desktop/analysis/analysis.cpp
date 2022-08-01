@@ -833,18 +833,14 @@ void Analysis::setErrorInResults(const std::string & msg)
 	setResults(errorResults, Status::FatalError);
 }
 
-std::string Analysis::upgradeMsgsForOption(const std::string & name) const
+const stringvec & Analysis::upgradeMsgsForOption(const std::string & name) const
 {
+	static stringvec emptyDummy;
+
 	if(_msgs.count(name) == 0)
-		return "";
+		return emptyDummy;
 
-	std::stringstream out;
-	const std::vector<std::string> & msg = _msgs.at(name);
-
-	for(size_t i=0; i<msg.size(); i++)
-		out << (i > 0 ? "\n" : "") << msg[i];
-
-	return out.str();
+	return _msgs.at(name);
 }
 
 Json::Value Analysis::rSources() const

@@ -248,25 +248,25 @@ void JASPControl::setCursorShape(int shape)
 
 void JASPControl::addControlError(QString message)
 {
-	if (_form)
+	if (_form && message.size())
 		_form->addControlError(this, message, false);
 }
 
 void JASPControl::addControlErrorTemporary(QString message)
 {
-	if (_form)
+	if (_form && message.size())
 		_form->addControlError(this, message, true);
 }
 
 void JASPControl::addControlWarning(QString message)
 {
-	if (_form)
+	if (_form && message.size())
 		_form->addControlError(this, message, false, true);
 }
 
 void JASPControl::addControlWarningTemporary(QString message)
 {
-	if (_form)
+	if (_form && message.size())
 		_form->addControlError(this, message, true, true);
 }
 

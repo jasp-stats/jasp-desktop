@@ -7,7 +7,7 @@ To make this possible you can add a file to your module, `Upgrades.qml`, which y
 Then whenever a jasp-file is loaded
 
 # Upgrades.qml
-This file contains a description of what upgrades your module offers, of which the simplest case is simply [renaming an analysis function](#rename-analysis). Further possibilities are [renaming an option](#rename-option) or [adding an option with a default value](#set-option). You can also [remove an option](#set-option) or even run custom [javascript](#javascript). And in all cases this can be done under certain [conditions](#conditionals) but that will probably be rarely used.
+This file contains a description of what upgrades your module offers, of which the simplest case is simply [renaming an analysis function](#rename-analysis). Further possibilities are [renaming an option](#rename-option) or [adding an option with a default value](#set-option). You can also [remove an option](#set-option) or even run custom [javascript](#javascript). And in all cases this can be done under certain [conditions](#conditionals) but that might only be rarely used. Furthermore there is the possibility of showing [messages](#messages) to the user which can be useful in the case of breaking changes.
 
 The rough structure of `Upgrades.qml` is an `Upgrades{}` QML Item with one or more `Upgrade{}` items in it. Each of these upgrades consists at least of a `functionName`, `fromVersion` and a `toVersion` field. The `functionName`-field specifies which analysis (called `function` here) is targeted while `fromVersion` and `toVersion` predictably define from which module-version it will be upgraded and to which one. 
 
@@ -37,9 +37,14 @@ To actually change the options for the qml form belonging to the analysis/functi
 Keep in mind that the order of `Upgrade`s within `Upgrades` is not important. However you should only ever have a single `Upgrade` with a particular combination of `functionName` and `fromVersion`, because those are used to find the right `Upgrade` to be applied to a particular version of an analysis. And these will be chained for multiple versions. So suppose you have an upgrade for an analysis from version `0.1` to `0.2`, and an upgrade from `0.3` to `0.4`. Then when you load an analysis made with module version `0.0.1` JASP is smart enough to figure that it should apply `0.1 -> 0.2` and then `0.3 -> 0.4`. So you do not need to specify an `Upgrade` for each version of your module, but just for the changes that need to be made. And JASP will chain them for you.
 
 ### Versions
+The module author or maintainer makes sure that the version in `DESCRIPTION` and `Description.qml` is updated at least for every new version of JASP.
+If, of course, any changes were made, but this is the usual case.
+Those versions are then used to specify the `to` and `from` fields.
+
+#### Older versions (<=0.15)
 Before JASP 0.15 was released the analyses were always saved with the version of JASP itself, so all analyses/modules in 0.14.1 would have that version. For 0.15 I manually made sure that the versions for each module were also 0.15 by setting that in `Description.qml` (this should be centralized to `DESCRIPTION` as [specified here](https://github.com/jasp-stats/INTERNAL-jasp/issues/1251)).
 
-After that version is released the version you need to upgrade to will be the **version of the module** and not of JASP.
+Since we do try to keep the versionnumber of the module the same as that in JASP it might not be obvious but the versions you need to specify corrects upgrades are those **versions of the module** and not those of JASP.
 
 # Changing Options
 Besides changing the name of your module or the function called for analysis you can also change the options stored in a jasp-file by older versions of your module. In case you aren't sure what is meant by options: these are the values stored in a json format by the QML form of your analysis. Each option has a name and this is the exact same `name:` as you specify in the QML forms. 
@@ -338,6 +343,10 @@ Upgrade
 
 }
 ```
+
+## Messages
+Sometimes there is no way to avoid breaking changes, or they might even be desirable, but nobody likes it when rerunning analyses return different results. At other times new interfaces/options require extra work from the user because some particular feature became mandatory but has no clear default to derive from previous versions (and thus sets a sensible default or something).
+For this the `msg` field is meant and it allows the module author to add a warning to components or the form entirely.
 
 ## Migrating from Oldschool Modules
 This process of upgrading modules via Upgrades.qml and having all the code for a single module in a single separate repository and `git submodule` was introduced with version `0.15` of JASP. Because there were no modules then, there were also no module-versions and so the version of JASP is used.

@@ -34,6 +34,7 @@ Rectangle
 	property color foreCol: warning ? jaspTheme.controlWarningTextColor : jaspTheme.controlErrorTextColor
 
 	property var control
+	property bool tmp			: false
 	property bool warning		: false
 	property var form
 	property var container		: parent
@@ -71,16 +72,43 @@ Rectangle
 		}
 	}
 
+	Connections
+	{
+		target:				container
+		onXChanged:			controlErrorMessage.repositionMessage()
+		onWidthChanged:		controlErrorMessage.repositionMessage()
+		onYChanged:			controlErrorMessage.repositionMessage()
+		onHeightChanged:	controlErrorMessage.repositionMessage()
+	}
+
+	function repositionMessage()
+	{
+		if(controlErrorMessage.opacity == 0 || !messageText.text || !control || !container)
+			return;
+
+		positionMessage();
+	}
+
 	function showMessage(message, temporary)
 	{
 		messageTimer.stop();
 		if (!message || !control || !container) return;
 
-		messageText.text = message
-		messageText.wrapMode = Text.NoWrap
-		messageText.width = messageText.implicitWidth
+		controlErrorMessage.tmp	= temporary
+		messageText.text		= message
+		messageText.wrapMode	= Text.NoWrap
 
-		var controlPoint = control.mapToItem(container, control.width / 2, 0)
+		positionMessage();
+
+		controlErrorMessage.opacity = 1
+		if (temporary) messageTimer.start();
+	}
+
+	function positionMessage()
+	{
+		messageText.width		= messageText.implicitWidth
+
+		var controlPoint		= control.mapToItem(container, control.width / 2, 0)
 
 		var x = controlPoint.x - (controlErrorMessage.width / 2)
 		var y = controlPoint.y - controlErrorMessage.height - 5
@@ -108,10 +136,9 @@ Rectangle
 
 		controlErrorMessage.x = x
 		controlErrorMessage.y = y
-
-		opacity = 1
-		if (temporary) messageTimer.start();
 	}
+
+
 
 	CrossButton
 	{

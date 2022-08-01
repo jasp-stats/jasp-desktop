@@ -289,16 +289,15 @@ void AnalysisForm::exportResults()
 
 QString AnalysisForm::msgsListToString(const QStringList & list) const
 {
-	if(list.length() == 0) return "";
+	if(list.length() == 0)
+		return "";
 
-	QString text = "<ul style=\"margin-bottom:0px\">";
-
+	QString text;
 	for (const QString& errorMessage : list)
-		text.append("<li>").append(errorMessage).append("</li>");
+		if(errorMessage.size())
+			text.append("<li>").append(errorMessage).append("</li>");
 
-	text.append("</ul>");
-
-	return text;
+	return !text.size() ? "" : "<ul style=\"margin-bottom:0px\">" + text + "</ul>";
 }
 
 void AnalysisForm::setInfo(QString info)
@@ -410,16 +409,11 @@ void AnalysisForm::bindTo()
 
 	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
 	for (JASPControl* control : _dependsOrderedCtrls)
-	{
-		QString upgradeMsg(tq(_analysis->upgradeMsgsForOption(fq(control->name()))));
+		control->addControlWarning(msgsListToString(tq(_analysis->upgradeMsgsForOption(fq(control->name())))));
 
-		if(upgradeMsg != "")
-			control->addControlWarning(upgradeMsg);
-	}
 
 	//Also check for a warning to show above the analysis:
-	QString upgradeMsg(tq(_analysis->upgradeMsgsForOption("")));
-
+	QString upgradeMsg = msgsListToString(tq(_analysis->upgradeMsgsForOption("")));
 	if(upgradeMsg != "")
 		addFormError(upgradeMsg);
 

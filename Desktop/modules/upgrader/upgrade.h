@@ -23,6 +23,8 @@ class Upgrade : public QQuickItem
 	Q_PROPERTY(QString toVersion		READ toVersionQ			WRITE setToVersionQ			NOTIFY toVersionChanged			)
 	Q_PROPERTY(QString functionName		READ functionName		WRITE setFunctionName		NOTIFY functionNameChanged		) //Aka fromFunction or just function if it doesnt need to change
 	Q_PROPERTY(QString newFunctionName	READ newFunctionName	WRITE setNewFunctionName	NOTIFY newFunctionNameChanged	) //This property can be set if the functionname changed in toVersion. "" here means undefined
+	Q_PROPERTY(QString msg READ msg WRITE setMsg NOTIFY msgChanged)
+
 
 	friend ChangeBase;
 public:
@@ -41,6 +43,9 @@ public:
 	Version toVersion()			const;
 	QString module()			const;
 
+	const QString &msg() const;
+	void setMsg(const QString &newMsg);
+
 public slots:
 	void setFromVersionQ(		QString fromVersion);
 	void setToVersionQ(			QString toVersion);
@@ -52,6 +57,8 @@ signals:
 	void toVersionChanged();
 	void functionNameChanged(	QString functionName);
 	void newFunctionNameChanged(QString newFunctionName);
+
+	void msgChanged();
 
 private slots:
 	void registerStep(		QQuickItem * parent);
@@ -65,7 +72,8 @@ private:
 	QString						_fromVersion,
 								_toVersion,
 								_functionName,
-								_newFunctionName;
+								_newFunctionName,
+								_msg;
 	std::vector<ChangeBase*>	_changes;
 };
 

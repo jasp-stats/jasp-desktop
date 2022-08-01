@@ -172,7 +172,8 @@ protected:
 	QVector<JASPControl*>						_dependsOrderedCtrls;
 	QMap<QString, ListModel* >					_modelMap;
 	QVector<ExpanderButtonBase*>				_expanders;
-	QMap<ExpanderButtonBase*, ExpanderButtonBase*>	_nextExpanderMap;
+	QMap<ExpanderButtonBase*,
+		ExpanderButtonBase*>					_nextExpanderMap;
 	QMap<JASPControl*, ExpanderButtonBase*>		_controlExpanderMap;
 	bool										_removed = false;
 	std::set<std::string>						_mustBe;
