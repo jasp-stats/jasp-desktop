@@ -483,13 +483,6 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 				container = control->parentListView();
 		}
 
-		/*if(container == this)
-		{
-			QQuickItem * contentArea = property("_contentArea").value<QQuickItem*>();
-			if(contentArea)
-				container = contentArea;
-		}*/
-
 		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
 		controlErrorMessageItem->setParentItem(container);
