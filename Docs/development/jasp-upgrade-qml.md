@@ -348,6 +348,45 @@ Upgrade
 Sometimes there is no way to avoid breaking changes, or they might even be desirable, but nobody likes it when rerunning analyses return different results. At other times new interfaces/options require extra work from the user because some particular feature became mandatory but has no clear default to derive from previous versions (and thus sets a sensible default or something).
 For this the `msg` field is meant and it allows the module author to add a warning to components or the form entirely.
 
+As an example below a sample text from the `Upgrades.qml` from ANOVA but with some frivolous messages added.
+```qml
+Upgrade
+	{
+		functionName: 		"Anova"
+		fromVersion:		"0.16.2"
+		toVersion:			"0.16.3"
+		msg:				"An example of a form warning from Upgrades.qml"
+
+		ChangeRename {	from: "dependent";			to: "unnecessary"; 
+			msg: "An example of a message for an upgrade."	}
+
+		ChangeRename {	from: "unnecessary";	to: "dependent"; 		
+			msg: "And just one more for the heck of it to show how they'd be combined."	}
+
+		...
+		ChangeRename {	from: "restrictedModelHeteroskedasticity";				to: "restrictedSE"											}
+		...
+
+		// Change of option value that is passed directly to the restriktor package: before it was 'none', but the package now uses 'standard'
+		ChangeSetValue
+		{
+			name:		"restrictedSE"
+			condition:	function(options) { return options["restrictedSE"] === "none"; }
+			jsValue:	"standard"
+			msg:		"None was set to standard!"
+		}
+	}
+```
+
+This is what it looks like in JASP:
+![Shows the formupgrade message and the two unnecessary renames' messages](img/upgrades/FormMessageAndTwoControlMessages.png)
+
+When a control has a message and it is inside a folded section it will look like this:
+![Folded section with a message/warning inside](img/upgrades/SectionFoldedWarningGlow.png)
+
+Once opened it reveals a normal control message (while keeping the section expander accentuated:
+![Control message inside earlier folded section](img/upgrades/ControlMessageInSection.png)
+
 ## Migrating from Oldschool Modules
 This process of upgrading modules via Upgrades.qml and having all the code for a single module in a single separate repository and `git submodule` was introduced with version `0.15` of JASP. Because there were no modules then, there were also no module-versions and so the version of JASP is used.
 This is important to keep in mind, because it means that the basic version for each module is actually `0.14.3`.
