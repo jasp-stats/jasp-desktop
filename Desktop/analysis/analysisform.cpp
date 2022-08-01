@@ -293,11 +293,11 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 		return "";
 
 	QString text;
-	for (const QString& errorMessage : list)
-		if(errorMessage.size())
-			text.append("<li>").append(errorMessage).append("</li>");
+	for (const QString & msg : list)
+		if(msg.size())
+			text.append("<li>").append(msg).append("</li>");
 
-	return !text.size() ? "" : "<ul style=\"margin-bottom:0px\">" + text + "</ul>";
+	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
 }
 
 void AnalysisForm::setInfo(QString info)

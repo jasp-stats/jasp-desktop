@@ -121,14 +121,14 @@ Rectangle
 	{
 		messageText.width		= messageText.implicitWidth
 
-		var controlPoint		= control.mapToItem(container, control.width / 2, container == form ? form.minimumYMsgs : 0)
+		var controlPoint		= control.mapToItem(parent, control.width / 2, 0)
 
 		var x = controlPoint.x - (controlErrorMessage.width / 2)
-		var y = controlPoint.y - controlErrorMessage.height - 5
+		var y = controlPoint.y - controlErrorMessage.height - paddingHeight
 
 		var maxWidth = containerWidth
 
-		if (x < 0) x = 0
+		x = Math.max(x, 0)
 
 		if (x + controlErrorMessage.width > maxWidth)
 		{
@@ -142,10 +142,13 @@ Rectangle
 			}
 		}
 
-		if (y < 0) y = 0
+		//make sure it comes below formwarningsmessages etc
+		var minimumY = form === container ? form.minimumYMsgs : 0
+		y = Math.max(minimumY, y)
 
+		//If it overlaps with control move it below
 		if (y + controlErrorMessage.height > controlPoint.y)
-			y = controlPoint.y + controlErrorMessage.height + 5
+			y = controlPoint.y + control.height + paddingHeight
 
 		controlErrorMessage.x = x
 		controlErrorMessage.y = y
@@ -170,7 +173,7 @@ Rectangle
 		color					: controlErrorMessage.foreCol
 		anchors.verticalCenter	: parent.verticalCenter
 		anchors.left			: parent.left
-		anchors.leftMargin		: 5 * jaspTheme.uiScale
+		anchors.leftMargin		: 2 * jaspTheme.uiScale
 		textFormat				: Text.RichText
 	}
 }
