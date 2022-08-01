@@ -72,13 +72,26 @@ Rectangle
 		}
 	}
 
+	onParentChanged:							repositionMessage();
+	onContainerChanged:	if(parent != container)	repositionMessage();
+
+
 	Connections
 	{
-		target:				container
-		onXChanged:			controlErrorMessage.repositionMessage()
-		onWidthChanged:		controlErrorMessage.repositionMessage()
-		onYChanged:			controlErrorMessage.repositionMessage()
-		onHeightChanged:	controlErrorMessage.repositionMessage()
+		target:	container
+		function onXChanged			(x)			{	controlErrorMessage.repositionMessage() }
+		function onWidthChanged		(width)		{	controlErrorMessage.repositionMessage() }
+		function onYChanged			(y)			{	controlErrorMessage.repositionMessage() }
+		function onHeightChanged	(height)	{	controlErrorMessage.repositionMessage() }
+	}
+
+	Connections
+	{
+		target:	!form ? null : form._contentArea
+		function onXChanged			(x)			{	controlErrorMessage.repositionMessage() }
+		function onWidthChanged		(width)		{	controlErrorMessage.repositionMessage() }
+		function onYChanged			(y)			{	controlErrorMessage.repositionMessage() }
+		function onHeightChanged	(height)	{	controlErrorMessage.repositionMessage() }
 	}
 
 	function repositionMessage()
@@ -108,7 +121,7 @@ Rectangle
 	{
 		messageText.width		= messageText.implicitWidth
 
-		var controlPoint		= control.mapToItem(container, control.width / 2, 0)
+		var controlPoint		= control.mapToItem(container, control.width / 2, container == form ? form.minimumYMsgs : 0)
 
 		var x = controlPoint.x - (controlErrorMessage.width / 2)
 		var y = controlPoint.y - controlErrorMessage.height - 5

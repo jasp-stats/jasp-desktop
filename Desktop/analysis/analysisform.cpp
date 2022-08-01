@@ -413,9 +413,9 @@ void AnalysisForm::bindTo()
 
 
 	//Also check for a warning to show above the analysis:
-	QString upgradeMsg = msgsListToString(tq(_analysis->upgradeMsgsForOption("")));
-	if(upgradeMsg != "")
-		addFormError(upgradeMsg);
+	for(const QString & upgradeMsg : tq(_analysis->upgradeMsgsForOption("")))
+		if(upgradeMsg != "")
+			addFormWarning(upgradeMsg);
 
 	_analysis->setOptionsBound(true);
 }
@@ -425,10 +425,16 @@ void AnalysisForm::unbind()
 	_analysis->setOptionsBound(false);
 }
 
-void AnalysisForm::addFormError(const QString &error)
+void AnalysisForm::addFormError(const QString & error)
 {
 	_formErrors.append(error);
 	emit errorsChanged();
+}
+
+void AnalysisForm::addFormWarning(const QString & warning)
+{
+	_formWarnings.append(warning);
+	emit warningsChanged();
 }
 
 
@@ -476,6 +482,13 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 			if (!container)
 				container = control->parentListView();
 		}
+
+		/*if(container == this)
+		{
+			QQuickItem * contentArea = property("_contentArea").value<QQuickItem*>();
+			if(contentArea)
+				container = contentArea;
+		}*/
 
 		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
