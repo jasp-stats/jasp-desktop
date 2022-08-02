@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 			std::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
 			
 			if(exists(modulesPath)) {
-				for(std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(modulesPath))
+				for(const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator(modulesPath))
 					if(entry.path().string().find("\\jasp") != std::string::npos)
 						remove_all(entry);
 				

@@ -184,14 +184,14 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 	std::error_code ec;
 
 #ifdef _WIN32
-	system::error_code er;
+	std::error_code er;
 	if (std::filesystem::exists(n, er))
 	{
 		std::filesystem::file_status s = std::filesystem::status(n);
 		
-		bool readOnly = (s.permissions() & std::filesystem::owner_write) == 0;
+		bool readOnly = (s.permissions() & std::filesystem::perms::owner_write) == std::filesystem::perms::none;
 		if (readOnly)
-			std::filesystem::permissions(n, std::filesystem::owner_write);
+			std::filesystem::permissions(n, std::filesystem::perms::owner_write);
 	}
 #endif
 
