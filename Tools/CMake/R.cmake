@@ -356,7 +356,7 @@ if(APPLE)
 
       # Patch and sign all first party libraries
 	  execute_process(
-		# COMMAND_ECHO STDOUT
+		COMMAND_ECHO STDOUT
 		ERROR_QUIET OUTPUT_QUIET
 		WORKING_DIRECTORY ${R_HOME_PATH}
 		COMMAND
@@ -371,7 +371,7 @@ if(APPLE)
       # R binary should be patched as well
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
-        # COMMAND_ECHO STDOUT
+        COMMAND_ECHO STDOUT
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
@@ -388,8 +388,8 @@ if(APPLE)
       while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
                                                       "1"))
         execute_process(
-          # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
+          COMMAND_ECHO STDOUT
+          #ERROR_QUIET OUTPUT_QUIET
           TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
@@ -487,8 +487,8 @@ if(APPLE)
     set(ENV{JASP_R_HOME} ${R_HOME_PATH})
 
     execute_process(
-	  #COMMAND_ECHO STDERR
-	  ERROR_QUIET OUTPUT_QUIET
+	  COMMAND_ECHO STDERR
+	  #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
 	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
@@ -498,6 +498,19 @@ if(APPLE)
     endif()
 
     message(CHECK_PASS "successful.")
+
+    message(CHECK_START "Patching Frameworks/.../library")
+    execute_process(
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
@@ -509,8 +522,8 @@ if(APPLE)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
