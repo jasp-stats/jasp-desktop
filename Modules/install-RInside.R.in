@@ -6,13 +6,14 @@
 
 #Load the post-install fixes from jaspBase. Think Baron von Munchausen ;)
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/utility.R")
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/checkSums.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/assignFunctionInPackage.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 
 options(renv.cache.linkable = FALSE)
 
-setupRenv("@R_LIBRARY_PATH@")
 Sys.setenv(RENV_PATHS_ROOT='@MODULES_RENV_ROOT_PATH@', RENV_PATHS_CACHE='@MODULES_RENV_CACHE_PATH@')
+setupRenv("@R_LIBRARY_PATH@")
 
 renv::install(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')
 

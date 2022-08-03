@@ -7,6 +7,7 @@ Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 
 #Load the post-install fixes from jaspBase. Think Baron von Munchausen ;)
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/utility.R")
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/checkSums.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/assignFunctionInPackage.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 
@@ -15,41 +16,32 @@ source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 # it anyway! It gets to if-y.
 .libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
 
-# The code below mimics what jaspBase::installModule does
-computeHash <- function(modulePkg) {
-  srcFiles <- c(
-    list.files(modulePkg,                    recursive=TRUE, full.names = TRUE, pattern = '(NAMESPACE|DESCRIPTION)$'),
-    list.files(file.path(modulePkg, 'src'),  recursive=TRUE, full.names = TRUE, pattern = '(\\.(cpp|c|hpp|h)|(Makevars|Makevars\\.win|Makevars\\.ucrt))$'),
-    list.files(file.path(modulePkg, 'R'),    recursive=TRUE, full.names = TRUE, pattern = '\\.R$'),
-    # list.files(file.path(modulePkg, 'inst'), recursive=TRUE, full.names = TRUE, pattern = '\\.(qml|po|svg|png|jpg|md)$'),
-    # list.files(file.path(modulePkg, 'inst'), recursive=TRUE, full.names = TRUE, pattern = '\\qmldir$'),
-    list.files(modulePkg,                    recursive=TRUE, full.names = TRUE, pattern = 'renv\\.lock')
-  )
-  tools::md5sum(srcFiles)
-}
+modulePkg     <- "@PROJECT_SOURCE_DIR@/Engine/jaspBase"
+moduleLibrary <- "@R_LIBRARY_PATH@"
+prompt        <- FALSE
 
-hashPath <- file.path("@R_LIBRARY_PATH@", "jaspBase", "jaspBaseHash.rds")
-currentHash <- computeHash("@PROJECT_SOURCE_DIR@/Engine/jaspBase/")
-if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
+if (md5SumsChanged(modulePkg, moduleLibrary)) {
   options(
-    install_opts = "--no-multiarch --no-docs --no-test-load",
     renv.cache.linkable = FALSE,
     configure.vars = c(jaspResults = "INCLUDE_DIR='-I@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder -I@PROJECT_SOURCE_DIR@/Common'")
   )
   
   setupRenv("@R_LIBRARY_PATH@")
 
-  renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase", repos=NULL, library="@R_LIBRARY_PATH@")
+  renv::hydrate(library = moduleLibrary, project = modulePkg)
+  renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
-}
+  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=cacheAble)
 
-if ("jaspBase" %in% installed.packages()) {
-  saveRDS(currentHash, hashPath)
+  if (correctlyInstalled)
+    writeMd5Sums(modulePkg, moduleLibrary)
+
+
 }
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-#if (Sys.info()["sysname"] == "Darwin") {
-#  source('@MODULES_BINARY_PATH@/symlinkTools.R')
-#  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
-#}
+if (Sys.info()["sysname"] == "Darwin") {
+  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+}
