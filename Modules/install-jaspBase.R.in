@@ -31,7 +31,7 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
   renv::hydrate(library = moduleLibrary, project = modulePkg)
   renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
-  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=cacheAble)
+  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=FALSE)
 
   if (correctlyInstalled)
     writeMd5Sums(modulePkg, moduleLibrary)
