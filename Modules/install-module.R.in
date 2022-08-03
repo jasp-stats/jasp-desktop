@@ -21,7 +21,7 @@ if (@IS_FLATPAK_USED@) {
 # The R_LIBRARY_PATH might already be there, but depending on the configuration 
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y. 
-.libPaths(c("@R_LIBRARY_PATH@"), .libPaths())
+.libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
 
 # Related to the comment above, there is variable here called, 
 # `libPathsToUse` but it is not connected to anything. If this works,

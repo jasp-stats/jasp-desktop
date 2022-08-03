@@ -128,12 +128,6 @@ if(APPLE AND (NOT EXISTS ${R_HOME_PATH}/bin/Modules))
     COMMAND ln -sf ../../../../../../Modules Modules)
 endif()
 
-if(LINUX)
-  set(R_PKG_TYPE "source")
-else()
-  set(R_PKG_TYPE "binary")
-endif()
-
 message(STATUS "Installing Required R Modules...")
 
 execute_process(
@@ -166,13 +160,6 @@ if(APPLE)
 	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
 	  USES_TERMINAL
 	  COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-	  COMMAND
-		${CMAKE_COMMAND} -D
-		NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-		-D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-		R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
-		SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
-		-P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
 	  COMMENT "------ Installing 'jaspBase'")
 else()
 	add_custom_command(
@@ -217,14 +204,6 @@ if(APPLE)
       WORKING_DIRECTORY ${R_HOME_PATH}
 	  DEPENDS	${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
 	  COMMAND  ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
-        -D R_DIR_NAME=${R_DIR_NAME} -D
-        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
-        SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=${IS_SIGNING} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       # COMMAND
       #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
       #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
@@ -283,14 +262,6 @@ if(APPLE)
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
         $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
 		COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
-        -D R_DIR_NAME=${R_DIR_NAME} -D
-        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
-        SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=${IS_SIGNING} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       # COMMAND
       #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
       #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P

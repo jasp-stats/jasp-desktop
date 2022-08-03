@@ -15,11 +15,6 @@ source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 # it anyway! It gets to if-y.
 .libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
 
-# Linux needs sources and maybe other stuff as well
-if (Sys.info()["sysname"] == "Darwin" || Sys.info()["sysname"] == "Windows") {
-  options(install.packages.compile.from.source = "never")
-}
-
 # The code below mimics what jaspBase::installModule does
 computeHash <- function(modulePkg) {
   srcFiles <- c(

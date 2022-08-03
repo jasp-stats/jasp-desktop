@@ -523,27 +523,15 @@ if(APPLE)
     message(CHECK_PASS "successful.")
 
     # Patching RInside and RCpp
-    message(CHECK_START "Patching RInside and Rcpp")
+    message(CHECK_START "Patching Frameworks/.../library")
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
-        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
-
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
         R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
@@ -552,8 +540,8 @@ if(APPLE)
 
 	message(CHECK_START "Patching and signing all stuff now in renv-cache")
 	execute_process(
-	  # COMMAND_ECHO STDOUT
-	  ERROR_QUIET OUTPUT_QUIET
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
 	  WORKING_DIRECTORY ${R_HOME_PATH}
 	  COMMAND
 	    ${CMAKE_COMMAND} -D
