@@ -368,20 +368,6 @@ if(APPLE)
 		  CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
 		  ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
-	  message(CHECK_START "Patching and signing all stuff now in renv-cache")
-	  execute_process(
-		# COMMAND_ECHO STDOUT
-		ERROR_QUIET OUTPUT_QUIET
-		WORKING_DIRECTORY ${R_HOME_PATH}
-		COMMAND
-		  ${CMAKE_COMMAND} -D
-		  NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-		  -D PATH=${MODULES_RENV_CACHE_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-		  R_DIR_NAME=${R_DIR_NAME} -D
-		  SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
-		  CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-		  ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
-
       # R binary should be patched as well
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
@@ -563,6 +549,20 @@ if(APPLE)
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     message(CHECK_PASS "successful.")
+
+	message(CHECK_START "Patching and signing all stuff now in renv-cache")
+	execute_process(
+	  # COMMAND_ECHO STDOUT
+	  ERROR_QUIET OUTPUT_QUIET
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND
+	    ${CMAKE_COMMAND} -D
+		NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+		-D PATH=${MODULES_RENV_CACHE_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
+		R_DIR_NAME=${R_DIR_NAME} -D
+		SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
+		CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+		${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
 
   message(CHECK_START "Checking for 'libRInside'")
