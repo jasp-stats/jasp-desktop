@@ -356,8 +356,9 @@ if(APPLE)
 
       # Patch and sign all first party libraries
 	  execute_process(
-		COMMAND_ECHO STDOUT
-		ERROR_QUIET OUTPUT_QUIET
+		#COMMAND_ECHO STDOUT
+		#ERROR_QUIET 
+    OUTPUT_QUIET
 		WORKING_DIRECTORY ${R_HOME_PATH}
 		COMMAND
 		  ${CMAKE_COMMAND} -D
@@ -371,8 +372,9 @@ if(APPLE)
       # R binary should be patched as well
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
-        COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        #COMMAND_ECHO STDOUT
+        #ERROR_QUIET 
+        OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -388,8 +390,9 @@ if(APPLE)
       while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
                                                       "1"))
         execute_process(
-          COMMAND_ECHO STDOUT
-          #ERROR_QUIET OUTPUT_QUIET
+          #COMMAND_ECHO STDOUT
+          #ERROR_QUIET 
+          OUTPUT_QUIET
           TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
@@ -670,8 +673,8 @@ elseif(WIN32)
                    ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
@@ -693,8 +696,8 @@ elseif(WIN32)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_BIN_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
@@ -823,8 +826,8 @@ elseif(LINUX)
                    ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
@@ -846,7 +849,8 @@ elseif(LINUX)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
