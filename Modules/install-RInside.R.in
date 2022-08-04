@@ -4,4 +4,4 @@
 # I've ran into situation where installing `RInside` doesn't install the `Rcpp`.
 # 
 
-install.packages(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
+install.packages(c('RInside', 'Rcpp'), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
