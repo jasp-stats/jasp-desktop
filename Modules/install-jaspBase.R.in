@@ -14,7 +14,7 @@ source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 # The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y.
-.libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
+.libPaths(c("@R_LIBRARY_PATH@"))
 
 modulePkg     <- "@PROJECT_SOURCE_DIR@/Engine/jaspBase"
 moduleLibrary <- "@R_LIBRARY_PATH@"
