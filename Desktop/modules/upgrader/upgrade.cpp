@@ -69,7 +69,7 @@ Version Upgrade::fromVersion() const
 	}
 	catch(Version::encodingError & e)
 	{
-		throw upgradeError("Incorrect from-version: '" + fq(_fromVersion) + "' supplied to Upgrade...");
+		throw upgradeError("Incorrect fromVersion: '" + fq(_fromVersion) + "' supplied to Upgrade...");
 	}
 }
 
