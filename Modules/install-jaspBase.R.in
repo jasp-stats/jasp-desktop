@@ -28,7 +28,7 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
   
   setupRenv("@R_LIBRARY_PATH@")
 
-  renv::hydrate(library = moduleLibrary, project = modulePkg)
+  renv::hydrate(library = moduleLibrary, project = modulePkg, sources=moduleLibrary)
   renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
   correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=FALSE)
