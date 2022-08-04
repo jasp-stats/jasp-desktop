@@ -28,6 +28,9 @@ void ChangeRename::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	msgs.erase(oldName);
 
 	msgs[logId].push_back(prefixLog + "Renamed option '" + oldName + "' to '" + newName + "'");
+
+	if(msg() != "")
+		msgs[newName].push_back(fq(msg()));
 }
 
 void ChangeRename::setFrom(QString from)

@@ -24,6 +24,9 @@ void ChangeCopy::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	msgs[newName]		= msgs[oldName];
 
 	msgs[logId].push_back(prefixLog + "Copied option '" + oldName + "' to '" + newName + "'");
+
+	if(msg() != "")
+		msgs[newName].push_back(fq(msg()));
 }
 
 void ChangeCopy::setFrom(QString from)

@@ -75,4 +75,17 @@ ChangeBase::~ChangeBase()
 		_upgrade->removeChange(this);
 }
 
+const QString &ChangeBase::msg() const
+{
+	return _msg;
+}
+
+void ChangeBase::setMsg(const QString &newMsg)
+{
+	if (_msg == newMsg)
+		return;
+	_msg = newMsg;
+	emit msgChanged();
+}
+
 }

@@ -20,6 +20,9 @@ void ChangeRemove::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	msgs.erase(name);
 
 	msgs[logId].push_back(prefixLog + "Removed option '" + name + "'");
+
+	if(msg() != "")
+		msgs[name].push_back(fq(msg()));
 }
 
 void ChangeRemove::setName(QString name)

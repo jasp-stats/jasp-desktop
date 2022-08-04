@@ -17,6 +17,9 @@ void ChangeSetValue::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) con
 	options[name]	= _jsonValue;
 
 	msgs[logId].push_back(prefixLog + "Set value '" + _jsonValue.toStyledString()  + "' on option '" + name + "'.");
+
+	if(msg() != "")
+		msgs[name].push_back(fq(msg()));
 }
 
 QString ChangeSetValue::toString() const	

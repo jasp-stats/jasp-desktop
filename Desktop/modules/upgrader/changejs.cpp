@@ -29,6 +29,9 @@ void ChangeJS::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	options[name] = fqj(result);
 
 	msgs[logId].push_back(prefixLog + "Applied ChangeJS to option '" + name + "', result was: '" + options[name].toStyledString() + "'");
+
+	if(msg() != "")
+		msgs[name].push_back(fq(msg()));
 }
 
 void ChangeJS::setName(QString name)

@@ -33,6 +33,8 @@ AnalysisForm
 	
 	default property alias	content		: contentArea.children
 	property alias	form				: form
+	property alias	_contentArea		: contentArea
+	property real	minimumYMsgs		: warningMessagesBox.height + warningMessagesBox.y
 	property int	majorVersion		: 1
 	property int	minorVersion		: 0
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin

@@ -15,6 +15,8 @@ class ChangeSetValue : public ChangeBase
 	Q_OBJECT
 	Q_PROPERTY(QString	name		READ name		WRITE setName		NOTIFY nameChanged)
 	Q_PROPERTY(QJSValue jsonValue	READ jsonValue	WRITE setJsonValue	NOTIFY jsonValueChanged) //Aka an object, which isn't converted to JSON by qt/qml but we can do that ourselves
+	Q_PROPERTY(QJSValue jsValue		READ jsonValue	WRITE setJsonValue	NOTIFY jsonValueChanged) //is it json or js? doesnt matter anymore
+
 public:
 	ChangeSetValue();
 
