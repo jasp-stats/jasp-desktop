@@ -119,7 +119,7 @@ if(APPLE)
       "${R_FRAMEWORK_PATH}/R.framework/Versions/${R_DIR_NAME}/Resources")
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
-  set(R_EXECUTABLE "${R_HOME_PATH}/R")
+  set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
@@ -355,24 +355,26 @@ if(APPLE)
       message(CHECK_START "Patching and signing all the first-party libraries")
 
       # Patch and sign all first party libraries
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${R_HOME_PATH}
-        COMMAND
-          ${CMAKE_COMMAND} -D
-          NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-          -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-          R_DIR_NAME=${R_DIR_NAME} -D
-          SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
-          CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-          ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
+	  execute_process(
+		#COMMAND_ECHO STDOUT
+		#ERROR_QUIET 
+    OUTPUT_QUIET
+		WORKING_DIRECTORY ${R_HOME_PATH}
+		COMMAND
+		  ${CMAKE_COMMAND} -D
+		  NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+		  -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
+		  R_DIR_NAME=${R_DIR_NAME} -D
+		  SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
+		  CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+		  ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        #COMMAND_ECHO STDOUT
+        #ERROR_QUIET 
+        OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -388,8 +390,9 @@ if(APPLE)
       while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
                                                       "1"))
         execute_process(
-          # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
+          #COMMAND_ECHO STDOUT
+          #ERROR_QUIET 
+          OUTPUT_QUIET
           TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
@@ -487,8 +490,8 @@ if(APPLE)
     set(ENV{JASP_R_HOME} ${R_HOME_PATH})
 
     execute_process(
-	  #COMMAND_ECHO STDERR
-	  ERROR_QUIET OUTPUT_QUIET
+	  COMMAND_ECHO STDERR
+	  #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
 	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
@@ -498,6 +501,19 @@ if(APPLE)
     endif()
 
     message(CHECK_PASS "successful.")
+
+    message(CHECK_START "Patching Frameworks/.../library")
+    execute_process(
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
@@ -509,8 +525,8 @@ if(APPLE)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
@@ -523,32 +539,19 @@ if(APPLE)
     message(CHECK_PASS "successful.")
 
     # Patching RInside and RCpp
-    message(CHECK_START "Patching RInside and Rcpp")
+    message(CHECK_START "Patching Frameworks/.../library")
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
         R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
-        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
-
-    message(CHECK_PASS "successful.")
   endif()
 
   message(CHECK_START "Checking for 'libRInside'")
@@ -670,8 +673,8 @@ elseif(WIN32)
                    ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
@@ -693,8 +696,8 @@ elseif(WIN32)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_BIN_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
@@ -823,8 +826,8 @@ elseif(LINUX)
                    ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
@@ -846,7 +849,8 @@ elseif(LINUX)
                    ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
+      #ERROR_QUIET OUTPUT_QUIET
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 

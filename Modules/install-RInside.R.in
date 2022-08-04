@@ -4,12 +4,5 @@
 # I've ran into situation where installing `RInside` doesn't install the `Rcpp`.
 # 
 
-options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = FALSE)
-
-Sys.setenv(RENV_PATHS_ROOT='@MODULES_RENV_ROOT_PATH@', RENV_PATHS_CACHE='@MODULES_RENV_CACHE_PATH@')
-renv::install(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')
-
-if (Sys.info()["sysname"] == "Darwin") {
-  source('@MODULES_BINARY_PATH@/symlinkTools.R')
-  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
-}
+.libPaths(c("@R_LIBRARY_PATH@"))
+install.packages(c('RInside', 'Rcpp'), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')

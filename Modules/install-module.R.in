@@ -29,7 +29,8 @@ if (@IS_FLATPAK_USED@) {
 result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
-	onlyModPkg=FALSE)
+	onlyModPkg=FALSE,
+	frameworkLibrary="@R_LIBRARY_PATH@")
 	
 print(result)
 
