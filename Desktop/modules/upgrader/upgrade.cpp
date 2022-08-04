@@ -81,7 +81,7 @@ Version Upgrade::toVersion() const
 	}
 	catch(Version::encodingError & e)
 	{
-		throw upgradeError("Incorrect to-version: '" + fq(_toVersion) + "' supplied to Upgrade...");
+		throw upgradeError("Incorrect toVersion: '" + fq(_toVersion) + "' supplied to Upgrade...");
 	}
 }
 
