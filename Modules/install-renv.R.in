@@ -1,4 +1,4 @@
 # Generated from install-renv.R.in
 # 
 
-install.packages('renv', lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs')
+install.packages('renv', lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
