@@ -40,13 +40,13 @@ set(JASP_EXTRA_MODULES
     "jaspLearnBayes"
     "jaspMachineLearning"
     "jaspMetaAnalysis"
-    #"jaspNetwork" #gdata not available
+    "jaspNetwork"
     "jaspProcessControl"
+    "jaspProphet"
     "jaspReliability"
     "jaspSem"
     "jaspSummaryStatistics"
-    "jaspVisualModeling"
-    #"jaspProphet"
+    "jaspVisualModeling"    
     )
 
 list(
