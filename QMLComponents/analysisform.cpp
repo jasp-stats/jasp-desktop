@@ -400,13 +400,6 @@ void AnalysisForm::bindTo()
 	for(const QString & upgradeMsg : tq(_analysis->upgradeMsgsForOption("")))
 		if(upgradeMsg != "")
 			addFormWarning(upgradeMsg);
-
-	_analysis->setOptionsBound(true);
-}
-
-void AnalysisForm::unbind()
-{
-	_analysis->setOptionsBound(false);
 }
 
 void AnalysisForm::addFormError(const QString & error)
