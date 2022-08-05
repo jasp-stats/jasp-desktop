@@ -30,7 +30,7 @@ public:
 	virtual void setTitle(const std::string& titel)									{}
 	virtual void preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual QString helpFile()														{ return "";				}
-	virtual std::string upgradeMsgsForOption(std::string name)						{ return "";				}
+	virtual stringvec upgradeMsgsForOption(std::string name)						{ return {""};				}
 	virtual const Json::Value & boundValues()								const	{ return Json::Value::null;	}
 	virtual const Json::Value & optionsFromJASPFile()						const	{ return Json::Value::null;	}
 	virtual const Json::Value & resultsMeta()								const 	{ return Json::Value::null;	}
