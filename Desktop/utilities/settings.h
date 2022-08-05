@@ -68,7 +68,8 @@ public:
 		DB_IMPORT_QUERY,
 		DB_IMPORT_INTERVAL,
 		DB_SHOW_WARNING,
-		DB_REMEMBER_ME
+		DB_REMEMBER_ME,
+		REPORT_SHOW
 	};
 
 	static QVariant value(Settings::Type key);
