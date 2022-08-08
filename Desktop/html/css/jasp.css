@@ -352,6 +352,14 @@ div.jasp-image-image.no-data {
 	white-space: normal;
 }
 
+.jaspReport  {
+	z-index: 100 ;
+	padding: 1em ;
+	border-radius: .4em ;
+	min-width: 300px ;
+	white-space: normal;
+}
+
 .stack-trace-selector div,
 .stack-trace-selector span {
 
