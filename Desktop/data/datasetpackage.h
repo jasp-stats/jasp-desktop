@@ -152,6 +152,7 @@ public:
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
 				bool				synchingData()						const	{ return _synchingData;						  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
+				bool				isDatabase()						const	{ return _database != Json::nullValue;			}
 		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							 }
@@ -161,6 +162,7 @@ public:
 
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						     }
 				uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					      }
+				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
 		const	Version			&	dataArchiveVersion()				const	{ return _dataArchiveVersion;						   }
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;							}
 		const	std::string		&	filterConstructorJson()				const	{ return _filterConstructorJSON;					    }
