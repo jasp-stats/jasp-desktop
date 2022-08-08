@@ -122,6 +122,19 @@ div.jasp-image-image.no-data.error {
 	border-style: double;
 }
 
+
+.jaspReportDo {
+  border: 3px double  #a30;
+  color:              #a30;
+  background:         #ddd;
+}
+
+.jaspReportDont {
+  border: 3px double  #000;
+  color:              #000;
+  background:         #fff;
+}
+
 .stack-trace-arrow {
 
   background: center no-repeat url("images/lightTheme/expand.png") ;
