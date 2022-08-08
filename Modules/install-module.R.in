@@ -31,8 +31,13 @@ result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@",
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE,
 	frameworkLibrary="@R_LIBRARY_PATH@")
-	
-print(result)
+
+jaspBasePath <- "@MODULES_BINARY_PATH@/@MODULE@/jaspBase"
+print(paste0("Was '", result, "' and will now remove jaspBase from module library at '", jaspBasePath , "' if it exists."))
+
+if(file.exists(jaspBasePath))
+	file.remove(jaspBasePath)
+
 
 if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
