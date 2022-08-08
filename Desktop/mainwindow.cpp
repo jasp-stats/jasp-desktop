@@ -591,9 +591,16 @@ void MainWindow::showRCommander()
 		_qml		-> load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
 
 		//To reload page because of https://github.com/jasp-stats/INTERNAL-jasp/issues/1280
-		_resultsJsInterface->resetResults();
-		QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+		reloadResults();
 	}
+}
+
+void MainWindow::reloadResults() const
+{
+	_resultsJsInterface->resetResults();//To reload page
+
+	QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+
 }
 
 void MainWindow::resendResultsToWebEngine()

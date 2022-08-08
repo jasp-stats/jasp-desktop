@@ -64,9 +64,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
-
-public:	
-	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
+	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 
 	explicit	 PreferencesModel(QObject *parent = 0);
 
@@ -120,14 +118,11 @@ public:
 	bool		dbShowWarning()				const;
 	QString		dataLabelNA()				const;
 	bool		guiQtTextRender()			const;
-
+	bool		reportingMode()				const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-	
-	
-	int maxEnginesAdmin() const;
-
+	int 		maxEnginesAdmin() 			const;
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -180,7 +175,8 @@ public slots:
 	void setDataLabelNA(				QString		dataLabelNA);
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
 	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
-
+	void setReportingMode(				bool		reportingMode);
+	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
 	void fixedDecimalsChangedString(	QString		fixedDecimals);
@@ -229,9 +225,9 @@ signals:
 
 private slots:
 	void dataLabelNAChangedSlot(		QString		dataLabelNA);
+	void reportingModeChanged(			bool		reportingMode);
 	
 private:
-
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
 	QStringList		_allFonts,

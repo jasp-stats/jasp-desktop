@@ -289,7 +289,19 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.tab:			interfaceFonts
+				KeyNavigation.tab:	reportingMode
+
+			}
+
+			CheckBox
+			{
+				id:					reportingMode
+				label:				qsTr("Reporting mode")
+				checked:			preferencesModel.reportingMode
+				onCheckedChanged:	preferencesModel.reportingMode = checked
+				toolTip:			qsTr("Whether JASP should run in reporting mode or not.")
+
+				KeyNavigation.tab:	interfaceFonts
 			}
 		}
 	}

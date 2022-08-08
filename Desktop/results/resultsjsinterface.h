@@ -36,10 +36,11 @@
 class ResultsJsInterface : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
-	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
-	Q_PROPERTY(bool				resultsLoaded	READ resultsLoaded	WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
-	Q_PROPERTY(bool				scrollAtAll		READ scrollAtAll	WRITE setScrollAtAll	NOTIFY scrollAtAllChanged		)
+	Q_PROPERTY(QString			resultsPageUrl		READ resultsPageUrl		WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
+	Q_PROPERTY(double			zoom				READ zoom				WRITE setZoom			NOTIFY zoomChanged				)
+	Q_PROPERTY(bool				resultsLoaded		READ resultsLoaded		WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
+	Q_PROPERTY(bool				scrollAtAll			READ scrollAtAll		WRITE setScrollAtAll	NOTIFY scrollAtAllChanged		)
+
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
@@ -102,6 +103,7 @@ public slots:
 	void moveAnalyses(					quint64 fromId,				quint64 toId);
 	void setThemeCss(					QString themeName);
 	void setFontFamily();
+
 
 //end callables
 
