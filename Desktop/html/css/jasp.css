@@ -360,6 +360,13 @@ div.jasp-image-image.no-data {
 	white-space: normal;
 }
 
+.jaspReportTop
+{
+	position: fixed !important;
+    top: 0;
+	z-index: 1234;
+}
+
 .stack-trace-selector div,
 .stack-trace-selector span {
 

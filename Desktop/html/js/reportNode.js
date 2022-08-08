@@ -48,7 +48,7 @@ JASPWidgets.reportNodeView = JASPWidgets.objectView.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	_mouseClicked: function (e) {},
+	_mouseClicked: function (e) { window.scrollToTopView(this.$el.find(".jaspReportRealLocation")); this.$el.find(".jaspReportTop").addClass("jasp-hide"); },
 
 	hasCollapse: function () {
 		return false;
@@ -74,7 +74,12 @@ JASPWidgets.reportNodePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
 		if(jasp.reportingVisible)
-			this.$el.append(this.model.get("html"));
+		{
+			this.$el.append("<div class='jaspReportRealLocation'>" + this.model.get("html") + "</div>");
+
+			if(this.model.get("report"))
+				this.$el.append("<div class='jaspReportTop'>" + this.model.get("html") + "</div>");
+		}
 	},
 
 	getExportAttributes: function (element, exportParams) {
