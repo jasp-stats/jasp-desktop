@@ -149,6 +149,7 @@ public slots:
 
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
+	void	reloadResults() const;
 
 private:
 	void makeConnections();

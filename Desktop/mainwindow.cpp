@@ -575,10 +575,16 @@ void MainWindow::showRCommander()
 		Log::log() << "Loading RCommander"  << std::endl;
 		_qml		-> load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
 
-		_resultsJsInterface->resetResults();//To reload page
-
-		QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+		reloadResults();
 	}
+}
+
+void MainWindow::reloadResults() const
+{
+	_resultsJsInterface->resetResults();//To reload page
+
+	QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+
 }
 
 void MainWindow::resendResultsToWebEngine()

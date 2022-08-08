@@ -73,7 +73,8 @@ JASPWidgets.reportNodeView = JASPWidgets.objectView.extend({
 JASPWidgets.reportNodePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
-		this.$el.append(this.model.get("html"));
+		if(jasp.reportingVisible)
+			this.$el.append(this.model.get("html"));
 	},
 
 	getExportAttributes: function (element, exportParams) {
