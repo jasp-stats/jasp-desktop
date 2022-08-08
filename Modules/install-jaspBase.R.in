@@ -23,12 +23,13 @@ prompt        <- FALSE
 if (md5SumsChanged(modulePkg, moduleLibrary)) {
   options(
     renv.cache.linkable = FALSE,
-    configure.vars = c(jaspResults = "INCLUDE_DIR='-I@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder -I@PROJECT_SOURCE_DIR@/Common'")
+    configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
   )
-  
+
   setupRenv("@R_LIBRARY_PATH@")
 
   renv::hydrate(library = moduleLibrary, project = modulePkg, sources=moduleLibrary)
+  options(renv.config.install.verbose = TRUE)
   renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
   correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=FALSE)
