@@ -148,11 +148,7 @@ bool Reporter::checkReports()
 		{
 			Json::Value analysisReport = Json::objectValue;
 			
-<<<<<<< Updated upstream
-			analysisReport["id"]		= a->id();
-=======
 			analysisReport["id"]		= int(a->id());
->>>>>>> Stashed changes
 			analysisReport["name"]		= a->name();
 			analysisReport["title"]		= a->title();
 			analysisReport["module"]	= a->module();
