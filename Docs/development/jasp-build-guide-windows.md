@@ -33,10 +33,11 @@ Before everything, you need to download and install the Microsoft Visual Studio 
 
 You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries and GUI. For this, 
 
-- You need to download and install the Qt installer from [Qt website](https://www.qt.io/download).
+- You need to download and install the Qt installer from [Qt website](https://www.qt.io/download-open-source).
+- Make sure you scroll all the way down to get the "Open source installer", they want to hide it real bad to get people to buy a developer license but it isn't necessary for us. The button is right above the FAQ and is called "Download the Qt online installer"
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
-		- **Qt 6.2.4** (or newest stable Qt)
+		- **Qt 6.3.1** (or newest stable Qt)
 			- [x] MSVC 2019 64-bit
 			- [x] MSVC 2019 ARM64 (Optional)
 			- [x] Qt 5 Compatibility Module
