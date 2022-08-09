@@ -44,10 +44,9 @@ ScrollView
 			CheckBox
 			{
 				id:						useNormalizedNotation
-				label:					qsTr("Use normalized notation")
-				labelTextFormat:		Text.RichText
-				checked:				preferencesModel.normalizedNotation
-				onCheckedChanged:		preferencesModel.normalizedNotation = checked
+				label:					qsTr("Use exponent notation") //the default now is normalizedNotation. https://github.com/jasp-stats/INTERNAL-jasp/issues/1872
+				checked:				!preferencesModel.normalizedNotation
+				onCheckedChanged:		preferencesModel.normalizedNotation = !checked
 				KeyNavigation.tab:		fixDecs
 				KeyNavigation.down:		fixDecs
 			}
