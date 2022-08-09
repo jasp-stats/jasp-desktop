@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
+#include "analysis/analyses.h"
 
 namespace resultXmlCompare
 {
@@ -48,6 +49,22 @@ void compareResults::setRefreshResult(QString result)
 {
 	refreshedResultExport = result;
 	sanitizeHtml(refreshedResultExport);
+}
+
+bool compareResults::checkForAnalysisError()
+{
+	Analyses::analyses()->applyToSome([&](Analysis * a) -> bool
+	{
+		if(a->status() == Analysis::Status::FatalError || a->status() == Analysis::Status::ValidationError)
+		{
+			_analysisHadError = true;
+			return false;
+		}
+		else
+			return true;
+	});
+
+	return _analysisHadError;
 }
 
 result compareResults::convertXmltoResultStruct(const QString &  resultXml)

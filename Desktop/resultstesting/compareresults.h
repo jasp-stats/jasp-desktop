@@ -25,6 +25,10 @@ public:
 	void	setOriginalResult(QString result);
 	void	setRefreshResult(QString result);
 
+	bool	checkForAnalysisError();
+
+	bool	analysisHadError()	const	{ return _analysisHadError; }
+
 	void	enableTestMode()			{ runningTestMode = true; }
 	bool	testMode()			const	{ return runningTestMode; }
 
@@ -53,7 +57,8 @@ private:
 					resultsExportCalled			= false,
 					saveAfterRefresh			= false,
 					ranCompare					= false,
-					succes						= false;
+					succes						= false,
+					_analysisHadError			= false;
 
 	QString			originalResultExport		= "",
 					refreshedResultExport		= "",
