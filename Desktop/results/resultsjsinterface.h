@@ -118,16 +118,16 @@ signals:
 
 
 public slots:
-	void setExactPValuesHandler(	bool			exact);
-	void setNormalizedNotationHandler(		bool			notation);
-	void setFixDecimalsHandler(		QString			numDecimals);
-	void analysisImageEditedHandler(Analysis	*	analysis);
-	void cancelImageEdit(			int				id);
-	void exportSelected(	const	QString		&	filename);
-	void setResultsPageUrl(			QString			resultsPageUrl);
+	void setExactPValuesHandler(		bool			exact);
+	void setNormalizedNotationHandler(	bool			notation);
+	void setFixDecimalsHandler(			QString			numDecimals);
+	void analysisImageEditedHandler(	Analysis	*	analysis);
+	void cancelImageEdit(				int				id);
+	void exportSelected(		const	QString		&	filename);
+	void setResultsPageUrl(				QString			resultsPageUrl);
 	void setZoomInWebEngine();
-	void setResultsLoaded(			bool			resultsLoaded);
-	void setScrollAtAll(			bool			scrollAtAll);
+	void setResultsLoaded(				bool			resultsLoaded);
+	void setScrollAtAll(				bool			scrollAtAll);
 	
 private:
 	void	setGlobalJsValues();

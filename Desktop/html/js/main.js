@@ -21,9 +21,10 @@ $(document).ready(function () {
 
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
-		"pExact" :		false,
-		"decimals":		"",
-		"tempFolder":	""
+		"pExact" :				false,
+		"decimals":				"",
+		"tempFolder":			"",
+		"normalizedNotation":	true
 	}
 
 	var selectedAnalysisId	= -1;
