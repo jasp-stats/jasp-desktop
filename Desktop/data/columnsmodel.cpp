@@ -29,7 +29,9 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 	case ToolTipRole:
 	{
 		columnType	colType = _tableModel->getColumnType(size_t(index.row()));
-		QString		usedIn	= colType == columnType::scale ? tr("which can be used in numerical comparisons") : colType == columnType::ordinal ? tr("which can only be used in (in)equivalence, greater and lesser than comparisons") : tr("which can only be used in (in)equivalence comparisons");
+		QString		usedIn	= colType == columnType::scale		? tr("which can be used in numerical comparisons and mathematical operations.")
+							: colType == columnType::ordinal	? tr("which can only be used in (in)equivalence, greater and lesser than comparisons. Not in mathematical operations as subtraction etc, to do so: try converting to scalar first.")
+																: tr("which can only be used in (in)equivalence comparisons. Not in greater/lesser-than comparisons or mathematical operations, to do so: try converting to ordinal or scalar first.");
 
 		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
 	}
