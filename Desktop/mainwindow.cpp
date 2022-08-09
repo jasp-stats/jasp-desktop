@@ -1580,6 +1580,10 @@ void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 
 void MainWindow::unitTestTimeOut()
 {
+	//If we are showing the user whatever went wrong we shouldnt close JASP automatically because it could get confusing
+	if(resultXmlCompare::compareResults::theOne()->analysisHadError())
+		return;
+
 	std::cerr << "Time out for unit test!" << std::endl;
 	exit(3);
 }
@@ -1629,7 +1633,14 @@ void MainWindow::finishComparingResults()
 		resultXmlCompare::compareResults::theOne()->compare();
 
 		if(resultXmlCompare::compareResults::theOne()->shouldSave())
-			emit saveJaspFile();
+		{
+			if(resultXmlCompare::compareResults::theOne()->checkForAnalysisError())
+			{
+				MessageForwarder::showWarning("Error in an analysis", "At least one of the analyses loaded for testing and saving had an error, please check what is going on.\n\nIf you are running a recursive unittest it will continue with the rest of the data library once this JASP is manually closed.");
+			}
+			else
+				emit saveJaspFile();
+		}
 		else
 			exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
