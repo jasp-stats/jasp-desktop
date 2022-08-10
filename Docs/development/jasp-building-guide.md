@@ -18,13 +18,32 @@ cd jasp-desktop
 git submodule update --init
 ```
 
-## Make a GitHub Personal Access Token
+## GITHUB_PAT
+We use R both inside JASP and during building. During the buildprocess [renv](https://github.com/rstudio/renv) is used to recreate the r-library that a module expects.
+As it does so it often queries [github](https://github.com), this can run foul of the rate limiter they have for anonymous requests. 
 
-If you haven't got a [GitHub Personal Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), please make one that allows access to your repository, that is:
+This look like:
+```
+Error: failed to resolve remote 'jasp-stats/jaspBase' -- failed to retrieve 'https://api.github.com/repos/jasp-stats/jaspBase' [error code 22]
+In addition: Warning message:
+curl: (22) The requested URL returned error: 403  
+Traceback (most recent calls last):
+26: pkgbuild::with_bui...
+```
 
-- repo:status
-- repo:rep_deployment
-- repo:public_repo
+Luckily it is easy to solve, just create a personal access token just to let github know you are not trying to DDOS them (I guess).
+You can create one under `Settings -> Developer settings -> Personal access tokens" or just [click here](https://github.com/settings/tokens/new).
+You don't need to give it any scopes/permissions. 
+![Shows the settings page on github](img/GithubPersonalToken.png)
+This will generate a hashcode and you can copy it to a environment variable.
+This can be done systemwide and that has the advantage that instances of R can also use it.
+
+The simplest cross-platform way will be described here though, just open up the projects pane in qt creator.
+Then change the build environment to include an environment variable called `GITHUB_PAT` and paste the token you create in github as the value.
+![Shows the projects pane of qt creator with an example of a GITHUB_PAT](img/GithubPatEnv.png)
+This can also be set in JASP itself under `Preferences -> Advanced`.
+
+It is also possible to set it as a CMAKE variable if you prefer that.
 
 ## Platform Specific Build Guides
 
