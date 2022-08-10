@@ -39,7 +39,7 @@ This will generate a hashcode and you can copy it to a environment variable.
 This can be done systemwide and that has the advantage that instances of R can also use it.
 
 The simplest cross-platform way will be described here though, just open up the projects pane in qt creator.
-Then change the build environment to include an environment variable called `GITHUB_PAT` and paste the token you create in github as the value.
+Under the header 'Build Environment' press 'Details'. Then use 'Add' on the right of the panel to to include an environment variable called `GITHUB_PAT` and paste the token you create in github as the value.
 ![Shows the projects pane of qt creator with an example of a GITHUB_PAT](img/GithubPatEnv.png)
 This can also be set in JASP itself under `Preferences -> Advanced`.
 
