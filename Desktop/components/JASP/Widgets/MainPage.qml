@@ -178,15 +178,16 @@ Item
 			WebEngineView
 			{
 				id:						resultsView
+				clip:                   true
 
 				anchors
 				{
 					top:				parent.top
-					left:				parent.left
 					bottom:				parent.bottom
 				}
 
-				width:					giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
+				x:						1 + (Math.floor(parent.x) - parent.x)
+				width:					Math.floor(giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth)
 
 				url:					resultsJsInterface.resultsPageUrl
 				onContextMenuRequested: (request)=>{ request.accepted = true; }
