@@ -41,9 +41,9 @@ endif()
 find_package(ZLIB 1.2 REQUIRED)
 find_package(Iconv 1.16 REQUIRED)
 
-if(USE_CONAN)
-  find_package(jsoncpp 1.9 REQUIRED)
-endif()
+#if(USE_CONAN)
+#  find_package(jsoncpp 1.9 REQUIRED)
+#endif()
 
 find_package(OpenSSL 1.1.1 COMPONENTS SSL Crypto)
 if(NOT OpenSSL_FOUND)
@@ -199,7 +199,7 @@ if(LINUX)
   endif()
 
   find_package(PkgConfig)
-  pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
+  #pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
 
 endif()
 
@@ -397,23 +397,23 @@ if(WIN32)
     )
   endif()
 
-  message(CHECK_START "Looking for libjsoncpp-24.dll")
-  find_file(
-    RTOOLS_LIBJSONCPP_DLL
-    NAMES libjsoncpp-24.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
+  #message(CHECK_START "Looking for libjsoncpp-24.dll")
+  #find_file(
+  #  RTOOLS_LIBJSONCPP_DLL
+  #  NAMES libjsoncpp-24.dll
+  #  PATHS ${RTOOLS_PATH}/bin
+  #  NO_DEFAULT_PATH)
 
-  if(EXISTS ${RTOOLS_LIBJSONCPP_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBJSONCPP_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
+  #if(EXISTS ${RTOOLS_LIBJSONCPP_DLL})
+  #  message(CHECK_PASS "found")
+  #  message(STATUS "  ${RTOOLS_LIBJSONCPP_DLL}")
+  #else()
+  #  message(CHECK_FAIL "not found")
+  #  message(
+  #    FATAL_ERROR
+  #      "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+  #  )
+  #endif()
 
   # jags
   # This could all go into its module later, and these can
