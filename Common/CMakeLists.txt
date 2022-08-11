@@ -33,14 +33,15 @@ target_include_directories(
          ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
          #
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>)
+		# $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
+	)
 
 target_link_libraries(
   Common
   PUBLIC # jsoncpp
-         $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
+         #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
+		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
          #
          LibArchive::LibArchive
          # Boost
@@ -54,7 +55,8 @@ target_link_libraries(
 
 target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
-                $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>)
+                $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
+				JSONCPP_NO_LOCALE_SUPPORT	)
 
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)

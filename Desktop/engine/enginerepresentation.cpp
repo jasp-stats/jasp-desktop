@@ -179,15 +179,33 @@ void EngineRepresentation::processReplies()
 			return;
 
 		Json::Value json;
-		bool		jsonIsOK = false;
+		bool		jsonIsOK		= false,
+					jsonMakesSense	= false;
+		std::string jsonParseError;
 
-		try { jsonIsOK = Json::Reader().parse(data, json) && (json.get("typeRequest", Json::nullValue).isString() || _engineState == engineState::analysis); }
-		catch(...) {}
+		try
+		{
+			Json::Reader reader;
+			jsonIsOK = reader.parse(data, json);
+
+			jsonParseError = reader.getFormattedErrorMessages();
+
+			jsonMakesSense = jsonIsOK && (json.get("typeRequest", Json::nullValue).isString() || _engineState == engineState::analysis);
+		}
+		catch(std::exception & e)
+		{
+			Log::log() << "Parsing/checking json had exception: " << e.what() << std::endl;
+		}
 
 		if(!jsonIsOK)
 		{
-			Log::log() << "Malformed reply from engine in state " << _engineState << ": '" << data << "'" << std::endl;
+			Log::log() << "Malformed reply from engine in state " << _engineState << ": '" << data << "', problem was: '" << jsonParseError << "'" << std::endl;
 			throw std::runtime_error("Malformed reply from engine!");
+		}
+
+		if(!jsonMakesSense)
+		{
+			Log::log() << "Json doesnt make sense?" << std::endl;
 		}
 
 		engineState typeRequest = engineStateFromString(json.get("typeRequest", "analysis").asString());

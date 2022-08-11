@@ -203,7 +203,7 @@ else()
            # CPM/CMake
            $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
            $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-           $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
+		   #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
            # R
            ${_LIB_RINSIDE}
            $<$<PLATFORM_ID:Linux>:${_LIB_R}>
