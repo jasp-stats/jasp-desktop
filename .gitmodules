@@ -81,7 +81,7 @@
 [submodule "Engine/jaspBase"]
 	path = Engine/jaspBase
 	url = https://github.com/jasp-stats/jaspBase.git
-	branch = master
+	branch = development
 [submodule "Modules/Extra/jaspLearnBayes"]
 	path = Modules/jaspLearnBayes
 	url = https://github.com/jasp-stats/jaspLearnBayes
