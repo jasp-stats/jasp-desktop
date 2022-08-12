@@ -4,12 +4,14 @@ Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
 Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
+options(renv.config.install.verbose = @RENV_INSTALL_VERBOSE@)
 
 #Load the post-install fixes from jaspBase. Think Baron von Munchausen ;)
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/utility.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/checkSums.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/assignFunctionInPackage.R")
 source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
+source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/utility.R")
 
 # The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
@@ -45,6 +47,29 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
     writeMd5Sums(modulePkg, moduleLibrary)
 
 
+}
+
+# compute and cache all hashes and dependencies of all jasp modules
+commitHashObject <- createCommitHashObject(
+  jaspRoot = "@PROJECT_SOURCE_DIR@",
+  file     = file.path("@R_LIBRARY_PATH@", "jaspBase", "cachedCommitInfo.rds")
+)
+
+# TODO: copying may not work on macOS, so for now just install jaspBase twice there.
+if (getOS() != "osx") {
+  # copy jaspBase installation to the renv-cache if it does not exist (otherwise the first jasp module will compile jaspBase again)
+  jaspBaseVersion <- commitHashObject[["descriptions"]][["jaspBase"]][["Version"]]
+  jaspBaseHash    <- commitHashObject[["commitHashes"]][["jaspBase"]]
+  jaspBaseCachePath <- file.path("@MODULES_RENV_CACHE_PATH@", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash, "jaspBase")
+  if (!dir.exists(jaspBaseCachePath)) {
+    # NOTE: we could use file.symlink or file.link, but I'm not sure if windows will like that
+    installedJaspBasePath <- file.path("@R_LIBRARY_PATH@", "jaspBase")
+    dir.create(jaspBaseCachePath, recursive = TRUE)
+    copySuccess <- file.copy(from = list.files(installedJaspBasePath, full.names = TRUE), to = jaspBaseCachePath, recursive = TRUE)
+    # if any copy fails remove the cache to not have a broken package in there
+    if (!all(copySuccess))
+      unlink(jaspBaseCachePath)
+  }
 }
 
 # Converting the absolute symlinks to relative symlinks on macOS

@@ -8,23 +8,22 @@ Sys.setenv(JAGS_PREFIX="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY="Yes, do it")
+options(renv.config.install.verbose = @RENV_INSTALL_VERBOSE@)
+options(JASP_COMMIT_HASHES_OBJECT=file.path("@R_LIBRARY_PATH@", "jaspBase", "cachedCommitInfo.rds"))
 
 if (@IS_LINUX_LOCAL_BUILD@) {
 	# Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
 	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
-isON <- function(x) identical(x, "ON")
-if (isON("@JASP_RENV_INSTALL_VERBOSE@"))
-  options(renv.config.install.verbose = TRUE)
 
 if (@IS_FLATPAK_USED@) {
 	source('/app/lib64/Rprofile.R');
 }
 
-# The R_LIBRARY_PATH might already be there, but depending on the configuration 
+# The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
-# it anyway! It gets to if-y. 
+# it anyway! It gets to if-y.
 .libPaths(c("@R_LIBRARY_PATH@"))
 
 jaspBase::installJaspModuleNew(
@@ -33,12 +32,12 @@ jaspBase::installJaspModuleNew(
   moduleLibrary  = "@MODULES_BINARY_PATH@/@MODULE@",
   repos          = "@R_REPOSITORY@",
   updatePackages = "@JASP_UPDATE_R_DEPENDENCIES@",
-  recordPackages = if (isON("@JASP_RECORD_LOCKFILE@")) "all" else "localJasp"
+  recordPackages = "@RECORD_LOCKFILE@"
 )
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") { 
+if (Sys.info()["sysname"] == "Darwin") {
 	source('@MODULES_BINARY_PATH@/symlinkTools.R')
 	convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }

@@ -57,7 +57,19 @@ if(NOT R_REPOSITORY)
 endif()
 
 option(JASP_RENV_INSTALL_VERBOSE "Tell renv to show package installation logs" OFF)
+if(JASP_RENV_INSTALL_VERBOSE)
+  set(RENV_INSTALL_VERBOSE TRUE)
+else()
+  set(RENV_INSTALL_VERBOSE FALSE)
+endif()
+
 option(JASP_RECORD_LOCKFILE "Whether to record all module dependencies in lockfiles so they can be reinstalled later" OFF)
+if(JASP_RECORD_LOCKFILE)
+  set(RECORD_LOCKFILE "all")
+else()
+  set(RECORD_LOCKFILE "localJasp")
+endif()
+
 if(NOT JASP_UPDATE_R_DEPENDENCIES)
   set(JASP_UPDATE_R_DEPENDENCIES
       "weekly"
