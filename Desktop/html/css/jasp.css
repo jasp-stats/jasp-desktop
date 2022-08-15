@@ -364,7 +364,9 @@ div.jasp-image-image.no-data {
 {
 	position: fixed !important;
     top: 0;
+	width: 80%; 
 	z-index: 1234;
+	
 }
 
 .stack-trace-selector div,
