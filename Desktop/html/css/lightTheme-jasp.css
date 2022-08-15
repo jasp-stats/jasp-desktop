@@ -9,7 +9,7 @@ body.selected {
 }
 
 
-body.selected .jasp-analysis:not(.selected){
+body.selected .jasp-analysis:not(.selected):not(.hasJaspReport){
     filter: opacity(0.75);
 }
 
@@ -124,9 +124,9 @@ div.jasp-image-image.no-data.error {
 
 
 .jaspReportDo {
-  border: 3px double  #a30;
-  color:              #a30;
-  background:         #ddd;
+  border: 3px double  #500;
+  color:              #500;
+  background:         #e30;
 }
 
 .jaspReportDont {

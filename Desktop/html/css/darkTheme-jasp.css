@@ -4,7 +4,7 @@ body {
         background-color: #222 ; /*grayLighter*/
 }
 
-body.selected .jasp-analysis:not(.selected){
+body.selected .jasp-analysis:not(.selected):not(.hasJaspReport){
     filter: opacity(0.5);
     background-color: #333 ;
 }

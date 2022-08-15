@@ -479,6 +479,8 @@ $(document).ready(function () {
 		else
 			jaspWidget.model.set(analysis);
 
+		jaspWidget.setHasReport(analysis.hasReport)
+
 		jaspWidget.render();
 	}
 

@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
-
+#include "utilities/reporter.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses()),
@@ -192,6 +192,9 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_results		= results;
 	_progress		= progress;
 	_resultsMeta	= _results.get(".meta", Json::arrayValue);
+
+	if(PreferencesModel::prefs()->reportingMode())	Reporter::reporter()->reportsFromAnalysis(this, _hasReport);
+	else											_hasReport = false;
 
 	setStatus(status);
 
@@ -391,6 +394,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
+	analysisAsJson["hasReport"]		= _hasReport;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
