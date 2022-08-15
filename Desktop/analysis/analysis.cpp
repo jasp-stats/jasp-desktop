@@ -139,9 +139,7 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_results		= results;
 	_progress		= progress;
 	_resultsMeta	= _results.get(".meta", Json::arrayValue);
-
-	if(PreferencesModel::prefs()->reportingMode())	Reporter::reporter()->reportsFromAnalysis(this, _hasReport);
-	else											_hasReport = false;
+	_hasReport		= !PreferencesModel::prefs()->reportingMode() ? false : Reporter::reporter()->analysisHasReportNeeded(this);
 
 	setStatus(status);
 

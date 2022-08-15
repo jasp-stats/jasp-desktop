@@ -24,7 +24,8 @@ public:
 	/// Otherwise it will just run a single time, and that wouldn't be very useful.
 	bool	isJaspFileNotDabaseOrSynching() const;
 
-	Json::Value reportsFromAnalysis(Analysis * a, bool & somethingToReport);
+	Json::Value reportsFromAnalysis(Analysis * a, int & reportsNeeded, int & reportsNeutral);
+	bool analysisHasReportNeeded(Analysis * a);
 	
 public slots:
 	void	analysesFinished();	///< Should be called whenever the last noncompleted analysis completes.
@@ -35,10 +36,13 @@ private:
 	bool	checkReports();
 	void	writeResultsJson();	///< write the entire resultsjson as given to results-webpage to reporting dir. This can later be used for a dashboard
 	void	writeReport();
+	void	writeReportLog();
 
 private:
 	QDir					_reportingDir;
 	Json::Value				_reports;
+	int						_reportsNeeded, ///< How many reports need to be attended to
+							_reportsNeutral;///< How many are neutral and can be ignored
 	QMetaObject::Connection _pdfConnection;
 	QString					_pdfPath;		
 
