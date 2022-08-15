@@ -142,7 +142,7 @@ private slots:
 
 private:
 	double				_webEngineZoom	= 1.0;
-	QString				_resultsPageUrl = "qrc:///html/index.html";
+	QString				_resultsPageUrl = "qrc:///html/index-jasp.html";
 	bool				_resultsLoaded	= false,
 						_scrollAtAll	= true;
 	

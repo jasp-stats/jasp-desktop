@@ -215,7 +215,7 @@ void Reporter::writeResultsJson()
 	QFile resultsFile(_reportingDir.absoluteFilePath("results.json"));
 	
 	if(resultsFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text))
-		resultsFile.write(_reports.toStyledString().c_str());
+		resultsFile.write(Analyses::analyses()->asJson() .toStyledString().c_str());
 }
 
 void Reporter::writeReport()
