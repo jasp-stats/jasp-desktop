@@ -277,7 +277,8 @@ private:
 							_wasUpgraded		= false,
 							_hasVolatileNotes	= false,
 							_tryToFixNotes		= false,
-							_optionsBound		= false;
+							_optionsBound		= false,
+							_hasReport			= false;
 	Version					_version;
 	int						_revision		= 0;
 

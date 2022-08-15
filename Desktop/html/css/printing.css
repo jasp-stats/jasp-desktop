@@ -7,6 +7,7 @@
 	.toolbar-button					{ display:				none  !important;	visibility: hidden; }
 	.jasp-menu						{ display:				none  !important;	visibility: hidden; }
 	.jasp-menu-selected				{ display:				none  !important;	visibility: hidden; }
+	.jaspReportTop					{ display:				none  !important;	visibility: hidden; }
 	body							{ float:				none  !important;	}
 
     .jasp-toolbar					{ page-break-after:		avoid;	}
