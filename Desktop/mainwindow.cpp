@@ -1098,12 +1098,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				_package->databaseStartSynching(false);
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-			{
-				//Make sure the engine gets enough time to load data
-				_engineSync->pauseEngines();
-				_engineSync->resumeEngines();
-
-				//Also give it like 3secs to have the ribbon load
+			{				
+				//Give it like 3secs to have the ribbon load and the engines to load the data
 				QTimer::singleShot(3000, this, &MainWindow::startComparingResults);
 			}
 			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
