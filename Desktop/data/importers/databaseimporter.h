@@ -6,6 +6,8 @@
 
 class DatabaseImporter : public Importer
 {
+	Q_DECLARE_TR_FUNCTIONS(DatabaseImporter)
+
 	typedef DatabaseConnectionInfo Info;
 	
 public:
