@@ -156,7 +156,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_pathname(entry, dd2.c_str());
 	archive_entry_set_size(entry, int(sizeOfMetaData));
 	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); // Not sure what this does
+	archive_entry_set_perm(entry, 0644);  //basically chmod
 	archive_write_header(a, entry);
 
 	archive_write_data(a, metaDataString.c_str(), sizeOfMetaData);
@@ -173,7 +173,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_pathname(entry, dd9.c_str());
 	archive_entry_set_size(entry, int(sizeOflabelData));
 	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); // Not sure what this does
+	archive_entry_set_perm(entry, 0644); //basically chmod
 	archive_write_header(a, entry);
 
 	archive_write_data(a, labelDataString.c_str(), sizeOflabelData);
@@ -187,7 +187,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_pathname(entry, dd.c_str());
 	archive_entry_set_size(entry, int(dataSize));
 	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); // Not sure what this does
+	archive_entry_set_perm(entry, 0644);  //basically chmod
 	archive_write_header(a, entry);
 
 	//Data data to archive
@@ -221,8 +221,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_pathname(	entry,	"index.html");
 	archive_entry_set_size(		entry,	int(htmlSize));
 	archive_entry_set_filetype(	entry,	AE_IFREG);
-	archive_entry_set_perm(		entry,	0644); // Not sure what this does
-	archive_write_header(		a,		entry);
+	archive_entry_set_perm(		entry,	0644);  //basically chmod
 
 	size_t ws = archive_write_data(a, html.data(), htmlSize);
 	if (ws != size_t(htmlSize))
@@ -248,7 +247,7 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 		archive_entry_set_pathname(	entry,	"analyses.json");
 		archive_entry_set_size(		entry,	int(sizeOfAnalysesString));
 		archive_entry_set_filetype(	entry,	AE_IFREG);
-		archive_entry_set_perm(		entry,	0644); // Not sure what this does
+		archive_entry_set_perm(		entry,	0644);  //basically chmod
 		archive_write_header(		a,		entry);
 
 		archive_write_data(a, analysesString.c_str(), sizeOfAnalysesString);

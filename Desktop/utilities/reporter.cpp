@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QDateTime>
 #include <QFile>
+#include "tempfiles.h"
 
 Reporter::Reporter(QObject *parent, QDir reportingDir) 
 	: _reportingDir(reportingDir), 
@@ -212,6 +213,16 @@ bool Reporter::analysisHasReportNeeded(Analysis *a)
 
 void Reporter::writeResultsJson()
 {
+	QDir tempResultsDir(_reportingDir.absoluteFilePath("resultsTemp"));
+
+	if(tempResultsDir.exists())
+		tempResultsDir.removeRecursively();
+
+	tempResultsDir.mkpath(".");
+
+	stringvec tempfiles = TempFiles::retrieveList();
+	for(const std::string & tempfile : tempfiles)
+		QFile(TempFiles::sessionDirName()) + tempfile).copy(
 	QFile resultsFile(_reportingDir.absoluteFilePath("results.json"));
 	
 	if(resultsFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text))
