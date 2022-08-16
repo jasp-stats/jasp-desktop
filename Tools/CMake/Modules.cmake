@@ -164,7 +164,7 @@ if(APPLE)
 else()
 	add_custom_command(
 	  WORKING_DIRECTORY ${R_HOME_PATH}
-	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+          OUTPUT ${R_HOME_PATH}/jaspBase_md5sums.rds
 	  USES_TERMINAL
 	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
 	          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
@@ -221,7 +221,7 @@ else()
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+      DEPENDS ${R_HOME_PATH}/jaspBase_md5sums.rds
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
@@ -277,7 +277,7 @@ else()
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
-        ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+        ${R_HOME_PATH}/jaspBase_md5sums.rds
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
         $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save

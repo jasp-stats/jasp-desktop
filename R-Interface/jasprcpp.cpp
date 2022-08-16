@@ -180,6 +180,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("jaspBase:::setInsideJasp()");
 
 	jaspRCPP_logString("Initializing jaspBase.\n");
+	jaspRCPP_parseEvalQNT("library(methods)");
 	jaspRCPP_parseEvalQNT("library(jaspBase)");
 
 //	if we have a separate engine for each module then we should move these kind of hacks to the .onAttach() of each module (instead of loading BayesFactor when Descriptives is requested).
