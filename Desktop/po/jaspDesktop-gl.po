@@ -3795,10 +3795,6 @@ msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
 msgstr "Axúdanos a traducir ou mellorar JASP no teu idioma"
 
-msgctxt "PrefsResults|"
-msgid "Use normalized notation"
-msgstr "Utilizar notación normalizada"
-
 msgctxt "ModuleInstaller|"
 msgid "Install"
 msgstr "Instalar"
@@ -3989,4 +3985,8 @@ msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Database"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Use exponent notation"
 msgstr ""
