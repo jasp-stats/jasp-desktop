@@ -63,6 +63,8 @@ Item
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
 
+			SplitView.maximumWidth:		maxWidth
+
 			function makeSureHandleVisible()
 			{
 				if(!analysesModel.visible && data.width < leftHandSpace)
@@ -81,7 +83,7 @@ Item
 				if(fakeEmptyDataForSumStatsEtc)
 				{
 					mainWindow.dataPanelVisible = false;
-					width = leftHandSpace;
+					minimizeData();
 				}
 
 				if(data.width != data.maxWidth)
@@ -90,8 +92,9 @@ Item
 				makeSureHandleVisible();
 			}
 
-			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true;  }
-			function minimizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return leftHandSpace; });	data.wasMaximized = false; }
+			function maximizeData()				{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true;  }
+			function minimizeData()				{ SplitView.preferredWidth = Qt.binding(function() { return leftHandSpace; });	data.wasMaximized = false; }
+			function setPreferredWidth(width)	{ SplitView.preferredWidth = width; }
 
 			Connections
 			{
@@ -170,7 +173,7 @@ Item
 					else if(inputOutputWidth < jaspTheme.resultWidth)
 					{
 						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
-						else							data.width = remainingDataWidth
+						else							data.setPreferredWidth(remainingDataWidth)
 					}
 				}
 			}
