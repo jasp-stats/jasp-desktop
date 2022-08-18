@@ -104,7 +104,7 @@ public:
 	Q_ENUM(ItemType)
 
 	JASPControl(QQuickItem *parent = nullptr);
-	~JASPControl() { disconnect(); } //Disconnecting signals right before destroying the object avoids some crashes with qt >= 6.3 on macos m1
+	~JASPControl(); //Disconnecting signals right before destroying the object avoids some crashes with qt >= 6.3 on macos m1
 
 	ControlType			controlType()				const	{ return _controlType;			}
 	const QString	&	name()						const	{ return _name;					}

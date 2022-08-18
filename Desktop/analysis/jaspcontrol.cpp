@@ -64,6 +64,16 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
 }
 
+JASPControl::~JASPControl()
+{
+		//first we disconnect the children because reconnectWithYourChildren connected them to the parent
+		//These might get triggered during the destructor of QQuickItem and then crash jasp...
+		for (JASPControl* child : getChildJASPControls(_childControlsArea))
+			child->disconnect();
+
+		disconnect();
+}
+
 void JASPControl::setFocusOnTab(bool focus)
 {
 	if (focus != activeFocusOnTab())
