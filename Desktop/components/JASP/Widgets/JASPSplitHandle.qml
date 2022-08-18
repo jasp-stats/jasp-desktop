@@ -114,7 +114,7 @@ Rectangle
 				source:					iconsFolder + (handleRoot.pointingLeft ? leftIcon : rightIcon)
 				width:					parent.width - (4 * preferencesModel.uiScale)
 				height:					width
-				sourceSize.width:		width * 2;
+				sourceSize.width:		width  * 2;
 				sourceSize.height:		height * 2;
 
 				anchors.centerIn:		parent
