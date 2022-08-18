@@ -203,7 +203,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 				}
 				else
 				{
-					values.push_back(Utils::emptyValue);
+					values.push_back("");
 				}
 			}
 			else
@@ -309,7 +309,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 			}
 			else //if we couldnt find the "row" in the emptyValuesMap?
 			{
-				values.push_back(Utils::emptyValue);
+				values.push_back("");
 
 				if (canBeConvertedToIntegers)		intValues.push_back(std::numeric_limits<int>::lowest());
 				else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
@@ -317,7 +317,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 		}
 		else if (key == std::numeric_limits<int>::lowest())
 		{
-			values.push_back(Utils::emptyValue);
+			values.push_back("");
 
 			if (canBeConvertedToIntegers)		intValues.push_back(std::numeric_limits<int>::lowest());
 			else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
@@ -523,7 +523,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 			std::vector<string> values;
 
 			for (double doubleValue : AsDoubles)
-				if (std::isnan(doubleValue))	values.push_back(Utils::emptyValue);
+				if (std::isnan(doubleValue))	values.push_back("");
 				else							values.push_back(Utils::doubleToString(doubleValue));
 
 			setColumnAsNominalText(values);

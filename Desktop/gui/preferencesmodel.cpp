@@ -38,10 +38,13 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 
 	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
+	connect(this,					&PreferencesModel::dataLabelNAChanged,			this, &PreferencesModel::dataLabelNAChangedSlot			);
 
 	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
 
 	_loadDatabaseFont();
+
+	dataLabelNAChangedSlot(dataLabelNA());
 }
 
 void PreferencesModel::browseSpreadsheetEditor()
@@ -121,6 +124,7 @@ GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_INT(	maxEnginesAdmin,            Settings::MAX_ENGINE_COUNT_ADMIN                    )
 GET_PREF_FUNC_BOOL( windowsNoBomNative,			Settings::WINDOWS_NO_BOM_NATIVE						)
 GET_PREF_FUNC_BOOL( dbShowWarning,				Settings::DB_SHOW_WARNING							)
+GET_PREF_FUNC_STR(  dataLabelNA,				Settings::DATA_LABEL_NA								)
 
 int PreferencesModel::maxEngines() const
 {
@@ -272,6 +276,7 @@ SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,	
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
 SET_PREF_FUNCTION(bool,		setWindowsNoBomNative,		windowsNoBomNative,			windowsNoBomNativeChanged,		Settings::WINDOWS_NO_BOM_NATIVE						)
 SET_PREF_FUNCTION(bool,		setDbShowWarning,			dbShowWarning,				dbShowWarningChanged,			Settings::DB_SHOW_WARNING							)
+SET_PREF_FUNCTION(QString,	setDataLabelNA,				dataLabelNA,				dataLabelNAChanged,				Settings::DATA_LABEL_NA								)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {
@@ -542,3 +547,10 @@ bool PreferencesModel::setLC_CTYPE_C() const
 	case winLcCtypeSetting::alwaysC:	return true;
 	}
 }
+
+
+void PreferencesModel::dataLabelNAChangedSlot(QString dataLabelNA)
+{
+	Utils::emptyValue = fq(dataLabelNA);
+}
+

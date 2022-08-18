@@ -25,11 +25,11 @@ size_t ReadStatImportColumn::size() const
 
 std::string ReadStatImportColumn::valueAsString(size_t row) const
 {
-	if(row >= size())	return Utils::emptyValue;
+	if(row >= size())	return missingValueString();
 
 	switch(_type)
 	{
-	default:						return Utils::emptyValue;
+	default:						return missingValueString();
 	case columnType::scale:			return Utils::doubleToString(_doubles[row]);
 	case columnType::ordinal:		[[fallthrough]];
 	case columnType::nominal:		return std::to_string(_ints[row]);
@@ -432,12 +432,12 @@ void ReadStatImportColumn::addMissingValue()
 
 bool ReadStatImportColumn::isMissingValue(std::string s)
 {
-	return s == Utils::emptyValue;
+	return s == missingValueString();
 }
 
 std::string  ReadStatImportColumn::missingValueString()
 {
-	return Utils::emptyValue;
+	return "";
 }
 
 std::string ReadStatImportColumn::readstatValueToString(const readstat_value_t & value)

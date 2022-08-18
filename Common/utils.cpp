@@ -42,6 +42,14 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
 
+///Internally the following actual missing values are used for scalar, ordinal/nominal and text:  NAN, std::numeric_limits<int>::lowest() and ""
+/// However, users might like to see something else hence we allow `emptyValue` to be changed through the settings.
+	  string			Utils::emptyValue					= "";
+const vector<string>	Utils::_defaultEmptyValues			= {"NaN", "nan", ".", "NA"};
+vector<double>			Utils::_currentDoubleEmptyValues	= {};
+vector<string>			Utils::_currentEmptyValues			= Utils::_defaultEmptyValues;
+
+
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
 
@@ -229,11 +237,6 @@ void Utils::sleep(int ms)
 	nanosleep(&ts, NULL);
 #endif
 }
-
-const string			Utils::emptyValue					= "";
-const vector<string>	Utils::_defaultEmptyValues			= {"NaN", "nan", ".", "NA"};
-vector<double>			Utils::_currentDoubleEmptyValues	= {};
-vector<string>			Utils::_currentEmptyValues			= Utils::_defaultEmptyValues;
 
 void Utils::setEmptyValues(const vector<string> &emptyvalues)
 {

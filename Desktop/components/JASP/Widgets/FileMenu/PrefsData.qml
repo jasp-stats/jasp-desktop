@@ -164,13 +164,52 @@ ScrollView
 					onValueChanged:		preferencesModel.thresholdScale = value
 					visible:			preferencesModel.customThresholdScale
 
-					KeyNavigation.down:	missingFileList.firstComponent
-					KeyNavigation.tab:	missingFileList.firstComponent
+					KeyNavigation.down:	missingValueDataLabelInput
+					KeyNavigation.tab:	missingValueDataLabelInput
 					anchors
 					{
 						left:			customThreshold.right
 						leftMargin:		jaspTheme.generalAnchorMargin
 						verticalCenter:	parent.verticalCenter
+					}
+				}
+			}
+
+			Item
+			{
+				id:				missingValueDataLabelItem
+				height:			missingValueDataLabelInput.height
+				anchors
+				{
+					left:		parent.left
+					right:		parent.right
+					margins:	jaspTheme.generalAnchorMargin
+				}
+
+				Label
+				{
+					id:					missingValueDataLabelLabel
+					text:				qsTr("Show missing values as: ")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:				missingValueDataLabelInput
+
+					text:			preferencesModel.dataLabelNA
+					onTextChanged:	preferencesModel.dataLabelNA = text
+					nextEl:			missingFileList.firstComponent
+
+					anchors
+					{
+						left:		missingValueDataLabelLabel.right
+						right:		parent.right
 					}
 				}
 			}

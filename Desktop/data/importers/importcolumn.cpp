@@ -63,7 +63,7 @@ bool ImportColumn::convertVecToDouble(const std::vector<std::string> &values, st
 		{
 			doubleValues.push_back(doubleValue);
 
-			if (std::isnan(doubleValue) && value != Utils::emptyValue)
+			if (std::isnan(doubleValue) && value != "")
 				emptyValuesMap.insert(std::make_pair(row, value));
 		}
 		else

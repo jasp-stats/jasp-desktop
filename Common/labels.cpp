@@ -380,6 +380,7 @@ std::string Labels::getLabelFromRow(int row) const
 		return "";
 	}
 	const Label & label = _labels.at(row);
+
 	return label.text();
 }
 
