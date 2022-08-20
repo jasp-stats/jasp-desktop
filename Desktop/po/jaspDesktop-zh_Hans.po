@@ -1868,20 +1868,6 @@ msgid "Sync Data Set"
 msgstr "同步数据集"
 
 msgctxt "ColumnsModel|"
-msgid "which can be used in numerical comparisons"
-msgstr "可用于数值比较"
-
-msgctxt "ColumnsModel|"
-msgid ""
-"which can only be used in (in)equivalence, greater and lesser than "
-"comparisons"
-msgstr "只能用于（不）等于、大于和小于的比较中"
-
-msgctxt "ColumnsModel|"
-msgid "which can only be used in (in)equivalence comparisons"
-msgstr "这只能用于（不）等于的比较"
-
-msgctxt "ColumnsModel|"
 msgid "The '"
 msgstr "此“"
 
@@ -3812,4 +3798,22 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons and mathematical operations."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons. Not in mathematical operations as subtraction etc, to do so: "
+"try converting to scalar first."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence comparisons. Not in greater/lesser-"
+"than comparisons or mathematical operations, to do so: try converting to "
+"ordinal or scalar first."
 msgstr ""

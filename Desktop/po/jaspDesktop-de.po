@@ -1954,22 +1954,6 @@ msgid "Sync Data Set"
 msgstr "Datensatz synchronisieren"
 
 msgctxt "ColumnsModel|"
-msgid "which can be used in numerical comparisons"
-msgstr "welche für numerische Vergleiche genutzt werden kann"
-
-msgctxt "ColumnsModel|"
-msgid ""
-"which can only be used in (in)equivalence, greater and lesser than "
-"comparisons"
-msgstr ""
-"welche nur für Vergleiche von (Un-)Gleichheit, größer und kleiner als "
-"genutzt werden kann"
-
-msgctxt "ColumnsModel|"
-msgid "which can only be used in (in)equivalence comparisons"
-msgstr "welche nur für Vergleiche auf (Un-)Gleichheit genutzt werden kann"
-
-msgctxt "ColumnsModel|"
 msgid "The '"
 msgstr "Die '"
 
@@ -4031,4 +4015,22 @@ msgstr "Datenbank"
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons and mathematical operations."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons. Not in mathematical operations as subtraction etc, to do so: "
+"try converting to scalar first."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence comparisons. Not in greater/lesser-"
+"than comparisons or mathematical operations, to do so: try converting to "
+"ordinal or scalar first."
 msgstr ""

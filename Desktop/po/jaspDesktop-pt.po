@@ -1967,22 +1967,6 @@ msgid "Only one formula per computed column allowed."
 msgstr "Apenas uma fórmula permitida por coluna."
 
 msgctxt "ColumnsModel|"
-msgid "which can be used in numerical comparisons"
-msgstr "que pode ser usado em comparações numéricas"
-
-msgctxt "ColumnsModel|"
-msgid ""
-"which can only be used in (in)equivalence, greater and lesser than "
-"comparisons"
-msgstr ""
-"que pode ser usado apenas em comparações de (in)equivalência, 'maior que' e "
-"'menor que'"
-
-msgctxt "ColumnsModel|"
-msgid "which can only be used in (in)equivalence comparisons"
-msgstr "que pode ser usado apenas em comparações de (in)equivalência"
-
-msgctxt "ColumnsModel|"
 msgid "The '"
 msgstr "A '"
 
@@ -3977,4 +3961,22 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons and mathematical operations."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons. Not in mathematical operations as subtraction etc, to do so: "
+"try converting to scalar first."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence comparisons. Not in greater/lesser-"
+"than comparisons or mathematical operations, to do so: try converting to "
+"ordinal or scalar first."
 msgstr ""
