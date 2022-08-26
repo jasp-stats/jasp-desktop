@@ -21,6 +21,7 @@
 #include "boundcontrolsourcetextarea.h"
 #include "boundcontroljagstextarea.h"
 #include "boundcontrollavaantextarea.h"
+#include "boundcontrolcsemtextarea.h"
 
 #include <QFontDatabase>
 #include <QRegularExpression>
@@ -37,10 +38,10 @@ TextAreaBase::TextAreaBase(QQuickItem* parent)
 
 void TextAreaBase::setUpModel()
 {
-	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan)
+	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem)
 	{
 		_model = new ListModelTermsAvailable(this);
-		_model->setNeedsSource(_textType == TextType::TextTypeLavaan);
+		_model->setNeedsSource(_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem);
 
 		JASPListControl::setUpModel();
 	}
@@ -53,6 +54,7 @@ void TextAreaBase::setUp()
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
 	case TextType::TextTypeLavaan:		_boundControl = new BoundControlLavaanTextArea(this);	break;
 	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
+	case TextType::TextTypeCSem:		_boundControl = new BoundControlCSemTextArea(this);		break;
 	default:							_boundControl = new BoundControlTextArea(this);			break;
 	}
 
@@ -97,7 +99,7 @@ void TextAreaBase::setText(const QString& text)
 
 void TextAreaBase::termsChangedHandler()
 {
-	if (_textType == TextType::TextTypeLavaan && form() && initialized())
+	if (_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem && form() && initialized())
 		form()->refreshAnalysis();
 
 }

@@ -39,6 +39,7 @@ protected:
 
 	std::set<std::string>		_usedColumnNames;
 	QString						_textEncoded;
+	static const std::string	_checkSyntaxRFunctionName;
 
 };
 
