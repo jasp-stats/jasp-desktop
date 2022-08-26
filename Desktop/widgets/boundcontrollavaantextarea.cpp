@@ -91,7 +91,7 @@ void BoundControlLavaanTextArea::checkSyntax()
 	}
 	encodedColNames.append(")");
 
-	QString checkCode = QString::fromStdString(_checkSyntaxRFunctionName());
+	QString checkCode = tq(_checkSyntaxRFunctionName());
 	checkCode
 		.append("('")
 		.append(_textEncoded)
