@@ -91,7 +91,7 @@ void BoundControlLavaanTextArea::checkSyntax()
 	}
 	encodedColNames.append(")");
 
-	QString checkCode = QString::fromStdString(_checkSyntaxRFunctionName);
+	QString checkCode = QString::fromStdString(_checkSyntaxRFunctionName());
 	checkCode
 		.append("('")
 		.append(_textEncoded)
@@ -124,5 +124,3 @@ QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
 	return QString();
 
 }
-
-const std::string BoundControlLavaanTextArea::_checkSyntaxRFunctionName = "jaspSem:::checkLavaanModel";

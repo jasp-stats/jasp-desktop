@@ -7,9 +7,9 @@ class BoundControlCSemTextArea : public BoundControlLavaanTextArea
 {
 public:
 	using BoundControlLavaanTextArea::BoundControlLavaanTextArea;    
-    
+
 protected:
-	static const std::string	_checkSyntaxRFunctionName;
+	const char * _checkSyntaxRFunctionName() override { return "jaspSem:::checkCSemModel"; }
 };
 
 #endif // BOUNDCONTROLCSEMTEXTAREA_H

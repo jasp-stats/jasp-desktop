@@ -39,7 +39,7 @@ protected:
 
 	std::set<std::string>		_usedColumnNames;
 	QString						_textEncoded;
-	static const std::string	_checkSyntaxRFunctionName;
+	virtual const char * 		_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
 
 };
 
