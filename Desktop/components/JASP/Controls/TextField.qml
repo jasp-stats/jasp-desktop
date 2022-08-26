@@ -55,8 +55,8 @@ TextInputBase
 
 	signal editingFinished()
 	signal textEdited()
-	signal pressed()
-	signal released()
+	signal pressed(var event)
+	signal released(var event)
 
 	function doEditingFinished()
 	{
@@ -128,8 +128,7 @@ TextInputBase
 			height:				parent.height + jaspTheme.jaspControlHighlightWidth
 			width:				parent.width  + jaspTheme.jaspControlHighlightWidth
 			color:				"transparent"
-			border.width:		control.acceptableInput ? 0 : 3 //See comment below
-			border.color:		jaspTheme.red // Needed when the QML file has wrong default value
+			border.width:		0
 			anchors.centerIn:	parent
 			opacity:			debug ? .3 : 1
 			visible:			textField.useExternalBorder

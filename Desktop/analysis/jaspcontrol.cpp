@@ -246,6 +246,18 @@ void JASPControl::componentComplete()
 
 	if (_form)
 		connect(this, &JASPControl::boundValueChanged, _form, &AnalysisForm::boundValueChangedHandler);
+
+	if (_innerControl)
+	{
+		// Needed when the QML file has wrong default value
+		QVariant acceptableInput = _innerControl->property("acceptableInput");
+		if (acceptableInput.isValid() && !acceptableInput.toBool())
+		{
+			setHasError(true);
+			_setFocusBorder();
+		}
+	}
+
 }
 
 void JASPControl::setCursorShape(int shape)
@@ -384,7 +396,8 @@ void JASPControl::_setFocusBorder()
 
 		if (!qFuzzyCompare(border->property("width").toFloat(), borderWidth))
 		{
-			if (qFuzzyCompare(borderWidth, _defaultBorderWidth)) {
+			if (!_form || !_form->initialized() || qFuzzyCompare(borderWidth, _defaultBorderWidth))
+			{
 				_borderAnimation.stop();
 				border->setProperty("width", borderWidth); // No animation when coming back to normal.
 			}
