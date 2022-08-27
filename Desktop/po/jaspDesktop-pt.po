@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-08-21 21:14+0000\n"
+"Last-Translator: Laura Durans <lauraadurans@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.14-dev\n"
 "X-Language: pt\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -67,11 +73,11 @@ msgstr "Arraste para reordenar as análises"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "Edite o título desta análise"
+msgstr "Editar o título desta análise"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "Duplique esta análise"
+msgstr "Duplicar esta análise"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
@@ -272,7 +278,7 @@ msgstr "Selecionar o editor personalizado"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr "Importar o limite entre Categórico ou Escala"
+msgstr "Importar o limite entre Categórico ou Escalar"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -280,8 +286,8 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Número limite de inteiros únicos antes de classificar uma variável "
-"como'escala'.\n"
+"Número limite de inteiros únicos antes de classificar uma variável como "
+"'escalar'.\n"
 "Você precisa recarregar seus dados para ter efeito! Verifique a ajuda para "
 "obter mais informações."
 
@@ -356,7 +362,7 @@ msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Isso torna o fundo de todos os diagramas transparente, bastante útil se você "
+"Isso torna o fundo de todos os gráficos transparente, bastante útil se você "
 "quiser usá-lo perfeitamente em qualquer fundo que não seja branco."
 
 msgctxt "RecentFiles|"
@@ -588,11 +594,11 @@ msgstr ""
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "Então, abra um arquivo de dados e experimente o JASP!"
+msgstr "Abra um arquivo de dados e experimente o JASP!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr "Clique para obter a última versão"
+msgstr "Clique para obter a última versão :D"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
@@ -668,7 +674,7 @@ msgstr "Arquivos recentes"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr "Ficheiro atual"
+msgstr "Arquivo atual"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
@@ -3765,27 +3771,27 @@ msgstr "Componentes de código aberto"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
-msgstr ""
+msgstr "Ajude-nos a traduzir o JASP para o Português :D"
 
 msgctxt "ModuleInstaller|"
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 msgctxt "ModuleInstaller|"
 msgid "Press this to install your selected Module"
-msgstr ""
+msgstr "Clique aqui para instalar o módulo selecionado"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module to install"
-msgstr ""
+msgstr "Selecionar um módulo JASP para instalar"
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "Não mostrar novamente"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "Base de dados"
 
 msgctxt "Database|"
 msgid ""
@@ -3820,7 +3826,7 @@ msgstr ""
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #, fuzzy
 msgctxt "Database|"
@@ -3829,11 +3835,11 @@ msgstr "Procurar"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "Nome de usuário"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #, fuzzy
 msgctxt "Database|"
@@ -3842,23 +3848,23 @@ msgstr "Lembre-se de mim"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "Conectar à base de dados"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "Consultar"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "Executar"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "Pré-visualização"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "Carregar no JASP"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
@@ -3875,11 +3881,13 @@ msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
 msgstr ""
+"O JASP acha que está conectado à base de dados, mas a QSqlDatabase não está "
+"aberta... :("
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "A consulta falhou: '%1'"
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
@@ -3888,10 +3896,12 @@ msgstr ""
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
 msgstr ""
+"Nenhum resultado ativo foi encontrado, talvez tenha algo errado com a sua "
+"consulta?"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "Senha da base de dados"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3904,7 +3914,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "A conexão falhou"
 
 #, qt-format
 msgctxt "DataSetPackage|"
