@@ -126,6 +126,16 @@ div.jasp-image-image.no-data.error {
   background:         #222;
 }
 
+.jaspReportIconDo
+{
+  background-color: #fb0;
+}
+
+.jaspReportIconDont
+{
+  background-color: #eee;
+}
+
 .stack-trace-arrow {
 
   background:		center no-repeat url("images/darkTheme/expand.png") ;

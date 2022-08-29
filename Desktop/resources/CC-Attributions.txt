@@ -3,6 +3,6 @@ Creative Commons requires us to give proper courtesy to the creators of certain 
 
 columnConstructorBackground.png: 				Originally from "Timur Zima, from the Noun Project"
 
-filter.png, filterConstructorBackground.png, exclamation.svg, font.svg, eyeOpen.png, eyeClosed.png:
+filter.png, filterConstructorBackground.png, exclamation.svg, font.svg, eyeOpen.png, eyeClosed.png, triangle-exclamation round-information(modified):
     
     originally from "Font Awesome by Dave Gandy - https://fortawesome.github.com/Font-Awesome"

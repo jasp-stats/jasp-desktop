@@ -48,6 +48,10 @@
 using namespace std;
 using namespace boost;
 
+
+
+string Dirs::_reportingDir = "";
+
 string Dirs::tempDir()
 {
 	static string p = "";
@@ -58,27 +62,35 @@ string Dirs::tempDir()
 	string dir;
 	std::filesystem::path pa;
 
+	if(reportingDir() != "")
+	{
+		//There is a reportingDir, which means JASP is running in reporting mode and we might want to show results on a dashboard or something.
+		//To be able to do this the results need to be at a relative position to index.html (which we need to make available somewhere)
+		//So lets place it in the reportingDir where the user will be able to find it easily
+
+		dir = reportingDir() + "/jaspTemp/";
+		pa  = dir;
+	}
+	else
+	{
+
 #ifdef _WIN32
-	wchar_t buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
-		throw Exception("App Data directory could not be retrieved");
+		char buffer[MAX_PATH];
+		if ( ! SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+			throw Exception("App Data directory could not be retrieved");
 
-	dir = Utils::wstringToString(buffer);
-
-	dir += "/JASP/temp";
-
-	pa = (dir);
-
+		dir = std::string(buffer);
+		dir += "/JASP/temp";
 #else
 
-	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/temp";
-
-	pa = dir;
-
+		dir = string(getpwuid(getuid())->pw_dir);
+		dir += "/.JASP/temp";
 #endif
 
-	if (!std::filesystem::exists(pa))
+		pa = dir;
+	}
+
+	if (!boost::filesystem::exists(pa))
 	{
 		system::error_code ec;
 		std::filesystem::create_directories(pa, ec);
