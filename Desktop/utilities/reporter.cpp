@@ -1,4 +1,5 @@
 #include "reporter.h"
+#include "QtCore/qdiriterator.h"
 #include "results/resultsjsinterface.h"
 #include "data/datasetpackage.h"
 #include "gui/messageforwarder.h"
@@ -7,7 +8,10 @@
 #include <iostream>
 #include <QDateTime>
 #include <QFile>
+#include <QDirIterator>
+#include <QStringRef>
 #include "tempfiles.h"
+#include "log.h"
 
 Reporter::Reporter(QObject *parent, QDir reportingDir) 
 	: _reportingDir(reportingDir), 
@@ -211,8 +215,43 @@ bool Reporter::analysisHasReportNeeded(Analysis *a)
 	return needed;
 }
 
+void Reporter::exportDashboard()
+{
+	QDir dashboardDir(_reportingDir.absoluteFilePath("dashboard/"));
+
+	if(dashboardDir.exists())
+		return;
+
+	dashboardDir.mkpath(".");
+
+	QDir qrcHtml("qrc:///html/");
+
+	QDirIterator goDeep(qrcHtml, QDirIterator::Subdirectories);
+
+	QString filePath, prefix;
+
+	while(goDeep.hasNext())
+	{
+		filePath = goDeep.next();
+		QFile nextFile(filePath);
+
+		if(filePath.size() >= qrcHtml.absolutePath().size())
+			Log::log() << "exportDashboard filePath was smaller than qrcHtml path... ???" << std::endl;
+		else
+		{
+			prefix = filePath.right(qrcHtml.absolutePath().size());
+
+			nextFile.copy(dashboardDir.absoluteFilePath(prefix));
+
+		}
+
+	}
+	}
+
 void Reporter::writeResultsJson()
 {
+	exportDashboard();
+
 	QFile resultsFile(_reportingDir.absoluteFilePath("results.json"));
 	
 	if(resultsFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text))
