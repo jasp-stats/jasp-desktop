@@ -37,6 +37,7 @@ private:
 	void	writeResultsJson();	///< write the entire resultsjson as given to results-webpage to reporting dir. This can later be used for a dashboard
 	void	writeReport();
 	void	writeReportLog();
+	void	exportDashboard();
 
 private:
 	QDir					_reportingDir;
