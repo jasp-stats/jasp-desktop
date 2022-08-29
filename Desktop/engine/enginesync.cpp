@@ -40,6 +40,7 @@
 #include "log.h"
 #include "utilities/qutils.h"
 #include "utilities/processhelper.h"
+#include "dirs.h"
 
 
 using namespace boost::interprocess;
@@ -517,7 +518,10 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
 
 	QStringList args;
-	args << QString::number(channel) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
+	args << QString::number(channel) << QString::number(ProcessInfo::currentPID()) << tq(Log::logFileNameBase) << tq(Log::whereStr());
+
+	if(Dirs::reportingDir() != "")
+		args << tq(Dirs::reportingDir());
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);

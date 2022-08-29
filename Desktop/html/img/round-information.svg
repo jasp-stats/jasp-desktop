@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg58"
+   sodipodi:docname="round-information.svg"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs62">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2528">
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="0"
+         id="stop2524" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="0.61093247"
+         id="stop2532" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0.61093247"
+         id="stop2534" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop2526" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2528"
+       id="radialGradient2530"
+       cx="257.08475"
+       cy="232.13559"
+       fx="257.08475"
+       fy="232.13559"
+       r="231.05084"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0140845,0,0,1.0140845,-4.7056578,11.916925)" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview60"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="0.921875"
+     inkscape:cx="15.728814"
+     inkscape:cy="186.57627"
+     inkscape:window-width="1728"
+     inkscape:window-height="1080"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg58" />
+  <circle
+     style="fill:url(#radialGradient2530);fill-opacity:1;stroke-width:1.01408"
+     id="path406"
+     cx="256"
+     cy="247.32204"
+     r="234.30508" />
+  <!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+  <path
+     d="m 487.57354,254.38828 c -2.01376,93.77124 -58.63207,159.77629 -121.25627,196.0202 -62.62421,36.2439 -173.47274,38.07039 -226.61919,-2.3011 C 86.551633,407.73589 25.212751,346.57545 25.445093,249.78609 25.677435,152.99674 65.862399,110.85002 119.12539,60.993001 172.38838,11.13598 306.13934,2.6986377 373.14339,47.186441 440.14744,91.674244 489.58729,160.61705 487.57354,254.38828 Z M 230.91525,359.18644 c 0,13.25 10.75,24 24,24 13.25,0 24,-10.8 24,-24 v -128 c 0,-13.25 -10.75,-24 -23.1,-24 -12.35,0 -24.9,10.7 -24.9,24 z m 24,-248 c -17.36,0 -31.44,14.08 -31.44,31.44 0,17.36 14.07,31.44 31.44,31.44 17.37,0 31.44,-14.08 31.44,-31.44 -0.04,-17.34 -14.04,-31.44 -31.44,-31.44 z"
+     id="path56"
+     sodipodi:nodetypes="zzzzzzzsssssssssscs"
+     style="fill:#000000;fill-opacity:1" />
+</svg>

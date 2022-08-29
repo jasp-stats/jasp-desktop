@@ -32,6 +32,8 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 	if(logToFile)
 		Settings::setValue(Settings::LOG_TO_FILE, true);
 
+	Dirs::setReportingDir(fq(reportingPath));
+
 	_mainWindow = new MainWindow(this);
 
 	if(unitTest)

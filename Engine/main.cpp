@@ -25,6 +25,7 @@
 #include "otoolstuff.h"
 #include "rbridge.h"
 #include "utils.h"
+#include "dirs.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -69,6 +70,9 @@ int main(int argc, char *argv[])
 						parentPID		= strtoul(argv[2], NULL, 10);
 		std::string		logFileBase		= argv[3],
 						logFileWhere	= argv[4];
+
+		if(argc > 5)
+			Dirs::setReportingDir(argv[5]);
 
 		Log::logFileNameBase = logFileBase;
 		Log::initRedirects();

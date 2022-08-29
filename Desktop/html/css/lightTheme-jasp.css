@@ -124,15 +124,25 @@ div.jasp-image-image.no-data.error {
 
 
 .jaspReportDo {
-  border: 3px double  #500;
-  color:              #500;
-  background:         #e30;
+  border: 3px double  #fd0;
+  color:              #fd0;
+  background:         #800;
 }
 
 .jaspReportDont {
   border: 3px double  #000;
   color:              #000;
   background:         #fff;
+}
+
+.jaspReportIconDo
+{
+  background-color: #fd0;
+}
+
+.jaspReportIconDont
+{
+  background-color: #000;
 }
 
 .stack-trace-arrow {
