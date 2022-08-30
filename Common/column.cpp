@@ -1011,31 +1011,31 @@ bool Column::isValueEqual(int row, const string &value)
 	return false;
 }
 
-string Column::_getScaleValue(int row)
+string Column::_getScaleValue(int row, bool forDisplay)
 {
 	double v = AsDoubles[row];
 
-	if (v > std::numeric_limits<double>::max())					return string({ (char)0xE2, (char)0x88, (char)0x9E, 0 });
-	else if (v < std::numeric_limits<double>::lowest())			return string({ (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 });
-	else if (Utils::isEmptyValue(v))							return Utils::emptyValue;
+	if (v > std::numeric_limits<double>::max())					return "∞";
+	else if (v < std::numeric_limits<double>::lowest())			return "-∞";
+	else if (Utils::isEmptyValue(v))							return forDisplay ? Utils::emptyValue : "";
 	else														return Utils::doubleToString(v);
 }
 
 string Column::getOriginalValue(int row)
 {
-	string result = Utils::emptyValue;
+	string result = "";
 
 	if (row < _rowCount)
 	{
 		if (_columnType == columnType::scale)
 		{
-			result = _getScaleValue(row);
+			result = _getScaleValue(row, false);
 		}
 		else
 		{
 			int key = AsInts[row];
 			if (key == std::numeric_limits<int>::lowest())
-				result = Utils::emptyValue;
+				result = "";
 			else
 				result = _labels.getValueFromKey(key);
 		}
@@ -1053,7 +1053,7 @@ string Column::operator [](int row)
 	{
 		if (_columnType == columnType::scale)
 		{
-			result = _getScaleValue(row);
+			result = _getScaleValue(row, true);
 		}
 		else
 		{
