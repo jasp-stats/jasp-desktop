@@ -17,7 +17,7 @@ ComponentsList                      1.0 ComponentsList.qml
 ComputedColumnField                 1.0 ComputedColumnField.qml
 ContrastsList                       1.0 ContrastsList.qml
 ControlErrorMessage                 1.0 ControlErrorMessage.qml
-CrossButton			    1.0 CrossButton.qml
+CrossButton                         1.0 CrossButton.qml
 CustomContrastsTableView            1.0 CustomContrastsTableView.qml
 Divider                             1.0 Divider.qml
 DoubleField                         1.0 DoubleField.qml
@@ -35,6 +35,7 @@ GroupBox                            1.0 GroupBox.qml
 HelpButton                          1.0 HelpButton.qml
 InputListView                       1.0 InputListView.qml
 IntegerField                        1.0 IntegerField.qml
+JagsTableView                       1.0 JagsTableView.qml
 JAGSTextArea                        1.0 JAGSTextArea.qml
 JASPControl                         1.0 JASPControl.qml
 JASPGridControl                     1.0 JASPGridControl.qml
