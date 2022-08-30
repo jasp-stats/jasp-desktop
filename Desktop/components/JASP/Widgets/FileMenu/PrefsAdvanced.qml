@@ -328,10 +328,10 @@ ScrollView
 			{
 				id:					maxEngineCount
 				value:				preferencesModel.maxEngines
-				onValueChanged:		if(value !== "") preferencesModel.maxEngines = value
+				onValueChanged:		if(value != "") preferencesModel.maxEngines = value
 				from:				1
-				to:					16
-				defaultValue:		4
+				to:					preferencesModel.maxEnginesAdmin > 0 ? preferencesModel.maxEnginesAdmin : 16
+				defaultValue:		Math.max(preferencesModel.maxEnginesAdmin, 4)
 				stepSize:			1
 				KeyNavigation.tab:	rememberModulesSelected
 				KeyNavigation.down:	rememberModulesSelected

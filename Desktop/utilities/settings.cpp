@@ -61,6 +61,7 @@ const Settings::Setting Settings::Values[] = {
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
 	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmodel.h
 	{"maxEngineCount",				4		}, //In debug always 1
+	{"maxEngineCountAdmin",			0		}, //If set to something >0 it will be the max allowed max engine count. This is here to allow admins to override the number of processes spawned as they might each consume quite some RAM.
 	{"GITHUB_PAT_Custom",			""		},
 	{"GITHUB_PAT_UseDefault",		true	},
 	{"WindowsNoBomNative",			false	}, //false as default because then we keep the behaviour we had before.
