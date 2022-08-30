@@ -128,7 +128,7 @@ TextInputBase
 			height:				parent.height + jaspTheme.jaspControlHighlightWidth
 			width:				parent.width  + jaspTheme.jaspControlHighlightWidth
 			color:				"transparent"
-			border.width:		0
+			border.width:		0		//Changed from JASPControl::_setFocusBorder() (like border.color)
 			anchors.centerIn:	parent
 			opacity:			debug ? .3 : 1
 			visible:			textField.useExternalBorder
