@@ -60,6 +60,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	allInterfaceFonts		READ allInterfaceFonts			CONSTANT																	)
 	Q_PROPERTY(QStringList	allResultFonts			READ allResultFonts				CONSTANT																	)
 	Q_PROPERTY(int			maxEngines				READ maxEngines					WRITE setMaxEngines					NOTIFY maxEnginesChanged				)
+	Q_PROPERTY(int			maxEnginesAdmin			READ maxEnginesAdmin												NOTIFY maxEnginesAdminChanged			)
 	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 
@@ -125,6 +126,8 @@ public:
 	void		zoomReset();
 	
 	
+	int maxEnginesAdmin() const;
+
 public slots:
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -224,7 +227,8 @@ signals:
 	void maxEnginesChanged(				int			maxEngines);
 	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
 	void dbShowWarningChanged(			bool		dbShowWarning);
-	
+	void maxEnginesAdminChanged();
+
 private:
 	static PreferencesModel * _singleton;
 

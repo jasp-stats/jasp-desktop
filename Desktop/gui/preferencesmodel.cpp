@@ -118,9 +118,18 @@ GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
-GET_PREF_FUNC_INT(	maxEngines,					Settings::MAX_ENGINE_COUNT							)
+GET_PREF_FUNC_INT(	maxEnginesAdmin,            Settings::MAX_ENGINE_COUNT_ADMIN                    )
 GET_PREF_FUNC_BOOL( windowsNoBomNative,			Settings::WINDOWS_NO_BOM_NATIVE						)
 GET_PREF_FUNC_BOOL( dbShowWarning,				Settings::DB_SHOW_WARNING							)
+
+int PreferencesModel::maxEngines() const
+{
+	int maxEngines = Settings::value(Settings::MAX_ENGINE_COUNT).toInt();
+
+	if(maxEnginesAdmin() > 0)	return std::min(maxEngines, maxEnginesAdmin());
+	else						return maxEngines;
+
+}
 
 QString PreferencesModel::githubPatCustom() const
 {
