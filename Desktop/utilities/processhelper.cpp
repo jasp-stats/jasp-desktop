@@ -17,14 +17,16 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
 	env.insert("RENV_PATHS_ROOT",					AppDirs::renvRootLocation());
 	env.insert("RENV_PATHS_CACHE",					AppDirs::renvCacheLocations());
+
 	
 	//Seems a bit weird but we need to tell this to jaspBase so it can tell renv to run it again because that will be running in a subprocess. 
 	//Which also means we have the following process -> subprocess structure while installing a dynamic module:
 	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
 	env.insert("JASPENGINE_LOCATION",				engineExe); 
 	
-	QString rHomePath = AppDirs::rHome();
-	QDir rHome(rHomePath);
+	QString TZDIR		= AppDirs::rHome() + "/share/zoneinfo";
+	QString rHomePath	= AppDirs::rHome();
+	QDir	rHome		( rHomePath );
 
 	QString custom_R_library = "";
 #ifdef JASP_DEBUG
@@ -39,6 +41,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 #define ARCH_SUBPATH "x64"
 #endif
 	
+			TZDIR		= shortenWinPaths(TZDIR);
 	QString PATH		= shortenWinPaths(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + shortenWinPaths(env.value("PATH")),
 			R_HOME		= shortenWinPaths(rHome.absolutePath()),
 			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/"));
@@ -92,7 +95,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	//Let's just trust linux and *not set* LC_CTYPE at all. It'll be fine.
 #endif
 
-
+	env.insert("TZDIR",				TZDIR);
 	env.insert("R_LIBS_SITE",		"");
 	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
