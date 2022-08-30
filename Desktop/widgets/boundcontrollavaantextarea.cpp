@@ -91,8 +91,9 @@ void BoundControlLavaanTextArea::checkSyntax()
 	}
 	encodedColNames.append(")");
 
-	QString checkCode = "jaspSem:::checkLavaanModel('";
+	QString checkCode = tq(_checkSyntaxRFunctionName());
 	checkCode
+		.append("('")
 		.append(_textEncoded)
 		.append("', ")
 		.append(encodedColNames)
