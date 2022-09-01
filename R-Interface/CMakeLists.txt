@@ -117,10 +117,10 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
-  message(CHECK_START "Checking for 'libjsoncpp-24.dll'")
+  message(CHECK_START "Checking for 'libjsoncpp-25.dll'")
   find_file(
     RTOOLS_LIB_JSONCPP_DLL
-    NAMES libjsoncpp-24.dll
+    NAMES libjsoncpp-25.dll
     PATHS ${RTOOLS_PATH}/bin REQUIRED
     NO_DEFAULT_PATH)
 
@@ -129,7 +129,7 @@ if(WIN32)
     message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
   else()
     message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
-    message(FATAL_ERROR "libjsoncpp-24.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
+    message(FATAL_ERROR "libjsoncpp-25.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
   endif()
 
   add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})

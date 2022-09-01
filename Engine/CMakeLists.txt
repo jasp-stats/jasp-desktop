@@ -94,6 +94,9 @@ if(WINDOWS)
 
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 
+  # increase the stack size so that recursive calls in renv when installing jasp modules do not cause stack overflows, see https://github.com/jasp-stats/INTERNAL-jasp/issues/2072
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:48000000")
+
   # These are mainly for R-Interface, and all build using the MinGW
   add_custom_command(
     TARGET JASPEngine
