@@ -379,10 +379,6 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-#ifdef _WIN32
-			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
-#endif
-
 			//Now we convert all these strings in args back to an int and a char * array.
 			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)
 			char** argvs = new char*[args.size()];
