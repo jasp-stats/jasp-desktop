@@ -67,7 +67,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	typedef filesystem::recursive_directory_iterator	recIt;
 	
 	filesystem::path path;
-	
+	std::string framework_resources = "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/";
 	try
 	{
 		// Follow symlinks so that we may fix pkgs installed by renv 
@@ -101,11 +101,11 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				line = stringUtils::replaceBy(line, " ", "\\ ");
 
 				// Know prefixes to be replaced
-				// - jags paths are fixed by CMake 
 				const std::map<std::string, std::string> prefixes_map = {
-					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib"}
-					// {"/opt/R/arm64/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/opt/R/arm64/lib"},
-					// {"/usr/local/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/opt/local/lib"},
+					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", framework_resources + "lib"},
+					// {"/opt/R/arm64/lib",		framework_resources + "opt/R/arm64/lib"},
+					{"/usr/local/lib/libjags",	framework_resources + "opt/jags/lib/libjags"},
+					{"/usr/local/lib",			framework_resources + "opt/local/lib"},
 				};
 
 				// Known fix library id's and paths 
@@ -150,11 +150,13 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				{
 
 					// Replacing the known prefixes
-					for(auto &prefix : prefixes_map) 
+					// Loop in the reverse order since "/usr/local/lib/libjags" must be handled before "/usr/local/lib"
+					for(auto prefix = prefixes_map.rbegin(); prefix != prefixes_map.rend(); ++prefix)
 					{
-						if (stringUtils::startsWith(line, prefix.first)) 
+						if (stringUtils::startsWith(line, prefix->first))
 						{
-							install_name_tool_cmd(line, stringUtils::replaceBy(prefix.second + line.substr(prefix.first.size()), " ", "\\ "));
+							install_name_tool_cmd(line, stringUtils::replaceBy(prefix->second + line.substr(prefix->first.size()), " ", "\\ "));
+							break;
 						}
 					}
 

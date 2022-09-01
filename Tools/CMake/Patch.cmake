@@ -65,6 +65,7 @@ else()
     ${BINARIES})
 
   set(NEW_ID "")
+  set(FRAMEWORK_RESOURCES "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources")
 
   foreach(FILE ${FILES})
 
@@ -131,7 +132,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib/"
+            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib/"
             NEW_ID
             ${FILE})
 
@@ -140,7 +141,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/opt/R/arm64/lib/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib/"
+            "${FRAMEWORK_RESOURCES}/opt/R/arm64/lib/"
             NEW_ID
             ${FILE})
 
@@ -157,7 +158,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/library/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/library/"
+            "${FRAMEWORK_RESOURCES}/library/"
             NEW_ID
             ${FILE})
 
@@ -166,7 +167,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/modules/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/modules/"
+            "${FRAMEWORK_RESOURCES}/modules/"
             NEW_ID
             ${FILE})
 
@@ -175,7 +176,25 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/opt/jags/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/"
+            "${FRAMEWORK_RESOURCES}/opt/jags/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/usr/local/lib/libjags")
+
+        string(
+          REPLACE
+            "/usr/local/lib/"
+            "${FRAMEWORK_RESOURCES}/opt/jags/"
+            NEW_ID
+            ${FILE})
+
+       elseif(FILE MATCHES "/usr/local/lib/JAGS")
+
+        string(
+          REPLACE
+            "/usr/local/lib/JAGS"
+            "${FRAMEWORK_RESOURCES}/opt/jags/lib/JAGS"
             NEW_ID
             ${FILE})
 
@@ -184,7 +203,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/lib/"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/"
+            "${FRAMEWORK_RESOURCES}/lib/"
             NEW_ID
             ${FILE})
 
@@ -198,7 +217,7 @@ else()
         COMMAND
           bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
           "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+          "${FRAMEWORK_RESOURCES}/lib"
       )
 
       # Changing the `R_HOME/opt/jags/lib` prefix
@@ -210,7 +229,7 @@ else()
         COMMAND
           bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
           "${R_HOME_PATH}/opt/jags/lib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+          "${FRAMEWORK_RESOURCES}/opt/jags/lib"
       )
 
       if(R_DIR_NAME MATCHES "arm64")
@@ -222,7 +241,7 @@ else()
           COMMAND
             install_name_tool -change
             "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/libgfortran.dylib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FRAMEWORK_RESOURCES}/lib/libgfortran.5.dylib"
             "${FILE}")
 
         execute_process(
@@ -232,7 +251,7 @@ else()
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
             "/opt/R/arm64/gfortran/lib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib"
         )
 
         execute_process(
@@ -242,7 +261,7 @@ else()
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
             "${R_HOME_PATH}/opt/R/arm64/gfortran/lib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib"
         )
 
       else()
@@ -254,7 +273,7 @@ else()
           COMMAND
             install_name_tool -change
             "${R_HOME_PATH}/opt/local/gfortran/lib/libgfortran.dylib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FRAMEWORK_RESOURCES}/lib/libgfortran.5.dylib"
             "${FILE}")
 
         execute_process(
@@ -264,7 +283,7 @@ else()
           COMMAND
             install_name_tool -change
             "${R_HOME_PATH}/opt/local/gfortran/lib/libquadmath.dylib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libquadmath.0.dylib"
+            "${FRAMEWORK_RESOURCES}/lib/libquadmath.0.dylib"
             "${FILE}")
 
         execute_process(
@@ -274,7 +293,7 @@ else()
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
             "/usr/local/gfortran/lib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/gfortran/lib"
+            "${FRAMEWORK_RESOURCES}/opt/local/gfortran/lib"
         )
         # For whatever reason, the above command cannot replace the prefix of these libraries. I have tried to
         # directly changed their 'id' even, and that didn't help either!
@@ -289,7 +308,7 @@ else()
             WORKING_DIRECTORY ${PATH}
             COMMAND
               bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
-              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/lib"
+              "${FRAMEWORK_RESOURCES}/opt/local/lib"
           )
 
         endif()
@@ -307,7 +326,7 @@ else()
           WORKING_DIRECTORY ${PATH}
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
+            "${FRAMEWORK_RESOURCES}/opt/R/arm64/lib"
         )
 
       else()
@@ -319,7 +338,7 @@ else()
         WORKING_DIRECTORY ${PATH}
         COMMAND
           bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+          "${FRAMEWORK_RESOURCES}/opt/jags/lib"
       )
 
       endif()
