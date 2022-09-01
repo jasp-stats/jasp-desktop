@@ -468,6 +468,22 @@ std::wstring Utils::getShortPathWin(const std::wstring & longPath)
     
     delete [] buffer;
 	
-	return shortPath;	 
+    return shortPath;
+}
+
+string Utils::wstringToString(const std::wstring & wstr)
+{
+    std::string str;
+
+    //get size of buffer we need
+    int requiredSize = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, NULL, 0, NULL, NULL );
+    str.resize(requiredSize);
+
+    //convert it
+    WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, str.data(), str.size(), NULL, NULL );
+    str.resize(requiredSize-1);//drop /nul
+
+    return str;
+
 }
 #endif

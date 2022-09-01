@@ -837,7 +837,7 @@ Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 		const std::string & modName = _moduleNames[i];
 
 		if(_modules[modName]->readyForUse()) //should be loaded again
-			loadingCode << _modules[modName]->generateModuleLoadingR(i == _moduleNames.size() - 1) << "\n";
+            loadingCode << _modules[modName]->generateModuleLoadingR(i == _moduleNames.size() - 1) << "\n";
 	}
 
 	if(loadingCode.str() != "")

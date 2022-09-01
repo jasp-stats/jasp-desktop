@@ -76,6 +76,7 @@ public:
 
 #ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
+    static std::string  wstringToString(const std::wstring & wstr);
 #endif
 	
 private:

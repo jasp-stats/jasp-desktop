@@ -47,7 +47,7 @@ const std::string	jaspExtension		= ".jasp",
 bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
 {
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
-	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(false, false);
+	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(false);
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
 	
 	QProcess engine;
@@ -316,10 +316,6 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 
 int main(int argc, char *argv[])
 {
-#ifdef _WIN32
-	setlocale(LC_ALL, ".UTF8"); //use utf8
-#endif
-
 	std::string filePath;
 	bool		unitTest,
 				dirTest,

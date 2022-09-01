@@ -444,7 +444,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	
 	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl; 
 
-	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
+    std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
 	
 	Log::log() << "Was " << (succes ? "succesful" : "a failure") << ", now crafting answer." << std::endl;

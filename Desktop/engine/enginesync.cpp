@@ -500,7 +500,7 @@ void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
 
 	Log::log() << "Windows PATH was changed to: '" << env.value("PATH", "???") << "'" << std::endl;
 }
-#endif
+#endif 
 
 //Should this function go to EngineRepresentation?
 QProcess * EngineSync::startSlaveProcess(int channel)
@@ -508,7 +508,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
-	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine(true, PreferencesModel::prefs()->setLC_CTYPE_C());
+	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine(PreferencesModel::prefs()->setLC_CTYPE_C());
 	
 #ifdef _WIN32 
 	fixPATHForWindows(env);
