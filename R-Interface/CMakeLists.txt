@@ -38,10 +38,10 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
-
-list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
-list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
+file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json/*.cpp")
+list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
+list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
+list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
 
 if(WIN32)
 
@@ -117,20 +117,20 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
-  message(CHECK_START "Checking for 'libjsoncpp-25.dll'")
-  find_file(
-    RTOOLS_LIB_JSONCPP_DLL
-    NAMES libjsoncpp-25.dll
-    PATHS ${RTOOLS_PATH}/bin REQUIRED
-    NO_DEFAULT_PATH)
+  #message(CHECK_START "Checking for 'libjsoncpp-25.dll'")
+  #find_file(
+  #  RTOOLS_LIB_JSONCPP_DLL
+  #  NAMES libjsoncpp-25.dll
+  #  PATHS ${RTOOLS_PATH}/bin REQUIRED
+  #  NO_DEFAULT_PATH)
 
-  if(RTOOLS_LIB_JSONCPP_DLL)
-    message(CHECK_PASS "found.")
-    message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
-  else()
-    message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
-    message(FATAL_ERROR "libjsoncpp-25.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
-  endif()
+  #if(RTOOLS_LIB_JSONCPP_DLL)
+  #  message(CHECK_PASS "found.")
+  #  message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
+  #else()
+  #  message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
+  #  message(FATAL_ERROR "libjsoncpp-25.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
+  #endif()
 
   add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
@@ -156,7 +156,7 @@ if(WIN32)
            # R
            ${_LIB_R}
            #
-           ${RTOOLS_LIB_JSONCPP_DLL}
+           #${RTOOLS_LIB_JSONCPP_DLL}
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
@@ -185,7 +185,8 @@ else()
     PUBLIC # JASP
            ${PROJECT_SOURCE_DIR}/Common
            ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-           $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
+           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
+           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
            # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
@@ -201,9 +202,9 @@ else()
            Boost::timer
            Boost::chrono
            # CPM/CMake
-           $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-           $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-		   #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
+           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
+		       #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
            # R
            ${_LIB_RINSIDE}
            $<$<PLATFORM_ID:Linux>:${_LIB_R}>
