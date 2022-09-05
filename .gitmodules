@@ -114,3 +114,7 @@
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
 	branch = master
+[submodule "Modules/jaspPredictiveAnalytics"]
+	path = Modules/jaspPredictiveAnalytics
+	url = https://github.com/jasp-stats/jaspPredictiveAnalytics
+	branch = main

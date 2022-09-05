@@ -41,6 +41,7 @@ set(JASP_EXTRA_MODULES
     "jaspMachineLearning"
     "jaspMetaAnalysis"
     "jaspNetwork"
+	"jaspPredictiveAnalytics"
     "jaspProcessControl"
     "jaspProphet"
     "jaspReliability"
