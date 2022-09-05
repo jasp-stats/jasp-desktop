@@ -1328,7 +1328,7 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 {
 	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
-		_package->setAnalysesHTML(fq(data));
+		_package->setAnalysesHTML(data);
 		_package->setAnalysesHTMLReady();
 
 		finishComparingResults();
@@ -1629,8 +1629,8 @@ void MainWindow::finishComparingResults()
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->exportCalled() && !resultXmlCompare::compareResults::theOne()->comparedAlready())
 	{
-		std::string resultHtml = _package->analysesHTML();
-		resultXmlCompare::compareResults::theOne()->setRefreshResult(QString::fromStdString(resultHtml));
+		QString resultHtml = _package->analysesHTML();
+		resultXmlCompare::compareResults::theOne()->setRefreshResult(resultHtml);
 
 		resultXmlCompare::compareResults::theOne()->compare();
 

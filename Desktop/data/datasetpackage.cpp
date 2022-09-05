@@ -96,7 +96,7 @@ void DataSetPackage::reset()
 	setDataSet(nullptr);
 	_archiveVersion				= Version();
 	_dataArchiveVersion			= Version();
-	_analysesHTML				= std::string();
+	_analysesHTML				= QString();
 	_analysesData				= Json::arrayValue;
 	_warningMessage				= std::string();
 	_hasAnalysesWithoutData		= false;

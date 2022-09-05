@@ -150,7 +150,7 @@ public:
 				bool				synchingData()						const	{ return _synchingData;						  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
 		const	Json::Value		&	databaseJson()						const	{ return _database;								}
-		const	std::string		&	analysesHTML()						const	{ return _analysesHTML;							}
+		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							 }
 		const	std::string		&	warningMessage()					const	{ return _warningMessage;						  }
 		const	Version			&	archiveVersion()					const	{ return _archiveVersion;						   }
@@ -174,7 +174,7 @@ public:
 				void				setInitialMD5(std::string initialMD5)				{ _initialMD5					= initialMD5;		}
 				void				setDataFileTimestamp(uint timestamp)				{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
-				void				setAnalysesHTML(std::string html)					{ _analysesHTML					= html;				}
+				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
 				void				setDataFilter(std::string filter)					{ _dataFilter					= filter;			}
 				void				setDataSet(DataSet * dataSet);
 				void				setIsArchive(bool isArchive)						{ _isArchive					= isArchive;		}
@@ -320,9 +320,9 @@ private:
 	emptyValsType				_emptyValuesMap;
 
 	QString						_currentFile,
-								_folder;
-	std::string					_analysesHTML,
-								_id,
+								_folder,
+								_analysesHTML;
+	std::string					_id,
 								_warningMessage,
 								_initialMD5,
 								_dataFilePath,

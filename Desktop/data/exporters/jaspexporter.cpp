@@ -210,7 +210,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	DataSetPackage::pkg()->waitForExportResultsReady();
 
 	//Create new entry for archive: HTML results
-	std::string html		= package->analysesHTML();
+	QByteArray	html		= package->analysesHTML().toUtf8();
 	size_t		htmlSize	= html.size();
 				entry		= archive_entry_new();
 	
@@ -220,7 +220,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_perm(		entry,	0644); // Not sure what this does
 	archive_write_header(		a,		entry);
 
-	size_t ws = archive_write_data(a, html.c_str(), htmlSize);
+	size_t ws = archive_write_data(a, html.data(), htmlSize);
 	if (ws != size_t(htmlSize))
 		throw std::runtime_error("Can't save jasp archive writing ERROR");
 
