@@ -513,6 +513,12 @@ std::string DynamicModule::iconFolder() const
 	return moduleInstFolder() + "/icons/";
 }
 
+std::string DynamicModule::rModuleCall(const std::string &function) const
+{
+	return ".libPaths(" + getLibPathsToUse()  + ");\n"
+			+ _name + _modulePostFix + "$" + function + _exposedPostFix;
+}
+
 std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
 {
 	if(!installed()) return "";
