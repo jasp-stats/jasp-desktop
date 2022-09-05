@@ -217,6 +217,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	archive_entry_set_pathname(	entry,	"index.html");
 	archive_entry_set_size(		entry,	int(htmlSize));
 	archive_entry_set_filetype(	entry,	AE_IFREG);
+	archive_write_header(           a,  entry);
 	archive_entry_set_perm(		entry,	0644);  //basically chmod
 
 	size_t ws = archive_write_data(a, html.data(), htmlSize);
