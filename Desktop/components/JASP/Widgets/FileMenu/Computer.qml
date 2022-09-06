@@ -60,9 +60,7 @@ Item
 			bottomMargin:	jaspTheme.generalMenuMargin
 		}
 
-		KeyNavigation.down:		browseButton
 		KeyNavigation.tab:		browseButton
-		KeyNavigation.up:		browseButton
 		KeyNavigation.backtab:	browseButton
 	}
 

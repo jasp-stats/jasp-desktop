@@ -14,7 +14,8 @@ Rectangle
 	color:			jaspTheme.uiBackground
 
 	property alias firstComponent:	missingValuesList
-	property var   navigateAfter:	undefined
+	property var   navigateFrom:	undefined
+	property var   navigateTo:		undefined
 
 	Text
 	{
@@ -55,8 +56,8 @@ Rectangle
 			anchors.fill:		parent
 			anchors.margins:	jaspTheme.generalAnchorMargin
 			model:				preferencesModel.missingValues
-			KeyNavigation.tab:	missingValueToAddText
-			KeyNavigation.down:	missingValueToAddText
+			
+
 			delegate:			MenuButton
 				{
 					id:					hoverphonic
@@ -77,6 +78,9 @@ Rectangle
 						sourceSize.height:	height * 2
 						visible:			parent.hovered
 					}
+
+					KeyNavigation.backtab:	navigateFrom
+					KeyNavigation.tab:		missingValueToAddText
 				}
 		}
 	}
@@ -115,9 +119,10 @@ Rectangle
 				clip:				true
 				font:				jaspTheme.font
 				color:				jaspTheme.textEnabled
-				KeyNavigation.tab:	addButton
-				KeyNavigation.down:	addButton
 				onAccepted:			addButton.clicked();
+
+				KeyNavigation.tab:		addButton
+
 				anchors
 				{
 					left:			parent.left
@@ -135,8 +140,8 @@ Rectangle
 			iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
 			anchors.top:		parent.top
 			anchors.right:		parent.right
-			KeyNavigation.tab:	resetButton
-			KeyNavigation.down:	resetButton
+
+			KeyNavigation.tab:		resetButton
 
 			onClicked:
 			{
@@ -151,8 +156,9 @@ Rectangle
 		id:					resetButton
 		text:				qsTr("Reset")
 		onClicked:			preferencesModel.resetMissingValues()
-		KeyNavigation.tab:	navigateAfter
-		KeyNavigation.down:	navigateAfter
+
+		KeyNavigation.tab:		navigateTo
+
 		anchors
 		{
 			top:			addValueItem.bottom

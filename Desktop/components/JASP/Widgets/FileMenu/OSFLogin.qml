@@ -142,7 +142,6 @@ FocusScope
 				onTextChanged		: fileMenuModel.osf.username = text
 				onAccepted			: passwordText.focus = true
 
-				KeyNavigation.down	: passwordText
 				KeyNavigation.tab	: passwordText
 				focus				: true
 			}
@@ -205,9 +204,6 @@ FocusScope
 				onTextChanged:	fileMenuModel.osf.password = text;
 				onAccepted:		fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 
-				KeyNavigation.up		: usernameText
-				KeyNavigation.backtab	: usernameText
-				KeyNavigation.down		: loginButton
 				KeyNavigation.tab		: loginButton
 
 			}
@@ -235,9 +231,6 @@ FocusScope
 
 			onClicked:			fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 
-			KeyNavigation.up		: passwordText
-			KeyNavigation.backtab	: passwordText
-			KeyNavigation.down		: idRememberMe
 			KeyNavigation.tab		: idRememberMe
 		}
 
@@ -245,21 +238,20 @@ FocusScope
 		{
 			id: idRememberMe
 
-			checked: fileMenuModel.osf.rememberme
-			label   : qsTr("Remember me")
+			checked:				fileMenuModel.osf.rememberme
+			label   :				qsTr("Remember me")
 
-			anchors.left  : parent.left
-			anchors.right : parent.right
-			anchors.bottom: parent.bottom
+			anchors.left  :			parent.left
+			anchors.right :			parent.right
+			anchors.bottom:			parent.bottom
 
-			anchors.bottomMargin: 30 * preferencesModel.uiScale
-			anchors.leftMargin  : 20 * preferencesModel.uiScale
-			anchors.topMargin   : 10 * preferencesModel.uiScale
+			anchors.bottomMargin:	30 * preferencesModel.uiScale
+			anchors.leftMargin  :	20 * preferencesModel.uiScale
+			anchors.topMargin   :	10 * preferencesModel.uiScale
 
-			onCheckedChanged:	fileMenuModel.osf.rememberme = checked
+			onCheckedChanged:		fileMenuModel.osf.rememberme = checked
 
-			KeyNavigation.up		: loginButton
-			KeyNavigation.backtab	: loginButton
+			KeyNavigation.tab:		usernameText
 		}
 	}
 
