@@ -47,7 +47,7 @@ Item
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		//And also on the left side to allow it to move out of the screen there.
 		property int	hackySplitHandlerHideWidth:	( mainWindow.analysesAvailable ? (analysesModel.visible ? leftHandSplitHandlerSpace : 0 ) + jaspTheme.splitHandleWidth : 0 )
-		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig
+		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig + jaspTheme.splitHandleWidth + 2 /* *borderwidth of openCloseButton*/
 
 		onResizingChanged: if(!resizing) data.makeSureHandleVisible();
 
@@ -123,8 +123,6 @@ Item
 			implicitWidth:			splitHandle.width + analyses.implicitWidth
 			width:					implicitWidth
 
-
-
 			JASPSplitHandle
 			{
 				id:				splitHandle
@@ -166,11 +164,11 @@ Item
 					//make sure we get to see the results!
 
 					var inputOutputWidth	= splitViewContainer.width - (data.width + jaspTheme.splitHandleWidth)
-					var remainingDataWidth	= Math.max(0, data.width - (jaspTheme.splitHandleWidth + jaspTheme.resultWidth));
+					var remainingDataWidth	= Math.max(0, data.width - (panelSplit.leftHandSplitHandlerSpace + jaspTheme.resultWidth));
 
-					if(inputOutputWidth < 100 * preferencesModel.uiScale)
+					if(inputOutputWidth < jaspTheme.resultWidth + panelSplit.leftHandSplitHandlerSpace)
 						 mainWindow.dataPanelVisible = false;
-					else if(inputOutputWidth < jaspTheme.resultWidth)
+					else
 					{
 						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
 						else							data.setPreferredWidth(remainingDataWidth)
