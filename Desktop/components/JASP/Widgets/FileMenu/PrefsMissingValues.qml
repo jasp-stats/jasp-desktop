@@ -120,8 +120,7 @@ Rectangle
 				font:				jaspTheme.font
 				color:				jaspTheme.textEnabled
 				onAccepted:			addButton.clicked();
-				
-				KeyNavigation.backtab:	missingValuesList
+
 				KeyNavigation.tab:		addButton
 
 				anchors
@@ -141,8 +140,7 @@ Rectangle
 			iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
 			anchors.top:		parent.top
 			anchors.right:		parent.right
-			
-			KeyNavigation.backtab:	missingValueToAddText
+
 			KeyNavigation.tab:		resetButton
 
 			onClicked:
@@ -158,8 +156,7 @@ Rectangle
 		id:					resetButton
 		text:				qsTr("Reset")
 		onClicked:			preferencesModel.resetMissingValues()
-		
-		KeyNavigation.backtab:	missingValueToAddText
+
 		KeyNavigation.tab:		navigateTo
 
 		anchors

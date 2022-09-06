@@ -38,7 +38,6 @@ ScrollView
 				checked:				preferencesModel.exactPValues
 				onCheckedChanged:		preferencesModel.exactPValues = checked
 				
-				KeyNavigation.backtab:		transparentBackgroundButton
 				KeyNavigation.tab:			useNormalizedNotation
 			}
 
@@ -49,7 +48,6 @@ ScrollView
 				checked:				!preferencesModel.normalizedNotation
 				onCheckedChanged:		preferencesModel.normalizedNotation = !checked
 				KeyNavigation.tab:		fixDecs
-				KeyNavigation.down:		fixDecs
 
 			}
 
@@ -65,7 +63,6 @@ ScrollView
 					checked:				preferencesModel.fixedDecimals
 					onCheckedChanged:		preferencesModel.fixedDecimals = checked
 					
-					KeyNavigation.backtab:		useNormalizedNotation
 					KeyNavigation.tab:			numDecs
 				}
 
@@ -76,7 +73,6 @@ ScrollView
 					onValueChanged:			preferencesModel.numDecimals = value
 					enabled:				preferencesModel.fixedDecimals
 
-                    KeyNavigation.backtab:		fixDecs
 					KeyNavigation.tab:			useDefaultPPICheckbox
 
 					anchors
@@ -102,8 +98,7 @@ ScrollView
 				height:				implicitHeight * preferencesModel.uiScale
 				toolTip:			qsTr("Use the Pixels Per Inch of your screen to render your plots.")
 				focus:				true
-				
-				KeyNavigation.backtab:	numDecs
+
 				KeyNavigation.tab:		customPPISpinBox
 			}
 
@@ -120,8 +115,7 @@ ScrollView
 				enabled:				!preferencesModel.useDefaultPPI
 
 				x:						jaspTheme.subOptionOffset
-				
-				KeyNavigation.backtab:		useDefaultPPICheckbox
+
 				KeyNavigation.tab:			whiteBackgroundButton
 			}
 
@@ -136,8 +130,7 @@ ScrollView
 					checked:			preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = checked
 					toolTip:			qsTr("This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal.")
-					
-					KeyNavigation.backtab:	customPPISpinBox
+
 					KeyNavigation.tab:      transparentBackgroundButton
 				}
 
@@ -148,8 +141,7 @@ ScrollView
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					
-					KeyNavigation.backtab:	whiteBackgroundButton
+
 					KeyNavigation.tab:		displayExactPVals
 				}
 			}

@@ -44,10 +44,10 @@ Item
 					width:					plus.x + plus.width
 					height:					valueField.height
 
-					Keys.onDownPressed:		{ minus.clicked(); event.accepted = true; }
-					Keys.onUpPressed:		{ plus.clicked();  event.accepted = true; }
-					Keys.onEnterPressed:	(event)=>   valueField.focus = !valueField.focus;
-					Keys.onReturnPressed: 	(event)=>	valueField.focus = !valueField.focus;
+					Keys.onDownPressed:		(event)=> { minus.clicked(); event.accepted = true; }
+					Keys.onUpPressed:		(event)=> { plus.clicked();  event.accepted = true; }
+					Keys.onEnterPressed:	(event)=> { valueField.focus = !valueField.focus;	}
+					Keys.onReturnPressed: 	(event)=> {	valueField.focus = !valueField.focus;	}
 
 
 	signal editingFinished()

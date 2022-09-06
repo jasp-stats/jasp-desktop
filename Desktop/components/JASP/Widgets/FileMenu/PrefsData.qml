@@ -39,7 +39,6 @@ ScrollView
 				checked:			preferencesModel.dataAutoSynchronization
 				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
 
-				KeyNavigation.backtab:	missingValuesList.firstComponent
 				KeyNavigation.tab:      useDefaultEditor
 			}
 
@@ -57,8 +56,7 @@ ScrollView
 					onCheckedChanged:       preferencesModel.useDefaultEditor = checked
 					enabled:                !LINUX
 
-					KeyNavigation.backtab:  synchronizeDataSave
-					KeyNavigation.tab:      !checked ? browseEditorButton : customThreshold
+					KeyNavigation.tab:      browseEditorButton
 				}
 
 				Label
@@ -93,7 +91,6 @@ ScrollView
 						anchors.left:		parent.left
 						anchors.leftMargin: jaspTheme.subOptionOffset
 
-						KeyNavigation.backtab:	useDefaultEditor
 						KeyNavigation.tab:      customEditorText
 					}
 
@@ -121,7 +118,6 @@ ScrollView
 							onTextChanged:		preferencesModel.customEditor = text
 							color:				jaspTheme.textEnabled
 
-							KeyNavigation.backtab:	browseEditorButton
 							KeyNavigation.tab:      customThreshold
 
 							anchors
@@ -158,8 +154,7 @@ ScrollView
 					ToolTip.timeout:	6000 //Some longer to read carefully
 					toolTip:			qsTr("Threshold number of unique integers before classifying a variable as 'scale'.\nYou need to reload your data to take effect! Check help for more info.")
 
-					KeyNavigation.backtab:	!useDefaultEditor.checked ? customEditorText : useDefaultEditor
-					KeyNavigation.tab:      preferencesModel.customThresholdScale ? thresholdScale : missingValuesList.firstComponent
+					KeyNavigation.tab:      thresholdScale
 
 				}
 
@@ -241,7 +236,6 @@ ScrollView
 					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
 					toolTip:			qsTr("See documentation for more information ")
 
-					KeyNavigation.backtab:	missingValuesList.firstComponent
 					KeyNavigation.tab:		synchronizeDataSave
 
 				}

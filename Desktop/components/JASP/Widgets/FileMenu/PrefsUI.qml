@@ -69,7 +69,6 @@ ScrollView
 					startValue:				preferencesModel.interfaceFont
 					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.backtab: 	useNativeFileDialog
 					KeyNavigation.tab:		codeFonts
 
 					Text
@@ -97,7 +96,6 @@ ScrollView
 					startValue:				 	preferencesModel.codeFont
 					onValueChanged:				preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.backtab:		interfaceFonts
 					KeyNavigation.tab:			resultFonts
 
 					Text
@@ -124,7 +122,6 @@ ScrollView
 					startValue: 				preferencesModel.resultFont
 					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.backtab: 		codeFonts
 					KeyNavigation.tab: 			lightThemeButton
 
 					Text
@@ -154,7 +151,6 @@ ScrollView
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
 					toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
 
-					KeyNavigation.backtab:	resultFonts
 					KeyNavigation.tab:		darkThemeButton
 				}
 
@@ -166,7 +162,6 @@ ScrollView
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
 					
-					KeyNavigation.backtab:	lightThemeButton
 					KeyNavigation.tab:		languages
 				}
 			}
@@ -189,7 +184,6 @@ ScrollView
 
 				source:					languageModel
 
-				KeyNavigation.backtab:		darkThemeButton
 				KeyNavigation.tab:			uiScaleSpinBox
 			}
 
@@ -230,8 +224,7 @@ ScrollView
 				text:					qsTr("Zoom (%): ")
 				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
 
-				KeyNavigation.backtab:		languages
-				KeyNavigation.tab:			uiMaxFlickVelocity
+				KeyNavigation.tab:		uiMaxFlickVelocity
 
 				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
 			}
@@ -249,7 +242,6 @@ ScrollView
 				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
 				widthLabel:				uiScaleSpinBox.widthLabel
 
-				KeyNavigation.backtab:		uiScaleSpinBox
 				KeyNavigation.tab:			safeGraphicsMode
 			}
 
@@ -262,7 +254,6 @@ ScrollView
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 
-				KeyNavigation.backtab:		uiMaxFlickVelocity
 				KeyNavigation.tab:			disableAnimations
 
 			}
@@ -277,7 +268,6 @@ ScrollView
 
 				enabled:			!preferencesModel.safeGraphics
 
-				KeyNavigation.backtab:		safeGraphicsMode
 				KeyNavigation.tab:			useNativeFileDialog
 			}
 
@@ -290,7 +280,6 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.backtab:		disableAnimations
 				KeyNavigation.tab:			interfaceFonts
 			}
 		}
