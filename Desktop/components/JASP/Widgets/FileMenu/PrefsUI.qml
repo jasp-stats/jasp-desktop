@@ -122,7 +122,7 @@ ScrollView
 					startValue: 				preferencesModel.resultFont
 					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.tab: 			lightThemeButton
+					KeyNavigation.tab: 			qtTextRendering
 
 					Text
 					{
@@ -132,6 +132,18 @@ ScrollView
 						visible: 		false
 					}
 				}
+			}
+
+			CheckBox
+			{
+				id:					qtTextRendering
+				label:				qsTr("Use Qt's textrendering")
+				checked:			preferencesModel.guiQtTextRender
+				onCheckedChanged:	preferencesModel.guiQtTextRender = checked
+				toolTip:			qsTr("If disabled will switch the textrendering to native.")
+
+
+				KeyNavigation.tab:		lightThemeButton
 			}
 		}
 

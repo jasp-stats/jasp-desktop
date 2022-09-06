@@ -24,6 +24,7 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickStyle>
+#include <QQuickWindow>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <QAction>
 #include <QMenuBar>
@@ -406,8 +407,12 @@ void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
 	Log::log(false) << std::endl;
 }
 
+
 void MainWindow::loadQML()
 {
+	if(!Settings::value(Settings::GUI_USE_QT_TEXTRENDER).toBool())
+		QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+
 	Log::log() << "Initializing QML" << std::endl;
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);

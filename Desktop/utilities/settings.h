@@ -71,6 +71,7 @@ public:
 		DB_SHOW_WARNING,
 		DB_REMEMBER_ME,
 		DATA_LABEL_NA
+		GUI_USE_QT_TEXTRENDER
 	};
 
 	static QVariant value(Settings::Type key);
