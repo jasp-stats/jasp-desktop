@@ -878,8 +878,24 @@
       ]
     },
     {
-      "name": "17. Miscellaneous",
-      "path": "17. Miscellaneous",
+      "name": "17. Mixed Models",
+      "path": "17. Mixed Models",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Larks and Owls",
+          "path": "Larks and Owls.jasp",
+          "description": "Mind wandering in sustained attention task at different times of the day and chronotype classification obtained via morningness-eveningness questionnaire.<br><br> The example JASP file demonstrates the use of a Generalized Linear Mixed Models.<br><br> <i>Data from Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Larks and Owls.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "18. Miscellaneous",
+      "path": "18. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [

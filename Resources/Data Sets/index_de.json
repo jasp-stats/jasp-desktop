@@ -878,8 +878,24 @@
       ]
     },
     {
-      "name": "17. Miscellaneous",
-      "path": "17. Miscellaneous",
+      "name": "17. Mixed Models",
+      "path": "17. Mixed Models",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Larks and Owls",
+          "path": "Larks and Owls.jasp",
+          "description": "Geistiges Umherschweifen bei der Aufgabe Anhaltende Aufmerksamkeit zu verschiedenen Tageszeiten und Klassifizierung des Chronotyps anhand des Fragebogens Morgens und Abends.<br><br> Die JASP-Beispieldatei demonstriert die Verwendung eines verallgemeinerten linearen gemischten Modells.<br><br> <i>Daten von Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Larks and Owls.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "18. Miscellaneous",
+      "path": "18. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
