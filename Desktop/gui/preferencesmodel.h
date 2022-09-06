@@ -230,16 +230,12 @@ signals:
 	void maxEnginesChanged(				int			maxEngines);
 	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
 	void dbShowWarningChanged(			bool		dbShowWarning);
-<<<<<<< HEAD
 	void maxEnginesAdminChanged();
-
-=======
 	void dataLabelNAChanged(			QString		dataLabelNA);
 
 private slots:
 	void dataLabelNAChangedSlot(		QString		dataLabelNA);
 	
->>>>>>> 1b9e6fceb (Userdefined label for missing values in data)
 private:
 	static PreferencesModel * _singleton;
 
