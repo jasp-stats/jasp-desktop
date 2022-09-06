@@ -215,8 +215,8 @@ FocusScope
 
 					ListElement	{ type: "separator" }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "log";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("natural logarithm") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"log²";					functionName: "log2";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("base 2 logarithm") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"log¹⁰";				functionName: "log10";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("base 10 logarithm") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"log\u2082";			functionName: "log2";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("base 2 logarithm") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"log\u2081\u2080";		functionName: "log10";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("base 10 logarithm") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "logb";			functionParameters: "y,base";			functionParamTypes: "number,number";				toolTip: qsTr("logarithm of y in 'base'") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "exp";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("exponential") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "fishZ";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line") }
