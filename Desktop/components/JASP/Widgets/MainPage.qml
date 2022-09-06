@@ -161,18 +161,34 @@ Item
 				target:				analysesModel
 				function			onAnalysisAdded()
 				{
-					//make sure we get to see the results!
+					//make sure we get to see the analyses + results!
 
-					var inputOutputWidth	= splitViewContainer.width - (data.width + jaspTheme.splitHandleWidth)
-					var remainingDataWidth	= Math.max(0, data.width - (panelSplit.leftHandSplitHandlerSpace + jaspTheme.resultWidth));
+					var desiredFormResWidth	= panelSplit.leftHandSplitHandlerSpace + jaspTheme.resultWidth
+					var inputOutputWidth	= splitViewContainer.width - data.width + panelSplit.leftHandSplitHandlerSpace
+					var remainingDataWidth	= Math.max(0, splitViewContainer.width - (desiredFormResWidth));
 
-					if(inputOutputWidth < jaspTheme.resultWidth + panelSplit.leftHandSplitHandlerSpace)
-						 mainWindow.dataPanelVisible = false;
-					else
+					//If data.width < leftHandSplit then it isnt in view anymore so we can just minimize it
+					if(data.width < panelSplit.leftHandSplitHandlerSpace)
+						data.minimizeData()
+					//If the remaining width of the jasp window is smaller than resultwidth + formwidth just minimize data as well
+					else if(inputOutputWidth < desiredFormResWidth)
+						 mainWindow.dataPanelVisible = false;						
+					else if(mainWindow.dataPanelVisible)
 					{
-						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
-						else							data.setPreferredWidth(remainingDataWidth)
+						//There was some space remaining but it aint much so hide datapanel
+						if(remainingDataWidth < jaspTheme.formWidth / 2)
+							mainWindow.dataPanelVisible = false;
+						else
+						{
+							//otherwise check whether we can just keep showing everything at once?
+
+							remainingDataWidth += panelSplit.leftHandSplitHandlerSpace;
+							if(remainingDataWidth < data.width) //data can stay visible but should be smaller
+								data.setPreferredWidth(remainingDataWidth)
+							//else, keep as is
+						}
 					}
+					//else keep as is
 				}
 			}
 
