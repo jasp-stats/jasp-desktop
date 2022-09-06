@@ -560,6 +560,7 @@ void PreferencesModel::dataLabelNAChangedSlot(QString dataLabelNA)
 
 void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 {
-
 	QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
+
+	MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
 }
