@@ -338,7 +338,7 @@ string Labels::_getOrgValueFromLabel(const Label &label) const
 	map<int, string> &orgStringValues	= getOrgStringValues();
 	map<int, string>::const_iterator it = orgStringValues.find(label.value());
 
-	if (it == orgStringValues.end())	return label.text();
+	if (it == orgStringValues.end())	return label.value() == std::numeric_limits<int>::lowest() ? "" : label.text(); //If missing value show nothing, not a label
 	else								return it->second;
 }
 
@@ -351,8 +351,8 @@ string Labels::getValueFromKey(int key) const
 	}
 	catch (const labelNotFound & e)
 	{
-		Log::log() << "Label not found, msg: " << e.what() << ", returning emptyValue\n";
-		return Utils::emptyValue;
+		Log::log() << "Label not found for getValueFromKey, msg: " << e.what() << ", returning emptyValue\n";
+		return "";
 	}
 }
 
@@ -380,6 +380,7 @@ std::string Labels::getLabelFromRow(int row) const
 		return "";
 	}
 	const Label & label = _labels.at(row);
+
 	return label.text();
 }
 

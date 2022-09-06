@@ -222,7 +222,7 @@ private:
 
 	void		_setRowCount(int rowCount);
 	std::string	_getLabelFromKey(int key) const;
-	std::string	_getScaleValue(int row);
+	std::string	_getScaleValue(int row, bool forDisplay);
 
 	void		_convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
 

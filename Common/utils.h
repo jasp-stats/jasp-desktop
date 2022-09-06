@@ -52,7 +52,7 @@ public:
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
 
-	static const std::string emptyValue;
+	static       std::string emptyValue;
 	static const std::vector<std::string>	& getEmptyValues()			{ return _currentEmptyValues;		}
 	static const std::vector<std::string>	& getDefaultEmptyValues()	{ return _defaultEmptyValues;		}
 	static const std::vector<double>		& getDoubleEmptyValues()	{ return _currentDoubleEmptyValues;	}

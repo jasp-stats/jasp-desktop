@@ -203,7 +203,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 				}
 				else
 				{
-					values.push_back(Utils::emptyValue);
+					values.push_back("");
 				}
 			}
 			else
@@ -309,7 +309,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 			}
 			else //if we couldnt find the "row" in the emptyValuesMap?
 			{
-				values.push_back(Utils::emptyValue);
+				values.push_back("");
 
 				if (canBeConvertedToIntegers)		intValues.push_back(std::numeric_limits<int>::lowest());
 				else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
@@ -317,7 +317,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 		}
 		else if (key == std::numeric_limits<int>::lowest())
 		{
-			values.push_back(Utils::emptyValue);
+			values.push_back("");
 
 			if (canBeConvertedToIntegers)		intValues.push_back(std::numeric_limits<int>::lowest());
 			else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
@@ -523,7 +523,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 			std::vector<string> values;
 
 			for (double doubleValue : AsDoubles)
-				if (std::isnan(doubleValue))	values.push_back(Utils::emptyValue);
+				if (std::isnan(doubleValue))	values.push_back("");
 				else							values.push_back(Utils::doubleToString(doubleValue));
 
 			setColumnAsNominalText(values);
@@ -1011,31 +1011,31 @@ bool Column::isValueEqual(int row, const string &value)
 	return false;
 }
 
-string Column::_getScaleValue(int row)
+string Column::_getScaleValue(int row, bool forDisplay)
 {
 	double v = AsDoubles[row];
 
-	if (v > std::numeric_limits<double>::max())					return string({ (char)0xE2, (char)0x88, (char)0x9E, 0 });
-	else if (v < std::numeric_limits<double>::lowest())			return string({ (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 });
-	else if (Utils::isEmptyValue(v))							return Utils::emptyValue;
+	if (v > std::numeric_limits<double>::max())					return "∞";
+	else if (v < std::numeric_limits<double>::lowest())			return "-∞";
+	else if (Utils::isEmptyValue(v))							return forDisplay ? Utils::emptyValue : "";
 	else														return Utils::doubleToString(v);
 }
 
 string Column::getOriginalValue(int row)
 {
-	string result = Utils::emptyValue;
+	string result = "";
 
 	if (row < _rowCount)
 	{
 		if (_columnType == columnType::scale)
 		{
-			result = _getScaleValue(row);
+			result = _getScaleValue(row, false);
 		}
 		else
 		{
 			int key = AsInts[row];
 			if (key == std::numeric_limits<int>::lowest())
-				result = Utils::emptyValue;
+				result = "";
 			else
 				result = _labels.getValueFromKey(key);
 		}
@@ -1053,7 +1053,7 @@ string Column::operator [](int row)
 	{
 		if (_columnType == columnType::scale)
 		{
-			result = _getScaleValue(row);
+			result = _getScaleValue(row, true);
 		}
 		else
 		{

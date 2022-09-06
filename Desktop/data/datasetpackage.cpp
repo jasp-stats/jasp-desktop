@@ -1183,7 +1183,7 @@ void DataSetPackage::writeDataSetToOStream(std::ostream & out, bool includeCompu
 			Column *column = cols[i];
 
 			std::string value = column->getOriginalValue(r);
-			if (value != ".")
+			if (value != "")
 			{
 				if (stringUtils::escapeValue(value))	out << '"' << value << '"';
 				else									out << value;
