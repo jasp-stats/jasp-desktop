@@ -7,7 +7,7 @@ import JASP.Controls	1.0
 FocusScope
 {
 	id:				analysisFormsFocusScope
-	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.width : 0)
+	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.visibleBreadth : 0)
 	width:			implicitWidth
 
 	property int	extraSpace:	openCloseButton.width
@@ -121,7 +121,7 @@ FocusScope
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
 				boundsBehavior: Flickable.StopAtBounds
-				width:			jaspTheme.formWidth
+				width:			parent.width - verticalScrollbar.breadth
 
 				anchors
 				{

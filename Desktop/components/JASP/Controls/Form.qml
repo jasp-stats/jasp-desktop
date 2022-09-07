@@ -100,7 +100,7 @@ AnalysisForm
 			id:					errorMessagesBox
 			visible:			form.errors !== ""
 			color:				jaspTheme.controlErrorBackgroundColor
-			width:				parent.width
+			width:				form.implicitWidth
 			height:				visible ? errorMessagesText.height : 0
 			anchors.top:		oldFileMessagesBox.bottom
 			anchors.margins:	visible ? jaspTheme.generalAnchorMargin : 0
@@ -139,7 +139,7 @@ AnalysisForm
 			id:					warningMessagesBox
 			visible:			form.warnings !== ""
 			color:				jaspTheme.controlWarningBackgroundColor
-			width:				parent.width
+			width:				form.implicitWidth
 			height:				visible ? warningMessagesText.height : 0
 			anchors.top:		errorMessagesBox.bottom
 			anchors.margins:	visible ? jaspTheme.generalAnchorMargin : 0
@@ -176,7 +176,7 @@ AnalysisForm
 			id:					contentArea
 			anchors.top:		warningMessagesBox.bottom
 			anchors.margins:	warningMessagesBox.visible || errorMessagesBox.visible ? jaspTheme.generalAnchorMargin : 0
-			width:				parent.width
+			width:				form.implicitWidth
 		}
 	}
 	

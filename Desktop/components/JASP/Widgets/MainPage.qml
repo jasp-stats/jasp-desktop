@@ -47,7 +47,7 @@ Item
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		//And also on the left side to allow it to move out of the screen there.
 		property int	hackySplitHandlerHideWidth:	( mainWindow.analysesAvailable ? (analysesModel.visible ? leftHandSplitHandlerSpace : 0 ) + jaspTheme.splitHandleWidth : 0 )
-		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig
+		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig + jaspTheme.splitHandleWidth + 2 /* *borderwidth of openCloseButton*/
 
 		onResizingChanged: if(!resizing) data.makeSureHandleVisible();
 
@@ -123,8 +123,6 @@ Item
 			implicitWidth:			splitHandle.width + analyses.implicitWidth
 			width:					implicitWidth
 
-
-
 			JASPSplitHandle
 			{
 				id:				splitHandle
@@ -163,18 +161,34 @@ Item
 				target:				analysesModel
 				function			onAnalysisAdded()
 				{
-					//make sure we get to see the results!
+					//make sure we get to see the analyses + results!
 
-					var inputOutputWidth	= splitViewContainer.width - (data.width + jaspTheme.splitHandleWidth)
-					var remainingDataWidth	= Math.max(0, data.width - (jaspTheme.splitHandleWidth + jaspTheme.resultWidth));
+					var desiredFormResWidth	= panelSplit.leftHandSplitHandlerSpace + jaspTheme.resultWidth
+					var inputOutputWidth	= splitViewContainer.width - data.width + panelSplit.leftHandSplitHandlerSpace
+					var remainingDataWidth	= Math.max(0, splitViewContainer.width - (desiredFormResWidth));
 
-					if(inputOutputWidth < 100 * preferencesModel.uiScale)
-						 mainWindow.dataPanelVisible = false;
-					else if(inputOutputWidth < jaspTheme.resultWidth)
+					//If data.width < leftHandSplit then it isnt in view anymore so we can just minimize it
+					if(data.width < panelSplit.leftHandSplitHandlerSpace)
+						data.minimizeData()
+					//If the remaining width of the jasp window is smaller than resultwidth + formwidth just minimize data as well
+					else if(inputOutputWidth < desiredFormResWidth)
+						 mainWindow.dataPanelVisible = false;						
+					else if(mainWindow.dataPanelVisible)
 					{
-						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
-						else							data.setPreferredWidth(remainingDataWidth)
+						//There was some space remaining but it aint much so hide datapanel
+						if(remainingDataWidth < jaspTheme.formWidth / 2)
+							mainWindow.dataPanelVisible = false;
+						else
+						{
+							//otherwise check whether we can just keep showing everything at once?
+
+							remainingDataWidth += panelSplit.leftHandSplitHandlerSpace;
+							if(remainingDataWidth < data.width) //data can stay visible but should be smaller
+								data.setPreferredWidth(remainingDataWidth)
+							//else, keep as is
+						}
 					}
+					//else keep as is
 				}
 			}
 
