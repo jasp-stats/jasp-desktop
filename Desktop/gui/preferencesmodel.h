@@ -64,6 +64,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
+	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -122,6 +123,7 @@ public:
 	bool		windowsNoBomNative()		const;
 	bool		dbShowWarning()				const;
 	QString		dataLabelNA()				const;
+	bool		guiQtTextRender()			const;
 
 	void		zoomIn();
 	void		zoomOut();
@@ -129,6 +131,7 @@ public:
 	
 	
 	int maxEnginesAdmin() const;
+
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -182,8 +185,9 @@ public slots:
 	void setWindowsNoBomNative(			bool		windowsNoBomNative);
 	void setDbShowWarning(				bool		dbShowWarning);
 	void setDataLabelNA(				QString		dataLabelNA);
-	
-	
+	void setGuiQtTextRender(			bool		newGuiQtTextRender);
+	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
+
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -232,6 +236,7 @@ signals:
 	void dbShowWarningChanged(			bool		dbShowWarning);
 	void maxEnginesAdminChanged();
 	void dataLabelNAChanged(			QString		dataLabelNA);
+	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 
 private slots:
 	void dataLabelNAChangedSlot(		QString		dataLabelNA);

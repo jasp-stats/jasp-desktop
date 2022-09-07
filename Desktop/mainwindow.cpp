@@ -24,6 +24,7 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickStyle>
+#include <QQuickWindow>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <QAction>
 #include <QMenuBar>
@@ -100,6 +101,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	//This is the constructor, so _qml is not set yet and there is no need to check that with an if statement
 	QQuickStyle::setStyle("Basic");
+
+	QQuickWindow::setTextRenderType(Settings::value(Settings::GUI_USE_QT_TEXTRENDER).toBool() ?
+										QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
@@ -405,6 +409,7 @@ void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
 		Log::log(false)	<< "\t" << warning.toString() << "\n";
 	Log::log(false) << std::endl;
 }
+
 
 void MainWindow::loadQML()
 {

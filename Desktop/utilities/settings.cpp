@@ -76,6 +76,7 @@ const Settings::Setting Settings::Values[] = {
 	{"dbShowWarning",				true	},
 	{"dbRememberMe",				false	},
 	{"dataNALabel",					""		}
+	{"guiQtTextRender",				true	}
 	
 };	
 

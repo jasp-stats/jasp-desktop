@@ -20,7 +20,6 @@
 #include <QDir>
 
 #include "utilities/application.h"
-#include <QQuickWindow>
 #include "utilities/settings.h"
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <boost/filesystem.hpp>
@@ -318,13 +317,6 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 int main(int argc, char *argv[])
 {
 #ifdef _WIN32
-	// Temporary fix for #2322 by disabling opengl drawing on windows
-	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for
-	// future permanent fix.
-	// This does slow down QML quite a bit and disables gradients
-	// qputenv("QT_QUICK_BACKEND", "software");
-	//Turned this off because it causes some weird resizing problems QCoreApplication::setAttribute(Qt::AA_UseOpenGLES); //might fix weirdlooking QML on Windows when using not-so-goo drivers? ( https://github.com/jasp-stats/jasp-desktop/issues/2669 )
-	
 	setlocale(LC_ALL, ".UTF8"); //use utf8
 #endif
 
@@ -378,10 +370,6 @@ int main(int argc, char *argv[])
 
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
-
-#ifdef _WIN32
-			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
-#endif
 
 			//Now we convert all these strings in args back to an int and a char * array.
 			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)
