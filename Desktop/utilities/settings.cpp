@@ -75,7 +75,7 @@ const Settings::Setting Settings::Values[] = {
 	{"dbImportInterval",			0		},
 	{"dbShowWarning",				true	},
 	{"dbRememberMe",				false	},
-	{"dataNALabel",					""		}
+	{"dataNALabel",					""		},
 	{"guiQtTextRender",				true	}
 	
 };	
