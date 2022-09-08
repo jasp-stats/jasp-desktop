@@ -141,3 +141,8 @@ QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
 	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	else															return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
 }
+
+QString MessageForwarder::browseOpenFolder(QString caption)
+{
+	return browseOpenFolder(caption, AppDirs::documents());
+}

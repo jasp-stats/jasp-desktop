@@ -43,6 +43,7 @@ public:
 	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter);
 	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);
 	static QString browseOpenFolder(		QString caption, QString browsePath);
+	static QString browseOpenFolder(		QString caption);
 	static QString browseOpenFileDocuments(	QString caption,						QString filter);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);
 
@@ -57,6 +58,9 @@ public slots:
 
 	QString			browseSaveFileQML(QString caption, QString browsePath, QString filter)																	{ return browseSaveFile(caption, browsePath, filter); }
 	QString			browseSaveFileDocumentsQML(QString caption, QString filter)																				{ return browseSaveFileDocuments(caption, filter); }
+	QString			browseOpenFolderQML(QString caption, QString browsePath)																				{ return browseOpenFolder(caption, browsePath);}
+	QString			browseOpenFolderQML(QString caption)																									{ return browseOpenFolder(caption);}
+
 
 private:
 	static		MessageForwarder	*_singleton;
