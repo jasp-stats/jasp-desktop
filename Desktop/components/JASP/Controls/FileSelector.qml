@@ -10,6 +10,7 @@ TextField
 	property bool	save		: true
 	property string	filter		: "*"
 	property alias	buttonText	: button.text
+	property bool	directory	: false
 
 	implicitWidth				: button.x + button.width
 
@@ -28,9 +29,14 @@ TextField
 
 		onClicked:
 		{
-			var browsedFile = selector.save ?
-						messages.browseSaveFileDocumentsQML(selector.caption, selector.filter) :
-						messages.browseOpenFileDocumentsQML(selector.caption, selector.filter) ;
+			var browsedFile;
+
+			if (selector.directory)
+				browsedFile = messages.browseOpenFolderQML(selector.caption, selector.filter)
+			else if (selector.save)
+				browsedFile = messages.browseSaveFileDocumentsQML(selector.caption, selector.filter)
+			else
+				browsedFile = messages.browseOpenFileDocumentsQML(selector.caption, selector.filter)
 
 			selector.value = browsedFile;
 			selector.doEditingFinished();
