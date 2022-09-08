@@ -7,8 +7,8 @@ import JASP.Controls	1.0
 Window
 {
 	id:					helpWindowRoot
-	width:				400
-	height:				700
+	width:				400 * preferencesModel.uiScale
+    height:				Math.min(700 * preferencesModel.uiScale, Screen.desktopAvailableHeight * 0.8)
 	minimumWidth:		200 * preferencesModel.uiScale
 	minimumHeight:		minimumWidth
 	visible:			helpModel.visible
@@ -16,10 +16,7 @@ Window
 	title:				qsTr("JASP Help")
 	color:				jaspTheme.uiBackground
 
-	Shortcut { onActivated: mainWindow.zoomInKeyPressed();		sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}
-	Shortcut { onActivated: mainWindow.zoomOutKeyPressed();		sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
-	Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
-	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+Q", "Ctrl+W", Qt.Key_Close];					}
+	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+W", Qt.Key_Close];					}
 	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
 	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];							}
 

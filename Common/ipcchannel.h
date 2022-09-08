@@ -36,6 +36,7 @@
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>
+#include <functional>
 
 typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared_memory::segment_manager	> CharAllocator;
 typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
@@ -65,7 +66,7 @@ public:
 
 private:
 	bool tryWait(int timeout = 0);
-	void catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis);
+    void catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis);
 
 	void doubleMemoryOut();
 	void rebindMemoryInIfSizeChanged();

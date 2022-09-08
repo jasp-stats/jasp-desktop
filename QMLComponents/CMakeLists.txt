@@ -29,6 +29,7 @@ target_include_directories(
 target_link_libraries(
   QMLComponents
   PUBLIC
+         Common
          Qt::Core
          Qt::Gui
          Qt::Widgets
