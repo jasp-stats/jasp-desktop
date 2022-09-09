@@ -92,7 +92,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 Text
                 {
                     id:						dbDriverLabel
-                    text:					qsTr("Choose DB driver")
+					text:					qsTr("DB driver")
 
                     anchors.verticalCenter: parent.verticalCenter
                     width:					dbHostnameLabel.width
