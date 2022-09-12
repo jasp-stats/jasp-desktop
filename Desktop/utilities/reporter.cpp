@@ -53,7 +53,10 @@ bool Reporter::isJaspFileNotDabaseOrSynching() const
 		{
 			std::cerr << "A jasp file without a datafile was loaded, which means there can be no updates..." << std::endl;
 
-			return false;
+			return MessageForwarder::showYesNo(tr("No datafile"),
+											   tr("JASP was started in reporting mode, but the jasp file is not coupled to a datafile.\n"
+												  "This means there can be no updates...\n\n"
+												  "Would you like to continue anyway?"));
 		}	
 		
 		//Lets make sure it actually checks whether the datafile is  being synched or not.
@@ -215,47 +218,34 @@ bool Reporter::analysisHasReportNeeded(Analysis *a)
 	return needed;
 }
 
+QDir Reporter::dashboardDir() const
+{
+	return _reportingDir.absoluteFilePath("dashboard/");
+}
+
 void Reporter::exportDashboard()
 {
-	QDir dashboardDir(_reportingDir.absoluteFilePath("dashboard/"));
+	QDir dashboardDir(Reporter::dashboardDir());
 
-	if(dashboardDir.exists())
+	if(dashboardDir.exists("index.html"))
 		return;
 
 	dashboardDir.mkpath(".");
 
-	QDir qrcHtml("qrc:///html/");
-
-	QDirIterator goDeep(qrcHtml, QDirIterator::Subdirectories);
-
-	QString filePath, prefix;
-
-	while(goDeep.hasNext())
-	{
-		filePath = goDeep.next();
-		QFile nextFile(filePath);
-
-		if(filePath.size() >= qrcHtml.absolutePath().size())
-			Log::log() << "exportDashboard filePath was smaller than qrcHtml path... ???" << std::endl;
-		else
-		{
-			prefix = filePath.right(qrcHtml.absolutePath().size());
-
-			nextFile.copy(dashboardDir.absoluteFilePath(prefix));
-
-		}
-
-	}
-	}
+	copyQDirRecursively(QDir(":/html/"), dashboardDir);
+}
 
 void Reporter::writeResultsJson()
 {
 	exportDashboard();
 
-	QFile resultsFile(_reportingDir.absoluteFilePath("results.json"));
+	QFile resultsFile(Reporter::dashboardDir().absoluteFilePath("results.json"));
 	
 	if(resultsFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text))
 		resultsFile.write(Analyses::analyses()->asJson() .toStyledString().c_str());
+
+	//Also copy the resources to the dashboarddir so we can show the operator some pictures
+	copyQDirRecursively(QDir(tq(TempFiles::sessionDirName() + "/resources/")), dashboardDir().absoluteFilePath("resources"));
 }
 
 void Reporter::writeReport()

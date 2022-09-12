@@ -20,7 +20,9 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QStringList>
+#include <QDirIterator>
 #include <QDateTime>
+#include "log.h"
 #include "appinfo.h"
 #include "simplecrypt.h"
 #include "log.h"
@@ -242,4 +244,43 @@ QString shortenWinPaths(QString in)
 #else
 	return in;
 #endif
+}
+
+void copyQDirRecursively(QDir copyThis, QDir toHere)
+{
+	toHere.mkpath(".");
+
+	const QString copyThisRootPath = copyThis.absolutePath() + "/";
+
+
+	QDirIterator goDeep(copyThis, QDirIterator::Subdirectories);
+
+	QString filePath, postfix;
+	QFileInfo fileInfo;
+
+	while(goDeep.hasNext())
+	{
+		fileInfo	= goDeep.nextFileInfo();
+		filePath	= fileInfo.absoluteFilePath();
+		postfix		= filePath.right(filePath.size() - copyThisRootPath.size());
+
+		if(fileInfo.isFile())
+		{
+			QFile nextFile(filePath);
+
+			if(filePath.size() <= copyThis.absolutePath().size())
+				Log::log() << "copyQDirRecursively 'toHere' filePath was smaller than 'copyThis' path... ???" << std::endl;
+			else
+			{
+				nextFile.copy(toHere.absoluteFilePath(postfix));
+			}
+		}
+		else if(fileInfo.isDir() && !fileInfo.isHidden())
+		{
+			toHere.mkpath(postfix);
+		}
+
+	}
+
+
 }

@@ -38,6 +38,7 @@ private:
 	void	writeReport();
 	void	writeReportLog();
 	void	exportDashboard();
+	QDir	dashboardDir() const;
 
 private:
 	QDir					_reportingDir;
