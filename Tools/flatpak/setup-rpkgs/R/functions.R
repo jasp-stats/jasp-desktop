@@ -246,6 +246,19 @@ getFlatpakJSONFromDESCRIPTION <- function(pathToModule, dirForPkgs = tempdir(), 
 
 }
 
+guardForNonStandardPackagesInSystemLibrary <- function() {
+  # look for packages in the system library and tell renv to rebuild them so it doesn't try to reuse them
+  installed <- installed.packages(.libPaths()[-1L])
+  idx <- !startsWith(installed[, "License"], "Part of R ")
+  badPackagesFoundInSystemLibrary <- installed[idx, "Package"]
+  if (length(badPackagesFoundInSystemLibrary) > 0L) {
+    cat("Warning: The following packages were found in the system library but they are not shipped with R!\nThis script should still work, but you probably don't want this.\n")
+    cat(badPackagesFoundInSystemLibrary, sep = ", ")
+    cat("\n")
+  }
+  options(badPackagesFoundInSystemLibrary = badPackagesFoundInSystemLibrary)
+}
+
 customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDownload = TRUE) {
 
   if (customDownload) {
@@ -257,6 +270,7 @@ customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDo
   on.exit(assignFunctionInPackage(old_renv_impl_install, "renv_install_impl", "renv"), add = TRUE)
   assignFunctionInPackage(identity, "renv_install_impl", "renv")
 
+  rebuild <- c(packages, getOption("badPackagesFoundInSystemLibrary", default = character()))
   renv::install(packages = packages, library = library, rebuild = rebuild)
 
 }
@@ -289,46 +303,46 @@ installRecommendedPackages <- function(dirs) {
 
 }
 
-getFlatpakJSONFromLockfile <- function(pathToModule, dirForPkgs = tempdir(), downloadPkgs = FALSE) {
-
-  options("renv.download.override" = download_override)
-  on.exit(options("renv.download.override" = NULL))
-
-  lockfile <- jsonlite::fromJSON(file.path(pathToModule, "renv.lock"))
-  records <- lockfile$Packages
-  records <- Filter(function(x) !x$Package %in% c("jaspTools", "jaspResults"), records)
-
-  nrecords <- length(records)
-
-  resultsEnv <- createResultsEnv(dirForPkgs, downloadPkgs, fromLockFile = TRUE)
-  resultsEnv$packages <- character(nrecords)
-  resultsEnv$url      <- character(nrecords)
-  resultsEnv$destfile <- character(nrecords)
-  resultsEnv$records  <- vector("list", nrecords)
-
-  pb <- utils::txtProgressBar(max = nrecords, style = 3)
-  on.exit(close(pb), add = TRUE)
-  for (i in seq_along(records)) {
-
-    # TODO: consider the same hack as in getFlatpakJSONFromDESCRIPTION to overwrite renv:::renv_install
-
-    tryCatch(
-      # rebuild ensures we bypass the cache
-      capture.output(renv::install(records[i], rebuild = TRUE, sources = "")),
-      earlyExit = function(e) {},
-      error = function(e) {
-        if (!identical(e[["message"]], "failed to retrieve 'Error: expected error: early exit\n' [expected error: early exit]")) {
-          browser(e)
-          print(paste("got an error:", e[["message"]]))
-        }
-      }
-    )
-
-    utils::setTxtProgressBar(pb, i)
-
-  }
-
-}
+# getFlatpakJSONFromLockfile <- function(pathToModule, dirForPkgs = tempdir(), downloadPkgs = FALSE) {
+#
+#   options("renv.download.override" = download_override)
+#   on.exit(options("renv.download.override" = NULL))
+#
+#   lockfile <- jsonlite::fromJSON(file.path(pathToModule, "renv.lock"))
+#   records <- lockfile$Packages
+#   records <- Filter(function(x) !x$Package %in% c("jaspTools", "jaspResults"), records)
+#
+#   nrecords <- length(records)
+#
+#   resultsEnv <- createResultsEnv(dirForPkgs, downloadPkgs, fromLockFile = TRUE)
+#   resultsEnv$packages <- character(nrecords)
+#   resultsEnv$url      <- character(nrecords)
+#   resultsEnv$destfile <- character(nrecords)
+#   resultsEnv$records  <- vector("list", nrecords)
+#
+#   pb <- utils::txtProgressBar(max = nrecords, style = 3)
+#   on.exit(close(pb), add = TRUE)
+#   for (i in seq_along(records)) {
+#
+#     # TODO: consider the same hack as in getFlatpakJSONFromDESCRIPTION to overwrite renv:::renv_install
+#
+#     tryCatch(
+#       # rebuild ensures we bypass the cache
+#       capture.output(renv::install(records[i], rebuild = TRUE, sources = "")),
+#       earlyExit = function(e) {},
+#       error = function(e) {
+#         if (!identical(e[["message"]], "failed to retrieve 'Error: expected error: early exit\n' [expected error: early exit]")) {
+#           browser(e)
+#           print(paste("got an error:", e[["message"]]))
+#         }
+#       }
+#     )
+#
+#     utils::setTxtProgressBar(pb, i)
+#
+#   }
+#
+# }
 
 getFlatpakJSONFromModule <- function(pathToModule, dirForPkgs = tempdir(), downloadPkgs = FALSE) {
 

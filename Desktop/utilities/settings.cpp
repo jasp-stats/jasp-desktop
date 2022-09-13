@@ -57,8 +57,14 @@ const Settings::Setting Settings::Values[] = {
 									"Fira Code"},
 #else
 									".AppleSystemUIFontMonospaced"},
-#endif									
-	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
+#endif
+#ifdef WIN32
+	{"resultFont",					"Arial,sans-serif,freesans,\"Segoe UI\""},
+#elif __APPLE__
+	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans"},
+#else // Linux and brave people compiling Jasp on other OSes
+	{"resultFont",					"freesans,sans-serif"},
+#endif
 	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmodel.h
 	{"maxEngineCount",				4		}, //In debug always 1
 	{"maxEngineCountAdmin",			0		}, //If set to something >0 it will be the max allowed max engine count. This is here to allow admins to override the number of processes spawned as they might each consume quite some RAM.

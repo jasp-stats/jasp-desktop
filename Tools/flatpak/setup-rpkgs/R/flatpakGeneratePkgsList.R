@@ -37,6 +37,8 @@ source(file.path("R", "validators.R"))
 
 validateSetup(jaspDir, flatpakDir)
 
+guardForNonStandardPackagesInSystemLibrary()
+
 options(repos = list(repos = c(CRAN = "https://cran.rstudio.com")))
 # for binary packages, but this does not yet work well
 # options(repos = list(repos = c(RSPM = "https://packagemanager.rstudio.com/all/__linux__/focal/latest")))
@@ -58,6 +60,9 @@ names(jaspModules) <- basename(jaspModules)
 
 # | HERE | you can add modules to exclude
 #jaspModules <- jaspModules[setdiff(names(jaspModules), c("jaspProcessControl"))]
+
+# useful to find out why some function is not downloaded
+# trace(renv:::renv_retrieve_impl, quote(if(package == "Rcpp") browser()))
 
 getModuleEnvironments(jaspModules)
 # system("beep_finished.sh")
