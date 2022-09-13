@@ -40,7 +40,7 @@ endif()
 
 project(
   JASP
-  VERSION 0.16.3.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
+  VERSION 0.16.4.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
