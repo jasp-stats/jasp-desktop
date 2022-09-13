@@ -67,7 +67,7 @@ availablePkgs <- available.packages()
 toInstall <- intersect(c("V8", "gert"), availablePkgs[, "Package"])
 renv::install(toInstall)
 
-installJaspStats(c("jaspBase", "jaspGraphs"), dirs)
+# installJaspStats(c("jaspBase", "jaspGraphs"), dirs)
 
 prettyCat(setNames(lapply(.libPaths(), dir), .libPaths()))
 

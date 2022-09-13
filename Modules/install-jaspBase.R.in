@@ -14,6 +14,12 @@ source("@PROJECT_SOURCE_DIR@/Engine/jaspBase/R/moduleInstall.R")
 # The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y.
+
+if (@IS_FLATPAK_USED@) {
+  source("/app/lib64/Rprofile.R")
+  options(repos = "@R_REPOSITORY@")
+}
+
 .libPaths(c("@R_LIBRARY_PATH@"))
 
 modulePkg     <- "@PROJECT_SOURCE_DIR@/Engine/jaspBase"
