@@ -244,7 +244,7 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspRCPP_parseEvalQNT("jaspBase:::setWriteSealLocation(\"" + root + "\", \"" + relativePath + "\");");
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont, const char * libPathsToUse)
 {
 	RInside &rInside			= rinside->instance();
 
@@ -261,6 +261,11 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside[".resultsFont"]		= resultsFont;
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
+
+	std::string libP = libPathsToUse;
+
+	if(libP != "")
+		jaspRCPP_parseEvalQNT(".libPaths(" + libP + ");");
 
 	SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
 

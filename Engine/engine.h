@@ -136,6 +136,7 @@ private: // Data:
 						_imageBackground	= "white",
 						_analysisRFile		= "",
 						_dynamicModuleCall	= "",
+						_libPathsToUse		= "", //temp hack
 						_langR				= "en";
 
 	Json::Value			_imageOptions,
