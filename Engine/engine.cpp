@@ -524,6 +524,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
+		_libPathsToUse			= jsonRequest.get("libPathsToUse",		"").asString();
 		_resultsFont			= jsonRequest.get("resultsFont",		"").asString();
 		_engineState			= engineState::analysis;
 
@@ -586,7 +587,7 @@ void Engine::runAnalysis()
 
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont, _libPathsToUse);
 
 	switch(_analysisStatus)
 	{

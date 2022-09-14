@@ -621,6 +621,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
 	json["resultsFont"]			= PreferencesModel::prefs()->resultFont().toStdString();
+	json["libPathsToUse"]		= _moduleData ? _moduleData->dynamicModule()->getLibPathsToUse() : ""; //temporary hack for fixing https://github.com/jasp-stats/jasp-test-release/issues/1953 and the like. can be removed once new dynamic moudles stuff is merged from development
 
 	if (!isAborted())
 	{
