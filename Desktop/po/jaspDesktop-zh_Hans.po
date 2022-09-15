@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-09-13 18:33+0000\n"
+"PO-Revision-Date: 2022-09-15 19:47+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -107,15 +107,15 @@ msgstr "版本："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "构建于："
+msgstr "构建："
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr "源："
+msgstr "源码："
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr "在此处访问源"
+msgstr "在此处查阅源代码"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
