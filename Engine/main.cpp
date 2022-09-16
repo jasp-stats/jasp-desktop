@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
 
 #ifdef _WIN32
-	_m	oduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
+		_moduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
 #else
 		_moduleLibraryFixer(argv[1], true, true);
 #endif
