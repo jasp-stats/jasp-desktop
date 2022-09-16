@@ -508,7 +508,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
-	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine(PreferencesModel::prefs()->setLC_CTYPE_C());
+	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
 	
 #ifdef _WIN32 
 	fixPATHForWindows(env);

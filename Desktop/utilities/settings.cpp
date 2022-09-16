@@ -65,7 +65,6 @@ const Settings::Setting Settings::Values[] = {
 #else // Linux and brave people compiling Jasp on other OSes
 	{"resultFont",					"freesans,sans-serif"},
 #endif
-	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmodel.h
 	{"maxEngineCount",				4		}, //In debug always 1
 	{"maxEngineCountAdmin",			0		}, //If set to something >0 it will be the max allowed max engine count. This is here to allow admins to override the number of processes spawned as they might each consume quite some RAM.
 	{"GITHUB_PAT_Custom",			""		},
@@ -117,19 +116,4 @@ QSettings *Settings::getSettings()
 	if (!_settings)
 		_settings = new QSettings();
 	return _settings;
-}
-
-winLcCtypeSetting Settings::getWinLcCtypeSetting()
-{
-	QString lcCtypeSetting = Settings::value(Settings::LC_CTYPE_C_WIN).toString();
-	
-	winLcCtypeSetting val = winLcCtypeSetting::check;
-	
-	try
-	{
-		val = winLcCtypeSettingFromQString(lcCtypeSetting);	
-	}
-	catch(missingEnumVal & e) {} //Just keep it at check then
-	
-	return val;
 }

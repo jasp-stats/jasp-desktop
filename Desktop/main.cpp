@@ -43,11 +43,11 @@ const std::string	jaspExtension		= ".jasp",
 #include "utilities/processhelper.h"
 // This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode or remove-junction mode.
 // The junction-fixining mode is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
-// The remove-junction mode is called before the uninstaller runs to remove all these junstions: doing this prevent the uninstaller to run for ages.
+// The remove-junction mode is called before the uninstaller runs to remove all these junctions: doing this prevent the uninstaller to run for ages.
 bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
 {
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
-	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(false);
+	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine();
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
 	
 	QProcess engine;
@@ -84,7 +84,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 #define QSTRING_FILE_ARG QString::fromStdString
 #endif
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system, Json::Value & dbJson)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, Json::Value & dbJson)
 {
 	filePath		= "";
 	unitTest		= false;
@@ -93,8 +93,6 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	logToFile		= false;
 	hideJASP		= false;
 	safeGraphics	= false;
-	LC_CTYPE_C		= false;
-	LC_CTYPE_system	= false;
 	timeOut			= 10;
 	dbJson			= Json::nullValue;
 
@@ -109,8 +107,6 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else if(args[arg] == "--logToFile")						logToFile				= true;
 		else if(args[arg] == "--hide")							hideJASP				= true;
 		else if(args[arg] == "--safeGraphics")					safeGraphics			= true;
-		else if(args[arg] == "--setLC_CTYPE_C")					LC_CTYPE_C				= true;
-		else if(args[arg] == "--setLC_CTYPE_system")			LC_CTYPE_system			= true;
 #ifdef _WIN32
 		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv, false); //Run the junctionfixer, it will exit the application btw!
 		else if(args[arg] == removeJunctionsArg)				runJaspEngineJunctionFixer(argc, argv, true);  //Remove the junctions
@@ -230,7 +226,6 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled.\n"
 			   #ifdef _WIN32
-					<< "If --setLC_CTYPE_C is specified JASP will make sure LC_CTYPE is set to \"C\" for the engine, --setLC_CTYPE_system is specified the system default is used."
 					<< "If --junctions is specified JASP will recreate the junctions in Modules/ to renv-cache/, this needs to be done at least once after install, but is usually triggered automatically."
 			   #endif
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
@@ -322,9 +317,7 @@ int main(int argc, char *argv[])
 				save,
 				logToFile,
 				hideJASP,
-				safeGraphics,
-				setLC_CTYPE_C,
-				setLC_CTYPE_system;
+				safeGraphics;
 	int			timeOut;
 	Json::Value	dbJson;
 
@@ -332,14 +325,10 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 	
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system, dbJson);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, dbJson);
 	
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
-	
-	//Make sure the strings are the same as enum winLcCtypeSetting in enginedefinitions.h
-	if(setLC_CTYPE_C)		Settings::setValue(Settings::LC_CTYPE_C_WIN, "alwaysC"); 
-	if(setLC_CTYPE_system)	Settings::setValue(Settings::LC_CTYPE_C_WIN, "neverC");
 
 	QString filePathQ(QSTRING_FILE_ARG(filePath.c_str()));
 

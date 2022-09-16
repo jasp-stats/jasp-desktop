@@ -33,24 +33,6 @@ Please *DO NOT* give this personal access token **any permissions** at all, beca
 
 Otherwise you can set it specifically in JASP by unchecking "Use default PAT" and then copying your token-code into the custom GITHUB_PAT textbox, this is probably the easiest if you do not know what an environment variable is.
 
-## Windows workarounds
-
-### LC_CTYPE 
-LC_CTYPE is a setting for the so-called "locale" and it determines, on windows, how characters are encoded. 
-This is used internally by R and sadly enough it cannot handle international characters very well on Windows.
-Setting this to "C" makes sure that all the output in the results looks good and can support all characters (unicode).
-
-The problem is when you are running in a different locale, such as Korean, and you have a username that contains special characters from that locale.
-In that scenario things might break if you install JASP per-user or if you try to install a dynamic module.
-To work around that problem we will then not set LC_CTYPE to "C" but keep it as is, then JASP works.
-The drawback is that some characters in the output will look bad.
-Installing JASP in a different place (per-machine) should fix that.
-
-The default setting "Let JASP guess the best setting for LC_CTYPE" handles this for you, our advice is to leave it enabled.
-
-We apologize for this small inconvenience, we are working on it and hopefully have this fixed next release.
-
-
 ## Logging options
 
 ### Log to file

@@ -48,7 +48,6 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
-	Q_PROPERTY(int			lcCtypeWin				READ lcCtypeWin					WRITE setLcCtypeWin					NOTIFY lcCtypeChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
@@ -117,8 +116,6 @@ public:
 	QString		defaultResultFont()			const;
 	QString		defaultInterfaceFont()		const;
 	QString		defaultCodeFont()			const;
-	bool		setLC_CTYPE_C()				const;
-	int			lcCtypeWin()				const;
 	int			maxEngines()				const;
 	bool		windowsNoBomNative()		const;
 	bool		dbShowWarning()				const;
@@ -180,7 +177,6 @@ public slots:
 	void setGenerateMarkdown(			bool		generateMarkdown);
 	void onCurrentThemeNameChanged(		QString		newThemeName);
 	void resetRememberedModules(		bool		clear);
-	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
 	void setWindowsNoBomNative(			bool		windowsNoBomNative);
 	void setDbShowWarning(				bool		dbShowWarning);

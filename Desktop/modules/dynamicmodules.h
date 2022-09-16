@@ -160,7 +160,6 @@ private:
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
 	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
-	void						checkAndWarnForLC_CTYPE_C() const;
 	bool						requiredModulesForModuleReady(const std::string & moduleName)	const;
 
 private:
