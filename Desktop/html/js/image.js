@@ -149,7 +149,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		if (data) {
 			html += '<div class="jasp-image-image"';
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
-			var url = insideJASP ? "plot://" + data :  data;
+			var url = insideJASP ? "plot://" + data : data;
 			html += ' id="' + id + '" style="';
 			html += error ? 'background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)),' : 'background-image:'
 			html += 'url(\'' + url + '?rev=' + this.model.get("revision") + '\'); '

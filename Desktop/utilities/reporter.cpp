@@ -147,10 +147,13 @@ Json::Value Reporter::reportsFromAnalysis(Analysis * a, int & reportsNeeded, int
 				if(meta.get("type", "").asString() == "reportNode")
 					names.push_back(meta["name"].asString());
 
-				const Json::Value & collection = meta.get("collection", Json::arrayValue);
+				if(meta.get("type", "").asString() == "collection")
+				{
+					const Json::Value & collection = meta.get("meta", Json::arrayValue);
 
-				for(const Json::Value & subEntry : collection)
-					reportNameExtractor(names, subEntry);
+					for(const Json::Value & subEntry : collection)
+						reportNameExtractor(names, subEntry);
+				}
 
 				break;
 			}
@@ -164,6 +167,9 @@ Json::Value Reporter::reportsFromAnalysis(Analysis * a, int & reportsNeeded, int
 	std::function<void(const stringset & names, const Json::Value & results, Json::Value & reports)> reportsExtractor =
 		[&reportsExtractor, &reportsNeeded, &reportsNeutral](const stringset & names, const Json::Value & results, Json::Value & reports) -> void
 		{
+			if(names.size() == 0)
+				return;
+
 			switch(results.type())
 			{
 			case Json::arrayValue:
@@ -172,7 +178,6 @@ Json::Value Reporter::reportsFromAnalysis(Analysis * a, int & reportsNeeded, int
 				break;
 
 			case Json::objectValue:
-			{
 				for(const std::string & name : results.getMemberNames())
 					if(names.count(name))
 					{
@@ -182,17 +187,12 @@ Json::Value Reporter::reportsFromAnalysis(Analysis * a, int & reportsNeeded, int
 
 						reports.append(report);
 					}
-					else if(name != ".meta" && results[name].isObject())
-					{
-						//std::cerr << "looking at name " << name << std::endl;
-						const Json::Value & collection = results[name].get("collection", Json::arrayValue);
-
-						for(const Json::Value & subEntry : collection)
-							reportsExtractor(names, subEntry, reports);
-					}
-
+					else if(name == "collection")
+						reportsExtractor(names, results[name], reports);
+					else if(results[name].isObject() && results[name].isMember("collection"))
+						reportsExtractor(names, results[name]["collection"], reports);
 				break;
-			}
+
 
 			default:
 				//Why would we even be here? It is just to shut up the warning ;)
@@ -205,6 +205,9 @@ Json::Value Reporter::reportsFromAnalysis(Analysis * a, int & reportsNeeded, int
 
 	stringvec reportNames;
 	reportNameExtractor(reportNames, a->resultsMeta());
+
+	//for(const std::string & reportName : reportNames)
+		//Log::log() << "found reportName: " << reportName << std::endl;
 
 	reportsExtractor(stringset(reportNames.begin(), reportNames.end()), a->results(), analysisReports);
 
@@ -266,7 +269,7 @@ void Reporter::writeReportLog()
 
 	reportLogFile.open(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Text);
 	QStringList writeThis = {
-		QDateTime::currentDateTimeUtc().toString(),
+		'"' + QDateTime::currentDateTimeUtc().toString() + '"',
 		tq(std::to_string(_reportsNeutral)),
 		tq(std::to_string(_reportsNeeded))
 	};
