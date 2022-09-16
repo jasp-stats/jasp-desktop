@@ -105,7 +105,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 
 	JASPTIMER_START(jaspRCPP_init);
 
-    static std::string tempDirStatic = TempFiles::createTmpFolder();
+	static std::string tempDirStatic = TempFiles::createTmpFolder();
 	
 	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
@@ -118,8 +118,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					rbridge_system,
 					rbridge_moduleLibraryFixer,
 					resultsFont,
-                    rbridge_nativeToUtf8,
-                    tempDirStatic.c_str()
+					rbridge_nativeToUtf8,
+					tempDirStatic.c_str()
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 

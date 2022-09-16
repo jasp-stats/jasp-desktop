@@ -91,7 +91,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
 	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont,
-    EnDecodeDef nativeToUtf8, const char * tempDir)
+	EnDecodeDef nativeToUtf8, const char * tempDir)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
@@ -100,11 +100,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_libraryFixerFunc		= libraryFixerFunc;
 	_stringNativeToUtf8		= nativeToUtf8;
 
-    jaspRCPP_logString("Creating RInside.\n");
+	jaspRCPP_logString("Creating RInside.\n");
 
-    rinside = new RInside();
+	rinside = new RInside();
 
-    R_TempDir = (char*)tempDir;
+	R_TempDir = (char*)tempDir;
 	
 	RInside &rInside = rinside->instance();
 
@@ -1110,7 +1110,7 @@ void jaspRCPP_parseEvalPreface(const std::string & code, const char * msg = "Eva
 
 std::string __sinkMe(const std::string code)
 {
-    return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
+	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
 }
 
 void jaspRCPP_setWorkingDirectory()

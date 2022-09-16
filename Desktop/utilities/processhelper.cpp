@@ -60,8 +60,8 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
 
-    //Lets set LC_ALL to utf8 before the process starts.
-    env.insert("LC_ALL", ".UTF8");			  
+	//Lets set LC_ALL to utf8 before the process starts.
+	env.insert("LC_ALL", ".UTF8");			  
 
 #elif __APPLE__
 

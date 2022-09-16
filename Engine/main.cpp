@@ -51,16 +51,12 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 #ifdef _WIN32
 int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 {
-   // setlocale(LC_ALL, ".UTF8"); //use utf8
-
-   // Utils::sleep(3000);
-
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= wcstoul(argv[1], NULL, 10),
 						parentPID		= wcstoul(argv[2], NULL, 10);
-        std::string		logFileBase		= Utils::wstringToString(argv[3]),
-                        logFileWhere	= Utils::wstringToString(argv[4]);
+		std::string		logFileBase		= Utils::wstringToString(argv[3]),
+						logFileWhere	= Utils::wstringToString(argv[4]);
 			
 #else
 int main(int argc, char *argv[])
@@ -114,9 +110,9 @@ int main(int argc, char *argv[])
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
 
 #ifdef _WIN32
-        _moduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
+	_m	oduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
 #else
-        _moduleLibraryFixer(argv[1], true, true);
+		_moduleLibraryFixer(argv[1], true, true);
 #endif
 
 		exit(0);
@@ -124,7 +120,7 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 	else if(argc == 3)
 	{
-        std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
+		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
 		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions"), junctionRemoveArg("--removeJunctions");
 		
 		if(arg1 == junctionRemoveArg || arg1 == junctionRecreateArg) //Also remove the old modules if it already exists and we are asked to recreate them, because it might be the old ones (previous install)
