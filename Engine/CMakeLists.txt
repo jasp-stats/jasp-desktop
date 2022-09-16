@@ -24,7 +24,12 @@ file(GLOB JASPRESULTS_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspBase/src/*.cpp
 # this target is not compiled and only exists so that the sources and headers of jaspResults show up in the project and can be opened with Ctrl+k
 add_custom_target(jaspResults ALL SOURCES ${JASPRESULTS_SOURCE_FILES} ${JASPRESULTS_HEADER_FILES})
 
-add_executable(JASPEngine ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(
+    JASPEngine
+    ${SOURCE_FILES}
+    ${HEADER_FILES}
+    $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Engine/JASPEngine.exe.manifest>
+)
 
 add_dependencies(JASPEngine R-Interface)
 
@@ -33,7 +38,7 @@ target_include_directories(
   PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common
          # Conan
-         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
+         #$<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
          #
          ${Boost_INCLUDE_DIRS})
 

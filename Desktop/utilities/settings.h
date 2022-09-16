@@ -5,8 +5,6 @@
 #include <QString>
 #include <QLocale>
 
-enum class winLcCtypeSetting;
-
 ///
 /// Sometimes a class-name says more than a thousand comments
 class Settings {
@@ -54,7 +52,6 @@ public:
 		INTERFACE_FONT,
 		CODE_FONT,
 		RESULT_FONT,
-		LC_CTYPE_C_WIN,
 		MAX_ENGINE_COUNT,
 		MAX_ENGINE_COUNT_ADMIN,
 		GITHUB_PAT_CUSTOM,
@@ -82,8 +79,6 @@ public:
 	static QSettings* getSettings();
 	static const char *	defaultMissingValues;
 	
-	static winLcCtypeSetting getWinLcCtypeSetting();
-
 private:
 	struct Setting {
 		QString type;

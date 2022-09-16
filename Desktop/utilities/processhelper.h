@@ -10,7 +10,7 @@ class ProcessHelper
 {
 public:
 	
-	static QProcessEnvironment getProcessEnvironmentForJaspEngine(bool withTmpDir, bool forceLC_CTYPE_C = false);
+    static QProcessEnvironment getProcessEnvironmentForJaspEngine();
 	
 private:
 	ProcessHelper(){}

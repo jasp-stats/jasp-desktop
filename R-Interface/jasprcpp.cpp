@@ -17,6 +17,7 @@
 
 #include "jasprcpp.h"
 #include <fstream>
+#include "tempfiles.h"
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";
@@ -82,13 +83,15 @@ std::string jaspNativeToUtf8(const Rcpp::String & in)
 #endif
 }
 
+//Terribly hack to work around windows messing up environment variables when local+codepage+utf8
+extern char * R_TempDir;
 
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
 	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont,
-	EnDecodeDef nativeToUtf8)
+	EnDecodeDef nativeToUtf8, const char * tempDir)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
@@ -98,7 +101,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_stringNativeToUtf8		= nativeToUtf8;
 
 	jaspRCPP_logString("Creating RInside.\n");
+
 	rinside = new RInside();
+
+	R_TempDir = (char*)tempDir;
 	
 	RInside &rInside = rinside->instance();
 
@@ -174,6 +180,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".sendToDesktopFunction"]	= Rcpp::XPtr<sendFuncDef>(&sendToDesktopFunction);
 	rInside[".pollMessagesFunction"]	= Rcpp::XPtr<pollMessagesFuncDef>(&pollMessagesFunction);
 	rInside[".baseCitation"]			= baseCitation;
+
+	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 	jaspRCPP_parseEvalQNT("jaspBase:::setSendFunc(.sendToDesktopFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setPollMessagesFunc(.pollMessagesFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setBaseCitation(.baseCitation)");
@@ -1110,6 +1118,7 @@ void jaspRCPP_setWorkingDirectory()
 	std::string root = requestTempRootNameCB();
 	std::string code = "setwd(\"" + root + "\"); sink();";
 	rinside->parseEvalQNT(__sinkMe(code));
+	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
 void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
@@ -1218,6 +1227,7 @@ Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 
 
 ///Makes sure that whatever string encoding it got, it comes out as utf-8. At least when it is ran *inside* jasp(engine)
+///It's probably obsolete
 std::string jaspRCPP_nativeToUtf8(const Rcpp::String & string)
 {
 #ifdef JASP_R_INTERFACE_LIBRARY

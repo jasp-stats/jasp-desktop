@@ -521,7 +521,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 
 	setLoadLog("Module " + _name + " is loading from " + _moduleFolder.absolutePath().toStdString() + "\n");
 
-	//Add the module name to the "do not remove from global env" list in R. See jaspRCPP_purgeGlobalEnvironment
+	//Add the  module name to the "do not remove from global env" list in R. See jaspRCPP_purgeGlobalEnvironment
 	R << "jaspBase:::.addModuleToDoNotRemove('" << _name << _modulePostFix << "');\n";
 
 	R << _name << _modulePostFix << " <- modules::module({\n" << standardRIndent << ".libPaths(" << getLibPathsToUse() <<");\n\n";

@@ -124,11 +124,11 @@ long Utils::getFileModificationTime(const std::string &filename)
 	return modificationTime;
 
 #else
-    struct stat attrib;
-    stat(filename.c_str(), &attrib);
-    time_t modificationTime = attrib.st_mtim.tv_sec;
+	struct stat attrib;
+	stat(filename.c_str(), &attrib);
+	time_t modificationTime = attrib.st_mtim.tv_sec;
 
-    return modificationTime;
+	return modificationTime;
 #endif
 }
 
@@ -231,7 +231,7 @@ void Utils::sleep(int ms)
 {
 
 #ifdef _WIN32
-    Sleep(DWORD(ms));
+	Sleep(DWORD(ms));
 #else
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
@@ -445,29 +445,45 @@ std::wstring Utils::getShortPathWin(const std::wstring & longPath)
 {
 	//See: https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew
 	long     length = 0;
-    TCHAR*   buffer = NULL;
+	TCHAR*   buffer = NULL;
 
 // First obtain the size needed by passing NULL and 0.
 
-    length = GetShortPathName(longPath.c_str(), NULL, 0);
-    if (length == 0) 
+	length = GetShortPathName(longPath.c_str(), NULL, 0);
+	if (length == 0) 
 		return longPath;
 
 // Dynamically allocate the correct size 
 // (terminating null char was included in length)
 
-    buffer = new TCHAR[length];
+	buffer = new TCHAR[length];
 
 // Now simply call again using same long path.
 
-    length = GetShortPathName(longPath.c_str(), buffer, length);
-    if (length == 0)
+	length = GetShortPathName(longPath.c_str(), buffer, length);
+	if (length == 0)
 		return longPath;
 
 	std::wstring shortPath(buffer, length);
-    
-    delete [] buffer;
 	
-	return shortPath;	 
+	delete [] buffer;
+	
+	return shortPath;
+}
+
+string Utils::wstringToString(const std::wstring & wstr)
+{
+	std::string str;
+
+	//get size of buffer we need
+	int requiredSize = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, NULL, 0, NULL, NULL );
+	str.resize(requiredSize);
+
+	//convert it
+	WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, str.data(), str.size(), NULL, NULL );
+	str.resize(requiredSize-1);//drop /nul
+
+	return str;
+
 }
 #endif

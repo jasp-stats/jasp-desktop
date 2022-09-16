@@ -47,7 +47,7 @@ public:
 	static bool removeFile(				const std::string &path);
 
 	static boost::filesystem::path osPath(const std::string &path);
-    static std::string osPath(const boost::filesystem::path &path);
+	static std::string osPath(const boost::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
@@ -76,6 +76,7 @@ public:
 
 #ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
+	static std::string  wstringToString(const std::wstring & wstr);
 #endif
 	
 private:

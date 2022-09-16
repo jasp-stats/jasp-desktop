@@ -5,14 +5,11 @@
 #include "utils.h"
 #include "log.h"
 
-QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withTmpDir, bool forceLC_CTYPE_C)
+QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 {
 	QDir				programDir	= AppDirs::programDir();
 	QString				engineExe	= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env			= QProcessEnvironment::systemEnvironment();
-
-	if(withTmpDir)
-		env.insert("TMPDIR",						tq(TempFiles::createTmpFolder()));
 	
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
 	env.insert("RENV_PATHS_ROOT",					AppDirs::renvRootLocation());
@@ -62,15 +59,9 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
-	
-	if(forceLC_CTYPE_C)
-	{
-		Log::log() << "Setting LC_CTYPE to C!" << std::endl;
-		env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al.
-	}
-	else
-		Log::log() << "Leaving LC_CTYPE at systemdefault" << std::endl;
-					  
+
+	//Lets set LC_ALL to utf8 before the process starts.
+	env.insert("LC_ALL", ".UTF8");			  
 
 #elif __APPLE__
 
@@ -91,8 +82,6 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
-
-	//Let's just trust linux and *not set* LC_CTYPE at all. It'll be fine.
 #endif
 
 	env.insert("TZDIR",				TZDIR);

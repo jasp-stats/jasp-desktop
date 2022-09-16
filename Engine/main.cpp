@@ -47,20 +47,18 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 }
 #endif
 
-/* THe following code might be useful if we ever want to get a bunch of utf16 from windows instead of local MBCS codepage crap
- #ifdef _WIN32
+
+#ifdef _WIN32
 int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 {
 	if(argc > 4)
 	{
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> strCvt;
-		
 		unsigned long	slaveNo			= wcstoul(argv[1], NULL, 10),
 						parentPID		= wcstoul(argv[2], NULL, 10);
-		std::string		logFileBase		= strCvt.to_bytes(argv[3]),
-						logFileWhere	= strCvt.to_bytes(argv[4]);	
+		std::string		logFileBase		= Utils::wstringToString(argv[3]),
+						logFileWhere	= Utils::wstringToString(argv[4]);
 			
-#else*/
+#else
 int main(int argc, char *argv[])
 {
 	if(argc > 4)
@@ -69,6 +67,8 @@ int main(int argc, char *argv[])
 						parentPID		= strtoul(argv[2], NULL, 10);
 		std::string		logFileBase		= argv[3],
 						logFileWhere	= argv[4];
+
+#endif
 
 		Log::logFileNameBase = logFileBase;
 		Log::initRedirects();
@@ -109,14 +109,18 @@ int main(int argc, char *argv[])
 
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
 
+#ifdef _WIN32
+		_moduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
+#else
 		_moduleLibraryFixer(argv[1], true, true);
+#endif
 
 		exit(0);
 	}
 #ifdef _WIN32
 	else if(argc == 3)
 	{
-		std::string arg1(argv[1]), arg2(argv[2]);
+		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
 		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions"), junctionRemoveArg("--removeJunctions");
 		
 		if(arg1 == junctionRemoveArg || arg1 == junctionRecreateArg) //Also remove the old modules if it already exists and we are asked to recreate them, because it might be the old ones (previous install)

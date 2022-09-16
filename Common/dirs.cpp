@@ -60,11 +60,12 @@ string Dirs::tempDir()
 	boost::filesystem::path pa;
 
 #ifdef _WIN32
-	char buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	wchar_t buffer[MAX_PATH];
+	if ( ! SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
 		throw Exception("App Data directory could not be retrieved");
 
-	dir = std::string(buffer);
+	dir = Utils::wstringToString(buffer);
+
 	dir += "/JASP/temp";
 
 	pa = (dir);
@@ -178,8 +179,8 @@ string Dirs::exeDir()
 	}
 #else
 
-    char buf[512];
-    char linkname[512]; /* /proc/<pid>/exe */
+	char buf[512];
+	char linkname[512]; /* /proc/<pid>/exe */
 	pid_t pid;
 	int ret;
 
@@ -201,13 +202,13 @@ string Dirs::exeDir()
 	//std::cout << "looking for exeDir in buff: '" << buf << "'\n" << std::flush;
 
 	for (int i = ret-1; i > 0; i--)
-    {
-        if (buf[i] == '/')
-        {
-            buf[i] = '\0'; // add null terminator
-            break;
-        }
-    }
+	{
+		if (buf[i] == '/')
+		{
+			buf[i] = '\0'; // add null terminator
+			break;
+		}
+	}
 
 	std::string exe = string(buf);
 
