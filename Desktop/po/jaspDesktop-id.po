@@ -755,46 +755,6 @@ msgstr ""
 "Mengaktifkan ini akan membuat helpfile markdown dari info pada opsi qml."
 
 msgctxt "PrefsAdvanced|"
-msgid "Windows workarounds"
-msgstr "Solusi Windows"
-
-msgctxt "PrefsAdvanced|"
-msgid "Handling LC_CTYPE"
-msgstr "Handling LC_CTYPE"
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Check the install and user directory path for compatibility with LC_CTYPE=\"C"
-"\" and set if reasonable."
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "See the documentation for more info."
-msgstr "Lihat dokumentasi untuk info lebih lanjut."
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"If this is enabled and you have non-ascii characters in your install path "
-"JASP won't work anymore.  If you only have non-ascii characters in your "
-"username then installing modules will probably break."
-msgstr ""
-"Jika ini diaktifkan dan Anda memiliki karakter non-ascii di jalur instal, "
-"JASP tidak akan berfungsi lagi. Jika Anda hanya memiliki karakter non-ascii "
-"di username Anda, maka instalasi modul mungkin akan rusak."
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Enabling this will make certain characters in the results look weird, but at "
-"least you can use JASP if you installed it in a folder with non-ascii "
-"characters in the path. Sorry for the inconvenience, we are working on it "
-"and hopefully have this fixed next release."
-msgstr ""
-"Mengaktifkan ini akan membuat karakter tertentu dalam bagian hasil terlihat "
-"aneh, tetapi setidaknya Anda dapat menggunakan JASP jika Anda menginstalnya "
-"di folder dengan karakter non-ascii di jalurnya. Maaf atas ketidaknyamanan "
-"ini, kami sedang mengerjakannya dan semoga rilis berikutnya diperbaiki."
-
-msgctxt "PrefsAdvanced|"
 msgid "Logging options"
 msgstr "Opsi logging"
 
@@ -2962,21 +2922,6 @@ msgid ""
 "%2"
 msgstr ""
 
-msgctxt "Modules::DynamicModules|"
-msgid "Path cannot be handled by R"
-msgstr ""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You are trying to install a module but because the path '%1' contains non-"
-"ascii characters (or a space) R might have some trouble installing there. If "
-"the installation of this module fails you can work around this by changing "
-"your username (or making a new username) that only contains ascii-characters "
-"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
-">Advanced->DeveloperMode."
-msgstr ""
-
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
@@ -3191,18 +3136,6 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\""
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at system default"
 msgstr ""
 
 msgctxt "PrefsUI|"
