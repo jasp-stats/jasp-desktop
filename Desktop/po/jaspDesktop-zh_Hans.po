@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-09-19 03:25+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.14.1\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -1568,7 +1574,7 @@ msgstr "欢迎使用 JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr "一种全新的统计解决方案：自由、友好且灵活"
+msgstr "一种全新的统计分析解决方案：自由、友好且灵活"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
@@ -1586,7 +1592,7 @@ msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
-msgstr "JASP是一个开源项目，由阿姆斯特丹大学提供结构性支持。"
+msgstr "JASP 是一个开源项目，由阿姆斯特丹大学提供结构性支持。"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -1601,7 +1607,7 @@ msgstr "JASP提供了经典和贝叶斯两种表现形式的标准分析程序�
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "因此，打开一个数据文件并尝试使用 JASP！"
+msgstr "现在，打开一个数据文件并尝试使用 JASP 吧！"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
@@ -1615,23 +1621,22 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
-"请记住，这是一个预览版本，仍然缺少许多功能。\n"
+"请注意，这是一个预览版本，仍然缺少许多功能。\n"
 "\n"
 "如果 JASP 今天不能满足您的需求，那么明天再来看看：JASP 正在以惊人的速度开发！"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "找不到绘图%1的编辑选项，因此绘图编辑无法工作。。。"
+msgstr "找不到绘图%1的编辑选项，因此绘图编辑无法工作..."
 
 #, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
-msgstr ""
-"找不到绘图%1的设置编辑选项，所以绘图编辑不会记住任何东西（如果它甚至可以工"
-"作）......"
+msgstr "找不到绘图%1的设置编辑选项，所以绘图编辑不会记住任何东西（如果它甚至可以工作"
+"）..."
 
 #, qt-format
 msgctxt "AnalysisForm|"
