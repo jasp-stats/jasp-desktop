@@ -17,9 +17,9 @@ public:
 #ifdef linux
 // Functions for qml cache bug workaround on linux
 public:
-    static void configureQMLCacheDir();
+	static void configureQMLCacheDir();
 private:
-    static QDir generateQMLCacheDir();
+	static QDir generateQMLCacheDir();
 #endif
 
 public slots:
