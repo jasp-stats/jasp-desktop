@@ -17,7 +17,7 @@ Window
 	minimumHeight:	550 
 
 	// maximumWidth:	850 
-	maximumHeight:	550 
+    // maximumHeight:	550
    
 	property string labelcolor:			"#F99800"
 	property string closebuttoncolor:	"#50B0E3"
