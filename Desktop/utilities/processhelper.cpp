@@ -14,6 +14,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
 	env.insert("RENV_PATHS_ROOT",					AppDirs::renvRootLocation());
 	env.insert("RENV_PATHS_CACHE",					AppDirs::renvCacheLocations());
+	env.insert("RENV_CONFIG_INSTALL_VERBOSE",		"TRUE"); // force renv package installation to be verbose (see https://rstudio.github.io/renv/reference/config.html#renv-config-install-verbose)
 
 	
 	//Seems a bit weird but we need to tell this to jaspBase so it can tell renv to run it again because that will be running in a subprocess. 
