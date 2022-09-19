@@ -19,7 +19,7 @@ void QMLCacheConfiguration::configureQMLCacheDir() {
     //delete stale caches
     QDir parent = cacheDir;
     parent.cdUp();
-    QStringList staleCaches = parent.entryList(QStringList() << "qmlcache_*", QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
+    QStringList staleCaches = parent.entryList(QStringList() << "qmlcache*", QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
     for(auto& cacheName: staleCaches) {
         QDir staleCache = parent;
         staleCache.cd(cacheName);
