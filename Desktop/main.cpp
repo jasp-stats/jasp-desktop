@@ -32,7 +32,7 @@
 #include <json/json.h>
 
 #ifdef linux
-#include "utilities/qmlcacheconfiguration.h"
+#include "utilities/qmlutils.h"
 #endif
 
 const std::string	jaspExtension		= ".jasp",
@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
 
         #ifdef linux
-            QMLCacheConfiguration::configureQMLCacheDir();
+            QmlUtils::configureQMLCacheDir();
         #endif
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
