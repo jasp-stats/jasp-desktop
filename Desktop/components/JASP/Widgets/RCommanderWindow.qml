@@ -61,10 +61,6 @@ Window
 		anchors.fill:		parent
 		//anchors.margins:	jaspTheme.generalAnchorMargin
 
-        Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}
-		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
-		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								}
-		Shortcut { onActivated: mainWindow.close();								sequences: ["Ctrl+Q", Qt.Key_Close];							}
 		Shortcut { onActivated: rcmdRoot.close();								sequences: ["Ctrl+W"];											}
 		Shortcut { onActivated: rcmdRoot.toggleFullScreen();					sequences: ["Ctrl+M", Qt.Key_F11];								}
 
