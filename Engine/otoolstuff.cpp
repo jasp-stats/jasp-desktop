@@ -105,6 +105,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", framework_resources + "lib"},
 					// {"/opt/R/arm64/lib",		framework_resources + "opt/R/arm64/lib"},
 					{"/usr/local/lib/libjags",	framework_resources + "opt/jags/lib/libjags"},
+					{"/usr/local/lib/libjrmath",	framework_resources + "opt/jags/lib/libjrmath"},
 					{"/usr/local/lib",			framework_resources + "opt/local/lib"},
 				};
 
