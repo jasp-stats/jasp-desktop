@@ -34,6 +34,7 @@
 #include "appinfo.h"
 #include "log.h"
 #include "utilenums.h"
+#include "utilities/qutils.h"
 #include "data/databaseconnectioninfo.h"
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
@@ -53,7 +54,12 @@ void JASPExporter::saveDataSet(const std::string &path, boost::function<void(int
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
 
-	int errorCode = archive_write_open_filename(a, path.c_str());
+    int errorCode =
+#ifdef _WIN32
+            archive_write_open_filename_w(a, tq(path).toStdWString().c_str());
+#else
+            archive_write_open_filename(a, path.c_str());
+#endif
 
 	if (errorCode != ARCHIVE_OK)
 		throw std::runtime_error("File could not be opened.");
