@@ -7,6 +7,7 @@ Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 Sys.setenv(JAGS_PREFIX="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
+Sys.setenv(JASP_R_INTERFACE_LIBRARY="Yes, do it")
 
 if (@IS_LINUX_LOCAL_BUILD@) {
 	# Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries

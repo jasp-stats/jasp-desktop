@@ -88,6 +88,12 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 //Calls from JASPresult (from R)
 typedef void (*sendFuncDef)(const char *);
 
+//Calls from jaspBase
+typedef void			(*logFuncDef)(const std::string &);
+typedef bool			(*setColumnDataFuncDef)	(std::string, Rcpp::RObject);
+typedef columnType		(*getColumnTypeFuncDef)	(std::string);
+
+
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax);
 
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);

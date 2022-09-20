@@ -32,7 +32,7 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
     configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
   )
 
-#  Sys.setenv(INCLUDE_DIR="@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder")
+  Sys.setenv(JASP_R_INTERFACE_LIBRARY="Oh yes indeed")
   setupRenv("@R_LIBRARY_PATH@", modulePkg)
 
   renv::hydrate(library = moduleLibrary, project = modulePkg, sources=moduleLibrary)
