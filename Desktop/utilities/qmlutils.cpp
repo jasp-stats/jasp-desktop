@@ -3,6 +3,15 @@
 #include "columnencoder.h"
 #include "data/datasetpackage.h"
 
+#ifdef linux
+
+#include <QtGlobal>
+#include <QStandardPaths>
+#include "appinfo.h"
+#include "log.h"
+
+#endif
+
 QmlUtils::QmlUtils(QObject *parent) : QObject(parent)
 {
 
@@ -34,13 +43,6 @@ QJSValue	QmlUtils::decodeJson(const QJSValue	& val, QQuickItem * caller)
 
 
 #ifdef linux
-
-#include <QtGlobal>
-#include <QStandardPaths>
-#include "appinfo.h"
-#include "log.h"
-
-
 void QmlUtils::configureQMLCacheDir() {
 	//set cache environment variable
 	QDir cacheDir = QmlUtils::generateQMLCacheDir();
@@ -68,12 +70,8 @@ QDir QmlUtils::generateQMLCacheDir() {
 	QString basePath = qEnvironmentVariable("QML_DISK_CACHE_PATH", QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
 	QString path = basePath + "/qmlcache_" + commit;
 	QDir cacheDir(path);
-	if(!cacheDir.exists()) {
-		bool succes = cacheDir.mkpath(".");
-		if(!succes) {
-			throw std::runtime_error("Could not create qml cache directory: " + fq(cacheDir.absolutePath()));
-		}
-	}
+	if(!cacheDir.exists() && !cacheDir.mkpath("."))
+		throw std::runtime_error("Could not create qml cache directory: " + fq(cacheDir.absolutePath()));
 	cacheDir.refresh();
 	return cacheDir;
 }
