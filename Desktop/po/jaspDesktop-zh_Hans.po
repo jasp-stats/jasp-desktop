@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-09-19 03:25+0000\n"
+"PO-Revision-Date: 2022-09-21 14:21+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -1203,7 +1203,7 @@ msgstr "筛选器已更改"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr "您的筛选器有未应用的更改；您想做什么？"
+msgstr "您的筛选器有未应用的更改；您想怎么做？"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
@@ -1422,7 +1422,7 @@ msgstr "已进行更改"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr "有未应用的更改；您想做什么？"
+msgstr "有未应用的更改；您想怎么做？"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
