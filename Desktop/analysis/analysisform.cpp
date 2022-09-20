@@ -765,10 +765,14 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 		else return {};
 	};
 
+	std::vector<std::vector<string> > result;
+
+	if (jsonValues.isNull())
+		return result;
+
 	if (!jsonValues.isArray() && !jsonValues.isObject())
 		return {getValueFromJson(jsonValues)};
 
-	std::vector<std::vector<string> > result;
 	QString path;
 	QStringList nextPaths;
 	if (searchPath.length() > 0)
