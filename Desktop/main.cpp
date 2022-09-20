@@ -31,6 +31,10 @@
 #include "utilities/plotschemehandler.h"
 #include <json/json.h>
 
+#ifdef linux
+#include "utilities/qmlutils.h"
+#endif
+
 const std::string	jaspExtension		= ".jasp",
 					unitTestArg			= "--unitTest",
 					saveArg				= "--save",
@@ -353,6 +357,9 @@ int main(int argc, char *argv[])
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
 
+		#ifdef linux
+			QmlUtils::configureQMLCacheDir();
+		#endif
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
