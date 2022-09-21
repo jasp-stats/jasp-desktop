@@ -110,21 +110,6 @@ For a local or toy database this is probably overkill, but use your own judgemen
 					onValueChanged:				fileMenuModel.database.setDbTypeFromIndex(currentIndex);
 					KeyNavigation.tab:			dbHostnameInput
 				}
-
-//				QC.ComboBox
-//                {
-//                    id:						dbDriver
-//                    x:						dbHostnameLabel.width
-//                    width:					dbHostnameInput.width
-
-//                    focus:					true
-
-//					currentIndex:			fileMenuModel.database.dbType
-//					onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-//					model:					fileMenuModel.database.dbTypes
-
-//
-//                }
             }
 
             Item
