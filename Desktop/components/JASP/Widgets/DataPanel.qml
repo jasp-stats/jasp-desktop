@@ -77,7 +77,7 @@ Rectangle
 			id:							filterWindow
 			objectName:					"filterWindow"
 			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.preferredHeight:	desiredMinimumHeight * 1.5
 			SplitView.maximumHeight:	rootDataset.height * 0.8
 
 		}
@@ -87,7 +87,7 @@ Rectangle
 			id:							computeColumnWindow
 			objectName:					"computeColumnWindow"
 			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.preferredHeight:	desiredMinimumHeight * 1.5
 			SplitView.maximumHeight:	rootDataset.height * 0.8
 		}
 
