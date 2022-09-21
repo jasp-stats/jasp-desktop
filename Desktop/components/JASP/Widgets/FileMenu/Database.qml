@@ -154,17 +154,23 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
+
                 PrefsTextInput
                 {
                     id:				dbPortInput
                     nextEl:			dbNameInput.textInput
                     text:			fileMenuModel.database.port
-                    onTextChanged:	fileMenuModel.database.port = parseInt(text);
-
+					onTextChanged:	fileMenuModel.database.port = parsePortNum(text)
                     textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
 
                     x:				dbHostnameLabel.width
                     width:			dbHostnameInput.width
+
+					function parsePortNum(value)
+					{
+						let num = parseInt(value);
+						return  (isNaN(num) || num >= 2 ** 16) ? 0 : num; //2**16-1 is the maximum port num
+					}
                 }
             }
 
