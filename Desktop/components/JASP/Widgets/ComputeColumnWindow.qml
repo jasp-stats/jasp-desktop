@@ -58,8 +58,6 @@ FocusScope
 		{
 			opened = true
 
-
-			height = desiredMinimumHeight * 2
 			computedColumnsInterface.computeColumnNameSelected = columnName
 			computeColumnEdit.text = computedColumnsInterface.computeColumnRCode
 
