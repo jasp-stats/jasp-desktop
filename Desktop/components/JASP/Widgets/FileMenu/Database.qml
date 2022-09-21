@@ -41,7 +41,7 @@ QC.ScrollView
         MenuHeader
         {
             id				: menuHeader
-            headertext		: qsTr("Database")
+			headertext		: qsTr("Database")
             helpfile:		"filemenu/Database"
             anchorMe        : false
             width:			scrollDB.width - (2 * jaspTheme.generalMenuMargin)
@@ -78,9 +78,9 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
         PrefsGroupRect
         {
-            id:		databaseGroup
+			id:		databaseGroup
 
-            title:	qsTr("Database")
+			title:	qsTr("Select database")
 
 
             Item
@@ -92,26 +92,39 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 Text
                 {
                     id:						dbDriverLabel
-                    text:					qsTr("Choose DB driver")
+					text:					qsTr("DB driver")
 
                     anchors.verticalCenter: parent.verticalCenter
                     width:					dbHostnameLabel.width
                 }
 
-				QC.ComboBox
-                {
-                    id:						dbDriver
-                    x:						dbHostnameLabel.width
-                    width:					dbHostnameInput.width
 
-                    focus:					true
+				DropDown
+				{
+					id:							dbDriver
+					x:							dbHostnameLabel.width
+					width:						dbHostnameInput.width
+					values:		 				fileMenuModel.database.dbTypes
+					addScrollBar:				true
+					startValue:				 	fileMenuModel.database.dbTypes[0]
+					onValueChanged:				fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+					KeyNavigation.tab:			dbHostnameInput
+				}
 
-					currentIndex:			fileMenuModel.database.dbType
-					onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-					model:					fileMenuModel.database.dbTypes
+//				QC.ComboBox
+//                {
+//                    id:						dbDriver
+//                    x:						dbHostnameLabel.width
+//                    width:					dbHostnameInput.width
 
-                    KeyNavigation.tab:		dbHostnameInput
-                }
+//                    focus:					true
+
+//					currentIndex:			fileMenuModel.database.dbType
+//					onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+//					model:					fileMenuModel.database.dbTypes
+
+//
+//                }
             }
 
             Item
