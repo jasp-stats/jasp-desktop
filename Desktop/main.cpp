@@ -176,7 +176,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		{
 			const std::string	remoteDebuggingPort = "--remote-debugging-port=",
 								qmlJsDebug			= "-qmljsdebugger",
-								dashing				= "--";
+								dashing				= "--",
+								psn					= "-psn";
 
 			auto startsWith = [&](const std::string checkThis)
 			{
@@ -192,6 +193,13 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					//So, it looks like an option, but not one we recognize, maybe it is meant for qt/chromium
 					std::cout << "Argument '" << args[arg] << "' was not recognized by JASP, but it might be recognized by one of it's components in Qt (such as chromium), it will be passed on. If you really expected JASP to do something with it check '--help' again." << std::endl;
 				}
+#ifdef __APPLE__
+				else if(startsWith(psn)) // https://github.com/jasp-stats/jasp-test-release/issues/1945
+				{
+					//this is one of those arguments to ignore...
+					std::cout << "Ignoring " << args[arg] << std::endl;
+				}
+#endif
 				else
 				{
 					//if it isn't anything else it must be a file to open right?
