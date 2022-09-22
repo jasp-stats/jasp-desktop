@@ -8,7 +8,7 @@ Window
 {
 	id:					helpWindowRoot
 	width:				400 * preferencesModel.uiScale
-	height:				Math.min(700 * preferencesModel.uiScale, Screen.desktopAvailableHeight * 0.8)
+	height:				Math.min(700 * preferencesModel.uiScale, Screen.desktopAvailableHeight) //If bigger than screenheight weird jumping behaviour observed by Rens
 	minimumWidth:		200 * preferencesModel.uiScale
 	minimumHeight:		minimumWidth
 	visible:			helpModel.visible
