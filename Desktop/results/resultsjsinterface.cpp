@@ -199,7 +199,10 @@ void ResultsJsInterface::pushToClipboard(const QString &mimeType, const QString 
 		mimeData->setText(data);
 
 	if ( ! html.isEmpty())
+	{
 		mimeData->setHtml(html);
+		mimeData->setText(html);
+	}
 
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
