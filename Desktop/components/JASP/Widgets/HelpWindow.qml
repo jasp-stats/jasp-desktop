@@ -8,7 +8,7 @@ Window
 {
 	id:					helpWindowRoot
 	width:				400 * preferencesModel.uiScale
-    height:				Math.min(700 * preferencesModel.uiScale, Screen.desktopAvailableHeight * 0.8)
+	height:				Math.min(700 * preferencesModel.uiScale, Screen.desktopAvailableHeight * 0.8)
 	minimumWidth:		200 * preferencesModel.uiScale
 	minimumHeight:		minimumWidth
 	visible:			helpModel.visible
@@ -16,9 +16,9 @@ Window
 	title:				qsTr("JASP Help")
 	color:				jaspTheme.uiBackground
 
-	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+W", Qt.Key_Close];					}
-	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
-	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];							}
+	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+W", Qt.Key_Close];			}
+	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];							}
+	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];			}
 
 
 	Connections

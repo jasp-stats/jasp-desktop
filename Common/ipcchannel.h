@@ -66,7 +66,7 @@ public:
 
 private:
 	bool tryWait(int timeout = 0);
-    void catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis);
+	void catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis);
 
 	void doubleMemoryOut();
 	void rebindMemoryInIfSizeChanged();
