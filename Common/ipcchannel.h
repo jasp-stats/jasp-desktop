@@ -36,6 +36,7 @@
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>
+#include <functional>
 
 typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared_memory::segment_manager	> CharAllocator;
 typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
