@@ -41,7 +41,7 @@ QC.ScrollView
         MenuHeader
         {
             id				: menuHeader
-            headertext		: qsTr("Database")
+			headertext		: qsTr("Database")
             helpfile:		"filemenu/Database"
             anchorMe        : false
             width:			scrollDB.width - (2 * jaspTheme.generalMenuMargin)
@@ -78,9 +78,9 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
         PrefsGroupRect
         {
-            id:		databaseGroup
+			id:		databaseGroup
 
-            title:	qsTr("Database")
+			title:	qsTr("Select database")
 
 
             Item
@@ -92,26 +92,24 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 Text
                 {
                     id:						dbDriverLabel
-                    text:					qsTr("Choose DB driver")
+					text:					qsTr("DB driver")
 
                     anchors.verticalCenter: parent.verticalCenter
                     width:					dbHostnameLabel.width
                 }
 
-				QC.ComboBox
-                {
-                    id:						dbDriver
-                    x:						dbHostnameLabel.width
-                    width:					dbHostnameInput.width
 
-                    focus:					true
-
-					currentIndex:			fileMenuModel.database.dbType
-					onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
-					model:					fileMenuModel.database.dbTypes
-
-                    KeyNavigation.tab:		dbHostnameInput
-                }
+				DropDown
+				{
+					id:							dbDriver
+					x:							dbHostnameLabel.width
+					width:						dbHostnameInput.width
+					values:		 				fileMenuModel.database.dbTypes
+					addScrollBar:				true
+					startValue:				 	fileMenuModel.database.dbTypes[0]
+					onValueChanged:				fileMenuModel.database.setDbTypeFromIndex(currentIndex);
+					KeyNavigation.tab:			dbHostnameInput
+				}
             }
 
             Item
@@ -156,17 +154,23 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
+
                 PrefsTextInput
                 {
                     id:				dbPortInput
                     nextEl:			dbNameInput.textInput
                     text:			fileMenuModel.database.port
-                    onTextChanged:	fileMenuModel.database.port = parseInt(text);
-
+					onTextChanged:	fileMenuModel.database.port = parsePortNum(text)
                     textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
 
                     x:				dbHostnameLabel.width
                     width:			dbHostnameInput.width
+
+					function parsePortNum(value)
+					{
+						let num = parseInt(value);
+						return  (isNaN(num) || num >= 2 ** 16) ? 0 : num; //2**16-1 is the maximum port num
+					}
                 }
             }
 
