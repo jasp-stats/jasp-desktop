@@ -84,15 +84,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (_inputType == TextInputType::PercentIntputType)
 			_value = _getPercentValue(dblVal);
 		else
-		{
-			// Ensure the the option does not have more decimals than authorized for backwards compatibility
-			int decimals = property("decimals").toInt();
-			int pow = 1;
-			for (int i = 0; i < decimals; i++) pow = pow * 10;
-			dblVal = (round(dblVal * pow))/pow;
-
 			_value = tq(Utils::doubleToString(dblVal));
-		}
 
 		break;
 	}
