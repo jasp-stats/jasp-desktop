@@ -28,7 +28,7 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 		return QValidator::Intermediate;
 	}
 
-	if (s.contains("-") && bottom() >= 0)
+	if (s.startsWith("-") && bottom() >= 0)
 		return QValidator::Invalid; 
 	
 	// check length of decimal places
