@@ -3415,10 +3415,6 @@ msgid ""
 msgstr ""
 
 msgctxt "Database|"
-msgid "Choose DB driver"
-msgstr ""
-
-msgctxt "Database|"
 msgid "Hostname"
 msgstr ""
 
@@ -3643,4 +3639,12 @@ msgctxt "PreferencesModel|"
 msgid ""
 "The textrendering setting has been changed, this will only take full effect "
 "after JASP is restarted."
+msgstr ""
+
+msgctxt "Database|"
+msgid "Select database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "DB driver"
 msgstr ""

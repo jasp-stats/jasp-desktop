@@ -3757,10 +3757,6 @@ msgstr ""
 "exaxerado, pero utiliza o teu propio criterio."
 
 msgctxt "Database|"
-msgid "Choose DB driver"
-msgstr "Escolle o controlador de BD"
-
-msgctxt "Database|"
 msgid "Hostname"
 msgstr "Nome do host"
 
@@ -4020,3 +4016,11 @@ msgid ""
 msgstr ""
 "A configuración do procesamento de texto mudou; e isto só vai ter un efecto "
 "completo logo de reiniciar JASP."
+
+msgctxt "Database|"
+msgid "Select database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "DB driver"
+msgstr ""

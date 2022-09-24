@@ -3773,10 +3773,6 @@ msgstr ""
 "aber entscheiden Sie nach eigenem Ermessen."
 
 msgctxt "Database|"
-msgid "Choose DB driver"
-msgstr "DB-Treiber auswählen"
-
-msgctxt "Database|"
 msgid "Hostname"
 msgstr "Hostname"
 
@@ -4036,3 +4032,11 @@ msgid ""
 msgstr ""
 "Die Textwiedergabe-Einstellung wurde geändert; dies wird erst nach einem "
 "Neustart von JASP voll wirksam."
+
+msgctxt "Database|"
+msgid "Select database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "DB driver"
+msgstr ""
