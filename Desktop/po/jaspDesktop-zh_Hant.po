@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-05-15 08:16+0000\n"
-"Last-Translator: Hector Tsai <hector.tsai@gmail.com>\n"
+"PO-Revision-Date: 2022-09-28 09:48+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -85,11 +85,11 @@ msgstr "新標籤"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr ""
+msgstr "⌘ + Enter 以應用"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr ""
+msgstr "Ctrl + Enter 以應用"
 
 #, qt-format
 msgctxt "TextField|"
@@ -130,7 +130,7 @@ msgstr "版本："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr ""
+msgstr "構建："
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -238,43 +238,43 @@ msgstr "貝氏因子作為虛無假設相較於對立假設的量化證據。"
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "BF10 的自然對數"
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "添加列"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "刪除列"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "計算列： "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "選擇一列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "絕對值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "標準差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "變異數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
