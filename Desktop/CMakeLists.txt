@@ -40,7 +40,9 @@ qt_add_executable(
   ${HEADER_FILES}
   ${BUNDLE_RESOURCES}
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
-  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>)
+
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
