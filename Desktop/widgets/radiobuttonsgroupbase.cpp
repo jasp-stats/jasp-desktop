@@ -82,18 +82,17 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 {
 	BoundControlBase::bindTo(jsonValue);
 
-	string value = jsonValue.asString();
-	if (!value.empty())
+	QString value = tq(jsonValue.asString());
+	if (!value.isEmpty())
 	{
-		RadioButtonBase* button = _buttons[tq(value)];
-		if (!button)
+		if (!_buttons.contains(value))
 		{
-			addControlError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
+			addControlError(tr("No radio button corresponding to name %1").arg(value));
 			QStringList names = _buttons.keys();
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
 		else
-			_setCheckedButton(button);
+			_setCheckedButton(_buttons[value]);
 	}
 }
 
