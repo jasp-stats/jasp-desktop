@@ -22,6 +22,7 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "ja"		,	true	},
 	{ "es"		,	true	},
 	{ "zh_Hans"	,	true	},
+	{ "zh_Hant" ,	false	},
 	{ "id"		,	false	},
 	{ "fr"		,	false   }
 };
