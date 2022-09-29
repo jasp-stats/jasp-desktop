@@ -35,10 +35,68 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.16.4" date="2022-09-13">
+	<release version="0.16.4" date="2022-09-29">
 		<description>
 JASP Release Notes 0.16.4
-This is a beta release, the release notes will be added at a later time.
+New features and improvements
+	• SQL Database can be connected to JASP (#4798)
+	• ANOVA
+		◦ SE and coefficient of variation added to the descriptives tables (#150)
+		◦ Friedman test checks “unreplicated block design” requirement (#177)
+		◦ Improved help file (#1772)
+		◦ Laplace approximation added to BANOVA (#194)
+	• T-Tests
+		◦ Brown-Forsythe test added (as default) to equality of variance tests in independent t-tests (#124)
+		◦ SEs for effect sizes added to all frequentist t-tests (#129)
+	• Factor (#75, #93)
+		◦ Ordinal variables allowed (#1624)
+		◦ Option for poly/tetrachoric correlations (#903)
+		◦ Mardia's tests of multivariate normality
+		◦ Detailed output of the parallel analysis results
+		◦ Help file improved
+	• Frequencies
+		◦ Contingency tables
+			▪ Unstandardized, Pearson and Standardized residuals added (#88, #1442)
+	• Cochrane Meta-Analyses (#12)
+		◦ Export selected datasets
+		◦ Improved error message for dataset with one estimate
+		◦ Improved Add Estimates
+	• Machine Learning
+		◦ New dataset: Palmerpenguins (#128)
+	• Mixed Models
+		◦ New dataset: Larks & Owls (#4806)
+		◦ Ability to remove random intercept (#97)
+		◦ Ability to show individual random effect estimates (#97)
+	• Network
+		◦ Improved Graphical Options (#51)
+	• Regression
+		◦ Offset included to GLM (#161)
+		◦ Improved help file for VIF (#1800)
+	• Reliability
+		◦ New analysis: Bland-Altman Plots (#111, #494)
+	• SEM (#90)
+		◦ Improved error message for unavailable missing data handlers of categorical data
+		◦ Fixed release constraints for multigroup SEM (#1687)
+		◦ Path coefficients table added (#95)
+	• Summary Statistics
+		◦ New analysis: Bayesian z-test (#77)
+	• New transformations added to Compute Column (#4799)
+		◦ Power transformations (Box-Cox, inverse Box-Cox, two parameter power transformation, Yeo-Johnson) 
+		◦ Logit and inverse logit transformations
+	• JASP now uses R 4.2.1 (#4801) (Improves unicode handling on windows)
+	• Maximum amount of engines used by JASP can be forced by admin (#1693, #4838)
+	• Exponent notation available for Table Options (#4824)
+	• Userdefined label for missing values in data (#4833)
+Bug fixes
+    • PCA results based on covariance instead of correlation did not change output (#1667)
+    • Custom contrasts in ANOVA did not update after filtering data (#627, #4741)
+    • Special character in username results crashes plots (#1758)
+    • Raincloud plot title fix (#181)
+    • Posterior model probabilities should update when the model prior changes (#195, #1816)
+    • Fix to Column Filter (#4736, #1661)
+    • (Partial) fix to results displaying ugly on windows (#1747) 
+    • Solves a crash on macOS in linear regression for extremely small numbers (#1777)
+    • Fix Prophet to allow it to find timezone and date-format information (#1714)
 		</description>
 	</release>
 	<release version="0.16.3" date="2022-06-15">
