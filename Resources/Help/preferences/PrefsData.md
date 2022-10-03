@@ -30,8 +30,16 @@ This means that if you have fewer (or equal) than 10 different integers in the d
 gets the Ordinal type (Nominal type if only 2 different integers are found) else it will get the Scale type. Be aware that this value is used when
 importing the data, so data needs to be reloaded (or synchronized) to take effect.
 
+### Show missing values as
+
+JASP shows missing values as blank in cells by default, you can also label them as others (e.g., it can even be defined as "😀" or other characters) in text field to display friendly on data pane. Note that this is different from a valid value label and means it won't appear in the results.
+
 ### Missing Value List
 
 In this list you can specify when observations in your datafile should be treated as missing (e.g., if you coded missing observations to be 999, you can add this value here and JASP will treat all cells with the value 999 as missing).
 You can delete values from this list by selecting them and pressing the minus button.
 Clicking on "Reset" will restore all the default values.
+
+### Windows workaround
+
+Option here specifically for importing CSV files on Windows. JASP usually try to import `.csv` data file in UTF encoding and/or with a BOM. Changed this option and re-import, JASP will assume a CSV in native encoding with no BOM, and some garbled characters problems may be resolved in this cases.
