@@ -198,7 +198,6 @@ ComboBoxBase
 					top:		parent.top
 					right:		parent.right
 					bottom:		parent.bottom
-					margins:	2
 				}
 			}
 
