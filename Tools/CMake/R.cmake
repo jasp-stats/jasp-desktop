@@ -80,16 +80,10 @@ endif()
 
 # ------ Preparing Renv Paths
 #
-set(MODULES_SOURCE_PATH
-    ${PROJECT_SOURCE_DIR}/Modules
-    CACHE PATH "Location of JASP Modules")
-
-set(MODULES_BINARY_PATH
-    "${CMAKE_BINARY_DIR}/Modules"
-    CACHE PATH "Location of the renv libraries")
-set(MODULES_RENV_ROOT_PATH
-    "${PROJECT_BINARY_DIR}/_cache/renv-root"
-    CACHE PATH "Location of renv root directories")
+set(MODULES_SOURCE_PATH		${PROJECT_SOURCE_DIR}/Modules			CACHE PATH "Location of JASP Modules")
+set(MODULES_BINARY_PATH		${CMAKE_BINARY_DIR}/Modules				CACHE PATH "Location of the renv libraries")
+set(MODULES_RENV_ROOT_PATH  ${PROJECT_BINARY_DIR}/_cache/renv-root  CACHE PATH "Location of renv root directories")
+set(SCRIPT_DIRECTORY		${PROJECT_BINARY_DIR}/_scripts			CACHE PATH "Location of R scripts for building")
 
 if(FLATPAK_USED)
   set(MODULES_RENV_CACHE_PATH "/app/lib64/renv-cache" CACHE PATH "Location of renv cache directories")
@@ -485,7 +479,7 @@ if(APPLE)
     message(CHECK_START "Installing 'renv'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
 
     set(ENV{JASP_R_HOME} ${R_HOME_PATH})
 
@@ -493,7 +487,7 @@ if(APPLE)
 	  COMMAND_ECHO STDERR
 	  #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
       message(CHECK_FAIL "unsuccessful.")
@@ -522,14 +516,14 @@ if(APPLE)
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-RInside.R @ONLY)
 
     execute_process(
       COMMAND_ECHO STDOUT
       #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
+	          --file=${SCRIPT_DIRECTORY}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")
@@ -670,14 +664,14 @@ elseif(WIN32)
     message(CHECK_START "Installing 'renv'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
 
     execute_process(
       COMMAND_ECHO STDOUT
       #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+	          --file=${SCRIPT_DIRECTORY}/install-renv.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
       message(CHECK_FAIL "unsuccessful.")
@@ -693,14 +687,14 @@ elseif(WIN32)
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-RInside.R @ONLY)
 
     execute_process(
       COMMAND_ECHO STDOUT
       #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_BIN_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
+	          --file=${SCRIPT_DIRECTORY}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")
@@ -823,14 +817,14 @@ elseif(LINUX)
     message(CHECK_START "Installing 'renv'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
 
     execute_process(
       COMMAND_ECHO STDOUT
       #ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+	          --file=${SCRIPT_DIRECTORY}/install-renv.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
       message(CHECK_FAIL "unsuccessful.")
@@ -846,13 +840,13 @@ elseif(LINUX)
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
-                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
+		           ${SCRIPT_DIRECTORY}/install-RInside.R @ONLY)
 
     execute_process(
       COMMAND_ECHO STDOUT
       #ERROR_QUIET OUTPUT_QUIET
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
+	          --file=${SCRIPT_DIRECTORY}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")

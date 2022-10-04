@@ -26,6 +26,11 @@
 #     because CMake cannot call its function inside a COMMAND section of `execute_process` or
 #     `add_custom_targets` and I needed to have that in a few situation.
 #
+# Notes by Joris:
+#   - This Patch.cmake emulates the behaviour of otoolstuff.h in jaspEngine, which is duplication of code.
+#     I am considering removing it, but it might be practical for cross-compiling on macos.
+#     This because JASPEngine is compiled for the system it runs on. So maybe some code-duplication isnt that bad.
+#     We still need it in JASPEngine to support dynamic modules
 
 cmake_policy(SET CMP0009 NEW)
 
@@ -37,7 +42,7 @@ else()
   file(
     GLOB_RECURSE
     LIBRARIES
-    FOLLOW_SYMLINKS
+    #FOLLOW_SYMLINKS #Turned this off because it got infinitely regressed
     "${PATH}/*.so"
     "${PATH}/*.dylib")
   list(
