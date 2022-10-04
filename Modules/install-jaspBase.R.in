@@ -39,7 +39,7 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
   options(renv.config.install.verbose = TRUE)
   renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
-  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=FALSE)
+  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=TRUE) 
 
   if (correctlyInstalled)
     writeMd5Sums(modulePkg, moduleLibrary)
