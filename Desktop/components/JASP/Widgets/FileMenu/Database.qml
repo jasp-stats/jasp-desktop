@@ -105,7 +105,6 @@ For a local or toy database this is probably overkill, but use your own judgemen
 					x:							dbHostnameLabel.width
 					width:						dbHostnameInput.width
 					values:		 				fileMenuModel.database.dbTypes
-					addScrollBar:				true
 					startValue:				 	fileMenuModel.database.dbTypes[0]
 					onValueChanged:				fileMenuModel.database.setDbTypeFromIndex(currentIndex);
 					KeyNavigation.tab:			dbHostnameInput
