@@ -26,7 +26,6 @@ ComboBoxBase
 	property int	controlMinWidth:		0
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
-	property bool	addScrollBar:			false
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
 
@@ -190,7 +189,6 @@ ComboBoxBase
 				flickable:		popupView
 				manualAnchor:	true
 				vertical:		true
-				visible:		addScrollBar
 				z:				1337
 
 				anchors
@@ -198,7 +196,6 @@ ComboBoxBase
 					top:		parent.top
 					right:		parent.right
 					bottom:		parent.bottom
-					margins:	2
 				}
 			}
 

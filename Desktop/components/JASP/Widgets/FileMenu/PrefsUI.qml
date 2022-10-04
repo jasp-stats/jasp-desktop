@@ -64,7 +64,6 @@ ScrollView
 					addEmptyValue:			true
 					showEmptyValueAsNormal:	true
 					addLineAfterEmptyValue:	true
-					addScrollBar:			true
 					placeholderText:		qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
 					startValue:				preferencesModel.interfaceFont
 					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
@@ -91,7 +90,6 @@ ScrollView
 					addEmptyValue:		 		true
 					showEmptyValueAsNormal:		true
 					addLineAfterEmptyValue:		true
-					addScrollBar:		 		true
 					placeholderText:		 	qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
 					startValue:				 	preferencesModel.codeFont
 					onValueChanged:				preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
@@ -117,7 +115,6 @@ ScrollView
 					addEmptyValue:				true
 					showEmptyValueAsNormal:		true
 					addLineAfterEmptyValue:		true
-					addScrollBar:				true
 					placeholderText: 			qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
 					startValue: 				preferencesModel.resultFont
 					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
