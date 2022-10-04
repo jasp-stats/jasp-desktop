@@ -8,7 +8,7 @@ With the user interface parameters in JASP you can specify the following options
 ### Fonts
 Here you can specify which font will be used by the interface (File Menu, Ribbon bar, Analysis options panel), the R, Lavaan or JAGS Code, or the results. If no choice is made, the default font is used.
 
-Use Qt's textrendering: JASP using Qt to render interface text by default. JASP will use native text rendering  when unchecked this. try to check/uncheck this if you find that the text on JASP looks terrible(blurry or fuzzy...). This will take effect after restarting JASP
+Use Qt's textrendering: JASP using Qt to render interface text by default. JASP will use native text rendering when the option unchecked. Try to check/uncheck this if you find that the text on JASP looks terrible(blurry or fuzzy...). This will take effect after restarting JASP.
 
 ### Themes
 Here you can specify if you would like to have a "light" or a "dark" theme on the interface of JASP. The dark theme is much easier on the eyes if you are in a dark environment while the light (and default) theme is clearer in bright light.
