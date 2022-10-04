@@ -24,6 +24,11 @@ if (@IS_FLATPAK_USED@) {
 # it anyway! It gets to if-y. 
 .libPaths(c("@R_LIBRARY_PATH@"))
 
+options(
+    renv.cache.linkable = FALSE,
+    configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
+  )
+
 # Related to the comment above, there is variable here called, 
 # `libPathsToUse` but it is not connected to anything. If this works,
 # then, I don't need to set the libPaths() anymore perhaps.
