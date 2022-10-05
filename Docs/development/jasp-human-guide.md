@@ -29,6 +29,34 @@ Hence, in developing an analysis, it is good to think through each and every sor
 
 Error messages can either be placed over the top of the results table, or put in the footnotes. In general, an error which makes the whole analysis meaningless, should be placed over the top of the results table. A t-test where the user has specified an independent variable with three levels would be one such example. In contrast, if the error only affects one or a handful of values in the table, then an NaN should be placed in that cell, and a footnote marker added.
 
+### Writing for internationalization
+
+Internationalization(i18n) is the adapting of module to different languages. An inspiring news is that JASP is moving towards i18n, which means that the analysis and modules you developed will be translated into different languages. Therefore, it is necessary to pay attention to the readability and flexibility of the message during writing.
+Passing your message with [gettext()](https://en.wikipedia.org/wiki/Gettext), JASP will generate the string  to be translated automatically in a `.po` file.
+
+**Placeholders**
+
+If you have multiple placeholders, you can provide them inside `gettext()` as `$1`, `$2`, and `$3` and so on. 
+
+Some examples:
+
+_Not good:_
+
+  ```r
+  gettextf("Number of factor levels is %s in %s", "{{factorLevels.amount}}", "{{variables}}")
+  ```
+ 
+
+_Good:_
+	
+  ```r
+  gettextf("Number of factor levels is %1$s in %2$s", "{{factorLevels.amount}}", "{{variables}}")
+  ```
+
+**Use Unicode everywhere**
+
+Internationalization includes support for multiple character sets (usually we recommend Unicode), e.g, use `\u03B2` is better than a `β` symbol in messages. This allows your writing characters available on multiple language environments.
+
 ### Thorough testing
 
 It is important that software is thoroughly tested, and that a proactive approach (proactively thinking through what sorts of problems may occur) is taken rather than reactive (simply waiting until people complain about things not working).
