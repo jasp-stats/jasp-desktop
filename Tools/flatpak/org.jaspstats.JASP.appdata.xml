@@ -64,7 +64,7 @@ New features and improvements
 	• Machine Learning
 		◦ New dataset: Palmerpenguins (#128)
 	• Mixed Models
-		◦ New dataset: Larks & Owls (#4806)
+		◦ New dataset: Larks and Owls (#4806)
 		◦ Ability to remove random intercept (#97)
 		◦ Ability to show individual random effect estimates (#97)
 	• Network
