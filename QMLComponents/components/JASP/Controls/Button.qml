@@ -27,6 +27,7 @@ JASPControl
 	isBound:			false
 	shouldStealHover:	false
 	innerControl:		control
+	focusIndicator:		focusIndicator
 	
 	readonly	property alias control:		control
 				property alias text:		control.text
@@ -43,4 +44,16 @@ JASPControl
 		id:				control
 		anchors.fill:	parent
     }
+
+	Rectangle
+	{
+		id:					focusIndicator
+		anchors.centerIn:	control
+		width:				control.width  + jaspTheme.jaspControlHighlightWidth
+		height:				control.height + jaspTheme.jaspControlHighlightWidth
+		color:				"transparent"
+		border.width:		0
+		border.color:		"transparent"
+		radius:				control.radius + jaspTheme.jaspControlHighlightWidth
+	}
 }
