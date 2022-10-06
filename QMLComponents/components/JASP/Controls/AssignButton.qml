@@ -43,14 +43,14 @@ Button
 	control.implicitWidth:	40 * preferencesModel.uiScale
 	control.implicitHeight: 20 * preferencesModel.uiScale
 
-	onClicked:		source.moveSelectedItems(target)
+	onClicked:			source.moveSelectedItems(target)
 
-	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true;		}
-	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false;	}
+	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true; setState(); }
+	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false; setState(); }
 	function setState()
 	{
-		var isEnabled = source.enabled && target.enabled;
-		if (isEnabled && source.model && source.model.selectedItems().length > 0)
+		var isEnabled = source.enabled && target.enabled && source.model && source.model.selectedItems().length > 0;
+		if (isEnabled)
 		{
 			if (target.allowedColumns.length > 0)
 			{
@@ -68,6 +68,5 @@ Button
 		enabled = isEnabled
 	}
 
-	onSourceChanged:	setState()
 
 }

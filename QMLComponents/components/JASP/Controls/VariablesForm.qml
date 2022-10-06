@@ -76,6 +76,9 @@ VariablesFormBase
 			Component.onCompleted:
 			{
 				KeyNavigation.tab = allAssignedVariablesList[index];
+				if(index !== 0)
+					KeyNavigation.backtab = allAssignedVariablesList[index - 1];
+
 				allAssignedVariablesList[index]	.activeFocusChanged		.connect(setIconToLeft	);
 				availableVariablesList			.activeFocusChanged		.connect(setIconToRight	);
 				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(setState		);
@@ -122,10 +125,12 @@ VariablesFormBase
 		setControlsSize()
 		assignButtonRepeater.model = countAssignedList;
 		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
+		availableVariablesList.KeyNavigation.backtab = parent;
 
 		for(var key3 in allAssignedVariablesList) {
+			allAssignedVariablesList[key3].KeyNavigation.backtab = assignButtonRepeater.itemAt(key3);
 			if(key3 < allAssignedVariablesList.length - 1)
-				allAssignedVariablesList[key3].KeyNavigation.tab = assignButtonRepeater.itemAt(key3 + 1)
+				allAssignedVariablesList[key3].KeyNavigation.tab = assignButtonRepeater.itemAt(key3 + 1);
 		}
 	}
 
