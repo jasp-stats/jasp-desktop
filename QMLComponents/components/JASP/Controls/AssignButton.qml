@@ -22,7 +22,6 @@ import QtQuick		2.11
 Button
 {
 	id:					button
-	focusOnTab:			false
 
 				property var	leftSource
 				property var	rightSource

@@ -43,6 +43,7 @@ Item
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 
+	focus: true
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
 						buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + ( 2 * buttonPadding)

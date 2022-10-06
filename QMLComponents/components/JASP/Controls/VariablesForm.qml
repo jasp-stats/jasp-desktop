@@ -75,6 +75,7 @@ VariablesFormBase
 
 			Component.onCompleted:
 			{
+				KeyNavigation.tab = allAssignedVariablesList[index];
 				allAssignedVariablesList[index]	.activeFocusChanged		.connect(setIconToLeft	);
 				availableVariablesList			.activeFocusChanged		.connect(setIconToRight	);
 				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(setState		);
@@ -120,6 +121,12 @@ VariablesFormBase
 		availableVariablesList.dropKeys = availableDropKeys
 		setControlsSize()
 		assignButtonRepeater.model = countAssignedList;
+		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
+
+		for(var key3 in allAssignedVariablesList) {
+			if(key3 < allAssignedVariablesList.length - 1)
+				allAssignedVariablesList[key3].KeyNavigation.tab = assignButtonRepeater.itemAt(key3 + 1)
+		}
 	}
 
 	function setControlsSize()
