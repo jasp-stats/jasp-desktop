@@ -49,11 +49,11 @@ JASPControl
 	{
 		id:					focusIndicator
 		anchors.centerIn:	control
-		width:				control.width  + jaspTheme.jaspControlHighlightWidth
-		height:				control.height + jaspTheme.jaspControlHighlightWidth
+		width:				control.width
+		height:				control.height
 		color:				"transparent"
 		border.width:		0
 		border.color:		"transparent"
-		radius:				control.radius + jaspTheme.jaspControlHighlightWidth
+		radius:				jaspTheme.jaspControlHighlightWidth
 	}
 }
