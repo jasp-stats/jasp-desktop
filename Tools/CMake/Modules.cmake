@@ -33,7 +33,7 @@ set(JASP_EXTRA_MODULES
     "jaspBain"
     "jaspBsts"
     "jaspCircular"
-#    "jaspCochrane"
+    "jaspCochrane"
     "jaspDistributions"
     "jaspEquivalenceTTests"
     "jaspJags"

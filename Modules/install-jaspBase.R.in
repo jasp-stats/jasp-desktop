@@ -42,7 +42,7 @@ if (needsInstallation) {
   options(renv.config.install.verbose = TRUE)
   renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
 
-  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=TRUE) 
+  correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble = TRUE)
 
   if (correctlyInstalled)
     writeMd5Sums(modulePkg, moduleLibrary)
@@ -65,16 +65,16 @@ if (needsInstallation) {
   # construct the cache path with the custom hash
   jaspBaseVersion <- commitHashObject[["descriptions"]][["jaspBase"]][["Version"]]
   jaspBaseHash    <- commitHashObject[["commitHashes"]][["jaspBase"]]
-  newJaspBaseCachePath <- file.path("/home/dvdb/GitHub/jasp/build-jasp-desktop-Desktop_Qt_6_3_1_GCC_64bit-Debug/Modules/renv-cache", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash, "jaspBase")
+  newJaspBaseCachePath <- file.path("/home/dvdb/GitHub/jasp/build-jasp-desktop-Desktop_Qt_6_3_1_GCC_64bit-Debug/Modules/renv-cache", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash)
 
-  if (cachePath != newJaspBaseCachePath) {
+  if (dirname(cachePath) != newJaspBaseCachePath) {
     # copy the old cache to the new cache and delete the old cache
     if (dir.exists(newJaspBaseCachePath))
       unlink(newJaspBaseCachePath, recursive = TRUE)
     dir.create(newJaspBaseCachePath, recursive = TRUE)
 
     result <- file.copy(cachePath, newJaspBaseCachePath, recursive = TRUE)
-    unlink(cachePath)
+    unlink(dirname(cachePath), recursive = TRUE)
 
     # update the symlink
     renv:::renv_file_link(file.path(newJaspBaseCachePath, "jaspBase"), target = installedPath, overwrite = TRUE)
