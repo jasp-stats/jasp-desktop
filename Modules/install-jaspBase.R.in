@@ -28,7 +28,8 @@ modulePkg     <- "@PROJECT_SOURCE_DIR@/Engine/jaspBase"
 moduleLibrary <- "@R_LIBRARY_PATH@"
 prompt        <- FALSE
 
-if (md5SumsChanged(modulePkg, moduleLibrary)) {
+needsInstallation <- md5SumsChanged(modulePkg, moduleLibrary)
+if (needsInstallation) {
   options(
     renv.cache.linkable = TRUE,
     configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
@@ -55,20 +56,28 @@ commitHashObject <- createCommitHashObject(
   file     = file.path("@R_LIBRARY_PATH@", "jaspBase", "cachedCommitInfo.rds")
 )
 
-# TODO: copying may not work on macOS, so for now just install jaspBase twice there.
-if (getOS() != "osx") {
-  # copy jaspBase installation to the renv-cache if it does not exist (otherwise the first jasp module will compile jaspBase again)
+if (needsInstallation) {
+
+  installedPath <- file.path("@R_LIBRARY_PATH@", "jaspBase")
+  # normalizePath resolves the symlink
+  cachePath <- normalizePath(installedPath)
+
+  # construct the cache path with the custom hash
   jaspBaseVersion <- commitHashObject[["descriptions"]][["jaspBase"]][["Version"]]
   jaspBaseHash    <- commitHashObject[["commitHashes"]][["jaspBase"]]
-  jaspBaseCachePath <- file.path("@MODULES_RENV_CACHE_PATH@", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash, "jaspBase")
-  if (!dir.exists(jaspBaseCachePath)) {
-    # NOTE: we could use file.symlink or file.link, but I'm not sure if windows will like that
-    installedJaspBasePath <- file.path("@R_LIBRARY_PATH@", "jaspBase")
-    dir.create(jaspBaseCachePath, recursive = TRUE)
-    copySuccess <- file.copy(from = list.files(installedJaspBasePath, full.names = TRUE), to = jaspBaseCachePath, recursive = TRUE)
-    # if any copy fails remove the cache to not have a broken package in there
-    if (!all(copySuccess))
-      unlink(jaspBaseCachePath)
+  newJaspBaseCachePath <- file.path("/home/dvdb/GitHub/jasp/build-jasp-desktop-Desktop_Qt_6_3_1_GCC_64bit-Debug/Modules/renv-cache", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash, "jaspBase")
+
+  if (cachePath != newJaspBaseCachePath) {
+    # copy the old cache to the new cache and delete the old cache
+    if (dir.exists(newJaspBaseCachePath))
+      unlink(newJaspBaseCachePath, recursive = TRUE)
+    dir.create(newJaspBaseCachePath, recursive = TRUE)
+
+    result <- file.copy(cachePath, newJaspBaseCachePath, recursive = TRUE)
+    unlink(cachePath)
+
+    # update the symlink
+    renv:::renv_file_link(file.path(newJaspBaseCachePath, "jaspBase"), target = installedPath, overwrite = TRUE)
   }
 }
 
