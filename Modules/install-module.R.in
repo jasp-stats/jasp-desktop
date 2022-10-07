@@ -12,20 +12,22 @@ options(renv.config.install.verbose = @RENV_INSTALL_VERBOSE@)
 options(JASP_COMMIT_HASHES_OBJECT=file.path("@R_LIBRARY_PATH@", "jaspBase", "cachedCommitInfo.rds"))
 
 if (@IS_LINUX_LOCAL_BUILD@) {
-	# Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
-	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
+  # Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
+  Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
 
-if (@IS_FLATPAK_USED@) {
-	source('/app/lib64/Rprofile.R');
-}
+if (@IS_FLATPAK_USED@)
+  source('/app/lib64/Rprofile.R');
 
 # The R_LIBRARY_PATH might already be there, but depending on the configuration
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y.
 .libPaths(c("@R_LIBRARY_PATH@"))
 
+# Related to the comment above, there is variable here called,
+# `libPathsToUse` but it is not connected to anything. If this works,
+# then, I don't need to set the libPaths() anymore perhaps.
 jaspBase::installJaspModuleNew(
   modulePkg      = "@MODULES_SOURCE_PATH@/@MODULE@",
   jaspRoot       = "@PROJECT_SOURCE_DIR@",
@@ -37,7 +39,7 @@ jaspBase::installJaspModuleNew(
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") {
-	source('@MODULES_BINARY_PATH@/symlinkTools.R')
-	convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+if (jaspBase::getOS() == "osx") {
+  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }

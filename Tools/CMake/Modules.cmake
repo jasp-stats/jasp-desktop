@@ -210,7 +210,6 @@ if(APPLE)
       #   ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
-                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
     add_dependencies(${MODULE} JASPEngine)

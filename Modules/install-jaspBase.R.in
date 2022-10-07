@@ -74,7 +74,7 @@ if (getOS() != "osx") {
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") {
+if (getOS() == "osx") {
   source('@MODULES_BINARY_PATH@/symlinkTools.R')
   convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }
