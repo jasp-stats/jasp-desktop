@@ -147,6 +147,7 @@ Window
 			}
 		}
 
+
 		MainPage
 		{
 			id:			mainpage
