@@ -30,7 +30,7 @@ prompt        <- FALSE
 
 if (md5SumsChanged(modulePkg, moduleLibrary)) {
   options(
-    renv.cache.linkable = FALSE,
+    renv.cache.linkable = TRUE,
     configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
   )
 
