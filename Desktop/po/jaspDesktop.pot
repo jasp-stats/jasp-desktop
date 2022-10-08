@@ -734,10 +734,6 @@ msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr ""
 
-msgctxt "PrefsAdvanced|"
-msgid "Maximum # of engines: "
-msgstr ""
-
 msgctxt "PrefsData|"
 msgid "Data Preferences"
 msgstr ""
@@ -2821,18 +2817,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr ""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
 msgstr ""
 
@@ -3647,4 +3631,30 @@ msgstr ""
 
 msgctxt "Database|"
 msgid "DB driver"
+msgstr ""
+
+msgctxt "EnginesWindow|"
+msgid "Engines Overview"
+msgstr ""
+
+msgctxt "EnginesWindow|"
+msgid "Right and middle mouse button to kill an engine."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Maximum number of engines: "
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Show engines"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '$1' but it doesn't exist."
 msgstr ""

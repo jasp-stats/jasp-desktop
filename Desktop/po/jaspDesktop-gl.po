@@ -2592,10 +2592,6 @@ msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "Opcións de rexistro"
 
-msgctxt "PrefsAdvanced|"
-msgid "Maximum # of engines: "
-msgstr "Máximo número de rexistros: "
-
 msgctxt "PrefsData|"
 msgid "Windows workaround"
 msgstr "Apaño de Windows"
@@ -3122,20 +3118,6 @@ msgid ""
 "%2"
 msgstr ""
 "A instalación do Módulo %1 fallou coa seguinte mensaxe de fallo:\n"
-"%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr "Fallo ao cargar paquetes para o Módulo %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"Fallou a carga de paquetes do Módulo %1, coa seguinte mensaxe de fallo:\n"
 "%2"
 
 #, qt-format
@@ -4024,3 +4006,29 @@ msgstr "Seleccionar o banco de datos"
 msgctxt "Database|"
 msgid "DB driver"
 msgstr "Controlador do BD"
+
+msgctxt "EnginesWindow|"
+msgid "Engines Overview"
+msgstr ""
+
+msgctxt "EnginesWindow|"
+msgid "Right and middle mouse button to kill an engine."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Maximum number of engines: "
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Show engines"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '$1' but it doesn't exist."
+msgstr ""
