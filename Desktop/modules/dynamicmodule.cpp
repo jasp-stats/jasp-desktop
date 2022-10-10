@@ -102,6 +102,8 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 
 void DynamicModule::initialize()
 {
+
+	//Log::log() << "DynamicModule::initialize() called for " << _moduleFolder.absolutePath() << std::endl;
 	//Check some stuff
 	_moduleFolder.makeAbsolute();
 
@@ -177,9 +179,13 @@ void DynamicModule::initialize()
 		loadUpgradesQML(qmlTxt, url);
 	
 	}
-	catch(upgradeLoadError & loadError)
+	catch(ModuleException & upgradeLoadError)
 	{
-		MessageForwarder::showWarning(tr("Loading upgrades for module %1 failed").arg(nameQ()), tr("Loading upgrades gave the following error: %1").arg(tq(loadError.what())));
+		MessageForwarder::showWarning(tr("Loading upgrades for module %1 failed").arg(nameQ()), tr("Loading upgrades gave the following error(s): %1").arg(tq(upgradeLoadError.what())));
+	}
+	catch(qmlLoadError & loadError)
+	{
+		MessageForwarder::showWarning(tr("Loading upgrades for module %1 failed").arg(nameQ()), tr("Loading upgrades gave the following error(s): %1").arg(tq(loadError.what())));
 	}
 	catch(std::runtime_error & qmlNotFound)
 	{
@@ -252,10 +258,10 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 			break;
 	}		
 	
-	Log::log() << "loadRequiredModulesFromDESCRIPTIONTxt found: ";
+	/*Log::log() << "loadRequiredModulesFromDESCRIPTIONTxt found: ";
 	for(const std::string & reqM : reqModules)
 		Log::log(false) << reqM << "\t";
-	Log::log(false) << std::endl;
+	Log::log(false) << std::endl;*/
 	
 	setImportsR(reqModules);
 }
@@ -273,6 +279,8 @@ Description * DynamicModule::instantiateDescriptionQml(const QString & descripti
 Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, const QUrl & url, const std::string & moduleName)
 {
 	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename(), MainWindow::singleton()->giveRootQmlContext()));
+
+	//Log::log() << "Dynamic module " << moduleName << " got upgrades? " << ( upgrades ? "yes!" : "no...") << std::endl;
 
 	return upgrades;
 }
@@ -295,7 +303,7 @@ void DynamicModule::loadUpgradesQML(const QString & upgradesTxt, const QUrl & ur
 	Upgrades * upgrades = instantiateUpgradesQml(upgradesTxt, url, name());
 
 	if(!upgrades)
-		throw ModuleException(name(), getQmlUpgradesFilename() + " must have Upgrades item as root!");
+		throw ModuleException(name(), getQmlUpgradesFilename() + " could not be instantiated!\nIt must have Upgrades item as root and, well not contain any errors.\nCheck the log for more details.");
 
 	_upgrades = upgrades;
 }

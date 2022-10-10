@@ -12,6 +12,14 @@
 #include "appinfo.h"
 #endif
 
+
+const char * qmlLoadError::what() const noexcept
+{
+	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
+	return std::runtime_error::what();
+}
+
+
 QmlUtils::QmlUtils(QObject *parent) : QObject(parent)
 {
 
@@ -77,13 +85,13 @@ QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::st
 
 		Log::log() << out.str() << std::flush;
 
-		throw std::runtime_error("There were errors loading " + filename + ":\n" + out.str());
+		throw qmlLoadError("There were errors loading " + filename + ":\n" + out.str());
 	};
 
 	errorLogger(qmlComp.isError(), qmlComp.errors());
 
 	if(!qmlComp.isReady())
-		throw std::runtime_error(whatAmILoading + " Component is not ready!");
+		throw qmlLoadError(whatAmILoading + " Component is not ready!");
 
 	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 
