@@ -6,7 +6,13 @@
 #include <QQuickItem>
 #include <QDir>
 
-/// Simply links through utilities for use inand around QML
+struct qmlLoadError  : public std::runtime_error
+{
+	qmlLoadError(std::string msg) : std::runtime_error(msg) {}
+	const char* what() const noexcept override;
+};
+
+/// Simply links through utilities for use in and around QML
 class QmlUtils : public QObject
 {
 	Q_OBJECT
