@@ -16,230 +16,205 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.12
-import QtWebEngine		1.7
-import QtWebChannel		1.0
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
-import QtQuick.Controls 6.0
+import QtQuick
+import QtWebEngine
+import QtWebChannel
+import JASP.Widgets
+import JASP.Controls
+import QtQuick.Controls
 
 Item
 {
 	id: splitViewContainer
 
+	// The MainPage has 3 panels: Data, Analyses form and Results.
+	// There are 3 configurations: only data, only analyses with results or all 3 panels.
+	// Between these 3 panels, there are 2 handles: handleBetweenDataAndAnalyses & handleBetweenAnalysesAndResults: if there are only data
+	// then no handle is displayed, if there are only analyses with results, then only handleBetweenAnalysesAndResults is displayed, and if
+	// there are data and analyses, then both handles are displayed.
+	// We cannot use the QML SplitView, since we cannot use click events on the handles (since Qt 6.3.2),
+	// so to simulate the handles between the panels, we just use rectangles that can be dragged on the X axe.
+	// The Analyses form panel has always the same width, so if we drag the first handle, the second handle should move at the same pace.
+	// To coordinate the panels in function of the handles movement, all positions and widths of the panels are deduced from the position
+	// of handleBetweenDataAndAnalyses (except when handleBetweenAnalysesAndResults is dragged, then this handle determine temporary the
+	// position of the rest)
+
 	property bool hasData:		mainWindow.dataAvailable
 	property bool hasAnalysis:	mainWindow.analysesAvailable
 
+	function minimiseDataPanel()
+	{
+		handleDataAnalyses.x = 0
+	}
+
+	function maximiseDataPanel()
+	{
+		handleDataAnalyses.x = splitViewContainer.width - (hasAnalysis ? handleAnalysesResults.width : 0)
+	}
+
 	Connections
 	{
-		target:		mainWindow
-		function onDataPanelVisibleChanged(visible)
+		target:		analysesModel
+		function onAnalysisAdded()
 		{
-			if (visible) data.maximizeData()
-			else data.minimizeData()
-//				if (visible && data.width		<=	data.leftHandSpace)	data.maximizeData();
-//				else if(!visible)										data.minimizeData();
+			// When adding an analysis, if the analyses pane is cut or the results pane has not enough space, hide the data panel
+			if (resultsPane.width < jaspTheme.resultWidth || analysesPane.x < 0)	minimiseDataPanel()
 		}
 	}
 
-/*	Connections
+	onHasDataChanged:
 	{
-		target:	analysesModel
-		function onVisibleChanged(visible)
-		{
-			if(!visible) makeSureHandleVisible();
-		}
-	} */
+		if (hasData && !hasAnalysis)	maximiseDataPanel()
+		else							minimiseDataPanel()
+	}
 
-	/*onWidthChanged:
+	onWidthChanged:
 	{
-		if(!hasData)												data.maximizeData();
-		else if(data.wasMaximized)									return; //wasMaximized binds!
-		else if(width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
-	}*/
-
-	//onVisibleChanged:	if(visible && !mainWindow.dataPanelVisible)	data.minimizeData();
-
-
-//		onResizingChanged: if(!resizing) data.makeSureHandleVisible();
+		if (handleDataAnalyses.visible && handleDataAnalyses.x > (width - handleDataAnalyses.width)) maximiseDataPanel()
+	}
 
 	DataPanel
 	{
-		id:						data
+		id:						dataPanel
 		visible:				hasData
-//		leftHandSpace:			panelSplit.leftHandSplitHandlerSpace
-		width:					splitHandle1.x
+		width:					hasAnalysis ? handleDataAnalyses.x + 1 : parent.width // -1 is for the border to the right
 		height:					parent.height
-
-/*		property real baseMaxWidth:					fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
-		property real maxWidth:						leftHandSpace + baseMaxWidth
-		property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
-		property bool wasMaximized:					false
-
-
-		onWidthChanged:
-		{
-
-			var iAmBig = width > leftHandSpace;
-			if(iAmBig != mainWindow.dataPanelVisible)
-				mainWindow.dataPanelVisible = iAmBig
-
-			if(fakeEmptyDataForSumStatsEtc)
-			{
-				mainWindow.dataPanelVisible = false;
-				minimizeData();
-			}
-
-			if(data.width != data.maxWidth)
-				data.wasMaximized = false;
-
-			makeSureHandleVisible();
-		}
-		*/
-
-		function maximizeData()				{ splitHandle1.x = parent.width - (hasAnalysis ? splitHandle1.width : 0) }
-		function minimizeData()				{ splitHandle1.x = 0; }
 	}
 
 	JASPSplitHandle
 	{
-		id:				splitHandle1
-		x:				100 //splitHandle2.x - width - analyses.width
-		visible:		hasData && hasAnalysis
-		onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
-		pointingLeft:	mainWindow.dataPanelVisible
-		showArrow:		true
-		toolTipArrow:	mainWindow.dataPanelVisible ? qsTr("Hide data")  : qsTr("Show data")
-		toolTipDrag:	mainWindow.dataPanelVisible ? qsTr("Resize data/results") : qsTr("Drag to show data")
-		dragEnabled:	true
-		onXChanged:		checkPosition()
-		onDraggingChanged: checkPosition()
-
-		function checkPosition()
+		id:					handleDataAnalyses
+		x:					0 // All other items are depending on this point
+		visible:			hasData && hasAnalysis
+		onArrowClicked:
 		{
-			if (!dragging && visible)
+			if (pointingLeft) minimiseDataPanel()
+			else maximiseDataPanel()
+		}
+		pointingLeft:		x > 0
+		toolTipArrow:		pointingLeft ? qsTr("Hide data")  : qsTr("Show data")
+		toolTipDrag:		pointingLeft ? qsTr("Resize data/results") : qsTr("Drag to show data")
+		onXChanged:			checkPosition(false)
+		onDraggingChanged:	checkPosition(true)
+
+		function checkPosition(forceCheck)
+		{
+			if (forceCheck || !dragging)
 			{
-				if (x < 0 && !analysesModel.visible)	x = 0
-				else if (x + width > parent.width)		x = parent.width - width
+				// When there is no data, the handle is not visible, but is still used to position the other items: then this handle might be negative.
+				// Also when the analysesPane is open, then you may drag this handle outside at the left of the container.
+				if (x < 0 && !analysesModel.visible && hasData)
+					x = 0
+				else if (x + width > parent.width)
+					x = parent.width - width // Take care that this handle is always inside the container
 			}
 		}
 	}
 
-	AnalysisForms
+	Item
 	{
-		id:						analyses
-		visible:				analysesModel.visible
-		width:					analysesModel.visible ? implicitWidth : 0
-		height:					parent.height
-		x:						hasData ? (splitHandle1.x + splitHandle1.width) : 0
+		id:				analysesPane
+		anchors.left:	handleDataAnalyses.right
+		width:			analysesForm.width + extraBorder.width
+		height:			parent.height
+
+		Rectangle
+		{
+			// When there is an analysis without data, add an axtra border at the left side of the analysis form
+			id:						extraBorder
+			width:					visible ? jaspTheme.splitHandleWidth : 0
+			visible:				!hasData && hasAnalysis && analysesModel.visible
+			color:					jaspTheme.uiBackground
+			border.width:			1
+			border.color:			jaspTheme.uiBorder
+			anchors
+			{
+				top:				parent.top
+				bottom:				parent.bottom
+				left:				parent.left
+				leftMargin:			-1
+				topMargin:			-1
+				bottomMargin:		-1
+			}
+
+		}
+
+		AnalysisForms
+		{
+			id:						analysesForm
+			visible:				hasAnalysis && analysesModel.visible
+			width:					hasAnalysis ? implicitWidth : 0
+			height:					parent.height
+			x:						extraBorder.width
+		}
 	}
 
 
 	JASPSplitHandle
 	{
-		id:						splitHandle2
-		x:						analyses.x + analyses.width
+		id:						handleAnalysesResults
+		anchors.left:			!dragging ? analysesPane.right : undefined
 		visible:				hasAnalysis
-		showArrow:				true
 		pointingLeft:			analysesModel.visible
 		onArrowClicked:			analysesModel.visible = !analysesModel.visible
-		toolTipDrag:			hasData	? (mainWindow.dataPanelVisible ? qsTr("Resize data/results")  : qsTr("Drag to show data")) : ""
-		toolTipArrow:			analysesModel.visible		? qsTr("Hide input options") : qsTr("Show input options")
-		dragEnabled:			true
-		onHandleDragging:		function(active, mouseArea)
+		toolTipDrag:			hasData	? (handleAnalysesResults.pointingLeft	? qsTr("Resize data/results")	: qsTr("Drag to show data")) : ""
+		toolTipArrow:			analysesModel.visible							? qsTr("Hide input options")	: qsTr("Show input options")
+		removeLeftBorder:		!analysesModel.visible
+
+		Binding
 		{
-			if (active)
+			// When dragging, the handleDataAnalyses must follow the movement of handleAnalysesResults
+			target:			handleDataAnalyses
+			property:		"x"
+			value:			handleAnalysesResults.x + handleAnalysesResults.dragX - handleDataAnalyses.width - analysesPane.width
+			when:			handleAnalysesResults.dragging
+			restoreMode:	Binding.RestoreNone
+		}
+
+		onDraggingChanged:
+		{
+			if (!dragging)
 			{
-				x = x // Remove binding to prevent binding loop
-				splitHandle1.x = Qt.binding(function() { return splitHandle2.x + mouseArea.x - splitHandle1.width - analyses.width })
-			}
-			else
-			{
-				// Remove binding for splitHandle1 and restore binding for splitHandler2
-				splitHandle1.x = splitHandle1.x
-				x = Qt.binding(function() { return analyses.x + analyses.width})
-				checkPosition()
+				if (!hasData && !analysesModel.visible && x > 0) analysesModel.visible = true
+				checkPosition(true)
 			}
 		}
-		onXChanged: checkPosition()
 
-		function checkPosition()
+		onXChanged: checkPosition(false)
+
+		function checkPosition(forceCheck)
 		{
-			if (!dragging && visible)
+			if (forceCheck || (!dragging && visible))
 			{
 				if (x < 0)
 				{
-					if (hasData)	splitHandle1.x = - (splitHandle1.width + analyses.width)
-					else			splitHandle1.x = 0
+					// We have moved the handle outside the container to the left: the analyses form panel must be hidden, and take care that the handleDataAnalyses appears.
+					analysesModel.visible = false
+					handleDataAnalyses.x = - (handleDataAnalyses.width + analysesPane.width)
 				}
+				else if (!hasData && x > analysesPane.width)
+					// If there is no data, the handle should not move more to the right than the widh of the analyses form panel.
+					handleDataAnalyses.x = - handleDataAnalyses.width
 			}
 		}
 	}
 
 	Rectangle
 	{
-		id:								giveResultsSomeSpace
-		x:								splitHandle2.x + splitHandle2.width
-		width:							parent.width - x
-		height:							parent.height
-
-//		z:								3
-		visible:						hasAnalysis
-//		onVisibleChanged:				if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
-		color:							analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
-
-		Connections
-		{
-			target:				analysesModel
-			function			onAnalysisAdded()
-			{
-				data.minimizeData()
-				//make sure we get to see the analyses + results!
-
-/*				var desiredFormResWidth	= panelSplit.leftHandSplitHandlerSpace + jaspTheme.resultWidth
-				var inputOutputWidth	= splitViewContainer.width - data.width + panelSplit.leftHandSplitHandlerSpace
-				var remainingDataWidth	= Math.max(0, splitViewContainer.width - (desiredFormResWidth));
-
-				//If data.width < leftHandSplit then it isnt in view anymore so we can just minimize it
-				if(data.width < panelSplit.leftHandSplitHandlerSpace)
-					data.minimizeData()
-				//If the remaining width of the jasp window is smaller than resultwidth + formwidth just minimize data as well
-				else if(inputOutputWidth < desiredFormResWidth)
-					 mainWindow.dataPanelVisible = false;
-				else if(mainWindow.dataPanelVisible)
-				{
-					//There was some space remaining but it aint much so hide datapanel
-					if(remainingDataWidth < jaspTheme.formWidth / 2)
-						mainWindow.dataPanelVisible = false;
-					else
-					{
-						//otherwise check whether we can just keep showing everything at once?
-
-						remainingDataWidth += panelSplit.leftHandSplitHandlerSpace;
-						if(remainingDataWidth < data.width) //data can stay visible but should be smaller
-							data.width = remainingDataWidth
-						//else, keep as is
-					}
-				}
-				//else keep as is
-				*/
-			}
-		}
+		id:						resultsPane
+		anchors.left:			handleAnalysesResults.right
+		width:					parent.width - x
+		height:					parent.height
+		visible:				hasAnalysis
+		color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
 		WebEngineView
 		{
 			id:						resultsView
 			clip:                   true
-
-			anchors.fill:			parent
-/*			anchors
-			{
-				top:				parent.top
-				bottom:				parent.bottom
-			}
-*/
-//			x:						1 + (Math.floor(parent.x) - parent.x)
-//			width:					Math.floor(giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth)
+			x:						1
+			height:					parent.height
+			width:					parent.width
 
 			url:					resultsJsInterface.resultsPageUrl
 

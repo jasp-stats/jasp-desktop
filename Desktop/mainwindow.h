@@ -73,7 +73,6 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
-	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
 	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
@@ -94,7 +93,6 @@ public:
 	bool	progressBarVisible()	const	{ return _progressBarVisible;	}
 	int		progressBarProgress()	const	{ return _progressBarProgress;	}
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
-	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const;
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
@@ -113,7 +111,6 @@ public slots:
 	void setWelcomePageVisible(bool welcomePageVisible);
 	void setProgressBarStatus(QString progressBarStatus);
 	void setAnalysesAvailable(bool analysesAvailable);
-	void setDataPanelVisible(bool dataPanelVisible);
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
 
@@ -209,8 +206,6 @@ signals:
 
 private slots:
 	void resultsPageLoaded();
-	void showResultsPanel() { setDataPanelVisible(false); }
-
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 	void removeAllAnalyses();
@@ -296,7 +291,6 @@ private:
 									_openedUsingArgs		= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
-									_dataPanelVisible		= false,
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,

@@ -11,20 +11,29 @@ Rectangle
 	signal arrowClicked
 	signal handleDragging(bool active, var mouseArea)
 	property bool pointingLeft: true
-	property bool showArrow:	false
+	property bool showArrow:	true
 	property bool dragEnabled:	true
+	property bool removeLeftBorder: false
 
 	property string toolTipDrag:	""
 	property string toolTipArrow:	""
 	property bool	hovered:		hoverMouse.containsMouse
-	property bool	dragging:		hoverMouse.drag.active
+	property alias	dragging:		hoverMouse.drag.active
+	property alias	dragX:			hoverMouse.x
 
 
-	width:	jaspTheme.splitHandleWidth
-	height: parent.height
+	width:			jaspTheme.splitHandleWidth
+	anchors
+	{
+		top:			parent.top
+		bottom:			parent.bottom
+		topMargin:		-1
+		bottomMargin:	-1
+		leftMargin:		removeLeftBorder ? -1 : 0
+	}
 	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
-	//border.color:	jaspTheme.uiBorder
-	//border.width:	1
+	border.color:	jaspTheme.uiBorder
+	border.width:	1
 
 	Drag.active: hoverMouse.drag.active
 
@@ -69,7 +78,9 @@ Rectangle
 		{
 			verticalCenter: parent.verticalCenter
 			left:			parent.left
+			leftMargin:		1
 			right:			parent.right
+			rightMargin:	1
 		}
 
 		Loader //No arrow? then three dots in the center instead

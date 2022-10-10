@@ -18,8 +18,6 @@ FocusScope
 		id:				formsBackground
 	//	z:				0
 		color:			jaspTheme.uiBackground
-		border.color:	jaspTheme.uiBorder
-		border.width:	1
 		anchors.fill:	parent
 
 		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing

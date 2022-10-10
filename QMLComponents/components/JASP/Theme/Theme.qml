@@ -183,7 +183,7 @@ JaspTheme
 	textFieldWidth:							200
 	textFieldHeight:						20
 	numericFieldWidth:						40
-	splitHandleWidth:						20
+	splitHandleWidth:						22
 	subMenuIconHeight:						13
 	ribbonButtonHeight:						72
 	variablesListTitle:						16
