@@ -67,7 +67,7 @@ Item
 	{
 		id: rect
 
-		color:			!enabled ? jaspTheme.buttonColorDisabled : (_pressed || selected) ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
+		color:			!enabled ? jaspTheme.buttonColorDisabled : _pressed ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
 		border.color:	(filterButtonRoot.hovered || selected) ?	jaspTheme.buttonBorderColorHovered	: jaspTheme.buttonBorderColor
 		border.width:	1
 		width:			parent.width
