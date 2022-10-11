@@ -65,7 +65,7 @@ if (needsInstallation) {
   # construct the cache path with the custom hash
   jaspBaseVersion <- commitHashObject[["descriptions"]][["jaspBase"]][["Version"]]
   jaspBaseHash    <- commitHashObject[["commitHashes"]][["jaspBase"]]
-  newJaspBaseCachePath <- file.path("/home/dvdb/GitHub/jasp/build-jasp-desktop-Desktop_Qt_6_3_1_GCC_64bit-Debug/Modules/renv-cache", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash)
+  newJaspBaseCachePath <- file.path("@MODULES_RENV_CACHE_PATH@", "v5", "jaspBase", jaspBaseVersion, jaspBaseHash)
 
   if (dirname(cachePath) != newJaspBaseCachePath) {
     # copy the old cache to the new cache and delete the old cache
