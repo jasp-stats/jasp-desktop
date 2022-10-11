@@ -42,12 +42,12 @@ Item
 	property bool hasData:		mainWindow.dataAvailable
 	property bool hasAnalysis:	mainWindow.analysesAvailable
 
-	function minimiseDataPanel()
+	function minimizeDataPanel()
 	{
 		handleDataAnalyses.x = 0
 	}
 
-	function maximiseDataPanel()
+	function maximizeDataPanel()
 	{
 		handleDataAnalyses.x = splitViewContainer.width - (hasAnalysis ? handleAnalysesResults.width : 0)
 	}
@@ -58,19 +58,20 @@ Item
 		function onAnalysisAdded()
 		{
 			// When adding an analysis, if the analyses pane is cut or the results pane has not enough space, hide the data panel
-			if (resultsPane.width < jaspTheme.resultWidth || analysesPane.x < 0)	minimiseDataPanel()
+			if (resultsPane.width < jaspTheme.resultWidth || analysesPane.x < 0)
+				minimizeDataPanel()
 		}
 	}
 
 	onHasDataChanged:
 	{
-		if (hasData && !hasAnalysis)	maximiseDataPanel()
-		else							minimiseDataPanel()
+		if (hasData && !hasAnalysis)	maximizeDataPanel()
+		else							minimizeDataPanel()
 	}
 
 	onWidthChanged:
 	{
-		if (handleDataAnalyses.visible && handleDataAnalyses.x > (width - handleDataAnalyses.width)) maximiseDataPanel()
+		if (handleDataAnalyses.visible && handleDataAnalyses.x > (width - handleDataAnalyses.width)) maximizeDataPanel()
 	}
 
 	DataPanel
@@ -88,8 +89,8 @@ Item
 		visible:			hasData && hasAnalysis
 		onArrowClicked:
 		{
-			if (pointingLeft) minimiseDataPanel()
-			else maximiseDataPanel()
+			if (pointingLeft) minimizeDataPanel()
+			else maximizeDataPanel()
 		}
 		pointingLeft:		x > 0
 		toolTipArrow:		pointingLeft ? qsTr("Hide data")  : qsTr("Show data")
@@ -105,6 +106,7 @@ Item
 				// Also when the analysesPane is open, then you may drag this handle outside at the left of the container.
 				if (x < 0 && !analysesModel.visible && hasData)
 					x = 0
+
 				else if (x + width > parent.width)
 					x = parent.width - width // Take care that this handle is always inside the container
 			}
@@ -173,38 +175,46 @@ Item
 
 		onDraggingChanged:
 		{
-			if (!dragging)
-			{
-				if (!hasData && !analysesModel.visible && x > 0) analysesModel.visible = true
-				checkPosition(true)
-			}
+			if (dragging)
+				return
+
+			if (!hasData && !analysesModel.visible && x > 0)
+				analysesModel.visible = true
+
+			checkPosition(true)
+
 		}
 
 		onXChanged: checkPosition(false)
 
 		function checkPosition(forceCheck)
 		{
-			if (forceCheck || (!dragging && visible))
+			if((!visible || dragging) && !forceCheck)
+				return
+
+			if (x < 0)
 			{
-				if (x < 0)
-				{
-					// We have moved the handle outside the container to the left: the analyses form panel must be hidden, and take care that the handleDataAnalyses appears.
-					analysesModel.visible = false
-					handleDataAnalyses.x = - (handleDataAnalyses.width + analysesPane.width)
-				}
-				else if (!hasData && x > analysesPane.width)
-					// If there is no data, the handle should not move more to the right than the widh of the analyses form panel.
-					handleDataAnalyses.x = - handleDataAnalyses.width
+				// We have moved the handle outside the container to the left: the analyses form panel must be hidden, and take care that the handleDataAnalyses appears.
+				//analysesModel.visible = false
+				handleDataAnalyses.x = - (handleDataAnalyses.width + analysesPane.width)
 			}
+			else if (!hasData && x > analysesPane.width)
+				// If there is no data, the handle should not move more to the right than the widh of the analyses form panel.
+				handleDataAnalyses.x = - handleDataAnalyses.width
 		}
+
 	}
 
 	Rectangle
 	{
 		id:						resultsPane
-		anchors.left:			handleAnalysesResults.right
-		width:					parent.width - x
-		height:					parent.height
+		anchors
+		{
+			top:				parent.top
+			left:				handleAnalysesResults.right
+			right:				parent.right
+			bottom:				parent.bottom
+		}
 		visible:				hasAnalysis
 		color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
@@ -212,9 +222,8 @@ Item
 		{
 			id:						resultsView
 			clip:                   true
-			x:						1
-			height:					parent.height
-			width:					parent.width
+			anchors.fill:			parent
+			anchors.leftMargin:		1
 
 			url:					resultsJsInterface.resultsPageUrl
 
