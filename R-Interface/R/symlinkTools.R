@@ -68,9 +68,10 @@ determineOverlap <- function(targetRoot, sourceRoot)
 # Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
 getRelativityFunction <- function(modulesRoot, renvCache)
 {
-  
   if (Sys.info()["sysname"] == "Darwin") {
-    modToRenvS <- pastePath(c("..", "renv-cache"))
+    #Lets make the hack better, if R.framework is in here we are installing jaspBase & co, else: jaspModules & co
+    if(grepl("R.framework", modulesRoot)) modToRenvS <- pastePath(c(rep("..",6), "Modules", "renv-cache"))
+    else                                  modToRenvS <- pastePath(c("..", "renv-cache"))
   } else {
     modToRenvF <- determineOverlap(modulesRoot, renvCache)
     modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
