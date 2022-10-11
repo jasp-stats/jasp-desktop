@@ -34,7 +34,7 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	// check length of decimal places
     QString point = locale().decimalPoint();
 
-	if (s.indexOf(point) != -1)
+	if (s.indexOf(point) != -1 && decimals() > 0)
 	{
 		if (decimals() == 0)
 			return QValidator::Invalid;
