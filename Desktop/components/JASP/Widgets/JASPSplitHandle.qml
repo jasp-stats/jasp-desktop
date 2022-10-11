@@ -9,25 +9,34 @@ Rectangle
 	id:				handleRoot
 
 	signal arrowClicked
+	signal handleDragging(bool active, var mouseArea)
 	property bool pointingLeft: true
-	property bool showArrow:	false
+	property bool showArrow:	true
 	property bool dragEnabled:	true
+	property bool removeLeftBorder: false
 
 	property string toolTipDrag:	""
 	property string toolTipArrow:	""
 	property bool	hovered:		hoverMouse.containsMouse
+	property alias	dragging:		hoverMouse.drag.active
+	property alias	dragX:			hoverMouse.x
 
-	implicitWidth:	jaspTheme.splitHandleWidth
-	width:			implicitWidth
-	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
-	//border.color:	jaspTheme.uiBorder
-	//border.width:	1
 
+	width:			jaspTheme.splitHandleWidth
 	anchors
 	{
-		top:		parent.top
-		bottom:		parent.bottom
+		top:			parent.top
+		bottom:			parent.bottom
+		topMargin:		-1
+		bottomMargin:	-1
+		leftMargin:		removeLeftBorder ? -1 : 0
 	}
+	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
+	border.color:	jaspTheme.uiBorder
+	border.width:	1
+
+	Drag.active: hoverMouse.drag.active
+
 
 	ToolTip
 	{
@@ -44,7 +53,7 @@ Rectangle
 	MouseArea
 	{
 		id:					hoverMouse
-		acceptedButtons:	Qt.NoButton
+		//acceptedButtons:	Qt.NoButton
 		hoverEnabled:		true
 		z:					-20
 		anchors
@@ -54,9 +63,12 @@ Rectangle
 			rightMargin:	-1
 		}
 		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
-		onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
-	}
+		//onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
 
+		drag.target: parent
+		drag.axis: Drag.XAxis
+		drag.onActiveChanged: handleDragging(drag.active, hoverMouse)
+	}
 
 	Item
 	{
@@ -66,7 +78,9 @@ Rectangle
 		{
 			verticalCenter: parent.verticalCenter
 			left:			parent.left
+			leftMargin:		1
 			right:			parent.right
+			rightMargin:	1
 		}
 
 		Loader //No arrow? then three dots in the center instead

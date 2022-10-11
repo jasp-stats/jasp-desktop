@@ -30,9 +30,8 @@ Window
 	height:				768
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
-
-	minimumWidth:		800
-	minimumHeight:		600
+	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
+	minimumHeight:		600 * jaspTheme.uiScale
 
 	onVisibleChanged:
 		if(!visible)
@@ -146,6 +145,7 @@ Window
 				bottom:	parent.bottom
 			}
 		}
+
 
 		MainPage
 		{

@@ -7,10 +7,8 @@ import JASP.Controls	1.0
 FocusScope
 {
 	id:				analysisFormsFocusScope
-	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.visibleBreadth : 0)
+	implicitWidth:	analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.visibleBreadth : 0
 	width:			implicitWidth
-
-	property int	extraSpace:	openCloseButton.width
 
 	Behavior on width { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
@@ -20,8 +18,6 @@ FocusScope
 		id:				formsBackground
 	//	z:				0
 		color:			jaspTheme.uiBackground
-		border.color:	jaspTheme.uiBorder
-		border.width:	1
 		anchors.fill:	parent
 
 		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing
@@ -56,38 +52,11 @@ FocusScope
 			function onCurrentAnalysisIndexChanged(index) { formsBackground.scrollToForm(index); }
 		}
 
-		Rectangle
-		{
-			id:				openCloseButton
-			width:			jaspTheme.splitHandleWidth + (2 * border.width)
-			height:			parent.height
-			//color:			//mouseArea.containsMouse ? jaspTheme.grayLighter : jaspTheme.uiBackground
-			border.color:	jaspTheme.uiBorder
-			border.width:	1
-			anchors.top:	parent.top
-			anchors.right:	parent.right
-
-			JASPSplitHandle
-			{
-				showArrow:				true
-				pointingLeft:			analysesModel.visible
-				onArrowClicked:			analysesModel.visible = !analysesModel.visible
-				anchors
-				{
-					fill:				parent
-					leftMargin:			openCloseButton.border.width
-					rightMargin:		openCloseButton.border.width
-				}
-				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Resize data/results")  : qsTr("Drag to show data")) : ""
-				toolTipArrow:			analysesModel.visible		? qsTr("Hide input options") : qsTr("Show input options")
-				dragEnabled:			mainWindow.analysesAvailable
-			}
-		}
 
 		Item
 		{
 			id:				scrollAnalyses
-			visible:		analysisFormsFocusScope.width > analysisFormsFocusScope.extraSpace
+			visible:		analysisFormsFocusScope.width > 0
 			z:				2
 			clip:			true
 
@@ -95,7 +64,7 @@ FocusScope
 			{
 				top:		parent.top
 				left:		parent.left
-				right:		openCloseButton.left
+				right:		parent.right
 				bottom:		parent.bottom
 				margins:	parent.border.width
 			}

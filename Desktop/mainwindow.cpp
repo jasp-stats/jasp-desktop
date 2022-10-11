@@ -296,9 +296,9 @@ void MainWindow::makeConnections()
 	qRegisterMetaType<DbType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showResultsPanel								);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showAnalysis									);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -1001,7 +1001,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 
 		_resultsJsInterface->resetResults();
-		setDataPanelVisible(false);
 		setDataAvailable(false);
 		setWelcomePageVisible(true);
 
@@ -1155,7 +1154,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			else
 			{
 				_engineSync->cleanUpAfterClose();
-				setDataPanelVisible(false);
 				setDataAvailable(false);
 			}
 		}
@@ -1189,9 +1187,6 @@ void MainWindow::populateUIfromDataSet()
 	setDataAvailable((_package->rowCount() > 0 || _package->columnCount() > 0));
 
 	hideProgress();
-
-	if(!_dataAvailable)	setDataPanelVisible(false);
-	else				setDataPanelVisible(!hasAnalyses);
 
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
 
@@ -1712,15 +1707,6 @@ void MainWindow::setProgressBarStatus(QString progressBarStatus)
 	emit progressBarStatusChanged(_progressBarStatus);
 }
 
-void MainWindow::setDataPanelVisible(bool dataPanelVisible)
-{
-	if (_dataPanelVisible == dataPanelVisible)
-		return;
-
-	_dataPanelVisible = dataPanelVisible;
-	emit dataPanelVisibleChanged(_dataPanelVisible);
-}
-
 void MainWindow::removeAnalysis(Analysis *analysis)
 {
 	_analyses->removeAnalysis(analysis);
@@ -1780,8 +1766,6 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 	else
 		_package->setModified(true);
 
-	if(!_analysesAvailable && !dataPanelVisible())
-		setDataPanelVisible(true);
 }
 
 void MainWindow::resetQmlCache()
