@@ -203,6 +203,7 @@ signals:
 	void welcomePageVisibleChanged(	bool		welcomePageVisible);
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 	void closeWindows();
+	void hideDataPanel();
 
 private slots:
 	void resultsPageLoaded();
@@ -218,11 +219,11 @@ private slots:
 	void resendResultsToWebEngine();
 
 	void fatalError();
-
 	void closeVariablesPage();
 	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
+	void showAnalysis() { emit hideDataPanel(); _analyses->setVisible(true); }
 
 	bool checkDoSync();
 	void unitTestTimeOut();

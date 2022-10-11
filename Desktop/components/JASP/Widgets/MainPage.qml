@@ -63,6 +63,12 @@ Item
 		}
 	}
 
+	Connections
+	{
+		target:		mainWindow
+		function	onHideDataPanel() { minimizeDataPanel() }
+	}
+
 	onHasDataChanged:
 	{
 		if (hasData && !hasAnalysis)	maximizeDataPanel()
