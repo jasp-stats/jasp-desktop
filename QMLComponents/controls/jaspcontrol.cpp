@@ -33,6 +33,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 {
 	setFlag(ItemIsFocusScope);
 	setActiveFocusOnTab(true);
+	installEventFilter(this);
 	/*if (JaspTheme::currentTheme()) // THis does not work...
 	{
 		// TODO: Add currentTheme changed font changed
@@ -62,6 +63,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_resetChildFocus);
 }
 
 JASPControl::~JASPControl()
@@ -88,8 +90,10 @@ void JASPControl::setInnerControl(QQuickItem* control)
 	if (control != _innerControl)
 	{
 		_innerControl = control;
-		if (_innerControl)
+		if (_innerControl) {
 			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_setShouldShowFocus);
+			_innerControl->installEventFilter(this);
+		}
 
 		emit innerControlChanged();
 	}
@@ -630,4 +634,47 @@ void JASPControl::runRScript(const QString &script, bool whiteListedVersion)
 void JASPControl::rScriptDoneHandler(const QString &)
 {
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
+}
+
+
+JASPControl::Direction JASPControl::tabDirectionForward = Forward;
+
+void JASPControl::_resetChildFocus()
+{
+	if(_childControlsArea && (_controlType == ControlType::GroupBox || _controlType == ControlType::CheckBox))
+	{
+		QList<JASPControl*> children =  getChildJASPControls(_childControlsArea);
+
+		for(int i = 0; i < children.length() && JASPControl::tabDirectionForward == JASPControl::Forward; i++)
+		{
+			if(children[i]->isEnabled())
+			{
+				children[i]->setFocus(true);
+				break;
+			}
+		}
+
+		for(int i = children.length() - 1; i >= 0 && JASPControl::tabDirectionForward == JASPControl::Backward; i--)
+		{
+			if(children[i]->isEnabled())
+			{
+				children[i]->setFocus(true);
+				break;
+			}
+		}
+	}
+}
+
+bool JASPControl::eventFilter(QObject *object, QEvent *event)
+{
+	if (event->type() == QEvent::KeyPress)
+	{
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Tab)
+			tabDirectionForward = Forward;
+		else if (keyEvent->key() == Qt::Key_Backtab)
+			tabDirectionForward = Backward;
+		Log::log() << "filter hit: " << (tabDirectionForward == Backward ? "backward" : "forward") << std::endl;
+	}
+	return false;
 }

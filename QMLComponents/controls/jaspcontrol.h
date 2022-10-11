@@ -164,6 +164,7 @@ public:
 	virtual void					rScriptDoneHandler(const QString& result);
 
 	virtual QString					friendlyName() const;
+//	virtual void keyPressEvent(QKeyEvent *event) override;
 
 protected:
 	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
@@ -211,6 +212,7 @@ private slots:
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }
 	void	_resetBindingValue();
+	void	_resetChildFocus();
 
 signals:
 	void setOptionBlockSignal(	bool blockSignal);
@@ -294,6 +296,17 @@ protected:
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
+
+public:
+	enum Direction { Forward, Backward };
+	Q_ENUM(Direction)
+
+private:
+
+	static Direction tabDirectionForward;
+	bool eventFilter(QObject *object, QEvent *event) override;
+
+
 };
 
 

@@ -75,10 +75,6 @@ VariablesFormBase
 
 			Component.onCompleted:
 			{
-				KeyNavigation.tab = allAssignedVariablesList[index];
-				if(index !== 0)
-					KeyNavigation.backtab = allAssignedVariablesList[index - 1];
-
 				allAssignedVariablesList[index]	.activeFocusChanged		.connect(setIconToLeft	);
 				availableVariablesList			.activeFocusChanged		.connect(setIconToRight	);
 				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(setState		);
@@ -124,14 +120,7 @@ VariablesFormBase
 		availableVariablesList.dropKeys = availableDropKeys
 		setControlsSize()
 		assignButtonRepeater.model = countAssignedList;
-		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
-		availableVariablesList.KeyNavigation.backtab = parent;
-
-		for(var key3 in allAssignedVariablesList) {
-			allAssignedVariablesList[key3].KeyNavigation.backtab = assignButtonRepeater.itemAt(key3);
-			if(key3 < allAssignedVariablesList.length - 1)
-				allAssignedVariablesList[key3].KeyNavigation.tab = assignButtonRepeater.itemAt(key3 + 1);
-		}
+		setTabOrder();
 	}
 
 	function setControlsSize()
@@ -193,4 +182,25 @@ VariablesFormBase
 		
 	}
 
+	function setTabOrder()
+	{
+		console.log(allAssignedVariablesList.length);
+		availableVariablesList.KeyNavigation.backtab = parent;
+		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
+		assignButtonRepeater.itemAt(0).KeyNavigation.backtab = availableVariablesList;
+
+		for (var x in allAssignedVariablesList) console.log(x);
+		for (var i = 0; i < allAssignedVariablesList.length; i++)
+		{
+			console.log(i);
+			allAssignedVariablesList[i].KeyNavigation.backtab = assignButtonRepeater.itemAt(i);
+			assignButtonRepeater.itemAt(i).KeyNavigation.tab = allAssignedVariablesList[i];
+
+			if(i < allAssignedVariablesList.length - 1)
+			{
+				allAssignedVariablesList[i].KeyNavigation.tab = assignButtonRepeater.itemAt(i + 1);
+				assignButtonRepeater.itemAt(i + 1).KeyNavigation.backtab = allAssignedVariablesList[i];
+			}
+		}
+	}
 }
