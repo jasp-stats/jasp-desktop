@@ -246,18 +246,6 @@ void JASPControl::componentComplete()
 
 	if (_form)
 		connect(this, &JASPControl::boundValueChanged, _form, &AnalysisForm::boundValueChangedHandler);
-
-	if (_innerControl)
-	{
-		// Needed when the QML file has wrong default value
-		QVariant acceptableInput = _innerControl->property("acceptableInput");
-		if (acceptableInput.isValid() && !acceptableInput.toBool())
-		{
-			setHasError(true);
-			_setFocusBorder();
-		}
-	}
-
 }
 
 void JASPControl::setCursorShape(int shape)

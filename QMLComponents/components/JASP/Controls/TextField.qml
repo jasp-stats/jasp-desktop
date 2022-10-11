@@ -76,7 +76,31 @@ TextInputBase
 		control.pressed.connect(pressed);
 		control.released.connect(released);
 		lastValidValue = control.text;
-	}	
+	}
+
+	onInitializedChanged: if (initialized) checkValue(false)
+
+	function checkValue(resetLastValidValue)
+	{
+		if (control.acceptableInput) return true;
+
+		var msg
+		if (control.validator && (typeof control.validator.validationMessage === "function"))
+			msg = control.validator.validationMessage(beforeLabel.text)
+
+		if (resetLastValidValue)
+		{
+			if (textField.useLastValidValue)
+				control.text = textField.lastValidValue
+			msg += "<br><br>"
+			msg += qsTr("Restoring last correct value: %1").arg(text);
+			addControlErrorTemporary(msg)
+		}
+		else
+			addControlError(control.validator.validationMessage(beforeLabel.text))
+
+		return false
+	}
 		
 	Rectangle
 	{
@@ -111,7 +135,7 @@ TextInputBase
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
-		text:					textField.defaultValue !== undefined ? textField.defaultValue : ""
+		// text property is set by TextInpoutBase
 
 		background: Rectangle
 		{
@@ -143,29 +167,16 @@ TextInputBase
 					control.selectAll()
 			}
 
-			if (!control.acceptableInput)
+			if (checkValue(true))
 			{
-				var msg
-				if (control.validator && (typeof control.validator.validationMessage === "function"))
-					msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
-
-				if (textField.useLastValidValue)
-					text = textField.lastValidValue
-				msg += qsTr("Restoring last correct value: %1").arg(text);
-				addControlErrorTemporary(msg)
+				if (!hasScriptError)
+					clearControlError()
 			}
-			else if (!hasScriptError)
-				clearControlError()
 		}
 
 		Keys.onReturnPressed: (event)=>
 		{
-			if (!control.acceptableInput)
-			{
-				if (control.validator && (typeof control.validator.validationMessage === "function"))
-					addControlError(control.validator.validationMessage(beforeLabel.text));
-			}
-			else
+			if (checkValue(false))
 			{
 				if (!hasScriptError)
 					clearControlError();
