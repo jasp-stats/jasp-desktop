@@ -303,7 +303,7 @@ public:
 
 private:
 
-	static Direction tabDirectionForward;
+	static Direction tabDirection;
 	bool eventFilter(QObject *object, QEvent *event) override;
 
 

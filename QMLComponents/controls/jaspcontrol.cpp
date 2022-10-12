@@ -637,7 +637,7 @@ void JASPControl::rScriptDoneHandler(const QString &)
 }
 
 
-JASPControl::Direction JASPControl::tabDirectionForward = Forward;
+JASPControl::Direction JASPControl::tabDirection = Forward;
 
 void JASPControl::_resetChildFocus()
 {
@@ -645,18 +645,18 @@ void JASPControl::_resetChildFocus()
 	{
 		QList<JASPControl*> children =  getChildJASPControls(_childControlsArea);
 
-		for(int i = 0; i < children.length() && JASPControl::tabDirectionForward == JASPControl::Forward; i++)
+		for(int i = 0; i < children.length() && JASPControl::tabDirection == JASPControl::Forward; i++)
 		{
-			if(children[i]->isEnabled())
+			if(children[i]->isEnabled() && children[i]->isVisible())
 			{
 				children[i]->setFocus(true);
 				break;
 			}
 		}
 
-		for(int i = children.length() - 1; i >= 0 && JASPControl::tabDirectionForward == JASPControl::Backward; i--)
+		for(int i = children.length() - 1; i >= 0 && JASPControl::tabDirection == JASPControl::Backward; i--)
 		{
-			if(children[i]->isEnabled())
+			if(children[i]->isEnabled() && children[i]->isVisible())
 			{
 				children[i]->setFocus(true);
 				break;
@@ -671,10 +671,10 @@ bool JASPControl::eventFilter(QObject *object, QEvent *event)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
 		if (keyEvent->key() == Qt::Key_Tab)
-			tabDirectionForward = Forward;
+			tabDirection = Forward;
 		else if (keyEvent->key() == Qt::Key_Backtab)
-			tabDirectionForward = Backward;
-		Log::log() << "filter hit: " << (tabDirectionForward == Backward ? "backward" : "forward") << std::endl;
+			tabDirection = Backward;
+		Log::log() << "filter hit: " << (tabDirection == Backward ? "backward" : "forward") << std::endl;
 	}
 	return false;
 }

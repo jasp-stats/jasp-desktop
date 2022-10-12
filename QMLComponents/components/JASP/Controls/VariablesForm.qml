@@ -184,15 +184,12 @@ VariablesFormBase
 
 	function setTabOrder()
 	{
-		console.log(allAssignedVariablesList.length);
 		availableVariablesList.KeyNavigation.backtab = parent;
 		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
 		assignButtonRepeater.itemAt(0).KeyNavigation.backtab = availableVariablesList;
 
-		for (var x in allAssignedVariablesList) console.log(x);
 		for (var i = 0; i < allAssignedVariablesList.length; i++)
 		{
-			console.log(i);
 			allAssignedVariablesList[i].KeyNavigation.backtab = assignButtonRepeater.itemAt(i);
 			assignButtonRepeater.itemAt(i).KeyNavigation.tab = allAssignedVariablesList[i];
 
