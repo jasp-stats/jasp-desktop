@@ -9,6 +9,7 @@ Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY="Yes, do it")
 options(renv.config.install.verbose = @RENV_INSTALL_VERBOSE@)
+options(renv.config.install.transactional = FALSE) #Avoid the .renv temp folder cause it breaks macos builds
 options(JASP_COMMIT_HASHES_OBJECT=file.path("@R_LIBRARY_PATH@", "jaspBase", "cachedCommitInfo.rds"))
 
 if (@IS_LINUX_LOCAL_BUILD@) {
