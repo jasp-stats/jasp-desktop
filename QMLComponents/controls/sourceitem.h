@@ -33,13 +33,13 @@ class SourceItem : public QObject, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
+
 	struct ConditionVariable
 	{
 		QString name,
 				controlName,
 				propertyName;
 		bool	addQuotes = false;
-
 		ConditionVariable(const QString& _name, const QString& _controlName, const QString& _propertyName, bool _addQuotes = false)
 			: name(_name), controlName(_controlName), propertyName(_propertyName), addQuotes(_addQuotes) {}
 		ConditionVariable(const ConditionVariable& source)
@@ -68,16 +68,19 @@ public:
 	const QStringList&		modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
 	bool					generateInteractions()		const	{ return _combineWithOtherModels || (_combineTerms != JASPControl::CombinationType::NoCombination); }
-	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
 	bool					isColumnsModel()			const	{ return _isVariableInfoModel;			}
 	bool					isNativeModel()				const	{ return _nativeModel != nullptr;	}
 	QAbstractItemModel*		nativeModel()						{ return _nativeModel;				}
 	Terms					getTerms();
+	QSet<QString>			usedControls()				const;
 
 
 	void									connectModels();
 	void									disconnectModels();
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
+	static QList<QVariant>					getListVariant(QVariant var);
+	static Terms							filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {});
+
 
 private:
 	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
@@ -85,7 +88,6 @@ private:
 	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& _nativeModel);
 	static JASPListControl::LabelValueMap	_readValues(JASPListControl* _listControl, const QVariant& _values);
 	static SourceItem*						_readRSource(JASPListControl* listControl, const QVariant& rSource);
-	static QList<QVariant>					_getListVariant(QVariant var);
 
 	void									_setUp();
 	Terms									_readAllTerms();
@@ -112,7 +114,6 @@ private:
 	bool							_combineWithOtherModels		= false;
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;
-	QSet<QString>					_usedControls;
 	bool							_connected					= false;
 	JASPControl::CombinationType	_combineTerms				= JASPControl::CombinationType::NoCombination;
 	int								_onlyTermsWithXComponents	= 0;

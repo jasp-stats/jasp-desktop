@@ -37,11 +37,11 @@ class ComponentsListBase : public JASPListControl, public BoundControlBase
 public:
 	ComponentsListBase(QQuickItem* item = nullptr);
 
-	bool			isJsonValid(const Json::Value& optionValue)	override;
-	Json::Value		createJson()								override;
-	void			bindTo(const Json::Value& value)			override;
-	ListModel*		model()								const	override { return _termsModel; }
-	void			setUpModel()								override;
+	bool			isJsonValid(const Json::Value& optionValue)	const	override;
+	Json::Value		createJson()								const	override;
+	void			bindTo(const Json::Value& value)					override;
+	ListModel*		model()										const	override { return _termsModel; }
+	void			setUpModel()										override;
 
 	QString			newItemName()						const			{ return _newItemName;			}
 	bool			addItemManually()					const			{ return _addItemManually;		}
@@ -50,6 +50,7 @@ public:
 	QList<QVariant>	defaultValues()						const			{ return _defaultValues;		}
 	bool			duplicateWhenAdding()				const			{ return _duplicateWhenAdding;	}
 
+	Json::Value		getConditionalTermsOptions(const ListModel::RowControlsValues& conditionalTermsMap);
 signals:
 	void			addItem();
 	void			removeItem(int index);
@@ -70,15 +71,16 @@ public slots:
 	GENERIC_SET_FUNCTION(DuplicateWhenAdding,	_duplicateWhenAdding,	duplicateWhenAddingChanged,		bool			)
 
 protected slots:
-	void			termsChangedHandler()						override;
+	void			termsChangedHandler()								override;
 	void			addItemHandler();
 	void			removeItemHandler(int index);
 	void			nameChangedHandler(int index, QString name);
+	void			resetDefaultValue();
 
 protected:
-	QString				_makeUnique(const QString& val, int index = -1);
-	QString				_makeUnique(const QString& val, const QList<QString>& values, int index = -1);
-	QString				_changeLastNumber(const QString& val);
+	QString				_makeUnique(const QString& val, int index = -1)	const;
+	QString				_makeUnique(const QString& val, const QList<QString>& values, int index = -1) const;
+	QString				_changeLastNumber(const QString& val) const;
 
 private:
 	ListModelTermsAssigned*		_termsModel				= nullptr;

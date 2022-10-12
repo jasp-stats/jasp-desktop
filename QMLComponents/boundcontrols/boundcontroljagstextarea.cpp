@@ -31,7 +31,7 @@ void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 
 }
 
-Json::Value BoundControlJAGSTextArea::createJson()
+Json::Value BoundControlJAGSTextArea::createJson() const
 {
 	Json::Value result;
 	std::string text = _textArea->text().toStdString();
@@ -44,7 +44,7 @@ Json::Value BoundControlJAGSTextArea::createJson()
 	return result;
 }
 
-bool BoundControlJAGSTextArea::isJsonValid(const Json::Value &value)
+bool BoundControlJAGSTextArea::isJsonValid(const Json::Value &value) const
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;

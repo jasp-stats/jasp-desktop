@@ -26,12 +26,12 @@ CheckBoxBase::CheckBoxBase(QQuickItem* parent)
 	_controlType = ControlType::CheckBox;
 }
 
-bool CheckBoxBase::isJsonValid(const Json::Value &value)
+bool CheckBoxBase::isJsonValid(const Json::Value &value) const
 {
 	return value.type() == Json::booleanValue;
 }
 
-Json::Value CheckBoxBase::createJson()
+Json::Value CheckBoxBase::createJson() const
 {
 	return checked();
 }
@@ -44,6 +44,7 @@ void CheckBoxBase::bindTo(const Json::Value &value)
 
 void CheckBoxBase::setUp()
 {
+	JASPControl::setUp();
 	connect(this,	&CheckBoxBase::clicked, this,	&CheckBoxBase::clickedSlot);
 }
 
@@ -52,7 +53,7 @@ void CheckBoxBase::setChecked(bool checked)
 	setProperty("checked", checked);
 }
 
-bool CheckBoxBase::checked()
+bool CheckBoxBase::checked() const
 {
 	return property("checked").toBool();
 }

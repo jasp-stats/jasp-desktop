@@ -22,6 +22,7 @@
 #include "jasplistcontrol.h"
 #include "models/listmodellabelvalueterms.h"
 #include "log.h"
+#include "rowcontrols.h"
 #include <QQmlEngine>
 
 SourceItem::SourceItem(
@@ -51,8 +52,7 @@ SourceItem::SourceItem(
 	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
-	if (!_controlName.isEmpty())											_usedControls.insert(_controlName);
-	if (isInfoProviderModel(_nativeModel))										_isVariableInfoModel = true;
+	if (isInfoProviderModel(_nativeModel))									_isVariableInfoModel = true;
 	if (_modelUse.contains("levels"))										_listControl->setUseSourceLevels(true);
 	if (_listControl->useSourceLevels() && !_modelUse.contains("levels"))	_modelUse.append("levels");
 
@@ -62,8 +62,7 @@ SourceItem::SourceItem(
 									, conditionVariable["component"].toString()
 									, conditionVariable["property"].toString()
 									, conditionVariable["addQuotes"].toBool())
-					);
-		if (!conditionVariable["component"].toString().isEmpty()) _usedControls.insert(conditionVariable["component"].toString());
+		);
 	}
 
 	_setUp();
@@ -124,7 +123,7 @@ void SourceItem::connectModels()
 		connect(_listModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
 		connect(_listModel,		&ListModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
 		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
-		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
+		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );		
 	}
 
 	_connected = true;
@@ -204,7 +203,7 @@ void SourceItem::_setUp()
 	}
 }
 
-QList<QVariant> SourceItem::_getListVariant(QVariant var)
+QList<QVariant> SourceItem::getListVariant(QVariant var)
 {
 	QList<QVariant> listVar;
 
@@ -297,7 +296,7 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 		if (map.contains("rSource"))
 		{
-			QList<QVariant> rawRSources = _getListVariant(map["rSource"]);
+			QList<QVariant> rawRSources = getListVariant(map["rSource"]);
 			for (const QVariant& rawSource : rawRSources)
 				rSources.append(_readRSource(listControl, rawSource));
 		}
@@ -386,7 +385,7 @@ SourceItem* SourceItem::_readRSource(JASPListControl* listControl, const QVarian
 	{
 		map = rSource.toMap();
 		if (map.contains("name"))
-		sourceName = _readRSourceName(map["name"].toString(), sourceUse);
+			sourceName = _readRSourceName(map["name"].toString(), sourceUse);
 
 		if (map.contains("use"))
 		{
@@ -408,12 +407,12 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 	if (listControl->rSource().isValid() && !listControl->rSource().isNull())
 	{
-		QList<QVariant> rSources = _getListVariant(listControl->rSource());
+		QList<QVariant> rSources = getListVariant(listControl->rSource());
 		for (const QVariant& rSource : rSources)
 			sources.append(_readRSource(listControl, rSource));
 	}
 
-	QList<QVariant> rawSources = _getListVariant(listControl->source());
+	QList<QVariant> rawSources = getListVariant(listControl->source());
 
 	for (const QVariant& rawSource : rawSources)
 	{
@@ -426,7 +425,7 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 		if (map.contains("discard"))
 		{
-			QList<QVariant> discardSources = _getListVariant(map["discard"]);
+			QList<QVariant> discardSources = getListVariant(map["discard"]);
 
 			for (const QVariant& discardSource : discardSources)
 			{
@@ -441,8 +440,7 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 		if (map.contains("conditionVariables"))
 		{
-			QList<QVariant> conditionVariablesList = _getListVariant(map["conditionVariables"]);
-
+			QList<QVariant> conditionVariablesList = getListVariant(map["conditionVariables"]);
 			for (const QVariant& conditionVariablesVar : conditionVariablesList)
 				if (conditionVariablesVar.canConvert<QMap<QString, QVariant> >())
 					conditionVariables.push_back(conditionVariablesVar.toMap());
@@ -508,6 +506,77 @@ Terms SourceItem::_readAllTerms()
 	return terms;
 }
 
+Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables)
+{
+	Terms filteredTerms;
+	JASPListControl* listControl = model->listView();
+	QJSEngine* jsEngine = qmlEngine(listControl);
+
+	for (const Term& term : terms)
+	{
+		if (conditionVariables.length() > 0)
+		{
+			// If condition variables are used, use them
+			for (const ConditionVariable& conditionVariable : conditionVariables)
+			{
+				JASPControl* control = model->getRowControl(term.asQString(), conditionVariable.controlName);
+				if (control)
+				{
+				QJSValue value;
+					QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
+					switch (valueVar.type())
+				{
+					case QVariant::Type::Int:
+					case QVariant::Type::UInt:		value = valueVar.toInt();		break;
+					case QVariant::Type::Double:	value = valueVar.toDouble();	break;
+					case QVariant::Type::Bool:		value = valueVar.toBool();		break;
+					default:						value = valueVar.toString();	break;
+				}
+					jsEngine->globalObject().setProperty(conditionVariable.name, value);
+				}
+			}
+		}
+		else
+		{
+			// If no condition variables are used, then set the values of the row controls in variables
+			RowControls* rowControls = model->getRowControls(term.asQString());
+			if (!rowControls) continue;
+
+			for (const QString& variable : rowControls->getJASPControlsMap().keys())
+			{
+				JASPControl* control = rowControls->getJASPControl(variable);
+				BoundControl* boundControl = control ? control->boundControl() : nullptr;
+				if (boundControl)
+				{
+					QJSValue value;
+					bool addValue = true;
+					const Json::Value& jsonValue = boundControl->boundValue();
+					switch (jsonValue.type())
+					{
+					case Json::booleanValue:		value = jsonValue.asBool();			break;
+					case Json::uintValue:			value = jsonValue.asUInt();			break;
+					case Json::intValue:			value = jsonValue.asInt();			break;
+					case Json::realValue:			value = jsonValue.asDouble();		break;
+					case Json::stringValue:			value = tq(jsonValue.asString());	break;
+					default:						addValue = false;					break;
+					}
+
+					if (addValue)
+						jsEngine->globalObject().setProperty(variable, value);
+				}
+			}
+		}
+
+		QJSValue result = jsEngine->evaluate(condition);
+		if (result.isError())
+			listControl->addControlError("Error when evaluating : " + condition + ": " + result.toString());
+		else if (result.toBool())
+			filteredTerms.add(term);
+	}
+
+	return filteredTerms;
+}
+
 Terms SourceItem::getTerms()
 {
 	Terms sourceTerms = _readAllTerms();
@@ -516,42 +585,31 @@ Terms SourceItem::getTerms()
 		sourceTerms.discardWhatDoesContainTheseComponents(discardModel->_readAllTerms());
 
 	if (!_conditionExpression.isEmpty() && _listModel)
-	{
-		Terms filteredTerms;
-		QJSEngine* jsEngine = qmlEngine(_listControl);
-
-		for (const Term& term : sourceTerms)
-		{
-			for (const ConditionVariable& conditionVariable : _conditionVariables)
-			{
-				JASPControl* control = _listModel->getRowControl(term.asQString(), conditionVariable.controlName);
-				if (control)
-				{
-					QJSValue value;
-					QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
-
-					switch (valueVar.type())
-					{
-					case QVariant::Type::Int:
-					case QVariant::Type::UInt:		value = valueVar.toInt();		break;
-					case QVariant::Type::Double:	value = valueVar.toDouble();	break;
-					case QVariant::Type::Bool:		value = valueVar.toBool();		break;
-					default:						value = valueVar.toString();	break;
-					}
-
-					jsEngine->globalObject().setProperty(conditionVariable.name, value);
-				}
-			}
-
-			QJSValue result = jsEngine->evaluate(_conditionExpression);
-			if (result.isError())
-				_listControl->addControlError("Error when evaluating : " + _conditionExpression + ": " + result.toString());
-			else if (result.toBool())
-				filteredTerms.add(term);
-		}
-
-		sourceTerms = filteredTerms;
-	}
+		sourceTerms = filterTermsWithCondition(_listModel, sourceTerms, _conditionExpression, _conditionVariables);
 
 	return sourceTerms;
+}
+
+QSet<QString> SourceItem::usedControls() const
+{
+	QSet<QString> result;
+
+	if (!_controlName.isEmpty()) result.insert(_controlName);
+	if (_conditionVariables.length() > 0)
+	{
+		for (const ConditionVariable& conditionVariable : _conditionVariables)
+		{
+			if (!conditionVariable.controlName.isEmpty())
+				result.insert(conditionVariable.controlName);
+		}
+	}
+	else if (!_conditionExpression.isEmpty() && _listModel->getAllRowControls().size() > 0)
+	{
+		// Take the controls of the first row, and check whether the expression contains their names.
+		RowControls* rowControls = _listModel->getAllRowControls().begin().value();
+		for (const QString& controlName : rowControls->getJASPControlsMap().keys())
+			if (_conditionExpression.contains(controlName)) result.insert(controlName);
+	}
+
+	return result;
 }

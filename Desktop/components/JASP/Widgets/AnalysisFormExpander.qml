@@ -354,7 +354,7 @@ DropArea
 					anchors
 					{
 						top:			parent.top
-						right:			helpButton.left
+						right:			rSyntaxButton.left
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
@@ -363,10 +363,31 @@ DropArea
 
 				MenuButton
 				{
+					id:					rSyntaxButton
+					width:				height
+					iconSource:			enabled ? jaspTheme.iconPath + "/R.png" : jaspTheme.iconPath + "/R.png"
+					enabled:			expanderButton.expanded
+					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
+					toolTip:			qsTr("Show R Syntax")
+					radius:				height
+					opacity:			copyButton.opacity
+					anchors
+					{
+						top:			parent.top
+						right:			helpButton.left
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
+					}
+				}
+
+
+				MenuButton
+				{
 					id:					helpButton
 					width:				height
 					iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-					opacity:			editButton.opacity
+					opacity:			rSyntaxButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))

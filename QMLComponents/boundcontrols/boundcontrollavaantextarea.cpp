@@ -50,7 +50,7 @@ void BoundControlLavaanTextArea::bindTo(const Json::Value &value)
 
 }
 
-Json::Value BoundControlLavaanTextArea::createJson()
+Json::Value BoundControlLavaanTextArea::createJson() const
 {
 	Json::Value result;
 	std::string text = _textArea->text().toStdString();
@@ -62,7 +62,7 @@ Json::Value BoundControlLavaanTextArea::createJson()
 	return result;
 }
 
-bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value)
+bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value) const
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;

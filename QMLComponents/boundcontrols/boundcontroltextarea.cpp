@@ -31,12 +31,12 @@ void BoundControlTextArea::bindTo(const Json::Value &value)
 	_textArea->setText(tq(value.asString()));
 }
 
-bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue)
+bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue) const
 {
 	return optionValue.type() == Json::stringValue;
 }
 
-Json::Value BoundControlTextArea::createJson()
+Json::Value BoundControlTextArea::createJson() const
 {
 	return Json::Value(_textArea->text().toStdString());
 }

@@ -11,10 +11,10 @@ class SliderBase : public JASPControl, public BoundControlBase
 public:
 	SliderBase(QQuickItem* parent = nullptr);
 
-	Json::Value createJson()									override;
-	bool		isJsonValid(const Json::Value& optionValue)		override;
-	void		bindTo(const Json::Value& value)				override;
-	void		setUp()											override;
+	Json::Value createJson()									const	override;
+	bool		isJsonValid(const Json::Value& optionValue)		const	override;
+	void		bindTo(const Json::Value& value)						override;
+	void		setUp()													override;
 
 signals:
 	void		moved();

@@ -79,30 +79,38 @@ void ListModel::initTerms(const Terms &terms, const RowControlsValues& allValues
 	_initTerms(terms, allValuesMap, true);
 }
 
-void ListModel::_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool setupControlConnections)
+void ListModel::_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool initRowControls)
 {
 	beginResetModel();
-	_rowControlsValues = allValuesMap;
+	if (initRowControls)
+	{
+		_rowControlsMap.clear();
+		_rowControlsValues = allValuesMap;
+	}
 	_setTerms(terms);
 	endResetModel();
 
-	if (setupControlConnections) _connectAllSourcesControls();
+	if (initRowControls)	_connectAllSourcesControls();
 }
 
 void ListModel::_connectAllSourcesControls()
 {
 	for (SourceItem* sourceItem : listView()->sourceItems())
-		_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
+		_connectSourceControls(sourceItem);
 }
 
-void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls)
+void ListModel::_connectSourceControls(SourceItem* sourceItem)
 {
-	// Connect option changes from controls in sourceModel that influence the terms of this model
-	if (!sourceModel || controls.size() == 0) return;
+	// Connect option changes from controls in sourceModel that influence the terms of this model:
+	// either the source uses direclty a control in sourceModel (controlName()), or the source uses
+	// a conditional expression.
+	ListModel* sourceModel = sourceItem->listModel();
+	if (!sourceModel) return;
 
 	const Terms& terms = sourceModel->terms();
+	if (terms.size() == 0) return;
 
-	for (const QString& controlName : controls)
+	for (const QString& controlName : sourceItem->usedControls())
 	{
 		for (const Term& term : terms)
 		{
@@ -128,7 +136,7 @@ Terms ListModel::getSourceTerms()
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
+		_connectSourceControls(sourceItem);
 		termsAvailable.add(terms);
 	});
 	
@@ -181,6 +189,34 @@ void ListModel::setUpRowControls()
 			// If some row controls are not used anymore, if they use some sources, they must be disconnected from these sources
 			// If a source changes and emits a signal, these controls should not be activated (cf. https://github.com/jasp-stats/jasp-test-release/issues/1786)
 			_rowControlsMap[key]->disconnectControls();
+}
+
+ListModel::RowControlsValues ListModel::getTermsWithComponentValues() const
+{
+	RowControlsValues result;
+
+	for (const Term& term : _terms)
+	{
+		QMap<QString, Json::Value> componentValues;
+		RowControls* rowControls = _rowControlsMap.value(term.asQString());
+		if (rowControls)
+		{
+			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
+			QMapIterator<QString, JASPControl*> it(controlsMap);
+			while (it.hasNext())
+			{
+				it.next();
+				JASPControl* control = it.value();
+				BoundControl* boundControl = control->boundControl();
+				if (boundControl)
+					componentValues[it.key()] = boundControl->boundValue();
+			}
+		}
+
+		result[term.asQString()] = componentValues;
+	}
+
+	return result;
 }
 
 JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const

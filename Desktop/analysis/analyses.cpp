@@ -503,17 +503,24 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
+Analysis* Analyses::createAnalysis(const QString& module, const QString& analysis)
 {
 	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
-	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
+	if (dynamicModule)	return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
+	else				return nullptr;
+
+}
+
+void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
+{
+	createAnalysis(module, analysisFunction);
 }
 
 
 int Analyses::_scriptRequestID = 0;
 
-void Analyses::rCodeReturned(QString result, int requestId)
+void Analyses::rCodeReturned(QString result, int requestId, bool hasError)
 {
 	if(requestId == -1)
 		return;//Not for us
@@ -521,7 +528,7 @@ void Analyses::rCodeReturned(QString result, int requestId)
 	if (_scriptIDMap.contains(requestId))
 	{
 		const QPair<Analysis*, QString>& pair = _scriptIDMap[requestId];
-		pair.first->runScriptRequestDone(result, pair.second);
+		pair.first->runScriptRequestDone(result, pair.second, hasError);
 	}
 	else
 		Log::log()  << "Unknown Returned Rcode request ID " << requestId << std::endl;

@@ -41,6 +41,7 @@ Rectangle
 	property int containerWidth	: container ? (container === form ? form.availableWidth : container.width) : 0
 	property int paddingWidth	: 10 * jaspTheme.uiScale
 	property int paddingHeight	: 6 * jaspTheme.uiScale
+	property alias message		: message.text
 
 	onContainerWidthChanged:	if (visible)				showMessage()
 	onControlChanged:			if (!control)				controlErrorMessage.opacity = 0

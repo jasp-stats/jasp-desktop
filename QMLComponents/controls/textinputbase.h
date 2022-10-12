@@ -35,11 +35,11 @@ public:
 
 	TextInputBase(QQuickItem* parent = nullptr);
 
-	bool		isJsonValid(const Json::Value& value)		override;
-	Json::Value createJson()								override;
-	void		bindTo(const Json::Value& value)			override;
-	void		setUp()										override;
-	void		rScriptDoneHandler(const QString& result)	override;
+	bool		isJsonValid(const Json::Value& value)		const	override;
+	Json::Value createJson()								const	override;
+	void		bindTo(const Json::Value& value)					override;
+	void		setUp()												override;
+	void		rScriptDoneHandler(const QString& result)			override;
 
 	TextInputType	inputType()	{ return _inputType; }
 	QString			friendlyName() const override;
@@ -60,7 +60,7 @@ private slots:
 	void		resetValue();
 
 private:
-	Json::Value	_getJsonValue(const QVariant& value);
+	Json::Value	_getJsonValue(const QVariant& value) const;
 	bool		_formulaResultInBounds(double result);
 
 	QString		_getPercentValue(double val);

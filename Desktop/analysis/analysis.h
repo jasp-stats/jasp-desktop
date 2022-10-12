@@ -68,18 +68,10 @@ public:
 
 	virtual				~Analysis();
 
-	void				clearOptions();
 	const Json::Value&	optionsFromJASPFile()		const	override	{ return _optionsDotJASP;	}
-
-	const Json::Value&	boundValues()				const	override	{ return _boundValues;		}
-	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {})	override;
-	
-	bool				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {})	override;
-	bool				setBoundValues(const Json::Value& boundValues);
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
-
 
 	bool				needsRefresh()				const	override;
 	bool				wasUpgraded()				const	override	{ return _wasUpgraded; }
@@ -129,9 +121,7 @@ public:
 			bool				utilityRunAllowed() const				{ return  isSaveImg() || isEditImg() || isRewriteImgs();							}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && form();	}
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
-	const	Json::Value			optionsMeta()		const				{ return _boundValues.get(".meta", Json::nullValue);	}
 			void				setTitle(const std::string& title)	override;
-
 			void				run()						override;
 			void				refresh()					override;
 			void				reloadForm()				override;
@@ -161,7 +151,7 @@ public:
 	performType				desiredPerformTypeFromAnalysisStatus()										const;
 
 	stringset				usedVariables();
-	void					runScriptRequestDone(const QString & result, const QString & controlName);
+	void					runScriptRequestDone(const QString & result, const QString & controlName, bool hasError);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
@@ -172,7 +162,6 @@ public:
 	Json::Value						rSources()									const;
 	bool							isOwnComputedColumn(const std::string& col)	const	override	{ return _computedColumns.contains(col); }
 	void							preprocessMarkdownHelp(QString & md)		const				{ if (_dynamicModule) _dynamicModule->preprocessMarkdownHelp(md);}
-
 
 signals:
 	void					titleChanged();
@@ -186,6 +175,7 @@ signals:
 	void					userDataChangedSignal(	Analysis * analysis);
 	void					imageChanged();
 	void					rSourceChanged(QString optionName);
+	void					optionsChanged();
 
 	ComputedColumn		*	requestComputedColumnCreation(		const std::string& columnName, Analysis * analysis);
 	void					requestColumnCreation(				const std::string& columnName, Analysis *source, columnType type);
@@ -196,6 +186,7 @@ signals:
 	void					emptyQMLCache();
 
 	void					createFormWhenYouHaveAMoment(QQuickItem* parent = nullptr);
+	void					analysisInitialized();
 
 public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);
@@ -223,7 +214,6 @@ private:
 	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
 	void					checkForRSources();
 	void					clearRSources();
-	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string>& parentNames, bool & found, bool createAnyway = false);
 	void					initAnalysis();
 	void					setAnalysisForm(AnalysisForm	* analysisForm);
 	bool					readyToCreateForm() const;
@@ -231,8 +221,7 @@ private:
 protected:
 	Status						_status				= Empty;
 	bool						_refreshBlocked		= false;
-	Json::Value					_boundValues		= Json::objectValue,
-								_optionsDotJASP		= Json::nullValue, ///< For backward compatibility: _optionsDotJASP = options from (old) JASP file.
+	Json::Value					_optionsDotJASP		= Json::nullValue, ///< For backward compatibility: _optionsDotJASP = options from (old) JASP file.
 								_results			= Json::nullValue,
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
@@ -272,6 +261,7 @@ private:
 
 	std::map<std::string,
 	Json::Value>				_rSources;
+
 };
 
 #endif // ANALYSIS_H

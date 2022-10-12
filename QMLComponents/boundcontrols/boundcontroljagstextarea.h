@@ -27,11 +27,11 @@ class BoundControlJAGSTextArea : public BoundControlTextArea
 public:
 	BoundControlJAGSTextArea(TextAreaBase* textArea) : BoundControlTextArea(textArea) {}
 
-	bool		isJsonValid(const Json::Value& optionValue)		override;
-	Json::Value	createJson()									override;
-	void		bindTo(const Json::Value &value)				override;
+	bool		isJsonValid(const Json::Value& optionValue)		const	override;
+	Json::Value	createJson()									const	override;
+	void		bindTo(const Json::Value &value)						override;
 
-	void		checkSyntax()									override;
+	void		checkSyntax()											override;
 
 private:
 	std::set<std::string>		_usedColumnNames;

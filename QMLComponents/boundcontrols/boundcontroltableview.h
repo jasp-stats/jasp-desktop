@@ -29,15 +29,15 @@ class BoundControlTableView : public BoundControlBase
 public:
 	BoundControlTableView(TableViewBase* tableView);
 
-	bool					isJsonValid(const Json::Value& value)		override;
-	Json::Value				createJson()								override;
-	void					bindTo(const Json::Value& value)			override;
-	void					resetBoundValue()							override;
+	bool					isJsonValid(const Json::Value& value)	const	override;
+	Json::Value				createJson()							const	override;
+	void					bindTo(const Json::Value& value)				override;
+	void					resetBoundValue()								override;
 
 protected:
 	virtual void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms);
 	virtual void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms);
-	Json::Value				_defaultValue(int colIndex = -1, int rowIndex = -1);
+	Json::Value				_defaultValue(int colIndex = -1, int rowIndex = -1) const;
 
 	TableViewBase			* _tableView	= nullptr;
 };

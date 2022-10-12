@@ -57,6 +57,8 @@ Text                                1.0 Text.qml
 RadioButton                         1.0 RadioButton.qml
 RadioButtonGroup                    1.0 RadioButtonGroup.qml
 RowComponents                       1.0 RowComponents.qml
+SetSeed                             1.0 SetSeed.qml
+SimpleTableView                     1.0 SimpleTableView.qml
 Slider                              1.0 Slider.qml
 Switch                              1.0 Switch.qml
 TableView                           1.0 TableView.qml

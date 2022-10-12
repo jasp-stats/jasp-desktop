@@ -57,7 +57,7 @@ void RowControls::init(int row, const Term& key, bool isNew)
 void RowControls::_setupControls(bool reuseBoundValue)
 {
 	// The controls (when created or reused) may need to be bound with some values:
-	// either with the initial values (in _rowValues), new values (by calling createJson)
+	// either with the initial values (in _rowValues) or new values (by calling createJson)
 	// And if a control depends on a source, its values must be refreshed by this source.
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	AnalysisForm* form = _parentModel->listView()->form();
@@ -80,6 +80,7 @@ void RowControls::_setupControls(bool reuseBoundValue)
 			bool hasNoBoundValue = boundItem->boundValue().isNull();
 			if (!reuseBoundValue || hasNoBoundValue)
 			{
+				boundItem->setDefaultBoundValue(boundItem->createJson());
 				boundItem->bindTo(hasInitialValues ? (_initialValues[control->name()]) : boundItem->createJson());
 				// bindTo does not emit the signal that the bound value is changed.
 				// But (at least) if it did not have any value, it should emit this signal.

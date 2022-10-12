@@ -56,7 +56,6 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	: AnalysisBase(			Analyses::analyses()					)
 	, _status(				duplicateMe->_status					)
-	, _boundValues(			duplicateMe->boundValues()				)
 	, _optionsDotJASP(		duplicateMe->_optionsDotJASP			)
 	, _results(				duplicateMe->_results					)
 	, _resultsMeta(			_results.get(".meta", Json::arrayValue)	)
@@ -78,6 +77,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _helpFile(			duplicateMe->_helpFile					)
 	, _rSources(			duplicateMe->_rSources					)
 {
+	setBoundValues(duplicateMe->boundValues());
 	initAnalysis();
 }
 
@@ -103,11 +103,6 @@ Analysis::~Analysis()
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 		for(const std::string & col : computedColumns())
 			emit requestComputedColumnDestruction(col);
-}
-
-void Analysis::clearOptions()
-{
-	_boundValues.clear();
 }
 
 bool Analysis::checkAnalysisEntry()
@@ -337,6 +332,9 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
+		connect(this,					&Analysis::boundValuesChanged,		_analysisForm,	&AnalysisForm::setRSyntaxText, Qt::QueuedConnection	);
+
+		emit analysisInitialized();
 	}
 }
 
@@ -345,7 +343,7 @@ void Analysis::destroyForm()
 	AnalysisBase::destroyForm();
 
 	if (_analysisForm)
-		_optionsDotJASP = _boundValues;  //So that we can later reload the controls to what we currently have
+		_optionsDotJASP = boundValues();  //So that we can later reload the controls to what we currently have
 }
 
 
@@ -409,135 +407,6 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	return analysisAsJson;
 }
 
-// This method tries to find the parent keys in _boundValues Json object
-// If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
-Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
-{
-	found = (parentKeys.size() == 0);
-	Json::Value* parentBoundValue = &_boundValues;
-
-	// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
-	// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
-	// if there are several parentKeys, it repeats this operation
-	//
-	// {
-	//		anOptionName : "one"
-	//		...
-	//		<name>: [
-	//			{
-	//				<key>: "anothervalue"
-	//				anotherKey: "xxx"
-	//			},
-	//			{
-	//				<key>: "<value>"
-	//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
-	//			}
-	//		]
-	// }
-
-	for (const auto& parent : parentKeys)
-	{
-		found = false;
-		if (createAnyway && !parentBoundValue->isMember(parent.name))	(*parentBoundValue)[parent.name] = Json::Value(Json::arrayValue);
-
-		if (parentBoundValue->isMember(parent.name))
-		{
-			Json::Value& parentBoundValues = (*parentBoundValue)[parent.name];
-			if (!parentBoundValues.isNull() && parentBoundValues.isArray())
-			{
-				for (Json::Value & boundValue : parentBoundValues)
-				{
-					if (boundValue.isMember(parent.key))
-					{
-						Json::Value &val = boundValue[parent.key];
-						// The value can be a string or an array of strings (for interaction terms)
-						if (val.isString() && parent.value.size() > 0)
-						{
-							if (val.asString() == parent.value[0])	found = true;
-						}
-						else if (val.isArray() && val.size() == parent.value.size())
-						{
-							found = true;
-							size_t i = 0;
-							for (const Json::Value& compVal : val)
-							{
-								if (!compVal.isString() || compVal.asString() != parent.value[i]) found = false;
-								i++;
-							}
-						}
-						if (found)
-						{
-							parentBoundValue = &boundValue;
-							parentNames.append(parent.name);
-							break;
-						}
-					}
-				}
-
-				if (!found && createAnyway)
-				{
-					Json::Value row(Json::objectValue);
-					if (parent.value.size() == 1)
-						row[parent.key] = parent.value[0];
-					else
-					{
-						Json::Value newValue(Json::arrayValue);
-						for (size_t i = 0; i < parent.value.size(); i++)
-							newValue.append(parent.value[i]);
-						row[parent.key] = newValue;
-					}
-					parentBoundValues.append(row);
-					parentBoundValue = &(parentBoundValues[parentBoundValues.size() - 1]);
-					found = true;
-				}
-			}
-		}
-	}
-
-	return *parentBoundValue;
-}
-
-bool Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
-{
-	bool found = false;
-	QVector<std::string> parents;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parents, found, true);
-	Json::Value copyPBV				= parentBoundValue;
-
-	if (found && parentBoundValue.isObject())
-	{
-		parentBoundValue[name] = value;
-
-		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
-		{
-			Json::Value* metaBoundValue = &_boundValues[".meta"];
-			for (const std::string& parent : parents)
-				metaBoundValue = &((*metaBoundValue)[parent]);
-			(*metaBoundValue)[name] = meta;
-		}
-	}
-
-	return copyPBV != parentBoundValue;
-}
-
-bool Analysis::setBoundValues(const Json::Value &boundValues)
-{
-	bool changed = _boundValues != boundValues;
-	_boundValues = boundValues;
-
-	return changed;
-}
-
-const Json::Value &Analysis::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
-{
-	bool found = false;
-	QVector<std::string> parentNames;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parentNames, found);
-
-
-	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
-	else																	return Json::Value::null;
-}
 
 void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 {
@@ -648,10 +517,10 @@ std::set<std::string> Analysis::usedVariables()
 	return {};
 }
 
-void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
+void Analysis::runScriptRequestDone(const QString& result, const QString& controlName, bool hasError)
 {
 	if (_analysisForm)
-		_analysisForm->runScriptRequestDone(result, controlName);
+		_analysisForm->runScriptRequestDone(result, controlName, hasError);
 }
 
 Json::Value Analysis::createAnalysisRequestJson()
@@ -687,7 +556,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();
 
-		json["options"]		= _boundValues;
+		json["options"]		= boundValues();
 	}
 
 	return json;

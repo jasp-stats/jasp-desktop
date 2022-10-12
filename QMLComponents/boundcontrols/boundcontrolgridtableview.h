@@ -26,7 +26,7 @@ class BoundControlGridTableView : public BoundControlTableView
 public:
 	BoundControlGridTableView(TableViewBase* tableView);
 
-	Json::Value				createJson()								override;
+	Json::Value				createJson()				const override;
 
 };
 

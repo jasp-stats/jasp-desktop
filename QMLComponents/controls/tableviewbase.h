@@ -27,65 +27,68 @@ class TableViewBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged				)
-	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged				)
-	Q_PROPERTY( QVariantList	itemTypePerColumn	READ itemTypePerColumn		WRITE setItemTypePerColumn		NOTIFY itemTypePerColumnChanged		)
-	Q_PROPERTY( QVariantList	itemTypePerRow		READ itemTypePerRow			WRITE setItemTypePerRow			NOTIFY itemTypePerRowChanged		)
-	Q_PROPERTY( QVariant		defaultValue		READ defaultValue			WRITE setDefaultValue			NOTIFY defaultValueChanged			)
-	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged	)
-	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged	)
-	Q_PROPERTY( int				initialRowCount		READ initialRowCount		WRITE setInitialRowCount		NOTIFY initialRowCountChanged		)
-	Q_PROPERTY( int				columnCount			READ columnCount											NOTIFY columnCountChanged			)
-	Q_PROPERTY( int				rowCount			READ rowCount												NOTIFY rowCountChanged				)
-	Q_PROPERTY( int				variableCount		READ variableCount											NOTIFY variableCountChanged			)
-	Q_PROPERTY( int				minRow				READ minRow					WRITE setMinRow					NOTIFY minRowChanged				)
-	Q_PROPERTY( int				maxRow				READ maxRow					WRITE setMaxRow					NOTIFY maxRowChanged				)
-	Q_PROPERTY( int				minColumn			READ minColumn				WRITE setMinColumn				NOTIFY minColumnChanged				)
-	Q_PROPERTY( int				maxColumn			READ maxColumn				WRITE setMaxColumn				NOTIFY maxColumnChanged				)
-	Q_PROPERTY( QStringList		columnNames			READ columnNames			WRITE setColumnNames			NOTIFY columnNamesChanged			)
-	Q_PROPERTY( QStringList		rowNames			READ rowNames				WRITE setRowNames				NOTIFY rowNamesChanged				)
-	Q_PROPERTY( bool			updateSource		READ updateSource			WRITE setUpdateSource			NOTIFY updateSourceChanged			)
+	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged					)
+	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged					)
+	Q_PROPERTY( QVariantList	itemTypePerColumn	READ itemTypePerColumn		WRITE setItemTypePerColumn		NOTIFY itemTypePerColumnChanged			)
+	Q_PROPERTY( QVariantList	itemTypePerRow		READ itemTypePerRow			WRITE setItemTypePerRow			NOTIFY itemTypePerRowChanged			)
+	Q_PROPERTY( QVariant		defaultValue		READ defaultValue			WRITE setDefaultValue			NOTIFY defaultValueChanged				)
+	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged		)
+	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged		)
+	Q_PROPERTY( int				initialRowCount		READ initialRowCount		WRITE setInitialRowCount		NOTIFY initialRowCountChanged			)
+	Q_PROPERTY( int				columnCount			READ columnCount											NOTIFY columnCountChanged				)
+	Q_PROPERTY( int				rowCount			READ rowCount												NOTIFY rowCountChanged					)
+	Q_PROPERTY( int				variableCount		READ variableCount											NOTIFY variableCountChanged				)
+	Q_PROPERTY( int				minRow				READ minRow					WRITE setMinRow					NOTIFY minRowChanged					)
+	Q_PROPERTY( int				maxRow				READ maxRow					WRITE setMaxRow					NOTIFY maxRowChanged					)
+	Q_PROPERTY( int				minColumn			READ minColumn				WRITE setMinColumn				NOTIFY minColumnChanged					)
+	Q_PROPERTY( int				maxColumn			READ maxColumn				WRITE setMaxColumn				NOTIFY maxColumnChanged					)
+	Q_PROPERTY( QStringList		columnNames			READ columnNames			WRITE setColumnNames			NOTIFY columnNamesChanged				)
+	Q_PROPERTY( QStringList		rowNames			READ rowNames				WRITE setRowNames				NOTIFY rowNamesChanged					)
+	Q_PROPERTY( bool			updateSource		READ updateSource			WRITE setUpdateSource			NOTIFY updateSourceChanged				)
 
 public:
 	TableViewBase(QQuickItem* parent = nullptr);
 
-	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
-	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
-	void						resetBoundValue()							override	{ return _boundControl->resetBoundValue();			}
-	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
-	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
-	Json::Value					createMeta()								override	{ return _boundControl->createMeta();				}
-	void						setBoundValue(const Json::Value& value, 
-											  bool emitChange = true)		override	{ return _boundControl->setBoundValue(value, emitChange);	}
+	void						bindTo(const Json::Value &value)					override	{ _boundControl->bindTo(value);							}
+	bool						isJsonValid(const Json::Value& optionValue) const	override	{ return _boundControl->isJsonValid(optionValue);		}
+	void						resetBoundValue()									override	{ return _boundControl->resetBoundValue();				}
+	const Json::Value&			boundValue()								const	override	{ return _boundControl->boundValue();					}
+	Json::Value					createJson()								const	override	{ return _boundControl->createJson();					}
+	Json::Value					createMeta()								const	override	{ return _boundControl->createMeta();					}
+	const Json::Value&			defaultBoundValue()							const	override	{ return _boundControl->defaultBoundValue();			}
+	void						setDefaultBoundValue(const Json::Value& defaultValue) override	{ _boundControl->setDefaultBoundValue(defaultValue);	}
 
-	ListModel*					model()									const	override { return _tableModel; }
-	ListModelTableViewBase*		tableModel()							const			 { return _tableModel; }
-	void						setUpModel()									override;
-	void						setUp()											override;
-	void						rScriptDoneHandler(const QString & result)		override;
+	void						setBoundValue(const Json::Value& value, 
+											  bool emitChange = true)				override	{ return _boundControl->setBoundValue(value, emitChange); }
+
+	ListModel*					model()										const	override	{ return _tableModel;									}
+	ListModelTableViewBase*		tableModel()								const				{ return _tableModel;									}
+	void						setUpModel()										override;
+	void						setUp()												override;
+	void						rScriptDoneHandler(const QString & result)			override;
 
 	ItemType itemTypePerItem(int col = -1, int row = -1) const;
 
-	JASPControl::ModelType		modelType()								const				{ return _modelType;					}
-	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
+	JASPControl::ModelType		modelType()									const				{ return _modelType;									}
+	JASPControl::ItemType		itemType()									const				{ return _itemType;										}
 	QVariant					defaultValue(int colIndex = -1, int rowIndex = -1);
-	QVariantList				itemTypePerRow()						const				{ QVariantList l; for (auto t : _itemTypePerRow) l.append(int(t)); return l;	}
-	QVariantList				itemTypePerColumn()						const				{ QVariantList l; for (auto t : _itemTypePerColumn) l.append(int(t)); return l;	}
-	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}
-	JASPListControl*			initialValuesControl()					const				{ return _initialValuesControl;			}
-	int							initialColumnCount()					const				{ return _initialColumnCount;			}
-	int							initialRowCount()						const				{ return _initialRowCount;				}
-	int							rowCount()								const				{ return _tableModel ? _tableModel->rowCount()		: 0; }
-	int							columnCount()							const				{ return _tableModel ? _tableModel->columnCount()	: 0; }
-	int							variableCount()							const				{ return _tableModel ? _tableModel->variableCount()	: 0; }
-	int							minRow()								const				{ return _minRow;						}
-	int							maxRow()								const				{ return _maxRow;						}
-	int							minColumn()								const				{ return _minColumn;					}
-	int							maxColumn()								const				{ return _maxColumn;					}
-	QStringList					columnNames()							const				{ return _columnNames;					}
-	QStringList					rowNames()								const				{ return _rowNames;						}
-	bool						updateSource()							const				{ return _updateSource;					}
-	std::vector<std::string>	usedVariables()							const override;
+	QVariantList				itemTypePerRow()							const				{ QVariantList l; for (auto t : _itemTypePerRow) l.append(int(t)); return l;	}
+	QVariantList				itemTypePerColumn()							const				{ QVariantList l; for (auto t : _itemTypePerColumn) l.append(int(t)); return l;	}
+	QVariant					initialValuesSource()						const				{ return _initialValuesSource;							}
+	JASPListControl*			initialValuesControl()						const				{ return _initialValuesControl;							}
+	int							initialColumnCount()						const				{ return _initialColumnCount;							}
+	int							initialRowCount()							const				{ return _initialRowCount;								}
+	int							rowCount()									const				{ return _tableModel ? _tableModel->rowCount()		: 0; }
+	int							columnCount()								const				{ return _tableModel ? _tableModel->columnCount()	: 0; }
+	int							variableCount()								const				{ return _tableModel ? _tableModel->variableCount()	: 0; }
+	int							minRow()									const				{ return _minRow;										}
+	int							maxRow()									const				{ return _maxRow;										}
+	int							minColumn()									const				{ return _minColumn;									}
+	int							maxColumn()									const				{ return _maxColumn;									}
+	QStringList					columnNames()								const				{ return _columnNames;									}
+	QStringList					rowNames()									const				{ return _rowNames;										}
+	bool						updateSource()								const				{ return _updateSource;									}
+	std::vector<std::string>	usedVariables()								const	override;
 
 	Q_INVOKABLE void addColumn(int col = -1, bool left = true);
 	Q_INVOKABLE void removeColumn(int col);

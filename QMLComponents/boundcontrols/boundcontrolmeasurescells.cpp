@@ -44,7 +44,7 @@ void BoundControlMeasuresCells::bindTo(const Json::Value &value)
 	_measuresCellsModel->initLevels(getLevels(), variables, true);
 }
 
-Terms BoundControlMeasuresCells::getLevels()
+Terms BoundControlMeasuresCells::getLevels() const
 {
 	Terms levels;
 	for (ListModelFactorLevels* factorsModel : _sourceFactorsModels)
@@ -53,7 +53,7 @@ Terms BoundControlMeasuresCells::getLevels()
 	return levels;
 }
 
-Json::Value BoundControlMeasuresCells::createJson()
+Json::Value BoundControlMeasuresCells::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 	size_t nbLevels = getLevels().size();
@@ -64,7 +64,7 @@ Json::Value BoundControlMeasuresCells::createJson()
 	return result;
 }
 
-bool BoundControlMeasuresCells::isJsonValid(const Json::Value &optionValue)
+bool BoundControlMeasuresCells::isJsonValid(const Json::Value &optionValue) const
 {
 	return optionValue.type() == Json::arrayValue;
 }

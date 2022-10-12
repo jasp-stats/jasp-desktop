@@ -38,25 +38,25 @@ class FactorLevelListBase :  public JASPListControl, public BoundControlBase
 public:
 	FactorLevelListBase(QQuickItem* parent = nullptr);
 
-	bool			isJsonValid(const Json::Value& optionValue)	override;
-	Json::Value		createJson()								override;
-	Json::Value		createMeta()								override;
-	void			bindTo(const Json::Value& value)			override;
-	bool			encodeValue()						const	override	{ return true; }
-	ListModel*		model()								const	override	{ return _factorLevelsModel; }
-	void			setUpModel()								override;
-	void			setUp()										override;
+	bool			isJsonValid(const Json::Value& optionValue)	const	override;
+	Json::Value		createJson()								const	override;
+	Json::Value		createMeta()								const	override;
+	void			bindTo(const Json::Value& value)					override;
+	bool			encodeValue()								const	override	{ return true; }
+	ListModel*		model()										const	override	{ return _factorLevelsModel; }
+	void			setUpModel()										override;
+	void			setUp()												override;
 
-	QString			factorName()						const				{ return _factorName;			}
-	QString			levelName()							const				{ return _levelName;			}
-	QString			factorPlaceHolder()					const				{ return _factorPlaceHolder;	}
-	QString			levelPlaceHolder()					const				{ return _levelPlaceHolder;		}
-	int				minFactors()						const				{ return _minFactors;			}
-	int				minLevels()							const				{ return _minLevels;			}
-	int				nbFactors()							const				{ return _nbFactors;			}
+	QString			factorName()								const				{ return _factorName;			}
+	QString			levelName()									const				{ return _levelName;			}
+	QString			factorPlaceHolder()							const				{ return _factorPlaceHolder;	}
+	QString			levelPlaceHolder()							const				{ return _levelPlaceHolder;		}
+	int				minFactors()								const				{ return _minFactors;			}
+	int				minLevels()									const				{ return _minLevels;			}
+	int				nbFactors()									const				{ return _nbFactors;			}
 
-	QString			getFactorName(int i)				const				{ return QStringLiteral("%1 %2").arg(_factorName).arg(i);	}
-	QString			getLevelName(int i)					const				{ return QStringLiteral("%1 %2").arg(_levelName).arg(i);	}
+	QString			getFactorName(int i)						const				{ return QStringLiteral("%1 %2").arg(_factorName).arg(i);	}
+	QString			getLevelName(int i)							const				{ return QStringLiteral("%1 %2").arg(_levelName).arg(i);	}
 
 signals:
 	void			itemChanged(int index, QString name);

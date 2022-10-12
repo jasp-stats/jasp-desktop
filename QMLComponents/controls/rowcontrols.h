@@ -55,8 +55,8 @@ private:
 	void										_setupControls(bool reuseBoundValue = false);
 
 	ListModel*								_parentModel;
-	QQmlComponent*							_rowComponent = nullptr;
-	QQuickItem*								_rowObject;
+	QQmlComponent*							_rowComponent	= nullptr;
+	QQuickItem*								_rowObject		= nullptr;
 	QMap<QString, JASPControl*>				_rowJASPControlMap;
 	QQmlContext*							_context;
 	QMap<QString, Json::Value>				_initialValues;

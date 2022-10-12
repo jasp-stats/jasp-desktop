@@ -42,7 +42,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QQuickItem						*	innerControl			READ innerControl			WRITE setInnerControl			NOTIFY innerControlChanged			)
 	Q_PROPERTY( QQuickItem						*	background				READ background				WRITE setBackground				NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator			READ focusIndicator			WRITE setFocusIndicator			NOTIFY focusIndicatorChanged		)
-	Q_PROPERTY( QQmlComponent					*	rowComponent			READ rowComponent			WRITE setRowComponent			NOTIFY rowComponentChanged			)
 	Q_PROPERTY( QStringList							dependencyMustContain	READ dependencyMustContain	WRITE setDependencyMustContain	NOTIFY dependencyMustContainChanged	)
 	Q_PROPERTY( int									preferredHeight			READ preferredHeight		WRITE setPreferredHeight		NOTIFY preferredHeightChanged		)
 	Q_PROPERTY( int									preferredWidth			READ preferredWidth			WRITE setPreferredWidth			NOTIFY preferredWidthChanged		)
@@ -149,8 +148,6 @@ public:
 
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
-	QQmlComponent				*	rowComponent()						const { return _rowComponent;	}
-
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
 
@@ -205,7 +202,6 @@ public slots:
 	GENERIC_SET_FUNCTION(ShouldShowFocus		, _shouldShowFocus		, shouldShowFocusChanged		, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover		, _shouldStealHover		, shouldStealHoverChanged		, bool			)
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
-	GENERIC_SET_FUNCTION(RowComponent			, _rowComponent			, rowComponentChanged			, QQmlComponent*)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
 
 private slots:
@@ -231,7 +227,6 @@ signals:
 	void hasWarningChanged();
 	void focusOnTabChanged();
 	void parentListViewChanged();
-	void rowComponentChanged();
 	void innerControlChanged();
 	void backgroundChanged();
 	void focusIndicatorChanged();
@@ -283,7 +278,6 @@ protected:
 						*	_innerControl				= nullptr,
 						*	_background					= nullptr,
 						*	_focusIndicator				= nullptr;
-	QQmlComponent		*	_rowComponent				= nullptr;
 
 	QColor					_defaultBorderColor;
 	float					_defaultBorderWidth			= 0;

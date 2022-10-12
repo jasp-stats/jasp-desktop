@@ -33,7 +33,6 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 
 void RadioButtonsGroupBase::setUp()
 {
-	JASPControl::setUp();
 	QList<RadioButtonBase* > buttons;
 	_getRadioButtons(this, buttons);
 	QVariant buttonGroup = property("buttonGroup");
@@ -59,6 +58,8 @@ void RadioButtonsGroupBase::setUp()
 		Log::log() << "No checked button found in radio buttons " << name() << ". First one (" << firstButton->name() << ") is checked per default" << std::endl;
 		_setCheckedButton(firstButton);
 	}
+
+	JASPControl::setUp();
 }
 
 void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButtonBase *> &buttons) {
@@ -96,12 +97,12 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 	}
 }
 
-Json::Value RadioButtonsGroupBase::createJson()
+Json::Value RadioButtonsGroupBase::createJson() const
 {
 	return fq(value());
 }
 
-bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value)
+bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value) const
 {
 	return value.isString();
 }

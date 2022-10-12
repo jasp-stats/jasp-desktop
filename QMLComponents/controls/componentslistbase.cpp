@@ -35,6 +35,7 @@ void ComponentsListBase::setUpModel()
 	connect(this, &ComponentsListBase::nameChanged, this, &ComponentsListBase::nameChangedHandler);
 	connect(this, &ComponentsListBase::addItem,		this, &ComponentsListBase::addItemHandler);
 	connect(this, &ComponentsListBase::removeItem,	this, &ComponentsListBase::removeItemHandler);
+	connect(this, &ComponentsListBase::initializedChanged, this, &ComponentsListBase::resetDefaultValue);
 }
 
 void ComponentsListBase::bindTo(const Json::Value& value)
@@ -50,7 +51,7 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	_termsModel->initTerms(terms, allControlValues);
 }
 
-Json::Value ComponentsListBase::createJson()
+Json::Value ComponentsListBase::createJson() const
 {
 	std::string keyName = fq(_optionKey);
 	Json::Value result(Json::arrayValue);
@@ -75,6 +76,13 @@ Json::Value ComponentsListBase::createJson()
 	}
 	else
 	{
+		QString			defaultName			= property("newItemName").toString();
+		QList<QVariant>	defaultValues		= property("defaultValues").toList();
+		int				minimumItems		= property("minimumItems").toInt();
+
+		while (defaultValues.length() < minimumItems)
+			defaultValues.push_back(defaultName);
+
 		QList<QString> keyValues;
 
 		int nbOfRows = _defaultValues.length();
@@ -124,17 +132,65 @@ Json::Value ComponentsListBase::createJson()
 	return result;
 }
 
-bool ComponentsListBase::isJsonValid(const Json::Value &value)
+void ComponentsListBase::resetDefaultValue()
+{
+	if (hasSource()) return;
+
+	// This slot is called when the component is initialized
+	// If the default values are not given by the defaultValues property, then it must be set by the default values of
+	// the components self. When the ComponentsList is initialized, the components are created and we can ask them their default values
+	Json::Value		defaultJson			= createJson();
+	uint			defaultValuesRows	= property("defaultValues").toList().size();
+
+	if (defaultJson.size() > defaultValuesRows)
+	{
+		const Terms& terms = _termsModel->terms();
+		const QMap<QString, RowControls*>& allRowControls = _termsModel->getAllRowControls();
+
+		for (uint i = defaultValuesRows; i < defaultJson.size(); i++)
+		{
+			if (terms.size() > i)
+			{
+				const QString& key = terms.at(i).asQString();
+				RowControls* rowControls = allRowControls[key];
+				if (!rowControls)
+				{
+					Log::log() << "Cannot find " << key << " in row controls!" << std::endl;
+					continue;
+				}
+				const QMap<QString, JASPControl*>& controlMap = rowControls->getJASPControlsMap();
+				Json::Value row(Json::objectValue);
+
+				row[fq(_optionKey)] = fq(key);
+				for (const QString& controlName : controlMap.keys())
+				{
+					JASPControl* control = controlMap[controlName];
+					BoundControl* boundControl = control->boundControl();
+					if (boundControl)
+						row[fq(controlName)] = boundControl->defaultBoundValue();
+				}
+				defaultJson[i] = row;
+			}
+		}
+	}
+	setDefaultBoundValue(defaultJson);
+}
+
+
+
+bool ComponentsListBase::isJsonValid(const Json::Value &value) const
 {
 	return value.isArray();
 }
 
 void ComponentsListBase::termsChangedHandler()
 {
-	const Terms& terms = _termsModel->terms();
-	const QMap<QString, RowControls*>& allControls = _termsModel->getAllRowControls();
+	_setTableValue(_termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+}
 
-	_setTableValue(terms, allControls, fq(_optionKey), containsInteractions());
+Json::Value ComponentsListBase::getConditionalTermsOptions(const ListModel::RowControlsValues &conditionalTermsMap)
+{
+	return _getTableValueOption(conditionalTermsMap, fq(_optionKey), containsInteractions());
 }
 
 void ComponentsListBase::addItemHandler()
@@ -206,7 +262,7 @@ void ComponentsListBase::nameChangedHandler(int index, QString name)
 	_termsModel->changeTerm(index, name);
 }
 
-QString ComponentsListBase::_changeLastNumber(const QString &val)
+QString ComponentsListBase::_changeLastNumber(const QString &val) const
 {
 	QString result = val;
 	int index = val.length() - 1;
@@ -232,14 +288,14 @@ QString ComponentsListBase::_changeLastNumber(const QString &val)
 		return result.append(QString::number(2));
 }
 
-QString ComponentsListBase::_makeUnique(const QString &val, int index)
+QString ComponentsListBase::_makeUnique(const QString &val, int index) const
 {
 	QList<QString> values = _termsModel->terms().asQList();
 
 	return _makeUnique(val, values, index);
 }
 
-QString ComponentsListBase::_makeUnique(const QString &val, const QList<QString> &values, int index)
+QString ComponentsListBase::_makeUnique(const QString &val, const QList<QString> &values, int index) const
 {
 	QString result = val;
 

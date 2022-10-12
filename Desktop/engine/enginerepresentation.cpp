@@ -112,7 +112,7 @@ void EngineRepresentation::handleEngineCrash()
 		break;
 
 	case engineState::rCode:
-		emit rCodeReturned(tr("The engine crashed while trying to run rscript..."), _lastRequestId);
+		emit rCodeReturned(tr("The engine crashed while trying to run rscript..."), _lastRequestId, true);
 		break;
 
 	case engineState::logCfg:
@@ -392,10 +392,14 @@ void EngineRepresentation::processRCodeReply(Json::Value & json)
 	setState(engineState::idle);
 
 	std::string rCodeResult = json.get("rCodeResult", "").asString();
+	std::string rCodeError	= json.get("rCodeError", "").asString();
 	int requestId			= json.get("requestId", -1).asInt();
+	bool hasError			= !rCodeError.empty();
 
-	if(!runsRCmd())			emit rCodeReturned(		tq(rCodeResult), requestId);
-	else					emit rCodeReturnedLog(	tq(rCodeResult));
+	if (hasError) rCodeResult = rCodeError;
+
+	if(!runsRCmd())			emit rCodeReturned(		tq(rCodeResult), requestId, hasError);
+	else					emit rCodeReturnedLog(	tq(rCodeResult), hasError);
 
 	Log::log() << "rCode reply for request (" << requestId << ") returned: " << rCodeResult << " with error: '" << json.get("rCodeError", "no error") << "'\n" <<  std::flush;
 }

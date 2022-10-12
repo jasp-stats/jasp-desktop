@@ -25,18 +25,24 @@
 #include "controls/expanderbuttonbase.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
+#include "rsyntax/rsyntax.h"
 
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
+#include "controls/variableslistbase.h"
 
 using namespace std;
 
+const QString AnalysisForm::rSyntaxControlName = "__RSyntaxTextArea";
+
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
-	Log::log() << "AnalysisForm created " << this << std::endl;
 	setObjectName("AnalysisForm");
+
+	_rSyntax = new RSyntax(this);
+	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
 	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
 	connect(this,					&AnalysisForm::formCompletedSignal,	this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
@@ -68,6 +74,11 @@ void AnalysisForm::runAnalysis()
 	refreshTableViewModels();
 }
 
+QString AnalysisForm::generateWrapper() const
+{
+	return _rSyntax->generateWrapper();
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)
@@ -89,10 +100,32 @@ void AnalysisForm::cleanUpForm()
 	}
 }
 
-void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
+void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName, bool hasError)
 {	
 	if(_removed)
 		return;
+
+	if (controlName == rSyntaxControlName)
+	{
+		JASPControl* rSyntaxControl = getControl(controlName);
+		if (hasError)
+			addControlError(rSyntaxControl, result);
+		else
+		{
+			Json::Reader parser;
+			Json::Value jsonResult;
+			parser.parse(fq(result), jsonResult);
+			Json::Value options = jsonResult["options"];
+			clearControlError(rSyntaxControl);
+			if (_rSyntax->parseRSyntaxOptions(options))
+			{
+				bindTo(options);
+				_analysis->boundValueChangedHandler();
+			}
+		}
+
+		return;
+	}
 
 	JASPControl* item = getControl(controlName);
 	if (!item)
@@ -138,7 +171,7 @@ void AnalysisForm::addControl(JASPControl *control)
 			_controls[name] = control;
 	}
 
-	if (_analysis)
+	if (_analysis && control->isBound())
 	{
 		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
 	}
@@ -217,6 +250,18 @@ void AnalysisForm::setHasVolatileNotes(bool hasVolatileNotes)
 	emit hasVolatileNotesChanged();
 }
 
+bool AnalysisForm::parseOptions(Json::Value &options)
+{
+	if (_rSyntax->parseRSyntaxOptions(options))
+	{
+		bindTo(options);
+		options = _analysis->boundValues();
+		return true;
+	}
+
+	return false;
+}
+
 void AnalysisForm::_setUp()
 {
 	QList<JASPControl*> controls = _controls.values();
@@ -229,9 +274,13 @@ void AnalysisForm::_setUp()
 
 	for (JASPControl* control : controls)
 	{
+		BoundControl* boundControl = control->boundControl();
+		if (boundControl) boundControl->setDefaultBoundValue(boundControl->createJson()); // The default value is known only when all controls are setup
 		_dependsOrderedCtrls.push_back(control);
 		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
+
+	_rSyntax->setUp();
 
 	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
 }
@@ -332,9 +381,8 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 	}
 }
 
-void AnalysisForm::bindTo()
+void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
-	const Json::Value & defaultOptions = _analysis->isDuplicate() ? _analysis->boundValues() : _analysis->optionsFromJASPFile();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
 	std::set<std::string> controlsJsonWrong;
@@ -419,7 +467,12 @@ void AnalysisForm::addFormWarning(const QString & warning)
 //Maybe even to full QML? Why don't we just use a loader...
 void AnalysisForm::addControlError(JASPControl* control, QString message, bool temporary, bool warning)
 {
-	if (!control) return;
+	if (!control)
+	{
+		// Quite bad: write it at least to the log
+		Log::log() << "Control error, but control not found: " << message << std::endl;
+		return;
+	}
 
 	if (!message.isEmpty())
 	{
@@ -483,6 +536,19 @@ bool AnalysisForm::hasError()
 	return false;
 }
 
+QString AnalysisForm::getError()
+{
+	QString message;
+
+	for (QQuickItem* item : _controlErrorMessageCache)
+	{
+		if (item->property("control").value<JASPControl*>() != nullptr)
+			message = item->property("message").toString();
+	}
+
+	return message;
+}
+
 void AnalysisForm::clearControlError(JASPControl* control)
 {
 	if (!control) return;
@@ -542,6 +608,12 @@ void AnalysisForm::setTitle(QString title)
 		_analysis->setTitle(fq(title.simplified()));
 }
 
+void AnalysisForm::setOptionNameConversion(const QVariantList &conv)
+{
+	if (_rSyntax->setControlNameToRSyntaxMap(conv))
+		emit optionNameConversionChanged();
+}
+
 void AnalysisForm::formCompletedHandler()
 {
 	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
@@ -560,7 +632,9 @@ void AnalysisForm::setAnalysisUp()
 	blockValueChangeSignal(true);
 
 	_setUpControls();
-	bindTo();
+
+	const Json::Value & defaultOptions = _analysis->isDuplicate() ? _analysis->boundValues() : _analysis->optionsFromJASPFile();
+	bindTo(defaultOptions);
 
 	blockValueChangeSignal(false, false);
 
@@ -717,6 +791,16 @@ QString AnalysisForm::metaHelpMD() const
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->resultsMeta(), 2);
 }
 
+QString AnalysisForm::generateRSyntax() const
+{
+	return _rSyntax->generateSyntax();
+}
+
+QVariantList AnalysisForm::optionNameConversion() const
+{
+	return _rSyntax->controlNameToRSyntaxMap();
+}
+
 std::vector<std::vector<string> > AnalysisForm::getValuesFromRSource(const QString &sourceID, const QStringList &searchPath)
 {
 	if (!_analysis) return {};
@@ -828,12 +912,10 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	return result;
 }
 
-bool AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
+void  AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
 {
 	if (_analysis)
-		return _analysis->setBoundValue(name, value, meta, parentKeys);
-	
-	return false;
+		_analysis->setBoundValue(name, value, meta, parentKeys);
 }
 
 std::set<string> AnalysisForm::usedVariables()
@@ -879,3 +961,36 @@ QString AnalysisForm::helpMD() const
 	
 	return md;
 }
+
+void AnalysisForm::setShowRSyntax(bool showRSyntax)
+{
+	if (_showRSyntax != showRSyntax)
+	{
+		_showRSyntax = showRSyntax;
+		setRSyntaxText();
+
+		emit showRSyntaxChanged();
+	}
+}
+
+void AnalysisForm::setRSyntaxText()
+{
+	if (_showRSyntax)
+	{
+		QString text = generateRSyntax();
+
+		if (text != _rSyntaxText)
+		{
+			_rSyntaxText = text;
+			emit rSyntaxTextChanged();
+		}
+	}
+}
+
+void AnalysisForm::sendRSyntax(QString text)
+{
+	setShowRSyntax(true);
+	emit _analysis->sendRScript(text, rSyntaxControlName, false);
+}
+
+

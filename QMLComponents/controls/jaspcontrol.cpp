@@ -315,7 +315,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 		else				result.append(getChildJASPControls(childItem));
 	}
 
-		return result;
+	return result;
 }
 
 BoundControl *JASPControl::boundControl()

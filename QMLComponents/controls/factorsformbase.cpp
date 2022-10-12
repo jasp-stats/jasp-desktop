@@ -63,7 +63,7 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 	_factorsModel->initFactors(factors);
 }
 
-Json::Value FactorsFormBase::createJson()
+Json::Value FactorsFormBase::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 
@@ -84,7 +84,7 @@ Json::Value FactorsFormBase::createJson()
 	return result;
 }
 
-bool FactorsFormBase::isJsonValid(const Json::Value &value)
+bool FactorsFormBase::isJsonValid(const Json::Value &value) const
 {
 	bool valid = value.isArray();
 	if (valid)

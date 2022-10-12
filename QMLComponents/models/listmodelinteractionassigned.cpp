@@ -33,6 +33,7 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
 {
+	clearInteractions();
 	_addTerms(terms, false);
 	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap);
 }

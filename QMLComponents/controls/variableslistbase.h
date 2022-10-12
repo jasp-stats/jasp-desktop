@@ -43,29 +43,31 @@ class VariablesListBase : public JASPListControl, public BoundControl
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
-	void						setUp()										override;
-	ListModel*					model()								const	override;
-	ListModelDraggable*			draggableModel()					const				{ return _draggableModel;							}
-	void						setUpModel()								override;
-	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
-	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
-	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
-	void						resetBoundValue()							override	{ return _boundControl->resetBoundValue();			}
-	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
-	Json::Value					createMeta()								override	{ return _boundControl->createMeta();				}
+	void						setUp()												override;
+	ListModel*					model()										const	override;
+	ListModelDraggable*			draggableModel()							const				{ return _draggableModel;							}
+	void						setUpModel()										override;
+	void						bindTo(const Json::Value &value)					override	{ _boundControl->bindTo(value);						}
+	const Json::Value&			boundValue()								const	override	{ return _boundControl->boundValue();				}
+	bool						isJsonValid(const Json::Value& optionValue) const	override	{ return _boundControl->isJsonValid(optionValue);	}
+	void						resetBoundValue()									override	{ return _boundControl->resetBoundValue();			}
+	Json::Value					createJson()								const	override	{ return _boundControl->createJson();				}
+	Json::Value					createMeta()								const	override	{ return _boundControl->createMeta();				}
 	void						setBoundValue(const Json::Value& value, 
-											  bool emitChange = true)		override	{ return _boundControl->setBoundValue(value, emitChange);	}
+											  bool emitChange = true)				override	{ return _boundControl->setBoundValue(value, emitChange);	}
+	const Json::Value&			defaultBoundValue()							const	override	{ return _boundControl->defaultBoundValue();		}
+	void						setDefaultBoundValue(const Json::Value& defaultValue) override	{ _boundControl->setDefaultBoundValue(defaultValue); }
 
-	ListViewType				listViewType()						const				{ return _listViewType;								}
-	BoundControl*				boundControl()								override	{ return _boundControl;								}
-	int							columns()							const				{ return _columns;									}
-	const QStringList&			allowedColumns()					const				{ return _allowedColumns;							}
-	const QStringList&			suggestedColumns()					const				{ return _suggestedColumns;							}
-	const QStringList&			suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
-	const QStringList&			columnsTypes()						const				{ return _columnsTypes;								}
-	const QStringList&			columnsNames()						const				{ return _columnsNames;								}
-	const QStringList&			dropKeys()							const				{ return _dropKeys;									}
-	const QString&				interactionHighOrderCheckBox()		const				{ return _interactionHighOrderCheckBox;				}
+	ListViewType				listViewType()								const				{ return _listViewType;								}
+	BoundControl*				boundControl()										override	{ return _boundControl;								}
+	int							columns()									const				{ return _columns;									}
+	const QStringList&			allowedColumns()							const				{ return _allowedColumns;							}
+	const QStringList&			suggestedColumns()							const				{ return _suggestedColumns;							}
+	const QStringList&			suggestedColumnsIcons()						const				{ return _suggestedColumnsIcons;					}
+	const QStringList&			columnsTypes()								const				{ return _columnsTypes;								}
+	const QStringList&			columnsNames()								const				{ return _columnsNames;								}
+	const QStringList&			dropKeys()									const				{ return _dropKeys;									}
+	const QString&				interactionHighOrderCheckBox()				const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control) override;
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 

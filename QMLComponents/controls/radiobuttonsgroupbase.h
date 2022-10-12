@@ -34,12 +34,12 @@ class RadioButtonsGroupBase : public JASPControl, public BoundControlBase
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
 
-	bool		isJsonValid(const Json::Value& value)		override;
-	Json::Value createJson()								override;
-	void		bindTo(const Json::Value& value)			override;
-	void		setUp()										override;
+	bool		isJsonValid(const Json::Value& value)		const	override;
+	Json::Value createJson()								const	override;
+	void		bindTo(const Json::Value& value)					override;
+	void		setUp()												override;
     
-	const QString&	value()										const	{ return _value; }
+	const QString&	value()									const	{ return _value; }
 
 signals:
 	void valueChanged();

@@ -30,30 +30,33 @@ class BoundControlBase : public BoundControl
 {
 public:
 	BoundControlBase(JASPControl* control);
-	virtual				~BoundControlBase()	{}
+	virtual						~BoundControlBase()	{}
 
-	Json::Value					createJson()														override { return Json::nullValue;		}
-	Json::Value					createMeta()														override;
+	Json::Value					createJson()												const	override { return Json::nullValue;		}
+	Json::Value					createMeta()												const	override;
 	void						bindTo(const Json::Value& value)									override { _orgValue = value; setBoundValue(value, false); }
-	const Json::Value&			boundValue()														override;
+	const Json::Value&			boundValue()												const	override;
 	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
 	void						setIsRCode(std::string key = "");
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
-	
+	const Json::Value&			defaultBoundValue()											const	override { return _defaultValue; }
+	void						setDefaultBoundValue(const Json::Value& defaultValue)				override { _defaultValue = defaultValue; }
 
 protected:
-	inline const std::string&	getName();
+	std::string					getName()													const;
+
+	Json::Value					_getTableValueOption(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms);
+	void						_setTableValue(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms);
 
 	void						_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
-	void						_setTableValue(const Terms& terms, const QMap<QString, RowControls*>& allControls, const std::string& key, bool hasMultipleTerms);
 
 	JASPControl*				_control			= nullptr;
 	bool						_isComputedColumn	= false,
 								_isColumn			= false;
 	std::set<std::string>		_isRCode;
-	Json::Value					_orgValue;
-	std::string					_name;
+	Json::Value					_orgValue,
+								_defaultValue;
 	columnType					_columnType			= columnType::unknown;
 };
 

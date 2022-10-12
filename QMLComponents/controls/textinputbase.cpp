@@ -148,7 +148,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 }
 
-Json::Value TextInputBase::createJson()
+Json::Value TextInputBase::createJson() const
 {
 	QVariant value = property("value");
 	if (value.toString() == "" && !_defaultValue.isNull())	value = _defaultValue;
@@ -156,7 +156,7 @@ Json::Value TextInputBase::createJson()
 	return _getJsonValue(value);
 }
 
-bool TextInputBase::isJsonValid(const Json::Value &value)
+bool TextInputBase::isJsonValid(const Json::Value &value) const
 {
 	bool valid = false;
 	switch (_inputType)
@@ -171,8 +171,6 @@ bool TextInputBase::isJsonValid(const Json::Value &value)
 
 void TextInputBase::setUp()
 {
-	JASPControl::setUp();
-
 	QString type = property("inputType").toString();
 
 		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
@@ -194,6 +192,8 @@ void TextInputBase::setUp()
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::resetValue);
+
+	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
 }
 
 void TextInputBase::resetValue()
@@ -290,7 +290,7 @@ bool TextInputBase::_formulaResultInBounds(double result)
 	return inBounds;
 }
 
-Json::Value TextInputBase::_getJsonValue(const QVariant& value)
+Json::Value TextInputBase::_getJsonValue(const QVariant& value) const
 {
 	switch (_inputType)
 	{

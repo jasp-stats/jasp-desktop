@@ -29,10 +29,10 @@ class BoundControlLayers : public BoundControlBase
 public:
 	BoundControlLayers(ListModelLayersAssigned* model);
 	
-	bool		isJsonValid(const Json::Value& optionValue)		override;
-	Json::Value	createJson()									override;
-	void		bindTo(const Json::Value &value)				override;
-	void		resetBoundValue()								override;
+	bool		isJsonValid(const Json::Value& optionValue)		const	override;
+	Json::Value	createJson()									const	override;
+	void		bindTo(const Json::Value &value)						override;
+	void		resetBoundValue()										override;
 	
 private:
 	ListModelLayersAssigned*	_layersModel	= nullptr;

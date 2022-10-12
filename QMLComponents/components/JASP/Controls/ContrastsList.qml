@@ -83,7 +83,7 @@ Item
 		anchors.top			: itemContrastVariables.bottom
 		anchors.topMargin	: jaspTheme.rowSpacing
 		visible				: count > 0
-		source				: [ { name: "contrasts", condition: "contrastValue == 'custom'", conditionVariables: [{ name: "contrastValue", component: "contrast", property: "currentValue"}] }]
+		source				: [ { name: "contrasts", condition: "contrast == 'custom'" }]
 
 		rowComponent: Group
 		{

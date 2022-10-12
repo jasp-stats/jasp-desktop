@@ -25,7 +25,7 @@ BoundControlContrastsTableView::BoundControlContrastsTableView(TableViewBase* ta
 {
 }
 
-Json::Value BoundControlContrastsTableView::createJson()
+Json::Value BoundControlContrastsTableView::createJson() const
 {
 	Json::Value result = Json::Value(Json::arrayValue);
 	ListModelCustomContrasts* contrastsModel = qobject_cast<ListModelCustomContrasts*>(_tableView->tableModel());
