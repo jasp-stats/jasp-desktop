@@ -245,9 +245,14 @@ Notice that the options are nested within another option both in Qml and in the 
 - `burnin`: number of burnin samples
 - `thinning`: thinning factor
 - `chains`: number of chains
-- `bayesFactor`: Bayes factor
-- `priorAndPosterior`: checkbox for prior and posterior
-- `robustnessCheck`: checkbox for robustness check
+- `bf`: Bayes factor
+- `bfType`: Type of a Bayes factor (this shouldn't be specified manually but should be used via the `BayesFactorType{}` component)
+- `priorAndPosteriorPlot`: checkbox for prior and posterior plot
+- `priorAndPosteriorPlotAdditionalInfo`: additional info for prior and posterior plot
+- `bfRobustnessPlot`: checkbox for robustness plot
+- `bfRobustnessPlotAdditionalInfo`: additional info for robustness plot
+- `bfSequentialPlot`: checkbox for sequential analysis plot
+- `bfSequentialPlotRobustness`: robustness check in sequential analysis plot
 - `cauchyPrior`: Cauchy prior checkbox/radiobutton
 - `cauchyPriorLocation`: Location of the cauchy prior
 - `cauchyPriorScale`: Scale of the cauchy prior
