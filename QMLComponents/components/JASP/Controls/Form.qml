@@ -187,12 +187,11 @@ AnalysisForm
 				{
 					id: popup
 
-					parent: Overlay.overlay
+					parent:				Overlay.overlay
+					anchors.centerIn:	parent
 
-					x:		Math.round((parent.width - width) / 2)
-					y:		Math.round((parent.height - height) / 2)
-					width:	400
-					height: 600
+					width:	400  * jaspTheme.uiScale
+					height: 600  * jaspTheme.uiScale
 
 					modal:	true
 
@@ -203,7 +202,7 @@ AnalysisForm
 						applyScriptInfo:			""
 						control.readOnly:			true
 						control.selectByKeyboard:	true
-						onVisibleChanged:	if (visible) 	text = form.generateWrapper()
+						onVisibleChanged:			if (visible) 	text = form.generateWrapper()
 					}
 				}
 			}

@@ -52,9 +52,9 @@ public:
 		VirtualRole,
 		DeletableRole
     };
-	typedef QMap<QString, RowControls*> RowControlMap;
-	typedef QMap<QString, QMap<QString, Json::Value> > RowControlsValues;
-	typedef QMapIterator<QString, QMap<QString, Json::Value> > RowControlsValuesIterator;
+	typedef QMap<QString, RowControls*>							RowControlMap;
+	typedef QMap<QString, QMap<QString, Json::Value> >			RowControlsValues;
+	typedef QMapIterator<QString, QMap<QString, Json::Value> >	RowControlsValuesIterator;
 
 	ListModel(JASPListControl* listView);
 	

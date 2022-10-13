@@ -122,8 +122,8 @@ bool FormulaParser::parse(const QString& formula, ParsedTerms& parsedTerms, QStr
 			int subGroup = 1;
 			bool hasSubSubGroup = false;
 			QString subFormula;
-			int j = i+1;
-			for (; j < formula.length(); j++)
+			int j; 
+			for (j = i+1 ; j < formula.length(); j++)
 			{
 				QChar ch2 = formula.at(j);
 				if (ch2 == '(')
@@ -228,7 +228,6 @@ bool FormulaParser::parse(const QString& formula, ParsedTerms& parsedTerms, QStr
 			leftCondition = {};
 
 		}
-
 	}
 	return true;
 }
@@ -242,7 +241,9 @@ QString FormulaParser::transformToFormulaTerm(const Term &term, char join, bool 
 	bool first = true;
 	for (const QString& component : components)
 	{
-		if (!first) result += QString(' ') + join + ' ';
+		if (!first) 
+			result += QString(' ') + join + ' ';
+
 		first = false;
 
 		if (addQuotes)						result += '"' + component + '"';

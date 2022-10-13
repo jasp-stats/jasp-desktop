@@ -541,10 +541,8 @@ QString AnalysisForm::getError()
 	QString message;
 
 	for (QQuickItem* item : _controlErrorMessageCache)
-	{
 		if (item->property("control").value<JASPControl*>() != nullptr)
-			message = item->property("message").toString();
-	}
+			message += (message != "" ? ", " : "") + item->property("message").toString();
 
 	return message;
 }
@@ -553,12 +551,9 @@ void AnalysisForm::clearControlError(JASPControl* control)
 {
 	if (!control) return;
 
-	for (QQuickItem* errorItem : _controlErrorMessageCache)
-	{
-		JASPControl* errorControl = errorItem->property("control").value<JASPControl*>();
-		if (errorControl == control)
+	for (QQuickItem * errorItem : _controlErrorMessageCache)
+		if (control == errorItem->property("control").value<JASPControl*>())
 			errorItem->setProperty("control", QVariant());
-	}
 
 	control->setHasError(false);
 	control->setHasWarning(false);
@@ -964,26 +959,27 @@ QString AnalysisForm::helpMD() const
 
 void AnalysisForm::setShowRSyntax(bool showRSyntax)
 {
-	if (_showRSyntax != showRSyntax)
-	{
-		_showRSyntax = showRSyntax;
-		setRSyntaxText();
+	if (_showRSyntax == showRSyntax)
+		return;
+	
+	_showRSyntax = showRSyntax;
+	setRSyntaxText();
 
-		emit showRSyntaxChanged();
-	}
+	emit showRSyntaxChanged();
+
 }
 
 void AnalysisForm::setRSyntaxText()
 {
-	if (_showRSyntax)
-	{
-		QString text = generateRSyntax();
+	if (!_showRSyntax)
+		return;
 
-		if (text != _rSyntaxText)
-		{
-			_rSyntaxText = text;
-			emit rSyntaxTextChanged();
-		}
+	QString text = generateRSyntax();
+
+	if (text != _rSyntaxText)
+	{
+		_rSyntaxText = text;
+		emit rSyntaxTextChanged();
 	}
 }
 

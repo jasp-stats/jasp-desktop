@@ -31,16 +31,17 @@ FormulaBase::FormulaBase(QQuickItem *parent) : QQuickItem(parent)
 
 void FormulaBase::setUp()
 {
-	_leftFormulaSources = FormulaSource::makeFormulaSources(this, _lhs);
+	_leftFormulaSources  = FormulaSource::makeFormulaSources(this, _lhs);
 	_rightFormulaSources = FormulaSource::makeFormulaSources(this, _rhs);
 
-	connect(this, &FormulaBase::lhsChanged, this, [this]() { _leftFormulaSources = FormulaSource::makeFormulaSources(this, _lhs); emit somethingChanged();} );
+	connect(this, &FormulaBase::lhsChanged, this, [this]() { _leftFormulaSources  = FormulaSource::makeFormulaSources(this, _lhs); emit somethingChanged();} );
 	connect(this, &FormulaBase::rhsChanged, this, [this]() { _rightFormulaSources = FormulaSource::makeFormulaSources(this, _rhs); emit somethingChanged();} );
 }
 
 QString FormulaBase::toString() const
 {
-	if (!_rSyntax) return "";
+	if (!_rSyntax)
+		return "";
 
 	QString result = _rSyntax->FunctionOptionIndent + _name + " = ";
 	bool isEmpty = true;
@@ -60,10 +61,13 @@ QString FormulaBase::toString() const
 		bool first = true;
 		for (FormulaSource* formulaSource: formulaSources)
 		{
-			if (formulaSource->isEmpty()) continue;
+			if (formulaSource->isEmpty()) 
+				continue;
 
 			QString terms = formulaSource->toString();
-			if (!first && !terms.isEmpty()) result += " + ";
+			if (!first && !terms.isEmpty()) 
+				result += " + ";
+
 			first = false;
 			result += terms;
 		}
@@ -78,7 +82,9 @@ QString FormulaBase::toString() const
 		QMap<QString, QString> extraOptions = formulaSource->additionalOptionStrings();
 		for (const QString& key : extraOptions.keys())
 		{
-			if (!result.isEmpty())	result += ",\n";
+			if (!result.isEmpty())	
+				result += ",\n";
+
 			result += _rSyntax->FunctionOptionIndent + _rSyntax->getRSyntaxFromControlName(key) + " = " + extraOptions[key];
 		}
 	}
@@ -86,12 +92,17 @@ QString FormulaBase::toString() const
 	for (const QString& optionToSpecify : _getSourceList(_userMustSpecify))
 	{
 		ListModel* model = getModel(optionToSpecify);
-		if (!model) continue;
+		if (!model) 
+			continue;
 
 		QStringList elements = model->terms().asQList();
-		if (elements.isEmpty()) continue;
 
-		if (!result.isEmpty())	result += ",\n";
+		if (elements.isEmpty()) 
+			continue;
+
+		if (!result.isEmpty())	
+			result += ",\n";
+
 		result += _rSyntax->FunctionOptionIndent + _rSyntax->getRSyntaxFromControlName(optionToSpecify) + " = ";
 
 		if (elements.length() == 0)			result += "\"\"";
@@ -102,7 +113,9 @@ QString FormulaBase::toString() const
 			bool first = true;
 			for (const QString& element : elements)
 			{
-				if (!first) result += ", ";
+				if (!first) 
+					result += ", ";
+
 				first = false;
 				result += "\"" + element + "\"";
 			}
@@ -181,7 +194,8 @@ QStringList FormulaBase::_getSourceList(const QVariant &var) const
 		if (modelSpec.canConvert<QString>())
 		{
 			QString sourceName = modelSpec.toString();
-			if (!sourceName.isEmpty())	result.push_back(sourceName);
+			if (!sourceName.isEmpty())	
+				result.push_back(sourceName);
 		}
 		else if (modelSpec.canConvert<QMap<QString, QVariant> >())
 		{
@@ -189,7 +203,8 @@ QStringList FormulaBase::_getSourceList(const QVariant &var) const
 			if (map.contains("name"))
 			{
 				QString sourceName = map["name"].toString();
-				if (!sourceName.isEmpty()) result.push_back(sourceName);
+				if (!sourceName.isEmpty()) 
+					result.push_back(sourceName);
 			}
 		}
 	}
@@ -199,7 +214,8 @@ QStringList FormulaBase::_getSourceList(const QVariant &var) const
 
 bool FormulaBase::_parseFormulaSources(const QVector<FormulaSource*>& formulaSources, FormulaParser::ParsedTerms& parsedTerms, Json::Value& options) const
 {
-	if (parsedTerms.isEmpty()) return true;
+	if (parsedTerms.isEmpty()) 
+		return true;
 
 	for (const FormulaSource* formulaSource : formulaSources)
 		parsedTerms = formulaSource->fillOptionsWithParsedTerms(parsedTerms, options);
@@ -212,14 +228,16 @@ bool FormulaBase::_parseFormulaSources(const QVector<FormulaSource*>& formulaSou
 
 ListModel *FormulaBase::getModel(const QString &name) const
 {
-	AnalysisForm* aform = form();
-	ListModel* model = nullptr;
-	JASPListControl* listControl = nullptr;
+	AnalysisForm	* aform 		= form();
+	ListModel		* model 		= nullptr;
+	JASPListControl	* listControl 	= nullptr;
 
-	if (!aform)	return model;
+	if (!aform)	
+		return model;
 
 	JASPControl* control = aform->getControl(name);
-	if (!control) aform->addFormError(tr("Source %1 in Formula not found").arg(name));
+	if (!control) 
+		aform->addFormError(tr("Source %1 in Formula not found").arg(name));
 	else
 	{
 		listControl = qobject_cast<JASPListControl*>(control);
@@ -233,8 +251,10 @@ ListModel *FormulaBase::getModel(const QString &name) const
 void FormulaBase::componentComplete()
 {
 	AnalysisForm* form = qobject_cast<AnalysisForm*>(parent());
+	
 	if (form)
 		_rSyntax = form->rSyntax();
+
 	if (_rSyntax)
 		_rSyntax->addFormula(this);
 }

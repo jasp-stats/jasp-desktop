@@ -203,13 +203,16 @@ Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const
 		Terms termsToAdd;
 		for (const Term& term : terms)
 		{
-			if (!termsAlreadyInOptions.contains(term)) continue; // Don't add term that is already in option.
-				termsToAdd.add(term);
+			if (!termsAlreadyInOptions.contains(term)) 
+				continue; // Don't add term that is already in option.
+			
+			termsToAdd.add(term);
 		}
 
 		for (const Term& term : terms)
 		{
-			if (termsAlreadyInOptions.contains(term)) continue; // Don't add term that is already in option.
+			if (termsAlreadyInOptions.contains(term)) 
+				continue; // Don't add term that is already in option.
 
 			Json::Value rowValues(Json::objectValue);
 			if (_listView->containsInteractions())
@@ -240,16 +243,12 @@ Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const
 		}
 	}
 	else if (_isSingleRow)
-	{
-		std::string str = terms.size() > 0 ? terms[0].asString() : "";
-		result = Json::Value(str);
-	}
+		result = terms.size() > 0 ? terms[0].asString() : "";
+	
 	else
-	{
 		for (const Term& term : terms)
 			if (!termsAlreadyInOptions.contains(term))
 				result.append(term.asString());
-	}
 
 	return result;
 }
@@ -263,10 +262,8 @@ bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms
 	Terms termsToSearch = terms;
 
 	for (const Term& term : termsToSearch)
-	{
 		if (termsInOptions.contains(term))	terms.remove(term);
 		else								result = false;
-	}
 
 	return result;
 }
@@ -277,44 +274,40 @@ Terms BoundControlTerms::_getValuesFromOptions(const Json::Value& option) const
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
-		if (!option.isArray()) return result; // Just to be sure
+		if (!option.isArray()) 
+			return result; // Just to be sure
 
 		for (const Json::Value& row : option)
-		{
 			if (_listView->containsInteractions())
 			{
 				if (row.isArray())
 				{
 					std::vector<std::string> term;
 					for (const Json::Value& val : row)
-					{
 						if (val.isString())
 							term.push_back(val.asString());
-					}
+					
 					result.add(Term(term));
 				}
 			}
-			else
-			{
-				if (row.isString())
-					result.add(row.asString());
-			}
-		}
+			else if (row.isString())
+				result.add(row.asString());
+
 	}
 	else if (_isSingleRow)
 	{
-		if (!option.isString()) return result; // Just to be sure
+		if (!option.isString()) 
+			return result; // Just to be sure
 		result.add(option.asString());
 	}
 	else
 	{
-		if (!option.isArray()) return result;
+		if (!option.isArray()) 
+			return result;
 
 		for (const Json::Value& row : option)
-		{
 			if (row.isString())
 				result.add(row.asString());
-		}
 	}
 
 	return result;

@@ -73,10 +73,13 @@ FormulaSource::FormulaSource(FormulaBase* formula, const QVariant& var) : QObjec
 {
 	QMap<QString, QVariant> map;
 	JASPControl* sourceControl = var.value<JASPControl*>();
+
 	if (sourceControl)
 		_sourceName = sourceControl->name();
+
 	else if (var.canConvert<QString>())
 		_sourceName = var.toString();
+		
 	else if (var.canConvert<QMap<QString, QVariant> >())
 	{
 		map = var.toMap();

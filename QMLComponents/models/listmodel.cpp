@@ -105,19 +105,20 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 	// either the source uses direclty a control in sourceModel (controlName()), or the source uses
 	// a conditional expression.
 	ListModel* sourceModel = sourceItem->listModel();
-	if (!sourceModel) return;
+	if (!sourceModel) 
+		return;
 
 	const Terms& terms = sourceModel->terms();
-	if (terms.size() == 0) return;
+	if (terms.size() == 0) 
+		return;
 
-	for (const QString& controlName : sourceItem->usedControls())
-	{
-		for (const Term& term : terms)
+	for (const QString & controlName : sourceItem->usedControls())
+		for (const Term & term : terms)
 		{
-			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
+			JASPControl * control = sourceModel->getRowControl(term.asQString(), controlName);
 			if (control)
 			{
-				BoundControl* boundControl = control->boundControl();
+				BoundControl * boundControl = control->boundControl();
 				if (boundControl && !_rowControlsConnected.contains(boundControl))
 				{
 					connect(control, &JASPControl::boundValueChanged, this, &ListModel::sourceTermsReset);
@@ -127,7 +128,6 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 			else
 				Log::log() << "Cannot find control " << controlName << " in model " << name() << std::endl;
 		}
-	}
 }
 
 Terms ListModel::getSourceTerms()

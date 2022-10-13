@@ -365,12 +365,12 @@ DropArea
 				{
 					id:					rSyntaxButton
 					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/R.png" : jaspTheme.iconPath + "/R.png"
+					iconSource:			jaspTheme.iconPath + "/R.png"
 					enabled:			expanderButton.expanded
 					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
 					toolTip:			qsTr("Show R Syntax")
 					radius:				height
-					opacity:			copyButton.opacity
+					opacity:			editButton.opacity
 					anchors
 					{
 						top:			parent.top
@@ -387,7 +387,7 @@ DropArea
 					id:					helpButton
 					width:				height
 					iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-					opacity:			rSyntaxButton.opacity
+					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))

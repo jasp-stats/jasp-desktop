@@ -123,7 +123,7 @@ void SourceItem::connectModels()
 		connect(_listModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
 		connect(_listModel,		&ListModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
 		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
-		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );		
+		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
 
 	_connected = true;
@@ -522,16 +522,18 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 				JASPControl* control = model->getRowControl(term.asQString(), conditionVariable.controlName);
 				if (control)
 				{
-				QJSValue value;
+					QJSValue value;
 					QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
+
 					switch (valueVar.type())
-				{
+					{
 					case QVariant::Type::Int:
 					case QVariant::Type::UInt:		value = valueVar.toInt();		break;
 					case QVariant::Type::Double:	value = valueVar.toDouble();	break;
 					case QVariant::Type::Bool:		value = valueVar.toBool();		break;
 					default:						value = valueVar.toString();	break;
-				}
+					}
+
 					jsEngine->globalObject().setProperty(conditionVariable.name, value);
 				}
 			}
@@ -540,17 +542,20 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 		{
 			// If no condition variables are used, then set the values of the row controls in variables
 			RowControls* rowControls = model->getRowControls(term.asQString());
-			if (!rowControls) continue;
+			if (!rowControls) 
+				continue;
 
 			for (const QString& variable : rowControls->getJASPControlsMap().keys())
 			{
-				JASPControl* control = rowControls->getJASPControl(variable);
-				BoundControl* boundControl = control ? control->boundControl() : nullptr;
+				JASPControl * control 		= rowControls->getJASPControl(variable);
+				BoundControl* boundControl 	= control ? control->boundControl() : nullptr;
+
 				if (boundControl)
 				{
 					QJSValue value;
-					bool addValue = true;
-					const Json::Value& jsonValue = boundControl->boundValue();
+					bool 				addValue  = true;
+					const Json::Value & jsonValue = boundControl->boundValue();
+
 					switch (jsonValue.type())
 					{
 					case Json::booleanValue:		value = jsonValue.asBool();			break;
@@ -568,8 +573,10 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 		}
 
 		QJSValue result = jsEngine->evaluate(condition);
+
 		if (result.isError())
 			listControl->addControlError("Error when evaluating : " + condition + ": " + result.toString());
+
 		else if (result.toBool())
 			filteredTerms.add(term);
 	}
@@ -594,21 +601,23 @@ QSet<QString> SourceItem::usedControls() const
 {
 	QSet<QString> result;
 
-	if (!_controlName.isEmpty()) result.insert(_controlName);
+	if (!_controlName.isEmpty()) 
+		result.insert(_controlName);
+		
 	if (_conditionVariables.length() > 0)
 	{
 		for (const ConditionVariable& conditionVariable : _conditionVariables)
-		{
 			if (!conditionVariable.controlName.isEmpty())
 				result.insert(conditionVariable.controlName);
-		}
 	}
 	else if (!_conditionExpression.isEmpty() && _listModel->getAllRowControls().size() > 0)
 	{
 		// Take the controls of the first row, and check whether the expression contains their names.
-		RowControls* rowControls = _listModel->getAllRowControls().begin().value();
-		for (const QString& controlName : rowControls->getJASPControlsMap().keys())
-			if (_conditionExpression.contains(controlName)) result.insert(controlName);
+		RowControls * rowControls = _listModel->getAllRowControls().begin().value();
+
+		for (const QString & controlName : rowControls->getJASPControlsMap().keys())
+			if (_conditionExpression.contains(controlName)) 
+				result.insert(controlName);
 	}
 
 	return result;

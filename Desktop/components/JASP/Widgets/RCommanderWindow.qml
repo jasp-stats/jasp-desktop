@@ -204,7 +204,7 @@ Window
 							width:					codeRect.width
 
 
-							placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is fully available as 'data' and filtered as 'filteredData'.") : qsTr("Enter your R code here.")
+							placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is available unfiltered as 'data'\nand filtered as 'filteredData'.\nYou can also paste syntax-mode JASP analyses here.") : qsTr("Enter your R code here.\n\nYou can also paste syntax-mode JASP analyses here.")
 							placeholderTextColor:	jaspTheme.grayDarker
 
 							Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}

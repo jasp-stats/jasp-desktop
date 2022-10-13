@@ -84,9 +84,9 @@ void BoundControlBase::setIsRCode(std::string key)
 	_isRCode.insert(key);
 }
 
-const Json::Value& BoundControlBase::boundValue() const
+const Json::Value & BoundControlBase::boundValue() const
 {
-	AnalysisForm* form = _control->form();
+	AnalysisForm * form = _control->form();
 
 	if (form)	return form->boundValue(getName(), _control->getParentKeys());
 	else		return Json::Value::null;
@@ -94,11 +94,12 @@ const Json::Value& BoundControlBase::boundValue() const
 
 void BoundControlBase::setIsColumn(bool isComputed, columnType type)
 {
-	_isColumn = true;
-	_isComputedColumn = isComputed;
-	_columnType = type;
+	_isColumn			= true;
+	_isComputedColumn	= isComputed;
+	_columnType			= type;
 
-	AnalysisForm* form = _control->form();
+	AnalysisForm * form = _control->form();
+	
 	if (form)	form->addColumnControl(_control, isComputed);
 }
 

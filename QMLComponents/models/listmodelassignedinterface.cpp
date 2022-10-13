@@ -100,29 +100,39 @@ bool ListModelAssignedInterface::sourceLabelsReordered(QString columnName)
 void ListModelAssignedInterface::sourceTermsReset()
 {
 	ListModelDraggable::sourceTermsReset();
-	if (!_rowComponent) return;
+
+	if (!_rowComponent) 
+		return;
 
 	// If row components exist and source changes, the default value must change.
 	// Each new term should give the default values for their row
 	// If the term already exists, then the default value for this row should not change.
 	BoundControl* boundControl = listView()->boundControl();
-	if (!boundControl) return;
+	if (!boundControl) 
+		return;
 
-	const Json::Value& defaultValue = boundControl->defaultBoundValue();
-	const Json::Value& newValue = boundControl->boundValue();
+	const Json::Value	& defaultValue 	= boundControl->defaultBoundValue(),
+						& newValue 		= boundControl->boundValue();
 
-	if (!newValue.isArray() || !defaultValue.isArray()) return; // should never happen..
+	if (!newValue.isArray() || !defaultValue.isArray()) 
+		return; // should never happen..
 
 	Json::Value newDefaultValue(Json::arrayValue);
 	std::string optionKey = fq(listView()->optionKey());
-	for (const Json::Value& rowValue : newValue)
+
+	for (const Json::Value & rowValue : newValue)
 	{
-		if (!rowValue.isObject()) continue; //should never happen
-		const Json::Value& key = rowValue[optionKey];
-		bool foundDefaultValue = false;
+		if (!rowValue.isObject()) 
+			continue; //should never happen
+
+		const Json::Value & 	key 				= rowValue[optionKey];
+		bool 					foundDefaultValue 	= false;
+
 		for (const Json::Value& defaultRowValue : defaultValue)
 		{
-			if (!defaultRowValue.isArray()) continue; //should never happen
+			if (!defaultRowValue.isArray()) 
+				continue; //should never happen
+				
 			if (defaultRowValue[optionKey] == key)
 			{
 				foundDefaultValue = true;
