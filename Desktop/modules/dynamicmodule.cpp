@@ -436,7 +436,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	}
 	setInstallLog("Installing module " + _name + ".\n");
 	
-	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + 
+	return "options(\"renv.config.install.verbose\" = FALSE);jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() +
 		"', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") +
 	 	", force=TRUE, cacheAble=FALSE, frameworkLibrary='"+fq(AppDirs::rHome())+"/library');";
 }
