@@ -58,7 +58,7 @@ void FactorLevelListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 }
 
-Json::Value FactorLevelListBase::createJson()
+Json::Value FactorLevelListBase::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 
@@ -78,7 +78,7 @@ Json::Value FactorLevelListBase::createJson()
 	return result;
 }
 
-Json::Value FactorLevelListBase::createMeta()
+Json::Value FactorLevelListBase::createMeta() const
 {
 	Json::Value meta(BoundControlBase::createMeta()); //Work from parent to get everything it defines
 	
@@ -99,7 +99,7 @@ Json::Value FactorLevelListBase::createMeta()
 	return meta;
 }
 
-bool FactorLevelListBase::isJsonValid(const Json::Value &value)
+bool FactorLevelListBase::isJsonValid(const Json::Value &value) const
 {
 	bool valid = value.isArray();
 

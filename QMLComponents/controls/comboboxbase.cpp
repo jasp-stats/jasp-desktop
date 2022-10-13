@@ -88,7 +88,7 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 }
 
-int ComboBoxBase::_getStartIndex()
+int ComboBoxBase::_getStartIndex() const
 {
 	if (!startValue().isEmpty())	return _model->getIndexOfValue(startValue());
 	if (currentIndex() != -1)		return currentIndex();
@@ -97,7 +97,7 @@ int ComboBoxBase::_getStartIndex()
 	return -1;
 }
 
-Json::Value ComboBoxBase::createJson()
+Json::Value ComboBoxBase::createJson() const
 {
 	std::vector<std::string> options = _model->getValues();
 	
@@ -111,7 +111,7 @@ Json::Value ComboBoxBase::createJson()
 	return selected;
 }
 
-bool ComboBoxBase::isJsonValid(const Json::Value &optionValue)
+bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
 	return optionValue.type() == Json::stringValue;
 }

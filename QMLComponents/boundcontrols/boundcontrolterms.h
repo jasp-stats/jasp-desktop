@@ -28,17 +28,21 @@ class BoundControlTerms : public BoundControlBase
 public:
 	BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow = false);
 	
-	bool		isJsonValid(const Json::Value& value)		override;
-	Json::Value	createJson()								override;
-	void		bindTo(const Json::Value &value)			override;
-	void		resetBoundValue()							override;
+	bool		isJsonValid(const Json::Value& value)		const	override;
+	Json::Value	createJson()								const	override;
+	void		bindTo(const Json::Value &value)					override;
+	void		resetBoundValue()									override;
 	
+	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
+	bool		areTermsInOption(const Json::Value& option,	Terms& terms)	const;
+
 private:
+	Terms		_getValuesFromOptions(const Json::Value& option)	const;
+
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;
 	bool							_isSingleRow			= false;
-	std::string						_optionKey,
-									_optionKeyFromFile;
+	std::string						_optionKey;
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

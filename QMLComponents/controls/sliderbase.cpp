@@ -28,12 +28,12 @@ SliderBase::SliderBase(QQuickItem* parent)
 	_controlType = ControlType::Slider;
 }
 
-bool SliderBase::isJsonValid(const Json::Value &value)
+bool SliderBase::isJsonValid(const Json::Value &value) const
 {
 	return value.isNumeric();
 }
 
-Json::Value SliderBase::createJson()
+Json::Value SliderBase::createJson() const
 {
 	return property("value").toDouble();
 }
@@ -46,6 +46,7 @@ void SliderBase::bindTo(const Json::Value &value)
 
 void SliderBase::setUp()
 {
+	JASPControl::setUp();
 	connect(this,	&SliderBase::moved, this,	&SliderBase::movedSlot);
 }
 

@@ -33,6 +33,7 @@
 class ListModelTermsAssigned;
 class JASPControl;
 class ExpanderButtonBase;
+class RSyntax;
 
 ///
 /// The backend for the `Form{}` used in all JASP's well, qml forms
@@ -45,21 +46,25 @@ class ExpanderButtonBase;
 class AnalysisForm : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY(QString		title				READ title				WRITE setTitle				NOTIFY titleChanged				)
-	Q_PROPERTY(QString		errors				READ errors											NOTIFY errorsChanged			)
-	Q_PROPERTY(QString		warnings			READ warnings										NOTIFY warningsChanged			)
-	Q_PROPERTY(bool			needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
-	Q_PROPERTY(bool			hasVolatileNotes	READ hasVolatileNotes								NOTIFY hasVolatileNotesChanged	)
-	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged		)
-	Q_PROPERTY(QString		info				READ info				WRITE setInfo				NOTIFY infoChanged				)
-	Q_PROPERTY(QString		helpMD				READ helpMD											NOTIFY helpMDChanged			)
-	Q_PROPERTY(QVariant		analysis			READ analysis										NOTIFY analysisChanged			)
+	Q_PROPERTY(QString		title					READ title					WRITE setTitle					NOTIFY titleChanged					)
+	Q_PROPERTY(QString		errors					READ errors													NOTIFY errorsChanged				)
+	Q_PROPERTY(QString		warnings				READ warnings												NOTIFY warningsChanged				)
+	Q_PROPERTY(bool			needsRefresh			READ needsRefresh											NOTIFY needsRefreshChanged			)
+	Q_PROPERTY(bool			hasVolatileNotes		READ hasVolatileNotes										NOTIFY hasVolatileNotesChanged		)
+	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
+	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
+	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
+	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
+	Q_PROPERTY(bool			showRSyntax				READ showRSyntax			WRITE setShowRSyntax			NOTIFY showRSyntaxChanged			)
+	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
+	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
 
 public:
 	explicit				AnalysisForm(QQuickItem * = nullptr);
 							~AnalysisForm();
 
-	void					bindTo();
+	void					bindTo(const Json::Value & defaultOptions);
 
 	void					runRScript(QString script, QString controlName, bool whiteListedVersion);
 
@@ -71,20 +76,28 @@ public:
 	bool					runOnChange()	{ return _runOnChange; }
 	void					setRunOnChange(bool change);
 	void					blockValueChangeSignal(bool block, bool notifyOnceUnblocked = true);
-	QString					title()							const	{ return _analysis ? tq(_analysis->title()) : "";		}
-	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;								}
-	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;	}
+	QString					title()							const	{ return _analysis ? tq(_analysis->title())		: "";		}
+	QString					name()							const	{ return _analysis ? tq(_analysis->name())		: "";		}
+	QString					module()						const	{ return _analysis ? tq(_analysis->module())	: "";		}
+	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;									}
+	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
 	bool					formCompleted()					const	{ return _formCompleted; }
+	bool					showRSyntax()					const	{ return _showRSyntax;	}
+	QString					rSyntaxText()					const	{ return _rSyntaxText;	}
 
 public slots:
-	void					runScriptRequestDone(const QString& result, const QString& requestId);
+	void					runScriptRequestDone(const QString& result, const QString& requestId, bool hasError);
 	void					setInfo(QString info);
 	void					setAnalysis(AnalysisBase * analysis);
 	void					boundValueChangedHandler(JASPControl* control);
+	void					setOptionNameConversion(const QVariantList& conv);
 	void					setTitle(QString title);
+	void					setShowRSyntax(bool showRSyntax);
+	void					setRSyntaxText();
+	void					sendRSyntax(QString text);
+	void					toggleRSyntax()		{ setShowRSyntax(!showRSyntax()); }
 
 signals:
-	void					sendRScript(QString script, int key);
 	void					formChanged(AnalysisBase* analysis);
 	void					formCompletedSignal();
 	void					refreshTableViewModels();
@@ -99,7 +112,10 @@ signals:
 	void					warningsChanged();
 	void					analysisChanged();
 	void					rSourceChanged(const QString& name);
+	void					optionNameConversionChanged();
 	void					titleChanged();
+	void					showRSyntaxChanged();
+	void					rSyntaxTextChanged();
 
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
@@ -117,36 +133,43 @@ public:
 	Q_INVOKABLE void		addFormWarning(const QString& message);
 	Q_INVOKABLE void		refreshAnalysis();
 	Q_INVOKABLE void		runAnalysis();
-	Q_INVOKABLE bool		initialized()	const	{ return _initialized; }
+	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
+	Q_INVOKABLE QString		generateWrapper()		const;
 
 	void			addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
 	void			clearControlError(JASPControl* control);
 	void			cleanUpForm();
 	bool			hasError();
+	QString			getError();
 
 	bool			isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->isOwnComputedColumn(col) : false; }
 
-	bool			needsRefresh()		const;
+	bool			needsRefresh()			const;
 
-	QString			info()				const	{ return _info; }
-	QString			helpMD()			const;
-	QString			metaHelpMD()		const;
-	QString			errors()			const	{ return msgsListToString(_formErrors);		}
-	QString			warnings()			const	{ return msgsListToString(_formWarnings);	}
-	QVariant		analysis()			const	{ return QVariant::fromValue(_analysis);	}
+	QString			info()					const	{ return _info; }
+	QString			helpMD()				const;
+	QString			metaHelpMD()			const;
+	QString			errors()				const	{ return msgsListToString(_formErrors);		}
+	QString			warnings()				const	{ return msgsListToString(_formWarnings);	}
+	QVariant		analysis()				const	{ return QVariant::fromValue(_analysis);	}
+	RSyntax*		rSyntax()				const	{ return _rSyntax;							}
+	QString			generateRSyntax()		const;
+	QVariantList	optionNameConversion()	const;
 
 	stringvecvec	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void			addColumnControl(JASPControl* control, bool isComputed);
 
+	const Json::Value& boundValues()		const { return _analysis ? _analysis->boundValues() : Json::Value::null; }
 	const Json::Value& boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys) { return _analysis ? _analysis->boundValue(name, parentKeys) : Json::Value::null; }
-	bool			setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	void			setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 	stringset		usedVariables();
 
 	void			sortControls(QList<JASPControl*>& controls);
+	QString			getSyntaxName(const QString& name)				const;
 	void			setHasVolatileNotes(bool hasVolatileNotes);
+	bool			parseOptions(Json::Value& options);
 
-protected:
-	QString			msgsListToString(const QStringList & list) const;
+	static const QString	rSyntaxControlName;
 
 private:
 
@@ -163,7 +186,7 @@ private:
 	void			setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
 	void			setAnalysisUp();
 	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
-
+	QString			msgsListToString(const QStringList & list) const;
 
 private slots:
 	   void			formCompletedHandler();
@@ -184,7 +207,6 @@ private:
 	std::set<std::string>							_mustBe;
 	std::map<std::string,std::set<std::string>>		_mustContain;
 
-private:
 	QStringList										_formErrors,
 													_formWarnings;
 	QQmlComponent*									_controlErrorMessageComponent	= nullptr;
@@ -197,6 +219,9 @@ private:
 	QString											_info;
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
+	RSyntax										*	_rSyntax						= nullptr;
+	bool											_showRSyntax					= false;
+	QString											_rSyntaxText;
 };
 
 #endif // ANALYSISFORM_H

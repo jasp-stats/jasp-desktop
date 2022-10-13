@@ -31,19 +31,23 @@ public:
 	virtual void preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual QString helpFile()														{ return "";				}
 	virtual stringvec upgradeMsgsForOption(std::string name)						{ return {""};				}
-	virtual const Json::Value & boundValues()								const	{ return Json::Value::null;	}
 	virtual const Json::Value & optionsFromJASPFile()						const	{ return Json::Value::null;	}
 	virtual const Json::Value & resultsMeta()								const 	{ return Json::Value::null;	}
 	virtual const Json::Value & getRSource(const std::string& name)			const 	{ return Json::Value::null;	}
 	virtual void initialized(AnalysisForm* form, bool isNewAnalysis)				{}
-	virtual const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {}) { return Json::Value::null; }
-	virtual bool setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys) { return false; }
 	virtual std::string	qmlFormPath(bool addFileProtocol = true, bool ignoreReadyForUse = false)	const;
 
 	virtual Q_INVOKABLE	QString	helpFile()									const	{ return ""; }
 	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem = nullptr);
 	virtual				void	destroyForm();
 
+	const Json::Value&	boundValues()										const	{ return _boundValues;		}
+	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
+
+	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	void				setBoundValues(const Json::Value& boundValues);
+	const	Json::Value	optionsMeta()										const	{ return _boundValues.get(".meta", Json::nullValue);	}
+	void				clearOptions()												{ _boundValues.clear();		}
 
 
 	QQuickItem *	formItem()												const;
@@ -62,12 +66,19 @@ signals:
 	void			sendRScript(QString script, QString controlName, bool whiteListedVersion);
 	void			formItemChanged();
 	void			qmlErrorChanged();
-
+	void			boundValuesChanged();
 
 
 protected:
+	Json::Value&	_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string>& parentNames, bool & found, bool createAnyway = false);
+
+
 	AnalysisForm*	_analysisForm		= nullptr;
 	QString			_qmlError;
+
+private:
+	Json::Value		_boundValues		= Json::objectValue;
+
 
 
 private:

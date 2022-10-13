@@ -47,12 +47,12 @@ void BoundControlMultiTerms::bindTo(const Json::Value& value)
 	_listModel->initTerms(values);
 }
 
-Json::Value BoundControlMultiTerms::createJson()
+Json::Value BoundControlMultiTerms::createJson() const
 {
 	return Json::Value(Json::arrayValue);
 }
 
-bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue)
+bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue) const
 {
 	return optionValue.type() == Json::arrayValue;
 }

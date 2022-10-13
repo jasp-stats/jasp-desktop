@@ -354,12 +354,33 @@ DropArea
 					anchors
 					{
 						top:			parent.top
+						right:			rSyntaxButton.left
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
+					}
+				}
+
+				MenuButton
+				{
+					id:					rSyntaxButton
+					width:				height
+					iconSource:			jaspTheme.iconPath + "/R.png"
+					enabled:			expanderButton.expanded
+					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
+					toolTip:			qsTr("Show R Syntax")
+					radius:				height
+					opacity:			editButton.opacity
+					anchors
+					{
+						top:			parent.top
 						right:			helpButton.left
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
 					}
 				}
+
 
 				MenuButton
 				{

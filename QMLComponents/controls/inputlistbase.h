@@ -30,18 +30,18 @@ class InputListBase : public JASPListControl, public BoundControlBase
 public:
 	InputListBase(QQuickItem* parent = nullptr);
 
-	bool			isJsonValid(const Json::Value& optionValue)	override;
-	Json::Value		createJson()								override;
-	void			bindTo(const Json::Value& value)			override;
-	ListModel*		model()								const	override { return _inputModel; }
-	void			setUpModel()								override;
+	bool			isJsonValid(const Json::Value& optionValue)	const	override;
+	Json::Value		createJson()								const	override;
+	void			bindTo(const Json::Value& value)					override;
+	ListModel*		model()										const	override { return _inputModel; }
+	void			setUpModel()										override;
 
 signals:
 	void			itemChanged(int index, QString name);
 	void			itemRemoved(int index);
 
 protected slots:
-	void			termsChangedHandler()						override;
+	void			termsChangedHandler()								override;
 
 private:
 	ListModelInputValue*		_inputModel			= nullptr;

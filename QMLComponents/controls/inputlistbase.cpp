@@ -66,7 +66,7 @@ void InputListBase::bindTo(const Json::Value& value)
 	_inputModel->initTerms(terms, allControlValues);
 }
 
-Json::Value InputListBase::createJson()
+Json::Value InputListBase::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 	std::string keyName = fq(_optionKey);
@@ -91,7 +91,7 @@ Json::Value InputListBase::createJson()
 	return result;
 }
 
-bool InputListBase::isJsonValid(const Json::Value &value)
+bool InputListBase::isJsonValid(const Json::Value &value) const
 {
 	bool valid = value.isArray();
 
@@ -111,13 +111,11 @@ bool InputListBase::isJsonValid(const Json::Value &value)
 
 void InputListBase::termsChangedHandler()
 {
-	const Terms& terms = _inputModel->terms();
-	const QMap<QString, RowControls*>& allControls = _inputModel->getAllRowControls();
-
 	if (hasRowComponent())
-		_setTableValue(terms, allControls, fq(_optionKey), containsInteractions());
+		_setTableValue(_inputModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 	else
 	{
+		const Terms& terms = _inputModel->terms();
 		Json::Value boundValue(Json::arrayValue);
 		for (const Term& term : terms)
 			boundValue.append(term.asString());

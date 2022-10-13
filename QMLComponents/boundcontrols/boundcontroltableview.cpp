@@ -25,12 +25,12 @@ BoundControlTableView::BoundControlTableView(TableViewBase* tableView)
 {
 }
 
-bool BoundControlTableView::isJsonValid(const Json::Value &value)
+bool BoundControlTableView::isJsonValid(const Json::Value &value) const
 {
 	return value.isArray();
 }
 
-Json::Value BoundControlTableView::createJson()
+Json::Value BoundControlTableView::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 
@@ -127,7 +127,7 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 	}
 }
 
-Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex)
+Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) const
 {
 	Json::Value result;
 	QVariant defaultValue = _tableView->defaultValue(colIndex, rowIndex);

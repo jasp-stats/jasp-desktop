@@ -30,13 +30,13 @@ class BoundControlMeasuresCells : public BoundControlBase
 public:
 	BoundControlMeasuresCells(ListModelMeasuresCellsAssigned* model);
 	
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	Json::Value	createJson()								override;
-	void		bindTo(const Json::Value &value)			override;
-	void		resetBoundValue()							override;
+	bool		isJsonValid(const Json::Value& optionValue) const	override;
+	Json::Value	createJson()								const	override;
+	void		bindTo(const Json::Value &value)					override;
+	void		resetBoundValue()									override;
 
 	void		addFactorModel(ListModelFactorLevels* factorModel);
-	Terms		getLevels();
+	Terms		getLevels()									const;
 	
 private:
 	ListModelMeasuresCellsAssigned*	_measuresCellsModel;

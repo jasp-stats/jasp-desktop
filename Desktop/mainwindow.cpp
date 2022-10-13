@@ -82,7 +82,7 @@
 #include "utilities/qmlutils.h"
 
 #include "widgets/filemenu/filemenu.h"
-
+#include "rsyntax/formulabase.h"
 
 
 using namespace std;
@@ -175,6 +175,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"						);
+	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
 
 
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");

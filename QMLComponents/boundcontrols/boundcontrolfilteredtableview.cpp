@@ -25,7 +25,7 @@ BoundControlFilteredTableView::BoundControlFilteredTableView(TableViewBase* tabl
 {
 }
 
-Json::Value BoundControlFilteredTableView::createJson()
+Json::Value BoundControlFilteredTableView::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 	Json::Value row(Json::objectValue);

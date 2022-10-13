@@ -30,9 +30,9 @@ public:
 
 	BoundControlTextArea(TextAreaBase* textArea);
 
-	bool					isJsonValid(const Json::Value& optionValue) override;
-	Json::Value				createJson()								override;
-	void					bindTo(const Json::Value& value)			override;
+	bool					isJsonValid(const Json::Value& optionValue) const	override;
+	Json::Value				createJson()								const	override;
+	void					bindTo(const Json::Value& value)					override;
 
 	virtual	void			checkSyntax();
 	virtual QString			rScriptDoneHandler(const QString &result)	{ throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler!\nResult was: " + result.toStdString()); };

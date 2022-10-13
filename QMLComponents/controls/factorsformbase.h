@@ -35,8 +35,8 @@ class FactorsFormBase :  public JASPListControl, public BoundControlBase
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
 
-	bool			isJsonValid(const Json::Value& optionValue)			override;
-	Json::Value		createJson()										override;
+	bool			isJsonValid(const Json::Value& optionValue)	const	override;
+	Json::Value		createJson()								const	override;
 	void			bindTo(const Json::Value& value)					override;
 	ListModel*		model()										const	override	{ return _factorsModel; }
 	void			setUpModel()										override;

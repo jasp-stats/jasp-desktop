@@ -26,9 +26,8 @@
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView, int maxRows)
+ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView)
 	: ListModelAssignedInterface(listView)
-	, _maxRows(maxRows)
 {
 }
 
@@ -65,7 +64,7 @@ void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms 
 
 Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 {
-	if (_maxRows >= 0 && int(terms.size()) > _maxRows)
+	if (listView()->maxRows() >= 0 && int(terms.size()) > listView()->maxRows())
 		return Terms();
 
 	return ListModelDraggable::canAddTerms(terms);
@@ -75,14 +74,15 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 {
 	Terms termsToSendBack;
 	Terms newTerms = terms();
-	if (dropItemIndex < 0 && _maxRows == 1)
+	size_t maxRows = size_t(listView()->maxRows());
+
+	if (dropItemIndex < 0 && maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
 	if (dropItemIndex >= 0 && dropItemIndex < rowCount())
 		newTerms.insert(dropItemIndex, termsToAdd);
 	else
 		newTerms.add(termsToAdd);
 
-	size_t maxRows = size_t(_maxRows);
 	if (newTerms.size() > maxRows)
 	{
 		for (size_t i = maxRows; i < newTerms.size(); i++)

@@ -43,6 +43,7 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QVariant		rSource					READ rSource				WRITE setRSource				NOTIFY sourceChanged				)
 	Q_PROPERTY( QVariant		values					READ values					WRITE setValues					NOTIFY sourceChanged				)
 	Q_PROPERTY( int				count					READ count													NOTIFY countChanged					)
+	Q_PROPERTY( int				maxRows					READ maxRows				WRITE setMaxRows				NOTIFY maxRowsChanged				)
 	Q_PROPERTY( QString			optionKey				READ optionKey				WRITE setOptionKey													)
 	Q_PROPERTY( bool			addEmptyValue			READ addEmptyValue			WRITE setAddEmptyValue			NOTIFY addEmptyValueChanged			)
 	Q_PROPERTY( QString			placeholderText			READ placeholderText		WRITE setPlaceHolderText		NOTIFY placeHolderTextChanged		)
@@ -51,6 +52,7 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( bool			containsVariables		READ containsVariables										NOTIFY containsVariablesChanged		)
 	Q_PROPERTY( bool			containsInteractions	READ containsInteractions									NOTIFY containsInteractionsChanged	)
 	Q_PROPERTY( double			maxTermsWidth			READ maxTermsWidth											NOTIFY maxTermsWidthChanged			)
+	Q_PROPERTY( QQmlComponent*	rowComponent			READ rowComponent			WRITE setRowComponent			NOTIFY rowComponentChanged			)
 
 
 public:
@@ -83,7 +85,9 @@ public:
 			const QVariant&		source()					const			{ return _source;				}
 			const QVariant&		values()					const			{ return _values;				}
 			const QVariant&		rSource()					const			{ return _rSource;				}
+			QQmlComponent*		rowComponent()				const			{ return _rowComponent;			}
 			int					count();
+			int					maxRows()					const			{ return _maxRows;				}
 			bool				addEmptyValue()				const			{ return _addEmptyValue;		}
 			const QString&		placeholderText()			const			{ return _placeHolderText;		}
 			const QString&		labelRole()					const			{ return _labelRole;			}
@@ -100,6 +104,7 @@ signals:
 			void				modelChanged();
 			void				sourceChanged();
 			void				countChanged();
+			void				maxRowsChanged();
 			void				addEmptyValueChanged();
 			void				placeHolderTextChanged();
 			void				labelRoleChanged();
@@ -107,6 +112,7 @@ signals:
 			void				containsVariablesChanged();
 			void				containsInteractionsChanged();
 			void				maxTermsWidthChanged();
+			void				rowComponentChanged();
 
 public slots:
 			void				setContainsVariables();
@@ -118,13 +124,15 @@ protected slots:
 
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
-			GENERIC_SET_FUNCTION(Source,				_source,				sourceChanged,					QVariant	)
-			GENERIC_SET_FUNCTION(RSource,				_rSource,				sourceChanged,					QVariant	)
-			GENERIC_SET_FUNCTION(Values,				_values,				sourceChanged,					QVariant	)
-			GENERIC_SET_FUNCTION(AddEmptyValue,			_addEmptyValue,			addEmptyValueChanged,			bool		)
-			GENERIC_SET_FUNCTION(PlaceHolderText,		_placeHolderText,		placeHolderTextChanged,			QString		)
-			GENERIC_SET_FUNCTION(LabelRole,				_labelRole,				labelRoleChanged,				QString		)
-			GENERIC_SET_FUNCTION(ValueRole,				_valueRole,				valueRoleChanged,				QString		)
+			GENERIC_SET_FUNCTION(Source,				_source,				sourceChanged,					QVariant		)
+			GENERIC_SET_FUNCTION(RSource,				_rSource,				sourceChanged,					QVariant		)
+			GENERIC_SET_FUNCTION(Values,				_values,				sourceChanged,					QVariant		)
+			GENERIC_SET_FUNCTION(AddEmptyValue,			_addEmptyValue,			addEmptyValueChanged,			bool			)
+			GENERIC_SET_FUNCTION(PlaceHolderText,		_placeHolderText,		placeHolderTextChanged,			QString			)
+			GENERIC_SET_FUNCTION(LabelRole,				_labelRole,				labelRoleChanged,				QString			)
+			GENERIC_SET_FUNCTION(ValueRole,				_valueRole,				valueRoleChanged,				QString			)
+			GENERIC_SET_FUNCTION(RowComponent,			_rowComponent,			rowComponentChanged,			QQmlComponent*	)
+			GENERIC_SET_FUNCTION(MaxRows,				_maxRows,				maxRows,						int				)
 
 protected:
 	QVector<SourceItem*>	_sourceItems;
@@ -138,13 +146,15 @@ protected:
 							_containsInteractions	= false,
 							_termsAreInteractions	= false,
 							_useSourceLevels		= false;
+	int						_maxRows				= -1;
 	QString					_placeHolderText		= tr("<no choice>"),
 							_labelRole				= "label",
 							_valueRole				= "value";
+	QQmlComponent		*	_rowComponent			= nullptr;
 
 private:
-	void									_setupSources();
-	Terms									_getCombinedTerms(SourceItem* sourceToCombine);
+	void					_setupSources();
+	Terms					_getCombinedTerms(SourceItem* sourceToCombine);
 };
 
 #endif // JASPLISTCONTROL_H

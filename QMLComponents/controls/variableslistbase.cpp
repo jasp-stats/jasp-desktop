@@ -137,10 +137,8 @@ void VariablesListBase::setUpModel()
 		}
 		else
 		{
-			int maxRows		= property("maxRows").toInt();
-
-			termsModel		= new ListModelTermsAssigned(this, maxRows);
-			_boundControl	= new BoundControlTerms(termsModel, maxRows == 1);
+			termsModel		= new ListModelTermsAssigned(this);
+			_boundControl	= new BoundControlTerms(termsModel, _maxRows == 1);
 			_draggableModel = termsModel;
 		}
 		break;

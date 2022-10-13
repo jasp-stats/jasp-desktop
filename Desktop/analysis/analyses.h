@@ -102,6 +102,7 @@ public:
 	Json::Value				resultsMeta()												const			{ return _resultsMeta;			}
 	Json::Value				allUserData()												const			{ return _allUserData;			}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
+	Analysis*				createAnalysis(const QString& module, const QString& analysis);
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -114,7 +115,7 @@ public slots:
 	void analysesUnselectedInResults();
 	void selectAnalysisAtRow(int row);
 	void unselectAnalysis();
-	void rCodeReturned(QString result, int requestId);
+	void rCodeReturned(QString result, int requestId, bool hasError);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
 	void setMoving(bool moving);

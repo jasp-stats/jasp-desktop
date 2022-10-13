@@ -28,9 +28,10 @@ public:
 
 public slots:
 	bool runCode(			const QString & code);
+	bool addAnalysis(		const QString & code);
 	void setOutput(			const QString & output);
-	void rCodeReturned(		const QString & result, int requestId);
-	void rCodeReturnedLog(	const QString & log);
+	void rCodeReturned(		const QString & result, int requestId, bool hasError);
+	void rCodeReturnedLog(	const QString & log, bool hasError);
 	void clearOutput()														{ setOutput(""); }
 	void appendToOutput(const QString & toAppend, QString separator = "\n") { setOutput(output() + separator + toAppend); }
 	void setRunning(bool running);

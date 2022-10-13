@@ -59,7 +59,7 @@ AnalysisForm
 	{
 		id:				formContent
 		width:			parent.width
-		height:			oldFileMessagesBox.height + errorMessagesBox.height + warningMessagesBox.height + contentArea.implicitHeight
+		height:			oldFileMessagesBox.height + errorMessagesBox.height + warningMessagesBox.height + rSyntaxElement.height + contentArea.implicitHeight
 		anchors
 		{
 			top:		form.top
@@ -169,11 +169,62 @@ AnalysisForm
 			CrossButton { onCrossClicked: form.clearFormWarnings(); warning: true; }
 		}
 
+		Item
+		{
+			id:					rSyntaxElement
+			anchors.top:		warningMessagesBox.bottom
+			width:				parent.width
+			height:				visible ? rScriptArea.y + rScriptArea.height : 0
+			visible:			form.showRSyntax
+
+			Button
+			{
+				id:					generateWrapperButton
+				label:				"Generate Wrapper"
+				onClicked:			popup.open()
+
+				Popup
+				{
+					id: popup
+
+					parent:				Overlay.overlay
+					anchors.centerIn:	parent
+
+					width:	400  * jaspTheme.uiScale
+					height: 600  * jaspTheme.uiScale
+
+					modal:	true
+
+					TextArea
+					{
+						anchors.fill:				parent
+						isBound:					false
+						applyScriptInfo:			""
+						control.readOnly:			true
+						control.selectByKeyboard:	true
+						onVisibleChanged:			if (visible) 	text = form.generateWrapper()
+					}
+				}
+			}
+			TextArea
+			{
+				id:					rScriptArea
+				name:				form.rSyntaxControlName
+				anchors.top:		generateWrapperButton.bottom
+				anchors.topMargin:	jaspTheme.generalAnchorMargin
+				width:				parent.width
+				height:				visible ? 100 * preferencesModel.uiScale : 0
+				text:				form.rSyntaxText
+				isBound:			false
+				onApplyRequest:		form.sendRSyntax(text)
+			}
+		}
+
 		GridLayout
 		{
 			id:					contentArea
-			anchors.top:		warningMessagesBox.bottom
-			anchors.margins:	warningMessagesBox.visible || errorMessagesBox.visible ? jaspTheme.generalAnchorMargin : 0
+			anchors.top:		rSyntaxElement.bottom
+			anchors.margins:	warningMessagesBox.visible || errorMessagesBox.visible || rSyntaxElement.visible ? jaspTheme.generalAnchorMargin : 0
 			width:				form.implicitWidth
 		}
 	}

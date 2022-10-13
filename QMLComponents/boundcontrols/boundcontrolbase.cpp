@@ -29,7 +29,7 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 
 
 //To do: define these fields (isRCode, shouldEncode, etc) somewhere centrally through an enum or something
-Json::Value BoundControlBase::createMeta() 
+Json::Value BoundControlBase::createMeta()  const
 { 
 	Json::Value meta(Json::objectValue);
 	
@@ -84,9 +84,9 @@ void BoundControlBase::setIsRCode(std::string key)
 	_isRCode.insert(key);
 }
 
-const Json::Value &BoundControlBase::boundValue()
+const Json::Value & BoundControlBase::boundValue() const
 {
-	AnalysisForm* form = _control->form();
+	AnalysisForm * form = _control->form();
 
 	if (form)	return form->boundValue(getName(), _control->getParentKeys());
 	else		return Json::Value::null;
@@ -94,21 +94,19 @@ const Json::Value &BoundControlBase::boundValue()
 
 void BoundControlBase::setIsColumn(bool isComputed, columnType type)
 {
-	_isColumn = true;
-	_isComputedColumn = isComputed;
-	_columnType = type;
+	_isColumn			= true;
+	_isComputedColumn	= isComputed;
+	_columnType			= type;
 
-	AnalysisForm* form = _control->form();
+	AnalysisForm * form = _control->form();
+	
 	if (form)	form->addColumnControl(_control, isComputed);
 }
 
 
-const std::string &BoundControlBase::getName()
+std::string BoundControlBase::getName() const
 {
-	if (_name.empty())
-		_name = _control->name().toStdString();
-
-	return _name;
+	return fq(_control->name());
 }
 
 void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues)
@@ -126,7 +124,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 				terms.add(Term(term));
 			}
 			else
-				Log::log() << "Key (" << key << ") bind value is not an array in " << _name << ": " << value.toStyledString() << std::endl;
+				Log::log() << "Key (" << key << ") bind value is not an array in " << getName() << ": " << value.toStyledString() << std::endl;
 		}
 		else
 		{
@@ -136,7 +134,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 				terms.add(Term(term));
 			}
 			else
-				Log::log() << "Key (" << key << ") bind value is not a string in " << _name << ": " << value.toStyledString() << std::endl;
+				Log::log() << "Key (" << key << ") bind value is not a string in " << getName() << ": " << value.toStyledString() << std::endl;
 		}
 
 		QMap<QString, Json::Value> controlMap;
@@ -151,11 +149,16 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 	}
 }
 
-void BoundControlBase::_setTableValue(const Terms& terms, const QMap<QString, RowControls*>& allControls, const std::string& key, bool hasMultipleTerms)
+Json::Value BoundControlBase::_getTableValueOption(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms)
 {
-	Json::Value boundValue(Json::arrayValue);
-	for (const Term& term : terms)
+	Json::Value result(Json::arrayValue);
+	ListModel::RowControlsValuesIterator it(termsWithComponentValues);
+	while (it.hasNext())
 	{
+		it.next();
+		Term term = Term::readTerm(it.key());
+		QMap<QString, Json::Value> componentValues = it.value();
+
 		Json::Value rowValues(Json::objectValue);
 		if (hasMultipleTerms)
 		{
@@ -170,27 +173,20 @@ void BoundControlBase::_setTableValue(const Terms& terms, const QMap<QString, Ro
 			rowValues[key] = keyValue;
 		}
 
-		RowControls* rowControls = allControls.value(term.asQString());
-		if (rowControls)
+		QMapIterator<QString, Json::Value> it2(componentValues);
+		while (it2.hasNext())
 		{
-			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
-			QMapIterator<QString, JASPControl*> it(controlsMap);
-			while (it.hasNext())
-			{
-				it.next();
-				JASPControl* control = it.value();
-				BoundControl* boundControl = control->boundControl();
-				if (boundControl)
-				{
-					const QString& name = it.key();
-					const Json::Value& value = boundControl->boundValue();
-					rowValues[fq(name)] = value;
-				}
-			}
+			it2.next();
+			rowValues[fq(it2.key())] = it2.value();
 		}
-		boundValue.append(rowValues);
+		result.append(rowValues);
 	}
 
-	setBoundValue(boundValue);
+	return result;
+}
+
+void BoundControlBase::_setTableValue(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms)
+{
+	setBoundValue(_getTableValueOption(termsWithComponentValues, key, hasMultipleTerms));
 }
 

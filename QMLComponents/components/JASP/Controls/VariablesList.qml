@@ -31,6 +31,7 @@ VariablesListBase
 	shouldStealHover		: false
 	innerControl			: itemGridView
 	optionKey				: listViewType === JASP.Interaction ? "components" : "variable"
+	maxRows					: singleVariable ? 1 : -1
 
 	property alias	label							: variablesList.title
 	property alias	itemGridView					: itemGridView
@@ -46,7 +47,6 @@ VariablesListBase
 	property var	sortMenuModel					: null
 	property bool	showSortMenu					: true
 	property bool	singleVariable					: false
-	property int	maxRows							: (singleVariable ? 1 : -1)
 	property bool	dropModeInsert					: dropMode === JASP.DropInsert
 	property bool	dropModeReplace					: dropMode === JASP.DropReplace
 	property bool	showElementBorder				: false

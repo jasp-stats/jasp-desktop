@@ -146,8 +146,8 @@ signals:
 	void			processNewFilterResult(			const std::vector<bool> & filterResult, int requestId);
 	void			computeColumnErrorTextChanged(	const QString & error);
 
-	void			rCodeReturned(					const QString & result, int requestId	);
-	void			rCodeReturnedLog(				const QString & log						);
+	void			rCodeReturned(					const QString & result, int requestId, bool hasError	);
+	void			rCodeReturnedLog(				const QString & log, bool hasError						);
 
 	void			computeColumnSucceeded(			const QString & columnName, const QString & warning, bool dataChanged);
 	void			computeColumnFailed(			const QString & columnName, const QString & error);

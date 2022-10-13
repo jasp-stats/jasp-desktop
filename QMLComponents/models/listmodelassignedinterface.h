@@ -28,16 +28,18 @@ class ListModelAssignedInterface : public ListModelDraggable
 public:
 	ListModelAssignedInterface(JASPListControl* listView);
 	
-	void							refresh()													override;
+	void							refresh()														override;
 
 	virtual void					setAvailableModel(ListModelAvailableInterface *availableModel);
-	ListModelAvailableInterface*	availableModel() const										{ return _availableModel; }
+	ListModelAvailableInterface*	availableModel() const													{ return _availableModel; }
 	
 public slots:
 	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
 			int  sourceColumnTypeChanged(QString name)												override;
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)		override;
 			bool sourceLabelsReordered(QString columnName)											override;
+			void sourceTermsReset()																	override;
+
 protected:
 	ListModelAvailableInterface*			_availableModel;
 };

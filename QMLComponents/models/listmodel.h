@@ -31,11 +31,11 @@ class JASPListControl;
 class RowControls;
 class JASPControl;
 class BoundControl;
+class SourceItem;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
 	Q_OBJECT
-	typedef QMap<QString, RowControls*> rowControlMap;
 
 public:
 	enum ListModelRoles
@@ -52,7 +52,9 @@ public:
 		VirtualRole,
 		DeletableRole
     };
-	typedef QMap<QString, QMap<QString, Json::Value> > RowControlsValues;
+	typedef QMap<QString, RowControls*>							RowControlMap;
+	typedef QMap<QString, QMap<QString, Json::Value> >			RowControlsValues;
+	typedef QMapIterator<QString, QMap<QString, Json::Value> >	RowControlsValuesIterator;
 
 	ListModel(JASPListControl* listView);
 	
@@ -78,7 +80,8 @@ public:
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
-	const rowControlMap	&			getAllRowControls()											const		{ return _rowControlsMap;				}
+	const RowControlMap	&			getAllRowControls()											const		{ return _rowControlsMap;				}
+	RowControlsValues				getTermsWithComponentValues()								const;
 	RowControls*					getRowControls(const QString& key)							const		{ return _rowControlsMap.value(key);	}
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
@@ -138,8 +141,8 @@ protected:
 
 private:
 			void	_addSelectedItemType(int _index);
-			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool setupRowConnections = true);
-			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
+			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool initRowControls = true);
+			void	_connectSourceControls(SourceItem* sourceItem);
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;

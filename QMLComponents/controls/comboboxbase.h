@@ -39,21 +39,20 @@ public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
 
 	void				bindTo(const Json::Value& value)			override;
-	bool				isJsonValid(const Json::Value& optionValue) override;
-	Json::Value			createJson()								override;
-	void				setUp()										override;
-	ListModel*			model()								const	override	{ return _model;				}
-	void				setUpModel()								override;
+	bool				isJsonValid(const Json::Value& optionValue) const	override;
+	Json::Value			createJson()								const	override;
+	void				setUp()												override;
+	ListModel*			model()										const	override	{ return _model;				}
+	void				setUpModel()										override;
 
-	const QString&		currentText()						const				{ return _currentText;			}
-	const QString&		currentValue()						const				{ return _currentValue;			}
-	const QString&		startValue()						const				{ return _startValue;			}
-	const QString&		currentColumnType()					const				{ return _currentColumnType;	}
-	const QString&		currentColumnTypeIcon()				const				{ return _currentColumnTypeIcon;}
-	int					currentIndex()						const				{ return _currentIndex;			}
+	const QString&		currentText()								const				{ return _currentText;			}
+	const QString&		currentValue()								const				{ return _currentValue;			}
+	const QString&		startValue()								const				{ return _startValue;			}
+	const QString&		currentColumnType()							const				{ return _currentColumnType;	}
+	const QString&		currentColumnTypeIcon()						const				{ return _currentColumnTypeIcon;}
+	int					currentIndex()								const				{ return _currentIndex;			}
 
-	std::vector<std::string> usedVariables()				const	override;
-	
+	std::vector<std::string> usedVariables()						const	override;
 signals:
 	void currentTextChanged();
 	void currentValueChanged();
@@ -81,7 +80,7 @@ protected:
 								_currentColumnTypeIcon;
 	int							_currentIndex			= -1;
 
-	int	 _getStartIndex();
+	int	 _getStartIndex() const;
 	void _resetItemWidth();
 	void _setCurrentProperties(int index, bool bindValue = true);
 

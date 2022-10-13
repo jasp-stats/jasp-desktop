@@ -26,7 +26,7 @@ class BoundControlFilteredTableView : public BoundControlTableView
 public:
 	BoundControlFilteredTableView(TableViewBase* tableView);
 
-	Json::Value		createJson()																				override;
+	Json::Value		createJson()																		const	override;
 
 	void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms)	override;
 	void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)	override;

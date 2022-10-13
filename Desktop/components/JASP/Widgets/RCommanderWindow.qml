@@ -29,11 +29,11 @@ Window
 	title:				qsTr("R in JASP")
 	visible:			true
 	width:				600 * preferencesModel.uiScale
-	height:				300 * preferencesModel.uiScale
+	height:				330 * preferencesModel.uiScale
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 
-	minimumWidth:		300 * preferencesModel.uiScale
+	minimumWidth:		330 * preferencesModel.uiScale
 	minimumHeight:		200 * preferencesModel.uiScale
 
 	function toggleFullScreen()
@@ -158,7 +158,7 @@ Window
 		Item
 		{
 		    id:		codeEntryContainer
-			height: 100 * preferencesModel.uiScale;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
+			height: 130 * preferencesModel.uiScale;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
 			anchors
 			{
 			    left:	parent.left
@@ -204,7 +204,7 @@ Window
 							width:					codeRect.width
 
 
-							placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is fully available as 'data' and filtered as 'filteredData'.") : qsTr("Enter your R code here.")
+							placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is available unfiltered as 'data'\nand filtered as 'filteredData'.\nYou can also paste syntax-mode JASP analyses here.") : qsTr("Enter your R code here.\n\nYou can also paste syntax-mode JASP analyses here.")
 							placeholderTextColor:	jaspTheme.grayDarker
 
 							Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
@@ -257,6 +257,7 @@ Window
 				text:			qsTr("Run Code")
 				onClicked:		runCode();
 				width:			clearOutput.width
+				height:			(codeRect.height - 2 * jaspTheme.generalAnchorMargin) / 3
 				enabled:		codeEntry.text != "" && !rCmd.running
 
 				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
@@ -267,9 +268,7 @@ Window
 				{
 					top:			parent.top
 					right:			parent.right
-					bottom:			parent.verticalCenter
 					margins:		jaspTheme.generalAnchorMargin
-					bottomMargin:	jaspTheme.generalAnchorMargin * 0.5
 				}
 
 				Rectangle
@@ -293,18 +292,36 @@ Window
 
 			JC.RoundedButton
 			{
+				id:			addAnalysisItem
+				text:		qsTr("Add analysis")
+				onClicked:	addAnalysis()
+				width:		clearOutput.width
+				height:		runButton.height
+				enabled:	codeEntry.text != "" && !rCmd.running
+
+				anchors
+				{
+					top:		runButton.bottom
+					right:		parent.right
+					margins:	jaspTheme.generalAnchorMargin
+				}
+
+				function addAnalysis() { if(addAnalysisItem.enabled && rCmd.addAnalysis(codeEntry.text)) codeEntry.text = ""; }
+			}
+
+			JC.RoundedButton
+			{
 				id:			clearOutput
 				text:		qsTr("Clear Output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
 				width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
+				height:		runButton.height
 
 				anchors
 				{
-					top:		parent.verticalCenter
+					top:		addAnalysisItem.bottom
 					right:		parent.right
-					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
-					topMargin:	jaspTheme.generalAnchorMargin * 0.5
 				}
 			}
 		}

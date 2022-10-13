@@ -24,7 +24,7 @@ BoundControlGridTableView::BoundControlGridTableView(TableViewBase* tableView)
 {
 }
 
-Json::Value BoundControlGridTableView::createJson()
+Json::Value BoundControlGridTableView::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 

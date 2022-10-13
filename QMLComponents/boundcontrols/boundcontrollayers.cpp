@@ -55,12 +55,12 @@ void BoundControlLayers::bindTo(const Json::Value &value)
 
 }
 
-Json::Value BoundControlLayers::createJson()
+Json::Value BoundControlLayers::createJson() const
 {	
 	return Json::Value(Json::arrayValue);
 }
 
-bool BoundControlLayers::isJsonValid(const Json::Value &optionValue)
+bool BoundControlLayers::isJsonValid(const Json::Value &optionValue) const
 {
 	bool valid = optionValue.type() == Json::arrayValue;
 	if (valid)

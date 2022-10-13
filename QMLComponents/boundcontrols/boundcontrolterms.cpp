@@ -41,14 +41,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	ListModel::RowControlsValues allControlValues;
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-	{
-		if (_optionKey != _optionKeyFromFile)
-		{
-			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replaced
-			// TODO: value[_optionKey] = value[_optionKeyFromFile];
-		}
 		_readTableValue(value, _optionKey, _listView->containsInteractions(), terms, allControlValues);
-	}
 	else
 	{
 		if (value.isArray())
@@ -69,17 +62,65 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	_termsModel->initTerms(terms, allControlValues);
 }
 
-Json::Value BoundControlTerms::createJson()
+Json::Value BoundControlTerms::createJson() const
 {
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		return Json::Value(Json::arrayValue);
+	const Terms& terms = _termsModel->terms();
+
+	if (_listView->containsInteractions() || _listView->hasRowComponent())
+	{
+		Json::Value jsonValue(Json::arrayValue);
+		for (const Term& term : terms)
+		{
+			Json::Value row(Json::objectValue);
+			if (_listView->containsInteractions())
+			{
+				Json::Value keyValue(Json::arrayValue);
+				for (const std::string& comp : term.scomponents())
+					keyValue.append(comp);
+				row[_optionKey] = keyValue;
+			}
+			else
+			{
+				Json::Value keyValue(term.asString());
+				row[_optionKey] = keyValue;
+			}
+
+			if (_listView->hasRowComponent())
+			{
+				auto allRowControls = _termsModel->getAllRowControls();
+				if (allRowControls.contains(term.asQString()))
+				{
+					RowControls* rowControls = allRowControls[term.asQString()];
+					const QMap<QString, JASPControl*>&	controlsMap = rowControls->getJASPControlsMap();
+					for (const QString& controlName : controlsMap.keys())
+					{
+						JASPControl* control = controlsMap[controlName];
+						BoundControl* boundControl = control->boundControl();
+						if (boundControl)
+							row[fq(controlName)] = boundControl->createJson();
+					}
+				}
+			}
+			jsonValue.append(row);
+		}
+
+		return jsonValue;
+	}
 	else if (_isSingleRow)
-		return Json::Value("");
+	{
+		if (terms.size() > 0)	return Json::Value(terms.at(0).asString());
+		else					return Json::Value("");
+	}
 	else
-		return Json::Value(Json::arrayValue);
+	{
+		Json::Value jsonValue(Json::arrayValue);
+		for (const Term& term : terms)
+			jsonValue.append(term.asString());
+		return jsonValue;
+	}
 }
 
-bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
+bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
 	bool valid = true;
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
@@ -93,13 +134,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 				valid = value.type() == Json::objectValue;
 				if (valid)
 				{
-					_optionKeyFromFile = _optionKey;
-					if (value[_optionKey].isNull() && value.size() > 0)
-					{
-						_optionKeyFromFile = value.begin().memberName();
-						Log::log() << "JASP file has options for " << _listView->name() << " without '" << _optionKey << "' key. Per default, first key '" << _optionKeyFromFile << "' is used. Probably the file comes from an older version of JASP." << std::endl;
-					}
-					const Json::Value& components = value[_optionKeyFromFile];
+					const Json::Value& components = value[_optionKey];
 					if (_listView->containsInteractions())
 					{
 						valid = components.type() == Json::arrayValue;
@@ -140,10 +175,9 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 void BoundControlTerms::resetBoundValue()
 {
 	const Terms& terms = _termsModel->terms();
-	const QMap<QString, RowControls*>& allControls = _termsModel->getAllRowControls();
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		_setTableValue(terms, allControls, _optionKey, _listView->containsInteractions());
+		_setTableValue(_termsModel->getTermsWithComponentValues(), _optionKey, _listView->containsInteractions());
 	else if (_isSingleRow)
 	{
 		std::string str = terms.size() > 0 ? terms[0].asString() : "";
@@ -157,6 +191,126 @@ void BoundControlTerms::resetBoundValue()
 			boundValue.append(term.asString());
 		setBoundValue(boundValue);
 	}
+}
+
+Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap) const
+{
+	Json::Value result = option;
+	Terms termsAlreadyInOptions = _getValuesFromOptions(option);
+
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
+	{
+		Terms termsToAdd;
+		for (const Term& term : terms)
+		{
+			if (!termsAlreadyInOptions.contains(term)) 
+				continue; // Don't add term that is already in option.
+			
+			termsToAdd.add(term);
+		}
+
+		for (const Term& term : terms)
+		{
+			if (termsAlreadyInOptions.contains(term)) 
+				continue; // Don't add term that is already in option.
+
+			Json::Value rowValues(Json::objectValue);
+			if (_listView->containsInteractions())
+			{
+				Json::Value keyValue(Json::arrayValue);
+				for (const std::string& comp : term.scomponents())
+					keyValue.append(comp);
+				rowValues[_optionKey] = keyValue;
+			}
+			else
+			{
+				Json::Value keyValue(term.asString());
+				rowValues[_optionKey] = keyValue;
+			}
+
+			QString termStr = term.asQString();
+			if (extraTermsMap.contains(termStr))
+			{
+				const QMap<QString, Json::Value>& controlsMap = extraTermsMap[termStr];
+				QMapIterator<QString, Json::Value> it(controlsMap);
+				while (it.hasNext())
+				{
+					it.next();
+					rowValues[fq(it.key())] = it.value();
+				}
+			}
+			result.append(rowValues);
+		}
+	}
+	else if (_isSingleRow)
+		result = terms.size() > 0 ? terms[0].asString() : "";
+	
+	else
+		for (const Term& term : terms)
+			if (!termsAlreadyInOptions.contains(term))
+				result.append(term.asString());
+
+	return result;
+}
+
+bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms) const
+{
+	if (terms.size() == 0) return false;
+
+	bool result = true;
+	Terms termsInOptions = _getValuesFromOptions(option);
+	Terms termsToSearch = terms;
+
+	for (const Term& term : termsToSearch)
+		if (termsInOptions.contains(term))	terms.remove(term);
+		else								result = false;
+
+	return result;
+}
+
+Terms BoundControlTerms::_getValuesFromOptions(const Json::Value& option) const
+{
+	Terms result;
+
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
+	{
+		if (!option.isArray()) 
+			return result; // Just to be sure
+
+		for (const Json::Value& row : option)
+			if (_listView->containsInteractions())
+			{
+				if (row.isArray())
+				{
+					std::vector<std::string> term;
+					for (const Json::Value& val : row)
+						if (val.isString())
+							term.push_back(val.asString());
+					
+					result.add(Term(term));
+				}
+			}
+			else if (row.isString())
+				result.add(row.asString());
+
+	}
+	else if (_isSingleRow)
+	{
+		if (!option.isString()) 
+			return result; // Just to be sure
+		result.add(option.asString());
+	}
+	else
+	{
+		if (!option.isArray()) 
+			return result;
+
+		for (const Json::Value& row : option)
+			if (row.isString())
+				result.add(row.asString());
+	}
+
+	return result;
 }
 
 

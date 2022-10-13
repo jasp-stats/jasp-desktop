@@ -52,7 +52,7 @@ void ListModelCustomContrasts::sourceTermsReset()
 QStringList ListModelCustomContrasts::_getVariables()
 {
 	if (!_colName.isEmpty())
-		return _colName.split(Term::separator);
+		return Term::readTerm(_colName).components();
 	else
 		return getSourceTerms().asQList();
 }
