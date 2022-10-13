@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "The JASP Team"
+title: "JASP"
+version: 0.16.4
+date-released: 2022-10-03
+url: "https://jasp-stats.org/"
