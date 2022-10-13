@@ -212,7 +212,7 @@ private slots:
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }
 	void	_resetBindingValue();
-	void	_resetChildFocus();
+	void	_setFocus();
 
 signals:
 	void setOptionBlockSignal(	bool blockSignal);
@@ -296,16 +296,6 @@ protected:
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
-
-public:
-	enum Direction { Forward, Backward };
-	Q_ENUM(Direction)
-
-private:
-
-	static Direction tabDirection;
-	bool eventFilter(QObject *object, QEvent *event) override;
-
 
 };
 

@@ -31,7 +31,8 @@ JASPControl
 	controlType				: JASPControl.GroupBox
 	isBound					: false
 	childControlsArea		: contentArea
-    
+	focusOnTab				: false
+
 	default property alias	content:			contentArea.children
 			property int	rowSpacing:			jaspTheme.rowGroupSpacing
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing

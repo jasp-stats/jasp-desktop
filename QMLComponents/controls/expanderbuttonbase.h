@@ -30,9 +30,6 @@ public:
 	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
 
 	void	setUp() override;
-
-protected:
-	JASPControl* _findFirstControl(QObject* obj);
 };
 
 #endif // EXPANDERBUTTONBASE_H
