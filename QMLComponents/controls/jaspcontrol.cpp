@@ -230,7 +230,8 @@ void JASPControl::componentComplete()
 			emit parentListViewChanged();
 		}
 
-		setInitialized();
+		if (!isDynamic)
+			setInitialized();
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)

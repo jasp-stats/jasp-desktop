@@ -85,9 +85,9 @@ QString RSyntax::generateSyntax() const
 		formulaSources.append(formula->modelSources());
 
 	result = _analysisFullName(true) + "(\n";
-	for (FormulaBase* formula : _formulas)
-		result += formula->toString() + ",\n";
 	result += FunctionOptionIndent + "data = NULL";
+	for (FormulaBase* formula : _formulas)
+		result += ",\n" + formula->toString();
 
 	const Json::Value& boundValues = _form->boundValues();
 
@@ -136,9 +136,9 @@ QString RSyntax::generateWrapper() const
 	QString result;
 
 	result = _form->name() + "Wrapper <- function(\n";
-	for (FormulaBase* formula : _formulas)
-		result += FunctionOptionIndent + formula->name() + " = NULL,\n";
 	result += FunctionOptionIndent + "data = NULL";
+	for (FormulaBase* formula : _formulas)
+		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
 
 	for (FormulaBase* formula : _formulas)
 	{
