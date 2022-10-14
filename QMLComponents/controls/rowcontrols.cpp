@@ -100,6 +100,8 @@ void RowControls::_setupControls(bool reuseBoundValue)
 				listView->model()->sourceTermsReset();
 			}
 		}
+
+		control->setInitialized();
 	}
 
 	if (form)
