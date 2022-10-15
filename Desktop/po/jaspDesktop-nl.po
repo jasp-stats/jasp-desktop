@@ -160,22 +160,6 @@ msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Verwijder deze analyse"
 
-msgctxt "AnalysisForms|"
-msgid "Resize data/results"
-msgstr "Pas grootte data/resultaten aan"
-
-msgctxt "AnalysisForms|"
-msgid "Drag to show data"
-msgstr "Sleep om data te zien"
-
-msgctxt "AnalysisForms|"
-msgid "Hide input options"
-msgstr "Verberg invoeropties"
-
-msgctxt "AnalysisForms|"
-msgid "Show input options"
-msgstr "Toon invoeropties"
-
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
 msgstr "Voeg toe"
@@ -1430,19 +1414,6 @@ msgstr "R in JASP"
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
 msgstr "Welkom bij R in JASP!"
-
-msgctxt "RCommanderWindow|"
-msgid ""
-"Enter your R code here.\n"
-"The data is fully available as 'data' and filtered as 'filteredData'."
-msgstr ""
-"Voer hier uw R-code in.\n"
-"De gegevens zijn volledig beschikbaar als 'data' en gefilterd als "
-"'filteredData'."
-
-msgctxt "RCommanderWindow|"
-msgid "Enter your R code here."
-msgstr "Voer hier uw R-code in."
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
@@ -2997,11 +2968,6 @@ msgid "Loading upgrades for module %1 failed"
 msgstr "Laden van upgrades voor module %1 mislukt"
 
 #, qt-format
-msgctxt "Modules::DynamicModule|"
-msgid "Loading upgrades gave the following error: %1"
-msgstr "Het laden van upgrades gaf de volgende fout: %1"
-
-#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
@@ -4007,4 +3973,113 @@ msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '$1' but it doesn't exist."
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show R Syntax"
+msgstr ""
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Hide input options"
+msgstr "Verberg invoeropties"
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Show input options"
+msgstr "Toon invoeropties"
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is available unfiltered as 'data'\n"
+"and filtered as 'filteredData'.\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Add analysis"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error(s): %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Wrong syntax in Formula: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Could not find term %1 in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula not found"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula is not a Variables List"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Parsing error in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "No matching parenthesis in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error near conditional operator (%1) in Formula %2"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given if Formula description"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "Cannot find item %1 given in Formula description"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula randomEffects"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "randomEffects in Formula can be used only with a ComponentsList item"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "The conditional term %1 does not come from the %2 source in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Wrong type for argument %1"
 msgstr ""

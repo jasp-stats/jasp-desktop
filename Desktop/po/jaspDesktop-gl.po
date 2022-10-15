@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-10-08 18:15+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/gl/>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -277,19 +271,6 @@ msgstr "Premendo Ctrl+Intro ou F5 tamén vai executar o código"
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
 msgstr "Borrar a Saída de Resultados"
-
-msgctxt "RCommanderWindow|"
-msgid "Enter your R code here."
-msgstr "Introduce aquí o teu código R."
-
-msgctxt "RCommanderWindow|"
-msgid ""
-"Enter your R code here.\n"
-"The data is fully available as 'data' and filtered as 'filteredData'."
-msgstr ""
-"Introduce aquí o teu código R.\n"
-"Os datos están completamente dispoñibles como 'datos' e filtrados como "
-"'filtrados'."
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
@@ -2034,14 +2015,6 @@ msgctxt "MainPage|"
 msgid "Resize data/results"
 msgstr "Volver dar dimensión aos datos/resultados"
 
-msgctxt "AnalysisForms|"
-msgid "Hide input options"
-msgstr "Ocultar as opcións de entrada"
-
-msgctxt "AnalysisForms|"
-msgid "Show input options"
-msgstr "Amosar as opcións de entrada"
-
 msgctxt "MainPage|"
 msgid "Show data"
 msgstr "Amosar os datos"
@@ -2436,14 +2409,6 @@ msgstr "Engadir á dereita"
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "Eliminar"
-
-msgctxt "AnalysisForms|"
-msgid "Resize data/results"
-msgstr "Volver dar dimensión aos datos/resultados"
-
-msgctxt "AnalysisForms|"
-msgid "Drag to show data"
-msgstr "Arrastrar para amosar os datos"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
@@ -3066,11 +3031,6 @@ msgstr "Xerar un Ficheiro de Datos como CSV"
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "Fallou a carga de actualizacións para o módulo %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModule|"
-msgid "Loading upgrades gave the following error: %1"
-msgstr "A carga de actualizacións xerou o seguinte fallo: %1"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -4040,3 +4000,112 @@ msgid ""
 msgstr ""
 "Para instalar un módulo de desenvolvemento, precisas escoller un cartafol xa "
 "existente; escolliches '$1' pero non existe."
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show R Syntax"
+msgstr ""
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Hide input options"
+msgstr "Ocultar as opcións de entrada"
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Show input options"
+msgstr "Amosar as opcións de entrada"
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is available unfiltered as 'data'\n"
+"and filtered as 'filteredData'.\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Add analysis"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error(s): %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Wrong syntax in Formula: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Could not find term %1 in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula not found"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula is not a Variables List"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Parsing error in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "No matching parenthesis in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error near conditional operator (%1) in Formula %2"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given if Formula description"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "Cannot find item %1 given in Formula description"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula randomEffects"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "randomEffects in Formula can be used only with a ComponentsList item"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "The conditional term %1 does not come from the %2 source in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Wrong type for argument %1"
+msgstr ""
