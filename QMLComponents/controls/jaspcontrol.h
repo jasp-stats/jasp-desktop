@@ -164,7 +164,6 @@ public:
 	virtual void					rScriptDoneHandler(const QString& result);
 
 	virtual QString					friendlyName() const;
-//	virtual void keyPressEvent(QKeyEvent *event) override;
 
 protected:
 	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
