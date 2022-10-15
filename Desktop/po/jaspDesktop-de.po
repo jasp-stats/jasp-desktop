@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-10-16 10:38+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4018,14 +4024,12 @@ msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "R-Syntax anzeigen"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "Eingabeoptionen ausblenden"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "Eingabeoptionen anzeigen"
@@ -4037,6 +4041,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Geben Sie hier Ihren R-Code ein.\n"
+"Die Daten sind ungefiltert als 'data'\n"
+"und gefiltert als 'filteredData' verfügbar.\n"
+"Sie können hier auch JASP-Analysen im Syntaxmodus einfügen."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -4044,83 +4052,88 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Geben Sie hier Ihren R-Code ein.\n"
+"\n"
+"Sie können hier auch JASP-Analysen im Syntaxmodus einfügen."
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Analyse hinzufügen"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "Das Laden von Upgrades ergab folgende(n) Fehler: %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Wrong syntax in Formula: %1"
-msgstr ""
+msgstr "Falsche Syntax in Formel: %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "Term %1 in Formel nicht gefunden"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "Quelle %1 in Formel nicht gefunden"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "Quelle %1 in Formel ist keine Variablenliste"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Parsing error in Formula %1"
-msgstr ""
+msgstr "Parsing-Fehler in Formel %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "No matching parenthesis in Formula %1"
-msgstr ""
+msgstr "Keine passenden Klammern in Formel %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error in Formula %1"
-msgstr ""
+msgstr "Syntaxfehler in Formel %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr ""
+msgstr "Syntaxfehler bei bedingtem Operator (%1) in Formel %2"
 
 msgctxt "FormulaSource|"
 msgid "No name given if Formula description"
-msgstr ""
+msgstr "Kein Name in Formelbeschreibung angegeben"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "Element %1 in Formelbeschreibung nicht gefunden"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Keine Quelle in Formel randomEffects gefunden"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"randomEffects in Formel kann nur mit einem ComponentsList-Element verwendet "
+"werden"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "Keine Quelle in Formel gefunden"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr ""
+msgstr "Der bedingte Term %1 stammt nicht aus der Quelle %2 in der Formel"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Wrong type for argument %1"
-msgstr ""
+msgstr "Falscher Typ für Argument %1"
