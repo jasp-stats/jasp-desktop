@@ -89,9 +89,8 @@ void JASPControl::setInnerControl(QQuickItem* control)
 	if (control != _innerControl)
 	{
 		_innerControl = control;
-		if (_innerControl) {
+		if (_innerControl)
 			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_setShouldShowFocus);
-		}
 
 		emit innerControlChanged();
 	}
