@@ -98,7 +98,7 @@ FormulaSource::FormulaSource(FormulaBase* formula, const QVariant& var) : QObjec
 	}
 
 	if (_sourceName.isEmpty())
-		_addError(tr("No name given if Formula description"));
+		_addError(tr("No name given in Formula description"));
 	else
 	{
 		_model = _formula->getModel(_sourceName);
