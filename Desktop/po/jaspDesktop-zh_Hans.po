@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-10-16 10:38+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -3783,40 +3789,38 @@ msgstr "数据库驱动程序"
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
-msgstr ""
+msgstr "引擎总览"
 
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr ""
+msgstr "使用鼠标右键或中键来结束某个引擎"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "最大引擎数： "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "显示引擎"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "选择现有文件夹"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '$1' but it doesn't exist."
-msgstr ""
+msgstr "要安装开发模块，您需要选择现有文件夹，您选择的“$1”文件夹不存在。"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "显示 R 语法"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "隐藏输入选项"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "显示输入选项"
@@ -3828,6 +3832,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"在此处输入您的 R 代码。\n"
+"未经筛选的数据被定义为“data”\n"
+"已筛选的数据为“filteredData”\n"
+"您还可以在此处粘贴 JASP 语法模式的分析。"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3835,55 +3843,58 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"在此处输入您的 R 代码。\n"
+"\n"
+"您还可以在此处粘贴 JASP 语法模式的分析。"
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "添加到分析"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "加载升级时出现以下错误：%1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Wrong syntax in Formula: %1"
-msgstr ""
+msgstr "公式中有语法错误：%1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "在公式中找不到项 %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "未找到公式中的来源 %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "公式中的来源 %1 不是变量列表"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Parsing error in Formula %1"
-msgstr ""
+msgstr "公式 %1 中有解析错误"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "No matching parenthesis in Formula %1"
-msgstr ""
+msgstr "公式 %1 中没有匹配的括号"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error in Formula %1"
-msgstr ""
+msgstr "公式 %1 中有语法错误"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr ""
+msgstr "公式 %2 中条件运算符 (%1) 附近有语法错误"
 
 msgctxt "FormulaSource|"
 msgid "No name given if Formula description"
@@ -3892,26 +3903,26 @@ msgstr ""
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "在公式描述中无法找到项目 %1"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "在公式 randomEffects 中找不到来源"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr ""
+msgstr "公式中的 randomEffects 只能与 ComponentsList 项一起使用"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "在公式中找不到来源"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr ""
+msgstr "条件项 %1 不是来自公式中的 %2 源"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Wrong type for argument %1"
-msgstr ""
+msgstr "参数 %1 的类型错误"
