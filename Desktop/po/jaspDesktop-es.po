@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-10-16 20:40+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4020,14 +4026,12 @@ msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "Mostrar la Sintaxis de R"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "Ocultar las opciones de entrada"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "Mostrar las opciones de entrada"
@@ -4039,6 +4043,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Introduce aquí tu código R.\n"
+"Los datos están disponibles como 'datos'\n"
+"y filtrados como 'datosFiltrados'.\n"
+"También puedes pegar aquí análisis en modo de sintaxis de JASP."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -4046,83 +4054,88 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Introduce aquí tu código R.\n"
+"\n"
+"También puedes pegar aquí análisis en modo de sintaxis de JASP."
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Añadir análisis"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "La carga de actualizaciones produjo el(los) siguinte(s) fallo(s): %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Wrong syntax in Formula: %1"
-msgstr ""
+msgstr "Sintaxis incorrecta en la Fórmula: %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "No se puede encontrar el término %1 en la Fórmula"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "No se encontró la fuente %1 en la Fórmula"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "La fuente %1 en la Fórmula no es una Lista de Variables"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Parsing error in Formula %1"
-msgstr ""
+msgstr "Fallo de análisis en la Fórmula %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "No matching parenthesis in Formula %1"
-msgstr ""
+msgstr "Los paréntesis no cuadran en la Fórmula %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error in Formula %1"
-msgstr ""
+msgstr "Fallo de sintaxis en la Fórmula %1"
 
 #, qt-format
 msgctxt "FormulaParser|"
 msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr ""
+msgstr "Fallo de sintaxis cerca del operador condicional (%1) en la Fórmula %2"
 
 msgctxt "FormulaSource|"
 msgid "No name given if Formula description"
-msgstr ""
+msgstr "Non se indicó el nombre en la descripción de la Fórmula"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "No se puede encontrar el elemento %1 en la descripción de la Fórmula"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Non se encontró la fuente en la Fórmula de randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"Los randomEffects en la Fórmula solo se pueden usar con un elemento de "
+"ComponentsList"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "No se encontró la fuente en la Fórmula"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr ""
+msgstr "El término condicional %1 no procede de la fuente %2 en la Fórmula"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Wrong type for argument %1"
-msgstr ""
+msgstr "Tipo erróneo para el argumento %1"
