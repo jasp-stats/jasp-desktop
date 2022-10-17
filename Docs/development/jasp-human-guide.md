@@ -88,7 +88,7 @@ Another tricky point is that the `%` character is a special character in `gettex
 
 **Do not** mark empty strings for translation, because in the po format, the empty string (“”) is reserved and has a [special use](https://www.gnu.org/software/gettext/manual/gettext.html#Concepts).
 
-Refer to our our [translation rules](https://github.com/shun2wang/jasp-desktop/blob/moreSamples/Docs/development/jasp-translation-rules.md) for more information and help.
+Refer to our [translation rules](https://github.com/shun2wang/jasp-desktop/blob/moreSamples/Docs/development/jasp-translation-rules.md) for more information and help.
 
 ### Thorough testing
 
