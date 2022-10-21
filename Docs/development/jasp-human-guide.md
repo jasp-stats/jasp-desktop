@@ -78,8 +78,27 @@ gettextf (rw ? "File %s is write protected" : "File %s is read protected", filen
  ```
 </details></p>
 
-It's also **not good** to split a whole sentence, that is more understandable for the translator.
-	  
+It's also **not good** to split a whole sentence. Good [plural forms](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) is understandable for translators, `ngettext` is used where the message needs to vary by a single integer, `msg1` is returned if n == 1 and `msg2` in all other cases:
+
+<p><details>
+	<summary>Some examples:</summary>
+	
+```r
+# Bad
+cat(ngettext(length(miss), "variable", "variables"),
+paste(sQuote(miss), collapse = ", "),
+ngettext(length(miss), "contains", "contain"), "missing values\n")
+
+# Good
+cat(sprintf(ngettext(length(miss),
+				 "variable %s contains missing values\n",
+				 "variables %s contain missing values\n"),
+		paste(sQuote(miss), collapse = ", ")))
+```
+</details></p>
+
+
+
 **Using Unicode everywhere**
 
 The message text may contain arbitrary Unicode characters, Try to always keep messages in the plain 7-bit ASCII or in the UTF-8 character sets, but avoid using any other character sets. This allows your writing characters available on multiple language environments.
