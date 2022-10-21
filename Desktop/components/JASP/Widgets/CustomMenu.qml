@@ -68,6 +68,13 @@ FocusScope
 				menu.props['functionCall'](currentIndex)
 				menu.currentIndex = -1;
 			}
+			else if (menu.sourceItem !== null) //focus is still on source item so toggle menu
+			{
+				menu.sourceItem.forceActiveFocus();
+				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
+					menu.sourceItem.myMenuOpen = false;
+				menu.hide();
+			}
 		}
 		else if (event.key === Qt.Key_Escape)
 		{
@@ -76,7 +83,7 @@ FocusScope
 			{
 				menu.sourceItem.forceActiveFocus();
 				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
-					menu.sourceItem.myMenuOpen = true;
+					menu.sourceItem.myMenuOpen = false;
 			}
 			menu.hide();
 		}

@@ -39,7 +39,7 @@ Rectangle
 	property string toolTip		: ""
 	property var	menu		: []
 	property bool	myMenuOpen	: false
-	property bool	showPressed	: myMenuOpen || mice.pressed
+	property bool	showPressed	: ribbonButton.focus
 
 	onMyMenuOpenChanged: if(!myMenuOpen) myMenuOpen = false; //Break the binding
 
@@ -78,9 +78,7 @@ Rectangle
 
 	onFocusChanged:
 	{
-		if (ribbonButton.focus)
-			myMenuOpen = true;
-		else
+		if (!ribbonButton.focus)
 		{
 			myMenuOpen = false;
 			customMenu.hide();
@@ -251,15 +249,22 @@ Rectangle
 			{
 				if(!ribbonButton.ready) return; //Be patient!
 
-				fileMenuModel.visible	= false;
-				modulesMenu.opened		= false;
-				ribbon.focusOutFileMenu();
-				ribbon.focusOutModules();
-				ribbon.focusOutPreviousRibbonButton();
-				ribbon.goToRibbonIndex(ribbonButton.listIndex);
-				mouse.accepted			= false;
-
-				ribbonButton.showMyMenu();
+				if (myMenuOpen)
+				{
+					ribbonButton.focus = false;
+					customMenu.hide();
+				}
+				else
+				{
+					fileMenuModel.visible	= false;
+					modulesMenu.opened		= false;
+					ribbon.focusOutFileMenu();
+					ribbon.focusOutModules();
+					ribbon.focusOutPreviousRibbonButton();
+					ribbon.goToRibbonIndex(ribbonButton.listIndex);
+					ribbonButton.showMyMenu();
+				}
+				mouse.accepted = false;
 			}
 		}
 	}
