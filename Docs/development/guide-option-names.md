@@ -247,8 +247,8 @@ Notice that the options are nested within another option both in Qml and in the 
 - `chains`: number of chains
 - `bf`: Bayes factor
 - `bfType`: Type of a Bayes factor (this shouldn't be specified manually but should be used via the `BayesFactorType{}` component)
-- `priorAndPosteriorPlot`: checkbox for prior and posterior plot
-- `priorAndPosteriorPlotAdditionalInfo`: additional info for prior and posterior plot
+- `priorPosteriorPlot`: checkbox for prior and posterior plot
+- `priorPosteriorPlotAdditionalInfo`: additional info for prior and posterior plot
 - `bfRobustnessPlot`: checkbox for robustness plot
 - `bfRobustnessPlotAdditionalInfo`: additional info for robustness plot
 - `bfSequentialPlot`: checkbox for sequential analysis plot
