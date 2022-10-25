@@ -13,6 +13,7 @@ DropArea
 
 	property alias		myIndex:				draggableItem.myIndex
 	property alias		myAnalysis:				formParent.myAnalysis
+	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
 
 	onEntered: (drag)=>
