@@ -45,6 +45,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 		- **Qt 6.2.4** (or newest stable Qt)
 			- [x] Desktop gcc 64-bit
 			- [x] Qt 5 Compatibility Module
+			- [x] Qt Shader Tools 
 			- **Additional Libraries**
 				- [x] Qt Web Engine
 				- [x] Qt Web Channel
