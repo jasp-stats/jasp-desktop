@@ -77,7 +77,7 @@ FocusScope
 		Keys.onSpacePressed		: toggleExpander()
 		Keys.onReturnPressed	: toggleExpander()
 
-		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded }
+		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         
 		MouseArea
 		{
@@ -140,7 +140,7 @@ FocusScope
 		anchors.topMargin		: 15 * preferencesModel.uiScale
 		width					: parent.width
 		columns					: 2
-		enabled					: expanded //set to that focus chain does not enter closed expanders
+		visible					: expanded //set to that focus chain does not enter closed expanders
 //		anchors.bottomMargin	: 20 * preferencesModel.uiScale
     }
 
