@@ -778,7 +778,7 @@ elseif(LINUX)
     find_file(
       _R_H
       NAMES R.h
-      PATHS /usr/include /usr/include/R)
+      PATHS /usr/include /usr/include/R /usr/share/R/include)
 
     if(_R_H)
       get_filename_component(R_INCLUDE_PATH ${_R_H} DIRECTORY)
