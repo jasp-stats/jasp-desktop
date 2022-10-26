@@ -48,9 +48,7 @@ JASPControl
 	Rectangle
 	{
 		id:					focusIndicator
-		anchors.centerIn:	control
-		width:				control.width
-		height:				control.height
+		anchors.fill:		parent
 		color:				"transparent"
 		border.width:		0
 		border.color:		"transparent"

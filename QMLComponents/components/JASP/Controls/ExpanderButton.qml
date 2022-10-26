@@ -140,7 +140,7 @@ FocusScope
 		anchors.topMargin		: 15 * preferencesModel.uiScale
 		width					: parent.width
 		columns					: 2
-		visible					: expanded //set to that focus chain does not enter closed expanders
+		visible					: expanderWrapper.implicitHeight > expanderButton.height //set to that focus chain does not enter closed expanders
 //		anchors.bottomMargin	: 20 * preferencesModel.uiScale
     }
 
