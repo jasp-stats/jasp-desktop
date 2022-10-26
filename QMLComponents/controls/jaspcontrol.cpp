@@ -62,7 +62,11 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
+<<<<<<< HEAD
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
+=======
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_notifyFormOfActiveFocus);
+>>>>>>> 5cff37b70 (scrolling almost implemented. Click detection needed)
 }
 
 JASPControl::~JASPControl()
@@ -633,9 +637,48 @@ void JASPControl::rScriptDoneHandler(const QString &)
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }
 
-
 void JASPControl::_setFocus()
 {
 	if (!hasActiveFocus())
 		setFocus(false);
+}
+
+  void JASPControl::_notifyFormOfActiveFocus()
+{
+	if (_form && getChildJASPControls(this).length() == 0)
+	{
+		if (!hasActiveFocus())
+			_form->setActiveJASPControl(nullptr);
+		else
+			_form->setActiveJASPControl(this);
+	}
+}
+
+
+//void JASPControl::_notifyFormOfActiveFocus()
+//{
+//	if (_form)
+//	{
+//		if (!hasActiveFocus()) {
+//			_form->setActiveJASPControl(nullptr);
+//			return;
+//		}
+
+//		auto childControls = getChildJASPControls(this);
+//		bool childActive = false;
+//		for (const auto& child : childControls)
+//		{
+//			childActive |=	child->hasActiveFocus();
+//		}
+//		if (!childActive)
+//			_form->setActiveJASPControl(this);
+//	}
+//}
+
+
+void JASPControl::focusInEvent(QFocusEvent * event)
+{
+	_focusReason = event->reason();
+	QQuickItem::focusInEvent(event);
+	Log::log() << "focus ve" << std::endl;
 }

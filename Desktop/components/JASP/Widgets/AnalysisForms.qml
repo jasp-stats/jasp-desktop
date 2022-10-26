@@ -136,27 +136,26 @@ FocusScope
 					}
 				}
 
-				Window.onActiveFocusItemChanged:
-				{
-					const margin = 50;
-					var item = Window.activeFocusItem;
-					var form = item.parent.analysisform;
-					if (form === formRepeater.itemAt(analysesModel.currentAnalysisIndex).myForm)
-					{
-						var coordinates = item.mapToItem(scrollAnalyses, 0, 0);
-						var diffYBottom = coordinates.y - scrollAnalyses.height;
-						var diffYTop = coordinates.y;
-						if (diffYBottom > -margin && !contentYBehaviour.animation.running)
-							analysesFlickable.contentY = Math.min(scrollAnalyses.height, analysesFlickable.contentY + diffYBottom + margin);
-						if (diffYTop < margin)
-							analysesFlickable.contentY = Math.max(0, analysesFlickable.contentY + diffYTop - margin);
-//						console.log(coordinates.y)
-//						console.log(analysesFlickable.contentY)
-//						console.log(diffYBottom)
-//						console.log("\n")
-					}
+//				Window.onActiveFocusItemChanged:
+//				{
+//					const margin = 50 * jaspTheme.uiScale;
+//					const currentExpander = formRepeater.itemAt(analysesModel.currentAnalysisIndex)
+//					if(!currentExpander)
+//						return;
 
-				}
+//					const currentForm = currentExpander.myForm;
+//					if (currentForm && currentForm.activeJASPControl)
+//					{
+//						const coordinates = currentForm.activeJASPControl.mapToItem(scrollAnalyses, 0, 0);
+//						const diffYBottom = coordinates.y + currentForm.activeJASPControl.height - scrollAnalyses.height;
+//						const diffYTop = coordinates.y;
+//						//check if the object is visisble in the scrollAnalyses and scroll to it if not
+//						if (diffYBottom > -margin && !contentYBehaviour.animation.running)
+//							analysesFlickable.contentY = Math.min(scrollAnalyses.height, analysesFlickable.contentY + diffYBottom + margin);
+//						if (diffYTop < margin)
+//							analysesFlickable.contentY = Math.max(0, analysesFlickable.contentY + diffYTop - margin);
+//					}
+//				}
 
 
 				Column

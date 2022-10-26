@@ -565,6 +565,31 @@ DropArea
 						if(myAnalysis)
 							myAnalysis.createForm(formParent); //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
 					}
+
+					Connections
+					{
+						target: myForm
+						onActiveJASPControlChanged :
+						{
+							if (!myForm || !myForm.activeJASPControl)
+								return;
+
+							const control = myForm.activeJASPControl;
+							const margin = 50 * jaspTheme.uiScale;
+							const focusReason = myForm.activeJASPControl.focusReason;
+//							if (focusReason === Qt.TabFocusReason || focusReason === Qt.BacktabFocusReason)
+//							{
+								const coordinates = myForm.activeJASPControl.mapToItem(scrollAnalyses, 0, 0);
+								const diffYBottom = coordinates.y + myForm.activeJASPControl.height - scrollAnalyses.height;
+								const diffYTop = coordinates.y;
+								//check if the object is visisble in the scrollAnalyses and scroll to it if not
+								if (diffYBottom > -margin && !contentYBehaviour.animation.running)
+									backgroundFlickable.contentY = Math.min(scrollAnalyses.height, backgroundFlickable.contentY + diffYBottom + margin);
+								if (diffYTop < margin)
+									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + diffYTop - margin);
+//							}
+						}
+					}
 				}
 			}
 		}
