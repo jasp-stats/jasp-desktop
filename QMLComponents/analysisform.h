@@ -122,7 +122,6 @@ public:
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
 	JASPControl			*	getControl(const QString& name)											{ return _controls.contains(name) ? _controls[name] : nullptr;				}
 	void					addListView(JASPListControl* listView, JASPListControl* sourceListView);
-	ExpanderButtonBase	*	nextExpander(ExpanderButtonBase* expander)								{ return _nextExpanderMap[expander];										}
 	void					addControl(JASPControl* control);
 
 	Q_INVOKABLE void		clearFormErrors();
@@ -177,7 +176,6 @@ private:
 	void			_setUpControls();
 	void			_setUpModels();
 	void			_setUp();
-	void			_orderExpanders();
 	QString			_getControlLabel(QString controlName);
 	void			_addLoadingError(QStringList wrongJson);
 	void			setControlIsDependency(	QString controlName, bool isDependency);
@@ -200,8 +198,6 @@ private:
 	QVector<JASPControl*>							_dependsOrderedCtrls;
 	QMap<QString, ListModel* >						_modelMap;
 	QVector<ExpanderButtonBase*>					_expanders;
-	QMap<ExpanderButtonBase*,
-		ExpanderButtonBase*>						_nextExpanderMap;
 	QMap<JASPControl*, ExpanderButtonBase*>			_controlExpanderMap;
 	bool											_removed 						= false;
 	std::set<std::string>							_mustBe;

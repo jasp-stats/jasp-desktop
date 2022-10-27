@@ -25,42 +25,10 @@ ExpanderButtonBase::ExpanderButtonBase(QQuickItem *parent)
 	_controlType = ControlType::Expander;
 }
 
-JASPControl* ExpanderButtonBase::_findFirstControl(QObject* obj)
-{
-	JASPControl* result = nullptr;
-
-	for (QObject* child : obj->children())
-	{
-		result = qobject_cast<JASPControl*>(child);
-
-		if (!result)
-			result = _findFirstControl(child);
-
-		if (result)
-			break;
-	}
-
-	return result;
-}
-
 void ExpanderButtonBase::setUp()
 {
 	if (!form())
 		return;
-
-	ExpanderButtonBase* nextExpander = form()->nextExpander(this);
-
-	if (nextExpander)
-		setProperty("nextExpander", QVariant::fromValue(nextExpander));
-
-	QQuickItem* childControlsAreaItem = childControlsArea();
-
-	if (childControlsAreaItem)
-	{
-		JASPControl* firstControl = _findFirstControl(childControlsAreaItem);
-		if (firstControl)
-			setProperty("firstControl", QVariant::fromValue(firstControl));
-	}
 
 	setInitialized();
 }

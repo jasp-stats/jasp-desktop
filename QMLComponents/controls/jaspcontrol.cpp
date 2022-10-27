@@ -1,4 +1,4 @@
-#include "jaspcontrol.h"
+﻿#include "jaspcontrol.h"
 #include "jasplistcontrol.h"
 #include "log.h"
 #include "analysisform.h"
@@ -62,6 +62,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
 }
 
 JASPControl::~JASPControl()
@@ -630,4 +631,11 @@ void JASPControl::runRScript(const QString &script, bool whiteListedVersion)
 void JASPControl::rScriptDoneHandler(const QString &)
 {
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
+}
+
+
+void JASPControl::_setFocus()
+{
+	if (!hasActiveFocus())
+		setFocus(false);
 }

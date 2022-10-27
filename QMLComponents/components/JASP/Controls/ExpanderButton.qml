@@ -76,10 +76,6 @@ FocusScope
 		shouldStealHover		: false //Because sometimes maybe something *inside* an expanderButton might want to get hovered
 		Keys.onSpacePressed		: toggleExpander()
 		Keys.onReturnPressed	: toggleExpander()
-		KeyNavigation.tab		: expanderWrapper.expanded ? firstControl : nextExpander
-
-		property var nextExpander			: null
-		property var firstControl			: null
 
 		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         
@@ -144,6 +140,7 @@ FocusScope
 		anchors.topMargin		: 15 * preferencesModel.uiScale
 		width					: parent.width
 		columns					: 2
+		visible					: expanderWrapper.implicitHeight > expanderButton.height //set to that focus chain does not enter closed expanders
 //		anchors.bottomMargin	: 20 * preferencesModel.uiScale
     }
 

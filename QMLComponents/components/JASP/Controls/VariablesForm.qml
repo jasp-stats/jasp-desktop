@@ -33,6 +33,7 @@ VariablesFormBase
 	preferredHeight				: implicitHeight
 	preferredWidth				: implicitWidth
 	Layout.preferredHeight		: preferredHeight // Cannot set Layout attached property in c++
+	focusOnTab					: false
 
 	default property alias	content				: items.children
 			property int	listWidth			: width * 2 / 5
@@ -120,6 +121,7 @@ VariablesFormBase
 		availableVariablesList.dropKeys = availableDropKeys
 		setControlsSize()
 		assignButtonRepeater.model = countAssignedList;
+		setTabOrder();
 	}
 
 	function setControlsSize()
@@ -181,4 +183,18 @@ VariablesFormBase
 		
 	}
 
+	function setTabOrder()
+	{
+		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
+		assignButtonRepeater.itemAt(0).KeyNavigation.backtab = availableVariablesList;
+
+		for (var i = 0; i < allAssignedVariablesList.length - 1; i++)
+			assignButtonRepeater.itemAt(i).KeyNavigation.tab = assignButtonRepeater.itemAt(i + 1);
+
+		if(allAssignedVariablesList.length > 0)
+			assignButtonRepeater.itemAt(allAssignedVariablesList.length - 1).KeyNavigation.tab = allAssignedVariablesList[0]
+
+		for (var j = 0; j < allAssignedVariablesList.length - 1; j++)
+			allAssignedVariablesList[j] = allAssignedVariablesList[j + 1];
+	}
 }

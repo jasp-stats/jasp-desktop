@@ -211,6 +211,7 @@ private slots:
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }
 	void	_resetBindingValue();
+	void	_setFocus();
 
 signals:
 	void setOptionBlockSignal(	bool blockSignal);

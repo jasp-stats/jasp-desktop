@@ -42,7 +42,7 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 	
 	if(!dbJson.isNull())
 		_mainWindow->open(dbJson);
-		
+
 }
 
 Application::~Application()

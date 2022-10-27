@@ -196,7 +196,6 @@ void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
 
 void AnalysisForm::_setUpControls()
 {
-	_orderExpanders();
 	_setUpModels();
 	_setUp();
 }
@@ -283,33 +282,6 @@ void AnalysisForm::_setUp()
 	_rSyntax->setUp();
 
 	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
-}
-
-void AnalysisForm::_orderExpanders()
-{
-	for (ExpanderButtonBase* expander : _expanders)
-	{
-		bool foundExpander = false;
-		for (QObject* sibling : expander->parent()->parent()->children())
-		{
-			if (sibling->objectName() == "Section")
-			{
-				QObject			* button	= sibling->property("button").value<QObject*>();
-				JASPControl	* control	= qobject_cast<JASPControl*>(button);
-				if (control && control->controlType() == JASPControl::ControlType::Expander)
-				{
-					if (foundExpander)
-					{
-						_nextExpanderMap[expander] = dynamic_cast<ExpanderButtonBase*>(control);
-						break;
-					}
-					if (control == expander)
-						foundExpander = true;
-				}
-			}
-		}
-		expander->setUp();
-	}
 }
 
 void AnalysisForm::reset()
