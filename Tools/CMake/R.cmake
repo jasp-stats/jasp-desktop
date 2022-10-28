@@ -766,6 +766,7 @@ elseif(LINUX)
   endif()
 
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
+  set(Rscript_EXECUTABLE "${R_HOME_PATH}/bin/Rscript")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
   set(RENV_PATH "${R_LIBRARY_PATH}/renv")
@@ -773,20 +774,25 @@ elseif(LINUX)
   set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
 
   message(CHECK_START "Looking for R.h")
-  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
+  # ask R where it thinks it's include folder is
+  execute_process(COMMAND ${Rscript_EXECUTABLE} -e "cat(R.home(\"include\"))" OUTPUT_VARIABLE R_INCLUDE_PATH)
+  # if R returns a nonexisting directory, try some fallback locations
   if(NOT EXISTS ${R_INCLUDE_PATH})
-    find_file(
-      _R_H
-      NAMES R.h
-      PATHS /usr/include /usr/include/R /usr/share/R/include)
-
-    if(_R_H)
-      get_filename_component(R_INCLUDE_PATH ${_R_H} DIRECTORY)
-      message(CHECK_PASS "found")
-      message(STATUS "  ${_R_H}")
-    else()
-      message(CHECK_FAIL "not found")
-      message(FATAL_ERROR "R.h is necessary for building R-Interface library.")
+    message(STATUS "R return an invalid include directory, trying fallbacks")
+    set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
+    if(NOT EXISTS ${R_INCLUDE_PATH})
+      find_file(
+        _R_H
+        NAMES R.h
+        PATHS /usr/include /usr/include/R /usr/share/R/include)
+      if(_R_H)
+        get_filename_component(R_INCLUDE_PATH ${_R_H} DIRECTORY)
+        message(CHECK_PASS "found")
+        message(STATUS "  ${_R_H}")
+      else()
+        message(CHECK_FAIL "not found")
+        message(FATAL_ERROR "R.h is necessary for building R-Interface library.")
+      endif()
     endif()
   endif()
 
