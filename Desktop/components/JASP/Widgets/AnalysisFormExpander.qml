@@ -34,13 +34,13 @@ DropArea
 
 	Rectangle
 	{
-		id:                             bottomLine
-		anchors.bottom: parent.bottom
-		anchors.left:   parent.left
+		id:						bottomLine
+		anchors.bottom:			parent.bottom
+		anchors.left:			parent.left
 		height:                 1
 		width:                  parent.width + 1
 		color:                  jaspTheme.buttonBorderColor
-		visible:                draggableItem.state != "dragging"
+		visible:				draggableItem.state != "dragging"
 	}
 
 
