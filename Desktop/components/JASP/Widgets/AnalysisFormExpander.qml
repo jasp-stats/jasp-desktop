@@ -583,7 +583,7 @@ DropArea
 								const margin = 50 * jaspTheme.uiScale;
 
 								//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
-								if(!contentYBehaviour.animation.running)
+								if(contentYBehaviour.animation.running)
 									return;
 								
 								if (diffYBottom > -margin) // scroll up
