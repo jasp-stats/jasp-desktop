@@ -11,6 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.14.2-dev\n"
 "X-Qt-Contexts: true\n"
+"X-Language: zh_Hant\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
