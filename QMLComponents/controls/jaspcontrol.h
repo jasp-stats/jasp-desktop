@@ -48,7 +48,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									cursorShape				READ cursorShape			WRITE setCursorShape												)
 	Q_PROPERTY( bool								hovered					READ hovered												NOTIFY hoveredChanged				)
 	Q_PROPERTY( int									alignment				READ alignment				WRITE setAlignment													)
-	Q_PROPERTY( QQuickItem*							analysisform           	READ form																						)
 
 	typedef std::set<JASPControl*> Set;
 
