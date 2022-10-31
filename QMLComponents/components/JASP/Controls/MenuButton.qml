@@ -14,6 +14,7 @@ RoundedButton
 	color:			(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
 	border.width:	0
 	centerText:		false
+	activeFocusOnTab: true
 
 	signal hoverClicked();
 	onHoverClicked:			forceActiveFocus();
