@@ -48,6 +48,8 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									cursorShape				READ cursorShape			WRITE setCursorShape												)
 	Q_PROPERTY( bool								hovered					READ hovered												NOTIFY hoveredChanged				)
 	Q_PROPERTY( int									alignment				READ alignment				WRITE setAlignment													)
+	Q_PROPERTY( Qt::FocusReason						focusReason				READ getFocusReason																				)
+
 
 	typedef std::set<JASPControl*> Set;
 
@@ -142,6 +144,7 @@ public:
 	int					cursorShape()				const	{ return _cursorShape;			}
 	bool				hovered()					const;
 	int					alignment()					const	{ return _alignment;			}
+	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;			}
 
 	QString				humanFriendlyLabel()		const;
 	void				setInitialized(bool byFile = false);
@@ -252,6 +255,8 @@ protected:
 	void				_setType();
 	void				setCursorShape(int shape);
 	void				setParentDebugToChildren(bool debug);
+	void				focusInEvent(QFocusEvent* event) override;
+	bool				eventFilter(QObject *watched, QEvent *event) override;
 
 protected:
 	ControlType				_controlType;
@@ -274,7 +279,8 @@ protected:
 							_shouldShowFocus			= false,
 							_shouldStealHover			= false,
 							_nameMustBeUnique			= true,
-							_hasUserInteractiveValue	= true;
+							_hasUserInteractiveValue	= true,
+							_activeJASPControl			= false;
 	JASPListControl		*	_parentListView				= nullptr;
 	QQuickItem			*	_childControlsArea			= nullptr,
 						*	_innerControl				= nullptr,
@@ -292,6 +298,7 @@ protected:
 	QQuickItem			*	_mouseAreaObj				= nullptr;
 	int						_cursorShape				= Qt::PointingHandCursor;
 	int						_alignment					= Qt::AlignTop | Qt::AlignLeft;
+	Qt::FocusReason			_focusReason				= Qt::FocusReason::NoFocusReason;
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;

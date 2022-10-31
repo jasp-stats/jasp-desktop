@@ -963,11 +963,11 @@ void AnalysisForm::sendRSyntax(QString text)
 	_analysis->sendRScript(text, rSyntaxControlName, false);
 }
 
-void AnalysisForm::setActiveItem(QQuickItem* control)
+void AnalysisForm::setActiveJASPControl(JASPControl* control)
 {
 	//currently set control still has active focus
-	if(!control && _activeItem && _activeItem->hasActiveFocus())
+	if(!control && _activeJASPControl && _activeJASPControl->hasActiveFocus())
 		return;
-	_activeItem = control;
-	emit activeItemChanged();
+	_activeJASPControl = control;
+	emit activeJASPControlChanged();
 }

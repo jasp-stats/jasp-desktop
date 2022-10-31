@@ -59,7 +59,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax			WRITE setShowRSyntax			NOTIFY showRSyntaxChanged			)
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
 	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
-	Q_PROPERTY(QQuickItem*	activeItem				READ getActiveItem											NOTIFY activeItemChanged		)
+	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
 public:
 	explicit				AnalysisForm(QQuickItem * = nullptr);
 							~AnalysisForm();
@@ -116,7 +116,7 @@ signals:
 	void					titleChanged();
 	void					showRSyntaxChanged();
 	void					rSyntaxTextChanged();
-	void					activeItemChanged();
+	void					activeJASPControlChanged();
 
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
@@ -168,8 +168,8 @@ public:
 	QString			getSyntaxName(const QString& name)				const;
 	void			setHasVolatileNotes(bool hasVolatileNotes);
 	bool			parseOptions(Json::Value& options);
-	void			setActiveItem(QQuickItem* control);
-	QQuickItem*		getActiveItem()	{ return _activeItem; }
+	void			setActiveJASPControl(JASPControl* control);
+	JASPControl*	getActiveJASPControl()	{ return _activeJASPControl; }
 
 	static const QString	rSyntaxControlName;
 
@@ -221,7 +221,7 @@ private:
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRSyntax					= false;
 	QString											_rSyntaxText;
-	QQuickItem*										_activeItem						= nullptr;
+	JASPControl*									_activeJASPControl				= nullptr;
 };
 
 #endif // ANALYSISFORM_H

@@ -569,20 +569,25 @@ DropArea
 					Connections
 					{
 						target: myForm
-						function onActiveItemChanged()
+						function onActiveJASPControlChanged()
 						{
-							if (!myForm || !myForm.activeItem)
+							if (!myForm || !myForm.activeJASPControl)
 								return;
 
-							const control = myForm.activeItem;
-							const coordinates = myForm.activeItem.mapToItem(scrollAnalyses, 0, 0);
-							const diffYBottom = coordinates.y + myForm.activeItem.height - scrollAnalyses.height;
-							const diffYTop = coordinates.y;
-							//check if the object is visisble in the scrollAnalyses and scroll to it if not
-							if (diffYBottom > 0 && !contentYBehaviour.animation.running)
-								backgroundFlickable.contentY = backgroundFlickable.contentY + diffYBottom;
-							if (diffYTop < 0 && !contentYBehaviour.animation.running)
-								backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + diffYTop);
+							const control = myForm.activeJASPControl;
+							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
+							{
+								const coordinates = control.mapToItem(scrollAnalyses, 0, 0);
+								const diffYBottom = coordinates.y + control.height - scrollAnalyses.height;
+								const diffYTop = coordinates.y;
+								const margin = 50 * jaspTheme.uiScale;
+
+								//check if the object is visisble in the scrollAnalyses and scroll to it if not
+								if (diffYBottom > -margin && !contentYBehaviour.animation.running)
+									backgroundFlickable.contentY = backgroundFlickable.contentY + Math.max(0, diffYBottom + margin);
+								if (diffYTop < margin && !contentYBehaviour.animation.running)
+									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + Math.min(0, diffYTop - margin));
+							}
 						}
 					}
 				}
