@@ -13,7 +13,7 @@ Here you can specify if p-values should be shown as "< .001" or if an exact valu
 
 ### Use exponent notation
 
-Here you can specify if scientific numbers should be displayed with exponent notation, 1×10<sup>-10</sup> instead of being displayed using the E notation, 1e-10.
+Here you can specify if scientific numbers should be displayed with exponent notation as in 1e-10, or normalized like 1×10<sup>-10</sup>.
 
 ### Fix the number of decimals
 
