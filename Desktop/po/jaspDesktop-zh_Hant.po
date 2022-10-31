@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-09-28 09:48+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"PO-Revision-Date: 2022-10-31 10:00+0000\n"
+"Last-Translator: Changya Hu <changyahu@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -26,15 +26,15 @@ msgstr "存檔至"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr "載入檔案自"
+msgstr "從以下位置加載文件："
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr "選擇儲存檔案"
+msgstr "選擇要儲存的檔案"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "選擇載入檔案"
+msgstr "選擇要加載的文件"
 
 msgctxt "FileSelector|"
 msgid "Browse"
@@ -47,13 +47,13 @@ msgstr "此分析由較早JASP版本產生"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr "，重新載入頁面可能產生些許不同結果"
+msgstr "，刷新頁面可能會產生稍微不同的結果。"
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr "，為了讓您的筆記保持原樣，強烈建議先刷新您的分析！"
+msgstr "，為了讓您的筆記保持原樣，強烈建議您首先刷新您的分析！"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -278,67 +278,67 @@ msgstr "變異數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "總和"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "乘積"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "取最小值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "取最大值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "將y的小數點取n位數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "y的向量長度"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "中位數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "自然對數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "二進位對數(2為底)"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "標準對數(10為底)"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "自訂對數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "指數"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
-msgstr ""
+msgstr "Fisher's Z轉換，(以反雙曲線函數)將相關係數(值介於-1到1之間)轉為Z值"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr ""
+msgstr "反Fisher's Z轉換，(以反雙曲線函數)將Z值轉為相關係數(值介於-1到1之間)"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
@@ -346,11 +346,11 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "將直行中任何的遺漏值(NA)以replaceWith中指定的數值取代"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "若-則指令"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -427,23 +427,23 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr ""
+msgstr "移除已新增之變數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "顯示R語法"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "新增變數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr ""
+msgstr "計算得出的直行(變數)"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "點此以計算新變數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
@@ -451,11 +451,11 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "開啟檔案"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr ""
+msgstr "關閉新增變數視窗"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
@@ -469,242 +469,242 @@ msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "無"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "離差"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "簡單"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "差異"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "重複"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "多項式"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "自訂"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "因子"
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr ""
+msgstr "為%1自訂"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "建立計算變數"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "變數名稱:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "變數名稱已被使用，請選擇另外的名稱"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "以R code定義新變數"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "以拖曳公式來定義新變數"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "連續"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr ""
+msgstr "次序"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr ""
+msgstr "名義"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "文字"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "開啟檔案"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "建立變數"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr ""
+msgstr "按下以建立新變數 '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "為新建立的變數輸入有效(未被使用過)的名稱"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "未新增變數即關閉"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "加入比較"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "刪除比較"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重設"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "隱藏篩選條件"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "顯示篩選條件"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "加入已新增之變數"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "按下此處以修改變數類型"
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr ""
+msgstr "按下此處以修改變數公式"
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr ""
+msgstr "按下此處以修改標籤"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr ""
+msgstr " 或檢查篩選條件"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "回到%1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "你在此處"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "最近使用文件夾"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "瀏覽"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "同步目前資料檔案"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "資料館"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "同步此資料檔"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "瀏覽文件夾"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "開啟JASP檔案"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "開啟資料檔"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "顯示這些偏好設定的資訊"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "公開科學架構(OSF)"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "登出"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "建立文件夾"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "文件夾名稱"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "檔案名稱"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "登入你的OSF帳號以繼續"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "登入"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "記得使用者資訊"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "關於OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "註冊"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr ""
+msgstr "進階偏好設定"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "模組選項"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -718,7 +718,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "開啟此選項以使用JASP模組"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
@@ -792,31 +792,31 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "顯示紀錄"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "引擎選項"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr ""
+msgstr "最大引擎數量: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr ""
+msgstr "資料偏好設定"
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
-msgstr ""
+msgstr "自動同步存檔之資料"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "使用預設的試算表編輯器"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "選擇自訂編輯器"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
@@ -831,65 +831,65 @@ msgstr ""
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "遺漏值清單"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr ""
+msgstr "移除遺漏值設定"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr ""
+msgstr "重設"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr ""
+msgstr "結果呈現偏好設定"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr ""
+msgstr "表格設定"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr ""
+msgstr "顯示實際的p值"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr ""
+msgstr "固定小數點位數"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr ""
+msgstr "圖選項"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr ""
+msgstr "圖的PPI設定為: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr ""
+msgstr "使用螢幕每英吋像素來設定圖型"
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr ""
+msgstr "自訂PPI: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr ""
+msgstr "圖片背景顏色"
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "白色"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
-msgstr ""
+msgstr "此設定圖的背景為白色，適用於LaTex或投稿期刊"
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr ""
+msgstr "透明"
 
 msgctxt "PrefsResults|"
 msgid ""
@@ -899,25 +899,25 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "字體"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "介面:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "預設: %1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "主題"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr ""
+msgstr "改成淡色主題，此為JASP預設及原有的色調"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -927,11 +927,11 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "其他設定選項"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "縮放(%): "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -974,27 +974,27 @@ msgstr ""
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "最近使用檔案"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "已清除計算新變數的語法"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "已套用計算新變數之語法"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "請輸入所有指令-看紅字區"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "每個新增之變數僅能有一個公式"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "歡迎使用拖曳方式新增變數!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
@@ -1002,11 +1002,11 @@ msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
-msgstr ""
+msgstr "篩選條件已清除<b4>"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
-msgstr ""
+msgstr "已套用篩選條件<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
@@ -1016,35 +1016,35 @@ msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
-msgstr ""
+msgstr "公式無法得到合理的數值，因此無法用於測定過濾條件"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr ""
+msgstr "歡迎使用拖曳過濾條件!<br>"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "加"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "減"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "乘"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "除"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "指數(2^3 為8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -1068,32 +1068,32 @@ msgstr ""
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "小於: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "小於或等於: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "大於:%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "大於或等於:%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "和:%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "或:%1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
@@ -1110,23 +1110,23 @@ msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "減"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "乘"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "除"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "指數(2^3為8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
@@ -1150,32 +1150,32 @@ msgstr ""
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "小於: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "小於或等於: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "大於:%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "大於或等於:%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "和:%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "或:%1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
@@ -1184,23 +1184,23 @@ msgstr ""
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "非:%1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "絕對值"
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "標準差"
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "變異數"
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "總和"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
@@ -1208,19 +1208,19 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "取最小值"
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "取最大值"
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均數"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "將y的小數點取n位數"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
@@ -1228,7 +1228,7 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "中位數"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
@@ -3394,7 +3394,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "清除"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
@@ -3402,35 +3402,35 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "還原到預設設定"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "顯示題目"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "顯示座標軸"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "刻度:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr ""
+msgstr "進階"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
@@ -3442,7 +3442,7 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "將影像存成"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
