@@ -6,6 +6,8 @@
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QTimer>
+#include <QQuickWindow>
+
 
 QMap<QQmlEngine*, QQmlComponent*> JASPControl::_mouseAreaComponentMap;
 QByteArray JASPControl::_mouseAreaDef = "\
@@ -640,7 +642,6 @@ void JASPControl::_setFocus()
 		setFocus(false);
 }
 
-#include <QQuickWindow>
 void JASPControl::_notifyFormOfActiveFocus()
 {
 	if (_form)
