@@ -32,21 +32,11 @@ DropArea
 
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
-	Rectangle
-	{
-		id:				bottomLine
-		anchors.bottom:	parent.bottom
-		anchors.left:	parent.left
-		height:			1
-		width:			parent.width + 1
-		color:			jaspTheme.buttonBorderColor
-		visible:		draggableItem.state != "dragging"
-	}
-
 	Item
 	{
 		id:					draggableItem
 		height:				loaderAndError.y
+		activeFocusOnTab:	true
 
 
 		property int		myIndex:			-1
@@ -77,6 +67,15 @@ DropArea
 					anchors.left:	undefined
 					anchors.right:	undefined
 				}
+
+				PropertyChanges
+				{
+					restoreEntryValues: false
+					draggableItem
+					{
+						focus:			true
+					}
+				}
 			},
 			
 			State
@@ -100,6 +99,15 @@ DropArea
 			}
 		]
 
+		Keys.onPressed: (event) =>
+		{
+			if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+			{
+				analysisFormExpander.toggleExpander();
+			}
+		}
+
+
 		ToolTip
 		{
 			text:			qsTr("Drag to reorder the analyses")
@@ -115,7 +123,7 @@ DropArea
 		MouseArea
 		{
 			id:				mouseArea
-			onClicked:		analysisFormExpander.toggleExpander();
+			onClicked:		{ analysisFormExpander.toggleExpander(); draggableItem.forceActiveFocus(); }
 			hoverEnabled:	true
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
@@ -134,6 +142,7 @@ DropArea
 					analysesModel.moveAnalysesResults(formParent.myAnalysis, draggableItem.droppedIndex)
 				}
 			}
+
 
 			anchors
 			{
@@ -155,6 +164,18 @@ DropArea
 			spread			: 0.2
 			cornerRadius	: expanderButton.radius + glowRadius
 			glowRadius		: 5
+		}
+
+		Rectangle
+		{
+			id:					focusIndicator
+			visible:			draggableItem.activeFocus && !draggableItem.Drag.active
+			anchors.fill:		draggableItem
+			color:				"transparent"
+			border.width:		jaspTheme.jaspControlHighlightWidth
+			border.color:		jaspTheme.focusBorderColor
+			radius:				jaspTheme.jaspControlHighlightWidth
+			z:					2
 		}
 
 		Rectangle
@@ -213,6 +234,8 @@ DropArea
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 			}
+
+
 
 			Item
 			{
