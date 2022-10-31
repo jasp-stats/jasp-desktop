@@ -32,6 +32,18 @@ DropArea
 
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
+	Rectangle
+	{
+		id:                             bottomLine
+		anchors.bottom: parent.bottom
+		anchors.left:   parent.left
+		height:                 1
+		width:                  parent.width + 1
+		color:                  jaspTheme.buttonBorderColor
+		visible:                draggableItem.state != "dragging"
+	}
+
+
 	Item
 	{
 		id:					draggableItem
