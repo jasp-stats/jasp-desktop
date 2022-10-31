@@ -155,7 +155,6 @@ DropArea
 				}
 			}
 
-
 			anchors
 			{
 				top:	parent.top
@@ -246,8 +245,6 @@ DropArea
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 			}
-
-
 
 			Item
 			{
