@@ -578,14 +578,14 @@ DropArea
 							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
 							{
 								const coordinates = control.mapToItem(scrollAnalyses, 0, 0);
-								const diffYBottom = coordinates.y + control.height - scrollAnalyses.height;
-								const diffYTop = coordinates.y;
+								const diffYBottom = coordinates.y + Math.min(control.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
+								const diffYTop = coordinates.y; //negative if not visible
 								const margin = 50 * jaspTheme.uiScale;
 
-								//check if the object is visisble in the scrollAnalyses and scroll to it if not
-								if (diffYBottom > -margin && !contentYBehaviour.animation.running)
+								//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
+								if (diffYBottom > -margin && !contentYBehaviour.animation.running) // scroll up
 									backgroundFlickable.contentY = backgroundFlickable.contentY + Math.max(0, diffYBottom + margin);
-								if (diffYTop < margin && !contentYBehaviour.animation.running)
+								else if (diffYTop < margin && !contentYBehaviour.animation.running) //scroll down
 									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + Math.min(0, diffYTop - margin));
 							}
 						}

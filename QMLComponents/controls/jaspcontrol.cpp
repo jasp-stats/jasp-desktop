@@ -437,7 +437,7 @@ void JASPControl::setParentDebugToChildren(bool debug)
 {
 	if (_childControlsArea)
 		for (JASPControl* childControl : getChildJASPControls(_childControlsArea))
-		childControl->setParentDebug(debug);
+			childControl->setParentDebug(debug);
 }
 
 void JASPControl::focusInEvent(QFocusEvent *event)
@@ -447,6 +447,7 @@ void JASPControl::focusInEvent(QFocusEvent *event)
 	_activeJASPControl = true;
 }
 
+//Installed of innercontrol and non JASPControl children to capture focus reason
 bool JASPControl::eventFilter(QObject *watched, QEvent *event)
 {
 	if (event->type() == QEvent::FocusIn)
