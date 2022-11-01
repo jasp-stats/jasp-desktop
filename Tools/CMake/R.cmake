@@ -766,7 +766,7 @@ elseif(LINUX)
   endif()
 
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
-  set(Rscript_EXECUTABLE "${R_HOME_PATH}/bin/Rscript")
+  set(RSCRIPT_EXECUTABLE "${R_HOME_PATH}/bin/Rscript")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
   set(RENV_PATH "${R_LIBRARY_PATH}/renv")
@@ -775,7 +775,7 @@ elseif(LINUX)
 
   message(CHECK_START "Looking for R.h")
   # ask R where it thinks it's include folder is
-  execute_process(COMMAND ${Rscript_EXECUTABLE} -e "cat(R.home(\"include\"))" OUTPUT_VARIABLE R_INCLUDE_PATH)
+  execute_process(COMMAND ${RSCRIPT_EXECUTABLE} -e "cat(R.home(\"include\"))" OUTPUT_VARIABLE R_INCLUDE_PATH)
   # if R returns a nonexisting directory, try some fallback locations
   if(NOT EXISTS ${R_INCLUDE_PATH})
     message(STATUS "R return an invalid include directory, trying fallbacks")
