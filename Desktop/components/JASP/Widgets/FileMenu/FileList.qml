@@ -42,6 +42,10 @@ ListView
 									decrementCurrentIndex();
 							}
 
+	Keys.onEscapePressed:	resourceMenu.forceActiveFocus();
+	Keys.onTabPressed:		{ incrementCurrentIndex(); }
+	Keys.onBacktabPressed: 	{ decrementCurrentIndex(); }
+
 	function selectLast()
 	{
 		forceActiveFocus();
