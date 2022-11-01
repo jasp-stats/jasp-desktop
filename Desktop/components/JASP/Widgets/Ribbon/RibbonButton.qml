@@ -39,7 +39,7 @@ Rectangle
 	property string toolTip		: ""
 	property var	menu		: []
 	property bool	myMenuOpen	: false
-	property bool	showPressed	: ribbonButton.focus
+	property bool	showPressed	: ribbonButton.activeFocus || myMenuOpen
 
 	onMyMenuOpenChanged: if(!myMenuOpen) myMenuOpen = false; //Break the binding
 

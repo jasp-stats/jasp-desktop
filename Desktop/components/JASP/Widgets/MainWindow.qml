@@ -82,11 +82,11 @@ Window
 	Item
 	{
 		anchors.fill:	parent
-		focus:			true
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.openKeyPressed();					sequences: ["Ctrl+O"];											context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { ribbon.showFileMenuPressed(); mainWindow.openKeyPressed();}
+																				sequences: ["Ctrl+O"];											context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
@@ -101,8 +101,9 @@ Window
 
 		RibbonBar
 		{
-			id	: ribbon
-			z	: 6
+			id:		ribbon
+			z:		6
+			focus:	true
 
 			anchors
 			{
