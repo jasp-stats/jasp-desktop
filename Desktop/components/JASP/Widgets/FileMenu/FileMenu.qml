@@ -18,6 +18,8 @@ FocusScope
 	}
 	Keys.onDownPressed:		fileMenuModel.actionButtons.selectButtonDown();
 	Keys.onUpPressed:		fileMenuModel.actionButtons.selectButtonUp();
+	Keys.onTabPressed:		fileMenuModel.actionButtons.selectButtonDown();
+	Keys.onBacktabPressed:  fileMenuModel.actionButtons.selectButtonUp();
 
 	function showToolSeperator(typeRole)
 	{
@@ -177,7 +179,8 @@ FocusScope
 
 			onFocusChanged:		if(focus) fileMenuModel.resourceButtons.selectFirstButtonIfNoneSelected();
 
-			Keys.onLeftPressed: actionMenu.forceActiveFocus();
+			Keys.onLeftPressed:		actionMenu.forceActiveFocus();
+			Keys.onEscapePressed:	actionMenu.forceActiveFocus();
 
 			Behavior on anchors.leftMargin
 			{
@@ -247,6 +250,8 @@ FocusScope
 							Keys.onRightPressed:	showSelectedSubScreen.forceActiveFocus()
 							Keys.onDownPressed:		fileMenuModel.resourceButtons.selectButtonDown()
 							Keys.onUpPressed:		fileMenuModel.resourceButtons.selectButtonUp()
+							Keys.onTabPressed:		fileMenuModel.resourceButtons.selectButtonDown()
+							Keys.onBacktabPressed: 	fileMenuModel.resourceButtons.selectButtonUp()
 							onHoverClicked:			fileMenuModel.resourceButtons.selectedButton = typeRole
 							onClicked:
 							{

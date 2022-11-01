@@ -18,6 +18,10 @@ ListView
 	spacing:				10
 	model:					cppModel
 
+	Keys.onEscapePressed:	resourceMenu.forceActiveFocus();
+	Keys.onTabPressed:		{ incrementCurrentIndex(); }
+	Keys.onBacktabPressed: 	{ decrementCurrentIndex(); }
+
 	function selectLast()
 	{
 		forceActiveFocus();
