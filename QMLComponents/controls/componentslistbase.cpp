@@ -203,20 +203,25 @@ void ComponentsListBase::addItemHandler()
 	if (_duplicateWhenAdding)
 	{
 		QMap<QString, Json::Value> jsonValues;
-		const Json::Value& boundVal = boundValue();
-		int currentIndex = property("currentIndex").toInt();
-		const Terms& terms = _termsModel->terms();
+		
+		const Json::Value	&	boundVal		= boundValue();
+		int						currentIndex	= property("currentIndex").toInt();
+		const Terms			&	terms			= _termsModel->terms();
+		
 		if (boundVal.isArray() && int(terms.size()) >= currentIndex)
 		{
 			std::string keyString = terms.at(size_t(currentIndex)).asString();
+			
 			for (const Json::Value& jsonVal : boundVal)
 			{
 				const Json::Value& keyVal = jsonVal.get(fq(_optionKey), Json::nullValue);
+				
 				if (keyVal.asString() == keyString)
 				{
 					for (const std::string& member : jsonVal.getMemberNames())
 						jsonValues[tq(member)] = jsonVal.get(member, Json::nullValue);
 				}
+				
 				jsonValues[_optionKey] = fq(newTerm);
 			}
 		}
@@ -265,8 +270,9 @@ void ComponentsListBase::nameChangedHandler(int index, QString name)
 QString ComponentsListBase::_changeLastNumber(const QString &val) const
 {
 	QString result = val;
-	int index = val.length() - 1;
-	for (; index >= 0 ; index--)
+	
+	int index;
+	for (index = val.length() - 1; index >= 0 ; index--)
 	{
 		if (!val.at(index).isDigit())
 			break;
