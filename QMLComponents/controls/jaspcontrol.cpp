@@ -456,6 +456,14 @@ bool JASPControl::eventFilter(QObject *watched, QEvent *event)
 		_focusReason = focusEvent->reason();
 		_activeJASPControl = true;
 	}
+	#ifdef __APPLE__
+	if (event->type() == QEvent::MouseButtonPress)
+	{
+		QQuickItem* item = qobject_cast<QQuickItem*>(watched);
+		if(item)
+			item->forceActiveFocus(Qt::FocusReason::MouseFocusReason);
+	}
+	#endif
 	return false;
 }
 
