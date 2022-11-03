@@ -533,7 +533,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::TextField:					return tr("Entry Field");			break;
 	case ControlType::RadioButton:					return tr("Radio Button");			break;
 	case ControlType::RadioButtonGroup:				return tr("Radio Buttons");			break;
-	case ControlType::VariablesListView:			return tr("Variables");				break;
+	case ControlType::VariablesListView:			return tr("Variables List");		break;
 	case ControlType::ComboBox:						return tr("ComboBox");				break;
 	case ControlType::FactorLevelList:				return tr("Factor Level List");		break;
 	case ControlType::InputListView:				return tr("Input ListView");		break;
@@ -544,6 +544,8 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::FactorsForm:					return tr("Factors Form");			break;
 	case ControlType::ComponentsList:				return tr("List of Components");	break;
 	case ControlType::GroupBox:						return tr("Group Box");				break;
+	case ControlType::TabView:						return tr("Tab View");				break;
+	case ControlType::VariablesForm:				return tr("Variables Form");		break;
 	}
 }
 
@@ -551,14 +553,21 @@ QString JASPControl::helpMD(int howDeep) const
 {
 	if(!isVisible())
 		return "";
+		
+	Log::log() << "Generating markdown for control by name '" << name() << "', title '" << title() << "' and type: '" << JASPControl::ControlTypeToFriendlyString(controlType()) << "'.\n";
+		
+	if(controlType() == JASPControl::ControlType::VariablesForm)
+		Log::log() << "varform!\n";
 
 	howDeep++;
 	QStringList markdown, childMDs;
 
 	//First we determine if we have children, and if so if they contain anything.
-	QList<JASPControl*> children = _childControlsArea ? getChildJASPControls(_childControlsArea) : QList<JASPControl*>();
+	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this);
 
 	bool aControlThatEncloses = children.size() > 0;
+		
+	Log::log() << "Control encloses #" << children.size() << " children." << std::endl;
 
 	for (JASPControl* childControl : children)
 		childMDs << childControl->helpMD(howDeep);
@@ -590,7 +599,11 @@ QString JASPControl::helpMD(int howDeep) const
 
 	markdown << childMD;
 
-	return markdown.join("") + "\n\n";
+	QString md = markdown.join("") + "\n\n";
+		
+	Log::log() << "Generated: '" << md << "'\n";
+		
+	return md;
 }
 
 void JASPControl::setChildControlsArea(QQuickItem * childControlsArea)

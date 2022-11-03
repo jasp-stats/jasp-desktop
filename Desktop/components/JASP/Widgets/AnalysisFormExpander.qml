@@ -427,8 +427,8 @@ DropArea
 					enabled:			expanderButton.expanded
 					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
 										{
-											if(helpModel.markdown !== formParent.myForm.helpMD)
-												helpModel.markdown = Qt.binding(function(){ return formParent.myForm.helpMD; });
+											if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm.helpMD; });
 											else
 												helpModel.visible  = false;
 											
