@@ -133,9 +133,28 @@ QString RSyntax::generateSyntax() const
 
 QString RSyntax::generateWrapper() const
 {
-	QString result;
-
-	result = _form->name() + "Wrapper <- function(\n";
+	QString result = "\
+#\n\
+# Copyright (C) 2013-2022 University of Amsterdam\n\
+#\n\
+# This program is free software: you can redistribute it and/or modify\n\
+# it under the terms of the GNU General Public License as published by\n\
+# the Free Software Foundation, either version 2 of the License, or\n\
+# (at your option) any later version.\n\
+#\n\
+# This program is distributed in the hope that it will be useful,\n\
+# but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+# GNU General Public License for more details.\n\
+#\n\
+# You should have received a copy of the GNU General Public License\n\
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\
+#\n\
+\n\
+# This is a generated file. Don't change it\n\
+\n\
+";
+	result += _form->name() + "Wrapper <- function(\n";
 	result += FunctionOptionIndent + "data = NULL";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
@@ -169,7 +188,7 @@ QString RSyntax::generateWrapper() const
 		result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = " + transformJsonToR(defaultValue, Json::Value::null);
 
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-		if (listControl && !listControl->hasRowComponent() && listControl->containsInteractions())
+		if (listControl)
 			optionsWithFormula.push_back(getRSyntaxFromControlName(control));
 	}
 
@@ -189,7 +208,7 @@ QString RSyntax::generateWrapper() const
 		+ FunctionLineIndent + FunctionLineIndent + "if (!inherits(" + formula->name() + ", \"formula\")) {\n"
 		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + formula->name() + " <- as.formula(" + formula->name() + ")\n"
 		+ FunctionLineIndent + FunctionLineIndent + "}\n"
-		+ FunctionLineIndent + FunctionLineIndent + "options$" + formula->name() + " <- deparse1(" + formula->name() + ")\n"
+		+ FunctionLineIndent + FunctionLineIndent + "options$" + formula->name() + " <- jaspBase::jaspFormula(" + formula->name() + ", data)\n"
 		+ FunctionLineIndent + "}\n\n";
 	}
 
@@ -206,7 +225,7 @@ QString RSyntax::generateWrapper() const
 		}
 		result += ")\n"
 		+ FunctionLineIndent + "for (name in optionsWithFormula) {\n"
-		+ FunctionLineIndent + FunctionLineIndent + "if ((name %in% optionsWithFormula) && inherits(options[[name]], \"formula\")) options[[name]] = deparse1(options[[name]])"
+		+ FunctionLineIndent + FunctionLineIndent + "if ((name %in% optionsWithFormula) && inherits(options[[name]], \"formula\")) options[[name]] = jaspBase::jaspFormula(options[[name]], data)"
 		+ FunctionLineIndent + "}\n"
 		+ "\n";
 	}
@@ -214,10 +233,10 @@ QString RSyntax::generateWrapper() const
 	result += ""
 	+ FunctionLineIndent + "if (jaspResultsCalledFromJasp()) {\n"
 	+ FunctionLineIndent + FunctionLineIndent + "result <- list(\"options\" = options, \"analysis\"=\"" + _analysisFullName() + "\")\n"
-	+ FunctionLineIndent + FunctionLineIndent + "result <- jsonlite::toJSON(result, auto_unbox = TRUE, digits = NA, null=\"null\")\n"
+	+ FunctionLineIndent + FunctionLineIndent + "result <- jsonlite::toJSON(result, auto_unbox = TRUE, digits = NA, null=\"null\", force = TRUE)\n"
 	+ FunctionLineIndent + FunctionLineIndent + "toString(result)\n"
 	+ FunctionLineIndent + "} else {\n"
-	+ FunctionLineIndent + FunctionLineIndent + "options <- checkAnalysisOptions(\"" + _analysisFullName() + "\", options)\n"
+	+ FunctionLineIndent + FunctionLineIndent + "options <- jaspBase::checkAnalysisOptions(\"" + _analysisFullName() + "\", options)\n"
 	+ FunctionLineIndent + FunctionLineIndent + "jaspTools::runAnalysis(\"" + _analysisFullName() + "\", data, options)\n"
 	+ FunctionLineIndent + "}\n"
 	+ "\n"
@@ -237,6 +256,7 @@ void RSyntax::setUp()
 
 bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 {
+	Log::log() << "Parse Syntax Options: " << options.toStyledString() << std::endl;
 	if (!options.isObject())
 	{
 		addError("Wrong type of options!");
@@ -264,43 +284,35 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 			BoundControl* boundControl = listControl->boundControl();
 			Json::Value defaultOption = boundControl != nullptr ? boundControl->defaultBoundValue() : Json::Value::null;
 			const Json::Value& option = options[fq(controlName)];
-			if (option.isString() && !defaultOption.isString())
+
+			// For user-friendliness purpose, an option that should have a structure (list of strings, or list of lists of strings...),
+			// can accept just a string. This may happen in 2 cases:
+			// . a formula is used
+			// . an array of strings contain only 1 element: this element is set without list.
+			BoundControlTerms* boundControlTerms = dynamic_cast<BoundControlTerms*>(boundControl);
+
+			if (option.isObject() && option.isMember("rhs") && boundControlTerms)
 			{
-				// For user-friendliness purpose, an option that should have a structure (list of strings, or list of lists of strings...),
-				// can accept just a string. This may happen in 2 cases:
-				// . a formula is used
-				// . an array of strings contain only 1 element: this element is set without list.
-				QString optionString = tq(option.asString()).trimmed();
-				BoundControlTerms* boundControlTerms = dynamic_cast<BoundControlTerms*>(boundControl);
+				// When a formula is used, just parse it
+				FormulaParser::ParsedTerms parsedTerms;
+				QString error;
 
-				if (optionString.startsWith('~') && boundControlTerms)
+				if (!FormulaParser::parse(option["rhs"], false, parsedTerms, error))
 				{
-					// When a formula is used, just parse it
-					QString formula = optionString.remove(0,1);
-					FormulaParser::ParsedTerms parsedTerms;
-					QString error;
-
-					if (!FormulaParser::parse(formula, parsedTerms, error))
-					{
-						addError(error);
-						return false;
-					}
-					Terms terms;
-					for (const FormulaParser::ParsedTerm& parsedTerm : parsedTerms)
-						terms.add(parsedTerm.allTerms);
-					Json::Value newOption = boundControlTerms->addTermsToOption(Json::Value::null, terms);
-					options[fq(controlName)] = newOption;
+					addError(error);
+					return false;
 				}
-				else if (listControl->maxRows() != 1)
-				{
-					// To make it easier, it is allowed to set a string when a Variables list has only 1 value: set back an array
-					Json::Value newOption(Json::arrayValue);
-					if (!optionString.isEmpty())
-						newOption.append(fq(optionString));
-					options[fq(controlName)] = newOption;
-				}
-				else
-					addError(tr("Wrong type for argument %1").arg(syntaxName));
+				Json::Value newOption = boundControlTerms->addTermsToOption(Json::Value::null, parsedTerms.fixedTerms);
+				options[fq(controlName)] = newOption;
+			}
+			else if (defaultOption.isArray() && option.isString())
+			{
+				// To make it easier, it is allowed to set a string when a Variables list has only 1 value: set back an array
+				Json::Value newOption(Json::arrayValue);
+				QString optionString = tq(option.asString());
+				if (!optionString.isEmpty())
+					newOption.append(fq(optionString));
+				options[fq(controlName)] = newOption;
 			}
 		}
 	}

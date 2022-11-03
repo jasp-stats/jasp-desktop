@@ -64,6 +64,7 @@ public:
 
 	FormulaSource(FormulaBase *formula, const QVariant& var);
 
+	static const QString			interceptTerm;
 	static QVector<FormulaSource*>	makeFormulaSources(FormulaBase* formula, const QVariant& var);
 	static QString					generateInteractionTerms(const Terms& terms);
 
@@ -85,10 +86,12 @@ protected:
 	Terms							_onlyTrueTerms(const QString& controlName, const Terms& terms)									const;
 	bool							_areTermsInOptions(ListModelAssignedInterface* model, const Json::Value& options, Terms& terms)	const;
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;
-	FormulaParser::ParsedTerms		_fillOptionsWithParsedTerms(ListModel* model, const FormulaParser::ParsedTerms &parsedTerms, Json::Value &options, QMap<QString, Terms>* termsMap = nullptr)	const;
-	FormulaParser::ParsedTerms		_fillOptionsWithConditionalParsedTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)														const;
+	FormulaParser::ParsedTerms		_fillOptionsWithFixedTerms(ListModel* model, const FormulaParser::ParsedTerms &parsedTerms, Json::Value &options, QMap<QString, Terms>* termsMap = nullptr)	const;
+	FormulaParser::ParsedTerms		_fillOptionsWithRandomTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)														const;
 	ListModel::RowControlsValues	_getTermsFromExtraOptions(const Json::Value& options)											const;
-	FormulaBase*						_formula			= nullptr;
+	bool							_checkIntercept(Terms& terms) const;
+
+	FormulaBase*					_formula			= nullptr;
 	ListModel*						_model				= nullptr;
 	QString							_sourceName;
 	QMap<QString, ExtraOption>		_extraOptions;

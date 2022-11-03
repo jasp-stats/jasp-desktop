@@ -188,9 +188,9 @@ void ComponentsListBase::termsChangedHandler()
 	_setTableValue(_termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 }
 
-Json::Value ComponentsListBase::getConditionalTermsOptions(const ListModel::RowControlsValues &conditionalTermsMap)
+Json::Value ComponentsListBase::getTableValueOptions(const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _getTableValueOption(conditionalTermsMap, fq(_optionKey), containsInteractions());
+	return _getTableValueOption(termsWithComponentValues, fq(_optionKey), containsInteractions());
 }
 
 void ComponentsListBase::addItemHandler()

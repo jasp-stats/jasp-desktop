@@ -38,6 +38,7 @@ void FormulaBase::setUp()
 	connect(this, &FormulaBase::rhsChanged, this, [this]() { _rightFormulaSources = FormulaSource::makeFormulaSources(this, _rhs); emit somethingChanged();} );
 }
 
+// Generate the R Formula
 QString FormulaBase::toString() const
 {
 	if (!_rSyntax)
@@ -55,28 +56,32 @@ QString FormulaBase::toString() const
 		return result;
 	}
 
-	auto addFormulaTerms = [] (const QVector<FormulaSource*>& formulaSources) -> QString
+	auto addFormulaTerms = [] (const QVector<FormulaSource*>& formulaSources, bool isLhs) -> QString
 	{
 		QString result;
+
 		bool first = true;
 		for (FormulaSource* formulaSource: formulaSources)
 		{
-			if (formulaSource->isEmpty()) 
-				continue;
+			if (formulaSource->isEmpty()) continue;
 
 			QString terms = formulaSource->toString();
-			if (!first && !terms.isEmpty()) 
-				result += " + ";
+			if (terms.isEmpty()) continue;
 
+			if (!first) result += " + ";
 			first = false;
+
 			result += terms;
 		}
 
+		if (isLhs && result.contains(" +")) result = "cbind(" + result.replace(" +", ",") + ")";
 		return result;
 	};
 
-	result += addFormulaTerms(_leftFormulaSources) + " ~ " +  addFormulaTerms(_rightFormulaSources);
+	result += addFormulaTerms(_leftFormulaSources, true) + " ~ " +  addFormulaTerms(_rightFormulaSources, false);
 
+	// In case of a formula uses a VarialesList which has also extra controls for each variable (typically the isNuisance checkbox in Bayesian ANOVA),
+	// then this information cannot be added in the formula. For this we need to add extra option with the values of these extra controls.
 	for (FormulaSource* formulaSource : _leftFormulaSources + _rightFormulaSources)
 	{
 		QMap<QString, QString> extraOptions = formulaSource->additionalOptionStrings();
@@ -89,6 +94,8 @@ QString FormulaBase::toString() const
 		}
 	}
 
+	// When terms come from different sources. only one can be unspecified, for the other one the user must specify in the script
+	// which terms are in these sources.
 	for (const QString& optionToSpecify : _getSourceList(_userMustSpecify))
 	{
 		ListModel* model = getModel(optionToSpecify);
@@ -129,25 +136,23 @@ QString FormulaBase::toString() const
 bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 {
 	const Json::Value& formulaJson = options[fq(_name)];
-	QString formulaStr = formulaJson.isString() ? tq(formulaJson.asString()).trimmed() : QString();
 
-	if (formulaStr.isEmpty()) return true;
+	Log::log() << "Formula: " << formulaJson.toStyledString() << std::endl;
+	if (formulaJson.empty()) return true;
 
-	QStringList formula = formulaStr.split('~');
-
-	if (formula.length() != 2)
+	if (!formulaJson.isObject())
 	{
-		_rSyntax->addError(tr("Wrong syntax in Formula: %1").arg(formulaStr));
+		Log::log() << "Formula option is not an object!" << std::endl;
 		return false;
 	}
 
-	QString lhs = formula[0],
-			rhs = formula[1];
+	const Json::Value	lhs = formulaJson["lhs"],
+						rhs = formulaJson["rhs"];
 
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	if (!FormulaParser::parse(lhs, leftParsedTerms, error) || !FormulaParser::parse(rhs, rightParsedTerms, error))
+	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error) || !FormulaParser::parse(rhs, false, rightParsedTerms, error))
 	{
 		_rSyntax->addError(error);
 		return false;
@@ -214,14 +219,14 @@ QStringList FormulaBase::_getSourceList(const QVariant &var) const
 
 bool FormulaBase::_parseFormulaSources(const QVector<FormulaSource*>& formulaSources, FormulaParser::ParsedTerms& parsedTerms, Json::Value& options) const
 {
-	if (parsedTerms.isEmpty()) 
+	if (parsedTerms.fixedTerms.terms().empty())
 		return true;
 
 	for (const FormulaSource* formulaSource : formulaSources)
 		parsedTerms = formulaSource->fillOptionsWithParsedTerms(parsedTerms, options);
 
-	if (!parsedTerms.isEmpty() && !_rSyntax->hasError())
-		_rSyntax->addError(tr("Could not find term %1 in Formula").arg(parsedTerms[0].allTerms[0].asQString()));
+	if (!parsedTerms.fixedTerms.terms().empty() && !_rSyntax->hasError())
+		_rSyntax->addError(tr("Could not find term %1 in Formula").arg(parsedTerms.fixedTerms.terms()[0].asQString()));
 
 	return !_rSyntax->hasError();
 }
