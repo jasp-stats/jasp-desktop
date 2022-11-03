@@ -35,7 +35,7 @@ class FormulaBase : public QQuickItem
 	Q_PROPERTY( QVariant	userMustSpecify		READ userMustSpecify		WRITE setUserMustSpecify		NOTIFY userMustSpecifyChanged		)
 	Q_PROPERTY( QVariant	lhs					READ lhs					WRITE setLhs					NOTIFY lhsChanged					)
 	Q_PROPERTY( QVariant	rhs					READ rhs					WRITE setRhs					NOTIFY rhsChanged					)
-	Q_PROPERTY( QString		name				READ name					WRITE setName					NOTIFY nameChanged			)
+	Q_PROPERTY( QString		name				READ name					WRITE setName					NOTIFY nameChanged					)
 
 public:
 	FormulaBase(QQuickItem *parent = nullptr);
@@ -80,7 +80,7 @@ private:
 	QVariant				_userMustSpecify,
 							_lhs,
 							_rhs;
-	QString					_name			= "formula";
+	QString					_name				= "formula";
 	QVector<FormulaSource*>	_leftFormulaSources,
 							_rightFormulaSources;
 };

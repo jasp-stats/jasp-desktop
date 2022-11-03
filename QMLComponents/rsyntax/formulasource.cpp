@@ -235,16 +235,21 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 		bool hasCorrelation = correlationControl ? correlationControl->property("checked").toBool() : false;
 
 		Terms filteredTerms = _randomEffects.checkControl.isEmpty() ? componentListModel->terms() : SourceItem::filterTermsWithCondition(componentListModel, componentListModel->terms(), _randomEffects.checkControl);
-		if (filteredTerms.size() > 0)
+		bool hasIntercept = _checkIntercept(filteredTerms);
+
+		if (filteredTerms.size() > 0 || hasIntercept)
 		{
 			if (!result.isEmpty()) result += " + " ;
 
-			if (filteredTerms.size() > 1) result += "(";
-			result += generateInteractionTerms(filteredTerms);
-			if (filteredTerms.size() > 1) result += ")";
+			result += "(";
+			result += (hasIntercept ? "1" : "0");
+
+			if (filteredTerms.size() > 0)
+				result += " + " + generateInteractionTerms(filteredTerms);
 
 			result += (hasCorrelation ? " | " : " || ");
 			result += key;
+			result += ")";
 		}
 	}
 
@@ -338,26 +343,20 @@ ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Jso
 	for (const QString& extraControlName : _extraOptions.keys())
 	{
 		const Json::Value& extraOptionJson = options[fq(_extraOptions[extraControlName].optionName)];
-		if (extraOptionJson.isString())
+		if (extraOptionJson.isObject())
 		{
-			QString extraOption = tq(extraOptionJson.asString()).trimmed();
-			if (extraOption.startsWith('~'))
-			{
-				QString formula = extraOption.mid(1).trimmed();
-				FormulaParser::ParsedTerms parsedTerms;
-				QString error;
+			FormulaParser::ParsedTerms parsedTerms;
+			QString error;
 
-				if (FormulaParser::parse(formula, parsedTerms, error))
-				{
-					for (const FormulaParser::ParsedTerm& parsedTerm : parsedTerms)
-					{
-						for (const Term& term : parsedTerm.allTerms)
-							extraTermsMap[term.asQString()][extraControlName] = true;
-					}
-				}
+			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error))
+			{
+				for (const Term& parsedTerm : parsedTerms.fixedTerms)
+					extraTermsMap[parsedTerm.asQString()][extraControlName] = true;
 			}
-			else
-				extraTermsMap[extraOption][extraControlName] = true;
+		}
+		else if (extraOptionJson.isString())
+		{
+				extraTermsMap[tq(extraOptionJson.asString())][extraControlName] = true;
 		}
 		else if (extraOptionJson.isArray())
 		{
@@ -374,19 +373,30 @@ ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Jso
 				}
 			}
 		}
-		else if (extraOptionJson.isObject())
-		{
-			// TODO: If complexer extra option is given, we will have to handle it here...
-		}
 		else
-		{
 			Log::log() << "Impossible Json type in _addTermsToOptions: " << extraOptionJson.toStyledString() << std::endl;
-			continue;
-		}
 	}
 
 	return extraTermsMap;
 
+}
+
+const QString FormulaSource::interceptTerm = "Intercept";
+
+bool FormulaSource::_checkIntercept(Terms &terms) const
+{
+	bool hasIntercept = false;
+	for (const Term& term : terms)
+	{
+		if (term.asQString() == interceptTerm)
+		{
+			hasIntercept = true;
+			terms.remove(term);
+			break;
+		}
+	}
+
+	return hasIntercept;
 }
 
 void FormulaSource::_addTermsToOptions(ListModelAssignedInterface *model, Json::Value &options, const Terms &terms) const
@@ -414,15 +424,15 @@ bool FormulaSource::_areTermsInOptions(ListModelAssignedInterface *model, const 
 	return boundControl ? boundControl->areTermsInOption(options[optionName], terms) : false;
 }
 
-QVector<FormulaParser::ParsedTerm> FormulaSource::fillOptionsWithParsedTerms(const QVector<FormulaParser::ParsedTerm> &parsedTerms, Json::Value& options) const
+FormulaParser::ParsedTerms FormulaSource::fillOptionsWithParsedTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options) const
 {
-	if (_randomEffects.isEmpty())	return _fillOptionsWithParsedTerms(_model, parsedTerms, options);
-	else							return _fillOptionsWithConditionalParsedTerms(parsedTerms, options);
+	if (_randomEffects.isEmpty())	return _fillOptionsWithFixedTerms(_model, parsedTerms, options);
+	else							return _fillOptionsWithRandomTerms(parsedTerms, options);
 }
 
-QVector<FormulaParser::ParsedTerm> FormulaSource::_fillOptionsWithParsedTerms(ListModel* model, const QVector<FormulaParser::ParsedTerm> &parsedTerms, Json::Value& options, QMap<QString, Terms>* termsMap) const
+FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* model, const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options, QMap<QString, Terms>* termsMap) const
 {
-	QVector<FormulaParser::ParsedTerm>	remainingParsedTerms;
+	FormulaParser::ParsedTerms			remainingParsedTerms;
 	QList<ListModelAssignedInterface*>	unspecifiedSourceModels,
 										specifiedSourceModels;
 	QStringList							specifiedByUserSources = _formula->sourcesThatMustBeSpecified();
@@ -465,16 +475,19 @@ QVector<FormulaParser::ParsedTerm> FormulaSource::_fillOptionsWithParsedTerms(Li
 		}
 	}
 
-	for (const FormulaParser::ParsedTerm& parsedTerm : parsedTerms)
+	remainingParsedTerms.intercept = parsedTerms.intercept;
+	remainingParsedTerms.randomTerms = parsedTerms.randomTerms;
+	for (const Term& parsedTerm : parsedTerms.fixedTerms)
 	{
-		if (parsedTerm.isConditional)
+		if (parsedTerms.randomTerms.contains(parsedTerm.asQString()))
 		{
-			remainingParsedTerms.append(parsedTerm);
+			remainingParsedTerms.fixedTerms.add(parsedTerm);
 			continue;
 		}
 		bool found = false;
-		Terms terms = parsedTerm.allTerms;
-		Terms termsToSearch = isInteractionModel ? parsedTerm.baseTerms : terms;
+		Terms terms;
+		terms.add(parsedTerm);
+		Terms termsToSearch = isInteractionModel ? Terms(parsedTerm.components()) : terms;
 
 		if (termsToSearch.size() == 0) continue;
 
@@ -531,23 +544,19 @@ QVector<FormulaParser::ParsedTerm> FormulaSource::_fillOptionsWithParsedTerms(Li
 			}
 		}
 		else
-			remainingParsedTerms.append(parsedTerm);
+			remainingParsedTerms.fixedTerms.add(parsedTerm);
 	}
 
 	return remainingParsedTerms;
 }
 
-FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithConditionalParsedTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)	const
+FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)	const
 {
 	FormulaParser::ParsedTerms	remainingParsedTerms;
 
-	// During the parsing of the terms, we cannot be sure which side of the condition is the main term, and which one is a fixed effect term (if there is only one).
-	// Now we know that the fixed effect terms must come from the variablesModel, which should be now set in the options.
 	VariablesListBase* fixedEffectsControl = qobject_cast<VariablesListBase*>(_randomEffects.fixedEffectsModel->listView());
 	fixedEffectsControl->bindTo(options[fq(_randomEffects.fixedEffectsSource)]);
-	Terms	fixedEffectTerms = fixedEffectsControl->model()->terms(),
-			mainTerms;
-
+	Terms	fixedEffectTerms = fixedEffectsControl->model()->terms();
 
 	QList<ListModelAssignedInterface*>	sourceModels;
 
@@ -560,41 +569,12 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithConditionalParsedTerms
 	}
 
 	std::map<ListModelAssignedInterface*, Terms> sourceMainTermsMap;
-	ListModel::RowControlsValues conditionalTermsMap;
+	ListModel::RowControlsValues randomTermsMap;
 
-
-	for (const FormulaParser::ParsedTerm& parsedTerm : parsedTerms)
+	for (auto i = parsedTerms.randomTerms.begin(); i != parsedTerms.randomTerms.end(); ++i)
 	{
-		if (!parsedTerm.isConditional)
-		{
-			remainingParsedTerms.append(parsedTerm);
-			continue;
-		}
-
-		Term mainTerm = parsedTerm.baseTerms[0];
-		Terms conditionalTerms = parsedTerm.conditionalTerms;
-		if (parsedTerm.conditionalTerms.size() == 1)
-		{
-			// If it appears that the conditionTerm is in fact the main term, switch then
-			if (!fixedEffectTerms.contains(parsedTerm.conditionalTerms[0]) && fixedEffectTerms.contains(mainTerm))
-			{
-				mainTerm = parsedTerm.conditionalTerms[0];
-				conditionalTerms = Terms();
-				conditionalTerms.add(parsedTerm.baseTerms[0]);
-			}
-		}
-
-		// Check that the conditionalTerms effectively comes form the conditional source
-		for (const Term& conditionalTerm : parsedTerm.conditionalTerms)
-		{
-			if (!fixedEffectTerms.contains(conditionalTerm))
-			{
-				_addError(tr("The conditional term %1 does not come from the %2 source in Formula").arg(conditionalTerm.asQString()).arg(_randomEffects.variablesControl));
-				return parsedTerms;
-			}
-		}
-
-		mainTerms.add(mainTerm);
+		QString mainTerm = i.key();
+		const FormulaParser::RandomTerm& randomTerm = i.value();
 
 		for (ListModelAssignedInterface* model : sourceModels)
 		{
@@ -613,26 +593,34 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithConditionalParsedTerms
 
 		QMap<QString, Json::Value> componentValues;
 		Json::Value variables(Json::arrayValue);
-		for (const Term& conditionalTerm : fixedEffectTerms)
+
+		Json::Value interceptVariable(Json::objectValue);
+		Json::Value interceptValue(Json::arrayValue);
+		interceptValue.append(fq(interceptTerm));
+		interceptVariable[fq(_randomEffects.variablesKey)] = interceptValue;
+		interceptVariable[fq(_randomEffects.checkControl)] = randomTerm.intercept;
+		variables.append(interceptVariable);
+
+		for (const Term& fixedTerm : fixedEffectTerms)
 		{
 			Json::Value variable(Json::objectValue);
-			variable[fq(_randomEffects.checkControl)] = parsedTerm.conditionalTerms.contains(conditionalTerm);
-			Json::Value conditionalTermValue(Json::arrayValue);
-			for (const std::string& conditionalTermComponent : conditionalTerm.scomponents())
-				conditionalTermValue.append(conditionalTermComponent);
+			variable[fq(_randomEffects.checkControl)] = randomTerm.terms.contains(fixedTerm);
+			Json::Value randomVariables(Json::arrayValue);
+			for (const std::string& fixedTermComponent : fixedTerm.scomponents())
+				randomVariables.append(fixedTermComponent);
 
-			variable[fq(_randomEffects.variablesKey)] = conditionalTermValue;
+			variable[fq(_randomEffects.variablesKey)] = randomVariables;
 			variables.append(variable);
 		}
-		componentValues[_randomEffects.correlationControl] = parsedTerm.isCorrelated;
+		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
 		componentValues[_randomEffects.variablesControl] = variables;
-		conditionalTermsMap[mainTerm.asQString()] = componentValues;
+		randomTermsMap[mainTerm] = componentValues;
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)
 		_addTermsToOptions(sourceMainTermsIt.first, options, sourceMainTermsIt.second);
 
-	options[fq(_sourceName)] = _randomEffects.componentsList->getConditionalTermsOptions(conditionalTermsMap);
+	options[fq(_sourceName)] = _randomEffects.componentsList->getTableValueOptions(randomTermsMap);
 
 	return remainingParsedTerms;
 }

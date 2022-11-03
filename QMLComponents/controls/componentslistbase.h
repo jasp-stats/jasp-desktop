@@ -50,7 +50,7 @@ public:
 	QList<QVariant>	defaultValues()						const			{ return _defaultValues;		}
 	bool			duplicateWhenAdding()				const			{ return _duplicateWhenAdding;	}
 
-	Json::Value		getConditionalTermsOptions(const ListModel::RowControlsValues& conditionalTermsMap);
+	Json::Value		getTableValueOptions(const ListModel::RowControlsValues& termsWithComponentValues);
 signals:
 	void			addItem();
 	void			removeItem(int index);
