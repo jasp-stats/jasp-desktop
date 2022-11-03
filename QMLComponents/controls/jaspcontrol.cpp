@@ -589,8 +589,10 @@ QString JASPControl::helpMD(int howDeep) const
 	if(howDeep > 6) markdown << "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
 	else			markdown << QString{howDeep, '#'} + " "; // ;)
 
-	//Ok removing the check for existence of wrapper because
-	markdown << friendlyName();
+	//Would be better to show something like "Assigned vars" or "Available var list" or something like that
+	//if(controlType() != ControlType::VariablesListView)		
+		markdown << friendlyName();
+	//else													markdown << qobject_cast<JASPListControl*>(this)->
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";
