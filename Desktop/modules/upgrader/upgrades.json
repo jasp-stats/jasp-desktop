@@ -413,5 +413,6 @@
 	{	"from": { "module": "Reliability",				"version": "0.14.3",	"function": "*"	},		"to":	{ "module": "jaspReliability",			"version": "0.14.3"	}	},
 	{	"from": { "module": "SEM",						"version": "0.14.3",	"function": "*"	},		"to":	{ "module": "jaspSem",					"version": "0.14.3"	}	},
 	{	"from": { "module": "SummaryStatistics",		"version": "0.14.3",	"function": "*"	},		"to":	{ "module": "jaspSummaryStatistics",	"version": "0.14.3"	}	},
-	{	"from": { "module": "VisualModeling",			"version": "0.14.3",	"function": "*"	},		"to":	{ "module": "jaspVisualModeling",		"version": "0.14.3"	}	}
+	{	"from": { "module": "VisualModeling",			"version": "0.14.3",	"function": "*"	},		"to":	{ "module": "jaspVisualModeling",		"version": "0.14.3"	}	},
+	{	"from": { "module": "jaspProcessControl",		"version": "0.16.4",	"function": "*"	},		"to":	{ "module": "jaspQualityControl",		"version": "0.17.0"	}	}
 ]
