@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-11-03 07:07+0000\n"
+"PO-Revision-Date: 2022-11-07 02:02+0000\n"
 "Last-Translator: Changya Hu <changyahu@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 "X-Qt-Contexts: true\n"
 "X-Language: zh_Hant\n"
 
@@ -23,7 +23,7 @@ msgstr "移除一列"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr "存檔至"
+msgstr "存檔至:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
@@ -712,8 +712,8 @@ msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
-"下次開啟JASP時，接續前次使用狀態 \n"
-"選擇此設定將使得JASP記得你使用過哪些模組"
+"下次開啟JASP時，接續前次最後的使用狀態 \n"
+"選擇此設定，JASP將記得所使用的模組"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
@@ -729,7 +729,7 @@ msgstr "選擇開發人員檔案夾"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "瀏覽你的JASP模組檔案夾"
+msgstr "瀏覽你的JASP模組文件夾"
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -742,7 +742,7 @@ msgstr "產生MD檔"
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD 幫助檔"
+msgstr "啟用此選項將會產生qml選項中的MD幫助檔"
 
 #, fuzzy
 msgctxt "PrefsAdvanced|"
@@ -764,15 +764,13 @@ msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
 msgstr "參見文件中更詳盡之說明"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "If this is enabled and you have non-ascii characters in your install path "
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
-msgstr ""
-"若你安裝JASP的路徑名稱中包含非ASCII碼，你將無法使用JASP.   若你的路徑名稱皆為"
-"非ASCII碼，則可能無法成功安裝此模組"
+msgstr "若你安裝JASP的路徑名稱中包含非ASCII碼，你將無法使用JASP.   "
+"若你的路徑名稱皆為非ASCII碼，則可能無法成功安裝此模組"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -794,11 +792,11 @@ msgstr "將記錄存檔"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "勾選此方格以將JASP 除錯紀錄存成檔案"
+msgstr "勾選此方格以將 JASP 除錯紀錄存成檔案"
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "紀錄檔案存檔上限數 "
+msgstr "紀錄檔案存檔上限數: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
@@ -1069,9 +1067,10 @@ msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr "模：返回除法的餘數。3%2 傳回 1"
 
+#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "返回邏輯並且可以是過濾器公式的根"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -1120,11 +1119,11 @@ msgstr "資料分群：將篩選器分別應用於每個子群中"
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "不是: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "加"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
@@ -1782,230 +1781,246 @@ msgstr "圖"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "集合"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "結果"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "報表"
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr ""
+msgstr "輸入"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "選項"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "部分"
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "核取方塊"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "開關"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "輸入欄位"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "單選按鈕"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "單選按鈕"
 
 msgctxt "JASPControl|"
 msgid "Variables"
-msgstr ""
+msgstr "變數"
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr ""
+msgstr "下拉式組合方塊"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "輸入清單檢視"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "表格方式檢視"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "滑塊"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "文字區"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "按鈕"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "因素形式"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "元件清單"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "組箱"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr ""
+msgstr "該值必須為 "
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr ""
+msgstr "≥ %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr ""
+msgstr "> %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr ""
+msgstr " 與 "
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr ""
+msgstr "≤ %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr ""
+msgstr "< %1"
 
+#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr ""
+msgstr "無驗證錯誤"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "載入已知問題時出錯"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "載入資料集"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "存檔資料集"
 
+#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "匯出結果集"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "匯出資料集"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "同步資料集"
 
+#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons"
-msgstr ""
+msgstr "可用於數值比較"
 
 msgctxt "ColumnsModel|"
 msgid ""
 "which can only be used in (in)equivalence, greater and lesser than "
 "comparisons"
-msgstr ""
+msgstr "只能用於（不）等同、大於和小於之比較"
 
 msgctxt "ColumnsModel|"
 msgid "which can only be used in (in)equivalence comparisons"
-msgstr ""
+msgstr "只能用於（不）等同之比較"
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr ""
+msgstr "此 '"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "'-行 "
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "從 %1 匯入資料"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "匯入 SPSS 檔"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "匯入 SAS 檔"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "匯入 STATA 檔"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "載入 JASP 檔"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "載入檔案中"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "存檔 JASP 檔案"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "匯出結果"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "匯出資料"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "同步資料"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "處理檔案中"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr ""
+msgstr "嘗試進行此分析時當機..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr ""
+msgstr "嘗試套用此篩選器時當機..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr ""
+msgstr "嘗試計算此變數時當機..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr ""
+msgstr "嘗試執行rscript時當機..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr ""
+msgstr "圖形存檔時出錯"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2018,30 +2033,37 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"遺憾的是，無法存檔此圖型。\n"
+"\n"
+"錯誤資訊：\n"
+"%1\n"
+"\n"
+"如此問題一直出現，請至以下網址報告前述錯誤訊息：https://jasp-stats.org/bug-"
+"reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
+msgstr "調整圖形大小時出錯"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr ""
+msgstr "連續"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr ""
+msgstr "次序"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr ""
+msgstr "名義"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr ""
+msgstr "否"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
@@ -2049,43 +2071,47 @@ msgstr "取消"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "存檔"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr ""
+msgstr "不存檔"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "選擇檔案..."
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "選擇資料夾..."
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "安全圖形模式已更改"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
-msgstr ""
+msgstr "您已更改 JASP 的安全圖形模式，重新啟動 JASP後才能使此選項生效，"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "資料檔已更改"
 
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
-msgstr ""
+msgstr "此 JASP 檔使用的資料檔被修改。是否要根據新資料更新分析結果？"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "版本不相容"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2094,6 +2120,9 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
+"您的分析結果是基於舊版的JASP ，要更改圖像的 PPI，必須先刷新它們。\n"
+"\n"
+"刷新所有分析？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2102,17 +2131,24 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析是基於舊版的 JASP ，要存檔圖像，必須先刷新分析。\n"
+"\n"
+"刷新分析？"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr ""
+msgstr "存檔JASP 圖像"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"便攜式網絡圖形 (*.png);;便攜式文檔格式 (*.pdf);;Encapsulated PostScript (*."
+"eps);;300 dpi 標記圖像文件 (*.tiff);;PowerPoint (*.pptx);;可縮放矢量圖形 (*."
+"svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2121,10 +2157,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析是基於舊版的 JASP ，要存檔圖像，必須先刷新分析。\n"
+"\n"
+"刷新分析？"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Save File?"
-msgstr ""
+msgstr "儲存檔案？"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2133,43 +2173,53 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
+"程式關閉前是否存檔 %1 的變更？ \n"
+"\n"
+"若不存檔，這些變更將會不見"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "File has changed"
-msgstr ""
+msgstr "檔案已更改"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"無法開啟檔案，因為：\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "存檔失敗"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to save file.\n"
 "\n"
 "%1"
 msgstr ""
+"無法儲存檔案。\n"
+"\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "您有 GitHub 帳戶嗎？"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
-msgstr ""
+msgstr "通報錯誤需要使用 GitHub 帳戶，您是否有此帳戶？"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "加入 GitHub"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2181,43 +2231,61 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"我們將在您的網絡瀏覽器中為您打開兩個頁面。\n"
+"第二個是“加入 GitHub”頁面，您可以該頁面註冊 GitHub 帳戶。\n"
+"第一個是登錄頁面，在您使用新的 GitHub 帳戶登錄後，可以在該頁面填寫錯誤報告。"
+"\n"
+"\n"
+"請在此處填寫所有缺失的信息。"
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "GitHub 無法開啟"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Something went wrong with leading you to GitHub..\n"
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"將您引導到 GitHub 時出了點問題。\n"
+"您仍然可以通過轉到 https://github.com/jasp-stats/jasp-issues/issues "
+"來報告該錯誤"
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr ""
+msgstr "錯誤"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"JASP 遇到了意外的內部錯誤：\n"
+"%1"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP cannot continue and will close.\n"
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP無法繼續，並將關閉。\n"
+"\n"
+"如果您能向 JASP 團隊報告此錯誤，我們將不勝感激。"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "報告"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2226,6 +2294,9 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"啟動JASP時沒有選擇開啟關聯資料檔（csv，sav或ods文件）。但是為了編輯資料檔，"
+"JASP 會基於此檔案啟動您電腦預設的試算表編輯器，並在再存檔時同步資料。此是否已"
+"有此資料檔，還是要建置資料檔？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2233,29 +2304,34 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP啟動時開啟了網路資料檔（csv，sav或ods文件）。但若要編輯資料，JASP 需要在"
+"您的電腦上使用此檔。此資料檔是否也存在於您的電腦上，或者您要產生此資料檔？"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started with a read-only data file (probably from the examples). "
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
-msgstr ""
+msgstr "JASP啟動時開啟了唯讀資料檔（可能來自範例）。但要編輯資料，JASP "
+"要能入資料檔。您電腦上是否該資料檔，或者您要產生此資料檔？"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "啟動試算表編輯器"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "生成資料檔"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "尋找資料檔"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "啟動編輯器"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2807,9 +2883,10 @@ msgctxt "TextInputBase|"
 msgid "Integers Field"
 msgstr "整數欄位"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "小數位數"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
@@ -3222,7 +3299,7 @@ msgstr "載入模組描述時出現問題"
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "無法從存檔中加載模組描述檔:  '%1'"
+msgstr "無法從存檔中加載模組描述檔: '%1'"
 
 #, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3316,9 +3393,10 @@ msgid ""
 "environment variables."
 msgstr "使用附隨的GITHUB_PAT, 或使用環境變數中的設定"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "私人GITHUB_PAT："
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
@@ -3392,20 +3470,17 @@ msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
 msgstr "這是個非常有用的工具提示吧？"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr "第一個複選框"
+msgstr "第一個核取方塊"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr "第二個複選框"
+msgstr "第二個核取方塊"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr "最後一個複選框"
+msgstr "最後一個核取方塊"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
@@ -3464,9 +3539,9 @@ msgstr "取消"
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
+msgstr "在 JASP 啟動期間模組初始化失敗，是否刪除該模組？"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed with the following message:\n"
@@ -3474,15 +3549,19 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"在 JASP 啟動期間初始化模組失敗，並顯示以下訊息：\n"
+"%1\n"
+"\n"
+"是否應該刪除模組？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "初始化模組 %1 失敗"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "缺少模組"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3492,22 +3571,27 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"組合模組 %1 似乎未正確安裝，因此無法載入。\n"
+"如果您安裝的是JASP的官方安裝程式，請告知 JASP 團隊。"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "在控制台中執行 R 語法"
 
+#, fuzzy
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "添加到左側"
 
+#, fuzzy
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "添加到右側"
 
+#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
@@ -3521,15 +3605,17 @@ msgstr "<sup>*</sup>只能以OSF帳號登入，不支持ORCID或機構帳號"
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "清除已安裝的模組和套件"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "這將刪除應用程式數據中的「renv」 和「模組」 資料夾。"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "視窗解決方法"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
@@ -3548,17 +3634,19 @@ msgctxt "FilterWindow|"
 msgid "returns the sign of values"
 msgstr "返回數值的正負號"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr ""
+msgstr "標籤"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "勾號 #"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "向左插入勾號"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
@@ -3579,7 +3667,8 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
-"清除你安裝的模組與套件，只使用JASP內建的套件。\n"
+"清除你安裝的模組與套件，只使用JASP內建的套件。 \n"
+"\n"
 "修改設定後需重新啟動JASP!"
 
 msgctxt "MainWindow|"
@@ -3588,7 +3677,7 @@ msgstr "清除"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i>在Linux上，始終使用預設的試算表編輯器。</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
@@ -3628,7 +3717,7 @@ msgstr "解析為R語法"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr "限制"
+msgstr "限制範圍:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
