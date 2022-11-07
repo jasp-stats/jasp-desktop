@@ -85,6 +85,8 @@ void VariablesListBase::setUp()
 	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
+	connect(this,	&VariablesListBase::allowedColumnsChanged,						this, &VariablesListBase::_setAllowedVariables);
+	connect(this,	&VariablesListBase::suggestedColumnsChanged,					this, &VariablesListBase::_setAllowedVariables);
 }
 
 
@@ -338,59 +340,63 @@ void VariablesListBase::termsChangedHandler()
 }
 
 
-int VariablesListBase::_getAllowedColumnsTypes()
+int VariablesListBase::_getColumnsTypes(const QStringList& types)
 {
-	int allowedColumnsTypes = -1;
+	int columnsTypes = -1;
 
-	if (!allowedColumns().isEmpty())
+	if (!types.isEmpty())
 	{
-		allowedColumnsTypes = 0;
-		for (const QString& allowedColumn: allowedColumns())
+		columnsTypes = 0;
+		for (const QString& typeStr: types)
 		{
-			columnType allowedType = columnTypeFromString(fq(allowedColumn), columnType::unknown);
-			if (allowedType != columnType::unknown)
-				allowedColumnsTypes |= int(allowedType);
+			columnType type = columnTypeFromString(fq(typeStr), columnType::unknown);
+			if (type != columnType::unknown)
+				columnsTypes |= int(type);
 			else
-				addControlError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
+				addControlError(tr("Wrong column type: %1 for ListView %2").arg(typeStr).arg(name()));
 		}
 	}
 
-	return allowedColumnsTypes;
+	return columnsTypes;
 }
 
 void VariablesListBase::_setAllowedVariables()
 {
-	if (suggestedColumns().empty() && !allowedColumns().empty())
-		setSuggestedColumns(allowedColumns());
-	else if (allowedColumns().empty() && !suggestedColumns().empty())
+	QStringList allowedColumnsFromSuggestion;
+	if (allowedColumns().empty() && !suggestedColumns().empty())
 	{
-		QStringList newAllowedColumns = suggestedColumns();
+		allowedColumnsFromSuggestion = suggestedColumns();
 		if (suggestedColumns().contains("scale"))
 		{
-			if (!newAllowedColumns.contains("nominal"))			newAllowedColumns.push_back("nominal");
-			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
+			if (!allowedColumnsFromSuggestion.contains("nominal"))			allowedColumnsFromSuggestion.push_back("nominal");
+			if (!allowedColumnsFromSuggestion.contains("ordinal"))			allowedColumnsFromSuggestion.push_back("ordinal");
 		}
 		if (suggestedColumns().contains("nominal"))
 		{
-			if (!newAllowedColumns.contains("nominalText"))		newAllowedColumns.push_back("nominalText");
-			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
+			if (!allowedColumnsFromSuggestion.contains("nominalText"))		allowedColumnsFromSuggestion.push_back("nominalText");
+			if (!allowedColumnsFromSuggestion.contains("ordinal"))			allowedColumnsFromSuggestion.push_back("ordinal");
 		}
-		setAllowedColumns(newAllowedColumns);
 	}
 
-	int allowedColumnsTypes = _getAllowedColumnsTypes();
+	int allowedColumnsTypes = _getColumnsTypes(allowedColumns().isEmpty() ? allowedColumnsFromSuggestion : allowedColumns());
 
 	if (allowedColumnsTypes >= 0)
 		_variableTypesAllowed = allowedColumnsTypes;
 
-	QStringList iconList;
-	for (const QString& suggectedType : suggestedColumns())
+	QStringList iconList,
+				columnTypes = suggestedColumns();
+	if (columnTypes.empty()) columnTypes = allowedColumns();
+	for (const QString& columnTypeStr : columnTypes)
 	{
-		columnType type = columnTypeFromString(fq(suggectedType), columnType::unknown);
+		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
 		if (type != columnType::unknown)
 			iconList.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
 	}
 	setSuggestedColumnsIcons(iconList);
+
+	if (form() && form()->initialized())
+		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
+		model()->refresh();
 }
 
 void VariablesListBase::_setRelations()
