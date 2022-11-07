@@ -78,15 +78,26 @@ TextInputBase
 		lastValidValue = control.text;
 	}
 
-	onInitializedChanged: if (initialized) checkValue(false)
+	// The value should be checked only when the control is initialized.
+	// But even if initialized, the constraints (e.g min or max) might change afterwards, if these constraints depend on other controls.
+	// In this case the error must be removed: this is done via the onAcceptableInputChanged which calls the checkValue.
+	onInitializedChanged: if (initialized) checkValue(false, false)
 
-	function checkValue(resetLastValidValue)
+	function checkValue(resetLastValidValue, addErrorIfNotFocussed)
 	{
-		if (control.acceptableInput) return true;
+		if (!initialized) return false
 
-		var msg
-		if (control.validator && (typeof control.validator.validationMessage === "function"))
-			msg = control.validator.validationMessage(beforeLabel.text)
+		if (control.acceptableInput)
+		{
+			if (!hasScriptError)
+				clearControlError();
+			return true;
+		}
+
+		if (addErrorIfNotFocussed && activeFocus) return false
+		if (!control.validator || (typeof control.validator.validationMessage !== "function")) return false;
+
+		var msg = control.validator.validationMessage(beforeLabel.text)
 
 		if (resetLastValidValue)
 		{
@@ -97,11 +108,13 @@ TextInputBase
 			addControlErrorTemporary(msg)
 		}
 		else
-			addControlError(control.validator.validationMessage(beforeLabel.text))
+			addControlError(msg)
 
 		return false
 	}
-		
+
+
+
 	Rectangle
 	{
 		id:					beforeLabelRect
@@ -137,6 +150,12 @@ TextInputBase
 		enabled:				textField.editable
 		// text property is set by TextInpoutBase
 
+		// The acceptableInput is checked even if the user is still typing in the TextField.
+		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
+		// so the the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
+		// In not in focus, the acceptableInput can be changed because another control has changed the constraint of this control: in this case, the error should be displayed.
+		onAcceptableInputChanged: checkValue(false, true)
+
 		background: Rectangle
 		{
 			id:				controlBackground
@@ -166,21 +185,16 @@ TextInputBase
 				if (textField.selectValueOnFocus)
 					control.selectAll()
 			}
-
-			if (checkValue(true))
-			{
-				if (!hasScriptError)
-					clearControlError()
-			}
+			else
+				// When going out of focus, the value must be checked. If the value is wrong, the last valid value should replace the wrong value.
+				checkValue(true, false)
 		}
 
 		Keys.onReturnPressed: (event)=>
 		{
-			if (checkValue(false))
+			// When pressing the return key, the value should be checked: if the value is wrong, an error should appear and the focus should stay on this control.
+			if (checkValue(false, false))
 			{
-				if (!hasScriptError)
-					clearControlError();
-
 				var nextItem = nextItemInFocusChain();
 				if (nextItem)
 					nextItem.forceActiveFocus();
