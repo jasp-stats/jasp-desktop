@@ -237,28 +237,37 @@ endif()
 # I will consider turning this off, and letting Qt does it
 # when everything else worked properly
 
-set(GITHUB_PAT
-    ""
-    CACHE STRING "GitHub Personal Access Token")
+set(GITHUB_PAT     "" CACHE STRING "GitHub Personal Access Token to use during building")
+set(GITHUB_PAT_DEF "" CACHE STRING "GitHub Personal Access Token to use in released version as default")
 
-if(INSTALL_R_MODULES)
 
-  message(CHECK_START "Looking if its set as an environment variable.")
-  set(GITHUB_PAT $ENV{GITHUB_PAT})
+message(CHECK_START "Looking if GITHUB_PAT is set as an environment variable.")
+set(GITHUB_PAT      $ENV{GITHUB_PAT})
 
-  if(GITHUB_PAT STREQUAL "")
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
-    )
-  endif()
-
-  message(CHECK_PASS "found")
-
+if(GITHUB_PAT STREQUAL "")
+  message(CHECK_FAIL "not found")
+  message(
+    FATAL_ERROR
+      "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
+  )
 endif()
+message(CHECK_PASS "found")
 
-message(STATUS "GITHUB_PAT: ${GITHUB_PAT}")
+message(CHECK_START "Looking if GITHUB_PAT_DEF is set as an environment variable.")
+set(GITHUB_PAT_DEF      $ENV{GITHUB_PAT_DEF})
+
+if(GITHUB_PAT_DEF STREQUAL "")
+  message(CHECK_FAIL "not found")
+  set(GITHUB_PAT_DEF ${GITHUB_PAT})
+  message(
+    WARNING
+      "Your GITHUB_PAT is used as the default PAT for any JASP build with this config, if this is inteded as released software you will want to set GITHUB_PAT_DEF to something else than your personal PAT!"
+  )
+endif()
+message(CHECK_PASS "found")
+
+message(STATUS "GITHUB_PAT:     ${GITHUB_PAT}")
+message(STATUS "GITHUB_PAT_DEF: ${GITHUB_PAT_DEF}")
 
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE
