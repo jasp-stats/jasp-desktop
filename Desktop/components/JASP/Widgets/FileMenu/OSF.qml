@@ -79,13 +79,6 @@ Item
 
 		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
 
-		MouseArea
-		{
-			z:				-5
-			anchors.fill:	parent
-			onClicked:		osfbreadcrumbs.forceActiveFocus()
-		}
-
 		onActiveFocusChanged: { currentIndex = count - 2; }
 		Keys.onPressed: (event) =>
 			{
@@ -106,6 +99,13 @@ Item
 				}
 
 			}
+
+		MouseArea
+		{
+			z:				-5
+			anchors.fill:	parent
+			onClicked:		osfbreadcrumbs.forceActiveFocus()
+		}
 
 	}
 

@@ -12,6 +12,7 @@ FocusScope
 
 	property alias color:  rectTitleBackground.color
 	property alias border: rectTitleBackground.border
+	property var datafile: rectTitleAndDataFile.hasDatafile ? rectTitleAndDataFile : null
 
 	Rectangle
 	{
@@ -109,7 +110,7 @@ FocusScope
 			id:				rectTitleAndDataFile
 			height:			textTitle.height
 			color:			!hasDatafile ? "transparent" :
-										   datafileMouseArea.pressed || (rectTitleAndDescripton.activeFocus && datafileMouseArea.containsMouse) ?
+										   datafileMouseArea.pressed || (rectTitleAndDescripton.activeFocus && (datafileMouseArea.containsMouse || rectTitleAndDataFile.activeFocus)) ?
 											   jaspTheme.buttonColorPressed :
 											   datafileMouseArea.containsMouse || rectTitleAndDescripton.activeFocus ?
 												   jaspTheme.buttonColorHovered : jaspTheme.buttonColor
@@ -118,6 +119,20 @@ FocusScope
 			radius:			jaspTheme.borderRadius
 
 			property bool hasDatafile: model.associated_datafile !== ""
+
+			Keys.onEnterPressed: (event) => { openDataFile(event); }
+			Keys.onReturnPressed: (event) => { openDataFile(event); }
+			Keys.onSpacePressed: (event) => { openDataFile(event); }
+
+			onActiveFocusChanged: if (!activeFocus) focus = false;
+
+			function openDataFile(event)
+			{
+				if (hasDatafile)
+					rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile);
+				else
+					event.accepted = false;
+			}
 
 			anchors
 			{
@@ -157,7 +172,7 @@ FocusScope
 				anchors.fill:	rectTitleAndDataFile.hasDatafile ? parent : undefined
 				hoverEnabled:	true
 
-				onClicked:		rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
+				onClicked:		(event) => { rectTitleAndDataFile.openDataFile(event); }
 				cursorShape:	Qt.PointingHandCursor
 			}
 

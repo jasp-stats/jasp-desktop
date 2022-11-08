@@ -23,13 +23,20 @@ ListView
 	Keys.onEscapePressed:	resourceMenu.forceActiveFocus();
 	Keys.onTabPressed:		(event) =>
 							{
-								if (tabbingEscapes && currentIndex === count - 1)
-									event.accepted = false;
-								incrementCurrentIndex()
+								if (currentItem.datafile && !currentItem.datafile.activeFocus)
+										currentItem.datafile.forceActiveFocus();
+								else
+								{
+									if (tabbingEscapes && currentIndex === count - 1)
+										event.accepted = false;
+									incrementCurrentIndex();
+								}
 							}
 	Keys.onBacktabPressed: 	(event) =>
 							{
-								if (tabbingEscapes && currentIndex === 0)
+								if (currentItem.datafile && currentItem.datafile.activeFocus)
+									currentItem.datafile.focus = false;
+								else if (tabbingEscapes && currentIndex === 0)
 									event.accepted = false;
 								else
 									decrementCurrentIndex();
