@@ -86,6 +86,27 @@ Item
 			onClicked:		osfbreadcrumbs.forceActiveFocus()
 		}
 
+		onActiveFocusChanged: { currentIndex = count - 2; }
+		Keys.onPressed: (event) =>
+			{
+				event.accepted = true;
+				if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Left)
+				{
+					if (currentIndex === 0)
+						osfList.selectLast();
+					else
+						decrementCurrentIndex();
+				}
+				if (event.key === Qt.Key_Tab || event.key === Qt.Key_Right)
+				{
+					if (currentIndex === count - 2)
+						osfList.selectFirst();
+					else
+						incrementCurrentIndex();
+				}
+
+			}
+
 	}
 
 	SortMenuButton
@@ -343,7 +364,7 @@ Item
 		focus				: visible
 		cppModel			: fileMenuModel.osf.listModel
 		breadCrumbs			: osfbreadcrumbs
-		keyNavigationWraps	: true
+		tabbingEscapes		: true
 
 		anchors
 		{
@@ -354,6 +375,9 @@ Item
 			topMargin		: jaspTheme.generalMenuMargin
 			bottomMargin	: jaspTheme.generalMenuMargin
 		}
+
+		KeyNavigation.backtab	:  osfbreadcrumbs
+		KeyNavigation.tab		:  osfbreadcrumbs
 	}
 
 
