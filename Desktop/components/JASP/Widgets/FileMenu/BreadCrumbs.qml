@@ -1,6 +1,6 @@
-import QtQuick 2.0
+import QtQuick 2.11
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.4
 
 import JASP.Widgets 1.0
 import JASP.Controls 1.0
@@ -8,7 +8,6 @@ import JASP.Controls 1.0
 ListView
 {
 	id :							listView
-			
 	orientation:					ListView.Horizontal
 	boundsBehavior:					Flickable.StopAtBounds
 	clip:							true
@@ -17,6 +16,8 @@ ListView
 	height:							implicitHeight
 	onCountChanged:					currentIndex = count - 1;
 	highlightFollowsCurrentItem:	true
+	keyNavigationWraps:				true
+
 
 	JASPScrollBar
 	{
@@ -37,16 +38,15 @@ ListView
 	signal crumbButtonClicked(int modelIndex)
 
 	delegate:
-		Item
+		FocusScope
 		{
 			id:		rect
 			height: rectButton.height
 			width:	rectArrow.width + rectButton.width
-			
+
 			Item
 			{
 				id :	rectArrow
-
 				height:		rect.height
 				width:		index > 0 ? height   : 0
 				visible:	index > 0

@@ -25,6 +25,7 @@ Item
 		anchors.left:			menuHeader.left
 		anchors.top:			menuHeader.bottom
 		onClicked:				fileMenuModel.computer.browseMostRecent();
+		activeFocusOnTab:		true
 
 		Keys.onBacktabPressed:	computerList.selectLast()
 		Keys.onUpPressed:		computerList.selectLast()
@@ -49,6 +50,7 @@ Item
 	{
 		id:					computerList
 		cppModel:			fileMenuModel.computer.listModel
+		tabbingEscapes:		true
 
 
 		anchors

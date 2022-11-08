@@ -7,6 +7,7 @@ ListView
 {
 	property var	cppModel:		undefined
 	property var	breadCrumbs:	null
+	property bool	tabbingEscapes:	false
 
 	id:						listView
 	maximumFlickVelocity:	jaspTheme.maximumFlickVelocity
@@ -17,10 +18,22 @@ ListView
 
 	spacing:				10
 	model:					cppModel
+	keyNavigationWraps:		true
 
 	Keys.onEscapePressed:	resourceMenu.forceActiveFocus();
-	Keys.onTabPressed:		{ incrementCurrentIndex(); }
-	Keys.onBacktabPressed: 	{ decrementCurrentIndex(); }
+	Keys.onTabPressed:		(event) =>
+							{
+								if (tabbingEscapes && currentIndex === count - 1)
+									event.accepted = false;
+								incrementCurrentIndex()
+							}
+	Keys.onBacktabPressed: 	(event) =>
+							{
+								if (tabbingEscapes && currentIndex === 0)
+									event.accepted = false;
+								else
+									decrementCurrentIndex();
+							}
 
 	function selectLast()
 	{
