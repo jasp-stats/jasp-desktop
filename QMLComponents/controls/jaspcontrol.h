@@ -280,7 +280,7 @@ protected:
 							_shouldStealHover			= false,
 							_nameMustBeUnique			= true,
 							_hasUserInteractiveValue	= true,
-							_activeJASPControl			= false;
+							_hasActiveFocus				= false;
 	JASPListControl		*	_parentListView				= nullptr;
 	QQuickItem			*	_childControlsArea			= nullptr,
 						*	_innerControl				= nullptr,

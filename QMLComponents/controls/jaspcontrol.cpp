@@ -255,13 +255,6 @@ void JASPControl::componentComplete()
 
 	if (_form)
 		connect(this, &JASPControl::boundValueChanged, _form, &AnalysisForm::boundValueChangedHandler);
-
-	//capture focus reason
-	for (QQuickItem* childItem : childItems())
-	{
-		if (!qobject_cast<JASPControl*>(childItem))
-			childItem->installEventFilter(this);
-	}
 }
 
 void JASPControl::setCursorShape(int shape)
@@ -444,7 +437,7 @@ void JASPControl::focusInEvent(QFocusEvent *event)
 {
 	QQuickItem::focusInEvent(event);
 	_focusReason = event->reason();
-	_activeJASPControl = true;
+	_hasActiveFocus = true;
 }
 
 //Installed of innercontrol and non JASPControl children to capture focus reason
@@ -454,7 +447,7 @@ bool JASPControl::eventFilter(QObject *watched, QEvent *event)
 	{
 		QFocusEvent* focusEvent = static_cast<QFocusEvent*>(event);
 		_focusReason = focusEvent->reason();
-		_activeJASPControl = true;
+		_hasActiveFocus = true;
 	}
 	#ifdef __APPLE__
 	if (event->type() == QEvent::MouseButtonPress)
@@ -682,14 +675,9 @@ void JASPControl::_setFocus()
 
 void JASPControl::_notifyFormOfActiveFocus()
 {
+	if (!hasActiveFocus())
+		_hasActiveFocus = false;
+
 	if (_form)
-	{
-		if (!hasActiveFocus())
-		{
-			_form->setActiveJASPControl(nullptr);
-			_activeJASPControl = false;
-		}
-		if(_activeJASPControl)
-			_form->setActiveJASPControl(this);
-	}
+		_form->setActiveJASPControl(this, hasActiveFocus());
 }

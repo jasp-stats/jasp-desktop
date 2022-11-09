@@ -168,7 +168,7 @@ public:
 	QString			getSyntaxName(const QString& name)				const;
 	void			setHasVolatileNotes(bool hasVolatileNotes);
 	bool			parseOptions(Json::Value& options);
-	void			setActiveJASPControl(JASPControl* control);
+	void			setActiveJASPControl(JASPControl* control, bool hasActiveFocus);
 	JASPControl*	getActiveJASPControl()	{ return _activeJASPControl; }
 
 	static const QString	rSyntaxControlName;
