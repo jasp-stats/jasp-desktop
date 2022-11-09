@@ -59,6 +59,8 @@ DropArea
 		Drag.hotSpot.x:		width/2
 		Drag.hotSpot.y:		height/2
 
+		Component.onCompleted:	{ forceActiveFocus(); }
+
 		states:
 		[
 			State
