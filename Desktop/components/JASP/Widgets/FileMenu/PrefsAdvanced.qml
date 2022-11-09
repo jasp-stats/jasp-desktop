@@ -183,6 +183,7 @@ ScrollView
 					textInput.echoMode:	TextInput.PasswordEchoOnEdit
 
 					KeyNavigation.tab:		generateMarkdown
+					activeFocusOnTab:		true
 				}
 			}				
 
