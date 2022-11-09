@@ -150,6 +150,11 @@ TextInputBase
 		enabled:				textField.editable
 		// text property is set by TextInpoutBase
 
+		ToolTip.text		: control.text
+		ToolTip.timeout		: jaspTheme.toolTipTimeout
+		ToolTip.delay		: !hovered ? 0 : jaspTheme.toolTipDelay
+		ToolTip.visible		: hovered || (contentWidth > width - leftPadding - rightPadding && control.activeFocus)
+
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
 		// so the the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
@@ -202,7 +207,6 @@ TextInputBase
 				event.accepted = false;
 			}
 		}
-
 	}
 
 	Binding
