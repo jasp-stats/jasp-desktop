@@ -39,8 +39,7 @@ VariablesFormBase
 		if (activeFocus)
 		{
 			availableVariablesList.forceActiveFocus();
-			//first child can calculate previous item in focus chain using Qt default
-			availableVariablesList.KeyNavigation.backtab = children[0].nextItemInFocusChain(false);
+			availableVariablesList.KeyNavigation.backtab = variablesForm.nextItemInFocusChain(false);
 		}
 	}
 
