@@ -232,7 +232,6 @@ ScrollView
 				decimals:				0
 				text:					qsTr("Zoom (%): ")
 				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
-
 				KeyNavigation.tab:		uiMaxFlickVelocity
 
 				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
@@ -250,8 +249,7 @@ ScrollView
 				text:					qsTr("Scroll speed (pix/s): ")
 				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
 				widthLabel:				uiScaleSpinBox.widthLabel
-
-				KeyNavigation.tab:			safeGraphicsMode
+				KeyNavigation.tab:		safeGraphicsMode
 			}
 
 
