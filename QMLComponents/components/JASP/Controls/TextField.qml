@@ -152,8 +152,8 @@ TextInputBase
 
 		ToolTip.text		: control.text
 		ToolTip.timeout		: jaspTheme.toolTipTimeout
-		ToolTip.delay		: jaspTheme.toolTipDelay
-		ToolTip.visible		: hovered && contentWidth > width - leftPadding - rightPadding
+		ToolTip.delay		: !hovered ? 0 : jaspTheme.toolTipDelay
+		ToolTip.visible		: hovered || (contentWidth > width - leftPadding - rightPadding && control.activeFocus)
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
