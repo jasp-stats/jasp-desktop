@@ -36,10 +36,11 @@ VariablesFormBase
 
 	onActiveFocusChanged		:
 	{
-		if (activeFocus) {
+		if (activeFocus)
+		{
 			availableVariablesList.forceActiveFocus();
-			//the first button knows the way out...
-			availableVariablesList.KeyNavigation.backtab = assignButtonRepeater.itemAt(0).nextItemInFocusChain(false);
+			//first child can calculate previous item in focus chain using Qt default
+			availableVariablesList.KeyNavigation.backtab = children[0].nextItemInFocusChain(false);
 		}
 	}
 
