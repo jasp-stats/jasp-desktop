@@ -27,7 +27,7 @@ msgstr "存檔至"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr "從以下位置加載文件："
+msgstr "載入檔案"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
@@ -35,26 +35,24 @@ msgstr "選擇要儲存的檔案"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "選擇要加載的文件"
+msgstr "選擇要載入的檔案"
 
 msgctxt "FileSelector|"
 msgid "Browse"
 msgstr "瀏覽"
 
 msgctxt "Form|"
-msgid ""
-"This analysis was created with an older version of JASP (or a dynamic module)"
-msgstr "此分析由較早JASP版本產生"
+msgid "This analysis was created with an older version of JASP (or a dynamic module)"
+msgstr "此分析檔版本較舊"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr "，刷新頁面可能會產生稍微不同的結果。"
+msgstr "，重新載入可能產生稍微不同的結果。"
 
 msgctxt "Form|"
-msgid ""
-", to keep your notes where they are it is highly recommended to first "
+msgid ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr "，為了讓您的筆記保持原樣，強烈建議您首先刷新您的分析！"
+msgstr "，為了保持筆記內容，強烈建議重新載入分析報表"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -86,11 +84,11 @@ msgstr "新標籤"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr "⌘ + Enter 以應用"
+msgstr "同時按⌘ + Enter"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr "Ctrl + Enter 以應用"
+msgstr "同時按Ctrl + Enter"
 
 #, qt-format
 msgctxt "TextField|"
@@ -131,27 +129,27 @@ msgstr "版本："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "構建："
+msgstr "建立日期時間："
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr "來源："
+msgstr "源始碼："
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr "在此連結至來源"
+msgstr "點此查看源始程式碼"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "下載："
+msgstr "下載網址："
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr "引述："
+msgstr "文獻引用建議："
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "全選"
+msgstr "選擇全部"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
@@ -159,7 +157,7 @@ msgstr "複製選取範圍"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr "BibTeX格式"
+msgstr "BibTeX書目碼"
 
 msgctxt "AboutWindow|"
 msgid "Close"
@@ -167,23 +165,23 @@ msgstr "關閉"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr "拖曳以重新排列分析"
+msgstr "拖曳排序分析模組"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "編輯分析標題"
+msgstr "編輯分析模組標題"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "複製此分析"
+msgstr "複製分析模組"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "顯示本分析的資訊"
+msgstr "顯示分析模組資訊"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr "刪除本分析"
+msgstr "刪除分析模組"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
@@ -511,60 +509,60 @@ msgstr "為%1自訂"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "建立計算變數"
+msgstr "建立自訂計算變項"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr "變數名稱:"
+msgstr "變項名稱:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr "變數名稱已存在，請另外命名"
+msgstr "變項名稱已存在，請命名其他名稱"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr "以R code定義新變數"
+msgstr "使用R程式碼定義計算公式"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr "以拖曳公式來定義新變數"
+msgstr "拖曳內建公式定義計算公式"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "連續"
+msgstr "連續變項"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "次序"
+msgstr "次序變項"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "名義"
+msgstr "名義變項"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr "文字"
+msgstr "文字變項"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr "開啟檔案"
+msgstr "開啟說明文件"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr "建立變數"
+msgstr "建立自訂變項"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "按下以建立新變數 '%1'"
+msgstr "按鈕建立變項'%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "為新建立的變數輸入有效(未被使用過)的名稱"
+msgstr "輸入未曾命名的有效自訂變項名稱"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr "未新增變數即關閉"
+msgstr "立即關閉對話視窗"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -617,23 +615,23 @@ msgstr "你在此處"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "最近使用文件夾"
+msgstr "最近使用的資料夾"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr "瀏覽"
+msgstr "瀏覽本機檔案"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr "同步目前資料檔案"
+msgstr "可同步的曾開啟資料檔"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr "資料館"
+msgstr "學習用資料館"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr "同步此資料檔"
+msgstr "同步這個資料檔"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
@@ -649,23 +647,23 @@ msgstr "開啟資料檔"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr "顯示這些偏好設定的資訊"
+msgstr "開啟本頁偏好設定說明文件"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr "公開科學架構(OSF)"
+msgstr "開放科學架構(OSF)"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr "登出"
+msgstr "登出OSF"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr "建立文件夾"
+msgstr "建立檔案夾"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr "文件夾名稱"
+msgstr "檔案夾名稱"
 
 msgctxt "OSF|"
 msgid "Filename"
@@ -681,7 +679,7 @@ msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr "登入你的OSF帳號以繼續"
+msgstr "登入個人OSF帳號"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
@@ -689,7 +687,7 @@ msgstr "登入"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr "記得使用者資訊"
+msgstr "記住使用者資訊"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
@@ -712,12 +710,12 @@ msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
-"下次開啟JASP時，接續前次使用狀態 \n"
+"下次開啟JASP時，維持前次使用狀態 \n"
 "選擇此設定將使得JASP記得你使用過哪些模組"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr "開發人員選項模式(測試版)"
+msgstr "啟動開發者模式(測試版)"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
@@ -725,7 +723,7 @@ msgstr "開啟此選項以使用JASP模組"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr "選擇開發人員檔案夾"
+msgstr "選取開發者用資料夾"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
@@ -733,16 +731,16 @@ msgstr "瀏覽你的JASP模組檔案夾"
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr "改變CRAN知識庫: "
+msgstr "自設CRAN模組檔案庫:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr "產生MD檔"
+msgstr "產生說明文件的markdown格式文件檔"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD 幫助檔"
+msgstr "啟用此選項會產生qml選項中的markdown說明文件檔"
 
 #, fuzzy
 msgctxt "PrefsAdvanced|"
@@ -912,7 +910,7 @@ msgstr "圖的背景設定為透明，適用於要將圖貼在非白色背景的
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr "字體"
+msgstr "字型"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
@@ -925,7 +923,7 @@ msgstr "預設: %1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr "主題"
+msgstr "介面主題"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -949,11 +947,11 @@ msgstr "縮放(%): "
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr "放大或縮小介面中顯示之字體（如文字、按鍵等）"
+msgstr "放大或縮小視窗介面顯示的字體大小（如文字、按鍵）"
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "滾動瀏覽速度(pix/s): "
+msgstr "滾動瀏覽速度(像素/秒): "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -2147,7 +2145,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "儲存失敗"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2156,10 +2154,14 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"無法儲存這個檔案\n"
+"\n"
+"%1"
+
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "是否有個人github帳號？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2169,7 +2171,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "註冊GitHub"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3350,11 +3352,11 @@ msgstr "深色主題"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr "語言偏好"
+msgstr "介面語言"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr "選擇語言  "
+msgstr "選擇語言"
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
