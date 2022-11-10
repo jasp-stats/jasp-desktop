@@ -25,7 +25,6 @@
 #include "log.h"
 #include "rowcontrols.h"
 #include "sourceitem.h"
-#include "preferencesmodelbase.h"
 #include "jasptheme.h"
 
 #include <QQmlContext>

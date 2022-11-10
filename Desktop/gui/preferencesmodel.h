@@ -65,6 +65,7 @@ class PreferencesModel : public QQuickItem
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
 	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 
+public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	int			customPPI()								const;
@@ -79,7 +80,6 @@ class PreferencesModel : public QQuickItem
 	bool		useDefaultPPI()							const;
 	bool		whiteBackground()						const;
 	QString		plotBackground()						const;
-	bool		developerMode()							const;
 	double		uiScale()								;
 	QString		customEditor()							const;
 	QString		developerFolder()						const;
@@ -124,6 +124,7 @@ class PreferencesModel : public QQuickItem
 	int 		maxEnginesAdmin() 						const;
 
 public slots:
+	bool developerMode()								const; //Some 
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
 	void setDefaultPPI(					int			defaultPPI);
@@ -175,6 +176,7 @@ public slots:
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
 	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
 	void setReportingMode(				bool		reportingMode);
+	void currentThemeNameHandler();
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -223,6 +225,13 @@ signals:
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
 	void uiScaleChanged(				float		uiScale);
+	void maxFlickVelocityChanged(		float		flickVelo);
+	void currentJaspThemeChanged();
+	void currentThemeReady();
+	void interfaceFontChanged();
+
+private slots:
+	void dataLabelNAChangedSlot(QString label);
 	
 private:
 	int				_defaultPPI		= 192;
@@ -235,6 +244,8 @@ private:
 
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts) const;
+	
+	
 };
 
 #endif // PREFERENCESDIALOG_H

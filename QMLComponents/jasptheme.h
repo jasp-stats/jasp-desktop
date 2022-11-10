@@ -571,7 +571,8 @@ public slots:
 	void setFontRCode(QFont fontRCode);
 	void setFontCode(QFont fontCode);
 	void setIsDark(bool isDark);
-	void uiScaleHandler();
+	void uiScaleHandler(float newUiScale);
+	void maxFlickVeloHandler(float maxFlickVelo);
 
 private:
 	void connectSizeDistancesToUiScaleChanged();

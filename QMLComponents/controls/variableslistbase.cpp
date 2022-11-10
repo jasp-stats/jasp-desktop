@@ -35,7 +35,6 @@
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
-#include "preferencesmodelbase.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)

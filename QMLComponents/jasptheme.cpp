@@ -3,10 +3,6 @@
 #include "utilities/qutils.h"
 #include <QFontDatabase>
 
-#ifdef BUILDING_JASP
-#include "gui/prefencesmodel.h"
-#endif
-
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFontMetricsF			JaspTheme::_fontMetrics		= QFontMetricsF(QFont());
 
@@ -119,13 +115,6 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 
 	setCurrentTheme(_themes[name]);
 }
-
-float JaspTheme::uiScale() const	
-{ 
-	return PreferencesModel::prefs()->uiScale(); 
-}
-
-float JaspTheme::maximumFlickVelocity() const	{ return PreferencesModel::prefs()->maxFlickVelocity(); }
 
 void JaspTheme::setRibbonScaleHovered(float ribbonScaleHovered)
 {
@@ -1261,9 +1250,16 @@ void JaspTheme::setIsDark(bool isDark)
 	emit isDarkChanged(_isDark);
 }
 
-void JaspTheme::uiScaleHandler()
+void JaspTheme::uiScaleHandler(float newUiScale)
 {
-	emit uiScaleChanged(PreferencesModel::prefs()->uiScale());
+	_uiScale = newUiScale;
+	emit uiScaleChanged(_uiScale);
+}
+
+void JaspTheme::maxFlickVeloHandler(float maxFlickVelo)
+{
+	_maximumFlickVelocity = maxFlickVelo;
+	emit maximumFlickVelocityChanged();
 }
 
 QString JaspTheme::currentIconPath()

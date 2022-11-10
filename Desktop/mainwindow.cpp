@@ -515,7 +515,7 @@ void MainWindow::loadQML()
 		connect(keyval.second,		&JaspTheme::currentThemeNameChanged,			_preferences,		&PreferencesModel::currentThemeNameHandler	);
 		connect(keyval.second,		&JaspTheme::currentThemeReady,					_preferences,		&PreferencesModel::currentThemeReady		);
 		connect(_preferences,		&PreferencesModel::uiScaleChanged,				keyval.second,		&JaspTheme::uiScaleHandler					);
-		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maximumFlickVelocityChanged		);
+		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maxFlickVeloHandler				);
 	}		
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged,		DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);

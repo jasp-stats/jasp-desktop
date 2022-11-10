@@ -88,7 +88,7 @@ public:
 	enum class Inclusive		{ None				= 0,															MinMax, MinOnly, MaxOnly };
 	enum class DropMode			{ DropNone			= static_cast<int>(Inclusive::MaxOnly)					+ 1,	DropInsert, DropReplace };
 	enum class ListViewType		{ AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
-	enum class CombinationType	{ NoCombination =	static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	CombinationCross, CombinationInteraction, Combination2Way, Combination3Way, Combination4Way, Combination5Way };
+	enum class CombinationType	{ NoCombination		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	CombinationCross, CombinationInteraction, Combination2Way, Combination3Way, Combination4Way, Combination5Way };
 	enum class TextType			{ TextTypeDefault	= static_cast<int>(CombinationType::Combination5Way)	+ 1,	TextTypeModel, TextTypeRcode, TextTypeJAGSmodel, TextTypeSource, TextTypeLavaan, TextTypeCSem };
 	enum class ModelType		{ Simple			= static_cast<int>(TextType::TextTypeLavaan)			+ 1,	GridInput, CustomContrasts, MultinomialChi2Model, JAGSDataInputModel, FilteredDataEntryModel };
 	enum class ItemType			{ String			= static_cast<int>(ModelType::FilteredDataEntryModel)	+ 1,	Integer, Double	};
