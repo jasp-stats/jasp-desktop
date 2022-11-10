@@ -27,7 +27,7 @@ QC.ScrollView
 {
     id:						scrollDB
     focus:					true
-    onActiveFocusChanged:	if(activeFocus) connectButton.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) dbDriver.forceActiveFocus();
     Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
     contentWidth:           availableWidth
     contentHeight:          colDB.height
@@ -46,6 +46,8 @@ QC.ScrollView
             anchorMe        : false
             width:			scrollDB.width - (2 * jaspTheme.generalMenuMargin)
             x:				jaspTheme.generalMenuMargin
+
+			activeFocusOnTab: true
         }
 
 		ErrorMessage
@@ -190,7 +192,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                 PrefsTextInput
                 {
                     id:				dbNameInput
-					nextEl:			connectButton
+					nextEl:			browseDbButton
                     text:			fileMenuModel.database.database
                     onTextChanged:	fileMenuModel.database.database = text;
 
@@ -207,6 +209,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 					visible:			enabled
 					onClicked:			fileMenuModel.database.browseDbFile();
 					anchors.right:		parent.right
+					activeFocusOnTab:	enabled
 				}
             }
 
@@ -286,7 +289,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 					text:				qsTr("Connect to database")
 					onClicked:			fileMenuModel.database.connect();
 					KeyNavigation.tab:	dbQuery.textInput
-
+					activeFocusOnTab:	true
 					anchors.right:		parent.right
 				}
 			}
@@ -320,6 +323,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     text:					qsTr("Execute")
                     onClicked:				fileMenuModel.database.runQuery();
                     KeyNavigation.tab:		loadResults
+					activeFocusOnTab:		true
                 }
             }
 
@@ -348,6 +352,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     onClicked:				fileMenuModel.database.importResults();
                     KeyNavigation.tab:		intervalSpinner
                     anchors.left:			parent.left
+					activeFocusOnTab:		true
                 }
 
                 SpinBox

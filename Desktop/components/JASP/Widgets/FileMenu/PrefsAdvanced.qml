@@ -69,7 +69,7 @@ ScrollView
 					toolTip:			qsTr("Browse to your JASP Module folder.")
 
 					KeyNavigation.tab:		developerFolderText.textInput
-					activeFocusOnTab:			true
+					activeFocusOnTab:		true
 				}
 				
 				PrefsTextInput
@@ -183,7 +183,6 @@ ScrollView
 					textInput.echoMode:	TextInput.PasswordEchoOnEdit
 
 					KeyNavigation.tab:		generateMarkdown
-					activeFocusOnTab:		true
 				}
 			}				
 
