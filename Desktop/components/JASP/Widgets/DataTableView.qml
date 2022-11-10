@@ -166,8 +166,8 @@ FocusScope
 
 					Connections
 					{
-						target:					ribbonModel
-						onFinishCurrentEdit:	finishEdit();
+						target:							ribbonModel
+						function onFinishCurrentEdit() {	finishEdit(); }
 					}
 
 					function finishEdit()
@@ -177,7 +177,7 @@ FocusScope
 						alreadyFinished = true;
 					}
 
-					Keys.onPressed:
+					Keys.onPressed: (event) =>
 					{
 						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
 						var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
@@ -289,7 +289,8 @@ FocusScope
 						anchors.fill:		itemHighlight
 						acceptedButtons:	Qt.LeftButton | Qt.RightButton
 						
-						onPressed:			
+						onPressed:	(mouse) => 
+						{		
 							if(ribbonModel.dataMode)
 							{
 								var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier);
@@ -308,13 +309,17 @@ FocusScope
 									forceActiveFocus();
 								}
 							}
+						}
 											
-						onPositionChanged:	if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
-											{
-												var idx = dataTableView.view.model.index(rowIndex, columnIndex)
-												dataTableView.view.pollSelectScroll(idx)
-												dataTableView.view.selectionEnd = idx
-											}
+						onPositionChanged:	(mouse) =>
+						{
+							if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
+							{
+								var idx = dataTableView.view.model.index(rowIndex, columnIndex)
+								dataTableView.view.pollSelectScroll(idx)
+								dataTableView.view.selectionEnd = idx
+							}
+						}
 
 					}
 					

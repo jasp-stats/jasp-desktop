@@ -236,7 +236,7 @@ private slots:
 
 	void resetQmlCache();
 	void setCurrentJaspTheme();
-	//void onDataModeChanged(bool dataMode) { if(analysesAvailable()) setDataPanelVisible(dataMode); }
+	void onDataModeChanged(bool dataMode) { if(dataMode && welcomePageVisible()) setWelcomePageVisible(false); }
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
 
