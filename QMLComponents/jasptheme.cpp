@@ -3,6 +3,10 @@
 #include "utilities/qutils.h"
 #include <QFontDatabase>
 
+#ifdef BUILDING_JASP
+#include "gui/prefencesmodel.h"
+#endif
+
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFontMetricsF			JaspTheme::_fontMetrics		= QFontMetricsF(QFont());
 
@@ -10,11 +14,6 @@ std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	connect(this,							&JaspTheme::currentThemeNameChanged,			PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeNameHandler	);
-	connect(this,							&JaspTheme::currentThemeReady,					PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeReady		);
-	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::uiScaleChanged,			this,								&JaspTheme::uiScaleHandler						);
-	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::maxFlickVelocityChanged, this,								&JaspTheme::maximumFlickVelocityChanged			);
-
 	connectSizeDistancesToUiScaleChanged();
 
 	if(_currentTheme == nullptr)
@@ -121,9 +120,16 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 	setCurrentTheme(_themes[name]);
 }
 
+float JaspTheme::uiScale() const	
+{ 
+	return PreferencesModel::prefs()->uiScale(); 
+}
+
+float JaspTheme::maximumFlickVelocity() const	{ return PreferencesModel::prefs()->maxFlickVelocity(); }
+
 void JaspTheme::setRibbonScaleHovered(float ribbonScaleHovered)
 {
-
+	
 	if (qFuzzyCompare(_ribbonScaleHovered, ribbonScaleHovered))
 		return;
 
@@ -1257,7 +1263,7 @@ void JaspTheme::setIsDark(bool isDark)
 
 void JaspTheme::uiScaleHandler()
 {
-	emit uiScaleChanged(PreferencesModelBase::prefs()->uiScale());
+	emit uiScaleChanged(PreferencesModel::prefs()->uiScale());
 }
 
 QString JaspTheme::currentIconPath()

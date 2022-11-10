@@ -31,7 +31,7 @@ using namespace std;
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
 	: ListModel(tableView), _tableView(tableView)
 {
-	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const

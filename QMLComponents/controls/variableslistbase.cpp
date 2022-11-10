@@ -76,7 +76,7 @@ void VariablesListBase::setUp()
 
 	_setAllowedVariables();
 
-	connect(PreferencesModelBase::prefs(), &PreferencesModelBase::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
+	connect(PreferencesModel::prefs(), &PreferencesModel::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
 
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());

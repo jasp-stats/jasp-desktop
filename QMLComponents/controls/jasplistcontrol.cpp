@@ -151,8 +151,8 @@ void JASPListControl::setUp()
 	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
 	connect(listModel,	&ListModel::termsChanged,			[this]() { emit countChanged(); });
 	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::maxTermsWidthChanged);
-	connect(PreferencesModelBase::prefs(), &PreferencesModelBase::uiScaleChanged,		this, &JASPListControl::maxTermsWidthChanged);
-	connect(PreferencesModelBase::prefs(), &PreferencesModelBase::interfaceFontChanged, this, &JASPListControl::maxTermsWidthChanged);
+	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &JASPListControl::maxTermsWidthChanged);
+	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged, this, &JASPListControl::maxTermsWidthChanged);
 
 }
 

@@ -5,7 +5,6 @@
 #include <QColor>
 #include <QFont>
 #include <QFontMetricsF>
-#include "preferencesmodelbase.h"
 
 #define theme_distanceType	float
 #define theme_sizeType		float
@@ -181,11 +180,12 @@ public:
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
 
-	static JaspTheme		* currentTheme() { return _currentTheme; }
-	static QFontMetricsF	& fontMetrics()	 { return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
+	static JaspTheme								* currentTheme()	{ return _currentTheme; }
+	static QFontMetricsF							& fontMetrics()		{ return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
+	static const std::map<QString, JaspTheme *>		& themes()			{ return _themes;		}
 
-	float				uiScale()							const	{ return PreferencesModelBase::prefs()->uiScale(); }
-	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered; }
+	float				uiScale()							const	{ return _uiScale;				}
+	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered;	}
 	QColor				white()								const	{ return _white; }
 	QColor				whiteBroken()						const	{ return _whiteBroken; }
 	QColor				black()								const	{ return _black; }
@@ -230,7 +230,7 @@ public:
 	QColor				containsDragBorderColor()			const	{ return _containsDragBorderColor; }
 	QColor				analysisBackgroundColor()			const	{ return _analysisBackgroundColor; }
 	QColor				controlBackgroundColor()			const	{ return _controlBackgroundColor; }
-	QColor				controlDisabledBackgroundColor()		const	{ return _controlDisabledBackgroundColor; }
+	QColor				controlDisabledBackgroundColor()	const	{ return _controlDisabledBackgroundColor; }
 	QColor				rowEvenColor()						const	{ return _rowEvenColor; }
 	QColor				rowOnevenColor() 					const	{ return _rowOnevenColor; }
 	QColor				controlErrorBackgroundColor() 		const	{ return _controlErrorBackgroundColor; }
@@ -296,7 +296,7 @@ public:
 	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight					* uiScale(); }
 	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight				* uiScale(); }
 	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight					* uiScale(); }
-	float				maximumFlickVelocity()				const	{ return PreferencesModelBase::prefs()->maxFlickVelocity(); }
+	float				maximumFlickVelocity()				const	{ return _maximumFlickVelocity;				}
 	int					hoverTime()							const	{ return _hoverTime;					}
 	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration;		}
 	int					toolTipDelay()						const	{ return _toolTipDelay;					}
@@ -582,7 +582,9 @@ private slots:
 private:
 	static JaspTheme		* _currentTheme;
 
-	float				_ribbonScaleHovered;
+	float				_ribbonScaleHovered,
+						_uiScale				= 1,	///< default for when in R, otherwise ignored
+						_maximumFlickVelocity	= 801;	///< default for when in R, otherwise ignored
 
 	QColor				_white,
 						_whiteBroken,
