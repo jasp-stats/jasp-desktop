@@ -305,6 +305,10 @@ Item
 				id:				resultsJsInterfaceInterface
 				WebChannel.id:	"jasp"
 
+				property bool reportingVisible: preferencesModel.reportingMode
+
+				onReportingVisibleChanged: mainWindow.reloadResults()
+
 				// Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of Desktop right now.
 				// It would be much better to have resultsJsInterface be passed directly though..
 				// It also gives you an overview of the functions used in results html
@@ -331,47 +335,12 @@ Item
 
 				function showAnalysesMenu(options)
 				{
-<<<<<<< HEAD
 					// FIXME: This is a mess
 					// TODO:  1. remove redundant computations
 					//        2. move everything to one place :P
 
 					var optionsJSON  = JSON.parse(options);
 					var functionCall = function (index)
-=======
-					id:				resultsJsInterfaceInterface
-					WebChannel.id:	"jasp"
-
-					property bool reportingVisible: preferencesModel.reportingMode
-
-					onReportingVisibleChanged: mainWindow.reloadResults()
-
-					// Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of Desktop right now.
-					// It would be much better to have resultsJsInterface be passed directly though..
-					// It also gives you an overview of the functions used in results html
-
-					function openFileTab()								{ resultsJsInterface.openFileTab()                              }
-					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)             }
-					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
-					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
-					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
-					function analysisTitleChangedInResults(id, title)	{ resultsJsInterface.analysisTitleChangedInResults(id, title)	}
-					function analysisSaveImage(id, options)				{ resultsJsInterface.analysisSaveImage(id, options)				}
-					function analysisEditImage(id, options)				{ resultsJsInterface.analysisEditImage(id, options)				}
-					function removeAnalysisRequest(id)					{ resultsJsInterface.removeAnalysisRequest(id)					}
-					function pushToClipboard(mime, raw, coded)			{ resultsJsInterface.pushToClipboard(mime, raw, coded)			}
-					function pushImageToClipboard(raw, coded)			{ resultsJsInterface.pushImageToClipboard(raw, coded)			}
-					function saveTempImage(index, path, base64)			{ resultsJsInterface.saveTempImage(index, path, base64)			}
-					function getImageInBase64(index, path)				{ resultsJsInterface.getImageInBase64(index, path)				}
-					function resultsDocumentChanged()					{ resultsJsInterface.resultsDocumentChanged()					}
-					function displayMessageFromResults(msg)				{ resultsJsInterface.displayMessageFromResults(msg)				}
-					function setAllUserDataFromJavascript(json)			{ resultsJsInterface.setAllUserDataFromJavascript(json)			}
-					function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
-					function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
-					function showDependenciesInAnalysis(id, optName)	{ resultsJsInterface.showDependenciesInAnalysis(id, optName)	}
-
-					function showAnalysesMenu(options)
->>>>>>> de2fc70db (Add reportingmode button)
 					{
 						var name		= customMenu.props['model'].getName(index);
 						var jsfunction	= customMenu.props['model'].getJSFunction(index);
