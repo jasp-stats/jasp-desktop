@@ -74,7 +74,7 @@ FocusScope
 	}
 	
 	
-	Keys.onPressed:
+	Keys.onPressed: (event)=>
 	{
 		var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
 		var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
