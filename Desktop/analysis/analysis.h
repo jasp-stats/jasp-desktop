@@ -130,7 +130,7 @@ public:
 
 			Json::Value			asJSON(bool withRSources = false)	const;
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
-			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData);
+			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
 			Json::Value			createAnalysisRequestJson();
 
 	static	Status				parseStatus(std::string name);
