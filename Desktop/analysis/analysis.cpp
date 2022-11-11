@@ -421,11 +421,11 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
 }
 
-void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData)
+void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status)
 {
 	Log::log() << "Now loading userdata results and R Sources for analysis " << _name << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
-	setResults(analysisData["results"], _status);
+	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
 
 	//The rest is already taken in from Analyses::createFromJaspFileEntry

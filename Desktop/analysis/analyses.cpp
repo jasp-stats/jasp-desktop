@@ -123,7 +123,7 @@ Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEn
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 	
-	if(!analysisData.isNull())	analysis->loadResultsUserdataAndRSourcesFromJASPFile(analysisData);
+	if(!analysisData.isNull())	analysis->loadResultsUserdataAndRSourcesFromJASPFile(analysisData, status);
 	else						analysis->setResults(analysisEntry->getDefaultResults(), status);
 	
 
