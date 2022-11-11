@@ -185,12 +185,12 @@ bool ComponentsListBase::isJsonValid(const Json::Value &value) const
 
 void ComponentsListBase::termsChangedHandler()
 {
-	_setTableValue(_termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 }
 
 Json::Value ComponentsListBase::getTableValueOptions(const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _getTableValueOption(termsWithComponentValues, fq(_optionKey), containsInteractions());
+	return _getTableValueOption(_termsModel->terms(), termsWithComponentValues, fq(_optionKey), containsInteractions());
 }
 
 void ComponentsListBase::addItemHandler()
