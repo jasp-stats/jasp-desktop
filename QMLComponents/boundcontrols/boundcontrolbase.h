@@ -46,8 +46,8 @@ public:
 protected:
 	std::string					getName()													const;
 
-	Json::Value					_getTableValueOption(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms);
-	void						_setTableValue(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms);
+	Json::Value					_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms);
+	void						_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms);
 
 	void						_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
 

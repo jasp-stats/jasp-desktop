@@ -112,7 +112,7 @@ bool InputListBase::isJsonValid(const Json::Value &value) const
 void InputListBase::termsChangedHandler()
 {
 	if (hasRowComponent())
-		_setTableValue(_inputModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+		_setTableValue(_inputModel->terms(), _inputModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 	else
 	{
 		const Terms& terms = _inputModel->terms();

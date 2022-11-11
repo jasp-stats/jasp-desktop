@@ -149,15 +149,13 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 	}
 }
 
-Json::Value BoundControlBase::_getTableValueOption(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms)
+Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms)
 {
 	Json::Value result(Json::arrayValue);
-	ListModel::RowControlsValuesIterator it(termsWithComponentValues);
-	while (it.hasNext())
+
+	for (const Term& term : terms)
 	{
-		it.next();
-		Term term = Term::readTerm(it.key());
-		QMap<QString, Json::Value> componentValues = it.value();
+		QMap<QString, Json::Value> componentValues = componentValuesMap[term.asQString()];
 
 		Json::Value rowValues(Json::objectValue);
 		if (hasMultipleTerms)
@@ -185,8 +183,8 @@ Json::Value BoundControlBase::_getTableValueOption(const ListModel::RowControlsV
 	return result;
 }
 
-void BoundControlBase::_setTableValue(const ListModel::RowControlsValues& termsWithComponentValues, const std::string& key, bool hasMultipleTerms)
+void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms)
 {
-	setBoundValue(_getTableValueOption(termsWithComponentValues, key, hasMultipleTerms));
+	setBoundValue(_getTableValueOption(terms, componentValuesMap, key, hasMultipleTerms));
 }
 

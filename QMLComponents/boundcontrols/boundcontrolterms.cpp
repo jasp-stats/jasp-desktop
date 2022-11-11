@@ -177,7 +177,7 @@ void BoundControlTerms::resetBoundValue()
 	const Terms& terms = _termsModel->terms();
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		_setTableValue(_termsModel->getTermsWithComponentValues(), _optionKey, _listView->containsInteractions());
+		_setTableValue(terms, _termsModel->getTermsWithComponentValues(), _optionKey, _listView->containsInteractions());
 	else if (_isSingleRow)
 	{
 		std::string str = terms.size() > 0 ? terms[0].asString() : "";
