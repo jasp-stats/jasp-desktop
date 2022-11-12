@@ -1,221 +1,185 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2022-11-12 03:18+0000\n"
-"Last-Translator: Sau-chin Chen <pmsp96@gmail.com>\n"
-"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hant/>\n"
-"Language: zh_Hant\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.15-dev\n"
 "X-Qt-Contexts: true\n"
-"X-Language: zh_Hant\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr "增加列"
+msgstr "Wstaw wiersz"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr "移除列"
+msgstr "Usuń wiersz"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr "儲存檔安至："
+msgstr "Zapisz plik w:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr "載入檔案:"
+msgstr "Załaduj plik z:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr "選擇要儲存的檔案"
+msgstr "Wybierz plik do zapisania"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "選擇要載入的檔案"
+msgstr "Wybierz plik do załadowania"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr "瀏覽"
+msgstr "Przeglądaj"
 
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
-msgstr "這份JASP檔版本較舊"
+msgstr ""
+"Ta analiza została stworzona przy użyciu starszej wersji JASP (lub modułu "
+"dynamicznego)"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr "，重新載入可能產生稍微不同的結果。"
+msgstr ", odświeżenie może dać nieco inny wynik."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr "，為了保持筆記內容，強烈建議重新載入分析報表！"
+msgstr ""
+", aby zachować notatki tam, gdzie się znajdują, zaleca się najpierw "
+"odświeżyć analizy!"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "新值"
+msgstr "Nowa wartość"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr "模型項目"
+msgstr "Składniki modelu"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr "增加至虛無模型"
+msgstr "Dodaj do modelu zerowego"
 
 msgctxt "TableView|"
 msgid "Row #"
-msgstr "列#"
+msgstr "Wiersz #"
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr "增加一項標籤"
+msgstr "Dodaj kartę"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr "刪除此標籤"
+msgstr "Usuń tę kartę"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr "新標籤"
+msgstr "Nowa karta"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr "同時按⌘ + Enter"
+msgstr "⌘ + Enter, aby zastosować"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr "同時按Ctrl + Enter"
+msgstr "Ctrl + Enter, aby zastosować"
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr "回復上一次正確值: %1"
-
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "主效果"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "僅2因子"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "僅3因子"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "僅4因子"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "僅5因子"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "全部"
+msgstr "Przywracanie ostatniej prawidłowej wartości: %1"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr "關於JASP"
+msgstr "Informacje o JASP"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr "版本："
+msgstr "Wersja:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "版本建立時間："
+msgstr "Zbudowany na:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr "源始碼："
+msgstr "Źródło:"
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr "點此查看源始程式碼"
+msgstr "Uzyskaj dostęp do źródeł tutaj"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "下載網址："
+msgstr "Pobierz:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr "文獻引用建議："
+msgstr "Cytowanie:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "選擇全部"
+msgstr "Zaznacz wszystko"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "複製選取範圍"
+msgstr "Kopiuj zaznaczone"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr "BibTeX書目碼"
+msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr "關閉"
+msgstr "Zamknij"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr "拖曳排序分析模組"
+msgstr "Przeciągnij, aby zmienić kolejność analiz"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "編輯分析模組標題"
+msgstr "Edytuj tytuł tej analizy"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "複製分析模組"
+msgstr "Zduplikuj tę analizę"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "顯示分析模組資訊"
+msgstr "Pokaż informacje o tej analizie"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr "刪除分析模組"
-
-msgctxt "AnalysisForms|"
-msgid "Resize data/results"
-msgstr "編修資料/結果大小"
-
-msgctxt "AnalysisForms|"
-msgid "Drag to show data"
-msgstr "拖曳以顯示資料"
-
-msgctxt "AnalysisForms|"
-msgid "Hide input options"
-msgstr "隱藏輸入選項"
-
-msgctxt "AnalysisForms|"
-msgid "Show input options"
-msgstr "顯示輸入選項"
+msgstr "Usuń tę analizę"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr "增加"
+msgstr "Dodaj"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr "刪除"
+msgstr "Usuń"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr "重置"
+msgstr "Reset"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr "貝氏因子"
+msgstr "Współczynnik Bayesa"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
@@ -225,7 +189,7 @@ msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
-msgstr "以貝氏因子計量對立假設相對於虛無假設的證據強度。"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
@@ -235,7 +199,7 @@ msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
-msgstr "以貝氏因子計量虛無假設相對於對立假設的證據強度。"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
@@ -243,437 +207,437 @@ msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr "BF10 的自然對數"
+msgstr "Logarytm naturalny z BF10."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr "添加列"
+msgstr "Wstaw kolumnę"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr "刪除列"
+msgstr "Usuń kolumnę"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr "重置"
+msgstr "Reset"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr "計算列： "
+msgstr "Kolumna obliczana: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr "選擇一列"
+msgstr "Wybierz kolumnę"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr "絕對值"
+msgstr "wartość bezwzględna"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr "標準差"
+msgstr "odchylenie standardowe"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr "變異數"
+msgstr "wariancja"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr "總和"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr "乘積"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "取最小值"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "取最大值"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr "平均數"
+msgstr "średnia"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr "將y的小數點取n位數"
+msgstr "zaokrągla y do n miejsc dziesiętnych"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr "回傳y的向量長度"
+msgstr "zwraca liczbę elementów znajdujących się w y"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr "中位數"
+msgstr "mediana"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr "自然對數"
+msgstr "logarytm naturalny"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr "二進位對數(2為底)"
+msgstr "logarytm o podstawie 2"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr "標準對數(10為底)"
+msgstr "logarytm o podstawie 10"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr "自訂對數"
+msgstr "logarytm o podstawie y"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr "指數"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
-msgstr "Fisher's Z轉換，(以反雙曲線函數)將相關係數(值介於-1到1之間)轉為Z值"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr "反Fisher's Z轉換，(以反雙曲線函數)將Z值轉為相關係數(值介於-1到1之間)"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "根據某變數將資料分成numBreaks指定的幾等分"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "將直行中任何的遺漏值(NA)以replaceWith中指定的數值取代"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "若-則指令"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
-msgstr "根據指定的平均數與標準差以Gaussian分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
-msgstr "根據指定自由度之t分配與非中心參數產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
-msgstr "根據指定自由度之卡方分配與非中心參數產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
-msgstr "根據指定自由度之F分配與非中心參數產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
-msgstr "根據試驗次數與機率以二項式分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
-msgstr "根據試驗次數與機率以負二項式分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
-msgstr "根據指定的機率以幾何分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "根據指定的rate lambda以卜瓦松幾何分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
-msgstr "根據指定的alpha與beta值以Beta分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr "根據指定的最小值與最大值以均勻分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr "根據指定的形狀與與尺度以gamma分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr "根據指定的比率以指數分配來產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
-msgstr "根據指定的對數平均數meanLog與標準差sdLog以對數常態分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
-msgstr "根據指定的形狀與尺規以Weibull分配產生資料"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "移除已新增之變數"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr "顯示R語法"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr "新增變數"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr "計算得出的直行(變數)"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr "點此以計算新變數"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
-msgstr "待計算的直行(變數)"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr "開啟檔案"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr "關閉新增變數視窗"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr "新增變數已修改"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr "仍有未套用在新增變數的調整，請問要如何處理？"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr "無"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr "離差"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr "簡單"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr "差異"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr "Helmert"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr "重複"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr "多項式"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr "自訂"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr "因子"
+msgstr ""
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr "為%1自訂"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "建立自訂計算變項"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr "變數名稱:"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr "變數名稱已存在，請另外命名"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr "以R code定義新變數"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr "以拖曳公式來定義新變數"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "連續"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "次序"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "名義"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr "文字"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr "開啟檔案"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr "建立變數"
+msgstr ""
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "點擊建立新變項 '%1'"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "輸入未曾命名的有效自訂變項名稱"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr "立即關閉對話視窗"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr "加入比較"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr "刪除比較"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr "重設"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr "隱藏篩選條件"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr "顯示篩選條件"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "加入已新增之變數"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr "按下此處以修改變數類型"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr "按下此處以修改變數公式"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr "按下此處以修改標籤"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr " 或檢查篩選條件"
+msgstr ""
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr "回到%1"
+msgstr ""
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr "你在此處"
+msgstr ""
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "最近使用的資料夾"
+msgstr ""
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr "瀏覽本機檔案"
+msgstr ""
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr "可同步的曾開啟資料檔"
+msgstr ""
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr "學習用資料館"
+msgstr ""
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr "同步這個資料檔"
+msgstr ""
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr "瀏覽文件夾"
+msgstr ""
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr "開啟JASP檔案"
+msgstr ""
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr "開啟資料檔"
+msgstr ""
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr "顯示這些偏好設定的資訊"
+msgstr ""
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr "開放科學架構(OSF)"
+msgstr "OSF (Open Science Framework)"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr "登出"
+msgstr "Wyloguj się"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr "建立文件夾"
+msgstr ""
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr "文件夾名稱"
+msgstr "Nazwa folderu"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr "檔案名稱"
+msgstr ""
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr "儲存"
+msgstr "Zapisz"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
@@ -681,152 +645,110 @@ msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr "登入你的OSF帳號以繼續"
+msgstr "Zaloguj się na konto OSF, aby kontynuować"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr "登入"
+msgstr "Zaloguj się"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr "記得使用者資訊"
+msgstr "Zapamiętaj mnie"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr "關於OSF"
+msgstr "O OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr "註冊"
+msgstr "Zarejestruj się"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr "進階偏好設定"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr "模組選項"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
-"下次開啟JASP時，接續前次最後的使用狀態 \n"
-"選擇此設定，JASP將記得之前所啟用的模組"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr "開發人員選項模式(測試版)"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr "開啟此選項以使用JASP模組"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr "選擇開發人員檔案夾"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "瀏覽你的JASP模組文件夾"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr "改變CRAN知識庫: "
+msgstr "Zmień repozytorium CRAN: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr "產生MD檔"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD幫助檔"
-
-msgctxt "PrefsAdvanced|"
-msgid "Windows workarounds"
-msgstr "Windows 系統特別措施"
-
-msgctxt "PrefsAdvanced|"
-msgid "Handling LC_CTYPE"
-msgstr "處理 LC_CTYPE"
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Check the install and user directory path for compatibility with LC_CTYPE=\"C"
-"\" and set if reasonable."
-msgstr "設定模組安裝及使用者路徑與系統預設字元分類及處理方式一致。"
-
-msgctxt "PrefsAdvanced|"
-msgid "See the documentation for more info."
-msgstr "參見文件中更詳盡之說明"
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"If this is enabled and you have non-ascii characters in your install path "
-"JASP won't work anymore.  If you only have non-ascii characters in your "
-"username then installing modules will probably break."
-msgstr "若你安裝JASP的路徑名稱中包含非ASCII碼，你將無法使用JASP.  "
-"若你的路徑名稱皆為非ASCII碼，則可能無法成功安裝此模組"
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Enabling this will make certain characters in the results look weird, but at "
-"least you can use JASP if you installed it in a folder with non-ascii "
-"characters in the path. Sorry for the inconvenience, we are working on it "
-"and hopefully have this fixed next release."
 msgstr ""
-"若你安裝JASP的路徑名稱中包含非ASCII碼，啟動此功能後，你仍可使用JASP但將某些字"
-"會看起來怪怪的。我們正在努力修正此問題，造成困擾深感抱歉。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr "紀錄設定"
+msgstr "Opcje logowania"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr "將記錄存檔"
+msgstr "Zapisz do pliku"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "勾選此方格將 JASP 除錯紀錄存成檔案"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "紀錄檔案存檔上限數: "
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr "顯示紀錄"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr "引擎選項"
-
-msgctxt "PrefsAdvanced|"
-msgid "Maximum # of engines: "
-msgstr "最大引擎數量: "
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr "資料偏好設定"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
-msgstr "自動同步存檔之資料"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr "使用預設的試算表編輯器"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr "選擇自訂編輯器"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr "匯入資料欄位屬於類別或連續的自訂值閾數"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid ""
@@ -834,127 +756,125 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"將變數分類為「連續變數」的特定整數閾值數。\n"
-"您需要重新載入資料才能生效！詳細資訊，請參見說明。"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "遺漏值清單"
+msgstr ""
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr "移除遺漏值設定"
+msgstr ""
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr "重設"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr "結果呈現偏好設定"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "表格設定"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr "顯示實際的p值"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr "固定小數點位數"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "圖選項"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr "圖的PPI設定為: "
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr "使用螢幕每英吋像素來設定圖型"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr "自訂PPI: "
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr "圖片背景顏色"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr "白色"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
-msgstr "此設定圖的背景為白色，適用於LaTex或投稿期刊"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr "透明"
+msgstr ""
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
-msgstr "圖的背景設定為透明，適用於要將圖貼在非白色背景的文件上。"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr "字體"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr "介面:"
+msgstr ""
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr "預設: %1"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr "主題"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr "改成淡色主題，此為JASP預設及原有的色調"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr "改成深色主題，此設定讓夜貓族的眼睛能輕鬆點"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr "其他設定選項"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr "縮放(%): "
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr "放大或縮小介面中顯示之字體（如文字、按鍵等）"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "滾動瀏覽速度(pix/s): "
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
-msgstr "設定在選項與資料視窗等處的滾動瀏覽速度"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -963,18 +883,15 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"改為「較安全」模式的圖形渲染模式。\n"
-"此模式將使得介面變慢，但可能解決其他像是奇怪的故障、無法顯示結果等問題。\n"
-"此設定不影響分析速度"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
-msgstr "關閉所有動畫。\"安全圖形模式\"下會自動套用此設定"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "因啟動\"安全圖形模式\"，動畫功能已關閉。"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -982,577 +899,563 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
-"若不使用此功能，除了Qt以外的其他功能將不會使用你作業系統的檔案對話檔。此設定"
-"可能解決Windows使用者按下\"瀏覽鍵\"後JASP程式當掉的問題。"
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr "最近使用檔案"
+msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr "已清除計算新變數的語法"
+msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr "已套用計算新變數之語法"
+msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "請輸入所有指令-看紅字區"
+msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr "每個新增之變數僅能有一個公式"
+msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "歡迎使用拖曳方式新增變數!"
+msgstr ""
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "無用的程式片段放在此處; 滑鼠雙擊以刪除整個內容"
+msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
-msgstr "篩選條件已清除<b4>"
+msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
-msgstr "已套用篩選條件<br>"
+msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
-msgstr "請輸入所有指令，參見紅字標示<br>"
+msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
-msgstr "公式無法得到合理的數值，因此無法用於測定過濾條件"
+msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr "歡迎使用拖曳過濾條件!<br>"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr "加"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr "減"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr "乘"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr "除"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr "指數(2^3 為8)"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr "平方根"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "模數：除法的餘數。如3除以2 餘 1"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr "回傳邏輯判斷與開根號運算結果"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr "等同"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr "不同"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr "小於: %1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr "小於或等於: %1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr "大於:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr "大於或等於:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr "和:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr "或:%1"
+msgstr ""
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "資料分群：將篩選器分別應用於每個子群中"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr "不是: %1"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr "加"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr "減"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr "乘"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr "除"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr "指數(2^3為8)"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr "平方根"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "模：返回除法的餘數。3%2 傳回 1"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr "回傳邏輯"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr "相同"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr "不同"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr "小於: %1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr "小於或等於: %1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr "大於:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr "大於或等於:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr "和:%1"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr "或:%1"
+msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "資料分群：將篩選器分別應用於每個子群中"
+msgstr ""
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr "非:%1"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr "絕對值"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr "標準差"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr "變異數"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr "總和"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr "乘積"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr "取最小值"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr "取最大值"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr "平均數"
+msgstr "średnia"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr "將y的小數點取n位數"
+msgstr "zaokrągla y do n miejsc dziesiętnych"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr "回傳y的向量長度"
+msgstr "zwraca liczbę elementów znajdujących się w y"
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr "中位數"
+msgstr "mediana"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr "若-則指令"
+msgstr "instrukcja if-else"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr "過濾規則已更改"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr "您的過濾器有未套用的變更；你想如何處理？"
+msgstr "Istnieją niezatwierdzone zmiany w filtrze; co chciałbyś zrobić?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr "切換為 R 模式"
+msgstr "Przełączanie na filtr języka R"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr "隱藏被篩選掉的橫列。"
+msgstr "Ukryj wiersze, które zostały odfiltrowane."
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr "顯示被篩選掉的橫行。"
+msgstr "Pokaż odfiltrowane wiersze."
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr "執行篩選規則"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr "已應用篩選器"
+msgstr "Filtr został zastosowany"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr "點擊以套用篩選器"
+msgstr "Kliknij, aby zastosować filtr"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr "已套用篩選器"
+msgstr "Filtr został już zastosowany"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr "開啟檔案"
+msgstr "Otwórz dokumentację"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr "隱藏篩選條件"
+msgstr "Ukryj filtr"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr "重置所有標籤上的標記"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr "切換為拖放模式"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr "重置預設篩選規則"
+msgstr "Przywróć filtr domyślny"
 
 msgctxt "FilterWindow|"
 msgid "Default filter applied"
-msgstr "已套用預設篩選器"
+msgstr "Domyślny filtr został zastosowany"
 
 msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
-msgstr "篩選器與預設值相同"
+msgstr "Filtr jest identyczny jak filtr domyślny"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr "JASP 説明文件"
+msgstr "Pomoc JASP"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr "搜尋:"
+msgstr "Szukaj:"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr "添加資料"
+msgstr "Wstaw dane"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr "刪除資料"
+msgstr "Usuń dane"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr "重置"
+msgstr "Przywróć domyślne"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr "按兩下編輯資料"
+msgstr "Kliknij dwukrotnie, aby edytować dane"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr "隱藏資料"
+msgstr "Ukryj dane"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr "顯示資料"
+msgstr "Pokaż dane"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr "調整資料/分析報表大小"
+msgstr ""
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr "拖曳以顯示資料"
+msgstr "Przeciągnij, aby wyświetlić dane"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr "結果"
+msgstr "Wyniki"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr "瀏覽 JASP 模組"
+msgstr "Wyszukaj moduł JASP"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
-msgstr "選擇JASP 模組"
+msgstr "Wybierz moduł JASP"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr "<i>選擇未安裝 JASP 模組查看相關資訊</i>"
+msgstr "<i> Wyszukaj moduł JASP, aby uzyskać więcej informacji</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr "<i> %1 不是（正確的）JASP 模組！</i>"
+msgstr "<i> %1 nie jest (prawidłowym) modułem JASP! </i>"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr "安裝模組"
+msgstr "Zainstaluj moduł"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr "安裝模組"
+msgstr "Zainstaluj moduł"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "安裝開發中模組"
+msgstr "Zainstaluj moduł dla programisty"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr "開發中模組安裝中"
+msgstr "Instalowanie modułu dla programistów"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr "選擇開發中模組"
+msgstr "Wybierz moduł dla programistów"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr "安裝選擇的開發人員模組"
+msgstr "Zainstaluj wybrany moduł dla programistów"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr "安裝開發中模組"
+msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr "準備就緒"
+msgstr ""
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "安裝： %1\n"
+msgstr ""
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr "載入中：%1\n"
+msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr "安裝完成且可使用！"
+msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr "偵測到錯誤！"
+msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr "尚未可以使用？"
+msgstr "Nie jest gotowy do użycia?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "移除模組 "
+msgstr "Odinstaluj moduł "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr "R指令視窗"
+msgstr "R w JASP"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr "歡迎使用 R！"
-
-msgctxt "RCommanderWindow|"
-msgid ""
-"Enter your R code here.\n"
-"The data is fully available as 'data' and filtered as 'filteredData'."
-msgstr ""
-"在此處入您的 R 語法。\n"
-"資料完全可用為「資料」使用，且篩選資料可作為「篩選資料」使用 。"
-
-msgctxt "RCommanderWindow|"
-msgid "Enter your R code here."
-msgstr "在此處輸入您的 R 語法"
+msgstr "Witamy w R w JASP!"
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr "執行語法"
+msgstr "Uruchom kod"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr "也可按下 Ctrl+Enter 或 F5 來執行語法"
+msgstr "Naciśnięcie Ctrl+Enter lub F5 również uruchomi kod"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr "清除報表"
+msgstr ""
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr "已清除"
+msgstr "Wyczyszczono..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr "已修改"
+msgstr "Zmiany zostały wprowadzone"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr "有未套用的修改；你想要怎麼做？"
+msgstr "Istnieją niezapisane zmiany; co chciałbyś zrobić?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr "套用"
+msgstr "Zastosuj"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr "忽略"
+msgstr "Odrzuć"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr "取消"
+msgstr "Anuluj"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr "分析可重複"
+msgstr "Powtarzalność"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr "設置隨機種子"
+msgstr ""
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr "增加直行(變數)"
+msgstr "Wstaw kolumnę"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr "删除直行(變數)"
+msgstr "Usuń kolumnę"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr "重置"
+msgstr "Przywróć domyślne"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr "排序項目"
+msgstr "Posortuj elementy"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr "先驗"
+msgstr "Prior"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr "標準化效果量"
+msgstr "Standaryzowana wielkość efektu"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr "預設"
+msgstr "Domyślne"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr "柯西分配"
+msgstr ""
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr "量尺"
+msgstr "skala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr "事前已知"
+msgstr ""
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr "位置"
+msgstr "lokalizacja:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "連續變數"
+msgstr "skala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr "常態"
+msgstr "Normalny"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "平均數"
+msgstr "średnia:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr "標準差"
+msgstr "std:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
@@ -1560,108 +1463,114 @@ msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr "自由度:"
+msgstr "df:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr "原始效果量(Dienes)"
+msgstr ""
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr "齊一"
+msgstr ""
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr "下界值："
+msgstr "dolna granica:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr "上界值："
+msgstr "górna granica:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr "半常態分配"
+msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
-msgstr "篩選規則"
+msgstr "Filtr"
 
 msgctxt "VariablesWindow|"
 msgid "Value"
-msgstr "數值"
+msgstr "Wartość"
 
 msgctxt "VariablesWindow|"
 msgid "Label"
-msgstr "標籤"
+msgstr "Etykieta"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr "上移選取標籤"
+msgstr "Przenieś wybrane etykiety w górę"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr "下移選取標籤"
+msgstr "Przenieś wybrane etykiety w dół"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
-msgstr "反轉所有標籤順序"
+msgstr "Odwróć kolejność wszystkich etykiet"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr "重置此列所有過濾器設定"
+msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr "重置所有列的所有過濾器設定"
+msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Close this view"
-msgstr "關閉此視窗"
+msgstr "Zamknij ten widok"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr "歡迎使用JASP"
+msgstr "Witamy w JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr "一種全新的統計方式：免費、友好、靈活"
+msgstr "Nowy sposób obliczania statystyk: darmowy, przyjazny i elastyczny"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr "免費:"
+msgstr "Darmowy:"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr "友善:"
+msgstr "Przyjazny:"
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr "彈性："
+msgstr "Elastyczny:"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
-msgstr "JASP是一個開源專案，主要由阿姆斯特丹大學所支援。"
+msgstr ""
+"JASP jest otwartym projektem (open-source) wspieranym przez Uniwersytet w "
+"Amsterdamie."
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
-msgstr "JASP有著考量使用者偏好的直觀操作介面。"
+msgstr ""
+"JASP posiada intuicyjny interfejs, który został zaprojektowany z myślą o "
+"użytkowniku."
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
-msgstr "JASP為古典取向與貝氏取向提供標準的分析流程。"
+msgstr ""
+"JASP oferuje standardowe procedury statystyczne zarówno w ich klasycznych, "
+"jak i bayesowskich wersjach."
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "打開一個資料檔並試用 JASP！"
+msgstr "Otwórz zatem plik z danymi i zabierz JASP na przejażdżkę!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr "按下此處以獲得最新版本"
+msgstr "Kliknij, aby pobrać najnowszą wersję"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -1671,315 +1580,294 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
-"請記住，這是一個預覽版本，仍然缺少許多功能。\n"
+"Należy pamiętać, że jest to wersja początkowa i brakuje jeszcze wielu "
+"funkcji.\n"
 "\n"
-"若今天JASP 沒有完成你想要的功能，請明天再回來看看：JASP "
-"正以驚人的速度開發程式！"
+"Jeśli JASP nie robi wszystkiego co chcesz dzisiaj, sprawdź jutro: JASP jest "
+"rozwijany z zawrotną prędkością!"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "找不到繪圖 %1 的編輯選項，故無法使用繪圖編輯功能"
+msgstr ""
+"Nie można odnaleźć opcji edycji wykresu %1, więc edycja wykresu nie będzie "
+"działać..."
 
 #, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
-msgstr "找不到繪圖 %1 的編輯選項，即使可以進行繪圖編輯，但將無法儲存任何調整"
+msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
-msgstr "標籤為“%1”的控制元件沒有名稱"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
-msgstr "控制元件沒有名稱"
+msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr "2 個控制元件有相同的名稱：%1"
+msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
-msgstr "%1 元件載入錯誤值，已將之重置為預設值。"
+msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
-msgstr "這些元件載入了錯誤值，已將之重置為預設值：%1"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr "這些元件載入了錯誤值，已將之重置為預設值"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr "此檔案可能使用舊版本 JASP進行分析。"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
-msgstr "這表示所顯示的結果無法對應已選的分析選項。"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr "更新分析可能會改變結果報告。"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr "表"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr "圖"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr "集合"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr "結果"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr "報表"
+msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr "輸入"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr "選項"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr "部分"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr "核取方塊"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr "開關"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr "輸入欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr "單選按鈕"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr "單選按鈕"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Variables"
-msgstr "變數"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr "下拉式組合方塊"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr "輸入清單檢視"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr "表格方式檢視"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr "滑塊"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr "文字區"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr "按鈕"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr "因素形式"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr "元件清單"
+msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr "組箱"
+msgstr ""
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr "該值必須為 "
+msgstr ""
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr "&#8805; %1"
+msgstr ""
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr "&gt; %1"
+msgstr ""
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr " 與 "
+msgstr ""
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr "&#8804; %1"
+msgstr ""
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr "&lt; %1"
+msgstr ""
 
-#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr "無驗證錯誤"
+msgstr ""
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr "載入已知錯誤問題"
+msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr "載入資料集"
+msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr "存檔資料集"
+msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr "匯出結果集合"
+msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr "匯出資料集"
+msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr "同步資料集"
-
-#, fuzzy
-msgctxt "ColumnsModel|"
-msgid "which can be used in numerical comparisons"
-msgstr "可用於數值比較"
-
-msgctxt "ColumnsModel|"
-msgid ""
-"which can only be used in (in)equivalence, greater and lesser than "
-"comparisons"
-msgstr "只能用於（不）等同、大於和小於之比較"
-
-msgctxt "ColumnsModel|"
-msgid "which can only be used in (in)equivalence comparisons"
-msgstr "只能用於（不）等同之比較"
+msgstr ""
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr "此 '"
+msgstr ""
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr "'-行 "
+msgstr ""
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr "從 %1 匯入資料"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr "匯入 SPSS 資料檔"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr "匯入 SAS 資料檔"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr "匯入 STATA 資料檔"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr "載入 JASP 資料檔"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr "載入檔案中"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr "存檔 JASP 檔案"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr "匯出結果報表"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr "匯出資料"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr "同步資料"
+msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr "處理檔案中"
+msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr "嘗試進行此分析時當機..."
+msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr "嘗試套用此篩選器時當機..."
+msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr "嘗試計算此變數時當機..."
+msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr "嘗試執行rscript時當機..."
+msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr "圖形存檔時出錯"
+msgstr ""
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -1992,81 +1880,74 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
-"遺憾的是，無法存檔此圖型。\n"
-"\n"
-"錯誤資訊：\n"
-"%1\n"
-"\n"
-"如此問題一直出現，請至以下網址報告前述錯誤訊息：https://jasp-stats.org/bug-"
-"reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr "調整圖形大小時出錯"
+msgstr ""
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "連續"
+msgstr ""
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "次序"
+msgstr ""
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr "名義"
+msgstr ""
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr "是"
+msgstr ""
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr "否"
+msgstr ""
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr "取消"
+msgstr ""
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr "存檔"
+msgstr ""
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr "不存檔"
+msgstr ""
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr "選取檔案..."
+msgstr ""
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr "選取資料夾..."
+msgstr ""
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr "已更動安全圖形模式"
+msgstr ""
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
-msgstr "您已更改 JASP 的安全圖形模式，重新啟動 JASP後才能使此選項生效，"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr "資料檔已更改"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
-msgstr "此 JASP 檔使用的資料檔被修改。是否要根據新資料更新分析結果？"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr "檔案版本不相容"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2075,9 +1956,10 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
-"您的分析結果是基於舊版的JASP ，要更改圖像的 PPI，必須先刷新它們。\n"
+"Twoje analizy zostały stworzone w starszej wersji JASP. Aby zmienić "
+"rozdzielczość obrazów (ppi) należy je najpierw odświeżyć.\n"
 "\n"
-"刷新所有分析？"
+"Odświeżyć wszystkie analizy?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2086,13 +1968,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"此分析是基於舊版的 JASP ，要存檔圖像，必須先刷新分析。\n"
+"Ta analiza została stworzona w starszej wersji JASP. Aby zachować obraz "
+"należy go najpierw odświeżyć.\n"
 "\n"
-"刷新分析？"
+"Odświeżyć analizę?"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr "存檔JASP 圖像"
+msgstr "Zapisz obraz JASP"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2100,8 +1983,6 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
-"可攜式網路圖形 (*.png);;可攜式文件格式 (*.pdf);;向量及點陣圖兼容格式 (*."
-"eps);;標籤圖檔格式 (*.tiff);;微軟PowerPoint (*.pptx);;可縮放向量圖形 (*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2110,13 +1991,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"此分析是基於舊版的 JASP ，要存檔圖像，必須先刷新分析。\n"
+"Ta analiza została stworzona przy pomocy starszej wersji JASP. Aby zmienić "
+"rozmiar obrazu, należy go najpierw odświeżyć.\n"
 "\n"
-"刷新分析？"
+"Odświeżyć analizę?"
 
 msgctxt "MainWindow|"
 msgid "Save File?"
-msgstr "需要儲存檔案？"
+msgstr "Zapisać plik?"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2125,13 +2007,13 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
-"程式關閉前是否存檔 %1 的變更？ \n"
+"Zapisać zmiany w pliku %1 przed zamknięciem?\n"
 "\n"
-"若不存檔，這些變更將會不見"
+"Zmiany zostaną utracone, jeśli ich nie zapiszesz."
 
 msgctxt "MainWindow|"
 msgid "File has changed"
-msgstr "檔案已更動"
+msgstr "Plik został zmodyfikowany"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2139,12 +2021,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
-"無法開啟檔案，原因：\n"
+"Nie można otworzyć pliku, ponieważ:\n"
 "%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr "存檔失敗"
+msgstr "Zapisywanie nie powiodło się"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2153,23 +2035,24 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
-"無法儲存檔案。\n"
+"Nie można zapisać pliku.\n"
 "\n"
 "%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr "您有 GitHub 帳戶嗎？"
+msgstr "Czy posiadasz konto w serwisie GitHub?"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
-msgstr "通報錯誤需要使用 GitHub 帳戶，您是否有此帳戶？"
+msgstr ""
+"Aby zgłosić błąd musisz mieć konto w serwisie GitHub. Czy masz takie konto?"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr "登入 GitHub"
+msgstr "Dołącz do GitHub'a"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2181,16 +2064,10 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
-"我們將在您的網絡瀏覽器中為您打開兩個頁面。\n"
-"第二個是“加入 GitHub”頁面，您可以該頁面註冊 GitHub 帳戶。\n"
-"第一個是登錄頁面，在您使用新的 GitHub 帳戶登錄後，可以在該頁面填寫錯誤報告。"
-"\n"
-"\n"
-"請在此處填寫所有缺失的信息。"
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr "GitHub 無法開啟"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2198,13 +2075,10 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
-"連線GitHub 發生錯誤。\n"
-"您可以直接到github討論區 https://github.com/jasp-stats/jasp-issues/issues "
-"提報錯誤"
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr "錯誤"
+msgstr "Błąd"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2212,7 +2086,7 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
-"發生意外的內部錯誤：\n"
+"Wystąpił nieoczekiwany błąd wewnętrzny:\n"
 "%1"
 
 msgctxt "MainWindow|"
@@ -2221,18 +2095,17 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
-"程式無法執行，即將將關閉。\n"
+"JASP nie może kontynuować i zostanie zamknięty.\n"
 "\n"
-"如果能向 JASP 開發團隊報告錯誤，我們非常感謝您的協助。"
+"Będziemy wdzięczni za zgłoszenie tego błędu zespołowi JASP."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr "報告"
+msgstr "Zgłoś"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr "關閉"
+msgstr "Wyjście"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2241,9 +2114,6 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
-"啟動JASP時並未開啟關聯資料檔（csv，sav或ods格式檔案）。為了編輯資料內容，"
-"JASP 會啟動預設試算表編輯器，編輯完畢存檔時同步資料。請確認是否有己存資料檔，"
-"或建立新資料檔？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2251,61 +2121,58 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
-"JASP啟動時開啟了網路資料檔（csv，sav或ods文件）。但若要編輯資料，JASP 需要在"
-"您的電腦上使用此檔。此資料檔是否也存在於您的電腦上，或者您要產生此資料檔？"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started with a read-only data file (probably from the examples). "
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
-msgstr "JASP啟動時開啟了唯讀資料檔（可能來自範例）。但要編輯資料，JASP "
-"要能入資料檔。您電腦上是否該資料檔，或者您要產生此資料檔？"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr "啟動試算表編輯器"
+msgstr "Uruchom edytor arkuszy kalkulacyjnych"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr "生成資料檔"
+msgstr "Wygeneruj plik danych"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr "尋找資料檔"
+msgstr "Znajdź plik z danymi"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr "啟動編輯器"
+msgstr "Uruchom edytor"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
-msgstr "無法啟動編輯器： %1。請在偏好項選單中檢查您的編輯器設置。"
+msgstr ""
+"Nie można uruchomić edytora: %1. Sprawdź ustawienia edytora w menu "
+"preferencji."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
-msgstr "檔 %1 沒有預設的試算表編輯器。使用偏好設定選擇正確的編輯器。"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr "移出所有分析"
+msgstr "Usuń wszystkie analizy"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr "是否確認要刪除所有分析？"
+msgstr "Czy na pewno chcesz usunąć wszystkie analizy?"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr "載入隨附模組 %1 失敗"
+msgstr "Ładowanie modułu %1 nie powiodło się"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2314,30 +2181,27 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
-"載入隨附模組 %1 失敗，出現以下錯誤：\n"
+"Załadowanie modułu %1 nie powiodło się z powodu następującego błędu:\n"
 "\n"
 "%2"
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
-msgstr "R(測試版）"
+msgstr "R (Beta)"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr "載入升級時出錯"
+msgstr "Błąd podczas ładowania aktualizacji"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr "為 %1 載入升級時遇到錯誤：%2"
+msgstr "Podczas ładowania aktualizacji dla %1 wystąpił błąd: %2"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr "無法讀取升級"
+msgstr "Nie udało się odczytać aktualizacji"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid ""
 "The necessary upgrades for reading older JASP-files could not be read...\n"
@@ -2345,14 +2209,10 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
-"無法讀取讀取較舊的 JASP 檔所需的升級...\n"
-"您仍然可以使用 JASP，甚至可以讀取（某些）較舊的檔，但某些選項可能無法正確理"
-"解，並且某些分析可能無法完全載入。"
 
-#, fuzzy
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr "檔案已更改"
+msgstr "Plik został zmieniony"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -2360,122 +2220,118 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
-"此文件的連線副本自打開以來已更改。\n"
+"Kopia tego pliku przechowywana online zmieniła się od czasu jego otwarcia.\n"
 "\n"
-"是否要覆蓋該副本連線檔？"
+"Czy chcesz nadpisać plik online?"
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr "開始上傳 "
+msgstr "Rozpoczęcie przesyłania "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr "開始下載 "
+msgstr "Rozpoczęcie pobierania "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr "開始建立新檔 "
+msgstr "Rozpoczęcie tworzenia nowego pliku "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr "開始建立新資料夾 "
+msgstr "Rozpoczęcie tworzenia nowego folderu "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr "開始 osf 操作 "
+msgstr "Rozpoczęcie akcji usługi OSF "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr "上傳 "
+msgstr "Przesyłanie "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr "下載 "
+msgstr "Pobieranie "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr "建立新文件 "
+msgstr "Tworzenie nowego pliku "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr "建立新文件夾 "
+msgstr "Tworzenie nowego folderu "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr "Osf 操作 "
+msgstr "Akcja usługi OSF "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr "因為 %3 造成%1 %2 失敗"
+msgstr "%1 %2 nie powiodło się, ponieważ %3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr " 處理中"
+msgstr " w toku"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "當機"
+msgstr ""
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr "編輯報表標題"
+msgstr "Edytuj tytuł"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr "複製報表"
+msgstr "Kopiuj"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr "複製LaTex"
+msgstr "Kopiuj LaTeX"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr "複製合法引用資訊"
+msgstr "Kopiuj cytowanie"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr "另存圖像為"
+msgstr "Zapisz obraz jako"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr "編輯統計圖"
+msgstr "Edytuj obraz"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr "增加註釋"
+msgstr "Dodaj notatkę"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr "複製報表模組"
+msgstr "Duplikuj"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr "移除"
+msgstr "Usuń"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr "全部移除"
+msgstr "Usuń wszystko"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr "全部更新"
+msgstr "Odśwież wszystko"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr "分析模組輸入提示"
+msgstr "Pokaż zależności"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr "匯出報表文件檔"
+msgstr "Eksportuj wyniki"
 
-#, fuzzy
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr "結果警告"
+msgstr "Ostrzeżenie dotyczące wyników"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -2486,73 +2342,73 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
-"即將推出！\n"
+"Już wkrótce!\n"
 "========\n"
 "\n"
-"目前沒有此分析的説明。\n"
+"Obecnie pomoc nie jest dostępna dla tej analizy.\n"
 "\n"
-"未來的JASP版本將提供說明。"
+"Dodatkowa dokumentacja będzie dostępna w przyszłych wydaniach JASP."
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr "有效的 R 語法"
+msgstr "prawidłowy kod R"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr "下拉清單 %1 的未知選項  %2"
+msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr "開啟"
+msgstr "Otwórz"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr "儲存"
+msgstr "Zapisz"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr "另存新檔"
+msgstr "Zapisz jako"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr "匯出結果文件檔"
+msgstr "Eksportuj wyniki"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr "匯出資料"
+msgstr "Eksportuj dane"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "同步資料"
+msgstr "Synchronizuj dane"
 
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr "關閉"
+msgstr "Zamknij"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr "設定偏好"
+msgstr "Preferencje"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr "關於"
+msgstr "O"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr "主題"
+msgstr "Kategorie"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr "檔案類型"
+msgstr "Typy plików"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr "無法從 OSF 打開檔案"
+msgstr "Nie udało się otworzyć pliku z OSF"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr "沒有連結的資料檔"
+msgstr "Brak powiązanego pliku danych"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2560,37 +2416,34 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
-"沒有能與JASP同步的關聯資料檔。\n"
-"需要在本機搜尋資料檔嗎？\n"
-"注意：您也可以通過功能選單/同步資料選單設定資料檔。"
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr "尋找資料檔"
+msgstr "Znajdź plik z danymi"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr "資料檔"
+msgstr "Plik danych"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr "使用者名稱或密碼錯誤。請重試。"
+msgstr "Nieprawidłowa nazwa użytkownika i/lub hasło. Proszę spróbować ponownie."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr "OSF 服務無法使用。請檢查您的網路連線。"
+msgstr "Usługa OSF jest niedostępna. Sprawdź połączenie internetowe."
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr "連接超時錯誤。請檢查您的網路連線。"
+msgstr "Przekroczono limit czasu połączenia. Sprawdź połączenie internetowe."
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr "OSF 錯誤"
+msgstr "Błąd usługi OSF"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr "專案"
+msgstr "Projekty"
 
 msgctxt "OSF|"
 msgid ""
@@ -2598,13 +2451,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
-"無法將檔案添加到專案清單中。\n"
+"Obecnie nie można dodawać plików do listy projektów.\n"
 "\n"
-"要添加新專案，請使用線上OSF服務。"
+"Aby dodać nowy projekt, skorzystaj z internetowej wersji usługi OSF."
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr "資料提供者"
+msgstr "Dostawcy danych"
 
 msgctxt "OSF|"
 msgid ""
@@ -2613,79 +2466,73 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
-"無法將檔案加入專案資料清單中。\n"
-"\n"
-"要添加新的資料提供位置（如：Google雲端硬碟），請使用線上OSF服務。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr "因未知原因，無法將檔添加到“%1”。"
+msgstr "Z nieznanej przyczyny pliki nie mogą zostać dodane do '%1'."
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr "檔案類型"
+msgstr "Typy plików"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr "無法從 OSF 開啟檔案"
+msgstr "Nie udało się otworzyć pliku z OSF"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr "發生錯誤，無法建立資料夾。"
+msgstr "Wystąpił błąd i folder nie mógł zostać utworzony."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
-msgstr "無法將新資料夾新增至專案清單中。<br>要增加新專案，請使用線上OSF服務。"
+msgstr ""
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
-"無法新增檔案夾到專案資料提位置清單中。\n"
-"\n"
-"要添加新的資料提供位置（如：Google雲端硬碟），請使用線上OSF服務。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr "由於未知原因，無法新增文件夾到“%1”。"
+msgstr ""
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr "文件夾"
+msgstr "Folder"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr "登入"
+msgstr "Zaloguj się"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr "用戶或密碼不可空白。"
+msgstr "Nazwa użytkownik lub hasło nie mogą być puste."
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr "輸入名稱不可空白"
+msgstr ""
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr "%1 名稱只能包含以下字元 A-Z a-z 0-9 _ %2"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr "最近使用的檔案"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr "目前檔案"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr "電腦"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
@@ -2693,88 +2540,83 @@ msgstr "OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr "學習資料館"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr "資料"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr "結果報表設定"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr "介面設定"
+msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr "進階設定"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr "對比度 %1"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr "層 %1"
+msgstr ""
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
-msgstr "RadioButtonGroup 元素（名稱：%1）中的按鈕沒有任何名稱"
+msgstr ""
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr "沒有與名為 %1 對應的按鈕"
+msgstr ""
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr "%1 中的橫列元件沒有名稱"
+msgstr ""
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr "在%1中有2橫列組件同名"
+msgstr ""
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr "無"
+msgstr ""
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr "按名稱排序"
+msgstr ""
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr "按名稱字母A-Z 排序"
+msgstr ""
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr "按名稱字母 Z-A排序"
+msgstr ""
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr "按類型排序"
+msgstr ""
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr "按日期排序"
+msgstr ""
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr "按大小排序"
+msgstr ""
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
@@ -2782,204 +2624,191 @@ msgstr ""
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr "套用模型"
+msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr "計算式未回傳數字"
+msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr "整數欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr "數位欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr "百分比欄位"
+msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr "整數欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr "小數位數"
+msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr "增加直行欄位"
+msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr "增加計算直行欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr "公式欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr "公式欄位"
+msgstr ""
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr "文字欄位"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr "值 （%1） 必須為 %2"
+msgstr ""
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr "%1 的模型來源必須來自因素清單"
+msgstr ""
 
 #, qt-format
 msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "找不到變數清單 %1 的來源"
-
-#, fuzzy, qt-format
-msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr "變數清單的來源型態錯誤%1"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr "未找到變數清單 %1 的相關清單"
+msgstr ""
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr "變數清單 %2 的相關列表 （%1）錯誤"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr "沒有為 %1 的來源命名"
+msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr "%1 無來源"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr "找不到 %2 源的組件 %1"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr "將變數標準化"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr "如果字串至少包含一個子字串，則回傳 true值"
+msgstr ""
 
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr "+"
+msgstr ""
 
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr "-"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr "將變數標準化"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr "如果字串至少包含一個子字串，則回傳 true值"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr "標題"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr "軸線刻度設定規則"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr "最低刻度"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr "最高刻度"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr "刻度單位"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr "依資料數值設定"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr "依刻度設定"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr "手動設定"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr "最小刻度"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr "最大刻度"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr "x 軸"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr "y 軸"
+msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr "在此處編輯標籤或選擇應濾掉的值。"
+msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
-msgstr "轉換變數型時出錯，但不確定原因"
+msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr "無法將變數轉為次序變數：值包含小數。"
+msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr "無法將變數轉為連續變數：值包含文字。"
+msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
-msgstr "無法將變數轉換為次序變數：值包含文字或小數。"
+msgstr ""
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Value"
-msgstr "值"
+msgstr ""
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Label"
-msgstr "標籤"
+msgstr ""
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2992,40 +2821,29 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
-"遺憾的是，無法編輯圖。\n"
-"\n"
-"錯誤信息：\n"
-"%1\n"
-"\n"
-"如果問題仍然存在，請報告上述消息：https://jasp-stats.org/bug-reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr "無法載入模組 %1 升級"
+msgstr ""
 
-#, fuzzy, qt-format
-msgctxt "Modules::DynamicModule|"
-msgid "Loading upgrades gave the following error: %1"
-msgstr "載入升級時出現以下錯誤：%1"
-
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr "嘗試從目錄%1 初始化模組時發生錯誤，錯誤為：%2"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr "嘗試載入模組 %1 時出錯，錯誤為：“%2”"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
-msgstr "刪除路徑“%2”處的模組 %1 的檔案時出錯，錯誤為：%3"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3033,46 +2851,11 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
-"模組 %1 安裝失敗，錯誤訊息如下：\n"
-"%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr "載入模組 %1 的套件失敗"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"載入模組 %1 的套件失敗，錯誤訊息如下：\n"
-"%2"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Path cannot be handled by R"
-msgstr "R無法辨識檔案路徑"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You are trying to install a module but because the path '%1' contains non-"
-"ascii characters (or a space) R might have some trouble installing there. If "
-"the installation of this module fails you can work around this by changing "
-"your username (or making a new username) that only contains ascii-characters "
-"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
-">Advanced->DeveloperMode."
-msgstr ""
-"您正在嘗試安裝模組，但由於路徑“%1”包含非 ascii 字元（或空格），R 可能在安裝過"
-"程中遇到一些問題。若此模組安裝失敗，您可透過更改（或創建新的）使用者名為只含 "
-"ascii 字元且不包含空格的方式來解決此問題。您也可在首選單>進階>開發人員模式"
-"下，停用“LC_CTYPE設置為C”。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
-msgstr "由於缺乏 %1 ，無法安裝該模組。"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3083,65 +2866,58 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
-"無法安裝模組，因為其名稱為“%1”，且該名稱保留給安裝開發模組的。\n"
-"更改該模組名稱後（在 DESCRIPTION 和 description.json 中）重試。如果您非該模組"
-"的作者，並且不知道該如何處理，請聯繫：%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr "選擇文件夾"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
-"要安裝開發模組，您需要選擇所要載入的資料夾，您可在檔案功能表的偏好>進階下執行"
-"此操作。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr "啟動模組時發生問題"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
-"載入開發中模組發生問題：\n"
-"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr "缺少檔案或文件夾"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
-msgstr "所選資料夾不能安裝為開發人員模組，因為不含所需的檔和資料夾。"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr "建立一個 inst/Description.qml 檔。"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr "建立包含分析語法的 R 目錄。"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "建立一個包含您 optionsforms 的 inst/qml 目錄。"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr "缺少 %1"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3150,8 +2926,6 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
-"您可能刪除了開發模組目錄中的 %1。您的模組需要%1才能使用，請將其放回原處。目前"
-"將先保留舊的%2檔。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3161,25 +2935,23 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"開發模組目錄中似乎從未有過 %1。您的模組需要 %1才能使用，請確實建立之。不確定"
-"您如何能安裝此模組，您應要卸載開發模組"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr "%1 已被刪除！"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
-msgstr "您似乎已刪除 %1，但您的模組需要此檔才能正常工作。現在將卸載開發模組。"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr "遺失 %1文件夾"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3188,8 +2960,6 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
-"疑似 %1文件夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
-"目前先保留舊文件夾。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3199,51 +2969,47 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"疑似開發模組目錄中從未建置 %1文件夾，需要該檔案夾模組才能執行模組。無法得知開"
-"發模組如何安裝，請將之移除。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr "載入模組描述時出現問題"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "無法從存檔中加載模組描述檔: '%1'"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
-"<h3>%1</h3>版本 %2%3由 [<i></i><br><p></p><br><br><i>X63X] 創建，由 %5 維護。"
-"</i><br><i>有關更多詳細資訊，請參閱網站： <a href=“HTTP：//%6”>%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr "來源中的行數大於 %1 的行數"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
-msgstr "錯誤的列類型：%1 用於列表檢視 %2"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
-msgstr "使用了錯誤的升級，正在尋找功能“%1”，但此升級適用於：“%2”"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
-msgstr "應用了錯誤的升級，正在尋找版本“%1”，但此升級適用於：“%2”或更低版本"
+msgstr ""
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3255,150 +3021,132 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
-"由於檢測到迴圈而中止升級！\n"
-"\n"
-"如果採用 %1，仍舊會出現迴圈。\n"
-"\n"
-"這現象決不該發生，也許“%2”的模組作者可提供協助"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr "因素水準列表"
+msgstr ""
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr "VariablesForm中只有一個變數列表可供設定"
+msgstr ""
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr "變數表中沒有可用的列表"
+msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr "因素"
+msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr "水準"
+msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr "新因素"
+msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr "新水準"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr "記得啟用的模組"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr "使用Github預設的PAT"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
-msgstr "使用附隨的GITHUB_PAT, 或使用環境變數中的設定"
+msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr "github私人串接金鑰："
-
-msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr "由JASP自行設定最佳的LC-CTYPE值(建議採取此設定)"
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\""
-msgstr "將LC-CTYPE一直設為\"C\""
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at system default"
-msgstr "將LC_CTYPE設為系統預設值"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr "R, JAGS, 或 lavaan 語法:"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr "結果與幫助"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr "右方主題"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr "深色主題"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr "語言偏好"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr "選擇語言  "
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr "安全圖片模式"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr "停用動畫功能"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr "使用本機文件對話檔"
+msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr "勾選此處以選擇發展人員模式"
+msgstr ""
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr "顯示主選單"
+msgstr ""
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr "顯示模組選單"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr "一組良好的元素組合"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr "您可在此輸入整數： "
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr "這是個非常有用的工具提示吧？"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr "第一個核取方塊"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr "第二個核取方塊"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr "最後一個核取方塊"
+msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr "變數"
+msgstr ""
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr "分割"
+msgstr ""
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3406,8 +3154,6 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
-"JASP 在下載此版本遇到已知問題，可能是無法連接到伺服器。別擔心，JASP仍會正常運"
-"作，只是可能不會告之一些已知的小問題。"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3415,8 +3161,6 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
-"JASP遇到此版本已知的問題。這不一定是嚴重的問題，但若此現象一直出現，你可以聯"
-"繫JASP團隊尋求幫助。"
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -3425,8 +3169,6 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
-"JASP 在載入此版本時遇到已知問題（“%1”），這不一定會造成問題，但這現象若不斷發"
-"生，您可聯繫 JASP 團隊尋求協助。"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -3434,23 +3176,21 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
-"%1 檔沒有預設的試算表編輯器。是否要將數據匯出到 CSV 檔案中，並啟動編輯此 CSV "
-"檔案的預設試算表編輯器？"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr "將資料檔轉為CSV欓"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr "取消"
+msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
-msgstr "在 JASP 啟動期間模組初始化失敗，是否刪除該模組？"
+msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed with the following message:\n"
@@ -3458,19 +3198,15 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
-"在 JASP 啟動期間初始化模組失敗，並顯示以下訊息：\n"
-"%1\n"
-"\n"
-"是否應該刪除模組？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr "初始化模組 %1 失敗"
+msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr "缺少模組"
+msgstr ""
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3480,87 +3216,86 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
-"組合模組 %1 似乎未正確安裝，因此無法載入。\n"
-"如果您安裝的是JASP的官方安裝程式，請告知 JASP 團隊。"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr "在控制台中執行 R 語法"
+msgstr ""
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr "增加左側欄位"
+msgstr ""
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr "增加右側欄位"
+msgstr ""
 
 msgctxt "TableView|"
 msgid "Delete"
-msgstr "刪除欄位"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr "顯示數值的正負號"
+msgstr ""
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
-msgstr "<sup>*</sup>只能以OSF帳號登入，不支持ORCID或機構帳號"
+msgstr ""
+"<sup>*</sup>Tylko logowanie poprzez konto OSF. ORCID lub logowanie przez "
+"konto instytucji nie są obsługiwane."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr "清除已安裝的模組和套件"
+msgstr ""
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr "這將刪除應用程式數據中的「renv」 和「模組」 資料夾。"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr "Windows系統特別設定"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr "如果資料檔案無 BOM 字元， 採用本機編碼儲存CSV 檔"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr "請參閱文件以瞭解更多資訊 "
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr "使用者介面選項"
+msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr "返回數值的正負號"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr "刻度標籤"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr "勾號 #"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr "本欄左側插入刻度"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr "本欄右側插入刻度"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr "刪除鈎號"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr "清除使用者安裝的模組與套件"
+msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3569,61 +3304,58 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
-"清除你安裝的模組與套件，只使用JASP內建的套件。 \n"
-"\n"
-"修改設定後需重新啟動JASP!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr "清除"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr "<i>在Linux上，始終使用預設的試算表編輯器。</i>"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr "OK"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr "取消"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr "還原到預設設定"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr "顯示題目"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr "顯示座標軸"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr "刻度:"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr "位置"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr "進階"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr "解析為R語法"
+msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr "限制範圍:"
+msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr "將影像存成"
+msgstr ""
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3636,20 +3368,14 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
-"很遺憾，該圖無法調整大小。\n"
-"\n"
-"錯誤資訊：\n"
-"%1\n"
-"\n"
-"如果問題仍然存在，請報告上述消息：https://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr "編輯統計圖有誤"
+msgstr ""
 
 msgctxt "Application|"
 msgid "One time setup for JASP Modules"
-msgstr "單次設定JASP 模組"
+msgstr ""
 
 msgctxt "Application|"
 msgid ""
@@ -3659,22 +3385,444 @@ msgid ""
 "Please be patient and wait for the application to show before attempting to "
 "start JASP again."
 msgstr ""
-"JASP 是從 zip 檔案安裝的，需要重新建立某些路徑才能使用分析。\n"
-"\n"
-"請耐心等待應用程式顯示，然後嘗試再次啟動 JASP。"
 
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr "開啟檔案"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
-msgstr "檢視源始碼資訊"
+msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
-msgstr "幫助我們用您的語言翻譯或改進 JASP"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Install"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Press this to install your selected Module"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module to install"
+msgstr ""
+
+msgctxt "ErrorMessage|"
+msgid "Don't show again"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Database"
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"<i>Warning!</i>\n"
+"<br><br>\n"
+"JASP stores the password to your database in jasp-files, while not directly "
+"readable it is easy to extract.\n"
+"If you <b>share this file</b> that means the recipients and whoever they "
+"share the file with could extract the password with some effort.\n"
+"<br><br>\n"
+"In case you are trying to connect to a production or even just network-"
+"accessible database:\n"
+"<br>\n"
+"We <b>strongly urge</b> you to make a special user for JASP in your database "
+"with as <i>few permissions</i> as needed.\n"
+"<br><br>\n"
+"For a local or toy database this is probably overkill, but use your own "
+"judgement."
+msgstr ""
+
+msgctxt "Database|"
+msgid "Hostname"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Port"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Name"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Browse"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Username"
+msgstr "Nazwa użytkownika"
+
+msgctxt "Database|"
+msgid "Password"
+msgstr "Hasło"
+
+msgctxt "Database|"
+msgid "Remember me"
+msgstr "Zapamiętaj mnie"
+
+msgctxt "Database|"
+msgid "Connect to database"
+msgstr "Połącz się z bazą danych"
+
+msgctxt "Database|"
+msgid "Query"
+msgstr "Zapytanie"
+
+msgctxt "Database|"
+msgid "Execute"
+msgstr "Wykonaj"
+
+msgctxt "Database|"
+msgid "Preview data"
+msgstr "Podgląd danych"
+
+msgctxt "Database|"
+msgid "Load into JASP"
+msgstr "Wczytaj do JASP"
+
+msgctxt "Database|"
+msgid "Synching interval in minutes: "
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"0 means no automatic synching, but you can still synch manually by pressing "
+"Ctrl/Cmd+Y"
+msgstr ""
+
+msgctxt "QObject|"
+msgid ""
+"JASP thinks it's connected to the database but the QSqlDatabase isn't "
+"opened..."
+msgstr ""
+"JASP myśli, że jest połączony z bazą danych, ale QSqlDatabase nie jest "
+"otwarte..."
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Query failed with: '%1'"
+msgstr "Zapytanie nie powiodło się z: '%1'"
+
+msgctxt "QObject|"
+msgid "Query wasn't a SELECT-like statement and returned nothing."
+msgstr ""
+
+msgctxt "QObject|"
+msgid "No active result found, maybe there is something wrong with your query?"
+msgstr ""
+"Nie znaleziono aktywnych wyników. Może coś jest nie tak z przesłanym "
+"zapytaniem?"
+
+msgctxt "DataSetPackage|"
+msgid "Database Password"
+msgstr "Hasło do bazy danych"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password for user '%1'"
+msgstr "Połączenie z bazą danych wymaga hasła dla użytkownika '%1'"
+
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password"
+msgstr "Połączenie z bazą danych wymaga hasła"
+
+msgctxt "DataSetPackage|"
+msgid "Connection failed"
+msgstr "Połączenie nie powiodło się"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"Could not connect to database because of '%1', want to try a different "
+"password?"
+msgstr ""
+"Nie można połączyć się z bazą danych z powodu '%1'. Czy chcesz wprowadzić "
+"inne hasło?"
+
+msgctxt "DataSetPackage|"
+msgid "Could not connect to the database so synchronizing will be disabled."
+msgstr ""
+"Nie można połączyć się z bazą danych, więc synchronizacja zostanie wyłączona."
+
+#, qt-format
+msgctxt "DatabaseImporter|"
+msgid ""
+"Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
+msgstr ""
+"Nie udało się połączyć z bazą danych %1 w %2 z użytkownikiem %3. Ostatni "
+"błąd to: '%4'"
+
+msgctxt "DatabaseFileMenu|"
+msgid "Choose a database driver..."
+msgstr "Wybierz sterownik bazy danych..."
+
+msgctxt "DatabaseFileMenu|"
+msgid "IBM DB2"
+msgstr "IBM DB2"
+
+msgctxt "DatabaseFileMenu|"
+msgid "MySQL Driver"
+msgstr "Sterownik MySQL"
+
+msgctxt "DatabaseFileMenu|"
+msgid "Oracle Call Interface Driver"
+msgstr "Sterownik Oracle Call Interface"
+
+msgctxt "DatabaseFileMenu|"
+msgid "ODBC Driver (includes Microsoft SQL Server)"
+msgstr "Sterownik ODBC (obejmuje Microsoft SQL Server)"
+
+msgctxt "DatabaseFileMenu|"
+msgid "PostgreSQL Driver"
+msgstr "Sterownik PostgreSQL"
+
+msgctxt "DatabaseFileMenu|"
+msgid "SQLite version 3 or above"
+msgstr "SQLite w wersji 3 lub wyższej"
+
+msgctxt "DatabaseFileMenu|"
+msgid "Not connected to database!"
+msgstr "Brak połączenia z bazą danych!"
+
+msgctxt "ResourceButtons|"
+msgid "Database"
+msgstr "Baza danych"
 
 msgctxt "PrefsResults|"
-msgid "Use normalized notation"
-msgstr "使用科學記號表示法"
+msgid "Use exponent notation"
+msgstr "Użyj notacji wykładniczej"
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons and mathematical operations."
+msgstr "które można użyć w porównaniach liczbowych i operacjach matematycznych."
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons. Not in mathematical operations as subtraction etc, to do so: "
+"try converting to scalar first."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence comparisons. Not in greater/lesser-"
+"than comparisons or mathematical operations, to do so: try converting to "
+"ordinal or scalar first."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Two-parameter power transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Show missing values as: "
+msgstr "Wyświetl braki danych jako: "
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's textrendering"
+msgstr "Użyj renderowania tekstu Qt"
+
+msgctxt "PrefsUI|"
+msgid "If disabled will switch the textrendering to native."
+msgstr ""
+"Wyłączenie tej opcji spowoduje przełączenie renderowania tekstu na natywne."
+
+msgctxt "PreferencesModel|"
+msgid "Text rendering setting changed"
+msgstr "Zmieniono ustawienia renderowania tekstu"
+
+msgctxt "PreferencesModel|"
+msgid ""
+"The textrendering setting has been changed, this will only take full effect "
+"after JASP is restarted."
+msgstr ""
+"Ustawienia renderowania tekstu zostały zmienione. Zmiany zostaną wprowadzone "
+"po ponownym uruchomieniu JASP."
+
+msgctxt "Database|"
+msgid "Select database"
+msgstr "Wybierz bazę danych"
+
+msgctxt "Database|"
+msgid "DB driver"
+msgstr "Sterownik DB"
+
+msgctxt "EnginesWindow|"
+msgid "Engines Overview"
+msgstr "Przegląd silników"
+
+msgctxt "EnginesWindow|"
+msgid "Right and middle mouse button to kill an engine."
+msgstr "Prawy i środkowy przycisk myszy, aby wyłączyć silnik."
+
+msgctxt "PrefsAdvanced|"
+msgid "Maximum number of engines: "
+msgstr "Maksymalna liczba silników: "
+
+msgctxt "PrefsAdvanced|"
+msgid "Show engines"
+msgstr "Pokaż silniki"
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr "Wybierz istniejący folder"
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '$1' but it doesn't exist."
+msgstr ""
+"Aby zainstalować moduł rozwojowy należy wybrać istniejący folder. Wybrany "
+"folder \"$1\" nie istnieje."
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show R Syntax"
+msgstr "Pokaż składnię języka R"
+
+msgctxt "MainPage|"
+msgid "Hide input options"
+msgstr "Ukryj opcje wprowadzania"
+
+msgctxt "MainPage|"
+msgid "Show input options"
+msgstr "Pokaż opcje wprowadzania"
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is available unfiltered as 'data'\n"
+"and filtered as 'filteredData'.\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+"Wprowadź kod R tutaj.\n"
+"Dane są dostępne w postaci niefiltrowanej jako 'data',\n"
+"natomiast filtrowane jako 'filteredData'.\n"
+"Tutaj można również wkleić analizy JASP w trybie składni."
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+"Wprowadź tutaj kod R.\n"
+"\n"
+"Tutaj można również wkleić analizy JASP w trybie składni."
+
+msgctxt "RCommanderWindow|"
+msgid "Add analysis"
+msgstr "Dodaj analizę"
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error(s): %1"
+msgstr "Ładowanie aktualizacji spowodowało następujące błędy: %1"
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Wrong syntax in Formula: %1"
+msgstr "Błąd składni w formule: %1"
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Could not find term %1 in Formula"
+msgstr "Nie można znaleźć terminu %1 w formule"
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula not found"
+msgstr "Nie znaleziono źródła %1 w formule"
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula is not a Variables List"
+msgstr "Źródło %1 w formule nie jest listą zmiennych"
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Parsing error in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "No matching parenthesis in Formula %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error in Formula %1"
+msgstr "Błąd składni w formule %1"
+
+#, qt-format
+msgctxt "FormulaParser|"
+msgid "Syntax error near conditional operator (%1) in Formula %2"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given if Formula description"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "Cannot find item %1 given in Formula description"
+msgstr "Nie można znaleźć elementu %1 podanego w opisie formuły"
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula randomEffects"
+msgstr "Nie znaleziono źródła w formule randomEffects"
+
+msgctxt "FormulaSource|"
+msgid "randomEffects in Formula can be used only with a ComponentsList item"
+msgstr ""
+"randomEffects w formule może być używany tylko z elementem ComponentsList"
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula"
+msgstr "Nie znaleziono źródła w formule"
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "The conditional term %1 does not come from the %2 source in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Wrong type for argument %1"
+msgstr "Niewłaściwy typ dla argumentu %1"
