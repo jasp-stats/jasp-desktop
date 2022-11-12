@@ -85,18 +85,20 @@ Rectangle
 		}
 	}
 
-	function showMyMenu()
+	function showMyMenu(openAllowed = true)
 	{
 
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
 			customMenu.hide()
-			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
+			if (openAllowed)
+				ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
 		}
 		else if (ribbonButton.menu.rowCount() === 1)
 		{
 			customMenu.hide()
-			ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+			if (openAllowed)
+				ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 			ribbon.focusOutRibbonBar();
 		}
 		else
@@ -131,12 +133,24 @@ Rectangle
 				return nextIndex;
 			}
 
+			// Forward navigation call to parent list
+			//	@index
+			//	@direction: +1 or -1
+			var parentNavigateFunc = function (direction)
+			{
+				forceActiveFocus(jaspRibbons);
+				jaspRibbons.navigateFunction(direction);
+				buttonList.currentItem.showMyMenu(false);
+
+			}
+
 			var props =
 			{
-				"model"			: ribbonButton.menu,
-				"functionCall"	: functionCall,
-				"hasIcons"		: ribbonButton.menu.hasIcons(),
-				"navigateFunc"	: navigateFunc
+				"model"					: ribbonButton.menu,
+				"functionCall"			: functionCall,
+				"hasIcons"				: ribbonButton.menu.hasIcons(),
+				"navigateFunc"			: navigateFunc,
+				"parentNavigateFunc"	: parentNavigateFunc
 			};
 
 			customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);

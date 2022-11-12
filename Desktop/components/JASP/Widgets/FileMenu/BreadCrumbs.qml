@@ -72,6 +72,7 @@ ListView
 				enabled:		index < count - 1
 				toolTip:		index < count - 1 ? qsTr("Back to %1").arg(name) : qsTr("You are here")
 				onClicked:		listView.crumbButtonClicked(index)
+				border.width:	2
 			}
 		}
 }

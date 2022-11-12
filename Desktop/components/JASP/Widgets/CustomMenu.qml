@@ -45,22 +45,28 @@ FocusScope
 
 	property int	currentIndex: -1
 
+	onSourceItemChanged: { menu.currentIndex = -1; }
+
 	Keys.onPressed: (event)=>
 	{
 		if (event.key === Qt.Key_Up || event.key === Qt.Key_Backtab)
 		{
-			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
-				menu.currentIndex = mod(menu.currentIndex - 1, repeater.count)
-			else
-				menu.currentIndex = menu.props["navigateFunc"](currentIndex, -1);
+			navigate(-1);
 			event.accepted = true;
 		}
 		else if (event.key === Qt.Key_Down || event.key === Qt.Key_Tab)
 		{
-			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
-				menu.currentIndex = mod(menu.currentIndex + 1, repeater.count)
-			else
-				menu.currentIndex = menu.props["navigateFunc"](currentIndex, 1);
+			navigate(1);
+			event.accepted = true;
+		}
+		else if (event.key === Qt.Key_Left)
+		{
+			parentNavigate(-1);
+			event.accepted = true;
+		}
+		else if (event.key === Qt.Key_Right)
+		{
+			parentNavigate(1);
 			event.accepted = true;
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
@@ -70,24 +76,12 @@ FocusScope
 				menu.props['functionCall'](currentIndex)
 				menu.currentIndex = -1;
 			}
-			else if (menu.sourceItem !== null) //focus is still on source item so toggle menu
-			{
-				menu.sourceItem.forceActiveFocus();
-				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
-					menu.sourceItem.myMenuOpen = false;
-				menu.hide();
-			}
+			closeMenu();
 		}
 		else if (event.key === Qt.Key_Escape)
 		{
 			menu.currentIndex = -1;
-			if (menu.sourceItem !== null)
-			{
-				menu.sourceItem.forceActiveFocus();
-				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
-					menu.sourceItem.myMenuOpen = false;
-			}
-			menu.hide();
+			closeMenu();
 		}
 	}
 
@@ -128,12 +122,39 @@ FocusScope
 		menu.menuOffset		= "0,0"
 		menu.menuScroll		= "0,0"
 		menu.menuMinPos		= "0,0"
+		menu.currentIndex   = -1;
 	}
 
 	function resizeElements(newWidth)
 	{
 		for (var i = 0; i < repeater.count; ++i)
 			repeater.itemAt(i).width = newWidth;
+	}
+
+	function navigate(direction)
+	{
+		if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
+			menu.currentIndex = mod(menu.currentIndex + direction, repeater.count)
+		else
+			menu.currentIndex = menu.props["navigateFunc"](currentIndex, direction);
+	}
+
+	function parentNavigate(direction)
+	{
+		if (menu.props["parentNavigateFunc"] === undefined || typeof(menu.props["parentNavigateFunc"]) === "undefined")
+			return;
+		menu.props["parentNavigateFunc"](direction);
+	}
+
+	function closeMenu()
+	{
+		if (menu.sourceItem !== null)
+		{
+			menu.sourceItem.forceActiveFocus();
+			if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
+				menu.sourceItem.myMenuOpen = false;
+		}
+		menu.hide();
 	}
 
 	Rectangle
