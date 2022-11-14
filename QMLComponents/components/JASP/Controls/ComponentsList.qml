@@ -45,6 +45,7 @@ ComponentsListBase
 	property string	addIcon				: "duplicate.png"
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
+    property bool   addBorder           : true
 
 	Text
 	{
@@ -65,7 +66,7 @@ ComponentsListBase
 		height			: componentsList.height - itemTitle.height
 		width			: parent.width
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.analysisBackgroundColor
-		border.width	: 1
+        border.width	: addBorder ? 1 : 0
 		border.color	: jaspTheme.borderColor
 		radius			: jaspTheme.borderRadius
 
