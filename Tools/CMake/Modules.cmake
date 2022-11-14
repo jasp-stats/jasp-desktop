@@ -26,6 +26,8 @@ set(JASP_COMMON_MODULES
     "jaspRegression"
     "jaspFrequencies"
     "jaspFactor"
+	"jaspPower"
+	"jaspQualityControl"
     )
 
 set(JASP_EXTRA_MODULES
@@ -41,7 +43,6 @@ set(JASP_EXTRA_MODULES
     "jaspMachineLearning"
     "jaspMetaAnalysis"
     "jaspNetwork"
-    "jaspProcessControl"
     "jaspProphet"
     "jaspReliability"
     "jaspSem"

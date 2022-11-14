@@ -114,3 +114,6 @@
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
 	branch = master
+[submodule "Modules/jaspPower"]
+	path = Modules/jaspPower
+	url = https://github.com/JTPetter/jaspPower
