@@ -27,7 +27,7 @@ set(JASP_COMMON_MODULES
     "jaspFrequencies"
     "jaspFactor"
 	"jaspPower"
-	"jaspQualityControl"
+  "jaspProcessControl"
     )
 
 set(JASP_EXTRA_MODULES
