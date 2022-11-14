@@ -22,6 +22,7 @@
 #include <vector>
 #include <limits>
 #include <set>
+#include <map>
 #include <boost/filesystem.hpp>
 #include "timers.h"
 

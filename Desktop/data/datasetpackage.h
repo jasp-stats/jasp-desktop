@@ -182,7 +182,7 @@ public:
 				void				setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		}
 				void				setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)				{ _dataFileReadOnly				= readOnly;			}
-				void				setAnalysesHTML(std::string html)				{ _analysesHTML					= html;				}
+				void				setAnalysesHTML(QString html)					{ _analysesHTML					= html;				}
 				void				setDataFilter(std::string filter)				{ _dataFilter					= filter;			}
 				void				setDataSet(DataSet * dataSet);
 				void				setIsArchive(bool isArchive)					{ _isArchive					= isArchive;		}
