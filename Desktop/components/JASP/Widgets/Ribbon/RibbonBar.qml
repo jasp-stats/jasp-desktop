@@ -17,7 +17,7 @@
 //
 
 import QtQuick 2.11
-import JASP.Widgets 1.0
+import JASP
 
 
 FocusScope
@@ -157,6 +157,29 @@ FocusScope
 		z			: 2
 		width		: 0.75 * height
 		focus		: true
+
+		ALTNavigation.enabled: true
+		ALTNavigation.requestedPostfix: "a"
+
+		property string a: "test "
+
+
+
+		Item
+		{
+			id: b
+			ALTNavigation.enabled: true
+//			ALTNavigation.parentScope: 	fileMenuOpenButton
+			ALTNavigation.requestedPostfix: "b"
+
+			Item
+			{
+				id: c
+				ALTNavigation.enabled: true
+				ALTNavigation.requestedPostfix: "c"
+
+			}
+		}
 
 		onClicked:
 		{

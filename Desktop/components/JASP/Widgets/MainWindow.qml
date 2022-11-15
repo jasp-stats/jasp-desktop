@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Window	2.11
-import JASP.Widgets		1.0
+import JASP
 import QtQuick.Controls	2.12
 
 Window
@@ -130,6 +130,7 @@ Window
 				left:	parent.left
 				bottom:	parent.bottom
 			}
+
 		}
 
 		WelcomePage

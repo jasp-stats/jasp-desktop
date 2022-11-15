@@ -64,6 +64,7 @@
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
+#include "gui/altnavigation.h"
 #include "utilities/messageforwarder.h"
 
 #include "modules/activemodules.h"
@@ -181,7 +182,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"						);
 	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
-
+	qmlRegisterType<ALTNavigation>								("JASP",		1, 0, "ALTNavigation"					);
+	qmlRegisterType<ALTNavTag>									("JASP",		1, 0, "ALTNavTag"						);
 
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
