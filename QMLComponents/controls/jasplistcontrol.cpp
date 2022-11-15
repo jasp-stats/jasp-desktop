@@ -26,6 +26,7 @@
 #include "rowcontrols.h"
 #include "sourceitem.h"
 #include "jasptheme.h"
+#include "utilities/desktopcommunicator.h"
 
 #include <QQmlContext>
 
@@ -146,12 +147,12 @@ void JASPListControl::setUp()
 	listModel->setRowComponent(rowComponent());
 	_setupSources();
 
-	connect(this,		&JASPListControl::sourceChanged,	this,	&JASPListControl::sourceChangedHandler);
-	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
-	connect(listModel,	&ListModel::termsChanged,			[this]() { emit countChanged(); });
-	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::maxTermsWidthChanged);
-	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &JASPListControl::maxTermsWidthChanged);
-	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged, this, &JASPListControl::maxTermsWidthChanged);
+	connect(this,								&JASPListControl::sourceChanged,			this,	&JASPListControl::sourceChangedHandler);
+	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::termsChangedHandler);
+	connect(listModel,							&ListModel::termsChanged,					this,	[this]() { emit countChanged(); });
+	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::maxTermsWidthChanged);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,		this,	&JASPListControl::maxTermsWidthChanged);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::interfaceFontChanged, this,	&JASPListControl::maxTermsWidthChanged);
 
 }
 

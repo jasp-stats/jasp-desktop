@@ -24,14 +24,14 @@
 #include "utilities/qutils.h"
 #include "controls/tableviewbase.h"
 #include "controls/textinputbase.h"
-#include "preferencesmodelbase.h"
+#include "utilities/desktopcommunicator.h"
 
 using namespace std;
 
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
 	: ListModel(tableView), _tableView(tableView)
 {
-	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const

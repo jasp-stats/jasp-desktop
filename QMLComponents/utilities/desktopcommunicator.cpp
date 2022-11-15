@@ -8,4 +8,13 @@ DesktopCommunicator::DesktopCommunicator(QObject *parent)
 	_singleton = this;
 }
 
+bool DesktopCommunicator::useNativeFileDialog()
+{
+#ifdef BUILDING_JASP
+	return emit useNativeFileDialogSignal();
+#else
+	return true;
+#endif
+}
+
 DesktopCommunicator * DesktopCommunicator::_singleton = nullptr;

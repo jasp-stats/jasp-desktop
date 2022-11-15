@@ -14,9 +14,14 @@
 
 using namespace std;
 
+PreferencesModel * PreferencesModel::_singleton = nullptr;
+
 PreferencesModel::PreferencesModel(QObject *parent) :
-	PreferencesModel(parent)
+	QObject(parent)
 {	
+	assert(!_singleton);
+	_singleton = this;
+
 	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
@@ -327,7 +332,7 @@ void PreferencesModel::setUiScale(double newUiScale)
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	_uiScale = newUiScale;
 
-	emit uiScaleChanged();
+	emit uiScaleChanged(_uiScale);
 }
 
 void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
@@ -522,4 +527,9 @@ void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 	QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
 
 	MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
+}
+
+void PreferencesModel::currentThemeNameHandler()
+{
+	setCurrentThemeName(JaspTheme::currentTheme()->themeName());
 }

@@ -300,6 +300,7 @@ ScrollView
 				checked:			preferencesModel.reportingMode
 				onCheckedChanged:	preferencesModel.reportingMode = checked
 				toolTip:			qsTr("Whether JASP should run in reporting mode or not.")
+				visible:			preferencesModel.developerMode
 
 				KeyNavigation.tab:	interfaceFonts
 			}

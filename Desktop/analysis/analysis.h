@@ -243,7 +243,8 @@ private:
 								_rfile,
 								_showDepsName					= "",
 								_moduleVersion					= "",
-								_codedReferenceToAnalysisEntry	= "";
+								_codedReferenceToAnalysisEntry	= "",
+								_lastQmlFormPath				= "";
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_tryToFixNotes					= false,

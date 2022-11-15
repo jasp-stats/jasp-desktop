@@ -13,8 +13,13 @@ public:
 	
 	static DesktopCommunicator * singleton() { return _singleton; }
 
+	bool useNativeFileDialog();
+
 signals:
 	void currentJaspThemeChanged();
+	void uiScaleChanged();
+	void interfaceFontChanged();
+	bool useNativeFileDialogSignal(); //< For internal use only, `bool useNativeFileDialog();` is what you want
 	
 private:
 	static DesktopCommunicator * _singleton;

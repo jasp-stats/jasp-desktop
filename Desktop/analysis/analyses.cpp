@@ -231,6 +231,17 @@ bool Analyses::allFresh() const
 }
 
 
+bool Analyses::allFinished() const
+{
+	for (auto idAnalysis : _analysisMap)
+		if (!idAnalysis.second->isFinished())
+			return false;
+
+	return true;
+}
+
+
+
 Json::Value Analyses::asJson() const
 {
 	Json::Value analysesJson		= Json::objectValue,

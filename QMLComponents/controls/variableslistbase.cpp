@@ -29,6 +29,7 @@
 #include "boundcontrols/boundcontrollayers.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "boundcontrols/boundcontrolmultiterms.h"
+#include "utilities/desktopcommunicator.h"
 #include "rowcontrols.h"
 #include "analysisform.h"
 #include "sourceitem.h"
@@ -75,7 +76,7 @@ void VariablesListBase::setUp()
 
 	_setAllowedVariables();
 
-	connect(PreferencesModel::prefs(), &PreferencesModel::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
+	connect(DesktopCommunicator::singleton(), &DesktopCommunicator::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
 
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());

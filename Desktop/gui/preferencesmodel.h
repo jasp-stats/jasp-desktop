@@ -10,7 +10,7 @@ class JaspTheme;
 
 ///
 /// Interface between QML and Settings, mostly templated functions to link through directly.
-class PreferencesModel : public QQuickItem
+class PreferencesModel : public QObject
 {
 	Q_OBJECT
 
@@ -67,6 +67,8 @@ class PreferencesModel : public QQuickItem
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
+
+	static PreferencesModel * prefs() { return _singleton; }
 
 	int			customPPI()								const;
 	int			numDecimals()							const;
@@ -228,7 +230,7 @@ signals:
 	void maxFlickVelocityChanged(		float		flickVelo);
 	void currentJaspThemeChanged();
 	void currentThemeReady();
-	void interfaceFontChanged();
+	void interfaceFontChanged(			QString		interfaceFont);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);
@@ -244,8 +246,9 @@ private:
 
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts) const;
+
 	
-	
+	static	PreferencesModel * _singleton;
 };
 
 #endif // PREFERENCESDIALOG_H

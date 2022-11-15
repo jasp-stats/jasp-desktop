@@ -1,5 +1,5 @@
 #include "settings.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "enginedefinitions.h"
 
 QSettings* Settings::_settings = nullptr;

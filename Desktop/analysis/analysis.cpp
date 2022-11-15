@@ -47,35 +47,35 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
 
-	_codedAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
-	_helpFile = dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
+	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
+	_helpFile						= dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
 
 	initAnalysis();
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
-	: AnalysisBase(			Analyses::analyses()					)
-	, _status(				duplicateMe->_status					)
-	, _optionsDotJASP(		duplicateMe->_optionsDotJASP			)
-	, _results(				duplicateMe->_results					)
-	, _resultsMeta(			_results.get(".meta", Json::arrayValue)	)
-	, _imgResults(			duplicateMe->_imgResults				)
-	, _userData(			duplicateMe->_userData					)
-	, _imgOptions(			duplicateMe->_imgOptions				)
-	, _progress(			duplicateMe->_progress					)
-	, _id(					id										)
-	, _name(				duplicateMe->_name						)
-	, _qml(					duplicateMe->_qml						)
-	, _titleDefault(		duplicateMe->_titleDefault				)
-	, _title("Copy of "+	duplicateMe->_title						)
-	, _rfile(				duplicateMe->_rfile						)
-	, _isDuplicate(			true									)
-	, _version(				duplicateMe->_version					)
-	, _moduleData(			duplicateMe->_moduleData				)
-	, _dynamicModule(		duplicateMe->_dynamicModule				)
-	, _codedAnalysisEntry(	duplicateMe->_codedAnalysisEntry		)
-	, _helpFile(			duplicateMe->_helpFile					)
-	, _rSources(			duplicateMe->_rSources					)
+	: AnalysisBase(						Analyses::analyses()							)
+	, _status(							duplicateMe->_status							)
+	, _optionsDotJASP(					duplicateMe->_optionsDotJASP					)
+	, _results(							duplicateMe->_results							)
+	, _resultsMeta(						_results.get(".meta", Json::arrayValue)			)
+	, _imgResults(						duplicateMe->_imgResults						)
+	, _userData(						duplicateMe->_userData							)
+	, _imgOptions(						duplicateMe->_imgOptions						)
+	, _progress(						duplicateMe->_progress							)
+	, _id(								id												)
+	, _name(							duplicateMe->_name								)
+	, _qml(								duplicateMe->_qml								)
+	, _titleDefault(					duplicateMe->_titleDefault						)
+	, _title("Copy of "+				duplicateMe->_title								)
+	, _rfile(							duplicateMe->_rfile								)
+	, _isDuplicate(						true											)
+	, _version(							duplicateMe->_version							)
+	, _moduleData(						duplicateMe->_moduleData						)
+	, _dynamicModule(					duplicateMe->_dynamicModule						)
+	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry		)
+	, _helpFile(						duplicateMe->_helpFile							)
+	, _rSources(						duplicateMe->_rSources							)
 {
 	setBoundValues(duplicateMe->boundValues());
 	initAnalysis();
@@ -123,10 +123,10 @@ bool Analysis::checkAnalysisEntry()
 
 	try
 	{
-		if(_codedAnalysisEntry == "" || !_dynamicModule)
+		if(_codedReferenceToAnalysisEntry == "" || !_dynamicModule)
 			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
 
-		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedAnalysisEntry);
+		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
 
 		bool updateTitleToDefault = _title == _titleDefault;
 

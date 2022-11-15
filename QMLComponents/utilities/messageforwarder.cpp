@@ -1,11 +1,11 @@
 #include "messageforwarder.h"
+#include "utilities/desktopcommunicator.h"
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QRegularExpression>
 #include <QString>
 #include "qutils.h"
-#include "settings.h"
 #include "appdirs.h"
 #include "log.h"
 
@@ -22,6 +22,11 @@ MessageForwarder::MessageForwarder(QObject *main) : QQuickItem(nullptr)
 void MessageForwarder::log(QString msg)
 {
 	Log::log() << msg << std::endl;
+}
+
+bool MessageForwarder::useNativeFileDialogs()
+{
+	return DesktopCommunicator::singleton()->useNativeFileDialog();
 }
 
 MessageForwarder * MessageForwarder::_singleton = nullptr;
@@ -92,8 +97,8 @@ QString MessageForwarder::askPassword(QString title, QString message)
 
 QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)
 {
-	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
-	else															return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, QFileDialog::DontUseNativeDialog);
+	if(useNativeFileDialogs())	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
+	else						return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, QFileDialog::DontUseNativeDialog);
 }
 
 QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filter)
@@ -112,8 +117,8 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 
 	QString saveFileName, selectedFilter;
 
-	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
-	else															saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter, QFileDialog::DontUseNativeDialog);
+	if(useNativeFileDialogs())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
+	else						saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter, QFileDialog::DontUseNativeDialog);
 
 	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << selectedFilter << std::endl;
 
@@ -145,8 +150,8 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 
 QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
 {
-	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	else															return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+	if(useNativeFileDialogs())	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	else						return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
 }
 
 QString MessageForwarder::browseOpenFolder(QString caption)
