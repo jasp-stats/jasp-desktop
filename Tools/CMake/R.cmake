@@ -41,26 +41,36 @@ set(AVAILABLE_R_VERSIONS
     "R-4.1.3"
     "R-4.1.3-arm64"
     "R-4.1.3-win"
-	"R-4.2.1"
-	"R-4.2.1-arm64"
-	"R-4.2.1-win")
+    "R-4.2.1"
+    "R-4.2.1-arm64"
+    "R-4.2.1-win"
+    "R-4.2.2"
+    "R-4.2.2-arm64"
+    "R-4.2.2-win"
+)
 set(R_BINARY_HASHES
+    # 4.1.2
     "61d3909bc070f7fb86c5a2bd67209fda9408faaa"
     "69e8845ffa134c822d4bdcf458220e841a9eeaa5"
     "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
+    # 4.1.3
     "45121f2c830b0cd7d180aee3fc4cd80d0de1e582"
     "dad405d4f58349403c4976ba50e944502070b209"
     "d4068fdc75334c850d5948a0dc8356d34d3512e1"
-	"f83a6c96cedd19193255f94cb01381a273073a3a"
-	"05370dd000f0fded68594fc95334808ee25a8e91"
-	"37cfb7702a7be00abd64bef8e2ae4252821e5cfc")
+    # 4.2.1
+    "f83a6c96cedd19193255f94cb01381a273073a3a"
+    "05370dd000f0fded68594fc95334808ee25a8e91"
+    "37cfb7702a7be00abd64bef8e2ae4252821e5cfc"
+    # 4.2.2
+    "99b8d184f855e630ac950ca4e62cb7fc9a1f7b2e"
+    "c3bb657ca6912b9b98e254f63434a365da26848f"
+    "f6ddcf0591d0d47034cce8dacf9b9f3ef6547fae"
+)
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
-set(R_VERSION
-	"4.2.1"
-    CACHE STRING "R version to be used")
+set(R_VERSION "4.2.2")
 set(R_VERSION_MAJOR_MINOR "4.2")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
