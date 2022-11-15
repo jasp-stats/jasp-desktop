@@ -240,8 +240,6 @@ bool Analyses::allFinished() const
 	return true;
 }
 
-
-
 Json::Value Analyses::asJson() const
 {
 	Json::Value analysesJson		= Json::objectValue,

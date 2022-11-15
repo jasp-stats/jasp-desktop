@@ -505,7 +505,7 @@ std::string DynamicModule::iconFolder() const
 std::string DynamicModule::rModuleCall(const std::string &function) const
 {
 	return ".libPaths(" + getLibPathsToUse()  + ");\n"
-			+ _name + _modulePostFix + "$" + function + _exposedPostFix;
+			+ _name + "::" + function;
 }
 
 std::string	DynamicModule::iconFilePath(std::string whichIcon)	const

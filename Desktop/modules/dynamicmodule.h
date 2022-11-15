@@ -246,8 +246,6 @@ private:
 						_isCommon			= false;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
-	const char		*	_modulePostFix		= "_module",
-					*	_exposedPostFix		= "_exposed";
 	Description		*	_description		= nullptr;
 	Upgrades		*	_upgrades			= nullptr;
 

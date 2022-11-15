@@ -11,7 +11,7 @@ class DesktopCommunicator : public QObject
 public:
 	explicit DesktopCommunicator(QObject *parent = nullptr);
 	
-	static DesktopCommunicator * singleton() { return _singleton; }
+	static DesktopCommunicator * singleton();
 
 	bool useNativeFileDialog();
 

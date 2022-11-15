@@ -8,6 +8,14 @@ DesktopCommunicator::DesktopCommunicator(QObject *parent)
 	_singleton = this;
 }
 
+DesktopCommunicator *DesktopCommunicator::singleton()
+{
+	if(!_singleton)
+		new DesktopCommunicator();
+
+	return _singleton;
+}
+
 bool DesktopCommunicator::useNativeFileDialog()
 {
 #ifdef BUILDING_JASP
