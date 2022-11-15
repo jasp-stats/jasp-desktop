@@ -3,7 +3,7 @@
 DesktopCommunicator::DesktopCommunicator(QObject *parent)
 	: QObject{parent}
 {
-	assert(_singleton != nullptr);
+	assert(!_singleton);
 	
 	_singleton = this;
 }
