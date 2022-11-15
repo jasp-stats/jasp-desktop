@@ -5,4 +5,4 @@
 # 
 
 .libPaths(c("@R_LIBRARY_PATH@"))
-install.packages(c('RInside', 'Rcpp'), type = "source", lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
+install.packages(c('RInside', 'Rcpp'), type = ifelse(.Platform$OS.type == "unix", "binary", "source"), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
