@@ -955,7 +955,10 @@ void EngineSync::enginesPrepareForData()
 
 	for(EngineRepresentation * e : _engines)
 		if(e->busyWithData())
+		{
 			pauseOrKillThese.insert(e);
+			e->pauseEngine(true);
+		}
 
 	long tryTill = Utils::currentSeconds() + ENGINE_KILLTIME; //Ill give the engine 1 sec to respond
 
@@ -1105,7 +1108,7 @@ void EngineSync::processLogCfgRequests()
 void EngineSync::cleanUpAfterClose()
 {
 	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
-	try {	pauseEngines(); }
+	try {	pauseEngines(true); }
 	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
 
 	while(_waitingScripts.size() > 0)
