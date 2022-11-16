@@ -111,12 +111,12 @@ Json::Value ComponentsListBase::createJson() const
 				if (name != _optionKey)
 				{
 					QVariant valueVar = it.value();
-					switch (valueVar.type())
+					switch (valueVar.typeId())
 					{
-					case QVariant::Int:		row[fq(name)] = valueVar.toInt();			break;
-					case QVariant::Double:	row[fq(name)] = valueVar.toDouble();		break;
-					case QVariant::Bool:	row[fq(name)] = valueVar.toBool();			break;
-					case QVariant::String:	row[fq(name)] = fq(valueVar.toString());	break;
+					case QMetaType::Int:		row[fq(name)] = valueVar.toInt();			break;
+					case QMetaType::Double:		row[fq(name)] = valueVar.toDouble();		break;
+					case QMetaType::Bool:		row[fq(name)] = valueVar.toBool();			break;
+					case QMetaType::QString:	row[fq(name)] = fq(valueVar.toString());	break;
 					default:
 					{
 						if (valueVar.canConvert<QString>())	row[fq(name)] = fq(valueVar.toString());

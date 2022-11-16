@@ -117,8 +117,8 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 		Json::Value values(Json::arrayValue);
 		for (const QVariant& val : tableTerms.values[colIndex])
 		{
-			if (val.type() == QVariant::Int)			values.append(val.toInt());
-			else if (val.type() == QVariant::Double)	values.append(val.toDouble());
+			if (val.typeId() == QMetaType::Int)			values.append(val.toInt());
+			else if (val.typeId() == QMetaType::Double)	values.append(val.toDouble());
 			else										values.append(fq(val.toString()));
 		}
 		row["values"] = values;

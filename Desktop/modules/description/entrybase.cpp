@@ -46,6 +46,7 @@ QString EntryBase::toString() const
 				+ ", qml: '"		+ qml() + "'"
 				+ ", reqData: "		+ (requiresData() ? "yes":"no")
 				+ ", icon: '"		+ icon() + "' --";
+	default: return "???";
 	}
 
 	return "???";

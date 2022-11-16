@@ -268,7 +268,7 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 	JASPControl* sourceItem = source.value<JASPControl*>();
 	if (sourceItem)										sourceName = sourceItem->name();
-	else if (source.type() == QVariant::Type::String)	sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
+	else if (source.typeId() == QMetaType::QString)	sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
 	else if (source.canConvert<QMap<QString, QVariant> >())
 	{
 		map = source.toMap();
@@ -380,7 +380,7 @@ SourceItem* SourceItem::_readRSource(JASPListControl* listControl, const QVarian
 	QString sourceName, sourceUse;
 	QMap<QString, QVariant> map;
 
-	if (rSource.type() == QVariant::Type::String)	sourceName = _readRSourceName(rSource.toString(), sourceUse);
+	if (rSource.typeId() == QMetaType::QString)	sourceName = _readRSourceName(rSource.toString(), sourceUse);
 	else if (rSource.canConvert<QMap<QString, QVariant> >())
 	{
 		map = rSource.toMap();
@@ -525,13 +525,13 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 					QJSValue value;
 					QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
 
-					switch (valueVar.type())
+					switch (valueVar.typeId())
 					{
-					case QVariant::Type::Int:
-					case QVariant::Type::UInt:		value = valueVar.toInt();		break;
-					case QVariant::Type::Double:	value = valueVar.toDouble();	break;
-					case QVariant::Type::Bool:		value = valueVar.toBool();		break;
-					default:						value = valueVar.toString();	break;
+					case QMetaType::Int:
+					case QMetaType::UInt:		value = valueVar.toInt();		break;
+					case QMetaType::Double:		value = valueVar.toDouble();	break;
+					case QMetaType::Bool:		value = valueVar.toBool();		break;
+					default:					value = valueVar.toString();	break;
 					}
 
 					jsEngine->globalObject().setProperty(conditionVariable.name, value);

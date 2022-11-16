@@ -395,7 +395,10 @@ int main(int argc, char *argv[])
 				std::cout << "Setting special options for software rendering (aka safe graphics)." << std::endl;
 				QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 				args.push_back("--disable-gpu");
-				putenv("LIBGL_ALWAYS_SOFTWARE=1");
+				std::string str("LIBGL_ALWAYS_SOFTWARE=1");
+				char dst[str.length() + 1];
+				strcpy(dst, str.c_str());
+				putenv(dst);
 			}
 			
 			if(hideJASP)

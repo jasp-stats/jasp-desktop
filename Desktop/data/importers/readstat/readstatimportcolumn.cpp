@@ -63,6 +63,8 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 	case columnType::scale:
 		switch(newType)
 		{
+		case columnType::scale:			[[fallthrough]];
+		case columnType::unknown:		[[fallthrough]];
 		case columnType::nominalText:	return true;
 		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
@@ -78,6 +80,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 	case columnType::nominal:
 		switch(newType)
 		{
+		case columnType::unknown:		[[fallthrough]];
 		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominalText:	[[fallthrough]];
 		case columnType::nominal:		return true;
@@ -117,7 +120,10 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 					return false;
 			return true;
 		}
+		default: return false;
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -163,6 +169,7 @@ void ReadStatImportColumn::setType(columnType newType)
 				_strings.push_back(isMissingValue(d) ? missingValueString() : Utils::doubleToString(d));
 			_doubles.clear();
 			break;
+		default: break;
 		}
 		break;
 
@@ -193,6 +200,8 @@ void ReadStatImportColumn::setType(columnType newType)
 			for(const auto & intLabel : _intLabels)
 				_strLabels[std::to_string(intLabel.first)] = intLabel.second;
 			_intLabels.clear();
+			break;
+		default:
 			break;
 		}
 		break;
@@ -230,6 +239,7 @@ void ReadStatImportColumn::setType(columnType newType)
 
 			break;
 		}
+		default: break;
 		}
 		break;
 	}
@@ -291,6 +301,8 @@ void ReadStatImportColumn::addValue(const string & val)
 		}
 		break;
 	}
+	default:
+		return;
 	}
 }
 
