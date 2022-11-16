@@ -11,7 +11,7 @@ FocusScope
 	property bool	opened:					false
 	property int	minimumHeightTextBoxes: 50 * preferencesModel.uiScale
 	property bool	showEasyFilter:			true
-	property int	desiredMinimumHeight:	showEasyFilter ? easyFilterConstructor.desiredMinimumHeight : rFilterFields.desiredMinimumHeight
+	property int	desiredMinimumHeight:	easyFilterConstructor.desiredMinimumHeight// : rFilterFields.desiredMinimumHeight
 
 	onShowEasyFilterChanged:	if(!showEasyFilter) absorbModelRFilter()
 	onVisibleChanged:			if(!visible) filterWindow.close()
