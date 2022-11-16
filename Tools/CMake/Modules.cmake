@@ -44,7 +44,7 @@ set(JASP_EXTRA_MODULES
     "jaspMetaAnalysis"
     "jaspNetwork"
     "jaspProphet"
-    "jaspReliability"
+  #  "jaspReliability"
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspVisualModeling"
