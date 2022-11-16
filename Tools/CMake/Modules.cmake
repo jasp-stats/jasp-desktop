@@ -43,7 +43,7 @@ set(JASP_EXTRA_MODULES
     "jaspNetwork"
     "jaspQualityControl"
     "jaspProphet"
-    "jaspReliability"
+   # "jaspReliability"
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspVisualModeling"
