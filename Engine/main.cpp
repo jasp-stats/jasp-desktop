@@ -57,6 +57,10 @@ int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 						parentPID		= wcstoul(argv[2], NULL, 10);
 		std::string		logFileBase		= Utils::wstringToString(argv[3]),
 						logFileWhere	= Utils::wstringToString(argv[4]);
+
+
+        if(argc > 5)
+            Dirs::setReportingDir(Utils::wstringToString(argv[5]));
 			
 #else
 int main(int argc, char *argv[])
@@ -68,9 +72,11 @@ int main(int argc, char *argv[])
 		std::string		logFileBase		= argv[3],
 						logFileWhere	= argv[4];
 
+
+        if(argc > 5)
+            Dirs::setReportingDir(argv[5]);
+
 #endif
-		if(argc > 5)
-			Dirs::setReportingDir(argv[5]);
 
 		Log::logFileNameBase = logFileBase;
 		Log::initRedirects();
