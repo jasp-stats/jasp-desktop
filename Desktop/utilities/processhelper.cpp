@@ -62,7 +62,9 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
 
 	//Lets set LC_ALL to utf8 before the process starts.
-	env.insert("LC_ALL", ".UTF8");			  
+	//env.insert("LC_ALL", ".UTF8");			  
+	//Actually we already set ACP to utf8 and that is enough!
+	//Also setting this breaks the check for the output of R CMD config CC we use to avoid problems on mac...
 
 #elif __APPLE__
 
