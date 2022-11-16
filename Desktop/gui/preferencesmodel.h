@@ -5,13 +5,12 @@
 #include <QFont>
 #include "column.h"
 #include "utilities/qutils.h"
-#include "preferencesmodelbase.h"
 
 class JaspTheme;
 
 ///
 /// Interface between QML and Settings, mostly templated functions to link through directly.
-class PreferencesModel : public PreferencesModelBase
+class PreferencesModel : public QObject
 {
 	Q_OBJECT
 
@@ -64,72 +63,70 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
+	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 
-public:	
-	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
-
+public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
-	int			customPPI()					const;
-	int			numDecimals()				const;
-	int			defaultPPI()				const	{ return _defaultPPI; }
-	int			plotPPI()					const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
-	bool		fixedDecimals()				const;
-	bool		exactPValues()				const;
-	bool		normalizedNotation()		const;
-	bool		dataAutoSynchronization()	const;
-	bool		useDefaultEditor()			const;
-	bool		useDefaultPPI()				const;
-	bool		whiteBackground()			const;
-	QString		plotBackground()			const;
-	bool		developerMode()				const;
-	double		uiScale()					override;
-	QString		customEditor()				const;
-	QString		developerFolder()			const;
-	QString		fixedDecimalsForJS()		const;
-	QStringList	missingValues()				const;
-	bool		customThresholdScale()		const;
-	int			thresholdScale()			const;
-	bool		logToFile()					const;
-	int			logFilesMax()				const;
-	int			maxFlickVelocity()			const override;
-	bool		modulesRemember()			const;
-	QStringList	modulesRemembered()			const;
-	bool		safeGraphics()				const;
-	QString		cranRepoURL()				const;
-	QString		githubPatResolved()			const;
-	QString		githubPatCustom()			const;
-	bool		githubPatUseDefault()		const;
-	QString		interfaceFont()				const;
-	QString		codeFont()					const;
-	QString		resultFont(bool forWebEngine = false)	const;
-	QString		currentThemeName()			const;
-	QString		languageCode()				const;
-	bool		useNativeFileDialog()		const;
-	bool		disableAnimations()			const;
-	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
-	bool		generateMarkdown()			const;
-	QStringList allInterfaceFonts()			const { return _allInterfaceFonts; }
-	QStringList allCodeFonts()				const { return _allCodeFonts; }
-	QStringList allResultFonts()			const { return _allResultFonts; }
-	QString		defaultResultFont()			const;
-	QString		defaultInterfaceFont()		const;
-	QString		defaultCodeFont()			const;
-	int			maxEngines()				const;
-	bool		windowsNoBomNative()		const;
-	bool		dbShowWarning()				const;
-	QString		dataLabelNA()				const;
-	bool		guiQtTextRender()			const;
+	static PreferencesModel * prefs() { return _singleton; }
 
+	int			customPPI()								const;
+	int			numDecimals()							const;
+	int			defaultPPI()							const	{ return _defaultPPI; }
+	int			plotPPI()								const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
+	bool		fixedDecimals()							const;
+	bool		exactPValues()							const;
+	bool		normalizedNotation()					const;
+	bool		dataAutoSynchronization()				const;
+	bool		useDefaultEditor()						const;
+	bool		useDefaultPPI()							const;
+	bool		whiteBackground()						const;
+	QString		plotBackground()						const;
+	double		uiScale()								;
+	QString		customEditor()							const;
+	QString		developerFolder()						const;
+	QString		fixedDecimalsForJS()					const;
+	QStringList	missingValues()							const;
+	bool		customThresholdScale()					const;
+	int			thresholdScale()						const;
+	bool		logToFile()								const;
+	int			logFilesMax()							const;
+	int			maxFlickVelocity()						const;
+	bool		modulesRemember()						const;
+	QStringList	modulesRemembered()						const;
+	bool		safeGraphics()							const;
+	QString		cranRepoURL()							const;
+	QString		githubPatResolved()						const;
+	QString		githubPatCustom()						const;
+	bool		githubPatUseDefault()					const;
+	QString		interfaceFont()							const;
+	QString		codeFont()								const;
+	QString		resultFont(bool forWebEngine = false)	const;
+	QString		currentThemeName()						const;
+	QString		languageCode()							const;
+	bool		useNativeFileDialog()					const;
+	bool		disableAnimations()						const;
+	bool		animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
+	bool		generateMarkdown()						const;
+	QStringList allInterfaceFonts()						const { return _allInterfaceFonts; }
+	QStringList allCodeFonts()							const { return _allCodeFonts; }
+	QStringList allResultFonts()						const { return _allResultFonts; }
+	QString		defaultResultFont()						const;
+	QString		defaultInterfaceFont()					const;
+	QString		defaultCodeFont()						const;
+	int			maxEngines()							const;
+	bool		windowsNoBomNative()					const;
+	bool		dbShowWarning()							const;
+	QString		dataLabelNA()							const;
+	bool		guiQtTextRender()						const;
+	bool		reportingMode()							const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-	
-	
-	int maxEnginesAdmin() const;
-
+	int 		maxEnginesAdmin() 						const;
 
 public slots:
+	bool developerMode()								const; //Some 
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
 	void setDefaultPPI(					int			defaultPPI);
@@ -166,7 +163,7 @@ public slots:
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
 	void onDefaultPPIChanged(			int);
-	void setCurrentThemeName(			QString		currentThemeName) override;
+	void setCurrentThemeName(			QString		currentThemeName);
 	void setInterfaceFont(				QString		interfaceFont);
 	void setCodeFont(					QString		codeFont);
 	void setResultFont(					QString		resultFont);
@@ -180,7 +177,9 @@ public slots:
 	void setDataLabelNA(				QString		dataLabelNA);
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
 	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
-
+	void setReportingMode(				bool		reportingMode);
+	void currentThemeNameHandler();
+	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
 	void fixedDecimalsChangedString(	QString		fixedDecimals);
@@ -226,12 +225,17 @@ signals:
 	void maxEnginesAdminChanged();
 	void dataLabelNAChanged(			QString		dataLabelNA);
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
+	void reportingModeChanged(			bool		reportingMode);
+	void uiScaleChanged(				float		uiScale);
+	void maxFlickVelocityChanged(		float		flickVelo);
+	void currentJaspThemeChanged();
+	void currentThemeReady();
+	void interfaceFontChanged(			QString		interfaceFont);
 
 private slots:
-	void dataLabelNAChangedSlot(		QString		dataLabelNA);
+	void dataLabelNAChangedSlot(QString label);
 	
 private:
-
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
 	QStringList		_allFonts,
@@ -242,6 +246,9 @@ private:
 
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts) const;
+
+	
+	static	PreferencesModel * _singleton;
 };
 
 #endif // PREFERENCESDIALOG_H

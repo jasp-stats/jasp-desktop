@@ -1,14 +1,16 @@
 var JASPWidgets = {};
 
-var Parchment = Quill.import('parchment');
+if(insideJASP)
+{
+	var Parchment = Quill.import('parchment');
 
-var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
-  scope: Parchment.Scope.BLOCK
-});
+	var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
+	scope: Parchment.Scope.BLOCK
+	});
 
 
-Quill.register('formats/linebreak', LineBreakClass);
-
+	Quill.register('formats/linebreak', LineBreakClass);
+}
 
 JASPWidgets.Encodings = {
 	getBase64: function (arrayBuffer) {
@@ -442,6 +444,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	render: function () {
 
+		if(!insideJASP)	return; //We dont want noteboxes in a dashboard
+
 		if (this._inited) {
 			this.$quill.off();
 			delete this.$quill;
@@ -612,6 +616,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	setQuillToolbarVisibility: function(display) {
 		// display: ['block', 'none']
 
+		if(!insideJASP) return;
+
 		this.$quillToolbar.style.display = display;
 
 		if (display === 'block') {
@@ -718,7 +724,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			callback = completedCallback;
 
 		var html = '';
-		if (this.isTextboxEmpty() === false && this.visible === true) {
+		if (insideJASP && this.isTextboxEmpty() === false && this.visible === true) {
 
 			html += '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '>' + this.$quill.root.innerHTML + '</div>';
 		}

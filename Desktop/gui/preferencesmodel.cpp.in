@@ -14,9 +14,14 @@
 
 using namespace std;
 
+PreferencesModel * PreferencesModel::_singleton = nullptr;
+
 PreferencesModel::PreferencesModel(QObject *parent) :
-	PreferencesModelBase(parent)
+	QObject(parent)
 {	
+	assert(!_singleton);
+	_singleton = this;
+
 	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
@@ -120,6 +125,7 @@ GET_PREF_FUNC_BOOL( windowsNoBomNative,			Settings::WINDOWS_NO_BOM_NATIVE						)
 GET_PREF_FUNC_BOOL( dbShowWarning,				Settings::DB_SHOW_WARNING							)
 GET_PREF_FUNC_STR(  dataLabelNA,				Settings::DATA_LABEL_NA								)
 GET_PREF_FUNC_BOOL( guiQtTextRender,			Settings::GUI_USE_QT_TEXTRENDER						)
+GET_PREF_FUNC_BOOL( reportingMode,				Settings::REPORT_SHOW								)
 
 int PreferencesModel::maxEngines() const
 {
@@ -271,16 +277,15 @@ SET_PREF_FUNCTION(QString,	setDeveloperFolder,			developerFolder,			developerFol
 SET_PREF_FUNCTION(int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
 SET_PREF_FUNCTION(bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
 SET_PREF_FUNCTION(int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,				Settings::LOG_FILES_MAX								)
-SET_PREF_FUNCTION_EMIT_NO_ARG(int,	setMaxFlickVelocity,	maxFlickVelocity,		maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
+SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
 SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
-//SET_PREF_FUNCTION(QString,	setGithubPatCustom,			githubPatCustom,			githubPatCustomChanged,			Settings::GITHUB_PAT_CUSTOM						)
 SET_PREF_FUNCTION(bool,		setGithubPatUseDefault,		githubPatUseDefault,		githubPatUseDefaultChanged,		Settings::GITHUB_PAT_USE_DEFAULT					)
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
-SET_PREF_FUNCTION_EMIT_NO_ARG(QString,	setInterfaceFont,	interfaceFont,			interfaceFontChanged,			Settings::INTERFACE_FONT							)
+SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
@@ -288,6 +293,7 @@ SET_PREF_FUNCTION(bool,		setWindowsNoBomNative,		windowsNoBomNative,			windowsNo
 SET_PREF_FUNCTION(bool,		setDbShowWarning,			dbShowWarning,				dbShowWarningChanged,			Settings::DB_SHOW_WARNING							)
 SET_PREF_FUNCTION(QString,	setDataLabelNA,				dataLabelNA,				dataLabelNAChanged,				Settings::DATA_LABEL_NA								)
 SET_PREF_FUNCTION(bool,		setGuiQtTextRender,			guiQtTextRender,			guiQtTextRenderChanged,			Settings::GUI_USE_QT_TEXTRENDER						)
+SET_PREF_FUNCTION(bool,		setReportingMode,			reportingMode,				reportingModeChanged,			Settings::REPORT_SHOW								)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {
@@ -326,7 +332,7 @@ void PreferencesModel::setUiScale(double newUiScale)
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	_uiScale = newUiScale;
 
-	emit uiScaleChanged();
+	emit uiScaleChanged(_uiScale);
 }
 
 void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
@@ -521,4 +527,9 @@ void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 	QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
 
 	MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
+}
+
+void PreferencesModel::currentThemeNameHandler()
+{
+	setCurrentThemeName(JaspTheme::currentTheme()->themeName());
 }

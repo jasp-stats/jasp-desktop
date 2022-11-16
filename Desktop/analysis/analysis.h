@@ -142,7 +142,8 @@ public:
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isRunningImg()		const { return status() == RunningImg;	}
-	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
+	bool isFinished()		const { return status() == Complete || isErrorState(); }
+	bool isErrorState()		const { return status() == ValidationError  || status() == FatalError; }
 
 	std::string				qmlFormPath(bool addFileProtocol = true, bool ignoreReadyForUse = false)	const	override;
 	void Q_INVOKABLE		createForm(QQuickItem* parentItem = nullptr)		override;
@@ -234,24 +235,25 @@ protected:
 
 private:
 	size_t						_id,
-								_counter			= 0;
+								_counter						= 0;
 	std::string					_name,
 								_qml,
 								_titleDefault,
 								_title,
 								_rfile,
-								_showDepsName		= "",
-								_moduleVersion		= "",
-								_lastQmlFormPath	= "",
-								_codedAnalysisEntry = "";
-	bool						_isDuplicate		= false,
-								_wasUpgraded		= false,
-								_tryToFixNotes		= false;
+								_showDepsName					= "",
+								_moduleVersion					= "",
+								_codedReferenceToAnalysisEntry	= "",
+								_lastQmlFormPath				= "";
+	bool						_isDuplicate					= false,
+								_wasUpgraded					= false,
+								_tryToFixNotes					= false,
+								_hasReport						= false;
 	Version						_version;
-	int							_revision			= 0;
+	int							_revision						= 0;
 
-	Modules::AnalysisEntry	*	_moduleData			= nullptr;
-	Modules::DynamicModule	*	_dynamicModule		= nullptr;
+	Modules::AnalysisEntry	*	_moduleData						= nullptr;
+	Modules::DynamicModule	*	_dynamicModule					= nullptr;
 	QList<std::string>			_computedColumns;
 	QFileSystemWatcher			_QMLFileWatcher;
 

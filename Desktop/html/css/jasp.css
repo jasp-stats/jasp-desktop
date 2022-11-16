@@ -352,6 +352,56 @@ div.jasp-image-image.no-data {
 	white-space: normal;
 }
 
+.jaspReport  {
+	z-index: 100 ;
+	padding: 1em ;
+	border-radius: .4em ;
+	min-width: 300px ;
+	white-space: normal;
+}
+
+.jaspReportTop
+{
+	position: fixed !important;
+    top: 0;
+	width: 80%; 
+	z-index: 1234;
+	
+}
+
+.jaspReportTitleRow
+{
+	display: 		flex;
+	width:			100%;
+	flex-direction: row;
+	justify-content: left;
+}
+
+.jaspReportTitle
+{
+	/*text-align: center;
+	width: 100%;*/
+	margin-left: 30px;
+}
+
+.jaspReportIcon
+{
+    width:		40px;
+	height:		40px;
+}
+
+.jaspReportIconDo
+{
+	-webkit-mask: url(../img/triangle-exclamation.svg) no-repeat center;
+	mask: url(../img/triangle-exclamation.svg) no-repeat center;
+}
+
+.jaspReportIconDont
+{
+	-webkit-mask: url(../img/round-information.svg) no-repeat center;
+	mask: url(../img/round-information.svg) no-repeat center;
+}
+
 .stack-trace-selector div,
 .stack-trace-selector span {
 

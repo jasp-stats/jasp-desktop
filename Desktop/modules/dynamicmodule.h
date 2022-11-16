@@ -120,7 +120,7 @@ public:
 	QStringList			importsRQ()			const { return tql(_importsR);					}
 	stringset			requiredModules()	const;
 	
-	std::string			getLibPathsToUse();
+	std::string			getLibPathsToUse()	const;
 
 	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }
 
@@ -129,7 +129,7 @@ public:
 	std::string			qmlFolder()											const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
-	std::string			rModuleCall(	const std::string & function)		const { return _name + "::" + function ; }
+	std::string			rModuleCall(	const std::string & function)		const;
 	QString				helpFolderPath()									const;
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
@@ -246,8 +246,6 @@ private:
 						_isCommon			= false;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
-	const char		*	_modulePostFix		= "_module",
-					*	_exposedPostFix		= "_exposed";
 	Description		*	_description		= nullptr;
 	Upgrades		*	_upgrades			= nullptr;
 

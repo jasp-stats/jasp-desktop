@@ -29,13 +29,13 @@
 #include "boundcontrols/boundcontrollayers.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "boundcontrols/boundcontrolmultiterms.h"
+#include "utilities/desktopcommunicator.h"
 #include "rowcontrols.h"
 #include "analysisform.h"
 #include "sourceitem.h"
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
-#include "preferencesmodelbase.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -76,7 +76,7 @@ void VariablesListBase::setUp()
 
 	_setAllowedVariables();
 
-	connect(PreferencesModelBase::prefs(), &PreferencesModelBase::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
+	connect(DesktopCommunicator::singleton(), &DesktopCommunicator::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
 
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());

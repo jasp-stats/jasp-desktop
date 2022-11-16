@@ -1,5 +1,5 @@
 #include "settings.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "enginedefinitions.h"
 
 QSettings* Settings::_settings = nullptr;
@@ -82,8 +82,8 @@ const Settings::Setting Settings::Values[] = {
 	{"dbShowWarning",				true	},
 	{"dbRememberMe",				false	},
 	{"dataNALabel",					""		},
-	{"guiQtTextRender",				true	}
-	
+	{"guiQtTextRender",				true	},
+	{"showReports",					false	}
 };	
 
 QVariant Settings::value(Settings::Type key)

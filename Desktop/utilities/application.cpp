@@ -25,12 +25,14 @@
 #include "utilities/settings.h"
 #include <iostream>
 
-void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson)
+void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
 {	
 	std::cout << "Application init entered" << std::endl;
 	
 	if(logToFile)
 		Settings::setValue(Settings::LOG_TO_FILE, true);
+
+	Dirs::setReportingDir(fq(reportingPath));
 
 	_mainWindow = new MainWindow(this);
 
@@ -43,6 +45,8 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 	if(!dbJson.isNull())
 		_mainWindow->open(dbJson);
 
+	if(reportingPath != "")
+		_mainWindow->reportHere(reportingPath);
 }
 
 Application::~Application()

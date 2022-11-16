@@ -45,6 +45,10 @@ project(
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
 
+#needed for R-Interface and QMLComponents for them to build stuff porperly when *inside* JASP
+add_definitions(-DBUILDING_JASP)
+set(BUILDING_JASP TRUE)
+
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
 set(CMAKE_CXX_STANDARD 17)

@@ -80,9 +80,11 @@
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "utilities/qmlutils.h"
+#include "utilities/reporter.h"
 
 #include "widgets/filemenu/filemenu.h"
 #include "rsyntax/formulabase.h"
+#include "utilities/desktopcommunicator.h"
 
 
 using namespace std;
@@ -244,7 +246,8 @@ QString MainWindow::windowTitle() const
 
 bool MainWindow::checkDoSync()
 {
-	if (checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
+	//Only do this if we are *not* running in reporting mode. 
+	if (!_reporter && checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
 	{
 		_preferences->setDataAutoSynchronization(false);
 		return false;
@@ -358,15 +361,21 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
-	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::uiScaleChangedHandler								);
+	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::uiScaleChangedHandler					);
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
-	connect(_preferences,			&PreferencesModel::currentJaspThemeChanged,			this,					&MainWindow::setCurrentJaspTheme						);
+	connect(_preferences,			&PreferencesModel::currentJaspThemeChanged,			this,					&MainWindow::setCurrentJaspTheme							);
 	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
 	connect(_preferences,			&PreferencesModel::resultFontChanged,				_engineSync,			&EngineSync::refreshAllPlots								);
 	connect(_preferences,			&PreferencesModel::restartAllEngines,				_engineSync,			&EngineSync::haveYouTriedTurningItOffAndOnAgain				);
 	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
+
+	//Needed to allow for a hard split between Desktop/QMLComps:
+	connect(_preferences,						&PreferencesModel::uiScaleChanged,					DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged			);
+	connect(_preferences,						&PreferencesModel::interfaceFontChanged,			DesktopCommunicator::singleton(),	&DesktopCommunicator::interfaceFontChanged		);
+	connect(_preferences,						&PreferencesModel::currentJaspThemeChanged,			DesktopCommunicator::singleton(),	&DesktopCommunicator::currentJaspThemeChanged	);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::useNativeFileDialogSignal,	_preferences,						&PreferencesModel::useNativeFileDialog			);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
@@ -508,6 +517,14 @@ void MainWindow::loadQML()
 	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
+	for(const auto & keyval : JaspTheme::themes())
+	{
+		connect(keyval.second,		&JaspTheme::currentThemeNameChanged,			_preferences,		&PreferencesModel::currentThemeNameHandler	);
+		connect(keyval.second,		&JaspTheme::currentThemeReady,					_preferences,		&PreferencesModel::currentThemeReady		);
+		connect(_preferences,		&PreferencesModel::uiScaleChanged,				keyval.second,		&JaspTheme::uiScaleHandler					);
+		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maxFlickVeloHandler				);
+	}		
+
 	connect(_preferences, &PreferencesModel::uiScaleChanged,		DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 	connect(_preferences, &PreferencesModel::interfaceFontChanged,	DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 
@@ -589,9 +606,16 @@ void MainWindow::showRCommander()
 		_qml		-> load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
 
 		//To reload page because of https://github.com/jasp-stats/INTERNAL-jasp/issues/1280
-		_resultsJsInterface->resetResults();
-		QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+		reloadResults();
 	}
+}
+
+void MainWindow::reloadResults() const
+{
+	_resultsJsInterface->resetResults();//To reload page
+
+	QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
+
 }
 
 void MainWindow::resendResultsToWebEngine()
@@ -808,6 +832,9 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 		analysesForComparingDoneAlready();
+	
+	if(_reporter && _analyses->allFinished())
+		_reporter->analysesFinished();
 }
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
@@ -1086,15 +1113,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				_package->databaseStartSynching(false);
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-			{
-				//Make sure the engine gets enough time to load data
-				_engineSync->pauseEngines();
-				_engineSync->resumeEngines();
-
-				//Also give it like 3secs to have the ribbon load
+			{				
+				//Give it like 3secs to have the ribbon load and the engines to load the data
 				QTimer::singleShot(3000, this, &MainWindow::startComparingResults);
 			}
-
+			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
+					exit(12);			
 		}
 		else
 		{
@@ -1591,6 +1615,11 @@ void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 	QTimer::singleShot(60000 * timeOut, this, &MainWindow::unitTestTimeOut);
 }
 
+void MainWindow::reportHere(QString dir)
+{
+	_reporter = new Reporter(this, dir);
+}
+
 void MainWindow::unitTestTimeOut()
 {
 	//If we are showing the user whatever went wrong we shouldnt close JASP automatically because it could get confusing
@@ -1614,26 +1643,13 @@ void MainWindow::startComparingResults()
 
 void MainWindow::analysesForComparingDoneAlready()
 {
-	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->refreshed())
-	{
-		bool allCompleted = true;
-
-		_analyses->applyToSome([&](Analysis * analysis)
-		{
-			if(!analysis->isFinished())
-			{
-				allCompleted = false;
-				return false;
-			}
-			return true;
-		});
-
-		if(allCompleted)
+	if(	resultXmlCompare::compareResults::theOne()->testMode()		&& 
+		resultXmlCompare::compareResults::theOne()->refreshed()		&&
+		_analyses->allFinished()									)
 		{
 			_resultsJsInterface->exportPreviewHTML();
 			resultXmlCompare::compareResults::theOne()->setExportCalled();
 		}
-	}
 }
 
 void MainWindow::finishComparingResults()

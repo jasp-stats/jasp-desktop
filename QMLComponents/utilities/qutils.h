@@ -28,6 +28,7 @@
 #include <QVector>
 #include <QRegularExpression>
 #include <QMap>
+#include <QDir>
 #include <map>
 #include <set>
 #include <string>
@@ -66,6 +67,8 @@ QString encrypt(const QString &input);
 QString decrypt(const QString &input);
 QString getSortableTimestamp();
 QString QJSErrorToString(QJSValue::ErrorType errorType);
+
+void	copyQDirRecursively(QDir copyThis, QDir toHere);
 
 QString shortenWinPaths(QString);
 

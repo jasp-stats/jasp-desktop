@@ -8,17 +8,19 @@
 
     <link rel="stylesheet" href="css/jquery-ui-1.10.1.custom.css"			type="text/css" />
 	<link rel="stylesheet" href="css/etch.css"								type="text/css" />
-	
-    <link rel="stylesheet" href="css/jasp.css"					            type="text/css"/>
-    <link rel="stylesheet" href="css/lightTheme-jasp.css"					type="text/css" id="style"/>
-    <link rel="stylesheet" href="css/printing.css"							type="text/css" />
+	<link rel="stylesheet" href="css/quill.snow.css"						type="text/css" />
+	<link rel="stylesheet" href="css/jasp.css"								type="text/css"/>
+	<link rel="stylesheet" href="css/lightTheme-jasp.css"					type="text/css" id="style"/>
+	<link rel="stylesheet" href="css/printing.css"							type="text/css" />
 
-    <script type="text/javascript" >   var insideJASP = false;  </script>
+	<script type="text/javascript" >   var insideJASP = true;               </script>
 
     <script type="text/javascript" src="js/jquery-1.9.1.js">                </script>
 	<script type="text/javascript" src="js/jquery-ui-1.10.1.custom.js">    </script>
 	<script type="text/javascript" src="js/underscore-min.js">            </script>
 	<script type="text/javascript" src="js/backbone-1.1.2.js">           </script>
+	<script type="text/javascript" src="js/etch.js">                    </script>
+	<script type="text/javascript" src="js/quill.js">                  </script>
 	<script type="text/javascript" src="js/mrkdwn.js">                </script>
 	<script type="text/javascript" src="js/jaspwidgets.js">          </script>
 	<script type="text/javascript" src="js/object.js">              </script>
@@ -26,6 +28,7 @@
 	<script type="text/javascript" src="js/table.js">             </script>
 	<script type="text/javascript" src="js/image.js">            </script>
 	<script type="text/javascript" src="js/collection.js">      </script>
+	<script type="text/javascript" src="js/qwebchannel.js">    </script>
 	<script type="text/javascript" src="js/analysis.js">      </script>
 	<script type="text/javascript" src="js/analyses.js">     </script>
 	<script type="text/javascript" src="js/reportNode.js">  </script>
@@ -35,30 +38,20 @@
 
 </head>
 <body>
-	<div id="results">
+	<div id="templates" ></div>
+	<div id="instructions" style="display: none;">
+          <h1>Instructions</h1>
+          <p>Below is the results table for your first analysis, highlighted in white.</p>
+          <p>To the left are the options for this analysis. As you choose options, the results table below will change to display the results.</p>
+          <p>When you have the analysis set up the way you want, you can click the OK button to return to the spreadsheet view.</p>
+          <p>If you decide you want to change the analysis later, you can simply click the results table again, and this will bring back the options.</p>
+	</div>
+        <div id="results">
           <div id="spacer" style="height: 1px;"></div>
 	</div>
 
 	<script type="text/javascript">
-            console.log("JASP standalone html was loaded")
-
-			jasp = { reportingVisible: true }; 
-
-            function readResults()
-            {
-                $.getJSON("results.json", function(results) {
-					for(var analysis in results.analyses)
-						window.analysisChanged(results.analyses[analysis])
-                    window.setResultsMeta(results.meta);
-					
-                });
-
-            };
-
-            readResults();
-
-            setInterval(readResults, 15000); //try reading 15 sec
-
+            console.log("\n%cHi.\n%cWelcome to the javascript console, true nerd. You are likely to be interested in our GitHub page! \n%cgithub.com/jasp-stats/jasp-desktop%c \n\n","font-family: Consolas; font-size: 32px; color: #992589","font-family: consolas; font-size: 16px; color: #767676","font-family: Helvetica Neue, sans-serif; font-size: 11px; text-decoration: underline; line-height: 1.2rem; color: #767676","")
 	</script>
 </body>
 </html>

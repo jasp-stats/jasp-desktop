@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
-
+#include "utilities/reporter.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses()),
@@ -47,35 +47,35 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
 
-	_codedAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
-	_helpFile = dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
+	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
+	_helpFile						= dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
 
 	initAnalysis();
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
-	: AnalysisBase(			Analyses::analyses()					)
-	, _status(				duplicateMe->_status					)
-	, _optionsDotJASP(		duplicateMe->_optionsDotJASP			)
-	, _results(				duplicateMe->_results					)
-	, _resultsMeta(			_results.get(".meta", Json::arrayValue)	)
-	, _imgResults(			duplicateMe->_imgResults				)
-	, _userData(			duplicateMe->_userData					)
-	, _imgOptions(			duplicateMe->_imgOptions				)
-	, _progress(			duplicateMe->_progress					)
-	, _id(					id										)
-	, _name(				duplicateMe->_name						)
-	, _qml(					duplicateMe->_qml						)
-	, _titleDefault(		duplicateMe->_titleDefault				)
-	, _title("Copy of "+	duplicateMe->_title						)
-	, _rfile(				duplicateMe->_rfile						)
-	, _isDuplicate(			true									)
-	, _version(				duplicateMe->_version					)
-	, _moduleData(			duplicateMe->_moduleData				)
-	, _dynamicModule(		duplicateMe->_dynamicModule				)
-	, _codedAnalysisEntry(	duplicateMe->_codedAnalysisEntry		)
-	, _helpFile(			duplicateMe->_helpFile					)
-	, _rSources(			duplicateMe->_rSources					)
+	: AnalysisBase(						Analyses::analyses()							)
+	, _status(							duplicateMe->_status							)
+	, _optionsDotJASP(					duplicateMe->_optionsDotJASP					)
+	, _results(							duplicateMe->_results							)
+	, _resultsMeta(						_results.get(".meta", Json::arrayValue)			)
+	, _imgResults(						duplicateMe->_imgResults						)
+	, _userData(						duplicateMe->_userData							)
+	, _imgOptions(						duplicateMe->_imgOptions						)
+	, _progress(						duplicateMe->_progress							)
+	, _id(								id												)
+	, _name(							duplicateMe->_name								)
+	, _qml(								duplicateMe->_qml								)
+	, _titleDefault(					duplicateMe->_titleDefault						)
+	, _title("Copy of "+				duplicateMe->_title								)
+	, _rfile(							duplicateMe->_rfile								)
+	, _isDuplicate(						true											)
+	, _version(							duplicateMe->_version							)
+	, _moduleData(						duplicateMe->_moduleData						)
+	, _dynamicModule(					duplicateMe->_dynamicModule						)
+	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry		)
+	, _helpFile(						duplicateMe->_helpFile							)
+	, _rSources(						duplicateMe->_rSources							)
 {
 	setBoundValues(duplicateMe->boundValues());
 	initAnalysis();
@@ -123,10 +123,10 @@ bool Analysis::checkAnalysisEntry()
 
 	try
 	{
-		if(_codedAnalysisEntry == "" || !_dynamicModule)
+		if(_codedReferenceToAnalysisEntry == "" || !_dynamicModule)
 			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
 
-		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedAnalysisEntry);
+		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
 
 		bool updateTitleToDefault = _title == _titleDefault;
 
@@ -192,6 +192,7 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_results		= results;
 	_progress		= progress;
 	_resultsMeta	= _results.get(".meta", Json::arrayValue);
+	_hasReport		= !PreferencesModel::prefs()->reportingMode() ? false : Reporter::reporter()->analysisHasReportNeeded(this);
 
 	setStatus(status);
 
@@ -391,6 +392,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
+	analysisAsJson["hasReport"]		= _hasReport;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
@@ -706,7 +708,7 @@ bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & 
 void Analysis::setErrorInResults(const std::string & msg)
 {
 	Json::Value errorResults		= Json::objectValue;
-	errorResults["error"]			= 1;
+	errorResults["error"]			= true;
 	errorResults["errorMessage"]	= msg;
 	errorResults["title"]			= title();
 

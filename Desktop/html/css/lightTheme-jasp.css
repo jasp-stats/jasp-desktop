@@ -9,7 +9,7 @@ body.selected {
 }
 
 
-body.selected .jasp-analysis:not(.selected){
+body.selected .jasp-analysis:not(.selected):not(.hasJaspReport){
     filter: opacity(0.75);
 }
 
@@ -120,6 +120,29 @@ div.jasp-image-image.no-data.error {
 .fatalError.error-message-box {
 	border-width: 3px;
 	border-style: double;
+}
+
+
+.jaspReportDo {
+  border: 3px double  #fd0;
+  color:              #fd0;
+  background:         #800;
+}
+
+.jaspReportDont {
+  border: 3px double  #000;
+  color:              #000;
+  background:         #fff;
+}
+
+.jaspReportIconDo
+{
+  background-color: #fd0;
+}
+
+.jaspReportIconDont
+{
+  background-color: #000;
 }
 
 .stack-trace-arrow {

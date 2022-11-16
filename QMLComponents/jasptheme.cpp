@@ -10,11 +10,6 @@ std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	connect(this,							&JaspTheme::currentThemeNameChanged,			PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeNameHandler	);
-	connect(this,							&JaspTheme::currentThemeReady,					PreferencesModelBase::prefs(),		&PreferencesModelBase::currentThemeReady		);
-	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::uiScaleChanged,			this,								&JaspTheme::uiScaleHandler						);
-	connect(PreferencesModelBase::prefs(),	&PreferencesModelBase::maxFlickVelocityChanged, this,								&JaspTheme::maximumFlickVelocityChanged			);
-
 	connectSizeDistancesToUiScaleChanged();
 
 	if(_currentTheme == nullptr)
@@ -123,7 +118,7 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 
 void JaspTheme::setRibbonScaleHovered(float ribbonScaleHovered)
 {
-
+	
 	if (qFuzzyCompare(_ribbonScaleHovered, ribbonScaleHovered))
 		return;
 
@@ -1255,9 +1250,16 @@ void JaspTheme::setIsDark(bool isDark)
 	emit isDarkChanged(_isDark);
 }
 
-void JaspTheme::uiScaleHandler()
+void JaspTheme::uiScaleHandler(float newUiScale)
 {
-	emit uiScaleChanged(PreferencesModelBase::prefs()->uiScale());
+	_uiScale = newUiScale;
+	emit uiScaleChanged(_uiScale);
+}
+
+void JaspTheme::maxFlickVeloHandler(float maxFlickVelo)
+{
+	_maximumFlickVelocity = maxFlickVelo;
+	emit maximumFlickVelocityChanged();
 }
 
 QString JaspTheme::currentIconPath()

@@ -208,7 +208,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	setResultsMeta: function (resultsNotes)
 	{
-		if(resultsNotes === null)
+		if(resultsNotes === null || !insideJASP)
 			return; //null is default value in Analyses class
 
 		var notes = resultsNotes['notes'];

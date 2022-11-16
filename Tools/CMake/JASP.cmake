@@ -62,12 +62,6 @@ endif()
 
 message(STATUS "CRAN mirror: ${R_REPOSITORY}")
 
-option(BUILDING_JASP "Indicates whether we are building JASP or not.
-					  This helps jaspResults to find its lib_json." ON)
-if(BUILDING_JASP)
-  add_definitions(-DBUILDING_JASP)
-endif()
-
 # This one is GLOBAL
 # should be off for flatpak though because it is always build in debug mode (but the symbols are split off)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT FLATPAK_USED)

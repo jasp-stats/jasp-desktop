@@ -305,6 +305,10 @@ Item
 				id:				resultsJsInterfaceInterface
 				WebChannel.id:	"jasp"
 
+				property bool reportingVisible: preferencesModel.reportingMode
+
+				onReportingVisibleChanged: mainWindow.reloadResults()
+
 				// Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of Desktop right now.
 				// It would be much better to have resultsJsInterface be passed directly though..
 				// It also gives you an overview of the functions used in results html

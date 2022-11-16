@@ -62,7 +62,8 @@ public slots:
 	void			log(QString msg);
 
 private:
-	static		MessageForwarder	*_singleton;
+	static		bool					useNativeFileDialogs();
+	static		MessageForwarder	* _singleton;
 };
 
 #endif // MESSAGEFORWARDER_H

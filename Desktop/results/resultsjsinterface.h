@@ -36,10 +36,11 @@
 class ResultsJsInterface : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
-	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
-	Q_PROPERTY(bool				resultsLoaded	READ resultsLoaded	WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
-	Q_PROPERTY(bool				scrollAtAll		READ scrollAtAll	WRITE setScrollAtAll	NOTIFY scrollAtAllChanged		)
+	Q_PROPERTY(QString			resultsPageUrl		READ resultsPageUrl		WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
+	Q_PROPERTY(double			zoom				READ zoom				WRITE setZoom			NOTIFY zoomChanged				)
+	Q_PROPERTY(bool				resultsLoaded		READ resultsLoaded		WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
+	Q_PROPERTY(bool				scrollAtAll			READ scrollAtAll		WRITE setScrollAtAll	NOTIFY scrollAtAllChanged		)
+
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
@@ -103,6 +104,7 @@ public slots:
 	void setThemeCss(					QString themeName);
 	void setFontFamily();
 
+
 //end callables
 
 
@@ -140,7 +142,7 @@ private slots:
 
 private:
 	double				_webEngineZoom	= 1.0;
-	QString				_resultsPageUrl = "qrc:///html/index.html";
+	QString				_resultsPageUrl = "qrc:///html/index-jasp.html";
 	bool				_resultsLoaded	= false,
 						_scrollAtAll	= true;
 	

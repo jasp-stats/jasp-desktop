@@ -27,9 +27,12 @@
 class Dirs
 {
 public:
-	static std::string tempDir();
-	static std::string exeDir();
-	static std::string resourcesDir();
+	static std::string			tempDir();
+	static std::string			exeDir();
+	static std::string			resourcesDir();
+
+	static void					setReportingDir(const std::string & dir) { _reportingDir = dir; }
+	static const std::string &	reportingDir() { return _reportingDir; }
 
 
 	class Exception : public std::runtime_error
@@ -42,6 +45,8 @@ public:
 			: runtime_error(message.c_str()) { }
 	};
 
+private:
+	static std::string _reportingDir;
 };
 
 #endif // DIRS_H

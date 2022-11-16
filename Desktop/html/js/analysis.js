@@ -7,7 +7,8 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 		status: 'waiting',
 		optionschanged: [],
 		saveimage: [],
-		editimage: []
+		editimage: [],
+		hasReport: false
 	}
 });
 
@@ -664,6 +665,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	select: function () {
 		this.$el.addClass("selected")
+	},
+
+	setHasReport: function (hasReport) {
+		if(hasReport)	{ this.$el.addClass		("hasJaspReport")
+		} else			{ this.$el.removeClass	("hasJaspReport")	}
 	},
 
 	destroyViews: function() {

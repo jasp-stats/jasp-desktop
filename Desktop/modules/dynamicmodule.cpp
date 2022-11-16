@@ -394,20 +394,9 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	return requestJson;
 }
 
-std::string DynamicModule::getLibPathsToUse()
+std::string DynamicModule::getLibPathsToUse() const
 {
-	std::string libPathsToUse = "c('" + AppDirs::rHome().toStdString() + "/library', '" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "')";
-
-	/*std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
-
-	for(const std::string & path : requiredLibPaths)
-		libPathsToUse += ", '" + path + "'";*/
-
-	//libPathsToUse += ", '" + AppDirs::rHome().toStdString() + "/library" + "'";
-
-	//libPathsToUse += ", .libPaths())";
-
-	return libPathsToUse;
+	return "c('" + AppDirs::rHome().toStdString() + "/library', '" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "')";
 }
 
 ///It would probably be better to move all of this code to jasp-r-pkg or something, but for now this works fine.
@@ -511,6 +500,12 @@ std::string	DynamicModule::qmlFolder()	const
 std::string DynamicModule::iconFolder() const
 {
 	return moduleInstFolder() + "/icons/";
+}
+
+std::string DynamicModule::rModuleCall(const std::string &function) const
+{
+	return ".libPaths(" + getLibPathsToUse()  + ");\n"
+			+ _name + "::" + function;
 }
 
 std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
