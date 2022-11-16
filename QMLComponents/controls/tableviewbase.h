@@ -35,8 +35,8 @@ class TableViewBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged		)
 	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged		)
 	Q_PROPERTY( int				initialRowCount		READ initialRowCount		WRITE setInitialRowCount		NOTIFY initialRowCountChanged			)
-	Q_PROPERTY( int				columnCount			READ columnCount											NOTIFY columnCountChanged				)
-	Q_PROPERTY( int				rowCount			READ rowCount												NOTIFY rowCountChanged					)
+	Q_PROPERTY( int				columnCount			READ columnCount			WRITE setColumnCount			NOTIFY columnCountChanged				)
+	Q_PROPERTY( int				rowCount			READ rowCount				WRITE setRowCount				NOTIFY rowCountChanged					)
 	Q_PROPERTY( int				variableCount		READ variableCount											NOTIFY variableCountChanged				)
 	Q_PROPERTY( int				minRow				READ minRow					WRITE setMinRow					NOTIFY minRowChanged					)
 	Q_PROPERTY( int				maxRow				READ maxRow					WRITE setMaxRow					NOTIFY maxRowChanged					)
@@ -90,10 +90,14 @@ public:
 	bool						updateSource()								const				{ return _updateSource;									}
 	std::vector<std::string>	usedVariables()								const	override;
 
+	void						setRowCount(int rows)											{ setSize(rows, -1);									}
+	void						setColumnCount(int columns)										{ setSize(-1, columns);									}
+
 	Q_INVOKABLE void addColumn(int col = -1, bool left = true);
 	Q_INVOKABLE void removeColumn(int col);
 	Q_INVOKABLE void addRow();
 	Q_INVOKABLE void removeRow(int row);
+	Q_INVOKABLE void setSize(int rows, int columns);
 	Q_INVOKABLE void reset();
 	Q_INVOKABLE void itemChanged(int col, int row, QString value, QString type);
 

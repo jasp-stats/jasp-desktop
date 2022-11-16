@@ -123,6 +123,12 @@ void TableViewBase::removeRow(int row)
 		_tableModel->removeRow(row);
 }
 
+void TableViewBase::setSize(int rows, int columns)
+{
+	if (_tableModel)
+		_tableModel->setSize(rows, columns);
+}
+
 void TableViewBase::reset()
 {
 	if (_tableModel)

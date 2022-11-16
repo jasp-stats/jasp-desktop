@@ -180,6 +180,66 @@ void ListModelTableViewBase::removeRow(size_t row, bool emitStuff)
 	}
 }
 
+void ListModelTableViewBase::setSize(int rows, int columns, bool emitStuff)
+{
+	if (emitStuff)
+		beginResetModel();
+
+	if (rows > -1)
+	{
+		if (rows < rowCount())
+		{
+			for (QVector<QVariant> & value : _tableTerms.values)
+				value.erase(value.begin() + rows, value.end());
+			_tableTerms.rowNames.erase(_tableTerms.rowNames.begin() + rows, _tableTerms.rowNames.end());
+		}
+		else if (rows > rowCount())
+		{
+			size_t oldRowCount = rowCount();
+			for (int i = 0; i < rows - oldRowCount; i++)
+			{
+				_tableTerms.rowNames.push_back(getDefaultRowName(rowCount()));
+				int colIndex = 0;
+				for (QVector<QVariant> & value : _tableTerms.values)
+				{
+					while (value.size() < _tableTerms.rowNames.size())
+						value.push_back(_tableView->defaultValue(colIndex, value.length()));
+					colIndex++;
+				}
+			}
+		}
+	}
+
+	if (columns > -1)
+	{
+		if (columns < columnCount())
+		{
+			_tableTerms.values.erase(_tableTerms.values.begin() + columns, _tableTerms.values.end());
+			_tableTerms.colNames.erase(_tableTerms.colNames.begin() + columns, _tableTerms.colNames.end());
+		}
+		else if (columns > columnCount())
+		{
+			size_t oldColumnCount = columnCount();
+			for (int i = 0; i < columns - oldColumnCount; i++)
+			{
+				_tableTerms.colNames.push_back(getDefaultColName(columnCount()));
+				QVector<QVariant> values;
+				for (int rowIndex = 0; rowIndex < _tableTerms.rowNames.length(); rowIndex++)
+					values.push_back(_tableView->defaultValue(columnCount(), rowIndex));
+				_tableTerms.values.push_back(values);
+			}
+		}
+	}
+
+	if (emitStuff)
+	{
+		endResetModel();
+
+		emit columnCountChanged();
+		emit rowCountChanged();
+	}
+}
+
 void ListModelTableViewBase::reset()
 {
 	beginResetModel();
