@@ -73,7 +73,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 			return true;
 		
 		default:	
-			return false
+			return false;
 		}
 		break;
 
@@ -305,7 +305,9 @@ void ReadStatImportColumn::addValue(const string & val)
 		}
 		break;
 	}
+		
 	default:
+		Log::log() << "Column '" << name() << "' being imported through readstat is of type " << _type << " but receives an string (" << val << ") as value. Doing nothing..." << std::endl;
 		return;
 	}
 }

@@ -395,9 +395,7 @@ int main(int argc, char *argv[])
 				std::cout << "Setting special options for software rendering (aka safe graphics)." << std::endl;
 				QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 				args.push_back("--disable-gpu");
-				std::string str("LIBGL_ALWAYS_SOFTWARE=1");
-				char dst[str.length() + 1];
-				strcpy(dst, str.c_str());
+				char dst[] = "LIBGL_ALWAYS_SOFTWARE=1";
 				putenv(dst);
 			}
 			
