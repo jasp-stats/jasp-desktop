@@ -64,7 +64,6 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 		switch(newType)
 		{
 		case columnType::scale:			[[fallthrough]];
-		case columnType::unknown:		[[fallthrough]];
 		case columnType::nominalText:	return true;
 		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
@@ -72,6 +71,9 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 				if(!isMissingValue(d) && d != double(int(d)))
 					return false;
 			return true;
+		
+		default:	
+			return false
 		}
 		break;
 
@@ -80,11 +82,11 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 	case columnType::nominal:
 		switch(newType)
 		{
-		case columnType::unknown:		[[fallthrough]];
 		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominalText:	[[fallthrough]];
 		case columnType::nominal:		return true;
 		case columnType::scale:			return _intLabels.size() == 0;
+		default:						return false;
 		}
 		break;
 
@@ -120,11 +122,13 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 					return false;
 			return true;
 		}
-		default: return false;
+		default: 
+			return false;
 		}
 		break;
-	default:
-		break;
+		
+	default:	
+		return false;
 	}
 
 	return false;
