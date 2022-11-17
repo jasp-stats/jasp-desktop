@@ -34,19 +34,21 @@ DropArea
 
 	Rectangle
 	{
-		id:				bottomLine
-		anchors.bottom:	parent.bottom
-		anchors.left:	parent.left
-		height:			1
-		width:			parent.width + 1
-		color:			jaspTheme.buttonBorderColor
-		visible:		draggableItem.state != "dragging"
+		id:						bottomLine
+		anchors.bottom:			parent.bottom
+		anchors.left:			parent.left
+		height:                 1
+		width:                  parent.width + 1
+		color:                  jaspTheme.buttonBorderColor
+		visible:				draggableItem.state != "dragging"
 	}
+
 
 	Item
 	{
 		id:					draggableItem
 		height:				loaderAndError.y
+		activeFocusOnTab:	true
 
 
 		property int		myIndex:			-1
@@ -56,6 +58,8 @@ DropArea
 		Drag.active:		mouseArea.drag.active
 		Drag.hotSpot.x:		width/2
 		Drag.hotSpot.y:		height/2
+
+		Component.onCompleted:	{ forceActiveFocus(); }
 
 		states:
 		[
@@ -76,6 +80,15 @@ DropArea
 					anchors.top:	undefined
 					anchors.left:	undefined
 					anchors.right:	undefined
+				}
+
+				PropertyChanges
+				{
+					restoreEntryValues: false
+					draggableItem
+					{
+						focus:			true
+					}
 				}
 			},
 			
@@ -100,6 +113,15 @@ DropArea
 			}
 		]
 
+		Keys.onPressed: (event) =>
+		{
+			if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+			{
+				analysisFormExpander.toggleExpander();
+			}
+		}
+
+
 		ToolTip
 		{
 			text:			qsTr("Drag to reorder the analyses")
@@ -115,7 +137,7 @@ DropArea
 		MouseArea
 		{
 			id:				mouseArea
-			onClicked:		analysisFormExpander.toggleExpander();
+			onClicked:		{ analysisFormExpander.toggleExpander(); draggableItem.forceActiveFocus(); }
 			hoverEnabled:	true
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
@@ -155,6 +177,18 @@ DropArea
 			spread			: 0.2
 			cornerRadius	: expanderButton.radius + glowRadius
 			glowRadius		: 5
+		}
+
+		Rectangle
+		{
+			id:					focusIndicator
+			visible:			draggableItem.activeFocus && !draggableItem.Drag.active
+			anchors.fill:		draggableItem
+			color:				"transparent"
+			border.width:		jaspTheme.jaspControlHighlightWidth
+			border.color:		jaspTheme.focusBorderColor
+			radius:				jaspTheme.jaspControlHighlightWidth
+			z:					2
 		}
 
 		Rectangle
