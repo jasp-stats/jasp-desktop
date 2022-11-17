@@ -58,10 +58,11 @@ TableViewBase
 	readonly property int tableWidth:  theView.width  + 2 + (vertiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
 	readonly property int tableHeight: theView.height + 2 + (horiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
 
-	// These 3 functions can be overloaded to set a custom column or row header, or a default value.
+	// These 4 functions can be overloaded to set a custom column or row header, or a default value, or a default validator.
 	function getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }
 	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue;	}
+	function getValidator(columnIndex, rowIndex)				{ return validator;	}
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -305,7 +306,7 @@ TableViewBase
 						parseDefaultValue:		tableView.parseDefaultValue
 						defaultValue:			tableView.getDefaultValue(columnIndex, rowIndex)
 						selectValueOnFocus:		true
-						validator:				tableView.validator
+						validator:				getValidator(columnIndex, rowIndex)
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:
 						{

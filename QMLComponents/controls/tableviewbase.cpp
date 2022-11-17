@@ -205,7 +205,7 @@ QVariant TableViewBase::defaultValue(int colIndex, int rowIndex)
 								  Q_ARG(QVariant, rowIndex));
 	}
 	// Force the QVariant to have the right type
-	switch (itemType())
+	switch (itemTypePerItem(colIndex, rowIndex))
 	{
 	case JASPControl::ItemType::Integer:
 	{
