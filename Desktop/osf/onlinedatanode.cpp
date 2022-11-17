@@ -94,6 +94,7 @@ bool OnlineDataNode::beginAction() {
 		case OnlineDataNode::NewFile:	return beginUploadFile(_preparedData);
 		case OnlineDataNode::Download:	return beginDownloadFile();
 		case OnlineDataNode::NewFolder:	return beginNewFolder(_preparedData);
+		default:						return false;
 		}
 	}
 

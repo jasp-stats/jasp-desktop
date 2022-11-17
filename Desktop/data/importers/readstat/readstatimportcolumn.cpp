@@ -63,6 +63,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 	case columnType::scale:
 		switch(newType)
 		{
+		case columnType::scale:			[[fallthrough]];
 		case columnType::nominalText:	return true;
 		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
@@ -70,6 +71,9 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 				if(!isMissingValue(d) && d != double(int(d)))
 					return false;
 			return true;
+		
+		default:	
+			return false;
 		}
 		break;
 
@@ -82,6 +86,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 		case columnType::nominalText:	[[fallthrough]];
 		case columnType::nominal:		return true;
 		case columnType::scale:			return _intLabels.size() == 0;
+		default:						return false;
 		}
 		break;
 
@@ -117,8 +122,13 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 					return false;
 			return true;
 		}
+		default: 
+			return false;
 		}
 		break;
+		
+	default:	
+		return false;
 	}
 
 	return false;
@@ -163,6 +173,7 @@ void ReadStatImportColumn::setType(columnType newType)
 				_strings.push_back(isMissingValue(d) ? missingValueString() : Utils::doubleToString(d));
 			_doubles.clear();
 			break;
+		default: break;
 		}
 		break;
 
@@ -193,6 +204,8 @@ void ReadStatImportColumn::setType(columnType newType)
 			for(const auto & intLabel : _intLabels)
 				_strLabels[std::to_string(intLabel.first)] = intLabel.second;
 			_intLabels.clear();
+			break;
+		default:
 			break;
 		}
 		break;
@@ -230,6 +243,7 @@ void ReadStatImportColumn::setType(columnType newType)
 
 			break;
 		}
+		default: break;
 		}
 		break;
 	}
@@ -291,6 +305,10 @@ void ReadStatImportColumn::addValue(const string & val)
 		}
 		break;
 	}
+		
+	default:
+		Log::log() << "Column '" << name() << "' being imported through readstat is of type " << _type << " but receives an string (" << val << ") as value. Doing nothing..." << std::endl;
+		return;
 	}
 }
 

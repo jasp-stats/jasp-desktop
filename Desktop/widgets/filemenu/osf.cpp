@@ -184,6 +184,7 @@ void OSF::checkErrorMessageOSF(QNetworkReply *reply)
 		case QNetworkReply::AuthenticationRequiredError:	err = tr("Username and/or password are not correct. Please try again.");		break;
 		case QNetworkReply::HostNotFoundError:				err = tr("OSF service not available. Please check your internet connection.");	break;
 		case QNetworkReply::TimeoutError:					err = tr("Connection Timeout error. Please check your internet connection.");	break;
+		default:											err = tr("Unknown error");														break;
 		}
 
 		MessageForwarder::showWarning(tr("OSF Error"), err);
