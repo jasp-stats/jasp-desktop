@@ -57,11 +57,13 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 	if(NoButtonText == "")		NoButtonText		= tr("No");
 	if(CancelButtonText == "")	CancelButtonText	= tr("Cancel");
 
-	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	QMessageBox box(QMessageBox::Question, title, message);
 
-	QPushButton* yesButton =	box.addButton(YesButtonText,	QMessageBox::ButtonRole::YesRole);
-	QPushButton* noButton =		box.addButton(NoButtonText,		QMessageBox::ButtonRole::NoRole);
-	QPushButton* cancelButton = box.addButton(NoButtonText,		QMessageBox::ButtonRole::RejectRole);
+	QPushButton* yesButton =	box.addButton(YesButtonText,		QMessageBox::ButtonRole::YesRole);
+	QPushButton* noButton =		box.addButton(NoButtonText,			QMessageBox::ButtonRole::NoRole);
+	QPushButton* cancelButton = box.addButton(CancelButtonText,		QMessageBox::ButtonRole::RejectRole);
+	box.setDefaultButton(cancelButton);
+
 	box.exec();
 
 	QAbstractButton* clicked = box.clickedButton();
@@ -71,23 +73,26 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 	return DialogResponse::Cancel;
 }
 
-MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveTxt, QString discardText, QString cancelText)
+MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveText, QString noSaveText, QString cancelText)
 {
-	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	QMessageBox box(QMessageBox::Question, title, message);
 
-	if(saveTxt == "")		saveTxt		= tr("Save");
-	if(discardText == "")	discardText = tr("Don't Save");
+	if(saveText == "")		saveText	= tr("Save");
 	if(cancelText == "")	cancelText	= tr("Cancel");
+	if(noSaveText == "")	noSaveText	= tr("Don't Save");
 
-	QPushButton* saveButton =		box.addButton(saveTxt,		QMessageBox::ButtonRole::YesRole);
-	QPushButton* discardButton =	box.addButton(discardText,	QMessageBox::ButtonRole::NoRole);
-	QPushButton* cancelButton =		box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
+	// In order to have the noSaveButton as first in the row of buttons, it has to get the role RejectRole.
+	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::YesRole);
+	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::NoRole);
+	QPushButton* noSaveButton =	box.addButton(noSaveText,	QMessageBox::ButtonRole::RejectRole);
+	box.setDefaultButton(noSaveButton);
+
 	box.exec();
 
 	QAbstractButton* clicked = box.clickedButton();
 
 	if (clicked == saveButton)			return DialogResponse::Save;
-	else if (clicked == discardButton)	return DialogResponse::Discard;
+	else if (clicked == noSaveButton)	return DialogResponse::Discard;
 
 	return DialogResponse::Cancel;
 }
