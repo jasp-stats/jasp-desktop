@@ -658,7 +658,7 @@ C	2	5	8
 ```
 `getValidator` is useful when a table requires mixed input (e.g., strings and doubles).
 For example, the cells in the first row should take a string, but those in all other rows should take doubles.
-We can specify a custom validator for each cell by overloading `getValidator` *and* setting `itemTypePerColumn`.
+We can specify a custom validator for each cell by overloading `getValidator` *and* setting `itemTypePerRow`.
 <details>
 	<summary>Example</summary>
 
