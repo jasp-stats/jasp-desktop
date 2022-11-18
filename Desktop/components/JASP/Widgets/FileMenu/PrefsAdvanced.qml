@@ -69,6 +69,7 @@ ScrollView
 					toolTip:			qsTr("Browse to your JASP Module folder.")
 
 					KeyNavigation.tab:		developerFolderText.textInput
+					activeFocusOnTab:		true
 				}
 				
 				PrefsTextInput
@@ -205,6 +206,7 @@ ScrollView
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
 				KeyNavigation.tab:		logToFile
+				activeFocusOnTab:		true
 			}
 		}
 		
@@ -267,6 +269,7 @@ ScrollView
 					}
 
 					KeyNavigation.tab:		maxEngineCount
+					activeFocusOnTab:		true
 				}
 			}
 		}
@@ -287,6 +290,7 @@ ScrollView
 				stepSize:			1
 
 				KeyNavigation.tab:	showEnginesWindow
+				activeFocusOnTab:			true
 				text:				qsTr("Maximum number of engines: ")
 			}
 
@@ -295,7 +299,7 @@ ScrollView
 				id:					showEnginesWindow
 				text:				qsTr("Show engines")
 				onClicked:			mainWindow.showEnginesWindow()
-				KeyNavigation.tab:	rememberModulesSelected
+				activeFocusOnTab:			true
 			}
 		}
 	}

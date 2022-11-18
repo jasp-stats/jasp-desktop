@@ -49,6 +49,7 @@ Item
 					Keys.onEnterPressed:	(event)=> { valueField.focus = !valueField.focus;	}
 					Keys.onReturnPressed: 	(event)=> {	valueField.focus = !valueField.focus;	}
 
+					activeFocusOnTab:		true
 
 	signal editingFinished()
 	

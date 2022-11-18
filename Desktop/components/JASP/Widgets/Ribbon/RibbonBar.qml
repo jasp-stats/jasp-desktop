@@ -26,7 +26,7 @@ FocusScope
 	height	: ribbonMenu.height
 
 	// This property is required to show filemenu button press in KeyNavigation
-	property bool isFileMenuPressed: false
+	property bool isFileMenuPressed: true
 
 	function focusOnRibbonMenu()
 	{
@@ -65,7 +65,7 @@ FocusScope
 
 	Keys.onPressed: (event) =>
 	{
-		if      (event.key === Qt.Key_Left)
+		if (event.key === Qt.Key_Left || event.key === Qt.Key_Backtab)
 		{
 			if (modulesPlusButton.focus)
 			{
@@ -80,8 +80,9 @@ FocusScope
 				isFileMenuPressed        = false;
 				showModulesMenuPressed();
 			}
+			event.accepted = true;
 		}
-		else if (event.key === Qt.Key_Right)
+		else if (event.key === Qt.Key_Right || event.key === Qt.Key_Tab)
 		{
 			if (modulesPlusButton.focus)
 			{
@@ -96,6 +97,7 @@ FocusScope
 				ribbonMenu.focus         = true;
 				ribbonMenu.setCurrentIndex('first')
 			}
+			event.accepted = true;
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space || event.key === Qt.Key_Down)
 		{
@@ -154,6 +156,7 @@ FocusScope
 		buttonType	: MenuArrowButton.ButtonType.Hamburger
 		z			: 2
 		width		: 0.75 * height
+		focus		: true
 
 		onClicked:
 		{
@@ -181,8 +184,8 @@ FocusScope
 
 	Ribbons
 	{
-		id	: ribbonMenu
-		z	: 0
+		id:		ribbonMenu
+		z:		0
 
 		anchors
 		{

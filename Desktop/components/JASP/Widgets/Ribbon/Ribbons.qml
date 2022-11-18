@@ -128,15 +128,15 @@ Item
 		onMovementStarted:				customMenu.hide()
 		Keys.onPressed: (event) =>
 		{
-			if      (event.key   === Qt.Key_Left)
+			if (event.key === Qt.Key_Left || event.key === Qt.Key_Backtab)
 			{
 				if (currentIndex === 0)
 					showFileMenuPressed();
 				else
 					navigateFunction(-1);
-				event.accepted    = true;
+				event.accepted  = true;
 			}
-			else if (event.key   === Qt.Key_Right)
+			else if (event.key === Qt.Key_Right || event.key === Qt.Key_Tab)
 			{
 				if (currentIndex === buttonList.count - 1)
 				{
@@ -146,7 +146,7 @@ Item
 				}
 				else
 					navigateFunction(1);
-				event.accepted    = true;
+				event.accepted = true;
 			}
 			else if (event.key   === Qt.Key_Return || event.key === Qt.Key_Space || event.key === Qt.Key_Down)
 			{

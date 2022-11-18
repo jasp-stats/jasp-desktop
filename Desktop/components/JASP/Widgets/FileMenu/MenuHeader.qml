@@ -53,6 +53,7 @@ Item
 		onClicked:			helpModel.showOrTogglePage(helpfile)
 		toolTip:			qsTr("Show info about these preferences")
 		radius:				height / 2
+		activeFocusOnTab:	true
 
 		anchors
 		{

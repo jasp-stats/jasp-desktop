@@ -56,7 +56,7 @@ ScrollView
 					onCheckedChanged:       preferencesModel.useDefaultEditor = checked
 					enabled:                !LINUX
 
-					KeyNavigation.tab:      browseEditorButton
+					KeyNavigation.tab:      editCustomEditor
 				}
 
 				Label
@@ -92,6 +92,7 @@ ScrollView
 						anchors.leftMargin: jaspTheme.subOptionOffset
 
 						KeyNavigation.tab:      customEditorText
+						activeFocusOnTab:		true
 					}
 
 					Rectangle

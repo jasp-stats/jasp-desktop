@@ -20,6 +20,8 @@ Item
 		toolseparator:			false
 	}
 
+
+
 	BreadCrumbs
 	{
 		id:						datalibrarybreadcrumbs
@@ -34,6 +36,28 @@ Item
 			leftMargin:			jaspTheme.generalMenuMargin
 			rightMargin:		jaspTheme.generalMenuMargin
 		}
+
+
+		onActiveFocusChanged: { currentIndex = count - 2; }
+		Keys.onPressed: (event) =>
+			{
+				event.accepted = true;
+				if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Left)
+				{
+					if (currentIndex === 0)
+						datalibrarylist.selectLast();
+					else
+						decrementCurrentIndex();
+				}
+				if (event.key === Qt.Key_Tab || event.key === Qt.Key_Right)
+				{
+					if (currentIndex === count - 2)
+						datalibrarylist.selectFirst();
+					else
+						incrementCurrentIndex();
+				}
+
+			}
 
 	}
 
@@ -52,7 +76,7 @@ Item
 		id:						datalibrarylist
 		cppModel:				fileMenuModel.datalibrary.listModel
 		breadCrumbs:			datalibrarybreadcrumbs
-		keyNavigationWraps:		true
+		tabbingEscapes:			true
 
 		anchors
 		{
@@ -63,5 +87,8 @@ Item
 			topMargin:			jaspTheme.generalMenuMargin
 			bottomMargin:		jaspTheme.generalMenuMargin
 		}
+
+		KeyNavigation.tab:		datalibrarybreadcrumbs
+		KeyNavigation.backtab:	datalibrarybreadcrumbs
 	}
 }

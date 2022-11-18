@@ -47,19 +47,21 @@ FocusScope
 
 	Keys.onPressed: (event)=>
 	{
-		if (event.key === Qt.Key_Up)
+		if (event.key === Qt.Key_Up || event.key === Qt.Key_Backtab)
 		{
 			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
 				menu.currentIndex = mod(menu.currentIndex - 1, repeater.count)
 			else
 				menu.currentIndex = menu.props["navigateFunc"](currentIndex, -1);
+			event.accepted = true;
 		}
-		else if (event.key === Qt.Key_Down)
+		else if (event.key === Qt.Key_Down || event.key === Qt.Key_Tab)
 		{
 			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
 				menu.currentIndex = mod(menu.currentIndex + 1, repeater.count)
 			else
 				menu.currentIndex = menu.props["navigateFunc"](currentIndex, 1);
+			event.accepted = true;
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
 		{

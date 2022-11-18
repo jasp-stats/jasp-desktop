@@ -19,6 +19,7 @@ Rectangle
 	border.color:		jaspTheme.buttonBorderColor
 	border.width:		1
 	onFocusChanged:		if(focus) textInput.focus = true;
+	activeFocusOnTab:	true
 
 	TextInput
 	{
