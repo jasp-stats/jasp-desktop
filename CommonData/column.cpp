@@ -25,6 +25,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <cmath>
+#include "columnutils.h"
 #include "log.h"
 
 using namespace boost::interprocess;
@@ -94,10 +95,10 @@ bool Column::_resetEmptyValuesForNominal(std::map<int, string> &emptyValuesMap)
 			if (search != emptyValuesMap.end())
 			{
 				string orgValue = search->second;
-				if (!Utils::isEmptyValue(orgValue))
+				if (!ColumnUtils::isEmptyValue(orgValue))
 				{
 					// This value is not empty anymore
-					if (Utils::getIntValue(orgValue, intValue))
+					if (ColumnUtils::getIntValue(orgValue, intValue))
 					{
 						*ints = intValue;
 						uniqueValues.insert(intValue);
@@ -114,7 +115,7 @@ bool Column::_resetEmptyValuesForNominal(std::map<int, string> &emptyValuesMap)
 				}
 			}
 		}
-		else if (intValue != std::numeric_limits<int>::lowest() && Utils::isEmptyValue(intValue))
+		else if (intValue != std::numeric_limits<int>::lowest() && ColumnUtils::isEmptyValue(intValue))
 		{
 			// This value is now considered as empty
 			*ints = std::numeric_limits<int>::lowest();
@@ -158,10 +159,10 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 			if (search != emptyValuesMap.end())
 			{
 				string orgValue = search->second;
-				if (!Utils::isEmptyValue(orgValue))
+				if (!ColumnUtils::isEmptyValue(orgValue))
 				{
 					// This value is not empty anymore
-					if (Utils::getDoubleValue(orgValue, doubleValue))
+					if (ColumnUtils::getDoubleValue(orgValue, doubleValue))
 					{
 						*doubles = doubleValue;
 						hasChanged = true;
@@ -174,7 +175,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 				}
 			}
 		}
-		else if (!std::isnan(doubleValue) && Utils::isEmptyValue(doubleValue))
+		else if (!std::isnan(doubleValue) && ColumnUtils::isEmptyValue(doubleValue))
 		{
 			// This value is now considered as empty
 			*doubles = NAN;
@@ -251,12 +252,12 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 				string orgValue = search->second;
 				values.push_back(orgValue);
 
-				if (!Utils::isEmptyValue(orgValue))
+				if (!ColumnUtils::isEmptyValue(orgValue))
 					hasChanged = true;
 
 				if (canBeConvertedToIntegers || canBeConvertedToDoubles)
 				{
-					if (Utils::isEmptyValue(orgValue))
+					if (ColumnUtils::isEmptyValue(orgValue))
 					{
 						if (canBeConvertedToIntegers)	intValues.push_back(std::numeric_limits<int>::lowest());
 						else							doubleValues.push_back(NAN);
@@ -269,7 +270,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 						{
 							int intValue;
 
-							if (Utils::getIntValue(orgValue, intValue))
+							if (ColumnUtils::getIntValue(orgValue, intValue))
 							{
 								intValues.push_back(intValue);
 								if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
@@ -294,7 +295,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 						if (convertToDouble)
 						{
 							double doubleValue;
-							if (Utils::getDoubleValue(orgValue, doubleValue))
+							if (ColumnUtils::getDoubleValue(orgValue, doubleValue))
 							{
 								doubleValues.push_back(doubleValue);
 								emptyValuesMap.erase(search);
@@ -327,7 +328,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 			string orgValue = _labels.getValueFromKey(key);
 			values.push_back(orgValue);
 
-			if (Utils::isEmptyValue(orgValue))
+			if (ColumnUtils::isEmptyValue(orgValue))
 			{
 				hasChanged = true;
 				if (canBeConvertedToIntegers)
@@ -347,7 +348,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 				if (canBeConvertedToIntegers)
 				{
 					int intValue;
-					if (Utils::getIntValue(orgValue, intValue))
+					if (ColumnUtils::getIntValue(orgValue, intValue))
 					{
 						intValues.push_back(intValue);
 						if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
@@ -369,7 +370,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 				if (convertToDouble)
 				{
 					double doubleValue;
-					if (Utils::getDoubleValue(orgValue, doubleValue))	doubleValues.push_back(doubleValue);
+					if (ColumnUtils::getDoubleValue(orgValue, doubleValue))	doubleValues.push_back(doubleValue);
 					else												canBeConvertedToDoubles = false;
 				}
 			}
@@ -386,7 +387,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 		for(const Label & label : _labels)
 		{
 			int ignoreMe;
-			if(!Utils::getIntValue(label.text(), ignoreMe))
+			if(!ColumnUtils::getIntValue(label.text(), ignoreMe))
 			{
 				canBeConvertedToIntegers = false;
 				break;
@@ -397,7 +398,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 		for(const Label & label : _labels)
 		{
 			double ignoreMe;
-			if(!Utils::getDoubleValue(label.text(), ignoreMe))
+			if(!ColumnUtils::getDoubleValue(label.text(), ignoreMe))
 			{
 				canBeConvertedToDoubles = false;
 				break;
@@ -471,7 +472,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 			if (key != std::numeric_limits<int>::lowest())
 			{
 				std::string value = _labels.getValueFromKey(key);
-				if (!Utils::isEmptyValue(value) && !Utils::getIntValue(value, intValue))
+				if (!ColumnUtils::isEmptyValue(value) && !ColumnUtils::getIntValue(value, intValue))
 					break;
 			}
 
@@ -507,7 +508,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 		{
 			int intValue = std::numeric_limits<int>::lowest();
 
-			if (!Utils::isEmptyValue(doubleValue) && !Utils::getIntValue(doubleValue, intValue))
+			if (!ColumnUtils::isEmptyValue(doubleValue) && !ColumnUtils::getIntValue(doubleValue, intValue))
 				break;
 
 			values.push_back(intValue);
@@ -549,7 +550,7 @@ columnTypeChangeResult Column::_changeColumnToScale()
 		{
 			double doubleValue = NAN;
 
-			if (intValue != std::numeric_limits<int>::lowest() && !Utils::isEmptyValue(intValue))
+			if (intValue != std::numeric_limits<int>::lowest() && !ColumnUtils::isEmptyValue(intValue))
 				doubleValue = double(intValue);
 
 			values.push_back(doubleValue);
@@ -566,8 +567,8 @@ columnTypeChangeResult Column::_changeColumnToScale()
 			if (key != std::numeric_limits<int>::lowest())
 			{
 				string value = _labels.getValueFromKey(key);
-				if (!Utils::isEmptyValue(value))
-					converted = Utils::getDoubleValue(value, doubleValue);
+				if (!ColumnUtils::isEmptyValue(value))
+					converted = ColumnUtils::getDoubleValue(value, doubleValue);
 			}
 			else
 				converted = true; //Because if key == std::numeric_limits<int>::lowest() then it is missing value
@@ -808,7 +809,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 	std::sort(sortedCases.begin(), sortedCases.end());
 
-	sortedCases.erase(std::remove_if(sortedCases.begin(),	sortedCases.end(), [](std::string x){	return Utils::isEmptyValue(x);}), sortedCases.end());
+	sortedCases.erase(std::remove_if(sortedCases.begin(),	sortedCases.end(), [](std::string x){	return ColumnUtils::isEmptyValue(x);}), sortedCases.end());
 
 	std::map<std::string, int> map = _labels.syncStrings(sortedCases, labels, changedSomething);
 
@@ -820,7 +821,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 		if(intInputItr == AsInts.end())
 			throw std::runtime_error("Column::setColumnAsNominalText ran out of Ints in assigning..");
 
-		if (Utils::isEmptyValue(value))
+		if (ColumnUtils::isEmptyValue(value))
 		{
 			if(changedSomething != nullptr && *intInputItr != std::numeric_limits<int>::lowest())
 				*changedSomething = true;
@@ -867,7 +868,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 string Column::_getLabelFromKey(int key) const
 {
 	if (key == std::numeric_limits<int>::lowest())
-		return Utils::emptyValue;
+		return ColumnUtils::emptyValue;
 
 	if (_labels.size() > 0)
 		try
@@ -877,7 +878,7 @@ string Column::_getLabelFromKey(int key) const
 		catch (const labelNotFound & e)
 		{
 			Log::log() << "Label not found, msg: " << e.what() << "\n";
-			return Utils::emptyValue;
+			return ColumnUtils::emptyValue;
 		}
 
 	stringstream ss;
@@ -944,8 +945,8 @@ bool Column::isValueEqual(int row, double value)
 	{
 		double d = AsDoubles[row];
 
-		if (Utils::isEmptyValue(value))
-			return Utils::isEmptyValue(d);
+		if (ColumnUtils::isEmptyValue(value))
+			return ColumnUtils::isEmptyValue(d);
 		else
 			return d == value;
 	}
@@ -1004,7 +1005,7 @@ bool Column::isValueEqual(int row, const string &value)
 		default:
 		{
 			int key = AsInts[row];
-			return key == std::numeric_limits<int>::lowest() ? Utils::isEmptyValue(value) : (value.substr(0, 128) == _labels.getValueFromKey(key));
+			return key == std::numeric_limits<int>::lowest() ? ColumnUtils::isEmptyValue(value) : (value.substr(0, 128) == _labels.getValueFromKey(key));
 		}
 	}
 
@@ -1017,7 +1018,7 @@ string Column::_getScaleValue(int row, bool forDisplay)
 
 	if (v > std::numeric_limits<double>::max())					return "∞";
 	else if (v < std::numeric_limits<double>::lowest())			return "-∞";
-	else if (Utils::isEmptyValue(v))							return forDisplay ? Utils::emptyValue : "";
+	else if (ColumnUtils::isEmptyValue(v))							return forDisplay ? ColumnUtils::emptyValue : "";
 	else														return Utils::doubleToString(v);
 }
 
@@ -1047,7 +1048,7 @@ string Column::getOriginalValue(int row)
 
 string Column::operator [](int row)
 {
-	string result = Utils::emptyValue;
+	string result = ColumnUtils::emptyValue;
 
 	if (row < _rowCount)
 	{
@@ -1359,7 +1360,7 @@ bool Column::isColumnDifferentFromStringValues(std::vector<std::string> strVals)
 		case columnType::nominal:
 		{
 			int intValue;
-			if(!Utils::convertValueToIntForImport(strVals[row], intValue) || !isValueEqual(row, intValue))
+			if(!ColumnUtils::convertValueToIntForImport(strVals[row], intValue) || !isValueEqual(row, intValue))
 				return true;
 			break;
 		}
@@ -1367,7 +1368,7 @@ bool Column::isColumnDifferentFromStringValues(std::vector<std::string> strVals)
 		case columnType::scale:
 		{
 			double doubleValue;
-			if(!Utils::convertValueToDoubleForImport(	strVals[row], doubleValue) || !isValueEqual(row, doubleValue))
+			if(!ColumnUtils::convertValueToDoubleForImport(	strVals[row], doubleValue) || !isValueEqual(row, doubleValue))
 				return true;
 			break;
 		}

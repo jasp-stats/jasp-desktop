@@ -39,7 +39,7 @@
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "sharedmemory.h"
-
+#include "columnutils.h"
 #include "mainwindow.h"
 
 #include "analysisform.h"
@@ -86,6 +86,9 @@
 #include "rsyntax/formulabase.h"
 #include "utilities/desktopcommunicator.h"
 
+#include "boost/iostreams/stream.hpp"
+#include <boost/iostreams/device/null.hpp>
+
 
 using namespace std;
 using namespace Modules;
@@ -95,7 +98,7 @@ MainWindow * MainWindow::_singleton	= nullptr;
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
 {
 	std::cout << "MainWindow constructor started" << std::endl;
-	
+
 	assert(!_singleton);
 	_singleton = this;
 	JASPTIMER_START(MainWindowConstructor);
@@ -191,7 +194,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
-		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+		ColumnUtils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
 
 	_engineSync->start(_preferences->plotPPI());
 
@@ -633,8 +636,10 @@ void MainWindow::initLog()
 {
 	assert(_engineSync != nullptr && _preferences != nullptr);
 
+	static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
+
 	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
-	Log::initRedirects();
+	Log::init(&nullstream);
 	Log::setLogFileName(Log::logFileNameBase + " Desktop.log");
 	Log::setLoggingToFile(_preferences->logToFile());
 	logRemoveSuperfluousFiles(_preferences->logFilesMax());

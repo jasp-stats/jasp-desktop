@@ -29,7 +29,7 @@ prompt        <- FALSE
 if (md5SumsChanged(modulePkg, moduleLibrary)) {
   options(
     renv.cache.linkable = FALSE,
-    configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'")
+    configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'")
   )
 
   Sys.setenv(JASP_R_INTERFACE_LIBRARY="Oh yes indeed")

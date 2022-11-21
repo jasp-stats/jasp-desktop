@@ -472,6 +472,8 @@ Terms SourceItem::_readAllTerms()
 		if (_listControl->useSourceLevels())
 			_listControl->model()->setColumnsUsedForLabels(_listModel->terms().asQList());
 	}
+	else if (_isVariableInfoModel)
+		terms = requestInfo(VariableInfo::VariableNames).toStringList();
 	else if (_nativeModel)
 	{
 		int nbRows = _nativeModel->rowCount();

@@ -31,8 +31,6 @@ enum class FileTypeBase;
 class Utils
 {
 public:
-	friend class PreferencesModel;
-
 	typedef FileTypeBase					FileType;
 	typedef std::vector<Utils::FileType>	FileTypeVector;
 
@@ -46,30 +44,14 @@ public:
 	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
 	static bool removeFile(				const std::string &path);
 
+	static std::string	doubleToString(double dbl, int precision = 10);
+
 	static std::filesystem::path osPath(const std::string &path);
 	static std::string osPath(const std::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
 
-	static       std::string emptyValue;
-	static const std::vector<std::string>	& getEmptyValues()			{ return _currentEmptyValues;		}
-	static const std::vector<std::string>	& getDefaultEmptyValues()	{ return _defaultEmptyValues;		}
-	static const std::vector<double>		& getDoubleEmptyValues()	{ return _currentDoubleEmptyValues;	}
-	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
-	static void processEmptyValues();
-
-	static bool getIntValue(const std::string& value, int& intValue);
-	static bool getIntValue(const double& value, int& intValue);
-	static bool getDoubleValue(const std::string& value, double& doubleValue);
-
-	static bool isEmptyValue(const std::string& val);
-	static bool isEmptyValue(const double& val);
-
-	static bool			convertValueToIntForImport(		const std::string &strValue, int &intValue);
-	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
-	static std::string	doubleToString(double dbl, int precision = 10);
-	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
 
 	static bool isEqual(const float a, const float b);
 	static bool isEqual(const double a, const double b);
@@ -79,13 +61,7 @@ public:
 	static std::string  wstringToString(const std::wstring & wstr);
 #endif
 	
-private:
-	static std::string _deEuropeaniseForImport(			const std::string &value);
-	static std::string _convertEscapedUnicodeToUTF8(	std::string hex);
 
-	static std::vector<std::string>			_currentEmptyValues;
-	static const std::vector<std::string>	_defaultEmptyValues;
-	static std::vector<double>				_currentDoubleEmptyValues;
 };
 
 #endif // UTILS_H

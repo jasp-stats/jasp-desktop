@@ -37,16 +37,12 @@
 #include <errno.h>
 #endif
 
-
-#include <boost/system/error_code.hpp>
-
 #include "processinfo.h"
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>
 
 using namespace std;
-using namespace boost;
 
 
 
@@ -92,7 +88,7 @@ string Dirs::tempDir()
 
 	if (!std::filesystem::exists(pa))
 	{
-		system::error_code ec;
+		std::error_code ec;
 		std::filesystem::create_directories(pa, ec);
 
 		if (ec)
@@ -107,17 +103,6 @@ string Dirs::tempDir()
 
 	return p;
 }
-
-#ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
-namespace boost {
-namespace interprocess {
-namespace ipcdetail {
-void get_shared_dir(std::string &shared_dir)
-{
-	shared_dir = Dirs::tempDir();
-}
-}}}
-#endif
 
 string Dirs::exeDir()
 {

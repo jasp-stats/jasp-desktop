@@ -1,6 +1,7 @@
 #include "importcolumn.h"
 #include <cmath>
 #include "utils.h"
+#include "columnutils.h"
 #include "log.h"
 
 ImportColumn::ImportColumn(ImportDataSet* importDataSet, std::string name)
@@ -32,7 +33,7 @@ bool ImportColumn::convertVecToInt(const std::vector<std::string> &values, std::
 	{
 		int intValue = std::numeric_limits<int>::lowest();
 
-		if (Utils::convertValueToIntForImport(value, intValue))
+		if (ColumnUtils::convertValueToIntForImport(value, intValue))
 		{
 			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
 			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));
@@ -59,7 +60,7 @@ bool ImportColumn::convertVecToDouble(const std::vector<std::string> &values, st
 	{
 		double doubleValue = static_cast<double>(NAN);
 
-		if (Utils::convertValueToDoubleForImport(value, doubleValue))
+		if (ColumnUtils::convertValueToDoubleForImport(value, doubleValue))
 		{
 			doubleValues.push_back(doubleValue);
 

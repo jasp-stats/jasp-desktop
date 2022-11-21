@@ -16,7 +16,7 @@
 //
 
 #include "jaspimporter.h"
-
+#include "columnutils.h"
 #include <fstream>
 
 #include <sys/stat.h>
@@ -106,14 +106,14 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 		emptyValues.push_back("NaN");
 		emptyValues.push_back("nan");
 		emptyValues.push_back(".");
-		Utils::setEmptyValues(emptyValues);
+		ColumnUtils::setEmptyValues(emptyValues);
 	}
 	else
 	{
 		std::vector<std::string> emptyValues;
 		for (const Json::Value & emptyValueJson  : emptyValuesJson)
 			emptyValues.push_back(emptyValueJson.asString());
-		Utils::setEmptyValues(emptyValues);
+		ColumnUtils::setEmptyValues(emptyValues);
 	}
 
 	Json::Value &emptyValuesMapJson = dataSetDesc["emptyValuesMap"];

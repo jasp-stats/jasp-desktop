@@ -24,11 +24,10 @@ public:
 
 	static std::string	logFileNameBase;
 
-	static void			initRedirects();
+	static void			init(std::ostream* nullStream);
 	static void			setLogFileName(const std::string & filePath);
 
 	static void			setDefaultDestination(logType newDestination);
-
 	static void			setLoggingToFile(bool logToFile);
 	static void			setWhere(logType where);
 	static void			setEngineNo(int num)	{ _engineNo = num; }
@@ -51,8 +50,9 @@ private:
 	static logError		_logError;
 	static int			_stdoutfd,
 						_engineNo;
+	static std::ostream*	_nullStream;
+	static std::ofstream	_logFile;
 
-	static const char*	_nullStream;
 };
 
 std::ostream & operator<<(std::ostream & os, const std::wstring & wStr);

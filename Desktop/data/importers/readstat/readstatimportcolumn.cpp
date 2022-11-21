@@ -1,5 +1,6 @@
 #include "readstatimportcolumn.h"
 #include "utils.h"
+#include "columnutils.h"
 #include "log.h"
 
 using namespace std;
@@ -97,7 +98,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 			for(const std::string & str : _strings)
 			{
 				double dblVal;
-				if(!isMissingValue(str) && !Utils::convertValueToDoubleForImport(str, dblVal))
+				if(!isMissingValue(str) && !ColumnUtils::convertValueToDoubleForImport(str, dblVal))
 					return false;
 			}
 
@@ -109,11 +110,11 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 			int val;
 
 			for(const std::string & str : _strings)
-				if(!isMissingValue(str) && !Utils::convertValueToIntForImport(str, val))
+				if(!isMissingValue(str) && !ColumnUtils::convertValueToIntForImport(str, val))
 					return false;
 
 			for(const auto & strLabel : _strLabels)
-				if(!Utils::convertValueToIntForImport(strLabel.first, val))
+				if(!ColumnUtils::convertValueToIntForImport(strLabel.first, val))
 					return false;
 			return true;
 		}
@@ -209,7 +210,7 @@ void ReadStatImportColumn::setType(columnType newType)
 			{
 				double dblVal;
 				if(isMissingValue(str))										_doubles.push_back(missingValueDouble());
-				else if(Utils::convertValueToDoubleForImport(str, dblVal))	_doubles.push_back(dblVal);
+				else if(ColumnUtils::convertValueToDoubleForImport(str, dblVal))	_doubles.push_back(dblVal);
 				else														conversionFailed("String '" + str + "' cannot be converted to double.");
 			}
 			break;
@@ -220,11 +221,11 @@ void ReadStatImportColumn::setType(columnType newType)
 			int val;
 			for(const std::string & str : _strings)
 				if(isMissingValue(str))									_ints.push_back(missingValueInt());
-				else if(Utils::convertValueToIntForImport(str, val))	_ints.push_back(val);
+				else if(ColumnUtils::convertValueToIntForImport(str, val))	_ints.push_back(val);
 				else													conversionFailed("String '" + str + "' cannot be converted to int.");
 
 			for(const auto & strLabel : _strLabels)
-				if(Utils::convertValueToIntForImport(strLabel.first, val))	_intLabels[val] = strLabel.second;
+				if(ColumnUtils::convertValueToIntForImport(strLabel.first, val))	_intLabels[val] = strLabel.second;
 				else														conversionFailed("String key '" + strLabel.first + "' (for label '" + strLabel.second + "') cannot be converted to int.");
 			_strLabels.clear();
 
@@ -264,7 +265,7 @@ void ReadStatImportColumn::addValue(const string & val)
 	case columnType::scale:
 	{
 		double dblVal;
-		if(Utils::convertValueToDoubleForImport(val, dblVal))
+		if(ColumnUtils::convertValueToDoubleForImport(val, dblVal))
 			addValue(dblVal);
 		else
 		{
@@ -280,7 +281,7 @@ void ReadStatImportColumn::addValue(const string & val)
 	case columnType::nominal:
 	{
 		int intVal;
-		if(Utils::convertValueToIntForImport(val, intVal))
+		if(ColumnUtils::convertValueToIntForImport(val, intVal))
 			addValue(intVal);
 		else
 		{

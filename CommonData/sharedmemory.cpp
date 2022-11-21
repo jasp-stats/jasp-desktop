@@ -23,12 +23,25 @@
 #include <sstream>
 
 #include "log.h"
+#include "dirs.h"
 
 using namespace std;
 using namespace boost;
 
 interprocess::managed_shared_memory *SharedMemory::_memory = NULL;
 string SharedMemory::_memoryName;
+
+#ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
+namespace boost {
+namespace interprocess {
+namespace ipcdetail {
+void get_shared_dir(std::string &shared_dir)
+{
+	shared_dir = Dirs::tempDir();
+}
+}}}
+#endif
+
 
 DataSet *SharedMemory::createDataSet()
 {

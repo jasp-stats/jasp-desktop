@@ -20,35 +20,29 @@ target_include_directories(
   QMLComponents
   PUBLIC # JASP
   ${PROJECT_SOURCE_DIR}/Common
-  ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-  ${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries(
-	QMLComponents
-	PUBLIC
-	Common
-	Qt::Core
-	Qt::Gui
-	Qt::Widgets
-	Qt::Qml
-	Qt::Quick
-	Qt::QuickLayouts
-	Qt::QuickControls2
-	Qt::QuickControls2Impl
-	Qt::QuickWidgets
-	Qt::QuickTemplates2
-	$<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
-	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
-	# Boost
-	Boost::system
-	Boost::date_time
-	Boost::timer
-	Boost::chrono
+  QMLComponents
+  PUBLIC
+         Common
+         Qt::Core
+         Qt::Gui
+         Qt::Widgets
+         Qt::Qml
+         Qt::Quick
+         Qt::QuickLayouts
+         Qt::QuickControls2
+         Qt::QuickControls2Impl
+         Qt::QuickWidgets
+         Qt::QuickTemplates2
+         $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
+         $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
 )
 
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
- qt_add_resources(
+
+qt_add_resources(
    QMLComponents
    "qmlComponents"
    PREFIX

@@ -36,7 +36,7 @@ class VariableInfo : public QObject
 {
 	Q_OBJECT
 public:
-	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, RowCount, Labels, StringValues, DoubleValues, NameRole, Value, MaxWidth, SignalsBlocked };
+	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, VariableNames, RowCount, Labels, StringValues, DoubleValues, NameRole, Value, MaxWidth, SignalsBlocked };
 	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType };
 
 public:

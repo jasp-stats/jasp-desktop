@@ -231,15 +231,7 @@ QString RSyntax::generateWrapper() const
 	}
 
 	result += ""
-	+ FunctionLineIndent + "if (jaspResultsCalledFromJasp()) {\n"
-	+ FunctionLineIndent + FunctionLineIndent + "result <- list(\"options\" = options, \"analysis\"=\"" + _analysisFullName() + "\")\n"
-	+ FunctionLineIndent + FunctionLineIndent + "result <- jsonlite::toJSON(result, auto_unbox = TRUE, digits = NA, null=\"null\", force = TRUE)\n"
-	+ FunctionLineIndent + FunctionLineIndent + "toString(result)\n"
-	+ FunctionLineIndent + "} else {\n"
-	+ FunctionLineIndent + FunctionLineIndent + "options <- jaspBase::checkAnalysisOptions(\"" + _analysisFullName() + "\", options)\n"
-	+ FunctionLineIndent + FunctionLineIndent + "jaspTools::runAnalysis(\"" + _analysisFullName() + "\", data, options)\n"
-	+ FunctionLineIndent + "}\n"
-	+ "\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options))\n"
 	+ "}";
 
 	return result;

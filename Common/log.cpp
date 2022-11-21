@@ -9,12 +9,12 @@
 
 #include <fstream>
 #include "utils.h"
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/null.hpp>
 #include <codecvt>
 #include <fstream>
 
-static std::ofstream _logFile;// = bofstream();
+std::ofstream Log::_logFile;// = bofstream();
+
+std::ostream* Log::_nullStream = &std::cout;
 
 std::string Log::logFileNameBase	= "";
 
@@ -76,9 +76,10 @@ void Log::setLogFileName(const std::string & filePath)
 		redirectStdOut();
 }
 
-void Log::initRedirects()
+void Log::init(std::ostream* nullStream)
 {
 	_where			= _default;
+	_nullStream		= nullStream;
 }
 
 void Log::redirectStdOut()
@@ -162,19 +163,21 @@ std::ostream & Log::log(bool addTimestamp)
 	default:				//Gcc is stupid and is not aware that the next three cases cover all
 #endif
 #endif
+	case logType::null:
+	{
+		return *_nullStream;
+	}
+	case logType::file:
+	{
+		if (addTimestamp) _logFile << Log::getTimestamp() << ": ";
+		return _logFile;
+	}
 	case logType::cout:
+	default:
 	{
 		if (addTimestamp) std::cout << ( _engineNo < 0 ? std::string("Desktop:\t") : "Engine#" + std::to_string(_engineNo) + ":\t");
 		return std::cout;
 	}
-	case logType::null:
-	{
-		static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
-		return nullstream;
-	}
-	case logType::file:
-		if (addTimestamp) _logFile << Log::getTimestamp() << ": ";
-		return _logFile;
 	}
 }
 
