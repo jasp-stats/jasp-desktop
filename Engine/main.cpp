@@ -110,15 +110,17 @@ int main(int argc, char *argv[])
 	}
 	else if(argc == 2)
 	{
-		std::cout << "Engine started in R (Module) Library Fixer mode because it received a single argument: '" << argv[1] << "'." << std::endl;
+		std::string singleArg =
+#ifdef _WIN32
+			Utils::wstringToString(argv[1]);
+#else
+			argv[1];
+#endif
+		std::cout << "Engine started in R (Module) Library Fixer mode because it received a single argument: '" << singleArg << "'." << std::endl;
 
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
 
-#ifdef _WIN32
-		_moduleLibraryFixer(Utils::wstringToString(argv[1]), true, true);
-#else
-		_moduleLibraryFixer(argv[1], true, true);
-#endif
+		_moduleLibraryFixer(singleArg, true, true);
 
 		exit(0);
 	}
