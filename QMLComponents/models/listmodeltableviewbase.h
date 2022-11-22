@@ -75,10 +75,11 @@ public:
 				QString				getMaximumRowHeaderString()															const;
 
 	virtual		void				initTableTerms(const TableTerms& terms);
-				void				addColumn(					bool emitStuff = true);
-				void				removeColumn(size_t index,	bool emitStuff = true);
-				void				addRow(						bool emitStuff = true);
-				void				removeRow(size_t index,		bool emitStuff = true);
+				void				addColumn(						bool emitStuff = true);
+				void				removeColumn(size_t index,		bool emitStuff = true);
+				void				addRow(							bool emitStuff = true);
+				void				removeRow(size_t index,			bool emitStuff = true);
+				void				setSize(int rows, int columns,	bool emitStuff = true);
 	virtual		void				reset();
 	virtual		void				setup() {}
 	virtual		void				itemChanged(int column, int row, QVariant value, QString type);

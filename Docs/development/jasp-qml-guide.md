@@ -610,6 +610,8 @@ Properties
 - `modelType`: [required, must be either `MultinomialChi2Model`, `JAGSDataInputModel`, `FilteredDataEntryModel` or `CustomContrasts`] Specify which kind of TableView is used.
 - `colName`: [optional, default `data`]: name of the generated column when `modelType` is `ListModelFilteredDataEntry` or `CustomContrasts`
 - `itemType`: [optional, default `string`, can be also `double` or `integer`]
+- `itemTypePerColumn`: [optional, unset implies `itemType` is used. Should be an array of `string`, `double` and/ or `integer`]
+- `itemTypePerRow`: [optional, unset implies `itemType` is used. Should be an array of `string`, `double` and/ or `integer`]
 - `source`: [optional, default `source of the values the table is based on`]
 
 <details>
@@ -627,6 +629,56 @@ Properties
 
 </details>
 
+#### Overloadable functions
+There are 4 functions that can be overloaded to customize the table behavior for each cell.
+Their default definitions are:
+- `getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }`
+- `getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }`
+- `getDefaultValue(columnIndex, rowIndex)				{ return defaultValue;	}`
+- `getValidator(columnIndex, rowIndex)				{ return validator;	}`
+
+`getColHeaderText` can be used to customize the names above the table (i.e., the column headers).
+For example, if we want the first column to be called 'A', the second, 'B' and so forth, we could do `getColHeaderText(headerText, columnIndex)			{ return String.fromCharCode(65 + columnIndex); }` (see [here](https://theasciicode.com.ar/) for why 65).
+Recall that in QML indexing starts at 0, so for the first column the value of `columnIndex` will be 0.
+`getColHeaderText` can be used to customize the names left of the table (i.e., the row headers).
+It functions basically the same as `getColHeaderText`.
+`getDefaultValue` can be used to customize the default value of each table cell.
+For example, suppose we want a table to be filled with increasing values, we could do
+```js
+getDefaultValue(columnIndex, rowIndex) {
+	return rowIndex + columnIndex * rowCount;
+}
+```
+to create a table with the following default values:
+```
+	A	B	C
+A	0	3	6
+B	1	4	7
+C	2	5	8
+```
+`getValidator` is useful when a table requires mixed input (e.g., strings and doubles).
+For example, the cells in the first row should take a string, but those in all other rows should take doubles.
+We can specify a custom validator for each cell by overloading `getValidator` *and* setting `itemTypePerRow`.
+<details>
+	<summary>Example</summary>
+
+```qml
+	TableView
+	{
+		modelType		: JASP.Simple
+		itemInputType	: "double" // serves as the fallback type
+
+		itemTypePerRow	: ["string"] // used for the first row
+
+		// these two must be defined inside the TableView component
+		JASPDoubleValidator			{ id: doubleValidator	}
+		RegularExpressionValidator	{ id: stringValidator	}
+
+		// return the id of the validator to use
+		function getValidator(columnIndex, rowIndex) { return rowIndex === 0 ? stringValidator : doubleValidator; }
+	}
+```
+</details>
 
 ### Grouping
 In order to add more structure to the input panel you can group components together. There are 2 levels of grouping: Section and Group. A Section can hide a group of components under a button. A Group is a smaller logical unit.
