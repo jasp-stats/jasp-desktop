@@ -67,8 +67,9 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	//Also setting this breaks the check for the output of R CMD config CC we use to avoid problems on mac...
 
 #elif __APPLE__
-
+	env.insert("PATH",				rHome.absoluteFilePath("bin") + ":" + env.value("PATH"));
 	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("RHOME",				rHome.absolutePath()); //For Rscript
 	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
 	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 	env.insert("JAGS_HOME",			rHome.absolutePath() + "/opt/jags/lib/JAGS/");
