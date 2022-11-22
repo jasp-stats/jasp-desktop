@@ -18,6 +18,7 @@
 #include "readstatimportdataset.h"
 #include "log.h"
 #include "utils.h"
+#include "columnutils.h"
 
 bool operator<(const readstat_value_t & l, const readstat_value_t & r)
 {
@@ -129,7 +130,7 @@ void ReadStatImportDataSet::setLabelsToColumns()
 				case READSTAT_TYPE_INT32:		
 				{
 					int keyInt;
-					if(Utils::convertValueToIntForImport(key, keyInt))		col->addLabel(keyInt,		label);
+					if(ColumnUtils::convertValueToIntForImport(key, keyInt))		col->addLabel(keyInt,		label);
 					else													col->addLabel(key,			label);
 					break;
 				}
@@ -137,7 +138,7 @@ void ReadStatImportDataSet::setLabelsToColumns()
 				case READSTAT_TYPE_DOUBLE:		
 				{
 					double keyDbl;
-					if(Utils::convertValueToDoubleForImport(key, keyDbl))	col->addLabel(keyDbl,		label);
+					if(ColumnUtils::convertValueToDoubleForImport(key, keyDbl))	col->addLabel(keyDbl,		label);
 					else													col->addLabel(key,			label);
 					break;
 				}

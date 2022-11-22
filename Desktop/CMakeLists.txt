@@ -79,67 +79,68 @@ if(WINDOWS)
 endif()
 
 target_include_directories(
-	JASP
-	PUBLIC 	
-	${CMAKE_CURRENT_LIST_DIR}
-	${PROJECT_SOURCE_DIR}/Common
-	${PROJECT_SOURCE_DIR}/QMLComponents
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-	# ReadStat
-	$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
-	${LIBREADSTAT_INCLUDE_DIRS}
-	# JSONCPP
-	$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
-	$<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
-	$<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
-	$<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
+    JASP
+    PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${PROJECT_SOURCE_DIR}/Common
+    ${PROJECT_SOURCE_DIR}/CommonData
+    ${PROJECT_SOURCE_DIR}/QMLComponents
+    # ReadStat
+    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
+    ${LIBREADSTAT_INCLUDE_DIRS}
+    # JSONCPP
+    $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
+    $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
+    $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
+    $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
 )
 
 target_link_libraries(
-	JASP
-	PUBLIC 
-	Common
-	QMLComponents
-	Qt::Core
-	Qt::Gui
-	Qt::OpenGL
-	Qt::Widgets
-	Qt::Qml
-	$<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::WebEngineQuick>
-	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineQuick.so>
-	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineCore.so>
-	$<$<BOOL:${FLATPAK_USED}>:/app/qml/QtWebEngine/libqtwebenginequickplugin.so>
-	Qt::WebChannel
-	Qt::Svg
-	Qt::Network
-	Qt::PrintSupport
-	Qt::Xml
-	Qt::Sql
-	Qt::Quick
-	Qt::QuickLayouts
-	Qt::QuickControls2
-	Qt::QuickControls2Impl
-	Qt::QuickWidgets
-	$<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
-	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
-	Qt::QuickTemplates2
-	Qt::DBus
-	Qt::QmlWorkerScript
-	Qt::LabsFolderListModel
-	# System
-	ZLIB::ZLIB
-	Iconv::Iconv
-	OpenSSL::SSL
-	OpenSSL::Crypto
-	# ReadStat -----------------------------------
-	${LIBREADSTAT_LIBRARIES}
-	# MinGW's ReadStat
-	$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
-	# JSONCPP
-	#$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-	#$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-	# R-Framework --------------------------------
-	$<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+    JASP
+    PUBLIC
+    Common
+    CommonData
+    QMLComponents
+    Qt::Core
+    Qt::Gui
+    Qt::OpenGL
+    Qt::Widgets
+    Qt::Qml
+    $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::WebEngineQuick>
+    $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineQuick.so>
+         $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineCore.so>
+         $<$<BOOL:${FLATPAK_USED}>:/app/qml/QtWebEngine/libqtwebenginequickplugin.so>
+    Qt::WebChannel
+    Qt::Svg
+    Qt::Network
+    Qt::PrintSupport
+    Qt::Xml
+    Qt::Sql
+    Qt::Quick
+    Qt::QuickLayouts
+    Qt::QuickControls2
+    Qt::QuickControls2Impl
+    Qt::QuickWidgets
+    $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
+    $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
+    Qt::QuickTemplates2
+    Qt::DBus
+    Qt::QmlWorkerScript
+    Qt::LabsFolderListModel
+    # System
+    ZLIB::ZLIB
+    Iconv::Iconv
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    # ReadStat -----------------------------------
+    ${LIBREADSTAT_LIBRARIES}
+    # MinGW's ReadStat
+    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
+    # JSONCPP
+         #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+         #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
+    # R-Framework --------------------------------
+    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
 

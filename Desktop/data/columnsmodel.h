@@ -30,6 +30,7 @@ public:
 	QHash<int, QByteArray>		roleNames()																			const	override;
 	int							columnCount(const QModelIndex & = QModelIndex())									const	override	{ return 1;	}
 	int							getColumnIndex(const std::string& col)												const				{ return _tableModel->getColumnIndex(col);	}
+	QStringList					getColumnNames()																	const;
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
 	QAbstractItemModel*			providerModel()																				override	{ return this;	}

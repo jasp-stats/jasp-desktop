@@ -116,6 +116,7 @@ if(WIN32)
 endif()
 
 add_subdirectory(Common)
+add_subdirectory(CommonData)
 add_subdirectory(QMLComponents)
 
 if(NOT WIN32)

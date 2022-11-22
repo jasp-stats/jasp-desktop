@@ -94,6 +94,17 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 	}
 }
 
+QStringList ColumnsModel::getColumnNames() const
+{
+	QStringList result;
+
+	int rows = rowCount();
+	for (int i = 0; i < rows; i++)
+		result.append(data(index(i, 0), NameRole).toString());
+
+	return result;
+}
+
 QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
 {
 	ColumnsModel* colModel = ColumnsModel::singleton();
@@ -121,7 +132,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::Value:						return	_tableModel->data(_tableModel->index(row, colIndex));
 		case VariableInfo::MaxWidth:					return	int(_tableModel->getMaximumColumnWidthInCharacters(colIndex));
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
-
+		case VariableInfo::VariableNames:				return	getColumnNames();
 		}
 	}
 	catch(columnNotFound & e) {} //just return an empty QVariant right?

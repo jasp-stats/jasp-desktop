@@ -24,6 +24,7 @@
 #include <boost/bind.hpp>
 #include "tempfiles.h"
 #include "utils.h"
+#include "columnutils.h"
 #include "sharedmemory.h"
 #include <csignal>
 
@@ -574,7 +575,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 
 void Engine::sendString(std::string message)
 {
-	Utils::convertEscapedUnicodeToUTF8(message);
+	ColumnUtils::convertEscapedUnicodeToUTF8(message);
 
 	Json::Value msgJson;
 

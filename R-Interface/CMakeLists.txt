@@ -38,7 +38,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json/*.cpp")
+file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/json/*.cpp")
 list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
@@ -141,7 +141,7 @@ if(WIN32)
     PUBLIC # JASP
            ${CMAKE_CURRENT_LIST_DIR}
            ${PROJECT_SOURCE_DIR}/../Common
-           ${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
+           ${PROJECT_SOURCE_DIR}/../CommonData
            # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
@@ -184,8 +184,8 @@ else()
     R-Interface
     PUBLIC # JASP
            ${PROJECT_SOURCE_DIR}/Common
-           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
+           ${PROJECT_SOURCE_DIR}/CommonData
+           ${PROJECT_SOURCE_DIR}/Common/json
            #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
            # R
            ${R_INCLUDE_PATH}
