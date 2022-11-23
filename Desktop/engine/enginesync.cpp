@@ -519,6 +519,14 @@ void EngineSync::processReloadData()
 }
 
 
+/**
+Checks if the top scriptstruct of the _waitingScripts queue is an rcode script that needs to run. Each of these belongs to a specific module, so it needs to find that engine or start it.
+
+    If there is no engine that is already coupled with the module, then it tries to find an idle engine that is not coupled with any module. If such an engine exists, it loads the module: it cannot run the script yet, because the loading of the module can take time. As this method is called every 50 milliseconds, the script will be run automatically when the module is loaded.
+    If an engine exists with the right module and is idle, it runs the script.
+
+If an engine is found that can run the script (immediately, or later when the module is loaded), then this method returns an empty set, else it returns a set with only the module name. This is done in order to facilitate the work of the process() function so that it can aggregate the modules that could not be handled, and starts maybe new engines.
+**/
 stringset EngineSync::processRScriptQueue()
 {
 	bool	foundEngine		= false, 
