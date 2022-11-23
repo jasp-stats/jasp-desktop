@@ -159,7 +159,7 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
 	connect(analysis,	&Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
-	connect(analysis,	&Analysis::sendRScript,							this, &Analyses::sendRScriptHandler					);
+	connect(analysis,	&Analysis::sendRScriptSignal,					this, &Analyses::sendRScriptHandler					);
 	connect(analysis,	&Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
 	connect(analysis,	&Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
 	connect(analysis,	&Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
@@ -542,12 +542,12 @@ void Analyses::rCodeReturned(QString result, int requestId, bool hasError)
 		Log::log()  << "Unknown Returned Rcode request ID " << requestId << std::endl;
 }
 
-void Analyses::sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion)
+void Analyses::sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion, QString module)
 {
 	Analysis* analysis = qobject_cast<Analysis*>(sender());
 	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
 
-	emit sendRScript(script, _scriptRequestID++, whiteListedVersion);
+	emit sendRScript(script, _scriptRequestID++, whiteListedVersion, module);
 }
 
 void Analyses::selectAnalysis(Analysis * analysis)

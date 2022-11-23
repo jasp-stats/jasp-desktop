@@ -58,7 +58,7 @@ void AnalysisForm::runRScript(QString script, QString controlName, bool whiteLis
 {
 	if(_analysis && !_removed)
 	{
-		if(_valueChangedSignalsBlocked == 0)	emit _analysis->sendRScript(script, controlName, whiteListedVersion);
+		if(_valueChangedSignalsBlocked == 0)	_analysis->sendRScript(script, controlName, whiteListedVersion);
 		else									_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
 	}
 }
@@ -712,7 +712,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 				while(_waitingRScripts.size() > 0)
 				{
 					const auto & front = _waitingRScripts.front();
-					emit _analysis->sendRScript(std::get<0>(front), std::get<1>(front), std::get<2>(front));
+					_analysis->sendRScript(std::get<0>(front), std::get<1>(front), std::get<2>(front));
 					_waitingRScripts.pop();
 				}
 			else //Otherwise just clean it up
@@ -960,7 +960,7 @@ void AnalysisForm::setRSyntaxText()
 void AnalysisForm::sendRSyntax(QString text)
 {
 	setShowRSyntax(true);
-	emit _analysis->sendRScript(text, rSyntaxControlName, false);
+	_analysis->sendRScript(text, rSyntaxControlName, false);
 }
 
 

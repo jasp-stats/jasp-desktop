@@ -130,7 +130,7 @@ public slots:
 	void move(int fromIndex, int toIndex);
 	void duplicateAnalysis(size_t id);
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
-	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitle);
+	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitlesendRScriptHandler);
 	void prepareForLanguageChange();
 	void languageChangedHandler();
 	void resultsMetaChanged(QString json);
@@ -149,7 +149,7 @@ signals:
 	void analysisTitleChanged(			Analysis *  source);
 	void analysisOverwriteUserdata(		Analysis *	source);
 	void analysisStatusChanged(			Analysis *	source);
-	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
+	void sendRScript(					QString		script, int requestID, bool whiteListedVersion, QString module);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
 	void reloadQmlForm(					int			row);
@@ -172,7 +172,7 @@ signals:
 	void currentFormPrevHChanged(double currentFormPrevH);
 
 private slots:
-	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion);
+	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion, QString module);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);

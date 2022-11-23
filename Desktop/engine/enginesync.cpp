@@ -380,14 +380,19 @@ void EngineSync::process()
 	if(_engines.size() == 0)
 		startExtraEngines();
 	
-	bool		notEnoughIdlesForScript		=	processScriptQueue();
+	stringset	notEnoughIdlesForScript		=	processRScriptQueue();
+	bool		notEnoughIdlesForCompCol	=	processComputedColumnQueue();
 	stringset	notEnoughIdlesForModule		=	processDynamicModules();
 	auto		notEnoughIdlesForAnalysis	=	processAnalysisRequests();
-	bool		notEnoughIdles				=	notEnoughIdlesForScript || notEnoughIdlesForModule.size() || notEnoughIdlesForAnalysis.size();
-	int			wantThisManyEngines			=	notEnoughIdlesForModule.size();
+	bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForScript.size() || notEnoughIdlesForModule.size() || notEnoughIdlesForAnalysis.size();
+	
+	stringset notEnoughIdlesSet(notEnoughIdlesForModule);
+	notEnoughIdlesSet.merge(notEnoughIdlesForScript);
+	
+	int			wantThisManyEngines			=	notEnoughIdlesSet.size();
 
 	if(notEnoughIdles)
-		Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript ? " one for script" : "") << (notEnoughIdlesForModule.size() ? std::to_string(notEnoughIdlesForModule.size()) + " for installing modules" : "") <<  (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
+		Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForModule.size() ? std::to_string(notEnoughIdlesForModule.size()) + " for installing modules" : "") <<  (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
 	
 	//First try to find or start some engines specifically for waiting analyses, and we assign them to the module immediately
 	if(notEnoughIdlesForAnalysis.size())
@@ -396,7 +401,7 @@ void EngineSync::process()
 				startMe (0);
 
 		for(const std::string & modName : notEnoughIdlesForAnalysis)
-			if(!notEnoughIdlesForModule.count(modName))
+			if(!notEnoughIdlesSet.count(modName))
 			{
 				bool foundAnEngineAnyway = false;
 				//Can we use an existing engine?
@@ -437,9 +442,9 @@ int EngineSync::sendFilter(const QString & generatedFilter, const QString & filt
 	return _filterCurrentRequestID;
 }
 
-void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion)
+void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion, QString module)
 {
-	_waitingScripts.push(new RScriptStore(requestId, rCode, engineState::rCode, whiteListedVersion));
+	_waitingScripts.push(new RScriptStore(requestId, rCode, module, engineState::rCode, whiteListedVersion));
 }
 
 void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
@@ -514,26 +519,97 @@ void EngineSync::processReloadData()
 }
 
 
-bool EngineSync::processScriptQueue()
+/**
+Checks if the top scriptstruct of the _waitingScripts queue is an rcode script that needs to run. Each of these belongs to a specific module, so it needs to find that engine or start it.
+
+    If there is no engine that is already coupled with the module, then it tries to find an idle engine that is not coupled with any module. If such an engine exists, it loads the module: it cannot run the script yet, because the loading of the module can take time. As this method is called every 50 milliseconds, the script will be run automatically when the module is loaded.
+    If an engine exists with the right module and is idle, it runs the script.
+
+If an engine is found that can run the script (immediately, or later when the module is loaded), then this method returns an empty set, else it returns a set with only the module name. This is done in order to facilitate the work of the process() function so that it can aggregate the modules that could not be handled, and starts maybe new engines.
+**/
+stringset EngineSync::processRScriptQueue()
 {
+	bool	foundEngine		= false, 
+			engineNotIdle	= false;
+	
 	try
 	{
-		for(auto * engine : _engines)
+		if(_waitingScripts.size() > 0)
 		{
-			if(engine->idle()  && engine->runsUtility() && _waitingScripts.size() > 0)
+			RScriptStore * waiting = _waitingScripts.front();
+			
+			if(waiting->typeScript == engineState::rCode)
 			{
-				RScriptStore * waiting = _waitingScripts.front();
-
-				switch(waiting->typeScript)
+				const std::string mod = fq(waiting->module);
+			
+				if(!moduleHasEngine(mod))	
 				{
-				case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
-				//case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
-				case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
-				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
+					for(auto & engine : _engines)
+						if(engine->idle() && engine->module() == "")
+						{
+							registerEngineForModule(engine, mod);	
+							foundEngine		= true;
+							engineNotIdle	= true; //it still needs to load the module
+							
+							if(!engine->moduleLoaded() && !engine->moduleLoading())
+								engine->moduleLoad();
+						}
 				}
+				else 
+				{
+					foundEngine = true;
+					if(_moduleEngines[mod]->idle())		_moduleEngines[mod]->runScriptOnProcess(waiting);
+					else								engineNotIdle = true;
+				}
+			
+				
+				if(!foundEngine)
+					return { mod };
+				
+				else if(!engineNotIdle)
+				{
+					delete waiting;
+					_waitingScripts.pop();
+				}
+			}	
+					
+		}
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "Exception thrown in processScriptQueue: " << e.what() << std::endl;
+	}
+	catch(...)
+	{
+		Log::log() << "Exception thrown in processScriptQueue" << std::endl;
+	}
+	
+	return {};
+}
 
-				_waitingScripts.pop();
-				delete waiting; //clean up
+bool EngineSync::processComputedColumnQueue()
+{
+	bool needEngine = false;
+	try
+	{
+		if(_waitingScripts.size() > 0)
+		{
+			RScriptStore * waiting = _waitingScripts.front();
+								
+			if(waiting->typeScript == engineState::computeColumn)	
+			{
+				needEngine = true;
+				
+				for(auto * engine : _engines)
+					if(engine->idle()  && engine->runsUtility())
+					{
+						engine->runScriptOnProcess((RComputeColumnStore*)waiting);
+					
+						delete waiting;
+						_waitingScripts.pop();
+						
+						needEngine = false;
+					}
 			}
 		}
 	}
@@ -542,7 +618,7 @@ bool EngineSync::processScriptQueue()
 		Log::log() << "Exception thrown in processScriptQueue" << std::endl;
 	}
 	
-	return _waitingScripts.size() > 0; //Because if there are still scripts waiting we didnt find an idle engine for it
+	return needEngine;
 }
 
 

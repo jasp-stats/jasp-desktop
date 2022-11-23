@@ -65,7 +65,7 @@ public slots:
 	void		destroyEngine(EngineRepresentation * engine);
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
-	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
+	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
 	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
 	void		pauseEngines(bool  unloadData = false);
 	void		stopEngines();
@@ -108,7 +108,8 @@ signals:
 
 private:
 	//These process functions can request a new engine to be started:
-	bool		processScriptQueue();
+	stringset	processRScriptQueue();
+	bool		processComputedColumnQueue();
 	stringset	processDynamicModules();
 	stringset	processAnalysisRequests();	///< Returns modules that still need an engine
 	

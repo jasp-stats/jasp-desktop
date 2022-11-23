@@ -35,10 +35,11 @@ public:
 	virtual const Json::Value & resultsMeta()								const 	{ return Json::Value::null;	}
 	virtual const Json::Value & getRSource(const std::string& name)			const 	{ return Json::Value::null;	}
 	virtual void initialized(AnalysisForm* form, bool isNewAnalysis)				{}
-	virtual std::string	qmlFormPath(bool addFileProtocol = true, bool ignoreReadyForUse = false)	const;
+	virtual std::string	qmlFormPath(bool addFileProtocol = true, 
+									bool ignoreReadyForUse = false)			const;
 
 	virtual Q_INVOKABLE	QString	helpFile()									const	{ return ""; }
-	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem = nullptr);
+	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem=nullptr);
 	virtual				void	destroyForm();
 
 	const Json::Value&	boundValues()										const	{ return _boundValues;		}
@@ -54,6 +55,7 @@ public:
 
 	const QString &	qmlError()																	const;
 	void			setQmlError(const QString &newQmlError);
+	void			sendRScript(QString script, QString controlName, bool whiteListedVersion)		{ emit sendRScriptSignal(script, controlName, whiteListedVersion, tq(module())); }
 
 
 public slots:
@@ -63,7 +65,7 @@ public slots:
 	virtual void	requestComputedColumnDestructionHandler(const std::string& columnName)			{}
 
 signals:
-	void			sendRScript(QString script, QString controlName, bool whiteListedVersion);
+	void			sendRScriptSignal(QString script, QString controlName, bool whiteListedVersion, QString module);
 	void			formItemChanged();
 	void			qmlErrorChanged();
 	void			boundValuesChanged();
@@ -82,7 +84,7 @@ private:
 
 
 private:
-	static const std::string emptyString;
+	static const std::string emptyString; ///< Otherwise we return references to a temporary object (std::string(""))
 };
 
 #endif // ANALYSISBASE_H

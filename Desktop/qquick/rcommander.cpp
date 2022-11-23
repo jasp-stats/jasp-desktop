@@ -77,7 +77,7 @@ bool RCommander::addAnalysis(const QString &code)
 		{
 			Analysis* analysis = Analyses::analyses()->createAnalysis(moduleName, analysisName);
 			if (analysis)
-				emit analysis->sendRScript(code, AnalysisForm::rSyntaxControlName, false);
+				analysis->sendRScript(code, AnalysisForm::rSyntaxControlName, false);
 		}
 		setRunning(false);
 	}
