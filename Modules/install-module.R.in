@@ -1,6 +1,6 @@
 # Generated from install-module.R.in
 #
-Sys.setenv(PATH=paste0("@R_HOME_PATH@/bin;", Sys.getenv("PATH"))) #Make sure any Rscript calls use ours
+Sys.setenv(PATH=paste0("@R_HOME_PATH@/bin", .Platform$path.sep, Sys.getenv("PATH"))) #Make sure any Rscript calls use ours
 Sys.setenv(RHOME="@R_HOME_PATH@") #Rscript looks for RHOME not R_HOME
 Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
