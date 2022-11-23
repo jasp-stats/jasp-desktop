@@ -20,7 +20,7 @@ public:
 	void updateAltNavInput(QString entry);
 	void setAltNavEnabled(bool value);
 
-	void setActiveNode(ALTNavScope* scope);
+	void setActiveNode(ALTNavScope *scope, bool setActive = false);
 	ALTNavScope* getActiveNode();
 
 	QString getCurrentALTNavInput();

@@ -12,7 +12,7 @@ ALTNavPostfixAssignmentStrategy* ALTNavPostfixAssignmentStrategy::createStrategy
 		case INDEXED:
 			return new IndexedStrategy();
 		case PASSTHROUGH:
-			return nullptr;
+			return new PassthroughStrategy();
 		case UNKNOWN:
 			return nullptr;
 		default:
@@ -28,9 +28,9 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 	QList<ALTNavScope*> unassigned;
 	QSet<char> assigned;
 	ALTNavScope* assignments[26] = { 0 };
-	for (auto child : children)
+	for (auto it = children.rbegin(); it != children.rend() ;it++)
 	{
-		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
+		ALTNavScope* scope = qobject_cast<ALTNavScope*>(*it);
 		QString request = scope->getRequestedPostfix();
 		if (request != "" && request[0].isLetter() && request[0].isUpper())
 		{
@@ -110,12 +110,23 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 
 void IndexedStrategy::assignPostfixes(const QObjectList &children, QString prefix)
 {
+	int maxLeadingZeros = std::log10((double)children.size()); //if needed I can write a fast integer version that never fails but I doubt it will really matter for reasonable input sizes
 	for (auto child : children)
 	{
 		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
-		int n = scope->getIndex() + 1; //get rid of 0
-		int numLeadingZeros = std::log10((double)n); //if needed I can write a fast integer version but I doubt it will really matter
+		int n = scope->getIndex() + 1; //get rid of 0 index
+		int numLeadingZeros = maxLeadingZeros - (int)std::log10((double)n);
 		QString tag = QString("0").repeated(numLeadingZeros) + QString::number(n);
 		scope->setPrefix(prefix + tag);
+	}
+}
+
+void PassthroughStrategy::assignPostfixes(const QObjectList &children, QString prefix)
+{
+	assert(children.length() <= 1);
+	for (auto child : children)
+	{
+		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
+		scope->setPrefix(prefix);
 	}
 }

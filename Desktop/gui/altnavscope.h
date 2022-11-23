@@ -17,10 +17,12 @@ class ALTNavScope : public QObject
 	Q_PROPERTY( bool						enabled						MEMBER		enabled					WRITE	setEnabled			NOTIFY	enabledChanged													);
 	Q_PROPERTY( QObject*					parentScope					MEMBER		parentScopeAttachee		WRITE	setParentAttachee	NOTIFY	parentScopeChanged												);
 	Q_PROPERTY( bool						scopeOnly					MEMBER		scopeOnly				WRITE	setScopeOnly		NOTIFY	scopeOnlyChanged												);
+	Q_PROPERTY( bool						propagateActivity			MEMBER		propagateActivity																											);
 	Q_PROPERTY( AssignmentStrategy			strategy					MEMBER		currentStrategy			WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
 	Q_PROPERTY( QString						requestedPostfix			READ		getRequestedPostfix		WRITE	setRequestedPostfix	NOTIFY	requestedPostfixChanged											);
 	Q_PROPERTY( int							scopePriority				READ		getScopePriority		WRITE	setScopePriority	NOTIFY	scopePriorityChanged											);
 	Q_PROPERTY( int							index						READ		getIndex				WRITE	setIndex			NOTIFY	indexChanged													);
+
 
 signals:
 	void enabledChanged();
@@ -71,6 +73,7 @@ private:
 	//ALTNavigation Interface
 	bool enabled = false;
 	bool scopeOnly = false;
+	bool propagateActivity = false;
 	QString requestedPostfix = "";
 	int index = -1;
 	int scopePriority = 0;

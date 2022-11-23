@@ -86,9 +86,7 @@ void ALTNavScope::traverse(QString input)
 		if(scope->prefix == input)
 		{
 			scope->match();
-			setChildrenActive(false);
-			scope->setChildrenActive(true);
-			root->setActiveNode(scope);
+			root->setActiveNode(scope, true);
 			scope->traverse(input);
 			return;
 		}
@@ -102,8 +100,7 @@ void ALTNavScope::traverse(QString input)
 	//end of the road so we disable the mode and return to root
 	if(!matchPossible)
 	{
-		setChildrenActive(false);
-		root->setActiveNode(root);
+		root->setActiveNode(root, true);
 		root->setAltNavEnabled(false);
 	}
 
@@ -128,7 +125,8 @@ void ALTNavScope::setPrefix(QString _prefix)
 
 void ALTNavScope::setChildrenPrefix(QString prefix)
 {
-	postfixBroker->assignPostfixes(children(), prefix);
+	if(postfixBroker)
+		postfixBroker->assignPostfixes(children(), prefix);
 }
 
 void ALTNavScope::setScopeActive(bool value)
@@ -136,7 +134,7 @@ void ALTNavScope::setScopeActive(bool value)
 	scopeActive = value;
 	if (!scopeOnly)
 		attachedTag->setActive(value);
-	else //passthrough activity
+	if (propagateActivity)
 		setChildrenActive(value);
 }
 
@@ -166,6 +164,7 @@ int ALTNavScope::getIndex()
 void ALTNavScope::setScopeOnly(bool value)
 {
 	scopeOnly = value;
+	propagateActivity = true;
 	emit scopeOnlyChanged();
 }
 
@@ -179,7 +178,7 @@ void ALTNavScope::childEvent(QChildEvent* event)
 
 	if(event->added())
 	{
-		setChildrenActive(scopeActive);
+		qobject_cast<ALTNavScope*>(event->child())->setScopeActive(scopeActive);
 		setChildrenPrefix(prefix);
 	}
 }
@@ -214,7 +213,7 @@ void ALTNavScope::setIndex(int _index)
 	ALTNavScope* parentScope = qobject_cast<ALTNavScope*>(parent());
 	if	(parentScope)
 		parentScope->setChildrenPrefix(parentScope->prefix);
-};
+}
 
 void ALTNavScope::setStrategy(AssignmentStrategy strategy)
 {

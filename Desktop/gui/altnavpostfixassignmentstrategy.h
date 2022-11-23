@@ -30,6 +30,7 @@ public:
 	PriorityStrategy(){};
 	~PriorityStrategy(){};
 	void assignPostfixes(QObjectList const&  children, QString prefix);
+
 };
 
 class IndexedStrategy : public ALTNavPostfixAssignmentStrategy
@@ -37,6 +38,14 @@ class IndexedStrategy : public ALTNavPostfixAssignmentStrategy
 public:
 	IndexedStrategy(){};
 	~IndexedStrategy(){};
+	void assignPostfixes(QObjectList const&  children, QString prefix);
+};
+
+class PassthroughStrategy : public ALTNavPostfixAssignmentStrategy
+{
+public:
+	PassthroughStrategy(){};
+	~PassthroughStrategy(){};
 	void assignPostfixes(QObjectList const&  children, QString prefix);
 };
 

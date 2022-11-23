@@ -26,7 +26,8 @@ FocusScope
 	height	: ribbonMenu.height
 
 	// This property is required to show filemenu button press in KeyNavigation
-	property bool isFileMenuPressed: true
+	property bool isFileMenuPressed: false
+	property alias fileMenuButton: fileMenuOpenButton
 
 	function focusOnRibbonMenu()
 	{
@@ -158,134 +159,9 @@ FocusScope
 		width		: 0.75 * height
 		focus		: true
 
-//		ALTNavigation.enabled: true
-//		ALTNavigation.requestedPostfix: "A"
-
-//		Item
-//		{
-//			id: g
-//			ALTNavigation.enabled: true
-//			ALTNavigation.scopeOnly: true
-////			ALTNavigation.parentScope: 	fileMenuOpenButton
-////			ALTNavigation.requestedPostfix: "Z"
-
-//			width: 50
-//			height: 50
-
-
-//			Item
-//			{
-//				id: f
-//				ALTNavigation.enabled: true
-//				ALTNavigation.scopeOnly: true
-//	//			ALTNavigation.parentScope: 	fileMenuOpenButton
-//				ALTNavigation.requestedPostfix: "K"
-
-//				width: 50
-//				height: 50
-
-
-
-//				Item
-//				{
-//					id: b
-//					ALTNavigation.enabled: true
-//		//			ALTNavigation.parentScope: 	fileMenuOpenButton
-//					ALTNavigation.requestedPostfix: "V"
-//					ALTNavigation.scopePriority: 9
-
-//					width: 50
-//					height: 50
-
-//					Item
-//					{
-//						id: c
-//						ALTNavigation.enabled: true
-//						ALTNavigation.requestedPostfix: "Y"
-//						anchors.fill: parent
-//						width: 50
-//						height: 50
-
-//					}
-
-//				}
-
-//				Item
-//				{
-//					id: bei
-//					ALTNavigation.enabled: true
-//		//			ALTNavigation.parentScope: 	fileMenuOpenButton
-//					ALTNavigation.requestedPostfix: "V"
-
-//					width: 50
-//					height: 50
-//				}
-
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-//				Item{ALTNavigation.enabled: true}
-
-//			}
-//		}
+		ALTNavigation.enabled: true
+		ALTNavigation.requestedPostfix: "O"
+		ALTNavigation.onTagMatch: { clicked(); }
 
 		onClicked:
 		{
@@ -334,6 +210,10 @@ FocusScope
 		width		: 0.75 * height
 		showPressed	: modulesMenu.opened
 		z			: 2
+
+		ALTNavigation.enabled: true
+		ALTNavigation.requestedPostfix: "I"
+		ALTNavigation.onTagMatch: { clicked(); }
 
 		onClicked	:
 		{

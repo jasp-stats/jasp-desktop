@@ -179,8 +179,17 @@ Item
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
 
-			ALTNavigation.enabled:	true;
-			ALTNavigation.index:	index
+			ALTNavigation.enabled:		true
+			ALTNavigation.index:		index
+			ALTNavigation.onTagMatch:
+			{
+				ribbon.focusOnRibbonMenu();
+				if(enabled && ready)
+				{
+					ribbon.goToRibbonIndex(listIndex);
+					showMyMenu();
+				}
+			}
 		}
 
 		onFocusChanged:

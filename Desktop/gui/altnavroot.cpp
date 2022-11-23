@@ -91,8 +91,11 @@ void ALTNavRoot::setAltNavEnabled(bool value)
 	}
 }
 
-void ALTNavRoot::setActiveNode(ALTNavScope *scope)
+void ALTNavRoot::setActiveNode(ALTNavScope *scope, bool setActive)
 {
+	activeNode->setChildrenActive(false);
+	if (setActive)
+		scope->setChildrenActive(true);
 	activeNode = scope;
 }
 
