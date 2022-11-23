@@ -354,6 +354,18 @@ void EngineSync::shutdownBoredEngines()
 		stopAndDestroyEngine(engine);
 }
 
+/**
+ * @brief EngineSync::process the beating heart of jasp-desktop
+ * 
+ * This function Handles starting, stopping and handling engines. 
+ * It also distributes jobs to them, this can range from filter-code to be run to rscripts for analyses.
+ * Also Module load/install requests are sent to engines and of course analyses can be run.
+ * 
+ * Each engine can be registered for a module, which should b e combined with a module load if rscripts or analyses need to be ran on it.
+ * This allows for clean separation of R-libraries per module (as they each get their own engine and thus R)
+ * 
+ * It gets runs every 50ms, if it can anyway.
+ */
 void EngineSync::process()
 {
 	if(_stopProcessing)	return;
@@ -380,12 +392,15 @@ void EngineSync::process()
 	if(_engines.size() == 0)
 		startExtraEngines();
 	
-	stringset	notEnoughIdlesForScript		=	processRScriptQueue();
+	//So we try to distribute some work to each engine as below:
+	stringset	notEnoughIdlesForScript		=	processRCodeQueue();
 	bool		notEnoughIdlesForCompCol	=	processComputedColumnQueue();
 	stringset	notEnoughIdlesForModule		=	processDynamicModules();
 	auto		notEnoughIdlesForAnalysis	=	processAnalysisRequests();
 	bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForScript.size() || notEnoughIdlesForModule.size() || notEnoughIdlesForAnalysis.size();
 	
+	// So  right now notEnoughIdles tells us we do not have enough idle engines (or free idle engines anyway)
+	// Now we join the set of missing module-engines, or engines registered for a module (and usually with that module loaded unless it is an install request)
 	stringset notEnoughIdlesSet(notEnoughIdlesForModule);
 	notEnoughIdlesSet.merge(notEnoughIdlesForScript);
 	
@@ -527,7 +542,7 @@ Checks if the top scriptstruct of the _waitingScripts queue is an rcode script t
 
 If an engine is found that can run the script (immediately, or later when the module is loaded), then this method returns an empty set, else it returns a set with only the module name. This is done in order to facilitate the work of the process() function so that it can aggregate the modules that could not be handled, and starts maybe new engines.
 **/
-stringset EngineSync::processRScriptQueue()
+stringset EngineSync::processRCodeQueue()
 {
 	bool	foundEngine		= false, 
 			engineNotIdle	= false;

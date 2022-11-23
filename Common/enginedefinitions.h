@@ -26,7 +26,7 @@ struct unexpectedEngineReply  : public std::runtime_error
 };
 
 ///How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
-#define ENGINE_KILLTIME 3
+#define ENGINE_KILLTIME 1
 
 ///After how many seconds is an engine allowed to shutdown due to boredom?
 #define ENGINE_BORED_SHUTDOWN (5 * 60)
