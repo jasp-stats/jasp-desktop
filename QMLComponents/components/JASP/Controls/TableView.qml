@@ -256,7 +256,8 @@ TableViewBase
 					MouseArea
 					{
 						anchors.fill: parent
-						onClicked: {
+						onClicked: 
+						{
 							if (tableView.colSelected === columnIndex)
 								columnIndex = -1
 							tableView.colSelected = columnIndex;
@@ -266,7 +267,7 @@ TableViewBase
 
 				rowNumberDelegate: Rectangle
 				{
-					color: jaspTheme.analysisBackgroundColor
+					color: rowIndex === tableView.rowSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
 					Text
 					{
 						text:					tableView.getRowHeaderText(headerText, rowIndex);
@@ -279,6 +280,17 @@ TableViewBase
 						width:					parent.width
 						height:					parent.width
 						font:					jaspTheme.font
+					}
+					
+					MouseArea
+					{
+						anchors.fill: parent
+						onClicked: 
+						{
+							if (tableView.rowSelected === rowIndex)
+								rowIndex = -1
+							tableView.rowSelected = rowIndex;
+						}
 					}
 				}
 
