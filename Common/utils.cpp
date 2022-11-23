@@ -92,15 +92,15 @@ long Utils::getFileModificationTime(const std::string &filename)
 
 	FILETIME modTime;
 
-	bool success = GetFileTime(file, NULL, NULL, &fileTime);
+	bool success = GetFileTime(file, NULL, NULL, &modTime);
 	CloseHandle(file);
 
 	if (success)
 	{
 		LARGE_INTEGER li;
 		ULONG         seconds;
-		li.QuadPart = fileTime->dwHighDateTime;
-		li.QuadPart = (li.QuadPart << 32) | fileTime->dwLowDateTime;
+		li.QuadPart = modTime.dwHighDateTime;
+		li.QuadPart = (li.QuadPart << 32) | modTime.dwLowDateTime;
 		RtlTimeToSecondsSince1970(&li, &seconds);
 
 		return seconds;

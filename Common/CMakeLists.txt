@@ -35,12 +35,10 @@ target_include_directories(
 
 target_link_libraries(
   Common
-  PUBLIC # jsoncpp
-         #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
-		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-         #
-         $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+  PUBLIC
+    $<$<BOOL:${WINDOWS}>:ntdll>
+    $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>
+  )
 
 target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
@@ -48,7 +46,6 @@ target_compile_definitions(
 				JSONCPP_NO_LOCALE_SUPPORT	)
 
 if(WINDOWS)
-
   target_compile_definitions(
     Common
     PUBLIC NOMINMAX
