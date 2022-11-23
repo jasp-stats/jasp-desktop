@@ -21,7 +21,7 @@ This will make sure JASP checks for new data at that time interval whenever the 
 
 ## Examples
 
-Below are shown an example for [Sqlite](#sqlite) and for [SQL server](#sql-server).
+Below examples for [Sqlite](#sqlite), [SQL server](#sql-server) and [Snowflake Warehouse](#snowflake-warehouse).
 
 ### Sqlite
 
@@ -85,3 +85,35 @@ The "Query" textinput should then be enabled (or you see an error below in "Prev
 ![JASP showing how to connect to a SQL Server database](filemenu/SqlServerConnectionExample.png)
 
 The output (a few lines) will be shown below in the preview panel and if you're satisfied simply choose "Load into JASP".
+
+### Snowflake Warehouse
+
+Both described ways of connecting below make use of ODBC and you might need to get the `SnowflakeDSIIDriver` from somewhere.
+#### Simple connect
+
+This uses a SQL DB user, which of course needs to be present in the database.
+
+The settings should look like:
+```
+DB Driver: ODBC Driver
+Hostname: [your_instance].snowflakecomputing.com
+Port: 1433
+Name: DRIVER={SnowflakeDSIIDriver};SERVER=[your_instance].snowflakecomputing.com;WAREHOUSE=[your warehouse];DATABASE=[your database];
+Username: [SQL User]
+Password: [SQL User PW]
+```
+
+#### Using single sign on
+
+More secure and flexible, Uses SSO login, can change which role is used.
+Query must use fully qualified database.schema.table
+
+Settings should look like:
+```
+DB Driver: ODBC Driver
+Hostname: [your_instance].snowflakecomputing.com
+Port: 1433
+Name: DRIVER={SnowflakeDSIIDriver};SERVER=[your_instance].snowflakecomputing.com;WAREHOUSE=[your warehouse];ROLE=[select a role];AUTHENTICATOR=externalbrowser;
+Username: [sso login]
+Password:
+```
