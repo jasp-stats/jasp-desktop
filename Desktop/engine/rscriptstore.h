@@ -14,8 +14,7 @@ struct RScriptStore
 		: typeScript(typeScript), script(script), module(module), requestId(requestId), whiteListedVersion(whiteListedVersion), returnLog(returnLog) {}
 
 	engineState typeScript; //should be filter/rcode/etc
-	QString		script,
-				module;
+	QString		script, module;
 	int			requestId;
 	bool		whiteListedVersion,
 				returnLog;
