@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-11-22 20:35+0000\n"
+"PO-Revision-Date: 2022-11-23 11:15+0000\n"
 "Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
@@ -227,7 +227,7 @@ msgstr "Reset"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr "Kolumna obliczana: "
+msgstr "Kolumna wynikowa: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
@@ -410,7 +410,7 @@ msgstr "generuje dane z rozkładu Weibulla o określonym kształcie i skali"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "Usuń kolumnę obliczoną"
+msgstr "Usuń kolumnę wynikową"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -422,7 +422,7 @@ msgstr "Dodaj kolumnę obliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr "Kolumna obliczona"
+msgstr "Kolumna wynikowa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
@@ -430,7 +430,7 @@ msgstr "Kliknij, aby dodać kolumnę obliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
-msgstr "Kolumna (która ma być) obliczona"
+msgstr "Kolumna wynikowa, która ma zostać utworzona"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
@@ -438,17 +438,17 @@ msgstr "Otwórz dokumentację"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr "Zamknij okno kolumn obliczonych"
+msgstr "Zamknij okno kolumn wynikowych"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr "Kolumna obliczona została zmodyfikowana"
+msgstr "Kolumna wynikowa została zmodyfikowana"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr "Istnieją niezapisane zmiany w kolumnie obliczonej; co chciałbyś zrobić?"
+msgstr "Istnieją niezapisane zmiany w kolumnie wynikowej; co chciałbyś zrobić?"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -493,7 +493,7 @@ msgstr "Zmodyfikuj dla %1"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "Wstaw kolumnę obliczoną"
+msgstr "Wstaw kolumnę wynikową"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
@@ -538,15 +538,15 @@ msgstr "Utwórz kolumnę"
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "Kliknij tutaj, aby utworzyć nową kolumnę obliczoną \"%1'"
+msgstr "Kliknij tutaj, aby utworzyć nową kolumnę wynikową \"%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "Podaj prawidłową (nieużywaną) nazwę kolumny obliczonej"
+msgstr "Podaj prawidłową (nieużywaną) nazwę kolumny wynikowej"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr "Zamknij bez tworzenia kolumny obliczonej"
+msgstr "Zamknij bez tworzenia kolumny wynikowej"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -570,7 +570,7 @@ msgstr "Pokaż filtr"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "Wstaw kolumnę obliczoną"
+msgstr "Wstaw kolumnę wynikową"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
@@ -946,11 +946,11 @@ msgstr "Ostatnio używane pliki"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr "Kod kolumn obliczonych został usunięty"
+msgstr "Kod kolumn wynikowych został usunięty"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr "Zastosowano kod kolumn obliczonych"
+msgstr "Zastosowano kod kolumn wynikowych"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
@@ -958,11 +958,11 @@ msgstr "Proszę podać wszystkie argumenty - patrz pola zaznaczone na czerwono."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr "Dozwolona jest tylko jedna formuła na kolumnę obliczoną."
+msgstr "Dozwolona jest tylko jedna formuła na kolumnę wynikową."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "Witamy w konstruktorze kolumn obliczonych metodą „przeciągnij i upuść”!"
+msgstr "Witamy w kreatorze kolumn wynikowych!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
@@ -1075,32 +1075,32 @@ msgstr ""
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "Dodatek"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Odejmowanie"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Mnożenie"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "Dzielenie"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Potęgowanie (2^3 zwraca 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "Pierwiastek kwadratowy"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Modulo: zwraca resztę z dzielenia. 3%2 zwraca 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
@@ -1139,7 +1139,7 @@ msgstr "Większe lub równe: %1"
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr "Oraz: %1"
+msgstr "I: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
@@ -2699,7 +2699,7 @@ msgstr "Wstaw pole kolumny"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr "Wstaw pole kolumny obliczonej"
+msgstr "Wstaw pole kolumny wynikowej"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
