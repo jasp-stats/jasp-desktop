@@ -53,7 +53,7 @@ TableViewBase
 	property alias  view					: theView
 	property alias  itemDelegate			: theView.itemDelegate
 	property alias  rowNumberDelegate		: theView.rowNumberDelegate
-	property alias  columnNumberDelegate	: theView.columnHeaderDelegate
+	property alias  columnHeaderDelegate	: theView.columnHeaderDelegate
 	property alias  leftTopCornerItem		: theView.leftTopCornerItem
 
 	property alias	addLeftButton	: addLeftButton
