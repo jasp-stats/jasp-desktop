@@ -38,7 +38,7 @@ TableViewBase
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
 	property string colName			: modelType === JASP.CustomContrasts ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
-	property alias	rowNumberWidth	: theView.rowNumberWidth
+	property alias	 rowNumberWidth	: theView.rowNumberWidth
 	property var	validator		: (itemType === JASP.Integer) ? intValidator : (itemType === JASP.Double ? doubleValidator : stringValidator)
 	property double	minimum			: 0
 	property int	decimals		: 1
@@ -49,6 +49,12 @@ TableViewBase
 	property bool	parseDefaultValue	: true
 	property bool	isFirstColEditable	: true
 	property bool	showAddRemoveButtons: modelType === JASP.GridInput
+
+	property alias  view					: theView
+	property alias  itemDelegate			: theView.itemDelegate
+	property alias  rowNumberDelegate		: theView.rowNumberDelegate
+	property alias  columnNumberDelegate	: theView.columnHeaderDelegate
+	property alias  leftTopCornerItem		: theView.leftTopCornerItem
 
 	property alias	addLeftButton	: addLeftButton
 	property alias	addRightButton	: addRightButton
