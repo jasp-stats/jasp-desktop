@@ -5,8 +5,9 @@
 #include <QQuickItem>
 
 #include "altnavtag.h"
+#include "altnavpostfixassignmentstrategy.h"
 
-class ALTNavPostfixAssignmentStrategy;
+using AssignmentStrategy = ALTNavPostfixAssignmentStrategy::AssignmentStrategy;
 
 class ALTNavScope : public QObject
 {
@@ -16,10 +17,10 @@ class ALTNavScope : public QObject
 	Q_PROPERTY( bool						enabled						MEMBER		enabled					WRITE	setEnabled			NOTIFY	enabledChanged													);
 	Q_PROPERTY( QObject*					parentScope					MEMBER		parentScopeAttachee		WRITE	setParentAttachee	NOTIFY	parentScopeChanged												);
 	Q_PROPERTY( bool						scopeOnly					MEMBER		scopeOnly				WRITE	setScopeOnly		NOTIFY	scopeOnlyChanged												);
-	Q_PROPERTY( AssignmentStrategy			postfixAssignmentStrategy	MEMBER		currentStrategy			WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
-	Q_PROPERTY( QString						requestedPostfix			MEMBER		requestedPostfix		WRITE	setRequestedPostfix	NOTIFY	requestedPostfixChanged											);
-	Q_PROPERTY( int							scopePriority				MEMBER		scopePriority			WRITE	setScopePriority	NOTIFY	scopePriorityChanged											);
-	Q_PROPERTY( int							index						MEMBER		index					WRITE	setIndex			NOTIFY	indexChanged													);
+	Q_PROPERTY( AssignmentStrategy			strategy					MEMBER		currentStrategy			WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
+	Q_PROPERTY( QString						requestedPostfix			READ		getRequestedPostfix		WRITE	setRequestedPostfix	NOTIFY	requestedPostfixChanged											);
+	Q_PROPERTY( int							scopePriority				READ		getScopePriority		WRITE	setScopePriority	NOTIFY	scopePriorityChanged											);
+	Q_PROPERTY( int							index						READ		getIndex				WRITE	setIndex			NOTIFY	indexChanged													);
 
 signals:
 	void enabledChanged();
@@ -36,15 +37,17 @@ public:
 	explicit ALTNavScope(QObject* _attachee);
 	~ALTNavScope();
 
-	enum AssignmentStrategy { PASSTHROUGH, INDEXED, PRIORITY, UNKNOWN };
-	Q_ENUM(AssignmentStrategy)
-
 	void traverse(QString input);
+	void match();
 	void setStrategy(ALTNavPostfixAssignmentStrategy* strategy);
 	void setPrefix(QString prefix);
 	void setScopeActive(bool value);
-	void setChildrenPrefix(QString tag);
+	void setChildrenPrefix(QString prefix);
 	void setChildrenActive(bool value);
+
+	QString getRequestedPostfix();
+	int getScopePriority();
+	int getIndex();
 
 public slots:
 	void registerWithParent();
@@ -52,11 +55,6 @@ public slots:
 
 protected:
 	void childEvent(QChildEvent *event) override;
-
-	bool scopeActive = false;
-	QString prefix;
-
-private:
 	void setEnabled(bool value);
 	void setStrategy(AssignmentStrategy strategy);
 	void setScopeOnly(bool value);
@@ -64,6 +62,9 @@ private:
 	void setRequestedPostfix(QString postfix);
 	void setScopePriority(int priority);
 	void setIndex(int index);
+
+	bool scopeActive = false;
+	QString prefix;
 
 
 private:
@@ -73,7 +74,7 @@ private:
 	QString requestedPostfix = "";
 	int index = -1;
 	int scopePriority = 0;
-	AssignmentStrategy currentStrategy = PRIORITY;
+	AssignmentStrategy currentStrategy = AssignmentStrategy::PRIORITY;
 
 	QQuickItem* attachee;
 	ALTNavTag* attachedTag = nullptr;
@@ -83,6 +84,8 @@ private:
 
 
 	ALTNavPostfixAssignmentStrategy* postfixBroker = nullptr;
+
+	friend class ALTNavPostfixAssignmentStrategy;
 
 };
 

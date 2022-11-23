@@ -1,29 +1,43 @@
 #ifndef ALTNAVPOSTFIXASSIGNMENTSTRATEGY_H
 #define ALTNAVPOSTFIXASSIGNMENTSTRATEGY_H
 
-#include <QSet>
+#include <QObject>
 
-#include "altnavscope.h"
-
+class ALTNavScope;
 
 class ALTNavPostfixAssignmentStrategy
 {
+	Q_GADGET
+
 public:
 	virtual ~ALTNavPostfixAssignmentStrategy() {};
-	virtual void assignPostfixes(QObjectList const&  children, QString tag) = 0;
+	virtual void assignPostfixes(QObjectList const&  children, QString prefix) = 0;
+
+	enum AssignmentStrategy { PASSTHROUGH, INDEXED, PRIORITY, UNKNOWN };
+	Q_ENUM(AssignmentStrategy)
+
 
 	//factory method
-	static ALTNavPostfixAssignmentStrategy* createStrategy(ALTNavScope::AssignmentStrategy strategy);
+	static ALTNavPostfixAssignmentStrategy* createStrategy(AssignmentStrategy strategy);
+
+
 
 };
 
-class TMPSTRAT : public ALTNavPostfixAssignmentStrategy
+class PriorityStrategy : public ALTNavPostfixAssignmentStrategy
 {
 public:
-	TMPSTRAT(){};
-	~TMPSTRAT(){};
-	void assignPostfixes(QObjectList const&  children, QString tag) {for(auto child : children) qobject_cast<ALTNavScope*>(child)->setPrefix(tag + "a");}
+	PriorityStrategy(){};
+	~PriorityStrategy(){};
+	void assignPostfixes(QObjectList const&  children, QString prefix);
 };
 
+class IndexedStrategy : public ALTNavPostfixAssignmentStrategy
+{
+public:
+	IndexedStrategy(){};
+	~IndexedStrategy(){};
+	void assignPostfixes(QObjectList const&  children, QString prefix);
+};
 
 #endif // ALTNAVPOSTFIXASSIGNMENTSTRATEGY_H

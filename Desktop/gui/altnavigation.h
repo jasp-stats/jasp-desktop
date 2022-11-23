@@ -10,13 +10,9 @@ class ALTNavigation : public QObject
 {
 	Q_OBJECT
 	QML_ATTACHED(ALTNavScope)
-	QML_ELEMENT
 
 public:
-
 	static ALTNavScope* qmlAttachedProperties(QObject *object);
-
-signals:
 
 };
 

@@ -16,6 +16,7 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 	{
 		index = x++;
 		Log::log() << "!!Created " << index << std::endl;
+		connect(_attachee, &QObject::destroyed, this, [this]() {delete this;});
 		ALTNavRoot::getInstance()->registerScope(this, _attachee);
 		attachee = qobject_cast<QQuickItem*>(_attachee);
 		if(attachee) //is a visual item
@@ -23,7 +24,8 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 			Log::log() << "!!" << QQmlProperty(attachee, "a").read().toString().toStdString() << std::endl;
 			attachedTag = new ALTNavTag(attachee);
 			QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(attachee);
-			QObject::connect(attached_component, SIGNAL(completed()), this, SLOT(registerWithParent()));
+			connect(attached_component, SIGNAL(completed()), this, SLOT(registerWithParent()));
+			connect(attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
 		}
 	}
 }
@@ -32,54 +34,7 @@ ALTNavScope::~ALTNavScope()
 {
 	ALTNavRoot::getInstance()->removeScope(attachee);
 	delete postfixBroker;
-	delete attachedTag;
-}
-
-void ALTNavScope::traverse(QString input)
-{
-	bool matchPossible = false;
-	for(QObject* child : children())
-	{
-		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
-		if(scope->prefix == input)
-		{
-
-		}
-		//partial match
-		matchPossible |= scope->prefix.length() < input.length() && scope->prefix.first(scope->prefix.length()) == input;
-	}
-
-	if(!matchPossible)
-		set
-
-}
-
-
-void ALTNavScope::setPrefix(QString prefix)
-{
-	prefix = prefix;
-	if (attachedTag)
-		attachedTag->setFullTag(prefix);
-}
-
-void ALTNavScope::setChildrenPrefix(QString tag)
-{
-	postfixBroker->assignPostfixes(children(), prefix);
-}
-
-void ALTNavScope::setChildrenActive(bool value)
-{
-	for(auto child : children())
-	{
-		qobject_cast<ALTNavScope*>(child)->setScopeActive(value);
-	}
-}
-
-void ALTNavScope::setScopeActive(bool value)
-{
-	scopeActive = value;
-	if (attachedTag)
-		attachedTag->setActive(value);
+	attachedTag->deleteLater();
 }
 
 void ALTNavScope::registerWithParent()
@@ -98,7 +53,7 @@ void ALTNavScope::registerWithParent()
 			ALTNavScope* scope = root->getAttachedScope(curr);
 			if(scope) //found a different valid valid scope
 			{
-				Log::log() << "!!found " << index << " " << scope->index << std::endl;
+				Log::log() << "!!found " << requestedPostfix.toStdString() << " " << scope->requestedPostfix.toStdString() << std::endl;
 				parentScope = scope;
 				break;
 			}
@@ -110,7 +65,7 @@ void ALTNavScope::registerWithParent()
 	if(!parentScope)
 	{
 		parentScope = root;
-		Log::log() << "!!not found root set for " << index << std::endl;
+		Log::log() << "!!not found root set for " << requestedPostfix.toStdString() << std::endl;
 	}
 
 	if(parentScope != parent())
@@ -118,25 +73,98 @@ void ALTNavScope::registerWithParent()
 }
 
 
+void ALTNavScope::traverse(QString input)
+{
+	ALTNavRoot* root = ALTNavRoot::getInstance();
+
+	bool matchPossible = false;
+	Log::log() << "!!traverse children " << requestedPostfix.toStdString() << " " << children().length() << std::endl;
+	for(QObject* child : children())
+	{
+		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
+		//total match, progress in tree
+		if(scope->prefix == input)
+		{
+			scope->match();
+			setChildrenActive(false);
+			scope->setChildrenActive(true);
+			root->setActiveNode(scope);
+			scope->traverse(input);
+			return;
+		}
+		//partial match
+		bool partialMatch = input.length() < scope->prefix.length() && scope->prefix.first(input.length()) == input;
+		if (!partialMatch)
+			scope->setScopeActive(false);
+		matchPossible |= partialMatch;
+	}
+
+	//end of the road so we disable the mode and return to root
+	if(!matchPossible)
+	{
+		setChildrenActive(false);
+		root->setActiveNode(root);
+		root->setAltNavEnabled(false);
+	}
+
+}
+
+void ALTNavScope::match()
+{
+	Log::log() << "match: " << prefix.toStdString() << std::endl;
+	setScopeActive(false);
+	emit tagMatch();
+}
+
+
+void ALTNavScope::setPrefix(QString _prefix)
+{
+	Log::log() << "!!setprefix " << requestedPostfix.toStdString() << " " << prefix.toStdString() << std::endl;
+	prefix = _prefix;
+	if (attachedTag)
+		attachedTag->setFullTag(prefix);
+	setChildrenPrefix(prefix);
+}
+
+void ALTNavScope::setChildrenPrefix(QString prefix)
+{
+	postfixBroker->assignPostfixes(children(), prefix);
+}
+
+void ALTNavScope::setScopeActive(bool value)
+{
+	scopeActive = value;
+	if (!scopeOnly)
+		attachedTag->setActive(value);
+	else //passthrough activity
+		setChildrenActive(value);
+}
+
+void ALTNavScope::setChildrenActive(bool value)
+{
+	for(auto child : children())
+	{
+		qobject_cast<ALTNavScope*>(child)->setScopeActive(value);
+	}
+}
+
+QString ALTNavScope::getRequestedPostfix()
+{
+	return requestedPostfix;
+}
+
+int ALTNavScope::getScopePriority()
+{
+	return scopePriority;
+}
+
+int ALTNavScope::getIndex()
+{
+	return index;
+}
 
 void ALTNavScope::setScopeOnly(bool value)
 {
-	//visual tag must be added
-	if(!value && scopeOnly)
-	{
-		QQuickItem* attacheeItem = qobject_cast<QQuickItem*>(attachee);
-		if(attacheeItem) //is a visual item
-		{
-			attachedTag = new ALTNavTag(attacheeItem);
-		}
-	}
-
-	//visual tag must be deleted
-	if(value && !scopeOnly)
-	{
-		delete attachedTag;
-	}
-
 	scopeOnly = value;
 	emit scopeOnlyChanged();
 }
@@ -145,10 +173,14 @@ void ALTNavScope::setScopeOnly(bool value)
 void ALTNavScope::childEvent(QChildEvent* event)
 {
 	QObject::childEvent(event);
+
+	if(!ALTNavRoot::getInstance()->dynamicTreeUpdate())
+		return;
+
 	if(event->added())
 	{
-		for(auto child: children())
-			qobject_cast<ALTNavScope*>(child)->registerWithParent();
+		setChildrenActive(scopeActive);
+		setChildrenPrefix(prefix);
 	}
 }
 
@@ -162,7 +194,6 @@ void ALTNavScope::setParentAttachee(QObject* _parent)
 {
 	parentScopeAttachee = qobject_cast<QQuickItem*>(_parent);
 	parentOverride = true;
-	//registerWithParent();
 }
 
 void ALTNavScope::setRequestedPostfix(QString postfix)
@@ -179,7 +210,10 @@ void ALTNavScope::setScopePriority(int priority)
 void ALTNavScope::setIndex(int _index)
 {
 	index = _index;
-
+	//indices changed recalc prefixes
+	ALTNavScope* parentScope = qobject_cast<ALTNavScope*>(parent());
+	if	(parentScope)
+		parentScope->setChildrenPrefix(parentScope->prefix);
 };
 
 void ALTNavScope::setStrategy(AssignmentStrategy strategy)
@@ -192,5 +226,5 @@ void ALTNavScope::setStrategy(AssignmentStrategy strategy)
 void ALTNavScope::setStrategy(ALTNavPostfixAssignmentStrategy* strategy)
 {
 	delete postfixBroker;
-	postfixBroker =  strategy;
+	postfixBroker = strategy;
 }

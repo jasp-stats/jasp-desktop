@@ -1,4 +1,5 @@
 #include "altnavroot.h"
+#include "log.h"
 
 ALTNavRoot* ALTNavRoot::instance = nullptr;
 
@@ -6,21 +7,15 @@ ALTNavRoot::ALTNavRoot(QObject *parent)
 	: ALTNavScope{parent}
 {
 	qApp->installEventFilter(this);
+	setScopeOnly(true);
 }
 
-void ALTNavRoot::registerTag(ALTNavTag *tagObject)
+ALTNavScope *ALTNavRoot::getAttachedScope(QObject *obj)
 {
-	tags.insert(tagObject);
-}
-
-void ALTNavRoot::removeTag(ALTNavTag *tagObject)
-{
-	tags.remove(tagObject);
-}
-
-void ALTNavRoot::updateTag(ALTNavTag *tagObject)
-{
-	tagObject->setTagText(tagObject->fullTag);
+	auto it = attachedScopeMap.find(obj);
+	if (it != attachedScopeMap.end())
+		return it.value();
+	return nullptr;
 }
 
 void ALTNavRoot::registerScope(ALTNavScope* scope, QObject *obj)
@@ -41,22 +36,22 @@ bool ALTNavRoot::eventFilter(QObject *object, QEvent *event)
 		int key = keyEvent->key();
 		if (!altNavEnabled && key == Qt::Key_Alt)
 		{
-			setAltNavEnabled(!altNavEnabled);
 			resetAltNavInput();
+			setAltNavEnabled(!altNavEnabled);
 			return true;
 
 		}
 		else if(altNavEnabled)
 		{
-			if (key == Qt::Key_Escape || key == Qt::Key_Alt)
-			{
-				setAltNavEnabled(false);
-				resetAltNavInput();
-				return true;
-			}
-			else if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
+			if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
 			{
 				updateAltNavInput(keyEvent->text().toUpper());
+				return true;
+			}
+			else
+			{
+				resetAltNavInput();
+				setAltNavEnabled(false);
 				return true;
 			}
 		}
@@ -67,23 +62,53 @@ bool ALTNavRoot::eventFilter(QObject *object, QEvent *event)
 void ALTNavRoot::resetAltNavInput()
 {
 	currenAltNavInput = "";
-	activeScope = this;
+	emit altNavInputChanged();
 }
 
 void ALTNavRoot::updateAltNavInput(QString entry)
 {
 	currenAltNavInput += entry;
-	activeScope->traverse(currenAltNavInput);
+	activeNode->traverse(currenAltNavInput);
+	emit altNavInputChanged();
 }
 
 void ALTNavRoot::setAltNavEnabled(bool value)
 {
+	Log::log() << "!!ALTNavEnabled: " << value << std::endl;
 	altNavEnabled = value;
 	if(altNavEnabled)
 	{
-		activeScope->setChildrenActive(true);
-		activeScope->setChildrenPrefix(prefix);
+		_dynamicTreeUpdate = true;
+		activeNode->setChildrenActive(true);
+		activeNode->setChildrenPrefix(prefix);
+		activeNode->traverse(currenAltNavInput);
 	}
+	else
+	{
+		_dynamicTreeUpdate = false;
+		activeNode->setChildrenActive(false);
+		setActiveNode(this);
+	}
+}
+
+void ALTNavRoot::setActiveNode(ALTNavScope *scope)
+{
+	activeNode = scope;
+}
+
+ALTNavScope *ALTNavRoot::getActiveNode()
+{
+	return activeNode;
+}
+
+QString ALTNavRoot::getCurrentALTNavInput()
+{
+	return currenAltNavInput;
+}
+
+bool ALTNavRoot::dynamicTreeUpdate()
+{
+	return _dynamicTreeUpdate;
 }
 
 ALTNavRoot* ALTNavRoot::getInstance()

@@ -184,7 +184,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
 	qmlRegisterType<ALTNavigation>								("JASP",		1, 0, "ALTNavigation"					);
 	qmlRegisterType<ALTNavTag>									("JASP",		1, 0, "ALTNavTag"						);
-
+	qmlRegisterUncreatableType<PriorityStrategy>				("JASP",		1, 0, "AssignmentStrategy",				"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 

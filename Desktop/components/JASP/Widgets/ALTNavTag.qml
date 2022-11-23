@@ -6,7 +6,7 @@ import JASP
 Item
 {
 	id:					tagRoot
-	visible:			true//show && parent.visible
+	visible:			tagData.active
 	width:				tagText.contentWidth + jaspTheme.contentMargin
 	height:				tagText.height
 	z:					99999

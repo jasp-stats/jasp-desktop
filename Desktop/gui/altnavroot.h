@@ -6,15 +6,11 @@
 
 class ALTNavRoot : public ALTNavScope
 {
+	Q_OBJECT
 public:
 	explicit ALTNavRoot(QObject *parent = nullptr);
 
-
-	void registerTag(ALTNavTag* tagObject);
-	void removeTag(ALTNavTag* tagObject);
-	void updateTag(ALTNavTag* tagObject);
-
-	ALTNavScope* getAttachedScope(QObject* obj) { auto it = attachedScopeMap.find(obj); if (it != attachedScopeMap.end()) return it.value(); return nullptr;};
+	ALTNavScope* getAttachedScope(QObject* obj);
 	void registerScope(ALTNavScope* scope, QObject* obj);
 	void removeScope(QObject* obj);
 
@@ -24,19 +20,28 @@ public:
 	void updateAltNavInput(QString entry);
 	void setAltNavEnabled(bool value);
 
+	void setActiveNode(ALTNavScope* scope);
+	ALTNavScope* getActiveNode();
+
+	QString getCurrentALTNavInput();
+	bool dynamicTreeUpdate();
+
 	//singleton stuff
 	static ALTNavRoot* getInstance();
 	ALTNavRoot(ALTNavRoot& other) = delete;
 	void operator=(const ALTNavRoot&) = delete;
 
+signals:
+	void altNavInputChanged();
+
 private:
 	static ALTNavRoot* instance;
 	QHash<QObject*, ALTNavScope*> attachedScopeMap;
-	QSet<ALTNavTag*> tags;
 
-	ALTNavScope* activeScope = this;
+	ALTNavScope* activeNode = this;
 
 	bool altNavEnabled = false;
+	bool _dynamicTreeUpdate = false;
 	QString currenAltNavInput = "";
 
 };

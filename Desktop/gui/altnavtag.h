@@ -15,16 +15,17 @@ class ALTNavTag : public QObject
 	Q_PROPERTY( bool	active		READ	getActive		NOTIFY	activeChanged	);
 
 public:
-	explicit ALTNavTag(QQuickItem* attachee = nullptr);
+	explicit ALTNavTag(QQuickItem* attachee);
 	~ALTNavTag();
 
 	void setFullTag(QString _fullTag);
 	void setActive(bool _active);
 
-	void setTagText(QString tag);
-
 	ALTNavScope* scope = nullptr;
 	QString fullTag;
+
+private slots:
+	void updateTagText();
 
 signals:
 	void tagTextChanged();
@@ -39,7 +40,7 @@ private:
 	QQuickItem* tagItem;
 
 	QString tagText = "";
-	bool active;
+	bool active = false;
 
 
 };

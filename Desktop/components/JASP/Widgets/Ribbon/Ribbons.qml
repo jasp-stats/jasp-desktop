@@ -18,7 +18,7 @@
 
 import QtQuick			2.15
 import QtQuick.Controls 2.15
-
+import JASP
 
 Item
 {
@@ -124,6 +124,11 @@ Item
 		highlightMoveDuration:			20
 		reuseItems:						true
 
+		ALTNavigation.enabled:				true
+		ALTNavigation.scopeOnly:			true
+		ALTNavigation.strategy:				AssignmentStrategy.INDEXED
+		ALTNavigation.requestedPostfix:		"M"
+
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
 		Keys.onPressed: (event) =>
@@ -173,6 +178,9 @@ Item
 			enabled:		 model.ribbonButton && model.active
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
+
+			ALTNavigation.enabled:	true;
+			ALTNavigation.index:	index
 		}
 
 		onFocusChanged:
