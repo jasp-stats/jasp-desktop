@@ -65,7 +65,7 @@ public:
 			void				setUp()						override;
 			void				cleanUp()					override;
 	
-			int					variableTypesAllowed()		const			{ return _variableTypesAllowed; }
+	const QSet<columnType>&		variableTypesAllowed()		const			{ return _variableTypesAllowed; }
 
 	const QVector<SourceItem*>& sourceItems()				const			{ return _sourceItems; }
 			void				applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
@@ -136,7 +136,7 @@ protected slots:
 
 protected:
 	QVector<SourceItem*>	_sourceItems;
-	int						_variableTypesAllowed	= 0xff;
+	QSet<columnType>		_variableTypesAllowed;
 	QString					_optionKey				= "value";
 	QVariant				_source;
 	QVariant				_rSource;

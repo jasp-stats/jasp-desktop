@@ -339,60 +339,48 @@ void VariablesListBase::termsChangedHandler()
 	else JASPListControl::termsChangedHandler();
 }
 
-
-int VariablesListBase::_getColumnsTypes(const QStringList& types)
-{
-	int columnsTypes = -1;
-
-	if (!types.isEmpty())
-	{
-		columnsTypes = 0;
-		for (const QString& typeStr: types)
-		{
-			columnType type = columnTypeFromString(fq(typeStr), columnType::unknown);
-			if (type != columnType::unknown)
-				columnsTypes |= int(type);
-			else
-				addControlError(tr("Wrong column type: %1 for ListView %2").arg(typeStr).arg(name()));
-		}
-	}
-
-	return columnsTypes;
-}
-
 void VariablesListBase::_setAllowedVariables()
 {
-	QStringList allowedColumnsFromSuggestion;
-	if (allowedColumns().empty() && !suggestedColumns().empty())
+	QSet<QString> implicitAllowedTypes;
+
+	// The implicitAllowedTypes is either the allowedColumns if they are explicitely defined
+	// or the suggestedColumns with extra permitted types, with these rules:
+	// . if suggestedType contains the scale type, then nomincal & ordinal types are then also allowed.
+	// . if suggestedType contains the nomincal type, then nominalText & ordinal types are also allowed.
+
+	auto listToSet = [](QStringList l) { return QSet<QString> (l.constBegin(), l.constEnd()); };
+	if (!allowedColumns().empty())
+		implicitAllowedTypes = listToSet(allowedColumns());
+	else if (!suggestedColumns().empty())
 	{
-		allowedColumnsFromSuggestion = suggestedColumns();
+		implicitAllowedTypes = listToSet(suggestedColumns());
 		if (suggestedColumns().contains("scale"))
 		{
-			if (!allowedColumnsFromSuggestion.contains("nominal"))			allowedColumnsFromSuggestion.push_back("nominal");
-			if (!allowedColumnsFromSuggestion.contains("ordinal"))			allowedColumnsFromSuggestion.push_back("ordinal");
+			implicitAllowedTypes.insert("nominal");
+			implicitAllowedTypes.insert("ordinal");
 		}
 		if (suggestedColumns().contains("nominal"))
 		{
-			if (!allowedColumnsFromSuggestion.contains("nominalText"))		allowedColumnsFromSuggestion.push_back("nominalText");
-			if (!allowedColumnsFromSuggestion.contains("ordinal"))			allowedColumnsFromSuggestion.push_back("ordinal");
+			implicitAllowedTypes.insert("nominalText");
+			implicitAllowedTypes.insert("ordinal");
 		}
 	}
 
-	int allowedColumnsTypes = _getColumnsTypes(allowedColumns().isEmpty() ? allowedColumnsFromSuggestion : allowedColumns());
+	_variableTypesAllowed.clear();
+	for (const QString& typeStr: implicitAllowedTypes)
+		_variableTypesAllowed.insert(columnTypeFromString(fq(typeStr), columnType::unknown));
 
-	if (allowedColumnsTypes >= 0)
-		_variableTypesAllowed = allowedColumnsTypes;
-
-	QStringList iconList,
-				columnTypes = suggestedColumns();
-	if (columnTypes.empty()) columnTypes = allowedColumns();
+	// The suggectedColumnsIcons indicates which columns are allowed in the VariableList view.
+	// It shows per default the suggested columns list, but if empty, it shows the alloaed columns list.
+	QStringList iconTypeList,
+				columnTypes = suggestedColumns().isEmpty() ?  allowedColumns() : suggestedColumns();
 	for (const QString& columnTypeStr : columnTypes)
 	{
 		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
 		if (type != columnType::unknown)
-			iconList.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
+			iconTypeList.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
 	}
-	setSuggestedColumnsIcons(iconList);
+	setSuggestedColumnsIcons(iconTypeList);
 
 	if (form() && form()->initialized())
 		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
@@ -417,7 +405,6 @@ void VariablesListBase::_setRelations()
 				addDependency(availableModel->listView());
 				setContainsVariables();
 				setContainsInteractions();
-
 			}
 		}
 	}
