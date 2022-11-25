@@ -158,11 +158,6 @@ std::ostream & Log::log(bool addTimestamp)
 {
 	switch(_where)
 	{
-#ifndef __clang__
-#ifdef __GNUG__
-	default:				//Gcc is stupid and is not aware that the next three cases cover all
-#endif
-#endif
 	case logType::null:
 	{
 		return *_nullStream;
