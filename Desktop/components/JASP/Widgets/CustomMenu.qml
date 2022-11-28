@@ -49,39 +49,41 @@ FocusScope
 
 	Keys.onPressed: (event)=>
 	{
-		if (event.key === Qt.Key_Up || event.key === Qt.Key_Backtab)
+		switch(event.key)
 		{
+		case Qt.Key_Up:
+		case Qt.Key_Backtab:
 			navigate(-1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Down || event.key === Qt.Key_Tab)
-		{
+			break;
+		case Qt.Key_Down:
+		case Qt.Key_Tab:
 			navigate(1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Left)
-		{
+			break;
+		case Qt.Key_Left:
 			parentNavigate(-1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Right)
-		{
+			break;
+		case Qt.Key_Right:
 			parentNavigate(1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
-		{
+			break;
+		case Qt.Key_Return:
+		case Qt.Key_Space:
 			if (currentIndex > -1)
 			{
 				menu.props['functionCall'](currentIndex)
 				menu.currentIndex = -1;
 			}
 			closeMenu();
-		}
-		else if (event.key === Qt.Key_Escape)
-		{
+			break;
+		case Qt.Key_Escape:
 			menu.currentIndex = -1;
 			closeMenu();
+			break;
+		default:
+			break;
 		}
 	}
 
