@@ -170,7 +170,7 @@ Rectangle
 		anchors
 		{
 			left	: parent.left
-			top		: parent.tomyMenuOpenp
+			top		: parent.top
 			bottom	: parent.bottom
 		}
 	}
