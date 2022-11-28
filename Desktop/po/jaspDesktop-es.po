@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-10-16 20:40+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"es/>\n"
-"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2015,26 +2009,6 @@ msgctxt "MessageForwarder|"
 msgid "Don't Save"
 msgstr "No Guardar"
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "Seleccionar un archivo..."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "Seleccionar una carpeta ..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "El modo gráfico seguro ha cambiado"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-"Ha cambiado el modo gráfico seguro de JASP, por lo que se debe reiniciar "
-"JASP para que esta opción surta efecto"
-
 msgctxt "MainWindow|"
 msgid "Datafile changed"
 msgstr "El archivo de datos ha cambiado"
@@ -3976,18 +3950,6 @@ msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "Si está desactivado se cambia al procesamiento propio de texto."
 
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr "Cambió la configuración del procesamiento de texto"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
-"La configuración del procesamiento de texto cambió; y esto solo va a tener "
-"un efecto completo después de reiniciar JASP."
-
 msgctxt "Database|"
 msgid "Select database"
 msgstr "Seleccionar la base de datos"
@@ -4069,11 +4031,6 @@ msgstr "La carga de actualizaciones produjo el(los) siguinte(s) fallo(s): %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
-msgid "Wrong syntax in Formula: %1"
-msgstr "Sintaxis incorrecta en la Fórmula: %1"
-
-#, qt-format
-msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
 msgstr "No se puede encontrar el término %1 en la Fórmula"
 
@@ -4086,30 +4043,6 @@ msgstr "No se encontró la fuente %1 en la Fórmula"
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
 msgstr "La fuente %1 en la Fórmula no es una Lista de Variables"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Parsing error in Formula %1"
-msgstr "Fallo de análisis en la Fórmula %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "No matching parenthesis in Formula %1"
-msgstr "Los paréntesis no cuadran en la Fórmula %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error in Formula %1"
-msgstr "Fallo de sintaxis en la Fórmula %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr "Fallo de sintaxis cerca del operador condicional (%1) en la Fórmula %2"
-
-msgctxt "FormulaSource|"
-msgid "No name given if Formula description"
-msgstr "Non se indicó el nombre en la descripción de la Fórmula"
 
 #, qt-format
 msgctxt "FormulaSource|"
@@ -4130,12 +4063,31 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr "No se encontró la fuente en la Fórmula"
 
-#, qt-format
-msgctxt "FormulaSource|"
-msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr "El término condicional %1 no procede de la fuente %2 en la Fórmula"
+msgctxt "PrefsUI|"
+msgid "Reporting mode"
+msgstr ""
 
-#, qt-format
-msgctxt "RSyntax|"
-msgid "Wrong type for argument %1"
-msgstr "Tipo erróneo para el argumento %1"
+msgctxt "PrefsUI|"
+msgid "Whether JASP should run in reporting mode or not."
+msgstr ""
+
+msgctxt "Reporter|"
+msgid "No datafile"
+msgstr ""
+
+msgctxt "Reporter|"
+msgid ""
+"JASP was started in reporting mode, but the jasp file is not coupled to a "
+"datafile.\n"
+"This means there can be no updates...\n"
+"\n"
+"Would you like to continue anyway?"
+msgstr ""
+
+msgctxt "OSF|"
+msgid "Unknown error"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given in Formula description"
+msgstr ""

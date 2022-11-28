@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-10-16 10:38+0000\n"
-"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2010,26 +2004,6 @@ msgctxt "MessageForwarder|"
 msgid "Don't Save"
 msgstr "Nicht speichern"
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "Datei auswählen..."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "Verzeichnis auswählen..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "Sicherer Grafikmodus wurde geändert"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-"Sie haben den Sicheren Grafikmodus von JASP geändert; damit diese Option "
-"tatsächlich wirkt, muss JASP neu gestartet werden"
-
 msgctxt "MainWindow|"
 msgid "Datafile changed"
 msgstr "Datendatei wurde verändert"
@@ -3974,18 +3948,6 @@ msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "Falls deaktiviert, wird auf natives Textwiedergabe umgestellt."
 
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr "Einstellung für Textwiedergabe geändert"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
-"Die Textwiedergabe-Einstellung wurde geändert; dies wird erst nach einem "
-"Neustart von JASP voll wirksam."
-
 msgctxt "Database|"
 msgid "Select database"
 msgstr "Datenbank auswählen"
@@ -4067,11 +4029,6 @@ msgstr "Das Laden von Upgrades ergab folgende(n) Fehler: %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
-msgid "Wrong syntax in Formula: %1"
-msgstr "Falsche Syntax in Formel: %1"
-
-#, qt-format
-msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
 msgstr "Term %1 in Formel nicht gefunden"
 
@@ -4084,30 +4041,6 @@ msgstr "Quelle %1 in Formel nicht gefunden"
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
 msgstr "Quelle %1 in Formel ist keine Variablenliste"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Parsing error in Formula %1"
-msgstr "Parsing-Fehler in Formel %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "No matching parenthesis in Formula %1"
-msgstr "Keine passenden Klammern in Formel %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error in Formula %1"
-msgstr "Syntaxfehler in Formel %1"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr "Syntaxfehler bei bedingtem Operator (%1) in Formel %2"
-
-msgctxt "FormulaSource|"
-msgid "No name given if Formula description"
-msgstr "Kein Name in Formelbeschreibung angegeben"
 
 #, qt-format
 msgctxt "FormulaSource|"
@@ -4128,12 +4061,31 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr "Keine Quelle in Formel gefunden"
 
-#, qt-format
-msgctxt "FormulaSource|"
-msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr "Der bedingte Term %1 stammt nicht aus der Quelle %2 in der Formel"
+msgctxt "PrefsUI|"
+msgid "Reporting mode"
+msgstr ""
 
-#, qt-format
-msgctxt "RSyntax|"
-msgid "Wrong type for argument %1"
-msgstr "Falscher Typ für Argument %1"
+msgctxt "PrefsUI|"
+msgid "Whether JASP should run in reporting mode or not."
+msgstr ""
+
+msgctxt "Reporter|"
+msgid "No datafile"
+msgstr ""
+
+msgctxt "Reporter|"
+msgid ""
+"JASP was started in reporting mode, but the jasp file is not coupled to a "
+"datafile.\n"
+"This means there can be no updates...\n"
+"\n"
+"Would you like to continue anyway?"
+msgstr ""
+
+msgctxt "OSF|"
+msgid "Unknown error"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given in Formula description"
+msgstr ""

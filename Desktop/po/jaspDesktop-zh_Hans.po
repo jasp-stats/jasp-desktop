@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-10-16 10:38+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hans/>\n"
-"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -1930,24 +1924,6 @@ msgctxt "MessageForwarder|"
 msgid "Don't Save"
 msgstr "不保存"
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "选择一个文件..."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "选择一个文件夹..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "安全图形模式已更改"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr "您已经更改了 JASP 的安全图形模式，如使该选项生效，需要重新启动 JASP"
-
 msgctxt "MainWindow|"
 msgid "Datafile changed"
 msgstr "数据文件已更改"
@@ -3769,16 +3745,6 @@ msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "如果禁用，则将文本呈现切换为本机渲染。"
 
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr "文本渲染设置已更改"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr "文本渲染设置已更改，这需要重新启动 JASP 后才能完全生效。"
-
 msgctxt "Database|"
 msgid "Select database"
 msgstr "选择数据库"
@@ -3858,11 +3824,6 @@ msgstr "加载升级时出现以下错误：%1"
 
 #, qt-format
 msgctxt "FormulaBase|"
-msgid "Wrong syntax in Formula: %1"
-msgstr "公式中有语法错误：%1"
-
-#, qt-format
-msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
 msgstr "在公式中找不到项 %1"
 
@@ -3875,30 +3836,6 @@ msgstr "未找到公式中的来源 %1"
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
 msgstr "公式中的来源 %1 不是变量列表"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Parsing error in Formula %1"
-msgstr "公式 %1 中有解析错误"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "No matching parenthesis in Formula %1"
-msgstr "公式 %1 中没有匹配的括号"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error in Formula %1"
-msgstr "公式 %1 中有语法错误"
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr "公式 %2 中条件运算符 (%1) 附近有语法错误"
-
-msgctxt "FormulaSource|"
-msgid "No name given if Formula description"
-msgstr ""
 
 #, qt-format
 msgctxt "FormulaSource|"
@@ -3917,12 +3854,31 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr "在公式中找不到来源"
 
-#, qt-format
-msgctxt "FormulaSource|"
-msgid "The conditional term %1 does not come from the %2 source in Formula"
-msgstr "条件项 %1 不是来自公式中的 %2 源"
+msgctxt "PrefsUI|"
+msgid "Reporting mode"
+msgstr ""
 
-#, qt-format
-msgctxt "RSyntax|"
-msgid "Wrong type for argument %1"
-msgstr "参数 %1 的类型错误"
+msgctxt "PrefsUI|"
+msgid "Whether JASP should run in reporting mode or not."
+msgstr ""
+
+msgctxt "Reporter|"
+msgid "No datafile"
+msgstr ""
+
+msgctxt "Reporter|"
+msgid ""
+"JASP was started in reporting mode, but the jasp file is not coupled to a "
+"datafile.\n"
+"This means there can be no updates...\n"
+"\n"
+"Would you like to continue anyway?"
+msgstr ""
+
+msgctxt "OSF|"
+msgid "Unknown error"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given in Formula description"
+msgstr ""

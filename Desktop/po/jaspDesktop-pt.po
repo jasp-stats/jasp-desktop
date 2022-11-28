@@ -1435,26 +1435,6 @@ msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr "Erro ao redimensionar gráfico"
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "Selecionar arquivo.."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "Selecionar pasta..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "Modo Gráfico Seguro alterado"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-"Você mudou para o Modo Gráfico Seguro do JASP. Para essa opção funcionar, é "
-"preciso que você reinicie o JASP"
-
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
 msgstr "Incompatibilidade de versão"
@@ -3901,16 +3881,6 @@ msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr ""
 
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
-
 msgctxt "Database|"
 msgid "Select database"
 msgstr ""
@@ -3985,11 +3955,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "FormulaBase|"
-msgid "Wrong syntax in Formula: %1"
-msgstr ""
-
-#, qt-format
-msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
 msgstr ""
 
@@ -4001,30 +3966,6 @@ msgstr ""
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Parsing error in Formula %1"
-msgstr ""
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "No matching parenthesis in Formula %1"
-msgstr ""
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error in Formula %1"
-msgstr ""
-
-#, qt-format
-msgctxt "FormulaParser|"
-msgid "Syntax error near conditional operator (%1) in Formula %2"
-msgstr ""
-
-msgctxt "FormulaSource|"
-msgid "No name given if Formula description"
 msgstr ""
 
 #, qt-format
@@ -4044,12 +3985,31 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr ""
 
-#, qt-format
-msgctxt "FormulaSource|"
-msgid "The conditional term %1 does not come from the %2 source in Formula"
+msgctxt "PrefsUI|"
+msgid "Reporting mode"
 msgstr ""
 
-#, qt-format
-msgctxt "RSyntax|"
-msgid "Wrong type for argument %1"
+msgctxt "PrefsUI|"
+msgid "Whether JASP should run in reporting mode or not."
+msgstr ""
+
+msgctxt "Reporter|"
+msgid "No datafile"
+msgstr ""
+
+msgctxt "Reporter|"
+msgid ""
+"JASP was started in reporting mode, but the jasp file is not coupled to a "
+"datafile.\n"
+"This means there can be no updates...\n"
+"\n"
+"Would you like to continue anyway?"
+msgstr ""
+
+msgctxt "OSF|"
+msgid "Unknown error"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given in Formula description"
 msgstr ""

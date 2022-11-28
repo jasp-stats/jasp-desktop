@@ -1,18 +1,12 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-10-25 08:07+0000\n"
-"Last-Translator: fedder <fedor.derish@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"ru/>\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
-"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Language: ru\n"
+"X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -164,22 +158,6 @@ msgstr "Показать информацию об этом анализе"
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Удалить данный анализ"
-
-msgctxt "AnalysisForms|"
-msgid "Resize data/results"
-msgstr "Изменить размер данных/результатов"
-
-msgctxt "AnalysisForms|"
-msgid "Drag to show data"
-msgstr "Перетащите, чтобы показать данные"
-
-msgctxt "AnalysisForms|"
-msgid "Hide input options"
-msgstr "Скрыть параметры ввода"
-
-msgctxt "AnalysisForms|"
-msgid "Show input options"
-msgstr "Показать параметры ввода"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -755,48 +733,6 @@ msgstr ""
 "опциях."
 
 msgctxt "PrefsAdvanced|"
-msgid "Windows workarounds"
-msgstr "Обходные пути для Windows"
-
-msgctxt "PrefsAdvanced|"
-msgid "Handling LC_CTYPE"
-msgstr "Обработка LC_CTYPE"
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Check the install and user directory path for compatibility with LC_CTYPE=\"C"
-"\" and set if reasonable."
-msgstr ""
-"Проверьте путь установки и пользовательского каталога на совместимость с "
-"LC_CTYPE=\"C\" и установите, если это целесообразно."
-
-msgctxt "PrefsAdvanced|"
-msgid "See the documentation for more info."
-msgstr "Смотрите документацию для получения дополнительной информации."
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"If this is enabled and you have non-ascii characters in your install path "
-"JASP won't work anymore.  If you only have non-ascii characters in your "
-"username then installing modules will probably break."
-msgstr ""
-"Если это включено и у вас есть не-ASCII-символы в вашем пути установки, JASP "
-"больше не будет работать. Если в вашем имени пользователя есть только "
-"не-ASCII-символы, установка модулей, вероятно, прервется."
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Enabling this will make certain characters in the results look weird, but at "
-"least you can use JASP if you installed it in a folder with non-ascii "
-"characters in the path. Sorry for the inconvenience, we are working on it "
-"and hopefully have this fixed next release."
-msgstr ""
-"Включение этого параметра сделает некоторые символы в результатах странными, "
-"но, по крайней мере, вы можете использовать JASP, если вы установили его в "
-"папку с не-ASCII-символами в пути. Приносим извинения за неудобства, мы "
-"работаем над этим и, надеюсь, исправим это в следующем выпуске."
-
-msgctxt "PrefsAdvanced|"
 msgid "Logging options"
 msgstr "Параметры ведения журнала"
 
@@ -819,10 +755,6 @@ msgstr "Показать журналы"
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "Опции движка"
-
-msgctxt "PrefsAdvanced|"
-msgid "Maximum # of engines: "
-msgstr "Максимальное количество движков "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -994,8 +926,8 @@ msgid ""
 msgstr ""
 "Переключается в «более безопасный» режим для графики или программного "
 "рендеринга.\n"
-"Это сделает ваш интерфейс медленнее, но если у вас есть какие-то проблемы ("
-"странные сбои, вы не можете видеть результаты или даже что-то еще), это "
+"Это сделает ваш интерфейс медленнее, но если у вас есть какие-то проблемы "
+"(странные сбои, вы не можете видеть результаты или даже что-то еще), это "
 "может их исправить.\n"
 "Анализы по-прежнему будут такими же быстрыми."
 
@@ -1294,7 +1226,8 @@ msgstr "Фильтр изменен"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr "В вашем фильтре есть непринимаемые изменения; что бы вы хотели сделать?"
+msgstr ""
+"В вашем фильтре есть непринимаемые изменения; что бы вы хотели сделать?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
@@ -1479,18 +1412,6 @@ msgstr "R в JASP"
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
 msgstr "Добро пожаловать в R в JASP!"
-
-msgctxt "RCommanderWindow|"
-msgid ""
-"Enter your R code here.\n"
-"The data is fully available as 'data' and filtered as 'filteredData'."
-msgstr ""
-"Введите здесь свой код R.\n"
-"Данные полностью доступны как 'data' и фильтруются как 'filteredData'."
-
-msgctxt "RCommanderWindow|"
-msgid "Enter your R code here."
-msgstr "Введите здесь свой код R."
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
@@ -1946,22 +1867,6 @@ msgid "Sync Data Set"
 msgstr "Синхронизация набора данных"
 
 msgctxt "ColumnsModel|"
-msgid "which can be used in numerical comparisons"
-msgstr "которые можно использовать в численных сравнениях"
-
-msgctxt "ColumnsModel|"
-msgid ""
-"which can only be used in (in)equivalence, greater and lesser than "
-"comparisons"
-msgstr ""
-"которые могут использоваться только в (не)эквивалентности, большей и "
-"меньшей, чем сравнения"
-
-msgctxt "ColumnsModel|"
-msgid "which can only be used in (in)equivalence comparisons"
-msgstr "который может использоваться только в (не)эквивалентных сравнениях"
-
-msgctxt "ColumnsModel|"
 msgid "The '"
 msgstr "'"
 
@@ -2050,8 +1955,8 @@ msgstr ""
 "Сообщение об ошибке: \n"
 "%1 \n"
 " \n"
-"Если проблема не устранена, сообщите о сообщении выше по адресу: https"
-"://jasp-stats.org/bug-reports"
+"Если проблема не устранена, сообщите о сообщении выше по адресу: https://"
+"jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
@@ -2088,26 +1993,6 @@ msgstr "Сохранить"
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
 msgstr "Не сохранять"
-
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "Выбрать файл..."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "Выбрать папку..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "Безопасный графический режим изменен"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-"Вы изменили безопасный графический режим JASP, чтобы этот параметр вступил в "
-"силу, вам необходимо перезапустить JASP"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
@@ -2412,8 +2297,8 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
-"Не удалось прочитать необходимые обновления для чтения старых JASP-файлов..."
-"\n"
+"Не удалось прочитать необходимые обновления для чтения старых JASP-"
+"файлов...\n"
 "Вы все еще можете использовать JASP и даже читать старые файлы, но некоторые "
 "параметры могут быть неправильно поняты, а некоторые анализы могут не "
 "загружаться полностью."
@@ -3059,18 +2944,13 @@ msgstr ""
 "Сообщение об ошибке:\n"
 "%1\n"
 "\n"
-"Если проблема не устранена, сообщите о сообщении выше по адресу: https"
-"://jasp-stats.org/bug-reports"
+"Если проблема не устранена, сообщите о сообщении выше по адресу: https://"
+"jasp-stats.org/bug-reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "Не удалось загрузить обновления для модуля %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModule|"
-msgid "Loading upgrades gave the following error: %1"
-msgstr "Загрузка обновлений выдала следующую ошибку: %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3101,41 +2981,6 @@ msgid ""
 msgstr ""
 "Установка модуля %1 не удалась со следующим сообщением об ошибке:\n"
 "%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr "Не удалось загрузить пакеты для модуля %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"Загрузка пакетов модуля %1 не удалась со следующим сообщением об ошибке:\n"
-"%2"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Path cannot be handled by R"
-msgstr "Путь не может быть обработан R"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You are trying to install a module but because the path '%1' contains non-"
-"ascii characters (or a space) R might have some trouble installing there. If "
-"the installation of this module fails you can work around this by changing "
-"your username (or making a new username) that only contains ascii-characters "
-"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
-">Advanced->DeveloperMode."
-msgstr ""
-"Вы пытаетесь установить модуль, но поскольку путь «%1» содержит не-ASCII-"
-"символы (или пробел), у R могут возникнуть проблемы с установкой. Если "
-"установка этого модуля не удалась, вы можете обойти это, изменив свое имя "
-"пользователя (или создав новое имя пользователя), которое содержит только "
-"символы ASCII и не содержит пробелов. Или вы можете отключить «LC_CTYPE-set-"
-"to-C» в разделе «Настройки» -> «Дополнительно» -> «Режим разработчика»."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3300,8 +3145,8 @@ msgid ""
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Версия %2</i><br><p>%3</p><br><br><br><i>Создано %4 и "
-"поддерживается %5.</i><br><i>Подробности смотрите на сайте: <a href=\"http"
-"://%6\">%6</a></i><br>"
+"поддерживается %5.</i><br><i>Подробности смотрите на сайте: <a href=\"http://"
+"%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
@@ -3396,18 +3241,6 @@ msgstr ""
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
 msgstr "Приватный GITHUB_PAT:"
-
-msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr "Пусть JASP угадает наилучшую настройку для LC_CTYPE (рекомендуется!)"
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\""
-msgstr "Всегда устанавливайте LC_CTYPE в \"C\""
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at system default"
-msgstr "Оставьте LC_CTYPE системным по умолчанию"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
@@ -3745,8 +3578,8 @@ msgstr ""
 "Сообщение об ошибке:\n"
 "%1\n"
 "\n"
-"Если проблема не устранена, сообщите о сообщении выше по адресу: https"
-"://jasp-stats.org/bug-reports"
+"Если проблема не устранена, сообщите о сообщении выше по адресу: https://"
+"jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
@@ -3782,10 +3615,6 @@ msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
 msgstr "Помогите нам перевести или улучшить JASP на вашем языке"
 
-msgctxt "PrefsResults|"
-msgid "Use normalized notation"
-msgstr "Используйте нормализованные обозначения"
-
 msgctxt "ModuleInstaller|"
 msgid "Install"
 msgstr "Установить"
@@ -3797,3 +3626,382 @@ msgstr "Нажмите, чтобы установить выбранный мо�
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module to install"
 msgstr "Выберите модуль JASP для установки"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show R Syntax"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Two-parameter power transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+
+msgctxt "EnginesWindow|"
+msgid "Engines Overview"
+msgstr ""
+
+msgctxt "EnginesWindow|"
+msgid "Right and middle mouse button to kill an engine."
+msgstr ""
+
+msgctxt "ErrorMessage|"
+msgid "Don't show again"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Database"
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"<i>Warning!</i>\n"
+"<br><br>\n"
+"JASP stores the password to your database in jasp-files, while not directly "
+"readable it is easy to extract.\n"
+"If you <b>share this file</b> that means the recipients and whoever they "
+"share the file with could extract the password with some effort.\n"
+"<br><br>\n"
+"In case you are trying to connect to a production or even just network-"
+"accessible database:\n"
+"<br>\n"
+"We <b>strongly urge</b> you to make a special user for JASP in your database "
+"with as <i>few permissions</i> as needed.\n"
+"<br><br>\n"
+"For a local or toy database this is probably overkill, but use your own "
+"judgement."
+msgstr ""
+
+msgctxt "Database|"
+msgid "Select database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "DB driver"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Hostname"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Port"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Name"
+msgstr ""
+
+#, fuzzy
+msgctxt "Database|"
+msgid "Browse"
+msgstr "Обзор"
+
+msgctxt "Database|"
+msgid "Username"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Password"
+msgstr ""
+
+#, fuzzy
+msgctxt "Database|"
+msgid "Remember me"
+msgstr "Напомнить мне"
+
+msgctxt "Database|"
+msgid "Connect to database"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Query"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Execute"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Preview data"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Load into JASP"
+msgstr ""
+
+msgctxt "Database|"
+msgid "Synching interval in minutes: "
+msgstr ""
+
+msgctxt "Database|"
+msgid ""
+"0 means no automatic synching, but you can still synch manually by pressing "
+"Ctrl/Cmd+Y"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Maximum number of engines: "
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Show engines"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Show missing values as: "
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Use exponent notation"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's textrendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "If disabled will switch the textrendering to native."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Reporting mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether JASP should run in reporting mode or not."
+msgstr ""
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Hide input options"
+msgstr "Скрыть параметры ввода"
+
+#, fuzzy
+msgctxt "MainPage|"
+msgid "Show input options"
+msgstr "Показать параметры ввода"
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is available unfiltered as 'data'\n"
+"and filtered as 'filteredData'.\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"\n"
+"You can also paste syntax-mode JASP analyses here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Add analysis"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons and mathematical operations."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons. Not in mathematical operations as subtraction etc, to do so: "
+"try converting to scalar first."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence comparisons. Not in greater/lesser-"
+"than comparisons or mathematical operations, to do so: try converting to "
+"ordinal or scalar first."
+msgstr ""
+
+msgctxt "QObject|"
+msgid ""
+"JASP thinks it's connected to the database but the QSqlDatabase isn't "
+"opened..."
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Query failed with: '%1'"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Query wasn't a SELECT-like statement and returned nothing."
+msgstr ""
+
+msgctxt "QObject|"
+msgid "No active result found, maybe there is something wrong with your query?"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Database Password"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password for user '%1'"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "The databaseconnection needs a password"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Connection failed"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"Could not connect to database because of '%1', want to try a different "
+"password?"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Could not connect to the database so synchronizing will be disabled."
+msgstr ""
+
+#, qt-format
+msgctxt "DatabaseImporter|"
+msgid ""
+"Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error(s): %1"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '$1' but it doesn't exist."
+msgstr ""
+
+msgctxt "Reporter|"
+msgid "No datafile"
+msgstr ""
+
+msgctxt "Reporter|"
+msgid ""
+"JASP was started in reporting mode, but the jasp file is not coupled to a "
+"datafile.\n"
+"This means there can be no updates...\n"
+"\n"
+"Would you like to continue anyway?"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Choose a database driver..."
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "IBM DB2"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "MySQL Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Oracle Call Interface Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "ODBC Driver (includes Microsoft SQL Server)"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "PostgreSQL Driver"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "SQLite version 3 or above"
+msgstr ""
+
+msgctxt "DatabaseFileMenu|"
+msgid "Not connected to database!"
+msgstr ""
+
+msgctxt "OSF|"
+msgid "Unknown error"
+msgstr ""
+
+msgctxt "ResourceButtons|"
+msgid "Database"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Could not find term %1 in Formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula not found"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaBase|"
+msgid "Source %1 in Formula is not a Variables List"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No name given in Formula description"
+msgstr ""
+
+#, qt-format
+msgctxt "FormulaSource|"
+msgid "Cannot find item %1 given in Formula description"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula randomEffects"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "randomEffects in Formula can be used only with a ComponentsList item"
+msgstr ""
+
+msgctxt "FormulaSource|"
+msgid "No source found in Formula"
+msgstr ""
