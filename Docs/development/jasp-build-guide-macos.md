@@ -74,8 +74,6 @@ JASP's CMake configuration file provides several variables that allow you to cus
 		- If you are using the Qt Creator, under the "Project Settings" on the left panel, find and click on the "Environment" item. Here, you can "Add" a new variable, `GITHUB_PAT`, and for its value enter the PAT that you've created. 
 	- If you are using the command line, CMake looks for this variable in your environment variable and is able to automatically find and use it, if your `GITHUB_PAT` can be found in your environment variables.
 		- Adding the following to your `.bash_profile`, or `.zshrc` will fasciliate this process, `export GITHUB_PAT=your github pat`
-- Lastly, you need to make sure that `Add build library search path to DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH` is set to `OFF`.
-	- ⚠️ This is important, otherwise, Qt Creator cannot run JASP!
 
 If you change any of these parameters, you need to reconfigure the CMake. This as soon as you press the `Run CMake`. At this point, Qt Creator rerun the CMake configuration, and prepares everything for a build. You can check the progress of the CMake configuration in the "General Messages" output panel. If you don't get any error, the last few messages will look like this, and you are ready to build JASP.
 
