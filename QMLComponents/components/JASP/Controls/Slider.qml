@@ -11,6 +11,7 @@ SliderBase
 	implicitWidth:		columnLayout.implicitWidth
 	innerControl:		textField
 	title:				controlLabel.text
+	focusOnTab:			false
 
 	property alias	control:		textField
 	property int	decimals:		2
@@ -52,6 +53,7 @@ SliderBase
 			value:				0.5
 			stepSize:			1 / slider.power
 			orientation:		slider.verticalInt
+			activeFocusOnTab:	false
 
 			background: Rectangle
 			{

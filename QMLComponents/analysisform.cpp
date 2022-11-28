@@ -963,4 +963,20 @@ void AnalysisForm::sendRSyntax(QString text)
 	_analysis->sendRScript(text, rSyntaxControlName, false);
 }
 
+void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocus)
+{
+	bool emitSignal = false;
+	if (hasActiveFocus)
+	{
+		 if (_activeJASPControl != control) emitSignal = true;
+		 _activeJASPControl = control;
+	}
+	else if (control == _activeJASPControl)
+	{
+		 if (_activeJASPControl) emitSignal = true;
+		 _activeJASPControl = nullptr;
+	}
 
+	if (emitSignal)
+		emit activeJASPControlChanged();
+}

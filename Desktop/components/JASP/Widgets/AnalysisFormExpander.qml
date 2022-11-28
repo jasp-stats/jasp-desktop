@@ -13,6 +13,7 @@ DropArea
 
 	property alias		myIndex:				draggableItem.myIndex
 	property alias		myAnalysis:				formParent.myAnalysis
+	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
 
 	onEntered: (drag)=>
@@ -563,6 +564,34 @@ DropArea
 					{
 						if(myAnalysis)
 							myAnalysis.createForm(formParent); //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
+					}
+
+					Connections
+					{
+						target: myForm
+						function onActiveJASPControlChanged()
+						{
+							if (!myForm || !myForm.activeJASPControl)
+								return;
+
+							const control = myForm.activeJASPControl;
+							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
+							{
+								const coordinates = control.mapToItem(scrollAnalyses, 0, 0);
+								const diffYBottom = coordinates.y + Math.min(control.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
+								const diffYTop = coordinates.y; //negative if not visible
+								const margin = 50 * jaspTheme.uiScale;
+
+								//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
+								if(contentYBehaviour.animation.running)
+									return;
+								
+								if (diffYBottom > -margin) // scroll up
+									backgroundFlickable.contentY = backgroundFlickable.contentY + Math.max(0, diffYBottom + margin);
+								else if (diffYTop < margin) //scroll down
+									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + Math.min(0, diffYTop - margin));
+							}
+						}
 					}
 				}
 			}

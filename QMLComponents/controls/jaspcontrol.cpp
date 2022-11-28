@@ -1,4 +1,4 @@
-﻿#include "jaspcontrol.h"
+#include "jaspcontrol.h"
 #include "jasplistcontrol.h"
 #include "log.h"
 #include "analysisform.h"
@@ -6,6 +6,8 @@
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QTimer>
+#include <QQuickWindow>
+
 
 QMap<QQmlEngine*, QQmlComponent*> JASPControl::_mouseAreaComponentMap;
 QByteArray JASPControl::_mouseAreaDef = "\
@@ -63,6 +65,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_notifyFormOfActiveFocus);
 }
 
 JASPControl::~JASPControl()
@@ -90,7 +93,11 @@ void JASPControl::setInnerControl(QQuickItem* control)
 	{
 		_innerControl = control;
 		if (_innerControl)
+		{
 			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_setShouldShowFocus);
+			//capture focus reason
+			control->installEventFilter(this);
+		}
 
 		emit innerControlChanged();
 	}
@@ -426,6 +433,33 @@ void JASPControl::setParentDebugToChildren(bool debug)
 			childControl->setParentDebug(debug);
 }
 
+void JASPControl::focusInEvent(QFocusEvent *event)
+{
+	QQuickItem::focusInEvent(event);
+	_focusReason = event->reason();
+	_hasActiveFocus = true;
+}
+
+//Installed of innercontrol and non JASPControl children to capture focus reason
+bool JASPControl::eventFilter(QObject *watched, QEvent *event)
+{
+	if (event->type() == QEvent::FocusIn)
+	{
+		QFocusEvent* focusEvent = static_cast<QFocusEvent*>(event);
+		_focusReason = focusEvent->reason();
+		_hasActiveFocus = true;
+	}
+	#ifdef __APPLE__
+	if (event->type() == QEvent::MouseButtonPress)
+	{
+		QQuickItem* item = qobject_cast<QQuickItem*>(watched);
+		if(item)
+			item->forceActiveFocus(Qt::FocusReason::MouseFocusReason);
+	}
+	#endif
+	return false;
+}
+
 QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 {
 	switch(controlType)
@@ -633,9 +667,17 @@ void JASPControl::rScriptDoneHandler(const QString &)
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }
 
-
 void JASPControl::_setFocus()
 {
 	if (!hasActiveFocus())
 		setFocus(false);
+}
+
+void JASPControl::_notifyFormOfActiveFocus()
+{
+	if (!hasActiveFocus())
+		_hasActiveFocus = false;
+
+	if (_form)
+		_form->setActiveJASPControl(this, hasActiveFocus());
 }
