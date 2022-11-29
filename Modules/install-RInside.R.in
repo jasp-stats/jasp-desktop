@@ -5,4 +5,5 @@
 # 
 
 .libPaths(c("@R_LIBRARY_PATH@"))
-install.packages(c('RInside', 'Rcpp'), type = ifelse(.Platform$OS.type == "unix", "binary", "source"), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
+#We need building from source on linux in any case and on windows because otherwise lots of CRAN env-vars get baked into RInside...
+install.packages(c('RInside', 'Rcpp'), type = ifelse(Sys.info()["sysname"] == "Darwin", "binary", "source"), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
