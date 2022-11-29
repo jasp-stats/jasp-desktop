@@ -16,6 +16,11 @@ DropArea
 	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
 
+	property bool		formReady:				expanderButton.expanded && formParent.visible
+
+	//set focus to first element when expansion is complete
+	onFormReadyChanged: { if (formReady) formParent.nextItemInFocusChain().forceActiveFocus(); }
+
 	onEntered: (drag)=>
 	{
 		if (drag.source.myIndex !== myIndex)
@@ -27,8 +32,8 @@ DropArea
 
 	function toggleExpander()
 	{
-		if(analysesModel.currentAnalysisIndex == draggableItem.myIndex)		analysesModel.unselectAnalysis()
-		else																analysesModel.selectAnalysisAtRow(draggableItem.myIndex);
+		if(analysesModel.currentAnalysisIndex === draggableItem.myIndex)	{ analysesModel.unselectAnalysis(); draggableItem.forceActiveFocus(); }
+		else																{ analysesModel.selectAnalysisAtRow(draggableItem.myIndex); }
 	}
 
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
@@ -59,8 +64,6 @@ DropArea
 		Drag.active:		mouseArea.drag.active
 		Drag.hotSpot.x:		width/2
 		Drag.hotSpot.y:		height/2
-
-		Component.onCompleted:	{ forceActiveFocus(); }
 
 		states:
 		[
@@ -138,7 +141,7 @@ DropArea
 		MouseArea
 		{
 			id:				mouseArea
-			onClicked:		{ analysisFormExpander.toggleExpander(); draggableItem.forceActiveFocus(); }
+			onClicked:		{ analysisFormExpander.toggleExpander(); }
 			hoverEnabled:	true
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
@@ -235,9 +238,9 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;			}	},
-				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;	}	},
-				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;											}	}
+				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;				}	},
+				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;		}	},
+				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;												}	}
 			]
 
 			transitions: Transition
