@@ -15,11 +15,17 @@ DropArea
 	property alias		myAnalysis:				formParent.myAnalysis
 	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
-
 	property bool		formReady:				expanderButton.expanded && formParent.visible
 
-	//set focus to first element when expansion is complete
-	onFormReadyChanged: { if (formReady) formParent.nextItemInFocusChain().forceActiveFocus(); }
+	//set focus to first element when expansion is complete and scroll to the form now with correct height set
+	onFormReadyChanged:
+	{
+		if (formReady)
+		{
+			formParent.nextItemInFocusChain().forceActiveFocus();
+			backgroundFlickable.scrollToElement(expanderButton);
+		}
+	}
 
 	onEntered: (drag)=>
 	{
@@ -49,13 +55,13 @@ DropArea
 		visible:				draggableItem.state != "dragging"
 	}
 
-
 	Item
 	{
 		id:					draggableItem
 		height:				loaderAndError.y
 		activeFocusOnTab:	true
 
+		onActiveFocusChanged:	{ if (activeFocus) backgroundFlickable.scrollToElement(expanderButton); }
 
 		property int		myIndex:			-1
 		property int		droppedIndex:		-1
@@ -252,10 +258,12 @@ DropArea
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 			}
 
-			Item
+			FocusScope
 			{
 				id:				expanderRectangle
 				height:			jaspTheme.formExpanderHeaderHeight  //label.contentHeight
+
+				onActiveFocusChanged:	{ if (activeFocus) backgroundFlickable.scrollToElement(expanderButton); }
 
 				anchors
 				{
@@ -579,21 +587,7 @@ DropArea
 
 							const control = myForm.activeJASPControl;
 							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
-							{
-								const coordinates = control.mapToItem(scrollAnalyses, 0, 0);
-								const diffYBottom = coordinates.y + Math.min(control.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
-								const diffYTop = coordinates.y; //negative if not visible
-								const margin = 50 * jaspTheme.uiScale;
-
-								//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
-								if(contentYBehaviour.animation.running)
-									return;
-								
-								if (diffYBottom > -margin) // scroll up
-									backgroundFlickable.contentY = backgroundFlickable.contentY + Math.max(0, diffYBottom + margin);
-								else if (diffYTop < margin) //scroll down
-									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + Math.min(0, diffYTop - margin));
-							}
+								backgroundFlickable.scrollToElement(control, 50 * jaspTheme.uiScale);
 						}
 					}
 				}

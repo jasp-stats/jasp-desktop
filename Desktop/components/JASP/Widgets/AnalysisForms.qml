@@ -22,37 +22,6 @@ FocusScope
 
 		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing
 
-		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
-
-		function scrollToForm(formIndex)
-		{
-			if(formIndex < 0) return;
-
-			var offset = getOffset(formIndex);
-
-			if(formIndex === 0)
-			{
-				analysesFlickable.contentY = 0;
-				return;
-			}
-
-			if (analysesModel.currentFormHeight + offset + singleButtonHeight <= analysesFlickable.contentHeight || analysesModel.currentFormHeight + singleButtonHeight > scrollAnalyses.height)
-			{
-				analysesFlickable.contentY = offset;
-				return;
-			}
-
-			analysesFlickable.contentY = Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height);
-
-		}
-
-		Connections
-		{
-			target:							analysesModel
-			function onCurrentAnalysisIndexChanged(index) { formsBackground.scrollToForm(index); }
-		}
-
-
 		Item
 		{
 			id:				scrollAnalyses
@@ -109,31 +78,22 @@ FocusScope
 					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
 				}
 
-				Connections
+
+				function scrollToElement(targetItem, margin = 0)
 				{
-					target:							analysesModel
-					function onCurrentFormHeightChanged(formHeight)
-					{ if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
+					const coordinates = targetItem.mapToItem(scrollAnalyses, 0, 0);
+					const diffYBottom = coordinates.y + Math.min(targetItem.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
+					const diffYTop = coordinates.y; //negative if not visible
 
-					function reposition()
-					{
-						var row = analysesModel.currentAnalysisIndex;
+					//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
+					if(contentYBehaviour.animation && contentYBehaviour.animation.running)
+						return;
 
-						if(row > -1 && row === analysesModel.currentAnalysisIndex)
-						{
-							var previousAnalysisButtonBottom	= formsBackground.getOffset(row);
+					if (diffYBottom > -margin) // scroll down
+						analysesFlickable.contentY = analysesFlickable.contentY + Math.max(0, diffYBottom + margin);
+					else if (diffYTop < margin) //scroll up
+						analysesFlickable.contentY = Math.max(0, analysesFlickable.contentY + Math.min(0, diffYTop - margin));
 
-							//Should we scroll the analysis a bit?
-							if(		previousAnalysisButtonBottom	> analysesFlickable.contentY										// We can actually scroll up a bit if necessary
-								||	analysesFlickable.contentY		> previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
-							)
-							{
-
-								if(!contentYBehaviour.animation.running)
-									formsBackground.scrollToForm(row);
-							}
-						}
-					}
 				}
 
 				Column
