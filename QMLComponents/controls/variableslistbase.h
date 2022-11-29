@@ -108,7 +108,6 @@ protected slots:
 	void interactionHighOrderHandler(JASPControl* checkBoxControl);
 
 private:
-	int							_getAllowedColumnsTypes();
 	void						_setAllowedVariables();
 	void						_setRelations();
 
