@@ -132,7 +132,7 @@ Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) con
 	Json::Value result;
 	QVariant defaultValue = _tableView->defaultValue(colIndex, rowIndex);
 
-	JASPControl::ItemType itemType = _tableView->itemType();
+	JASPControl::ItemType itemType = _tableView->itemTypePerItem(colIndex, rowIndex);
 
 	if (itemType == JASPControl::ItemType::Double)
 		result = defaultValue.toDouble();
