@@ -38,7 +38,7 @@ TableViewBase
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
 	property string colName			: modelType === JASP.CustomContrasts ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
-	property alias	 rowNumberWidth	: theView.rowNumberWidth
+	property alias	rowNumberWidth	: theView.rowNumberWidth
 	property var	validator		: (itemType === JASP.Integer) ? intValidator : (itemType === JASP.Double ? doubleValidator : stringValidator)
 	property double	minimum			: 0
 	property int	decimals		: 1
