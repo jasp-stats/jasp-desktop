@@ -15,17 +15,6 @@ DropArea
 	property alias		myAnalysis:				formParent.myAnalysis
 	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
-	property bool		formReady:				expanderButton.expanded && formParent.visible
-
-	//set focus to first element when expansion is complete and scroll to the form now with correct height set
-	onFormReadyChanged:
-	{
-		if (formReady)
-		{
-			formParent.nextItemInFocusChain().forceActiveFocus();
-			backgroundFlickable.scrollToElement(expanderButton);
-		}
-	}
 
 	onEntered: (drag)=>
 	{
@@ -230,11 +219,23 @@ DropArea
 			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
 			property bool		loadingQml:			!formParent.loaded
 			property real		formHeight:			formParent.height
+			property bool		expansionInProgress:			false
 
 			onLoadingQmlChanged:
 			{
 				if(loadingQml)	qmlLoadingIndicator.startManually();
 				else			qmlLoadingIndicator.stopManually();
+			}
+
+			//I dont really like this but cant get a connect with animation end
+			onHeightChanged:
+			{
+				if(expansionInProgress && height === (loaderAndError.y + loaderAndError.implicitHeight)) //expansion complete
+				{
+					backgroundFlickable.scrollToElement(expanderButton);
+					formParent.nextItemInFocusChain().forceActiveFocus();
+					expansionInProgress = false;
+				}
 			}
 
 			Connections
@@ -244,9 +245,9 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;				}	},
-				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;		}	},
-				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;												}	}
+				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;			expansionInProgress: true		}	},
+				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;									}	},
+				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;																			}	}
 			]
 
 			transitions: Transition
