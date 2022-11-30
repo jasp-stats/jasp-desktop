@@ -58,6 +58,7 @@ CheckBoxBase
 		id:						control
 		padding:				jaspTheme.jaspControlPadding
 		focus:					true
+		focusPolicy:			Qt.NoFocus
 		// When the checked is changed by a binding, run the clicked slot without emiting the clicked signal
 		// The clicked signal should be emitted only when the user really clicks on the CheckBox.
 		onCheckedChanged:		checkBox.clickedSlot()

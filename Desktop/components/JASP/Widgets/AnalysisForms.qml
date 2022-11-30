@@ -81,19 +81,7 @@ FocusScope
 
 				function scrollToElement(targetItem, margin = 0)
 				{
-					const coordinates = targetItem.mapToItem(scrollAnalyses, 0, 0);
-					const diffYBottom = coordinates.y + Math.min(targetItem.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
-					const diffYTop = coordinates.y; //negative if not visible
-
-					//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
-					if(contentYBehaviour.animation && contentYBehaviour.animation.running)
-						return;
-
-					if (diffYBottom > -margin) // scroll down
-						analysesFlickable.contentY = analysesFlickable.contentY + Math.max(0, diffYBottom + margin);
-					else if (diffYTop < margin) //scroll up
-						analysesFlickable.contentY = Math.max(0, analysesFlickable.contentY + Math.min(0, diffYTop - margin));
-
+					verticalScrollbar.scrollToElement(targetItem, margin, contentYBehaviour)
 				}
 
 				Column
