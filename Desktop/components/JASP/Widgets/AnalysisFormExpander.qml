@@ -141,6 +141,9 @@ DropArea
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
 
+			onEntered: { expanderRectangle.scale = 1.02; }
+			onExited:  { expanderRectangle.scale = 1.0; }
+
 			drag.onActiveChanged:
 			{
 				if (drag.active)
@@ -180,18 +183,6 @@ DropArea
 
 		Rectangle
 		{
-			id:					focusIndicator
-			visible:			draggableItem.activeFocus && !draggableItem.Drag.active
-			anchors.fill:		draggableItem
-			color:				"transparent"
-			border.width:		jaspTheme.jaspControlHighlightWidth
-			border.color:		jaspTheme.focusBorderColor
-			radius:				jaspTheme.jaspControlHighlightWidth
-			z:					2
-		}
-
-		Rectangle
-		{
 			// This line appears only when the analysis above this one is dragged.
 			anchors
 			{
@@ -227,17 +218,6 @@ DropArea
 				else			qmlLoadingIndicator.stopManually();
 			}
 
-			//I dont really like this but cant get a connect with animation end
-			onHeightChanged:
-			{
-				if(expansionInProgress && height === (loaderAndError.y + loaderAndError.implicitHeight)) //expansion complete
-				{
-					backgroundFlickable.scrollToElement(expanderButton);
-					formParent.nextItemInFocusChain().forceActiveFocus();
-					expansionInProgress = false;
-				}
-			}
-
 			Connections
 			{
 				target:										analysesModel
@@ -254,6 +234,15 @@ DropArea
 			{
 				enabled:	preferencesModel.animationsOn
 				reversible:	true
+
+				onRunningChanged: //expansion ended
+				{
+					if (expanderButton.expanded)
+					{
+						backgroundFlickable.scrollToElement(expanderButton);
+						formParent.nextItemInFocusChain().forceActiveFocus();
+					}
+				}
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
@@ -286,7 +275,7 @@ DropArea
 					rotation:		expanderButton.expanded ? 90 : 0
 					height:			analysisTitle.height * 0.88 //expanderRectangle.height / 1.5
 					width:			height
-					source:			jaspTheme.iconPath + "/large-arrow-right.png"
+					source:			draggableItem.activeFocus ? jaspTheme.iconPath + "/large-arrow-right-selected.png" : jaspTheme.iconPath + "/large-arrow-right.png"
 					sourceSize
 					{
 						width:	expanderIcon.width * 2
@@ -482,6 +471,7 @@ DropArea
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
+						rightMargin:	4 * preferencesModel.uiScale
 					}
 				}
 			}
