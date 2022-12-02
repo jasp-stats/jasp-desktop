@@ -242,6 +242,8 @@ private slots:
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 	void makeAppleMenu();
+	void qmlLoaded();
+	void handleDeferredFileLoad();
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
@@ -292,7 +294,8 @@ private:
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
-									_resultsViewLoaded		= false,
+									_resultsPageLoaded		= false,
+									_qmlLoaded				= false,
 									_openedUsingArgs		= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,

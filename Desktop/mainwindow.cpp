@@ -544,6 +544,8 @@ void MainWindow::loadQML()
 		ActiveModules::getActiveCommonModules(),
 		ActiveModules::getActiveExtraModules());
 	
+	qmlLoaded();
+	
 }
 
 void MainWindow::showEnginesWindow()
@@ -684,7 +686,7 @@ void MainWindow::open(QString filepath)
 		resultXmlCompare::compareResults::theOne()->setFilePath(filepath);
 
 	_openedUsingArgs = true;
-	if (_resultsViewLoaded)	_fileMenu->open(filepath);
+	if (_resultsPageLoaded)	_fileMenu->open(filepath);
 	else					_openOnLoadFilename = filepath;
 }
 
@@ -692,7 +694,7 @@ void MainWindow::open(QString filepath)
 void MainWindow::open(const Json::Value & dbJson)
 {
 	_openedUsingArgs = true;
-	if (_resultsViewLoaded)	_fileMenu->open(dbJson);
+	if (_resultsPageLoaded)	_fileMenu->open(dbJson);
 	else					_openOnLoadDbJson = dbJson;
 }
 
@@ -1210,7 +1212,7 @@ void MainWindow::populateUIfromDataSet()
 	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
-		emit (*_analyses)[0]->expandAnalysis(); //Show options for only analysis
+		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
 
 	bool hasAnalyses = _analyses->count() > 0;
 
@@ -1247,11 +1249,27 @@ void MainWindow::matchComputedColumnsToAnalyses()
 			col->setAnalysis(_analyses->get(col->analysisId()));
 }
 
+void MainWindow::qmlLoaded()
+{
+	Log::log() << "MainWindow::qmlLoaded()" << std::endl;
+	_qmlLoaded = true;
+	
+	handleDeferredFileLoad();
+}
 
 void MainWindow::resultsPageLoaded()
 {
-	_resultsViewLoaded = true;
+	Log::log() << "MainWindow::resultsPageLoaded()" << std::endl;
+	_resultsPageLoaded = true;
+	
+	handleDeferredFileLoad();
+}
 
+void MainWindow::handleDeferredFileLoad()
+{
+	if( !(_qmlLoaded && _resultsPageLoaded))
+		return;
+			
 	if (_openOnLoadFilename != "")
 		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
 	
