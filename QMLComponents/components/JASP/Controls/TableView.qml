@@ -50,6 +50,12 @@ TableViewBase
 	property bool	isFirstColEditable	: true
 	property bool	showAddRemoveButtons: modelType === JASP.GridInput
 
+	property alias  view					: theView
+	property alias  itemDelegate			: theView.itemDelegate
+	property alias  rowNumberDelegate		: theView.rowNumberDelegate
+	property alias  columnHeaderDelegate	: theView.columnHeaderDelegate
+	property alias  leftTopCornerItem		: theView.leftTopCornerItem
+
 	property alias	addLeftButton	: addLeftButton
 	property alias	addRightButton	: addRightButton
 	property alias	deleteButton	: deleteButton
