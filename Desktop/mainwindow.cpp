@@ -544,7 +544,7 @@ void MainWindow::loadQML()
 		ActiveModules::getActiveCommonModules(),
 		ActiveModules::getActiveExtraModules());
 	
-	emit qmlLoaded();
+	qmlLoaded();
 	
 }
 
