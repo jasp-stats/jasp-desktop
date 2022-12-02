@@ -155,6 +155,7 @@ public:
 	RSyntax*		rSyntax()				const	{ return _rSyntax;							}
 	QString			generateRSyntax()		const;
 	QVariantList	optionNameConversion()	const;
+	bool			isFormulaName(const QString& name)	const;
 
 	stringvecvec	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void			addColumnControl(JASPControl* control, bool isComputed);

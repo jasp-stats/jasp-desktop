@@ -23,5 +23,5 @@ RadioButtonBase::RadioButtonBase(QQuickItem* item)
 {
 	_controlType		= ControlType::RadioButton;
 	_isBound			= false;
-	_nameMustBeUnique	= false;
+	_nameIsOptionValue	= true;
 }

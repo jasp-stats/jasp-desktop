@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QQuickWindow>
 
+const QStringList JASPControl::_optionReservedNames = {"data", "version"};
 
 QMap<QQmlEngine*, QQmlComponent*> JASPControl::_mouseAreaComponentMap;
 QByteArray JASPControl::_mouseAreaDef = "\
@@ -184,6 +185,8 @@ void JASPControl::componentComplete()
 	_setBackgroundColor();
 	_setVisible();
 
+	connect(this, &JASPControl::initializedChanged, this, &JASPControl::_checkControlName);
+
 	if (_useControlMouseArea)
 	{
 		QQmlComponent* comp = getMouseAreaComponent(qmlEngine(this));
@@ -203,10 +206,22 @@ void JASPControl::componentComplete()
 	bool isDynamic = context->contextProperty("isDynamic").toBool();
 	_form = context->contextProperty("form").value<AnalysisForm*>();
 
-	if (!isDynamic && _form)
+	if (!_form)
+	{
+		// The control is used outside of a form, typically this is used by the Desktop application direclty
+		// Just call its setup function, and it is then already initialized.
+		setUp();
+		setInitialized();
+	}
+	else if (!isDynamic)
+		// For statically build controls in a form, the form self will setup the controls when the form is completely loaded
+		// (by calling the AnalysisForm::setAnalysisUp function).
 		_form->addControl(this);
 	else
 	{
+		// The control is created dynamically, this is the case for row components.
+		// They are created either from a ListView (or a TableView): when all terms of the ListView are set, the row components are created, and then initialized (via rhe ListModel::setUpRowControls function).
+		// Here the parent ListView and the key for this control is stored.
 		setUp();
 
 		JASPListControl* listView = nullptr;
@@ -237,9 +252,6 @@ void JASPControl::componentComplete()
 
 			emit parentListViewChanged();
 		}
-
-		if (!isDynamic)
-			setInitialized();
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)
@@ -457,7 +469,56 @@ bool JASPControl::eventFilter(QObject *watched, QEvent *event)
 			item->forceActiveFocus(Qt::FocusReason::MouseFocusReason);
 	}
 	#endif
-	return false;
+		return false;
+}
+
+void JASPControl::_checkControlName()
+{
+	checkOptionName(_name);
+}
+
+bool JASPControl::checkOptionName(const QString &name)
+{
+	// Do not check the option name if the control is not yet initialized: the isBound property is maybe not yet set
+	// A RadioButton uses the name as value of a RadioButtonGroup option, so it's not an option self, so don't check it
+	// (the RadioButtonGroup will take care that the Radio Button names are consistent.
+	if (!form() || !initialized() || nameIsOptionValue()) return true;
+
+	// Some controls without bound value, have a name (like Available Variables List). This name must also be checked
+	if (!isBound() && name.isEmpty()) return true;
+
+	// If a control is bound, it must have a name.
+	if (isBound() && name.isEmpty())
+	{
+		QString label = humanFriendlyLabel();
+
+		if (!label.isEmpty())	addControlError(tr("Control with label '%1' has no name").arg(label));
+		else					addControlError(tr("A control has no name"));
+
+		return false;
+	}
+
+	if (_optionReservedNames.contains(name))
+	{
+		addControlError(tr("Option name '%1' is a reserved word").arg(name));
+		return false;
+	}
+
+	JASPControl* anotherControl = form()->getControl(name);
+	if (anotherControl && anotherControl != this)
+	{
+		addControlError(tr("2 controls have the same name: %1").arg(name));
+		anotherControl->addControlError(tr("2 controls have the same name: %1").arg(name));
+		return false;
+	}
+
+	if (form()->isFormulaName(name))
+	{
+		addControlError(tr("A control and a formula have the same name '%1'").arg(name));
+		return false;
+	}
+
+	return true;
 }
 
 QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
@@ -564,6 +625,15 @@ void JASPControl::parentListViewKeyChanged(const QString &oldName, const QString
 {
 	if (oldName == _parentListViewKey)
 		_parentListViewKey = newName;
+}
+
+void JASPControl::setName(const QString &name)
+{
+	if (name != _name && checkOptionName(name))
+	{
+		_name = name;
+		emit nameChanged();
+	}
 }
 
 bool JASPControl::hasError() const

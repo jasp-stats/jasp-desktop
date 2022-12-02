@@ -114,7 +114,7 @@ public:
 	QString				toolTip()					const	{ return _toolTip;				}
 	QString				helpMD(int howDeep = 2)		const;
 	bool				isBound()					const	{ return _isBound;				}
-	bool				nameMustBeUnique()			const	{ return _nameMustBeUnique;		}
+	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;	}
 	bool				indent()					const	{ return _indent;				}
 	bool				isDependency()				const	{ return _isDependency;			}
 	bool				initialized()				const	{ return _initialized;			}
@@ -194,8 +194,8 @@ public slots:
 
 	void	reconnectWithYourChildren();
 	void	parentListViewKeyChanged(const QString& oldName, const QString& newName);
+	void	setName(const QString& name);
 
-	GENERIC_SET_FUNCTION(Name					, _name					, nameChanged					, QString		)
 	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
 	GENERIC_SET_FUNCTION(ToolTip				, _toolTip				, toolTipChanged				, QString		)
 	GENERIC_SET_FUNCTION(Title					, _title				, titleChanged					, QString		)
@@ -216,6 +216,7 @@ private slots:
 	void	_resetBindingValue();
 	void	_setFocus();
 	void	_notifyFormOfActiveFocus();
+	void	_checkControlName();
 
 signals:
 	void setOptionBlockSignal(	bool blockSignal);
@@ -257,6 +258,7 @@ protected:
 	void				setParentDebugToChildren(bool debug);
 	void				focusInEvent(QFocusEvent* event) override;
 	bool				eventFilter(QObject *watched, QEvent *event) override;
+	bool				checkOptionName(const QString& name);
 
 protected:
 	ControlType				_controlType;
@@ -278,7 +280,7 @@ protected:
 							_useControlMouseArea		= true,
 							_shouldShowFocus			= false,
 							_shouldStealHover			= false,
-							_nameMustBeUnique			= true,
+							_nameIsOptionValue			= false,
 							_hasUserInteractiveValue	= true,
 							_hasActiveFocus				= false;
 	JASPListControl		*	_parentListView				= nullptr;
@@ -303,6 +305,7 @@ protected:
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
+	static const QStringList						_optionReservedNames;
 };
 
 
