@@ -3032,11 +3032,6 @@ msgid "Column number in source is bigger than the number of columns of %1"
 msgstr "源中的列数大于 %1 的列数"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "错误的列类型： %1 用于列表视图 %2"
-
-#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "

@@ -3151,11 +3151,6 @@ msgid "Column number in source is bigger than the number of columns of %1"
 msgstr "Meer kolommen in de bron dan in %1"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "Verkeerd kolomtype: %1 voor ListView %2"
-
-#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "

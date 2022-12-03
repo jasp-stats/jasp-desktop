@@ -3184,11 +3184,6 @@ msgstr ""
 "El número de columna en la fuente es mayor que el número de columnas de %1"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "Tipo de columna incorrecto: %1 para ListView %2"
-
-#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "

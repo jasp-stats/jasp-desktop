@@ -2933,11 +2933,6 @@ msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
 
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
-
 msgctxt "FactorLevelList|"
 msgid "Factor"
 msgstr ""

@@ -3486,11 +3486,6 @@ msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
 "Atopouse un tipo incorrecto de lista relacionada (%1) para VariablesList %2"
 
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "Tipo de columna incorrecto: %1 para ListView %2"
-
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
 msgstr "Opcións da Interface de Usuario"

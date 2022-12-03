@@ -3480,11 +3480,6 @@ msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
 msgstr "変数フォームに使用可能なリストがありません。"
 
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "リストビュー%2にまちがった列タイプ%1があります"
-
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
 msgstr ""

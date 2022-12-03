@@ -3053,11 +3053,6 @@ msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
 msgstr "來源中的行數大於 %1 的行數"
 
-#, fuzzy, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "錯誤的列類型：%1 用於列表檢視 %2"
-
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""

@@ -3198,11 +3198,6 @@ msgstr ""
 "colonnes de %1"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr "Mauvais type de colonne : %1 pour le ListView %2"
-
-#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
