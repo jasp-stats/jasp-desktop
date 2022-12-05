@@ -30,17 +30,16 @@
 #include "utilities/reporter.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
-	  AnalysisBase(Analyses::analyses()),
+	  AnalysisBase(Analyses::analyses(), moduleVersion),
 	  _id(				id),
 	  _name(			analysisEntry->function()),
 	  _qml(				analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
 	  _titleDefault(	analysisEntry->title()),
 	  _title(			title == "" ? _titleDefault : title),
-	  _moduleVersion(	moduleVersion),
 	  _moduleData(		analysisEntry),
 	  _dynamicModule(	_moduleData->dynamicModule())
 {
-	if(_moduleVersion == "" && _dynamicModule)
+	if(moduleVersion == "" && _dynamicModule)
 		_moduleVersion = _dynamicModule->version();
 
 	if (data)
@@ -391,7 +390,6 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["hasReport"]		= _hasReport;
 	analysisAsJson["progress"]		= _progress;
-	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
 	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
@@ -415,7 +413,7 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 	if(_title == oldTitleDefault && _titleDefault != oldTitleDefault)
 		_title = _titleDefault;
 
-	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
+	_preUpgraderVersion	= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
 }
 
 void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status)
@@ -450,9 +448,9 @@ void Analysis::setStatus(Analysis::Status status)
 		bool neededRefresh = needsRefresh();
 
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
-		setVersion(AppInfo::version, true);
+		_wasUpgraded = false;
 
-		_moduleVersion = _dynamicModule->version();
+		_moduleVersion = _dynamicModule ?  _dynamicModule->version() : AppInfo::version;
 
 		if(neededRefresh != needsRefresh())
 			emit needsRefreshChanged();
@@ -761,7 +759,7 @@ void Analysis::fitOldUserDataEtc()
 		std::map<std::string, std::string> oldToNew;
 
 		//Only do special fix for older ANOVA's
-		if(module() == "ANOVA" && Version(_oldVersion) < Version("0.12"))
+		if(module() == "ANOVA" && Version(_preUpgraderVersion) < Version("0.12"))
 		{
 			//Gotta do some manual repairing for https://github.com/jasp-stats/jasp-test-release/issues/649
 			//All of these replacements are based on the unittests.
@@ -933,22 +931,9 @@ void Analysis::setUpgradeMsgs(const Modules::UpgradeMsgs &msgs)
 		emit needsRefreshChanged();
 }
 
-void Analysis::setVersion(Version version, bool resetWasUpgraded)
-{
-	bool oldNeedsRefresh = needsRefresh();
-
-	if(resetWasUpgraded)
-		_wasUpgraded = false;
-
-	_version = version;
-
-	if(needsRefresh() != oldNeedsRefresh)
-		emit needsRefreshChanged();
-}
-
 bool Analysis::needsRefresh() const
 {
-	bool differentVersion = _dynamicModule ? _moduleVersion != _dynamicModule->version() : version() != AppInfo::version;
+	bool differentVersion = _moduleVersion != (_dynamicModule ? _dynamicModule->version() : AppInfo::version);
 	return _wasUpgraded || differentVersion;
 }
 

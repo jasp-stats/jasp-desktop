@@ -88,7 +88,6 @@ public:
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);
 	void				setUserData(Json::Value userData);
-	void				setVersion(Version version, bool resetWasUpgraded = false);
 	void				setRefreshBlocked(bool block)								{ _refreshBlocked = block;						}
 	void				incrementRevision()											{ _revision++;									}
 
@@ -230,7 +229,7 @@ protected:
 								_progress			= Json::nullValue,
 								_oldUserData		= Json::nullValue,
 								_oldMetaData		= Json::nullValue;
-	std::string					_oldVersion			= "0";
+	std::string					_preUpgraderVersion	= "0";
 
 private:
 	size_t						_id,
@@ -241,7 +240,6 @@ private:
 								_title,
 								_rfile,
 								_showDepsName					= "",
-								_moduleVersion					= "",
 								_codedReferenceToAnalysisEntry	= "",
 								_lastQmlFormPath				= "";
 	bool						_isDuplicate					= false,

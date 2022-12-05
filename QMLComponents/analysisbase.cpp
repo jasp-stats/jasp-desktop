@@ -5,15 +5,15 @@
 
 const std::string AnalysisBase::emptyString;
 
-AnalysisBase::AnalysisBase(QObject* parent)
+AnalysisBase::AnalysisBase(QObject* parent, Version moduleVersion)
 	: QObject(parent)
-	, _version(AppInfo::version)
+	, _moduleVersion(moduleVersion)
 {
 }
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
-	, _version(duplicateMe->version())
+	, _moduleVersion(duplicateMe->moduleVersion())
 	, _boundValues(duplicateMe->boundValues())
 {
 }
