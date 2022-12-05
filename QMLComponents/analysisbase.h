@@ -16,6 +16,7 @@ class AnalysisBase : public QObject
 
 public:
 	explicit AnalysisBase(QObject *parent = nullptr);
+	AnalysisBase(QObject *parent, AnalysisBase* duplicateMe);
 
 	virtual bool isOwnComputedColumn(const std::string &col)				const	{ return false; }
 	virtual void refresh()															{}
@@ -28,7 +29,6 @@ public:
 	virtual const std::string & module()									const	{ return emptyString;		}
 	virtual const std::string & name()										const	{ return emptyString;		}
 	virtual const std::string & title()										const	{ return emptyString;		}
-	virtual const Version & version()										const	{ return AppInfo::version;	}
 	virtual void setTitle(const std::string& titel)									{}
 	virtual void preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual QString helpFile()														{ return "";				}
@@ -52,6 +52,7 @@ public:
 	const	Json::Value	optionsMeta()										const	{ return _boundValues.get(".meta", Json::nullValue);	}
 	void				clearOptions()												{ _boundValues.clear();		}
 
+	const	Version	&	version()											const	{ return _version;			}
 
 	QQuickItem *	formItem()												const;
 
@@ -79,6 +80,7 @@ protected:
 
 	AnalysisForm*	_analysisForm		= nullptr;
 	QString			_qmlError;
+	Version			_version;
 
 private:
 	Json::Value		_boundValues		= Json::objectValue;

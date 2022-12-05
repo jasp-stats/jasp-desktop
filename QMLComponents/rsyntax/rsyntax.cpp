@@ -86,7 +86,7 @@ QString RSyntax::generateSyntax() const
 		formulaSources.append(formula->modelSources());
 
 	result = _analysisFullName(true) + "(\n";
-	result += FunctionOptionIndent + "data = NULL\n";
+	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
 	for (FormulaBase* formula : _formulas)
@@ -158,7 +158,7 @@ QString RSyntax::generateWrapper() const
 \n\
 ";
 	result += _form->name() + "Wrapper <- function(\n";
-	result += FunctionOptionIndent + "data = NULL\n";
+	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";

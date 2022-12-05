@@ -37,7 +37,6 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	  _titleDefault(	analysisEntry->title()),
 	  _title(			title == "" ? _titleDefault : title),
 	  _moduleVersion(	moduleVersion),
-	  _version(			AppInfo::version),
 	  _moduleData(		analysisEntry),
 	  _dynamicModule(	_moduleData->dynamicModule())
 {
@@ -54,7 +53,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
-	: AnalysisBase(						Analyses::analyses()							)
+	: AnalysisBase(						Analyses::analyses(), duplicateMe				)
 	, _status(							duplicateMe->_status							)
 	, _optionsDotJASP(					duplicateMe->_optionsDotJASP					)
 	, _results(							duplicateMe->_results							)
@@ -70,14 +69,12 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _title("Copy of "+				duplicateMe->_title								)
 	, _rfile(							duplicateMe->_rfile								)
 	, _isDuplicate(						true											)
-	, _version(							duplicateMe->_version							)
 	, _moduleData(						duplicateMe->_moduleData						)
 	, _dynamicModule(					duplicateMe->_dynamicModule						)
 	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry		)
 	, _helpFile(						duplicateMe->_helpFile							)
 	, _rSources(						duplicateMe->_rSources							)
 {
-	setBoundValues(duplicateMe->boundValues());
 	initAnalysis();
 }
 
