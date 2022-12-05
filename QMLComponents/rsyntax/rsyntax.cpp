@@ -87,7 +87,7 @@ QString RSyntax::generateSyntax() const
 
 	result = _analysisFullName(true) + "(\n";
 	result += FunctionOptionIndent + "data = NULL\n";
-	result += FunctionOptionIndent + "version = \"" + tq(AppInfo::version.asString()) + "\"";
+	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + formula->toString();
@@ -159,7 +159,7 @@ QString RSyntax::generateWrapper() const
 ";
 	result += _form->name() + "Wrapper <- function(\n";
 	result += FunctionOptionIndent + "data = NULL\n";
-	result += FunctionOptionIndent + "version = \"" + tq(AppInfo::version.asString()) + "\"";
+	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
 
@@ -203,7 +203,8 @@ QString RSyntax::generateWrapper() const
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
 	+ FunctionLineIndent + "defaults <- setdiff(names(defaultArgs), names(options))\n"
 	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
-	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n\n";
+	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n"
+	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 
 	for (FormulaBase* formula : _formulas)
 	{
@@ -235,7 +236,7 @@ QString RSyntax::generateWrapper() const
 	}
 
 	result += ""
-	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options))\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options, version))\n"
 	+ "}";
 
 	return result;

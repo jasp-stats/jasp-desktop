@@ -79,6 +79,7 @@ public:
 	QString					title()							const	{ return _analysis ? tq(_analysis->title())		: "";		}
 	QString					name()							const	{ return _analysis ? tq(_analysis->name())		: "";		}
 	QString					module()						const	{ return _analysis ? tq(_analysis->module())	: "";		}
+	QString					version()						const	{ return _analysis ? tq(_analysis->version().asString()) : "";	}
 	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;									}
 	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
 	bool					formCompleted()					const	{ return _formCompleted; }

@@ -102,7 +102,7 @@ public:
 	const	Json::Value		&	userData()			const				{ return _userData;							}
 	const	std::string		&	name()				const	override	{ return _name;								}
 	const	std::string		&	qml()				const				{ return _qml;								}
-	const	Version			&	version()			const				{ return _version;							}
+	const	Version			&	version()			const	override	{ return _version;							}
 	const	std::string		&	title()				const	override	{ return _title;							}
 	const	std::string		&	rfile()				const				{ return _rfile;							}
 	const	std::string		&	module()			const	override	{ return _moduleData->dynamicModule()->name();	}
