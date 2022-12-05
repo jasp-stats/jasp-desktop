@@ -210,7 +210,18 @@ DropArea
 			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
 			property bool		loadingQml:			!formParent.loaded
 			property real		formHeight:			formParent.height
-			property bool		expansionInProgress:			false
+
+			function postExpansionTasks()
+			{
+					backgroundFlickable.scrollToElement(expanderButton);
+					formParent.nextItemInFocusChain().forceActiveFocus();
+			}
+
+			Connections {
+				target: expanderButton
+				enabled: !preferencesModel.animationsOn
+				function onHeightChanged() { Qt.callLater(expanderButton.postExpansionTasks); }
+			}
 
 			onLoadingQmlChanged:
 			{
@@ -225,7 +236,7 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;			expansionInProgress: true		}	},
+				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;											}	},
 				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;									}	},
 				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;																			}	}
 			]
@@ -235,14 +246,7 @@ DropArea
 				enabled:	preferencesModel.animationsOn
 				reversible:	true
 
-				onRunningChanged: //expansion ended
-				{
-					if (expanderButton.expanded)
-					{
-						backgroundFlickable.scrollToElement(expanderButton);
-						formParent.nextItemInFocusChain().forceActiveFocus();
-					}
-				}
+				onRunningChanged: { if (expanderButton.expanded) Qt.callLater(expanderButton.postExpansionTasks); } //expansion ended
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
