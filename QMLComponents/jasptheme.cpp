@@ -116,6 +116,12 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 	setCurrentTheme(_themes[name]);
 }
 
+void JaspTheme::initializeUIScales(double uiScale)
+{
+	for(auto& keyval : _themes)
+		keyval.second->uiScaleHandler(uiScale);
+}
+
 void JaspTheme::setRibbonScaleHovered(float ribbonScaleHovered)
 {
 	

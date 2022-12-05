@@ -179,6 +179,7 @@ public:
 
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
+	static void initializeUIScales(double uiScale = 1);
 
 	static JaspTheme								* currentTheme()	{ return _currentTheme; }
 	static QFontMetricsF							& fontMetrics()		{ return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
