@@ -36,18 +36,19 @@ class AnalysisEntry
 {
 	friend EntryBase;
 public:
-	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
-	AnalysisEntry();
+	AnalysisEntry() {}
 
 	std::string		menu()					const { return _menu;									}
 	std::string		title()					const { return _title;									}
 	std::string		function()				const { return _function;								}
+	std::string		functionInternal()		const { return _functionInternal;						}
 	std::string		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
 	std::string		icon()					const;
 	bool			isSeparator()			const { return _isSeparator;		}
 	bool			isGroupTitle()			const { return _isGroupTitle;		}
 	bool			isAnalysis()			const { return _isAnalysis;			}
 	bool			isEnabled()				const { return _isEnabled;			}
+	bool			hasWrapper()			const { return _hasWrapper;			}
 	bool			requiresData()			const { return _requiresData;		}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
@@ -63,6 +64,7 @@ public:
 private:
 	std::string		_title			= "???",
 					_function		= "???",
+					_functionInternal = "???",
 					_qml			= "???",
 					_menu			= "???";
 	DynamicModule*	_dynamicModule	= nullptr;
@@ -72,6 +74,7 @@ private:
 					_isEnabled		= true,
 					_requiresData	= true;
 	std::string		_icon			= "";
+	bool			_hasWrapper		= false;
 };
 
 typedef std::vector<AnalysisEntry*> AnalysisEntries;

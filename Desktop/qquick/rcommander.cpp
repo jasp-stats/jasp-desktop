@@ -63,15 +63,13 @@ bool RCommander::addAnalysis(const QString &code)
 
 	setRunning(true);
 
-	// Temporary solution: check whether the code starts with '<moduleName>::<analysisNameWrapper>(...'
+	// Temporary solution: check whether the code starts with '<moduleName>::<analysisName>(...'
 	QString codeTrimmed = code.trimmed();
 	QStringList analysisParts = codeTrimmed.mid(0, codeTrimmed.indexOf("(")).split("::");
 
 	if (analysisParts.length() == 2)
 	{
 		QString moduleName = analysisParts[0], analysisName = analysisParts[1];
-		if (analysisName.endsWith("Wrapper"))
-			analysisName = analysisName.mid(0, analysisName.lastIndexOf("Wrapper"));
 
 		if (!moduleName.isEmpty() && !analysisName.isEmpty())
 		{

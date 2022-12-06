@@ -341,6 +341,7 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	_maintainer						= fq(description->maintainer());
 	_descriptionTxt					= fq(description->description());
 	_version						= fq(description->version());
+	_hasWrappers					= description->hasWrappers();
 
 	for(auto * menuEntry : _menuEntries)
 		delete menuEntry;

@@ -66,6 +66,7 @@ void Description::connectChangesToDelay()
 	connect(this, &Description::requiresDataDefChanged,	this, &Description::delayedUpdate);
 	connect(this, &Description::dynModChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::childChanged,			this, &Description::delayedUpdate);
+	connect(this, &Description::hasWrappersChanged,		this, &Description::delayedUpdate);
 }
 
 void Description::addChild(DescriptionChildBase * child)
@@ -183,6 +184,15 @@ void Description::setRequiresDataDef(bool requiresData)
 	emit requiresDataDefChanged(_requiresDataDef);
 }
 
+void Description::setHasWrappers(bool hasWrappers)
+{
+	if (_hasWrappers == hasWrappers)
+		return;
+
+	_hasWrappers = hasWrappers;
+	emit hasWrappersChanged(_hasWrappers);
+}
+
 void Description::setDynMod(DynamicModule * dynMod)
 {
 	if (_dynMod == dynMod)
@@ -205,7 +215,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	{
 		if(entry->shouldBeAdded())
 		{
-			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef());
+			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), hasWrappers());
 			if (analysisEntry != nullptr)
 			{
 				if (analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())

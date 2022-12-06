@@ -85,7 +85,7 @@ QString RSyntax::generateSyntax() const
 	for (FormulaBase* formula : _formulas)
 		formulaSources.append(formula->modelSources());
 
-	result = _analysisFullName(true) + "(\n";
+	result = _analysisFullName() + "(\n";
 	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
@@ -157,7 +157,7 @@ QString RSyntax::generateWrapper() const
 # This is a generated file. Don't change it\n\
 \n\
 ";
-	result += _form->name() + "Wrapper <- function(\n";
+	result += _form->name() + " <- function(\n";
 	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
@@ -197,7 +197,7 @@ QString RSyntax::generateWrapper() const
 	}
 
 	result += ") {\n\n"
-	+ FunctionLineIndent + "defaultArgCalls <- formals(" + _analysisFullName(true) + ")\n"
+	+ FunctionLineIndent + "defaultArgCalls <- formals(" + _analysisFullName() + ")\n"
 	+ FunctionLineIndent + "defaultArgs <- lapply(defaultArgCalls, eval)\n"
 	+ FunctionLineIndent + "options <- as.list(match.call())[-1L]\n"
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
@@ -445,10 +445,9 @@ QString RSyntax::transformInteractionTerms(const Terms& terms, bool useFormula)
 	return result;
 }
 
-QString RSyntax::_analysisFullName(bool wrapper) const
+QString RSyntax::_analysisFullName() const
 {
-
-	return _form->module() + "::" + _form->name() + (wrapper ? "Wrapper" : "");
+	return _form->module() + "::" + _form->name();
 }
 
 QString RSyntax::getRSyntaxFromControlName(JASPControl *control) const

@@ -20,12 +20,14 @@ EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(e
 	connect(this, &EntryBase::menuChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::titleChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::functionChanged,		this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::functionInternalChanged, this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::iconChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::entryTypeChanged,		this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::requiresDataChanged,	this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::enabledChanged,		this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::debugChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::hasWrapperChanged,	this, &EntryBase::somethingChanged);
 }
 
 void EntryBase::devModeChanged(bool)
@@ -43,7 +45,9 @@ QString EntryBase::toString() const
 		return	"-- analysis '"		+ title()
 				+ ( menu() != title() ? " menu: '" + menu() + "'" : "" )
 				+ ", function: '"	+ function() + "'"
+				+ ", functionInternal: '"	+ functionInternal() + "'"
 				+ ", qml: '"		+ qml() + "'"
+				+ ", hasWrapper: "	+ (hasWrapper() ? "TRUE" : "FALSE")
 				+ ", reqData: "		+ (requiresData() ? "yes":"no")
 				+ ", icon: '"		+ icon() + "' --";
 	default: 
@@ -92,6 +96,18 @@ void EntryBase::setFunction(QString function)
 
 	_function = function;
 	emit functionChanged();
+}
+
+void EntryBase::setFunctionInternal(QString functionInternal)
+{
+	if(_entryType != EntryType::analysis)
+		throw EntryError("You cannot set 'func(tion)' of an entry that is not of type 'analysis'.");
+
+	if (_functionInternal == functionInternal)
+		return;
+
+	_functionInternal = functionInternal;
+	emit functionInternalChanged();
 }
 
 void EntryBase::setIcon(QString icon)
@@ -147,7 +163,16 @@ void EntryBase::setDebug(bool debug)
 	emit debugChanged();
 }
 
-AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) const
+void EntryBase::setHasWrapper(bool hasWrapper)
+{
+	if (_hasWrapper == hasWrapper)
+		return;
+
+	_hasWrapper = hasWrapper;
+	emit hasWrapperChanged();
+}
+
+AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool hasWrappers) const
 {
 	AnalysisEntry * entry = new AnalysisEntry();
 
@@ -162,7 +187,8 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 	entry->_isAnalysis		= _entryType == EntryType::analysis;
 	entry->_isSeparator		= _entryType == EntryType::separator;
 	entry->_isGroupTitle	= _entryType == EntryType::groupTitle;
-
+	entry->_hasWrapper		= hasWrappers || _hasWrapper;
+	entry->_functionInternal = functionInternal().isEmpty() ? (entry->_function + (entry->_hasWrapper ? "Internal" : "")) : fq(functionInternal());
 	entry->_dynamicModule	= _description->dynMod();
 	
 	//Log::log()<<"convertToAnalysisEntry has title '"<<title()<<"'"<<std::endl;

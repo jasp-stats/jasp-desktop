@@ -38,6 +38,7 @@ class Description : public QQuickItem
 	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
 	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod				WRITE setDynMod				NOTIFY dynModChanged			)
+	Q_PROPERTY(bool						hasWrappers		READ hasWrappers		WRITE setHasWrappers		NOTIFY hasWrappersChanged		)
 
 public:
 	Description(QQuickItem *parent = nullptr);
@@ -54,6 +55,7 @@ public:
 	QString			license()			const { return _license;					}
 	bool			requiresDataDef()	const { return _requiresDataDef;			}
 	DynamicModule * dynMod()			const { return _dynMod;						}
+	bool			hasWrappers()		const { return _hasWrappers;				}
 
 	void	addChild(	DescriptionChildBase * child);
 	void	removeChild(DescriptionChildBase * child);
@@ -74,6 +76,7 @@ public slots:
 	void setRequiresDataDef(	bool							defRequiresData	);
 	void setDynMod(				Modules::DynamicModule		*	dynMod			);
 	void delayedUpdate();
+	void setHasWrappers(		bool							hasWrappers		);
 
 signals:
 	void titleChanged(				QString						title			);
@@ -86,6 +89,7 @@ signals:
 	void licenseChanged(			QString						license			);
 	void nameChanged(				QString						name			);
 	void requiresDataDefChanged(	bool						defRequiresData	);
+	void hasWrappersChanged(		bool						hasWrappers		);
 	void dynModChanged(				Modules::DynamicModule	*	dynMod			);
 	void iShouldBeUpdated(			Modules::Description	*	desc			);
 	void childChanged();
@@ -103,7 +107,8 @@ private:
 							_license;
 	QUrl					_website;
 	Version					_version;
-	bool					_requiresDataDef	= true;
+	bool					_requiresDataDef	= true,
+							_hasWrappers		= false;
 	DynamicModule		*	_dynMod				= nullptr;
 	QList<EntryBase*>		_entries;
 	QTimer					_timer;
