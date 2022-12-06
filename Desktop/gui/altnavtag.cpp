@@ -3,17 +3,21 @@
 
 #include <QQmlEngine>
 #include <QVariantMap>
+#include <QQuickWindow>
 
-ALTNavTag::ALTNavTag(QQuickItem *attachee) : QObject{attachee}
+#include "log.h"
+
+ALTNavTag::ALTNavTag(QQuickItem *_attachee) : QObject{_attachee}
 {
 	//create a visual object for which we are the interface
-	QQmlComponent component(qmlEngine(attachee), QUrl("qrc:///components/JASP/Widgets/ALTNavTag.qml"), this);
+	QQmlComponent component(qmlEngine(_attachee), QUrl("qrc:///components/JASP/Widgets/ALTNavTag.qml"), this);
 	QObject* obj = component.createWithInitialProperties(QVariantMap{{"tagData", QVariant::fromValue<ALTNavTag*>(this)}});
 	tagItem = qobject_cast<QQuickItem*>(obj);
+	attachee = _attachee;
 	tagItem->setParentItem(attachee);
 
 	//connect to root to get input updates so we may update tag accordingly
-	connect(ALTNavRoot::getInstance(), &ALTNavRoot::altNavInputChanged, this, &ALTNavTag::updateTagText);
+	connect(ALTNavRegistry::getInstance(), &ALTNavRegistry::altNavInputChanged, this, &ALTNavTag::updateTagText);
 }
 
 ALTNavTag::~ALTNavTag()
@@ -34,7 +38,7 @@ void ALTNavTag::updateTagText()
 {
 	if(active)
 	{
-		int len = fullTag.length() - ALTNavRoot::getInstance()->getCurrentALTNavInput().length();
+		int len = fullTag.length() - ALTNavRegistry::getInstance()->getCurrentALTNavInput().length();
 		if (len >= 0)
 		{
 			tagText = fullTag.last(len);
@@ -45,6 +49,29 @@ void ALTNavTag::updateTagText()
 
 void ALTNavTag::setActive(bool _active)
 {
-	active = _active;
+	active = _active;	
+	position();
 	emit activeChanged();
+}
+
+void ALTNavTag::setX(qreal _x)
+{
+	x = _x;
+	if(active)
+		position();
+}
+
+void ALTNavTag::setY(qreal _y)
+{
+	y = _y;
+	if(active)
+		position();
+}
+
+void ALTNavTag::position()
+{
+//	tagItem->setParentItem(attachee->window()->contentItem());
+//	QPointF coord = attachee->mapToScene(QPointF(x, y));
+	tagItem->setX(x);//coord.x());
+	tagItem->setY(y);//coord.y());
 }

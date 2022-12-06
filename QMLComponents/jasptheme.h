@@ -88,6 +88,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QColor             errorMessagesBackgroundColor    READ errorMessagesBackgroundColor    WRITE setErrorMessagesBackgroundColor    NOTIFY errorMessagesBackgroundColorChanged    )
 	Q_PROPERTY(QColor             sliderPartOn                    READ sliderPartOn                    WRITE setSliderPartOn                    NOTIFY sliderPartOnChanged                    )
 	Q_PROPERTY(QColor             sliderPartOff                   READ sliderPartOff                   WRITE setSliderPartOff                   NOTIFY sliderPartOffChanged                   )
+	Q_PROPERTY(QColor             altNavTagColor                  READ altNavTagColor                  WRITE setAltNavTagColor                  NOTIFY altNavTagColorChanged                     )
+
 
 	//Distances:
 	Q_PROPERTY(theme_distanceType borderRadius                    READ borderRadius                    WRITE setBorderRadius                    NOTIFY borderRadiusChanged                    )
@@ -244,6 +246,7 @@ public:
 	QColor				errorMessagesBackgroundColor() 		const	{ return _errorMessagesBackgroundColor; }
 	QColor				sliderPartOn() 						const	{ return _sliderPartOn; }
 	QColor				sliderPartOff() 					const	{ return _sliderPartOff; }
+	QColor				altNavTagColor() 					const	{ return _altNavTagColor; }
 	QColor				darkeningColour()					const	{ return _darkeningColour;	}
 	theme_distanceType	borderRadius()						const	{ return _borderRadius						* uiScale(); }
 	theme_distanceType	shadowRadius()						const	{ return _shadowRadius						* uiScale(); }
@@ -376,6 +379,7 @@ signals:
 	void errorMessagesBackgroundColorChanged(QColor errorMessagesBackgroundColor);
 	void sliderPartOnChanged(QColor sliderPartOn);
 	void sliderPartOffChanged(QColor sliderPartOff);
+	void altNavTagColorChanged(QColor altNavTagColor);
 	void darkeningColourChanged(QColor darkeningColour);
 	void borderRadiusChanged();
 	void shadowRadiusChanged();
@@ -505,6 +509,7 @@ public slots:
 	void setErrorMessagesBackgroundColor(QColor errorMessagesBackgroundColor);
 	void setSliderPartOn(QColor sliderPartOn);
 	void setSliderPartOff(QColor sliderPartOff);
+	void setAltNavTagColor(QColor altNavTagColor);
 	void setDarkeningColour(QColor darkeningColour);
 	void setBorderRadius(theme_distanceType borderRadius);
 	void setShadowRadius(theme_distanceType shadowRadius);
@@ -646,7 +651,8 @@ private:
 						_errorMessagesBackgroundColor,
 						_sliderPartOn,
 						_sliderPartOff,
-						_darkeningColour;
+						_darkeningColour,
+						_altNavTagColor;
 
 	theme_distanceType	_borderRadius,
 						_shadowRadius,

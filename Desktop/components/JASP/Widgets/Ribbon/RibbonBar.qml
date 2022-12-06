@@ -27,7 +27,6 @@ FocusScope
 
 	// This property is required to show filemenu button press in KeyNavigation
 	property bool isFileMenuPressed: false
-	property alias fileMenuButton: fileMenuOpenButton
 
 	function focusOnRibbonMenu()
 	{

@@ -9,10 +9,9 @@ class ALTNavScope;
 class ALTNavTag : public QObject
 {
 	Q_OBJECT
-	QML_ELEMENT
 
-	Q_PROPERTY( QString	tagText		READ	getTagText		NOTIFY	tagTextChanged	);
-	Q_PROPERTY( bool	active		READ	getActive		NOTIFY	activeChanged	);
+	Q_PROPERTY( QString		tagText			READ	getTagText		NOTIFY	tagTextChanged		);
+	Q_PROPERTY( bool		active			READ	getActive		NOTIFY	activeChanged		);
 
 public:
 	explicit ALTNavTag(QQuickItem* attachee);
@@ -20,8 +19,9 @@ public:
 
 	void setFullTag(QString _fullTag);
 	void setActive(bool _active);
+	void setX(qreal x);
+	void setY(qreal y);
 
-	ALTNavScope* scope = nullptr;
 	QString fullTag;
 
 private slots:
@@ -34,6 +34,7 @@ signals:
 private:
 	bool getActive() { return active; };
 	QString getTagText() { return tagText; };
+	void position();
 
 private:
 	QQuickItem* attachee;
@@ -41,7 +42,7 @@ private:
 
 	QString tagText = "";
 	bool active = false;
-
+	qreal x = 0, y = 0;
 
 };
 

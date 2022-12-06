@@ -16,8 +16,10 @@ Item
 
 	Rectangle
 	{
-		color:				"black"
+		color:				jaspTheme.altNavTagColor
+		radius:				3 * jaspTheme.uiScale
 		anchors.fill:		parent
+		anchors.centerIn:	parent
 
 		Text
 		{

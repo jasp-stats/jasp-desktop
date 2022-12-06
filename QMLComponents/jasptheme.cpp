@@ -646,6 +646,15 @@ void JaspTheme::setSliderPartOff(QColor sliderPartOff)
 	emit sliderPartOffChanged(_sliderPartOff);
 }
 
+void JaspTheme::setAltNavTagColor(QColor altNavTagColor)
+{
+	if (_altNavTagColor == altNavTagColor)
+		return;
+
+	_altNavTagColor = altNavTagColor;
+	emit altNavTagColorChanged(_altNavTagColor);
+}
+
 void JaspTheme::setBorderRadius(theme_distanceType borderRadius)
 {
 	if (_borderRadius == borderRadius)

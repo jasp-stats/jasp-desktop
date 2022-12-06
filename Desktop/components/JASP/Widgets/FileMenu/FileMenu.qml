@@ -77,6 +77,11 @@ FocusScope
 			height:			parent.height
 			z:				2
 
+			ALTNavigation.enabled:		true
+			ALTNavigation.root:			true
+			ALTNavigation.scopeOnly:	true
+			ALTNavigation.foreground:	fileMenuModel.visible
+
 			Rectangle
 			{
 				z:				-1
@@ -127,6 +132,9 @@ FocusScope
 								leftMargin: 3  * preferencesModel.uiScale
 								left:		itemActionMenu.left
 							}
+
+							ALTNavigation.enabled:		true
+							ALTNavigation.onTagMatch:	{ clicked(); }
 
 							Keys.onLeftPressed:
 							{
