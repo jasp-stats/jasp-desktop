@@ -937,6 +937,26 @@ void AnalysisForm::setShowRSyntax(bool showRSyntax)
 
 }
 
+void AnalysisForm::setShowRButton(bool showRButton)
+{
+	if (_showRButton == showRButton)
+		return;
+
+	_showRButton = showRButton;
+
+	emit showRButtonChanged();
+}
+
+void AnalysisForm::setDeveloperMode(bool developerMode)
+{
+	if (_developerMode == developerMode)
+		return;
+
+	_developerMode = developerMode;
+
+	emit developerModeChanged();
+}
+
 void AnalysisForm::setRSyntaxText()
 {
 	if (!_showRSyntax)

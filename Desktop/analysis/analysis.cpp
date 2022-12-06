@@ -331,6 +331,9 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
 		connect(this,					&Analysis::boundValuesChanged,		_analysisForm,	&AnalysisForm::setRSyntaxText, Qt::QueuedConnection	);
 
+		_analysisForm->setShowRButton(_moduleData->hasWrapper());
+		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
+
 		emit analysisInitialized();
 	}
 }

@@ -56,7 +56,9 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
-	Q_PROPERTY(bool			showRSyntax				READ showRSyntax			WRITE setShowRSyntax			NOTIFY showRSyntaxChanged			)
+	Q_PROPERTY(bool			showRSyntax				READ showRSyntax											NOTIFY showRSyntaxChanged			)
+	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
+	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
 	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
 	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
@@ -84,6 +86,8 @@ public:
 	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
 	bool					formCompleted()					const	{ return _formCompleted; }
 	bool					showRSyntax()					const	{ return _showRSyntax;	}
+	bool					showRButton()					const	{ return _showRButton;	}
+	bool					developerMode()					const	{ return _developerMode; }
 	QString					rSyntaxText()					const	{ return _rSyntaxText;	}
 
 public slots:
@@ -94,6 +98,8 @@ public slots:
 	void					setOptionNameConversion(const QVariantList& conv);
 	void					setTitle(QString title);
 	void					setShowRSyntax(bool showRSyntax);
+	void					setShowRButton(bool showRButton);
+	void					setDeveloperMode(bool developerMode);
 	void					setRSyntaxText();
 	void					sendRSyntax(QString text);
 	void					toggleRSyntax()		{ setShowRSyntax(!showRSyntax()); }
@@ -116,6 +122,8 @@ signals:
 	void					optionNameConversionChanged();
 	void					titleChanged();
 	void					showRSyntaxChanged();
+	void					showRButtonChanged();
+	void					developerModeChanged();
 	void					rSyntaxTextChanged();
 	void					activeJASPControlChanged();
 
@@ -221,7 +229,9 @@ private:
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 	RSyntax										*	_rSyntax						= nullptr;
-	bool											_showRSyntax					= false;
+	bool											_showRSyntax					= false,
+													_showRButton					= false,
+													_developerMode					= false;
 	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
 };

@@ -180,6 +180,7 @@ AnalysisForm
 			Button
 			{
 				id:					generateWrapperButton
+				visible:            DEBUG_MODE || form.developerMode
 				label:				"Generate Wrapper"
 				onClicked:			popup.open()
 

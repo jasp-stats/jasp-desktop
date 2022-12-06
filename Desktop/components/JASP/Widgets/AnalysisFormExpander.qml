@@ -358,6 +358,27 @@ DropArea
 
 				MenuButton
 				{
+					id:					rSyntaxButton
+					width:				height
+					iconSource:			jaspTheme.iconPath + "/R.png"
+					enabled:			expanderButton.expanded
+					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
+					toolTip:			qsTr("Show R Syntax")
+					radius:				height
+					opacity:			editButton.opacity
+					visible:            formParent.myForm.showRButton
+					anchors
+					{
+						top:			parent.top
+						right:			editButton.left
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
+					}
+				}
+
+				MenuButton
+				{
 					id:					editButton
 					width:				height
 					iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
@@ -389,33 +410,12 @@ DropArea
 					anchors
 					{
 						top:			parent.top
-						right:			rSyntaxButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
-					}
-				}
-
-				MenuButton
-				{
-					id:					rSyntaxButton
-					width:				height
-					iconSource:			jaspTheme.iconPath + "/R.png"
-					enabled:			expanderButton.expanded
-					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
-					toolTip:			qsTr("Show R Syntax")
-					radius:				height
-					opacity:			editButton.opacity
-					anchors
-					{
-						top:			parent.top
 						right:			helpButton.left
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
 					}
 				}
-
 
 				MenuButton
 				{
