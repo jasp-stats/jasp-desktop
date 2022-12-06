@@ -123,9 +123,13 @@ private: // Data:
 	int					_analysisId,
 						_analysisRevision,
 						_progress,
-						_ppi		= 96;
+						_ppi		= 96,
+						_numDecimals = 3;
 
-	bool				_developerMode		= false;
+	bool				_developerMode		= false,
+						_fixedDecimals		= false,
+						_exactPValues		= false,
+						_normalizedNotation	= true;
 
 	std::string			_analysisName,
 						_analysisTitle,
@@ -138,7 +142,6 @@ private: // Data:
 						_imageBackground	= "white",
 						_analysisRFile		= "",
 						_dynamicModuleCall	= "",
-						_libPathsToUse		= "", //temp hack
 						_langR				= "en";
 
 	Json::Value			_imageOptions,

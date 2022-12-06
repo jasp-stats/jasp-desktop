@@ -177,6 +177,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".setColumnDataAsNominalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal);
 	rInside[".setColumnDataAsNominalTextPtr"]	= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsNominalText);
 	rInside[".baseCitation"]					= baseCitation;
+	rInside[".numDecimals"]						= 3;
+	rInside[".fixedDecimals"]					= false;
+	rInside[".normalizedNotation"]				= true;
+	rInside[".exactPValues"]					= false;
 
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
@@ -245,21 +249,33 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspRCPP_parseEvalQNT("jaspBase:::setWriteSealLocation(\"" + root + "\", \"" + relativePath + "\");");
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont, const char * libPathsToUse)
+void STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bool normalizedNotation, bool exactPValues)
 {
 	RInside &rInside			= rinside->instance();
 
-	rInside["name"]				= name;
-	rInside["title"]			= title;
-	rInside["options"]			= options;
-	rInside[".ppi"]				= ppi;
-	rInside["dataKey"]			= dataKey;
-	rInside["stateKey"]			= stateKey;
-	rInside["moduleCall"]		= moduleCall;
-	rInside["resultsMeta"]		= "null";
-	rInside["requiresInit"]		= false;
-	rInside[".imageBackground"]	= imageBackground;
-	rInside[".resultsFont"]		= resultsFont;
+	rInside[".numDecimals"]			= numDecimals;
+	rInside[".fixedDecimals"]		= fixedDecimals;
+	rInside[".normalizedNotation"]	= normalizedNotation;
+	rInside[".exactPValues"]		= exactPValues;
+}
+
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options,
+										   const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode,
+										   const char* resultsFont)
+{
+	RInside &rInside			= rinside->instance();
+
+	rInside["name"]					= name;
+	rInside["title"]				= title;
+	rInside["options"]				= options;
+	rInside[".ppi"]					= ppi;
+	rInside["dataKey"]				= dataKey;
+	rInside["stateKey"]				= stateKey;
+	rInside["moduleCall"]			= moduleCall;
+	rInside["resultsMeta"]			= "null";
+	rInside["requiresInit"]			= false;
+	rInside[".imageBackground"]		= imageBackground;
+	rInside[".resultsFont"]			= resultsFont;
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
@@ -371,12 +387,12 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 {
 	RInside &rInside = rinside->instance();
 
-	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= data;
-	rInside["format"]			= type;
-	rInside["height"]			= height;
-	rInside["width"]			= width;
-	rInside[".ppi"]				= ppi;
+	rInside[".imageBackground"]		= imageBackground;
+	rInside["plotName"]				= data;
+	rInside["format"]				= type;
+	rInside["height"]				= height;
+	rInside["width"]				= width;
+	rInside[".ppi"]					= ppi;
 
 	static std::string staticResult;
 	staticResult = jaspRCPP_parseEvalStringReturn("jaspBase:::saveImage(plotName, format, height, width)", true);
@@ -388,10 +404,10 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 
 	RInside &rInside = rinside->instance();
 
-	rInside[".imageBackground"] = imageBackground;
-	rInside[".editImgOptions"]	= optionsJson;
-	rInside[".analysisName"]	= name;
-	rInside[".ppi"]				= ppi;
+	rInside[".imageBackground"]		= imageBackground;
+	rInside[".editImgOptions"]		= optionsJson;
+	rInside[".analysisName"]		= name;
+	rInside[".ppi"]					= ppi;
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
@@ -407,10 +423,10 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 
 	RInside &rInside = rinside->instance();
 
-	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"] = imageBackground;
-	rInside[".analysisName"]	= name;
-	rInside[".resultsFont"]     = resultsFont;
+	rInside[".ppi"]					= ppi;
+	rInside[".imageBackground"]		= imageBackground;
+	rInside[".analysisName"]		= name;
+	rInside[".resultsFont"]			= resultsFont;
 
 	_setJaspResultsInfo(analysisID, 0, false);
 

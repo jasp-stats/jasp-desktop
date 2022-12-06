@@ -554,7 +554,6 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_libPathsToUse			= jsonRequest.get("libPathsToUse",		"").asString();
 		_resultsFont			= jsonRequest.get("resultsFont",		"").asString();
 		_engineState			= engineState::analysis;
 
@@ -617,7 +616,8 @@ void Engine::runAnalysis()
 
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont, _libPathsToUse);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey,
+												   _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont);
 
 	switch(_analysisStatus)
 	{
@@ -655,7 +655,7 @@ void Engine::runAnalysis()
 }
 
 void Engine::saveImage()
-{
+{	
 	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
 				width	= _imageOptions.get("width",	Json::nullValue).asInt();
 	std::string data	= _imageOptions.get("data",		Json::nullValue).asString(),
@@ -976,10 +976,14 @@ void Engine::receiveLogCfg(const Json::Value & jsonRequest)
 
 void Engine::absorbSettings(const Json::Value & jsonRequest)
 {
-	_ppi				= jsonRequest.get("ppi",				_ppi			).asInt();
-	_developerMode		= jsonRequest.get("developerMode",		_developerMode	).asBool();
-	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground).asString();
-	_langR				= jsonRequest.get("languageCode",		_langR			).asString();
+	_ppi				= jsonRequest.get("ppi",				_ppi				).asInt();
+	_developerMode		= jsonRequest.get("developerMode",		_developerMode		).asBool();
+	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground	).asString();
+	_langR				= jsonRequest.get("languageCode",		_langR				).asString();
+	_numDecimals		= jsonRequest.get("numDecimals",		_numDecimals		).asInt();
+	_fixedDecimals		= jsonRequest.get("fixedDecimals",		_fixedDecimals		).asBool();
+	_exactPValues		= jsonRequest.get("exactPValues",		_exactPValues		).asBool();
+	_normalizedNotation	= jsonRequest.get("normalizedNotation",	_normalizedNotation	).asBool();
 
 	const char	* PAT	= std::getenv("GITHUB_PAT");
 	
@@ -989,6 +993,7 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	setenv		("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			PAT ? PAT : "").asCString(), 1);
 #endif
 	rbridge_setLANG(_langR);
+	jaspRCPP_setDecimalSettings(_numDecimals, _fixedDecimals, _normalizedNotation, _exactPValues);
 }
 
 
