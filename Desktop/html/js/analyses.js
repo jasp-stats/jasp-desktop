@@ -100,6 +100,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	removeAnalysis: function (analysis) {
 
+		var analysesVar = this;
+
 		analysis.$el.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 			analysis.$el.slideUp(400, function () {
 				// TODO: See why analysis is NULL here.
@@ -107,7 +109,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 				this.analyses = _.without(this.analyses, analysis);
 				this.views = _.without(this.analyses, analysis);
 
-				this.setBottomSpacerHeight();
+				analysesVar.setBottomSpacerHeight();
 			});
 		});
 
