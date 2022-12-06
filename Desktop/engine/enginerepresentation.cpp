@@ -1024,11 +1024,15 @@ void EngineRepresentation::sendReloadData()
 
 void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 {
-	msg["ppi"]				= PreferencesModel::prefs()->plotPPI();
-	msg["developerMode"]	= PreferencesModel::prefs()->developerMode();
-	msg["imageBackground"]	= fq(PreferencesModel::prefs()->plotBackground());
-	msg["languageCode"]		= fq(PreferencesModel::prefs()->languageCode());
-	msg["GITHUB_PAT"]		= fq(PreferencesModel::prefs()->githubPatResolved());
+	msg["ppi"]					=	 PreferencesModel::prefs()->plotPPI();
+	msg["developerMode"]		=	 PreferencesModel::prefs()->developerMode();
+	msg["imageBackground"]		= fq(PreferencesModel::prefs()->plotBackground());
+	msg["languageCode"]			= fq(PreferencesModel::prefs()->languageCode());
+	msg["GITHUB_PAT"]			= fq(PreferencesModel::prefs()->githubPatResolved());
+	msg["numDecimals"]			=	 PreferencesModel::prefs()->numDecimals();
+	msg["fixedDecimals"]		=	 PreferencesModel::prefs()->fixedDecimals();
+	msg["exactPValues"]			=	 PreferencesModel::prefs()->exactPValues();
+	msg["normalizedNotation"]	=	 PreferencesModel::prefs()->normalizedNotation();
 }
 
 void EngineRepresentation::processSettingsReply()

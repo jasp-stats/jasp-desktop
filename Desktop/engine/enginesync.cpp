@@ -66,6 +66,11 @@ EngineSync::EngineSync(QObject *parent)
 	connect(PreferencesModel::prefs(),	&PreferencesModel::githubPatCustomChanged,			this,						&EngineSync::settingsChanged					);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::githubPatUseDefaultChanged,		this,						&EngineSync::settingsChanged					);
 
+	connect(PreferencesModel::prefs(),	&PreferencesModel::numDecimalsChanged,				this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::fixedDecimalsChanged,			this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::exactPValuesChanged,				this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::normalizedNotationChanged,		this,						&EngineSync::settingsChanged					);
+
 	// delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
 	// Except, that it might somehow cause a crash? If the timer goes off while waiting for a download from OSF than it might remove the files while making them..
 	// So lets put it on 500ms...
@@ -524,6 +529,9 @@ void EngineSync::processSettingsChanged()
 	for(auto * engine : _engines)
 		if(engine->shouldSendSettings())
 			engine->sendSettings();
+
+	if(_rCmder && _rCmder->shouldSendSettings())
+		_rCmder->sendSettings();
 }
 
 void EngineSync::processReloadData()
@@ -531,6 +539,9 @@ void EngineSync::processReloadData()
 	for(auto * engine : _engines)
 		if(engine->needsReloadData())
 			engine->sendReloadData();
+
+	if(_rCmder && _rCmder->needsReloadData())
+		_rCmder->sendReloadData();
 }
 
 
