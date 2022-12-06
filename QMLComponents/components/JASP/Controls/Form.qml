@@ -181,6 +181,7 @@ AnalysisForm
 			{
 				id:					generateWrapperButton
 				visible:            DEBUG_MODE || form.developerMode
+				height:				visible ? implicitHeight : 0
 				label:				"Generate Wrapper"
 				onClicked:			popup.open()
 
@@ -207,6 +208,7 @@ AnalysisForm
 					}
 				}
 			}
+
 			TextArea
 			{
 				id:					rScriptArea
