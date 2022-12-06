@@ -29,6 +29,8 @@ Version::Version(std::string version)
 {
 	const static std::regex parseIt("(\\d+)(\\.(\\d+))?(\\.(\\d+))?(\\.(\\d+))?"); //(sub)groups: 1 3 5 7//0 is whole match/line
 
+	if (version.empty()) return; // Empty version.
+
 	std::smatch found;
 	if(!std::regex_match(version, found, parseIt))
 		throw encodingError(version);

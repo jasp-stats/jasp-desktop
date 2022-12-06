@@ -39,7 +39,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	  _moduleData(		analysisEntry),
 	  _dynamicModule(	_moduleData->dynamicModule())
 {
-	if(moduleVersion == "" && _dynamicModule)
+	if(_moduleVersion.isEmpty() && _dynamicModule)
 		_moduleVersion = _dynamicModule->version();
 
 	if (data)
