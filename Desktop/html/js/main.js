@@ -38,6 +38,12 @@ $(document).ready(function () {
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
 	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 
+	$( window ).resize(function()
+	{
+		//console.log("window resized")
+		analyses.setBottomSpacerHeight();
+	});
+
 	window.refreshEditedImage = function(id, imageEditResults) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis === undefined) return;
@@ -321,7 +327,6 @@ $(document).ready(function () {
 			params.callback();
 	}
 
-
 	window.unselect = function () {
 
 		analyses.unselectAllAnalyses();
@@ -482,6 +487,8 @@ $(document).ready(function () {
 		jaspWidget.setHasReport(analysis.hasReport)
 
 		jaspWidget.render();
+
+		analyses.setBottomSpacerHeight();
 	}
 
 	$("#results").on("click", ".stack-trace-selector", function()
@@ -594,3 +601,4 @@ window.setTheme = function(themeName) {
 window.setFontFamily = function(fontFamily) {
 	document.body.style.fontFamily = fontFamily;
 }
+
