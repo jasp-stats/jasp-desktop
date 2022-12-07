@@ -20,12 +20,14 @@ target_include_directories(
   QMLComponents
   PUBLIC # JASP
   ${PROJECT_SOURCE_DIR}/Common
+  ${PROJECT_SOURCE_DIR}/CommonData
 )
 
 target_link_libraries(
   QMLComponents
   PUBLIC
          Common
+		 CommonData
          Qt::Core
          Qt::Gui
          Qt::Widgets
