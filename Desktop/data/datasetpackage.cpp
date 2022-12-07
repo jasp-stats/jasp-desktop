@@ -26,6 +26,7 @@
 #include "timers.h"
 #include "utilities/appdirs.h"
 #include "utils.h"
+#include "columnutils.h"
 #include "utilities/messageforwarder.h"
 #include "datasetpackagesubnodemodel.h"
 #include "databaseconnectioninfo.h"
@@ -1128,13 +1129,13 @@ void DataSetPackage::initColumnWithStrings(QVariant colId, std::string newName, 
 	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
-	bool valuesAreIntegers		= Utils::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
+	bool valuesAreIntegers		= ColumnUtils::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
 	
 	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
 
 	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
 	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
-	auto isScalar				= [&](){ return Utils::convertVecToDouble(values, doubleValues, emptyValuesMap); };
+	auto isScalar				= [&](){ return ColumnUtils::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 
 	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
 	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
