@@ -973,9 +973,9 @@ void EngineSync::pauseEngines(bool unloadData)
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine(unloadData);
 
-	long tryTill = Utils::currentSeconds() + ENGINE_KILLTIME; //Ill give the engine 1 sec to respond
+	long tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
 
-	while(!allEnginesPaused() && tryTill >= Utils::currentSeconds())
+	while(!allEnginesPaused() && tryTill >= Utils::currentMillis())
 		for (auto * engine : _engines)
 			engine->processReplies();
 
@@ -1055,9 +1055,9 @@ void EngineSync::enginesPrepareForData()
 			e->pauseEngine(true);
 		}
 
-	long tryTill = Utils::currentSeconds() + ENGINE_KILLTIME; //Ill give the engine 1 sec to respond
+	long tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
 
-	while(!allEnginesPaused(pauseOrKillThese) && tryTill >= Utils::currentSeconds())
+	while(!allEnginesPaused(pauseOrKillThese) && tryTill >= Utils::currentMillis())
 		for (auto * engine : pauseOrKillThese)
 			engine->processReplies();
 

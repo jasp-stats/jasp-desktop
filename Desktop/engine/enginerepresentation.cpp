@@ -300,7 +300,7 @@ void EngineRepresentation::processReplies()
 		resumeEngine();
 
 
-	if(!_stopRequested && _analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
+	if(!_stopRequested && _analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentMillis()) //We wait a second or two before we kill the engine if it does not want to abort.
 	{
 		if(jaspEngineStillRunning())
 			killEngine();
@@ -678,7 +678,7 @@ void EngineRepresentation::shutEngineDown()
 		stopEngine();
 		
 		//Wait for the engine to get the message.
-		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME > Utils::currentSeconds())
+		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME > Utils::currentMillis())
 			processReplies();
 		
 		if(!killed() && !stopped())
@@ -686,10 +686,10 @@ void EngineRepresentation::shutEngineDown()
 	}
 	else
 	{
-		size_t stopTime = Utils::currentSeconds();
+		size_t stopTime = Utils::currentMillis();
 		stopEngine();
 		
-		while(!stopped() && stopTime + ENGINE_KILLTIME > Utils::currentSeconds())
+		while(!stopped() && stopTime + ENGINE_KILLTIME > Utils::currentMillis())
 			processReplies();
 		
 		if(!stopped())
@@ -953,7 +953,7 @@ void EngineRepresentation::abortAnalysisInProgress(bool restartAfterwards)
 		runAnalysisOnProcess(_analysisInProgress);
 
 		_analysisAborted	= _analysisInProgress;
-		_abortTime			= Utils::currentSeconds(); //We'll give it some time to abort, so we need to remember when we gave the order.
+		_abortTime			= Utils::currentMillis(); //We'll give it some time to abort, so we need to remember when we gave the order.
 		_abortAndRestart	= restartAfterwards;
 	}
 }

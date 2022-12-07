@@ -25,8 +25,8 @@ struct unexpectedEngineReply  : public std::runtime_error
 	static void checkIfExpected(engineState expectedReplyState, engineState currentState, int channelNo);
 };
 
-///How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
-#define ENGINE_KILLTIME 1
+///How many milliseconds do we wait for an engine to be killed if it gets stuck in some analysis?
+#define ENGINE_KILLTIME 250
 
 ///After how many seconds is an engine allowed to shutdown due to boredom?
 #define ENGINE_BORED_SHUTDOWN (5 * 60)
