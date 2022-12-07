@@ -230,7 +230,7 @@ protected:
 	void			updateExtraColumnItem();
 	void			positionEditItem(	int row, int col);
 
-	QQmlContext *	setStyleDataItem(			QQmlContext * previousContext, bool active, size_t col, size_t row);
+	QQmlContext *	setStyleDataItem(			QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel = true);
 	QQmlContext *	setStyleDataRowNumber(		QQmlContext * previousContext, QString text, int row);
 	QQmlContext *	setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError, int columnType);
 

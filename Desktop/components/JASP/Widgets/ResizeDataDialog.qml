@@ -39,8 +39,8 @@ Popup
 
 		Item
 		{
-			height:	resizeButton.y + resizeButton.height + jaspTheme.generalAnchorMargin
-			width:	inputs.width
+			height:	inputs.height + jaspTheme.generalAnchorMargin + (40 * jaspTheme.uiScale)
+			width:	250 * jaspTheme.uiScale
 
 			Component.onCompleted:	cols.forceActiveFocus();
 
@@ -62,8 +62,7 @@ Popup
 			Item
 			{
 				id:				inputs
-				width:			200 * jaspTheme.uiScale
-				height:			cols.y + cols.height + jaspTheme.generalAnchorMargin
+				height:			100 * jaspTheme.uiScale + 2 * jaspTheme.generalAnchorMargin
 
 				anchors
 				{
@@ -79,9 +78,8 @@ Popup
 					text:			qsTr("Columns")
 					anchors
 					{
-						top:		inputs.top
-						left:		cols.left
-						right:		cols.right
+						top:				inputs.top
+						horizontalCenter:	cols.horizontalCenter
 					}
 				}
 
@@ -91,9 +89,8 @@ Popup
 					text:			qsTr("Rows")
 					anchors
 					{
-						top:		inputs.top
-						left:		rows.left
-						right:		rows.right
+						top:				inputs.top
+						horizontalCenter:	rows.horizontalCenter
 					}
 				}
 
@@ -103,7 +100,12 @@ Popup
 					text:					"X"
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
-					anchors.centerIn:		parent
+					anchors
+					{
+						top:				colsLabel.bottom
+						horizontalCenter:	parent.horizontalCenter
+						topMargin:			jaspTheme.generalAnchorMargin
+					}
 				}
 
 				IntegerField
@@ -113,13 +115,13 @@ Popup
 					fieldWidth:				width
 					anchors
 					{
-						top:				x.verticalCenter
+						top:				x.bottom
 						left:				parent.left
 						right:				x.left
 						margins:			jaspTheme.generalAnchorMargin
 					}
 
-					//KeyNavigation.tab:		rows
+					KeyNavigation.tab:		rows
 					KeyNavigation.right:	rows
 					KeyNavigation.down:		resizeButton
 				}
@@ -131,14 +133,13 @@ Popup
 					fieldWidth:				width
 					anchors
 					{
-						top:				x.verticalCenter
+						top:				x.bottom
 						left:				x.right
 						right:				parent.right
 						margins:			jaspTheme.generalAnchorMargin
 					}
-					KeyNavigation.down:		resizeButton
-					KeyNavigation.right:	resizeButton
-					//KeyNavigation.tab:		resizeButton
+					KeyNavigation.down:		closeButtonCross
+					KeyNavigation.tab:		resizeButton
 				}
 			}
 
@@ -149,15 +150,12 @@ Popup
 				text:					qsTr("Resize")
 				onClicked:				{ dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
 				toolTip:				qsTr("Resize data to set values")
-				KeyNavigation.right:	closeButtonCross
-				//KeyNavigation.tab:		closeButtonCross
-				//KeyNavigation.backtab:	rows
-				KeyNavigation.left:		rows
-				KeyNavigation.up:		cols
+
+				KeyNavigation.tab:		closeButtonCross
 
 				anchors
 				{
-					top:				inputs.bottom
+					bottom:				inputs.bottom
 					margins:			jaspTheme.generalAnchorMargin
 					left:				parent.left
 					right:				closeButtonCross.left
@@ -173,11 +171,12 @@ Popup
 				height:					resizeButton.height
 				onClicked:				popupResizeData.close()
 				toolTip:				qsTr("Close without resizing data")
-				KeyNavigation.up:		rows
+				KeyNavigation.tab:		cols
+
 				anchors
 				{
 					right:				parent.right
-					top:				inputs.bottom
+					bottom:				inputs.bottom
 					margins:			jaspTheme.generalAnchorMargin
 				}
 			}
