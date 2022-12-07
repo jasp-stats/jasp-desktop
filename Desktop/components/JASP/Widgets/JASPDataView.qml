@@ -49,10 +49,10 @@ FocusScope
 
 				property real  contentFlickSize:		100
 	
-	Keys.onUpPressed:		{ budgeUp();	event.accepted = true; }
-	Keys.onLeftPressed:		{ budgeLeft();	event.accepted = true; }
-	Keys.onDownPressed: 	{ budgeDown();	event.accepted = true; }
-	Keys.onRightPressed:	{ budgeRight();	event.accepted = true; }
+	Keys.onUpPressed:		(event) => { budgeUp();		event.accepted = true; }
+	Keys.onLeftPressed:		(event) => { budgeLeft();	event.accepted = true; }
+	Keys.onDownPressed: 	(event) => { budgeDown();	event.accepted = true; }
+	Keys.onRightPressed:	(event) => { budgeRight();	event.accepted = true; }
 	
 	function budgeUp()		{ if(myFlickable.contentY0 > 0)							myFlickable.contentY = Math.max(0,												myFlickable.contentY - contentFlickSize) }
 	function budgeDown()	{ if(myFlickable.contentY1 < myFlickable.contentHeight)	myFlickable.contentY = Math.min(myFlickable.contentHeight - myFlickable.height,	myFlickable.contentY + contentFlickSize) }
@@ -120,7 +120,7 @@ FocusScope
 
 		DataSetView
 		{
-			z:			-1
+			z:			1
 			id:			theView
 			model:		null
 			
