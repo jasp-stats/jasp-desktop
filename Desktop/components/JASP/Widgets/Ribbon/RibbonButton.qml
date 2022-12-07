@@ -62,15 +62,13 @@ Rectangle
 		{
 			if (ribbonButton.enabled && ribbonButton.ready)
 			{
-				if (ribbonButton.menu.rowCount() > 1) {
-					ribbonButton.showMyMenu();
-					event.accepted = true;
-				}
+				ribbonButton.startOrShowMenu();
+				event.accepted = true;
 			}
 		}
 		else if (event.key === Qt.Key_Down)
 		{
-			if (ribbonButton.ready && ribbonButton.enabled && ribbonButton.menu.rowCount() > 1)
+			if (ribbonButton.ready && ribbonButton.enabled)
 				ribbonButton.showMyMenu();
 			event.accepted = true;
 		}
@@ -85,9 +83,8 @@ Rectangle
 		}
 	}
 
-	function showMyMenu()
+	function startOrShowMenu()
 	{
-
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
 			customMenu.hide()
@@ -97,52 +94,72 @@ Rectangle
 		{
 			customMenu.hide()
 			ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
-			ribbon.focusOutRibbonBar();
 		}
 		else
+			showMyMenu();
+	}
+
+	function showMyMenu()
+	{
+
+		if (ribbonButton.menu.rowCount() <= 1)
+			return
+
+		var functionCall = function (index)
 		{
-			var functionCall = function (index)
-			{
-				var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
-				var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-				var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
+			var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
+			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
+			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
 
-				ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
-				customMenu.hide();
-				customMenu.focus = false;
-			}
-
-			// Key Navigation with Up or Down. Only navigate valid analysis items
-			//	@index
-			//	@direction: +1 or -1
-			var navigateFunc = function (index, direction)
-			{
-				let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
-				while(true)
-				{
-					let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
-					let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
-
-					if (name !== "" && name !== '???' && isEnabled)
-						break;
-
-					nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
-				}
-				return nextIndex;
-			}
-
-			var props =
-			{
-				"model"			: ribbonButton.menu,
-				"functionCall"	: functionCall,
-				"hasIcons"		: ribbonButton.menu.hasIcons(),
-				"navigateFunc"	: navigateFunc
-			};
-
-			customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
-
-			myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+			customMenu.hide();
+			customMenu.focus = false;
 		}
+
+		// Key Navigation with Up or Down. Only navigate valid analysis items
+		//	@index
+		//	@direction: +1 or -1
+		var navigateFunc = function (index, direction)
+		{
+			let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
+			while(true)
+			{
+				let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
+				let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
+
+				if (name !== "" && name !== '???' && isEnabled)
+					break;
+
+				nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
+			}
+			return nextIndex;
+		}
+
+		// Forward navigation call to parent list
+		//	@index
+		//	@direction: +1 or -1
+		var parentNavigateFunc = function (direction)
+		{
+			customMenu.hide()
+			jaspRibbons.forceActiveFocus();
+			jaspRibbons.navigateFunction(direction);
+			if (buttonList.currentItem)
+				buttonList.currentItem.showMyMenu();
+		}
+
+		var props =
+		{
+			"model"					: ribbonButton.menu,
+			"functionCall"			: functionCall,
+			"hasIcons"				: ribbonButton.menu.hasIcons(),
+			"navigateFunc"			: navigateFunc,
+			"parentNavigateFunc"	: parentNavigateFunc
+		};
+
+		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
+
+		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+
 	}
 
 	Rectangle
@@ -262,7 +279,7 @@ Rectangle
 					ribbon.focusOutModules();
 					ribbon.focusOutPreviousRibbonButton();
 					ribbon.goToRibbonIndex(ribbonButton.listIndex);
-					ribbonButton.showMyMenu();
+					ribbonButton.startOrShowMenu();
 				}
 				mouse.accepted = false;
 			}

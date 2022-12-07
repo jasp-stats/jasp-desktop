@@ -45,49 +45,45 @@ FocusScope
 
 	property int	currentIndex: -1
 
+	onSourceItemChanged: { menu.currentIndex = -1; }
+
 	Keys.onPressed: (event)=>
 	{
-		if (event.key === Qt.Key_Up || event.key === Qt.Key_Backtab)
+		switch(event.key)
 		{
-			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
-				menu.currentIndex = mod(menu.currentIndex - 1, repeater.count)
-			else
-				menu.currentIndex = menu.props["navigateFunc"](currentIndex, -1);
+		case Qt.Key_Up:
+		case Qt.Key_Backtab:
+			navigate(-1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Down || event.key === Qt.Key_Tab)
-		{
-			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
-				menu.currentIndex = mod(menu.currentIndex + 1, repeater.count)
-			else
-				menu.currentIndex = menu.props["navigateFunc"](currentIndex, 1);
+			break;
+		case Qt.Key_Down:
+		case Qt.Key_Tab:
+			navigate(1);
 			event.accepted = true;
-		}
-		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
-		{
+			break;
+		case Qt.Key_Left:
+			parentNavigate(-1);
+			event.accepted = true;
+			break;
+		case Qt.Key_Right:
+			parentNavigate(1);
+			event.accepted = true;
+			break;
+		case Qt.Key_Return:
+		case Qt.Key_Space:
 			if (currentIndex > -1)
 			{
 				menu.props['functionCall'](currentIndex)
 				menu.currentIndex = -1;
 			}
-			else if (menu.sourceItem !== null) //focus is still on source item so toggle menu
-			{
-				menu.sourceItem.forceActiveFocus();
-				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
-					menu.sourceItem.myMenuOpen = false;
-				menu.hide();
-			}
-		}
-		else if (event.key === Qt.Key_Escape)
-		{
+			closeMenu();
+			break;
+		case Qt.Key_Escape:
 			menu.currentIndex = -1;
-			if (menu.sourceItem !== null)
-			{
-				menu.sourceItem.forceActiveFocus();
-				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
-					menu.sourceItem.myMenuOpen = false;
-			}
-			menu.hide();
+			closeMenu();
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -128,12 +124,39 @@ FocusScope
 		menu.menuOffset		= "0,0"
 		menu.menuScroll		= "0,0"
 		menu.menuMinPos		= "0,0"
+		menu.currentIndex   = -1;
 	}
 
 	function resizeElements(newWidth)
 	{
 		for (var i = 0; i < repeater.count; ++i)
 			repeater.itemAt(i).width = newWidth;
+	}
+
+	function navigate(direction)
+	{
+		if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
+			menu.currentIndex = mod(menu.currentIndex + direction, repeater.count)
+		else
+			menu.currentIndex = menu.props["navigateFunc"](currentIndex, direction);
+	}
+
+	function parentNavigate(direction)
+	{
+		if (menu.props["parentNavigateFunc"] === undefined || typeof(menu.props["parentNavigateFunc"]) === "undefined")
+			return;
+		menu.props["parentNavigateFunc"](direction);
+	}
+
+	function closeMenu()
+	{
+		if (menu.sourceItem !== null)
+		{
+			menu.sourceItem.forceActiveFocus();
+			if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
+				menu.sourceItem.myMenuOpen = false;
+		}
+		menu.hide();
 	}
 
 	Rectangle

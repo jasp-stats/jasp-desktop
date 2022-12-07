@@ -106,7 +106,6 @@ Item
 			anchors.fill:	parent
 			onClicked:		osfbreadcrumbs.forceActiveFocus()
 		}
-
 	}
 
 	SortMenuButton
