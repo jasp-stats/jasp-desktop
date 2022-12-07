@@ -140,7 +140,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		if(this.analyses.length > 0)
 		{
 			var lastAnalysis = this.analyses[this.analyses.length - 1];
-			height = height - lastAnalysis.$el.outerHeight();
+			height = Math.max(0, height - lastAnalysis.$el.outerHeight());
 		}
 		else
 			height = 0;
