@@ -40,7 +40,6 @@ JAGSTextArea                        1.0 JAGSTextArea.qml
 JASPControl                         1.0 JASPControl.qml
 JASPGridControl                     1.0 JASPGridControl.qml
 JASPGridViewControl                 1.0 JASPGridViewControl.qml
-JASPDataView                        1.0 JASPDataView.qml
 JASPScrollBar                       1.0 JASPScrollBar.qml
 Label                               1.0 Label.qml
 MenuButton                          1.0 MenuButton.qml
