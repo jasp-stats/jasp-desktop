@@ -161,10 +161,11 @@ protected:
 #ifdef DATASETVIEW_ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
-	float extraColumnWidth() { return _extraColumnItem == nullptr ? 0 : 1 + _extraColumnItem->width(); }
+	float extraColumnWidth() { return !_extraColumnItem ? 0 : 2 + _extraColumnItem->width(); }
 
 	QQuickItem *	createTextItem(int row, int col);
 	void			storeTextItem(int row, int col, bool cleanUp = true);
+	void			setTextItemInfo(int row, int col, QQuickItem * textItem);
 
 	QQuickItem *	createRowNumber(int row);
 	void			storeRowNumber(int row);

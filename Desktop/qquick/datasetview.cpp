@@ -575,14 +575,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 
 		JASPTIMER_RESUME(createTextItem setValues);
 
-		textItem->setHeight(_dataRowsMaxHeight		- (2 * _itemVerticalPadding));
-		textItem->setWidth(_dataColsMaxWidth[col]	- (2 * _itemHorizontalPadding));
-
-		textItem->setX(_colXPositions[col]				+ _itemHorizontalPadding);
-		textItem->setY(((row + 1) * _dataRowsMaxHeight)	+ _itemVerticalPadding);
-
-		textItem->setZ(-4);
-		textItem->setVisible(true);
+		setTextItemInfo(row, col, textItem);
 
 		_cellTextItems[col][row] = itemCon;
 
@@ -592,6 +585,18 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 	JASPTIMER_STOP(createTextItem);
 
 	return _cellTextItems[col][row]->item;
+}
+
+void DataSetView::setTextItemInfo(int row, int col, QQuickItem * textItem)
+{
+	textItem->setHeight(_dataRowsMaxHeight		- (2 * _itemVerticalPadding));
+	textItem->setWidth(_dataColsMaxWidth[col]	- (2 * _itemHorizontalPadding));
+
+	textItem->setX(_colXPositions[col]				+ _itemHorizontalPadding );
+	textItem->setY(((row + 1) * _dataRowsMaxHeight)	+ _itemVerticalPadding   );
+
+	textItem->setZ(-4);
+	textItem->setVisible(true);
 }
 
 void DataSetView::storeTextItem(int row, int col, bool cleanUp)
@@ -679,8 +684,8 @@ QQuickItem * DataSetView::createRowNumber(int row)
 
 		//rowNumber->setProperty("text", QString::fromStdString(std::to_string(row + 1))); //Nobody wants zero-based rows...
 
-		rowNumber->setHeight(_dataRowsMaxHeight);
-		rowNumber->setWidth(_rowNumberMaxWidth);
+		rowNumber->setHeight(_dataRowsMaxHeight		- 2);
+		rowNumber->setWidth(_rowNumberMaxWidth		- 2);
 
 		rowNumber->setVisible(true);
 
@@ -689,8 +694,8 @@ QQuickItem * DataSetView::createRowNumber(int row)
 	else
 		rowNumber = _rowNumberItems[row]->item;
 
-	rowNumber->setX(_viewportX);
-	rowNumber->setY(_dataRowsMaxHeight * (1 + row));
+	rowNumber->setX(1 + _viewportX);
+	rowNumber->setY(1 + _dataRowsMaxHeight * (1 + row));
 	rowNumber->setZ(-3);
 
 	return _rowNumberItems[row]->item;
@@ -777,8 +782,8 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 		}
 
 
-		columnHeader->setHeight(_dataRowsMaxHeight);
-		columnHeader->setWidth(_dataColsMaxWidth[col]);
+		columnHeader->setHeight(_dataRowsMaxHeight    - 2);
+		columnHeader->setWidth(_dataColsMaxWidth[col] - 2);
 
 		columnHeader->setVisible(true);
 
@@ -787,8 +792,8 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	else
 		columnHeader = _columnHeaderItems[col]->item;
 
-	columnHeader->setX(_colXPositions[col]);
-	columnHeader->setY(_viewportY);
+	columnHeader->setX(1 + _colXPositions[col]);
+	columnHeader->setY(1 + _viewportY);
 	columnHeader->setZ(-3);
 
 	return columnHeader;
@@ -831,17 +836,16 @@ QQuickItem * DataSetView::createleftTopCorner()
 		_leftTopItem->setParent(this);
 		_leftTopItem->setParentItem(this);
 
-		_leftTopItem->setZ(-1);
-
 
 
 		_leftTopItem->setVisible(true);
 	}
 
-	_leftTopItem->setHeight(_dataRowsMaxHeight);
-	_leftTopItem->setWidth(_rowNumberMaxWidth);
-	_leftTopItem->setX(_viewportX);
-	_leftTopItem->setY(_viewportY);
+	_leftTopItem->setHeight(_dataRowsMaxHeight - 2);
+	_leftTopItem->setWidth(_rowNumberMaxWidth  - 2);
+	_leftTopItem->setX(_viewportX + 1);
+	_leftTopItem->setY(_viewportY + 1);
+	_leftTopItem->setZ(-1);
 
 	return _leftTopItem;
 }
@@ -849,12 +853,12 @@ QQuickItem * DataSetView::createleftTopCorner()
 void DataSetView::updateExtraColumnItem()
 {
 	//Log::log() << "createleftTopCorner() called!\n" << std::flush;
-	if(_extraColumnItem == nullptr)
+	if(!_extraColumnItem)
 		return;
 
-	_extraColumnItem->setHeight(_dataRowsMaxHeight);
+	_extraColumnItem->setHeight(_dataRowsMaxHeight - 2);
 	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
-	_extraColumnItem->setY(_viewportY);
+	_extraColumnItem->setY(1 + _viewportY);
 
 	connect(_extraColumnItem, &QQuickItem::widthChanged, this, &DataSetView::setExtraColumnX, Qt::UniqueConnection);
 }
@@ -1110,7 +1114,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		geomSize *= 2;
 		
 		QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), geomSize);
-		geometry->setLineWidth(1);
+		geometry->setLineWidth(1); //ignored anyway
         geometry->setDrawingMode(QSGGeometry::DrawLines);
 
 		assert(sizeof(float) * 2 == geometry->sizeOfVertex());
