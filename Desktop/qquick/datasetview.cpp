@@ -14,6 +14,7 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include "utils.h"
+#include "columnutils.h"
 #include "utilities/languagemodel.h"
 #include "data/datasettablemodel.h"
 
@@ -938,7 +939,7 @@ void DataSetView::positionEditItem(int row, int col)
 
 	if(!_editItemContextual)
 	{
-		_editItemContextual = new ItemContextualized(setStyleDataItem(nullptr, active, col, row));
+		_editItemContextual = new ItemContextualized(setStyleDataItem(nullptr, active, col, row, false));
 
 		//forceActiveFocus();
 
@@ -960,7 +961,7 @@ void DataSetView::positionEditItem(int row, int col)
 	else
 	{
 		//Log::log() << "repositioning current edit item (row=" << row << ", col=" << col << ")" << std::endl;
-		setStyleDataItem(_editItemContextual->context, active, col, row);
+		setStyleDataItem(_editItemContextual->context, active, col, row, false);
 	}
 
 	setTextItemInfo(row, col, _editItemContextual->item); //Will set it visible
@@ -1322,7 +1323,7 @@ void DataSetView::contextMenuClickedAtIndex(QModelIndex index)
 		_selectionModel->select(index, QItemSelectionModel::SelectCurrent);
 }
 
-QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)
+QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel)
 {
 	QModelIndex idx = _model->index(row, col);
 	
@@ -1332,6 +1333,9 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 		_storedDisplayText[row][col] = _model->data(idx, Qt::DisplayRole).toString();
 
 	QString text = _storedDisplayText[row][col];
+
+	if(text == tq(ColumnUtils::emptyValue) && !emptyValLabel)
+		text = "";
 
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
@@ -1572,6 +1576,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 			currentNode->setFlag(QSGNode::OwnsMaterial, false);
 			currentNode->setFlag(QSGNode::OwnsGeometry, true);
 			currentNode->setMaterial(&_material);
+			currentNode->setRenderOrder(100);
 
 			justAdded = true;
 
