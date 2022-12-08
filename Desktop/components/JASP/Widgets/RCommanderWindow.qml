@@ -210,6 +210,8 @@ Window
 							Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
 							Shortcut { onActivated: codeEntry.undo();		sequences: ["Ctrl+Z", ];}
 							Shortcut { onActivated: codeEntry.selectAll();	sequences: ["Ctrl+A", ];}
+
+							onTextChanged: rCmd.checkRCode(text)
 						}
 					}
 
@@ -297,7 +299,7 @@ Window
 				onClicked:	addAnalysis()
 				width:		clearOutput.width
 				height:		runButton.height
-				enabled:	codeEntry.text != "" && !rCmd.running
+				enabled:	rCmd.isAnalysisCode && !rCmd.running
 
 				anchors
 				{
