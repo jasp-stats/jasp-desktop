@@ -207,11 +207,20 @@ DropArea
 			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
 			property bool		loadingQml:			!formParent.loaded
 			property real		formHeight:			formParent.height
+			property bool		firstExpansion:		true //lame but is works
+
+			onExpandedChanged: { if(!expanded) firstExpansion = false; }
 
 			function postExpansionTasks()
 			{
+					if(typeof backgroundFlickable === 'undefined')
+						return;
+
 					backgroundFlickable.scrollToElement(expanderButton);
-					formParent.nextItemInFocusChain().forceActiveFocus();
+					if(firstExpansion) //only focus first item on analysis creation
+						formParent.nextItemInFocusChain().forceActiveFocus();
+					else
+						draggableItem.forceActiveFocus();
 			}
 
 			Connections {
