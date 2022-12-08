@@ -180,7 +180,7 @@ Item
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
 
 			ALTNavigation.enabled:		true
-			ALTNavigation.y: 10
+//			ALTNavigation.y: 10
 			ALTNavigation.index:		index
 			ALTNavigation.onTagMatch:
 			{
@@ -188,7 +188,7 @@ Item
 				if(enabled && ready)
 				{
 					ribbon.goToRibbonIndex(listIndex);
-					showMyMenu();
+					startOrShowMenu();
 				}
 			}
 		}

@@ -17,7 +17,7 @@ Item
 	Rectangle
 	{
 		color:				jaspTheme.altNavTagColor
-		radius:				3 * jaspTheme.uiScale
+		radius:				4 * jaspTheme.uiScale
 		anchors.fill:		parent
 		anchors.centerIn:	parent
 
@@ -26,7 +26,7 @@ Item
 			id:							tagText
 			text:						tagData.tagText
 			color:						"white"
-			font:						jaspTheme.fontLabel
+			font:						jaspTheme.fontALTNavTag
 			anchors.centerIn:			parent
 			horizontalAlignment:		Text.AlignHCenter
 			verticalAlignment:			Text.AlignVCenter

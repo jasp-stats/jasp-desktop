@@ -3,9 +3,10 @@
 #include "altnavroot.h"
 
 #include <QQmlProperty>
+#include <QMetaObject>
 
 #include "log.h"
-static int x = 0;
+static int z = 0;
 
 ALTNavScope::ALTNavScope(QObject* _attachee)
 	: QObject{nullptr}
@@ -14,9 +15,8 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 	postfixBroker = ALTNavPostfixAssignmentStrategy::createStrategy(currentStrategy);
 	if(_attachee)
 	{
-		index = x++;
-		Log::log() << "!!Created " << index << std::endl;
-		connect(_attachee, &QObject::destroyed, this, [this]() {deleteLater();});
+		Log::log() << "!!Created " << z++ << std::endl;
+		connect(_attachee, &QObject::destroyed, this, [&]() {setParent(nullptr); deleteLater();});
 		attachee = qobject_cast<QQuickItem*>(_attachee);
 		if(attachee) //is a visual item
 		{
@@ -219,16 +219,15 @@ void ALTNavScope::childEvent(QChildEvent* event)
 {
 	QObject::childEvent(event);
 
-	if(!ALTNavRegistry::getInstance()->dynamicTreeUpdate())
+	ALTNavRegistry* reg = ALTNavRegistry::getInstance();
+	if(!reg->dynamicTreeUpdate())
 		return;
 
-	if(event->added())
+	if(event->added() || event->removed())
 	{
-		qobject_cast<ALTNavScope*>(event->child())->setScopeActive(scopeActive);
+		reg->getCurrentNode()->setChildrenActive(reg->AltNavEnabled());
 		setChildrenPrefix();
 	}
-	else if(event->removed())
-		setChildrenPrefix();
 }
 
 void ALTNavScope::setEnabled(bool value)

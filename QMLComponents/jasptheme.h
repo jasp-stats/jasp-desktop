@@ -165,6 +165,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QFont              fontRibbon                      READ fontRibbon                      WRITE setFontRibbon                      NOTIFY fontRibbonChanged                      )
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
 	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
+	Q_PROPERTY(QFont              fontALTNavTag                   READ fontALTNavTag                   WRITE setFontALTNavTag                   NOTIFY fontALTNavTagChanged                   )
+
 
 	Q_PROPERTY(QFont              fontRCode                       READ fontRCode                       WRITE setFontRCode                       NOTIFY fontRCodeChanged                       )
 	Q_PROPERTY(QFont              fontCode						  READ fontCode				           WRITE setFontCode                        NOTIFY fontCodeChanged                        )
@@ -312,6 +314,7 @@ public:
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
 	QFont				fontRCode()							const	{ return _fontRCode;					}
 	QFont				fontCode()							const	{ return _fontCode;						}
+	QFont				fontALTNavTag()						const	{ return _fontALTNavTag;				}
 	QString				iconPath()							const	{ return _iconPath;						}
 	QString				themeName()							const	{ return _themeName;					}
 	static QString		currentIconPath();
@@ -445,6 +448,7 @@ signals:
 	void fontPrefOptionsGroupTitleChanged(QFont fontPrefOptionsGroupTitle);
 	void fontRCodeChanged(QFont fontRCode);
 	void fontCodeChanged(QFont fontCode);
+	void fontALTNavTagChanged(QFont fontALTNavTag);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged();
@@ -576,6 +580,7 @@ public slots:
 	void setThemeName(QString themeName);
 	void setFontRCode(QFont fontRCode);
 	void setFontCode(QFont fontCode);
+	void setFontALTNavTag(QFont fontALTNavTag);
 	void setIsDark(bool isDark);
 	void uiScaleHandler(float newUiScale);
 	void maxFlickVeloHandler(float maxFlickVelo);
@@ -720,7 +725,8 @@ private:
 						_fontRCode,
 						_fontCode,
 						_fontGroupTitle,
-						_fontPrefOptionsGroupTitle;
+						_fontPrefOptionsGroupTitle,
+						_fontALTNavTag;
 
 	QString				_iconPath,
 						_themeName;

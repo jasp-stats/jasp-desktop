@@ -22,8 +22,6 @@ ALTNavTag::ALTNavTag(QQuickItem *_attachee) : QObject{_attachee}
 
 ALTNavTag::~ALTNavTag()
 {
-	tagItem->setParentItem(nullptr);
-	tagItem->disconnect();
 	delete tagItem;
 }
 

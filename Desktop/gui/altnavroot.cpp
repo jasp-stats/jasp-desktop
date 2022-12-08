@@ -110,10 +110,16 @@ void ALTNavRegistry::setAltNavEnabled(bool value)
 	}
 }
 
+bool ALTNavRegistry::AltNavEnabled()
+{
+	return altNavEnabled;
+}
+
 void ALTNavRegistry::setCurrentNode(ALTNavScope *scope)
 {
 	currentNode->setChildrenActive(false);
 	scope->setChildrenActive(altNavEnabled);
+	scope->setChildrenPrefix();
 	currentNode = scope;
 }
 

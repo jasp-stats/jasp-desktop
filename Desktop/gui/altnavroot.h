@@ -19,16 +19,19 @@ public:
 	void resetAltNavInput();
 	void setAltNavInput(QString input);
 	void updateAltNavInput(QString entry);
+	QString getCurrentALTNavInput();
+
+	bool dynamicTreeUpdate();
+
 	void setAltNavEnabled(bool value);
+	bool AltNavEnabled();
+
 
 	void setCurrentNode(ALTNavScope* scope);
 	void setCurrentRoot(ALTNavScope* root);
 	ALTNavScope* getCurrentNode();
 	ALTNavScope* getCurrentRoot();
 	ALTNavScope* getDefaultRoot();
-
-	QString getCurrentALTNavInput();
-	bool dynamicTreeUpdate();
 
 	//singleton stuff
 	static ALTNavRegistry* getInstance();

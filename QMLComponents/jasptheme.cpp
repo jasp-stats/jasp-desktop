@@ -1256,6 +1256,15 @@ void JaspTheme::setFontCode(QFont fontCode)
 	emit fontCodeChanged(_fontCode);
 }
 
+void JaspTheme::setFontALTNavTag(QFont fontALTNavTag)
+{
+	if (_fontALTNavTag == fontALTNavTag)
+		return;
+
+	_fontALTNavTag = fontALTNavTag;
+	emit fontALTNavTagChanged(_fontALTNavTag);
+}
+
 void JaspTheme::setIsDark(bool isDark)
 {
 	if (_isDark == isDark)
