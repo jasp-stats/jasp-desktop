@@ -17,6 +17,7 @@
 //
 
 #include "rsyntax.h"
+#include "appinfo.h"
 #include "analysisform.h"
 #include "log.h"
 #include <QQmlContext>
@@ -85,7 +86,9 @@ QString RSyntax::generateSyntax() const
 		formulaSources.append(formula->modelSources());
 
 	result = _analysisFullName(true) + "(\n";
-	result += FunctionOptionIndent + "data = NULL";
+	result += FunctionOptionIndent + "data = NULL,\n";
+	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
+
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + formula->toString();
 
@@ -155,7 +158,8 @@ QString RSyntax::generateWrapper() const
 \n\
 ";
 	result += _form->name() + "Wrapper <- function(\n";
-	result += FunctionOptionIndent + "data = NULL";
+	result += FunctionOptionIndent + "data = NULL,\n";
+	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
 
@@ -199,7 +203,8 @@ QString RSyntax::generateWrapper() const
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
 	+ FunctionLineIndent + "defaults <- setdiff(names(defaultArgs), names(options))\n"
 	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
-	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n\n";
+	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n"
+	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 
 	for (FormulaBase* formula : _formulas)
 	{
@@ -231,7 +236,7 @@ QString RSyntax::generateWrapper() const
 	}
 
 	result += ""
-	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options))\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options, version))\n"
 	+ "}";
 
 	return result;
@@ -244,6 +249,25 @@ void RSyntax::setUp()
 		formula->setUp();
 		connect(formula,	&FormulaBase::somethingChanged, this, &RSyntax::somethingChanged, Qt::QueuedConnection);
 	}
+}
+
+FormulaBase* RSyntax::getFormula(const QString& name) const
+{
+	for (FormulaBase* formula : _formulas)
+		if (formula->name() == name)
+			return formula;
+
+	return nullptr;
+}
+
+void RSyntax::addFormula(FormulaBase *formula)
+{
+	if (getFormula(formula->name()))
+		_form->addFormError(tr("Formula with name '%1' is defined twice").arg(formula->name()));
+	else if (_form->getControl(formula->name()))
+		_form->addFormError(tr("A control and a formula have the same name '%1'").arg(formula->name()));
+	else
+		_formulas.append(formula);
 }
 
 bool RSyntax::parseRSyntaxOptions(Json::Value &options) const

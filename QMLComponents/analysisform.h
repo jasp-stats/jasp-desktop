@@ -79,6 +79,7 @@ public:
 	QString					title()							const	{ return _analysis ? tq(_analysis->title())		: "";		}
 	QString					name()							const	{ return _analysis ? tq(_analysis->name())		: "";		}
 	QString					module()						const	{ return _analysis ? tq(_analysis->module())	: "";		}
+	QString					version()						const	{ return _analysis ? tq(_analysis->moduleVersion().asString()) : "";	}
 	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;									}
 	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
 	bool					formCompleted()					const	{ return _formCompleted; }
@@ -155,6 +156,7 @@ public:
 	RSyntax*		rSyntax()				const	{ return _rSyntax;							}
 	QString			generateRSyntax()		const;
 	QVariantList	optionNameConversion()	const;
+	bool			isFormulaName(const QString& name)	const;
 
 	stringvecvec	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void			addColumnControl(JASPControl* control, bool isComputed);

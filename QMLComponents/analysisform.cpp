@@ -149,28 +149,6 @@ void AnalysisForm::addControl(JASPControl *control)
 {
 	const QString & name = control->name();
 
-	if (name.isEmpty() && control->isBound())
-	{
-		QString label = control->humanFriendlyLabel();
-
-		if (!label.isEmpty())	addFormError(tr("Control with label '%1' has no name").arg(label));
-		else					addFormError(tr("A control has no name"));
-
-		control->setHasError(true);
-	}
-
-	if (!name.isEmpty() && control->nameMustBeUnique())
-	{
-		if (_controls.keys().contains(name))
-		{
-			addFormError(tr("2 controls have the same name: %1").arg(name));
-			control			->	setHasWarning(true);
-			_controls[name]	->	setHasWarning(true);
-		}
-		else
-			_controls[name] = control;
-	}
-
 	if (_analysis && control->isBound())
 	{
 		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
@@ -180,6 +158,17 @@ void AnalysisForm::addControl(JASPControl *control)
 	{
 		ExpanderButtonBase* expander = dynamic_cast<ExpanderButtonBase*>(control);
 		_expanders.push_back(expander);
+	}
+
+	if (!name.isEmpty() && !control->nameIsOptionValue())
+	{
+		if (_controls.count(name) > 0)
+		{
+			control->addControlError(tr("2 controls have the same name: %1").arg(name));
+			_controls[name]->addControlError(tr("2 controls have the same name: %1").arg(name));
+		}
+		else
+			_controls[name] = control;
 	}
 }
 
@@ -758,6 +747,11 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->resultsMeta(), 2);
+}
+
+bool AnalysisForm::isFormulaName(const QString& name) const
+{
+	return _rSyntax->getFormula(name) != nullptr;
 }
 
 QString AnalysisForm::generateRSyntax() const

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <json/json.h>
 #include "controls/jaspcontrol.h"
+#include "appinfo.h"
 
 class AnalysisForm;
 
@@ -14,7 +15,8 @@ class AnalysisBase : public QObject
 	Q_PROPERTY(QString				qmlError				READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
 
 public:
-	explicit AnalysisBase(QObject *parent = nullptr);
+	explicit AnalysisBase(QObject *parent = nullptr, Version moduleVersion = AppInfo::version);
+	AnalysisBase(QObject *parent, AnalysisBase* duplicateMe);
 
 	virtual bool isOwnComputedColumn(const std::string &col)				const	{ return false; }
 	virtual void refresh()															{}
@@ -50,6 +52,7 @@ public:
 	const	Json::Value	optionsMeta()										const	{ return _boundValues.get(".meta", Json::nullValue);	}
 	void				clearOptions()												{ _boundValues.clear();		}
 
+	const	Version	&	moduleVersion()										const	{ return _moduleVersion;	}
 
 	QQuickItem *	formItem()												const;
 
@@ -77,6 +80,7 @@ protected:
 
 	AnalysisForm*	_analysisForm		= nullptr;
 	QString			_qmlError;
+	Version			_moduleVersion;
 
 private:
 	Json::Value		_boundValues		= Json::objectValue;

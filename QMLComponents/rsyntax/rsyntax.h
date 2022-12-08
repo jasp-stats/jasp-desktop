@@ -43,7 +43,8 @@ public:
 	QString							getRSyntaxFromControlName(const QString& name)	const;
 	QString							getControlNameFromRSyntax(const QString& name)	const;
 	void							setUp();
-	void							addFormula(FormulaBase* formula)							{ _formulas.append(formula);	}
+	void							addFormula(FormulaBase* formula);
+	FormulaBase*					getFormula(const QString& name)					const;
 	bool							parseRSyntaxOptions(Json::Value& options)		const;
 	void							addError(const QString& msg)					const;
 	bool							hasError()										const;
@@ -62,7 +63,7 @@ private:
 	QString							_analysisFullName(bool wrapper = false)		const;
 
 	AnalysisForm*					_form							= nullptr;
-	QVector<FormulaBase*>				_formulas;
+	QVector<FormulaBase*>			_formulas;
 	QMap<QString, QString>			_controlNameToRSyntaxMap;
 	QMap<QString, QString>			_rSyntaxToControlNameMap;
 };
