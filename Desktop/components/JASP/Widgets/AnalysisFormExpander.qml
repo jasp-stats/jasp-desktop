@@ -141,9 +141,6 @@ DropArea
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
 
-			onEntered: { expanderRectangle.scale = 1.02; }
-			onExited:  { expanderRectangle.scale = 1.0; }
-
 			drag.onActiveChanged:
 			{
 				if (drag.active)
@@ -256,6 +253,7 @@ DropArea
 			{
 				id:				expanderRectangle
 				height:			jaspTheme.formExpanderHeaderHeight  //label.contentHeight
+				scale:			mouseArea.containsMouse && !expanderButton.expanded ? 1.015 : 1.0
 
 				onActiveFocusChanged:	{ if (activeFocus) backgroundFlickable.scrollToElement(expanderButton); }
 
