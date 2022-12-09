@@ -534,7 +534,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::RadioButton:					return tr("Radio Button");			break;
 	case ControlType::RadioButtonGroup:				return tr("Radio Buttons");			break;
 	case ControlType::VariablesListView:			return tr("Variables List");		break;
-	case ControlType::ComboBox:						return tr("ComboBox");				break;
+	case ControlType::ComboBox:						return tr("DropDown");				break;
 	case ControlType::FactorLevelList:				return tr("Factor Level List");		break;
 	case ControlType::InputListView:				return tr("Input ListView");		break;
 	case ControlType::TableView:					return tr("TableView");				break;
@@ -549,15 +549,30 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	}
 }
 
-QString JASPControl::helpMD(int howDeep) const
+QString JASPControl::helpMD(int howDeep, bool asList) const
 {
-	if(!isVisible())
+	if(!isEnabled())
 		return "";
 		
 	Log::log() << "Generating markdown for control by name '" << name() << "', title '" << title() << "' and type: '" << JASPControl::ControlTypeToFriendlyString(controlType()) << "'.\n";
 		
 	if(controlType() == JASPControl::ControlType::VariablesForm)
 		Log::log() << "varform!\n";
+
+	bool shouldChildrenBeAList;
+
+	switch(controlType())
+	{
+	case ControlType::GroupBox:
+	case ControlType::ComboBox:
+	case ControlType::RadioButtonGroup:
+		shouldChildrenBeAList = true;
+		break;
+
+	default:
+		shouldChildrenBeAList = false;
+		break;
+	}
 
 	howDeep++;
 	QStringList markdown, childMDs;
@@ -569,8 +584,14 @@ QString JASPControl::helpMD(int howDeep) const
 		
 	Log::log() << "Control encloses #" << children.size() << " children." << std::endl;
 
+	bool	childrenList = asList || shouldChildrenBeAList || howDeep > 6;
+	int		newDeep = howDeep;
+
+	if(childrenList && !asList)
+		newDeep = 0;
+
 	for (JASPControl* childControl : children)
-		childMDs << childControl->helpMD(howDeep);
+		childMDs << childControl->helpMD(newDeep, childrenList);
 
 	QString childMD = childMDs.join("");
 
@@ -586,20 +607,25 @@ QString JASPControl::helpMD(int howDeep) const
 	if(aControlThatEncloses)
 		markdown << "\n\n";
 
-	if(howDeep > 6) markdown << "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
-	else			markdown << QString{howDeep, '#'} + " "; // ;)
+	if(controlType() == ControlType::Expander)
+		markdown << "\n---\n";
 
-	//Would be better to show something like "Assigned vars" or "Available var list" or something like that
-	//if(controlType() != ControlType::VariablesListView)		
-		markdown << friendlyName();
-	//else													markdown << qobject_cast<JASPListControl*>(this)->
+	if(asList)	markdown << QString{howDeep, '\t'} + "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
+	else		markdown << QString{howDeep, '#' } + " "; // ;)
+
+	markdown << friendlyName();
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";
 
+
 	markdown << info() + "\n";
 
 	markdown << childMD;
+
+	if(controlType() == ControlType::Expander)
+		markdown << "\n---\n";
+
 
 	QString md = markdown.join("") + "\n\n";
 		

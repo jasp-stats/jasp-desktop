@@ -112,7 +112,8 @@ public:
 	QString				title()						const	{ return _title;				}
 	QString				info()						const	{ return _info;					}
 	QString				toolTip()					const	{ return _toolTip;				}
-	QString				helpMD(int howDeep = 2)		const;
+	QString				helpMD(int howDeep = 2,
+							   bool asList = false)	const;
 	bool				isBound()					const	{ return _isBound;				}
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;	}
 	bool				indent()					const	{ return _indent;				}
