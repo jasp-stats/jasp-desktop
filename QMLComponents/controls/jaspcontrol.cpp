@@ -549,15 +549,14 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	}
 }
 
-QString JASPControl::helpMD(int howDeep, bool asList) const
+QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) const
 {
 	if(!isEnabled())
 		return "";
+
+	markdowned.insert(this);
 		
 	Log::log() << "Generating markdown for control by name '" << name() << "', title '" << title() << "' and type: '" << JASPControl::ControlTypeToFriendlyString(controlType()) << "'.\n";
-		
-	if(controlType() == JASPControl::ControlType::VariablesForm)
-		Log::log() << "varform!\n";
 
 	bool shouldChildrenBeAList;
 
@@ -566,6 +565,7 @@ QString JASPControl::helpMD(int howDeep, bool asList) const
 	case ControlType::GroupBox:
 	case ControlType::ComboBox:
 	case ControlType::RadioButtonGroup:
+	case ControlType::VariablesForm:
 		shouldChildrenBeAList = true;
 		break;
 
@@ -573,6 +573,9 @@ QString JASPControl::helpMD(int howDeep, bool asList) const
 		shouldChildrenBeAList = false;
 		break;
 	}
+
+	if(controlType() == ControlType::Expander)
+		howDeep = 1; //When within a section we can go back to bigger titles. Together with howDeep++ right below here this ends up as default 2
 
 	howDeep++;
 	QStringList markdown, childMDs;
@@ -584,14 +587,15 @@ QString JASPControl::helpMD(int howDeep, bool asList) const
 		
 	Log::log() << "Control encloses #" << children.size() << " children." << std::endl;
 
-	bool	childrenList = asList || shouldChildrenBeAList || howDeep > 6;
+	bool	childrenList = asList || shouldChildrenBeAList || howDeep > 6; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
 	int		newDeep = howDeep;
 
 	if(childrenList && !asList)
 		newDeep = 0;
 
 	for (JASPControl* childControl : children)
-		childMDs << childControl->helpMD(newDeep, childrenList);
+		if(!markdowned.count(childControl))
+			childMDs << childControl->helpMD(markdowned, newDeep, childrenList);
 
 	QString childMD = childMDs.join("");
 
@@ -601,7 +605,7 @@ QString JASPControl::helpMD(int howDeep, bool asList) const
 
 	//If on the other hand we are a simply radiobutton we can just turn it into a list entry
 	if(controlType() == ControlType::RadioButton && !aControlThatEncloses)
-		return "- *" + title() + "*: " + info() + "\n";
+		return "- *" + title() + "* " + info() + "\n";
 
 	//And otherwise we go the full mile, header + title + info and all followed by whatever children we have
 	if(aControlThatEncloses)
@@ -610,7 +614,7 @@ QString JASPControl::helpMD(int howDeep, bool asList) const
 	if(controlType() == ControlType::Expander)
 		markdown << "\n---\n";
 
-	if(asList)	markdown << QString{howDeep, '\t'} + "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
+	if(asList)	markdown << QString{howDeep, ' '} + "- ";
 	else		markdown << QString{howDeep, '#' } + " "; // ;)
 
 	markdown << friendlyName();

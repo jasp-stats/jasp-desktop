@@ -32,8 +32,7 @@ TextInputBase
 	title:				text
 	
 	property alias	control:			control
-	property alias	label:				beforeLabel.text
-	property alias	text:				beforeLabel.text
+	property alias	text:				textField.label
 	property alias	value:				control.text
 	property string lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
@@ -46,7 +45,6 @@ TextInputBase
 
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
-	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
 	property bool	editable:			true
@@ -128,6 +126,7 @@ TextInputBase
 			font:					jaspTheme.font
 			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			text:					textField.label
 		}
 	}
 
@@ -234,6 +233,7 @@ TextInputBase
 			font:		jaspTheme.font
 			anchors.verticalCenter: parent.verticalCenter
 			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			text:		textField.afterLabel
 		}
 	}
 }

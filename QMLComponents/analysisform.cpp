@@ -912,8 +912,11 @@ QString AnalysisForm::helpMD() const
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
+	std::set<const JASPControl *> markdowned;
+
 	for(JASPControl * control : orderedControls)
-		markdown.push_back(control->helpMD());
+		if(!markdowned.count(control))
+			markdown.push_back(control->helpMD(markdowned));
 
 	markdown.push_back(metaHelpMD());
 	

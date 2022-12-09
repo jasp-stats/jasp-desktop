@@ -28,7 +28,8 @@ class TextInputBase : public JASPControl, public BoundControlBase
 
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
 	Q_PROPERTY( QVariant	defaultValue		READ defaultValue			WRITE setDefaultValue		NOTIFY defaultValueChanged			)
-
+	Q_PROPERTY( QString		label				READ label					WRITE setLabel				NOTIFY labelChanged					)
+	Q_PROPERTY( QString		afterLabel			READ afterLabel				WRITE setAfterLabel			NOTIFY afterLabelChanged			)
 
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
@@ -40,16 +41,28 @@ public:
 	void		bindTo(const Json::Value& value)					override;
 	void		setUp()												override;
 	void		rScriptDoneHandler(const QString& result)			override;
+	QString		helpMD(SetConst & markdowned,
+					   int howDeep = 2, bool asList=true)	const	override;
 
-	TextInputType	inputType()	{ return _inputType; }
+	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
 	QVariant		defaultValue()							const	{ return _defaultValue;			}
+
+	const QString &label() const;
+	void setLabel(const QString &newLabel);
+
+	const QString &afterLabel() const;
+	void setAfterLabel(const QString &newAfterLabel);
 
 signals:
 	void		formulaCheckSucceeded();
 	void		hasScriptErrorChanged();
 	void		defaultValueChanged();
+
+	void labelChanged();
+
+	void afterLabelChanged();
 
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
@@ -68,12 +81,13 @@ private:
 	QString		_getDoubleArrayValue(const std::vector<double>& dblValues);
 
 	TextInputType			_inputType;
-	QString					_value;
+	QString					_value,
+							_label,
+							_afterLabel;
 
 	bool					_parseDefaultValue	= true;
 	QVariant				_defaultValue;
 	bool					_hasScriptError		= false;
-
 };
 
 #endif // TEXTINPUTBASE_H

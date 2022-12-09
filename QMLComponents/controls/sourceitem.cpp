@@ -356,6 +356,7 @@ JASPListControl::LabelValueMap SourceItem::_readValues(JASPListControl* listCont
 		{
 			for (const QVariant& itemVariant : list)
 			{
+				//It is called labelValuePair but it might in fact also contain "info"
 				QMap<QString, QVariant> labelValuePair = itemVariant.toMap();
 				if (labelValuePair.isEmpty())
 				{
