@@ -135,7 +135,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	setBottomSpacerHeight: function() {
 		var bottomSpacer = $("#bottomSpacer");
-		var height		 = window.innerHeight;
+		var height		 = $(window).innerHeight();
 
 		if(this.analyses.length > 0)
 		{
