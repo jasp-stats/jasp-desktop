@@ -33,6 +33,7 @@ ComponentsListBase
 	addItemManually			: !source
 	minimumItems			: 1
 	newItemName				: qsTr("New tab")
+	controlType				: JASPControl.TabView
 
 	property alias	label				: tabView.title
 	property bool	showAddIcon			: addItemManually
