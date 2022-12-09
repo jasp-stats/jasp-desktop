@@ -56,10 +56,18 @@ Table of Contents:
 The components can roughly be divided in three classes. One that deals with general inputs (e.g., checkboxes), one that deals with assigning variables and one that groups components together. Each will be covered in the following section.
 Some remarks about these components:
 - They are all QML items, so they automatically get generic QML properties like `enabled` or `visible`.
-- In several examples you may encounter `qsTr()`, it is important that this function wraps all text that will be shown in the interface. It will provide the possibility to translate JASP in the future.
+- In several examples you may encounter `qsTr()`, it is important that this function wraps around all user-visible text, this function makes translating the interface possible.
 - The components described below may generally be nested to an arbitrary level (e.g., a checkbox in a group in a checkbox).
 
+### Name
 All (well almost all) of these components have a property `name` that is also used in JASP-files to store the value the user selected. That means that whenever you change `name` for a component for a newer version of your analysis/module the stored value will be ignored. To make sure the user entered information isn't lost you can add an [Upgrades.qml to your module](jasp-upgrade-qml.md).
+
+### Info
+Each component also has a field called `info` which is used to generate documentation from. By wrapping the text in the above mentioned `qsTr` this also allows us to translate the documentation for each module in parts. So you would have something like:
+```
+Checkbox { name: "aCheckBox"; info: qsTr("Can be turned on or off and send a boolean to the r-code"); }
+```
+The info will be combined with that of all the other components and displayed as markdown in the helpwindow.
 
 ### General Input
 These components are quite common in questionnaires and input forms on websites, they include the checkbox, radiobutton, dropdown, slider and textfields where text may be entered.
