@@ -93,10 +93,14 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.$el.append(analysis.$el);
 		analysis.$el.animate({ "opacity": 1 }, 400, "easeOutCubic")
 
+		this.setBottomSpacerHeight();
+
 		window.scrollToTopView(analysis.$el);
 	},
 
 	removeAnalysis: function (analysis) {
+
+		var analysesVar = this;
 
 		analysis.$el.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 			analysis.$el.slideUp(400, function () {
@@ -104,8 +108,12 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 				// analysis.close();
 				this.analyses = _.without(this.analyses, analysis);
 				this.views = _.without(this.analyses, analysis);
+
+				analysesVar.setBottomSpacerHeight();
 			});
 		});
+
+		
 	},
 
 	removeAnalysisId: function (analysisId) {
@@ -122,6 +130,23 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	reRender: function() {
 		this.analyses.forEach(function(analysis) {analysis.render();});
+		this.setBottomSpacerHeight();
+	},
+
+	setBottomSpacerHeight: function() {
+		var bottomSpacer = $("#bottomSpacer");
+		var height		 = $(window).innerHeight();
+
+		if(this.analyses.length > 0)
+		{
+			var lastAnalysis = this.analyses[this.analyses.length - 1];
+			height = Math.max(0, height - lastAnalysis.$el.outerHeight());
+		}
+		else
+			height = 0;
+
+		bottomSpacer[0].style.height = height + "px";
+		//console.log(`bottomSpacer height set to ${height}`);
 	},
 
 	move: function(fromId, toId) {
@@ -132,6 +157,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 			if (this.analyses[i].model.get("id") === toId)
 				toIndex = i
 		}
+
 		if (fromIndex >= 0 && toIndex >= 0 && fromIndex != toIndex) {
 			var fromAnalysis = this.analyses[fromIndex]
 			var toAnalysis = this.analyses[toIndex]
@@ -145,6 +171,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 					toAnalysis.$el.before(fromAnalysis.$el)
 				fromAnalysis.$el.slideDown(200)
 			})
+
+			this.setBottomSpacerHeight();
 		}
 	},
 
@@ -260,6 +288,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.$el.append(this.noteBox.$el);
 
 		//this.$el.append($titleSpace);
+
+		this.setBottomSpacerHeight();
 	},
 
 	onClose: function () {
