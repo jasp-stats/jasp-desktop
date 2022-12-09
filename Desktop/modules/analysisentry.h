@@ -41,7 +41,6 @@ public:
 	std::string		menu()					const { return _menu;									}
 	std::string		title()					const { return _title;									}
 	std::string		function()				const { return _function;								}
-	std::string		functionInternal()		const { return _functionInternal;						}
 	std::string		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
 	std::string		icon()					const;
 	bool			isSeparator()			const { return _isSeparator;		}
@@ -64,7 +63,6 @@ public:
 private:
 	std::string		_title			= "???",
 					_function		= "???",
-					_functionInternal = "???",
 					_qml			= "???",
 					_menu			= "???";
 	DynamicModule*	_dynamicModule	= nullptr;

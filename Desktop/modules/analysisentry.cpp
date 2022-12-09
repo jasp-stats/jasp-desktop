@@ -43,7 +43,7 @@ std::string AnalysisEntry::icon() const
 
 std::string AnalysisEntry::getFullRCall() const
 {
-	return dynamicModule()->rModuleCall(functionInternal());
+	return dynamicModule()->rModuleCall(function() + (hasWrapper() ? "Internal" : ""));
 }
 
 Json::Value AnalysisEntry::getDefaultResults() const

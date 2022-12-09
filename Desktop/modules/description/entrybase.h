@@ -26,7 +26,6 @@ class EntryBase : public DescriptionChildBase
 	Q_PROPERTY(QString		menu			READ menu				WRITE setMenu				NOTIFY menuChanged				)
 	Q_PROPERTY(QString		title			READ title				WRITE setTitle				NOTIFY titleChanged				)
 	Q_PROPERTY(QString		func			READ function			WRITE setFunction			NOTIFY functionChanged			)
-	Q_PROPERTY(QString		funcInternal	READ functionInternal	WRITE setFunctionInternal	NOTIFY functionInternalChanged	)
 	Q_PROPERTY(QString		icon			READ icon				WRITE setIcon				NOTIFY iconChanged				)
 	Q_PROPERTY(QString		qml				READ qml				WRITE setQml				NOTIFY qmlChanged				)
 	Q_PROPERTY(EntryType	entryType		READ entryType										NOTIFY entryTypeChanged			) //Entry type can only be set in constructor, to keep things manageable
@@ -44,7 +43,6 @@ public:
 	QString		menu()				const { return _menu;				}
 	QString		title()				const { return _title;				}
 	QString		function()			const { return _function;			}
-	QString		functionInternal()	const { return _functionInternal;	}
 	QString		icon()				const { return _icon;				}
 	EntryType	entryType()			const { return _entryType;			}
 	bool		requiresData()		const { return _requiresData;		}
@@ -56,7 +54,7 @@ public:
 	bool		shouldBeAdded()		const;
 
 	///This function is a stopgap and these two classes must be merged together later
-	AnalysisEntry * convertToAnalysisEntry(bool requiresDataDefault, bool hasWrappers) const;
+	AnalysisEntry * convertToAnalysisEntry(bool requiresDataDefault) const;
 
 
 
@@ -64,7 +62,6 @@ public slots:
 	void setMenu(			QString menu);
 	void setTitle(			QString title);
 	void setFunction(		QString function);
-	void setFunctionInternal(QString functionInternal);
 	void setIcon(			QString icon);
 	void setQml(			QString qml);
 	void setRequiresData(	bool	requiresData);
@@ -77,7 +74,6 @@ signals:
 	void menuChanged();
 	void titleChanged();
 	void functionChanged();
-	void functionInternalChanged();
 	void iconChanged();
 	void entryTypeChanged();
 	void requiresDataChanged();
@@ -90,7 +86,6 @@ private:
 	QString			_menu					= "",
 					_title					= "???",
 					_function				= "",
-					_functionInternal		= "",
 					_icon					= "",
 					_qml					= "";
 	EntryType		_entryType				= EntryType::unknown;

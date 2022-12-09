@@ -215,7 +215,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	{
 		if(entry->shouldBeAdded())
 		{
-			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), hasWrappers());
+			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef());
 			if (analysisEntry != nullptr)
 			{
 				if (analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())
