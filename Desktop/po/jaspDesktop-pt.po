@@ -955,15 +955,6 @@ msgctxt "FilterWindow|"
 msgid "Filter Changed"
 msgstr "Filtro alterado"
 
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "Control with label '%1' has no name"
-msgstr "Controle com rótulo '%1' não tem nome"
-
-msgctxt "AnalysisForm|"
-msgid "A control has no name"
-msgstr "Um controle não tem nome"
-
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
 msgstr "O arquivo foi originado em uma versão mais antiga do JASP."
@@ -2926,12 +2917,12 @@ msgstr ""
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Versão %2</i><br><p>%3</p>>>br>>>br>>i>Criado por %4 e mantido "
-"por %5.</i><br>>i>Veja o website para mais detalhes: <a href=\"http://%6\">"
-"%6</a></i><br>"
+"por %5.</i><br>>i>Veja o website para mais detalhes: <a href=\"http://"
+"%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -4007,4 +3998,39 @@ msgstr ""
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "Control with label '%1' has no name"
+msgstr "Controle com rótulo '%1' não tem nome"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "A control has no name"
+msgstr "Um controle não tem nome"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "Option name '%1' is a reserved word"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "2 controls have the same name: %1"
+msgstr "2 controles têm o mesmo nome: %1"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "A control and a formula have the same name '%1'"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Formula with name '%1' is defined twice"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "A control and a formula have the same name '%1'"
 msgstr ""

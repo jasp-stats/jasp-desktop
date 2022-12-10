@@ -609,10 +609,6 @@ msgctxt "AnalysisForm|"
 msgid "Input"
 msgstr "Entrada"
 
-msgctxt "AnalysisForm|"
-msgid "A control has no name"
-msgstr "Un control non ten nome"
-
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
@@ -625,11 +621,6 @@ msgstr "Colección"
 msgctxt "AnalysisForm|"
 msgid "Result"
 msgstr "Resultado"
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "Control with label '%1' has no name"
-msgstr "O control con etiqueta '%1' non ten nome"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -3227,8 +3218,8 @@ msgstr "<i>Non pode cargarse a descrición do módulo no ficheiro: '%1'</i>"
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Versión %2</i><br><p>%3</p><br><br><i>Creada por %4 e mantida "
 "por %5.</i> <br><i>Mira no sitio web para máis detalles: <a href=\"http://"
@@ -4067,4 +4058,39 @@ msgstr ""
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "Control with label '%1' has no name"
+msgstr "O control con etiqueta '%1' non ten nome"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "A control has no name"
+msgstr "Un control non ten nome"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "Option name '%1' is a reserved word"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "2 controls have the same name: %1"
+msgstr "2 controis teñen o mesmo nome: %1"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "A control and a formula have the same name '%1'"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Formula with name '%1' is defined twice"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "A control and a formula have the same name '%1'"
 msgstr ""

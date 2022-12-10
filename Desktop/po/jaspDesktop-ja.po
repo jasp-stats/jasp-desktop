@@ -1646,15 +1646,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
-msgid "Control with label '%1' has no name"
-msgstr "ラベル '%1' のコントロールには名前がありません"
-
-msgctxt "AnalysisForm|"
-msgid "A control has no name"
-msgstr "コントロールには名前がありません"
-
-#, qt-format
-msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
 msgstr "2つのコントロールは同じ名前です：%1"
 
@@ -3404,8 +3395,8 @@ msgstr "<i>アーカイブ内のモジュールの説明を読み込めません
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>バージョン %2</i><br><p>%3</p><br><br><i>%4によって作成され、%5"
 "によって維持されています</i><br><i>詳細についてはウェブサイトを参照してくださ"
@@ -3971,4 +3962,39 @@ msgstr ""
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "Control with label '%1' has no name"
+msgstr "ラベル '%1' のコントロールには名前がありません"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "A control has no name"
+msgstr "コントロールには名前がありません"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "Option name '%1' is a reserved word"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPControl|"
+msgid "2 controls have the same name: %1"
+msgstr "2つのコントロールは同じ名前です：%1"
+
+#, qt-format
+msgctxt "JASPControl|"
+msgid "A control and a formula have the same name '%1'"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "Formula with name '%1' is defined twice"
+msgstr ""
+
+#, qt-format
+msgctxt "RSyntax|"
+msgid "A control and a formula have the same name '%1'"
 msgstr ""
