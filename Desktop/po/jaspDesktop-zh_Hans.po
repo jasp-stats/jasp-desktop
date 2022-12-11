@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-12-10 10:58+0000\n"
+"PO-Revision-Date: 2022-12-12 07:47+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -3856,7 +3856,7 @@ msgstr "JASP 是否应该以报告模式运行。"
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "没有数据文件"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3866,16 +3866,20 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP 以报告模式启动，但 jasp 文件未匹配到数据文件。\n"
+"这意味着报告不能更新...\n"
+"\n"
+"仍然要继续吗？"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "未知错误"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "公式描述中未给出名称"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "标签为'%1'的控件没有名称"
