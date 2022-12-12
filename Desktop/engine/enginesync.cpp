@@ -250,7 +250,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed										);
 		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
 		connect(engine,						&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
-		connect(engine,						&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
+		connect(engine,						&EngineRepresentation::requestEngineRestartAfterCrash,			this,					&EngineSync::restartEngineAfterCrash									);
 		connect(engine,						&EngineRepresentation::registerForModule,				this,					&EngineSync::registerEngineForModule									);
 		connect(engine,						&EngineRepresentation::unregisterForModule,				this,					&EngineSync::unregisterEngineForModule									);
 		connect(engine,						&EngineRepresentation::moduleHasEngine,					this,					&EngineSync::moduleHasEngine											);
@@ -329,10 +329,17 @@ void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
 void EngineSync::restartKilledAndStoppedEngines()
 {
 	for(EngineRepresentation * engine : _engines)
-		if(engine->killed() || !engine->jaspEngineStillRunning())
-			engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+		restartAKilledOrStoppedEngine(engine);
+}
+
+void EngineSync::restartAKilledOrStoppedEngine(EngineRepresentation * engine)
+{
+
+	if(engine->killed() || !engine->jaspEngineStillRunning())
+		engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+
 	else if(engine->stopped())
-			engine->resumeEngine();
+		engine->resumeEngine();
 }
 
 void EngineSync::shutdownBoredEngines()
@@ -376,7 +383,14 @@ void EngineSync::process()
 	if(_stopProcessing)	return;
 
 	if(_rCmder)
+	{
+		restartAKilledOrStoppedEngine(_rCmder);
+
 		_rCmder->processReplies();
+
+		if(_rCmder->module() != "" && !_rCmder->moduleLoaded() && !_rCmder->moduleLoading())
+			_rCmder->moduleLoad();
+	}
 	
 	restartKilledAndStoppedEngines();
 	shutdownBoredEngines();
@@ -1267,7 +1281,7 @@ EngineRepresentation *	EngineSync::createRCmdEngine()
 		_rCmderChannel	= new IPCChannel(_memoryName, rCmdChannelNumber);
 		_rCmder			= createNewEngine(false, rCmdChannelNumber);
 
-		_rCmder->setRunsAnalysis(	false);
+		_rCmder->setRunsAnalysis(	true);
 		_rCmder->setRunsUtility(	false);
 		_rCmder->setRunsRCmd(		true);
 

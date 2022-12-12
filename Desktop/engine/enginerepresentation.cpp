@@ -142,7 +142,7 @@ void EngineRepresentation::handleEngineCrash()
 
 	setState(engineState::initializing);
 
-	emit requestEngineRestart(this); //Only for actual crashes
+	emit requestEngineRestartAfterCrash(this); //Only for actual crashes
 }
 
 void EngineRepresentation::clearAnalysisInProgress()
@@ -185,6 +185,8 @@ void EngineRepresentation::setDynamicModule(const std::string & name)
 
 	_dynModName		= name;
 	_moduleLoaded	= false;
+
+	emit moduleChanged();
 }
 
 void EngineRepresentation::moduleLoad()

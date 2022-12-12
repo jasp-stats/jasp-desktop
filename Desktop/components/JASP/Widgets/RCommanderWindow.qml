@@ -89,7 +89,8 @@ Window
 				contentWidth:			width
 				flickableDirection:		Flickable.VerticalFlick
 				interactive:			false
-				onContentYChanged:		if(contentHeight < height) rCmd.countDownToScroll();
+				onContentYChanged:		if(contentHeight > height) rCmd.countDownToScroll();
+				onContentHeightChanged:	if(contentHeight > height) rCmd.countDownToScroll();
 
 				anchors
 				{
@@ -99,7 +100,6 @@ Window
 					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 				}
-
 
 				Item
 				{
@@ -158,7 +158,7 @@ Window
 		Item
 		{
 		    id:		codeEntryContainer
-			height: 130 * preferencesModel.uiScale;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
+			height: 150 * preferencesModel.uiScale;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
 			anchors
 			{
 			    left:	parent.left
@@ -259,7 +259,7 @@ Window
 				text:			qsTr("Run Code")
 				onClicked:		runCode();
 				width:			clearOutput.width
-				height:			(codeRect.height - 2 * jaspTheme.generalAnchorMargin) / 3
+				height:			(codeRect.height - 2 * jaspTheme.generalAnchorMargin) / 4
 				enabled:		codeEntry.text != "" && !rCmd.running
 
 				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
@@ -316,7 +316,7 @@ Window
 				id:			clearOutput
 				text:		qsTr("Clear Output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
-				width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
+				width:		Math.max(clearOutput.implicitWidth, Math.max(selectModule.implicitWidth, runButton.implicitWidth))
 				height:		runButton.height
 
 				anchors
@@ -324,6 +324,24 @@ Window
 					top:		addAnalysisItem.bottom
 					right:		parent.right
 					margins:	jaspTheme.generalAnchorMargin
+				}
+			}
+
+			JC.DropDown
+			{
+				id:							selectModule
+				values:		 				dynamicModules.loadedModulesTitles
+				//startValue:				 	"Module selection"
+				onValueChanged:				rCmd.loadModule(dynamicModules.loadedModules[currentIndex])
+				height:						runButton.height
+
+				anchors
+				{
+					top:		clearOutput.bottom
+					right:		parent.right
+					left:		clearOutput.left
+					margins:	jaspTheme.generalAnchorMargin
+					leftMargin:	0
 				}
 			}
 		}

@@ -31,6 +31,7 @@ public:
 public slots:
 	bool runCode(			const QString & code);
 	bool addAnalysis(		const QString & code);
+	void loadModule(		const QString & moduleName);
 	void checkRCode(		const QString & code);
 	void setOutput(			const QString & output);
 	void rCodeReturned(		const QString & result, int requestId, bool hasError);
@@ -40,6 +41,7 @@ public slots:
 	void setRunning(bool running);
 	void setLastCmd(QString lastCmd);
 	void countDownToScroll();
+	void processEngineChanges();
 
 signals:
 	void outputChanged(QString output);
