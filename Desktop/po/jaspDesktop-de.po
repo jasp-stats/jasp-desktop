@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-12-12 09:33+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -525,15 +531,15 @@ msgstr "Spalte per Drag-&-Drop-Formel definieren"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "metrisch (gleichabständig)"
+msgstr "Metrisch"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "ordinal (sortierbar)"
+msgstr "Ordinal"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "nominal (nicht sortierbar)"
+msgstr "Nominal"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -1965,15 +1971,15 @@ msgstr "Fehler bei Größenänderung der Abbildung"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "metrisch (gleichabständig)"
+msgstr "Metrisch"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "ordinal (sortierbar)"
+msgstr "Ordinal"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr "nominal (nicht sortierbar)"
+msgstr "Nominal"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
@@ -4049,15 +4055,15 @@ msgstr "Keine Quelle in Formel gefunden"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Berichtsmodus"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Ob JASP im Berichtsmodus ausgeführt werden soll oder nicht."
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Keine Datendatei"
 
 msgctxt "Reporter|"
 msgid ""
@@ -4067,46 +4073,50 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP wurde im Berichtsmodus gestartet, aber die jasp-Datei ist nicht mit "
+"einer Datendatei gekoppelt.\n"
+"Das bedeutet, dass es keine Aktualisierungen geben kann...\n"
+"\n"
+"Möchten Sie trotzdem fortfahren?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Unbekannter Fehler"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "Kein Name in Formelbeschreibung angegeben"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "Einstellung mit Label '%1' hat keinen Namen"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
-msgstr "Eine Kontrolle hat keinen Namen"
+msgstr "Eine Kontrollelement hat keinen Namen"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "Optionsbezeichnung '%1' ist ein reserviertes Wort"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
-msgstr "2 Kontrollen haben denselben Namen: %1"
+msgstr "2 Kontrollelemente haben denselben Namen: %1"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Ein Kontrollelement und eine Formel haben denselben Namen '%1'"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "Formel mit Name '%1' ist zweimal definiert"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Ein Kontrollelement und eine Formel haben denselben Namen '%1'"

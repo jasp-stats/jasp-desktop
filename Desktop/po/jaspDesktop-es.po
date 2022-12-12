@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-12-10 12:02+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4051,15 +4057,15 @@ msgstr "No se encontró la fuente en la Fórmula"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Modo de informe"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Si JASP debe funcionar en modo de informe o no."
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Sin archivo de datos"
 
 msgctxt "Reporter|"
 msgid ""
@@ -4069,21 +4075,25 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"Se inició JASP en modo de informe, pero el archivo de JASP non está asociado "
+"a un archivo de datos.\n"
+"Esto significa que no puede haber actualizaciones...\n"
+"\n"
+"¿Quieres continuar de todas formas?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Fallo desconocido"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "No se indicó ningún nombre en la descripción de la Fórmula"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "El control con etiqueta '%1' no tiene nombre"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "Un control no tiene nombre"
@@ -4091,9 +4101,9 @@ msgstr "Un control no tiene nombre"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "El nombre de la opción '%1' es una palabra reservada"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
 msgstr "2 controles tienen el mismo nombre: %1"
@@ -4101,14 +4111,14 @@ msgstr "2 controles tienen el mismo nombre: %1"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Un control y una fórmula tienen el mismo nombre '%1'"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "La fórmula con nombre '%1' está definida dos veces"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Un control y una fórmula tienen el mismo nombre '%1'"
