@@ -366,7 +366,7 @@ DropArea
 					toolTip:			qsTr("Show R Syntax")
 					radius:				height
 					opacity:			editButton.opacity
-					visible:            formParent.myForm.showRButton
+					visible:            formParent.myForm && formParent.myForm.showRButton
 					anchors
 					{
 						top:			parent.top
