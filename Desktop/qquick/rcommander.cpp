@@ -76,10 +76,8 @@ bool RCommander::parseAnalysisCode(const QString& code, QString& moduleName, QSt
 	if (!module) return false;
 
 	for (const Modules::AnalysisEntry* entry : module->menu())
-	{
 		if (entry->isAnalysis() && entry->isEnabled() && entry->hasWrapper() && entry->function() == fq(analysisName))
 			return true;
-	}
 
 	return false;
 }
