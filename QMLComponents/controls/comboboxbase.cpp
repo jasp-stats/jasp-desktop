@@ -248,7 +248,7 @@ QString	ComboBoxBase::helpMD(SetConst & markdowned, int howDeep, bool) const
 	if (values().isValid() && !values().isNull())
 	{
 		bool isInteger = false;
-		int count =  values().toInt(&isInteger);
+		values().toInt(&isInteger);
 
 		if (!isInteger)
 		{
@@ -263,7 +263,7 @@ QString	ComboBoxBase::helpMD(SetConst & markdowned, int howDeep, bool) const
 						QString label = labelValueInfoTriplet[labelRole()].toString(),
 								info  = labelValueInfoTriplet["info"].toString();
 
-						md << ( QString{howDeep, ' '} + "- " + label + ": " + info);
+						md << ( QString{howDeep, ' '} + "- *" + label + "*: " + info);
 					}
 				}
 			}

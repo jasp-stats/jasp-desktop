@@ -605,7 +605,7 @@ QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) con
 
 	//If on the other hand we are a simply radiobutton we can just turn it into a list entry
 	if(controlType() == ControlType::RadioButton && !aControlThatEncloses)
-		return "- *" + title() + "* " + info() + "\n";
+		return "- *" + title() + "*: " + info() + "\n";
 
 	//And otherwise we go the full mile, header + title + info and all followed by whatever children we have
 	if(aControlThatEncloses)
