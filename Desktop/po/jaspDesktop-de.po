@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-12-12 07:47+0000\n"
+"PO-Revision-Date: 2022-12-12 09:33+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -531,15 +531,15 @@ msgstr "Spalte per Drag-&-Drop-Formel definieren"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "metrisch (gleichabständig)"
+msgstr "Metrisch"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "ordinal (sortierbar)"
+msgstr "Ordinal"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "nominal (nicht sortierbar)"
+msgstr "Nominal"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -1971,15 +1971,15 @@ msgstr "Fehler bei Größenänderung der Abbildung"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "metrisch (gleichabständig)"
+msgstr "Metrisch"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "ordinal (sortierbar)"
+msgstr "Ordinal"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr "nominal (nicht sortierbar)"
+msgstr "Nominal"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
