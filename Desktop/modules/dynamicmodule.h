@@ -110,6 +110,7 @@ public:
 	std::string			description()		const { return _descriptionTxt;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
 	bool				isCommon()			const { return _isCommon;								}
+	bool				hasWrappers()		const { return _hasWrappers;							}
 
 	bool				isDevMod()			const { return _isDeveloperMod;							}
 	bool				error()				const { return _status == moduleStatus::error;			}
@@ -243,7 +244,8 @@ private:
 						_isDeveloperMod		= false,
 						_initialized		= false,
 						_bundled			= false,
-						_isCommon			= false;
+						_isCommon			= false,
+						_hasWrappers		= false;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
 	Description		*	_description		= nullptr;

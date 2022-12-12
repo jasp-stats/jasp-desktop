@@ -1,6 +1,7 @@
 #include "rcommander.h"
 #include "engine/enginesync.h"
 #include "mainwindow.h"
+#include "modules/dynamicmodules.h"
 
 RCommander * RCommander::_lastCommander = nullptr;
 
@@ -56,6 +57,31 @@ bool RCommander::runCode(const QString & code)
 	return true;
 }
 
+bool RCommander::parseAnalysisCode(const QString& code, QString& moduleName, QString& analysisName) const
+{
+	// Check whether the code starts with '<moduleName>::<analysisName>(...)'
+	QString codeTrimmed = code.trimmed();
+	int startBracket = codeTrimmed.indexOf('(');
+
+	if (startBracket < 0) return false;
+	if (codeTrimmed.indexOf(')', startBracket) < 0 ) return false;
+
+	QStringList analysisParts = codeTrimmed.mid(0, startBracket).split("::");
+	if (analysisParts.length() != 2) return false;
+
+	moduleName = analysisParts[0];
+	analysisName = analysisParts[1];
+
+	Modules::DynamicModule* module = Modules::DynamicModules::dynMods()->dynamicModule(moduleName);
+	if (!module) return false;
+
+	for (const Modules::AnalysisEntry* entry : module->menu())
+		if (entry->isAnalysis() && entry->isEnabled() && entry->hasWrapper() && entry->function() == fq(analysisName))
+			return true;
+
+	return false;
+}
+
 bool RCommander::addAnalysis(const QString &code)
 {
 	if(running() || !_engine->idle() || code == "")
@@ -63,32 +89,40 @@ bool RCommander::addAnalysis(const QString &code)
 
 	setRunning(true);
 
-	// Temporary solution: check whether the code starts with '<moduleName>::<analysisNameWrapper>(...'
-	QString codeTrimmed = code.trimmed();
-	QStringList analysisParts = codeTrimmed.mid(0, codeTrimmed.indexOf("(")).split("::");
-
-	if (analysisParts.length() == 2)
+	QString moduleName, analysisName;
+	if (parseAnalysisCode(code, moduleName, analysisName))
 	{
-		QString moduleName = analysisParts[0], analysisName = analysisParts[1];
-		if (analysisName.endsWith("Wrapper"))
-			analysisName = analysisName.mid(0, analysisName.lastIndexOf("Wrapper"));
-
-		if (!moduleName.isEmpty() && !analysisName.isEmpty())
-		{
-			Analysis* analysis = Analyses::analyses()->createAnalysis(moduleName, analysisName);
-			if (analysis)
-				analysis->sendRScript(code, AnalysisForm::rSyntaxControlName, false);
-		}
-		setRunning(false);
+		Analysis* analysis = Analyses::analyses()->createAnalysis(moduleName, analysisName);
+		if (analysis)
+			analysis->sendRScript(code, AnalysisForm::rSyntaxControlName, false);
+		else
+			appendToOutput("> " + tr("Analysis not found"));
 	}
 	else
-		_engine->runScriptOnProcess(code);
+		appendToOutput("> " + tr("Not an analysis function: <module name>::<analysis name>(...)"));
 
+	setRunning(false);
 	setLastCmd(code);
 
 	appendToOutput("> " + code);
 
 	return true;
+}
+
+void RCommander::setIsAnalysisCode(bool isAnalysisCode)
+{
+	if (_isAnalysisCode == isAnalysisCode)
+		return;
+
+	_isAnalysisCode = isAnalysisCode;
+
+	emit isAnalysisCodeChanged(_isAnalysisCode);
+}
+
+void RCommander::checkRCode(const QString &code)
+{
+	QString moduleName, analysisName;
+	setIsAnalysisCode(parseAnalysisCode(code, moduleName, analysisName));
 }
 
 void RCommander::rCodeReturned(const QString & result, int, bool)

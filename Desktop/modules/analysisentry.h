@@ -36,8 +36,7 @@ class AnalysisEntry
 {
 	friend EntryBase;
 public:
-	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
-	AnalysisEntry();
+	AnalysisEntry() {}
 
 	std::string		menu()					const { return _menu;									}
 	std::string		title()					const { return _title;									}
@@ -48,6 +47,7 @@ public:
 	bool			isGroupTitle()			const { return _isGroupTitle;		}
 	bool			isAnalysis()			const { return _isAnalysis;			}
 	bool			isEnabled()				const { return _isEnabled;			}
+	bool			hasWrapper()			const { return _hasWrapper;			}
 	bool			requiresData()			const { return _requiresData;		}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
@@ -72,6 +72,7 @@ private:
 					_isEnabled		= true,
 					_requiresData	= true;
 	std::string		_icon			= "";
+	bool			_hasWrapper		= false;
 };
 
 typedef std::vector<AnalysisEntry*> AnalysisEntries;

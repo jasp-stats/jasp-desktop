@@ -26,6 +26,7 @@ EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(e
 	connect(this, &EntryBase::enabledChanged,		this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::debugChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::hasWrapperChanged,	this, &EntryBase::somethingChanged);
 }
 
 void EntryBase::devModeChanged(bool)
@@ -44,6 +45,7 @@ QString EntryBase::toString() const
 				+ ( menu() != title() ? " menu: '" + menu() + "'" : "" )
 				+ ", function: '"	+ function() + "'"
 				+ ", qml: '"		+ qml() + "'"
+				+ ", hasWrapper: "	+ (hasWrapper() ? "TRUE" : "FALSE")
 				+ ", reqData: "		+ (requiresData() ? "yes":"no")
 				+ ", icon: '"		+ icon() + "' --";
 	default: 
@@ -147,6 +149,15 @@ void EntryBase::setDebug(bool debug)
 	emit debugChanged();
 }
 
+void EntryBase::setHasWrapper(bool hasWrapper)
+{
+	if (_hasWrapper == hasWrapper)
+		return;
+
+	_hasWrapper = hasWrapper;
+	emit hasWrapperChanged();
+}
+
 AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) const
 {
 	AnalysisEntry * entry = new AnalysisEntry();
@@ -162,7 +173,7 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 	entry->_isAnalysis		= _entryType == EntryType::analysis;
 	entry->_isSeparator		= _entryType == EntryType::separator;
 	entry->_isGroupTitle	= _entryType == EntryType::groupTitle;
-
+	entry->_hasWrapper		= _description->hasWrappers() || _hasWrapper;
 	entry->_dynamicModule	= _description->dynMod();
 	
 	//Log::log()<<"convertToAnalysisEntry has title '"<<title()<<"'"<<std::endl;

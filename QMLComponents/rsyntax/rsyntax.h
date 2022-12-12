@@ -60,7 +60,7 @@ signals:
 
 private:
 
-	QString							_analysisFullName(bool wrapper = false)		const;
+	QString							_analysisFullName()								const;
 
 	AnalysisForm*					_form							= nullptr;
 	QVector<FormulaBase*>			_formulas;
