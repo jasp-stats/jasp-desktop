@@ -39,8 +39,10 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool developersModuleInstallButtonEnabled	READ developersModuleInstallButtonEnabled	WRITE setDevelopersModuleInstallButtonEnabled	NOTIFY developersModuleInstallButtonEnabledChanged	)
-	Q_PROPERTY(bool dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
+	Q_PROPERTY(bool			developersModuleInstallButtonEnabled	READ developersModuleInstallButtonEnabled	WRITE setDevelopersModuleInstallButtonEnabled	NOTIFY developersModuleInstallButtonEnabledChanged	)
+	Q_PROPERTY(bool			dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
+	Q_PROPERTY(QStringList	loadedModules							READ loadedModules																			NOTIFY loadedModulesChanged							)
+	Q_PROPERTY(QStringList	loadedModulesTitles						READ loadedModulesTitles																	NOTIFY loadedModulesChanged							)
 
 public:
 	explicit				DynamicModules(QObject *parent) ;
@@ -106,6 +108,9 @@ public:
 
 	QStringList importPaths() const;
 
+	const QStringList loadedModules() const;
+	const QStringList loadedModulesTitles() const;
+
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleName);
 	void installationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
@@ -134,8 +139,7 @@ signals:
 	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
-
-
+	void loadedModulesChanged();
 
 private:
 	void						removeUninstalledModuleFolder(const std::string & moduleName);

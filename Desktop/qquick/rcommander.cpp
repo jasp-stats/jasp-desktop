@@ -13,6 +13,8 @@ RCommander::RCommander()
 
 	connect(_engine, &EngineRepresentation::rCodeReturned,		this, &RCommander::rCodeReturned);
 	connect(_engine, &EngineRepresentation::rCodeReturnedLog,	this, &RCommander::rCodeReturnedLog);
+	connect(_engine, &EngineRepresentation::stateChanged,		this, &RCommander::processEngineChanges);
+	connect(_engine, &EngineRepresentation::moduleChanged,		this, &RCommander::processEngineChanges);
 
 	_scrollTimer = new QTimer(this);
 	_scrollTimer->setInterval(50);
@@ -171,4 +173,68 @@ void RCommander::setOutput(const QString & output)
 	emit outputChanged(_output);
 
 	_scrollTimer->start(); //I had some trouble getting the scrolldown thing to work easily, this workaround seems good.
+}
+
+void RCommander::loadModule(const QString & moduleName)
+{
+	if(!_engine)
+	{
+		Log::log() << "R Commander tried to load a module '" << moduleName << "' but has no engine..." << std::endl;
+		return;
+	}
+
+	if(_engine->module() != fq(moduleName) && _engine->module() != "")
+	{
+		_engine->shutEngineDown();
+		EngineSync::singleton()->restartAKilledOrStoppedEngine(_engine);
+	}
+
+	_engine->setDynamicModule(fq(moduleName));
+}
+
+void RCommander::processEngineChanges()
+{
+	static	QString lastState,
+					lastModule;
+			QString newState,
+					newModule = tq(_engine->module());
+
+	//The users really dont want to see all the gritty functioning of the engines the below should be enough
+	switch(_engine->state())
+	{
+	case engineState::initializing:
+		newState = tr("R is (re)starting");
+		break;
+
+	case engineState::moduleInstallRequest:
+	case engineState::moduleLoadRequest:
+		newState = tr("R is installing or loading a module %1").arg(newModule);
+		break;
+
+	case engineState::killed:
+	case engineState::stopped:
+		newState = tr("R stopped");
+		break;
+
+	case engineState::idle:
+		newState = tr("R awaits commands");
+		break;
+
+	default:
+		newState = lastState;
+		break;
+	}
+
+	bool	stateChanged  = newState  != lastState,
+			moduleChanged = newModule != lastModule;
+
+	if(stateChanged || moduleChanged)
+	{
+		lastState  = newState;
+		lastModule = newModule;
+
+		_output += "\n" + (stateChanged ? lastState : "") + (!moduleChanged ? "" : (stateChanged ? " and " : "R ") + (newModule == "" ? "has unselected module" : ("has selected module " + newModule)));
+		emit outputChanged(_output);
+	}
+
 }

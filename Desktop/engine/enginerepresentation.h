@@ -27,6 +27,8 @@ class EngineRepresentation : public QObject
 	Q_PROPERTY(bool			runsRCmd			READ runsRCmd			WRITE setRunsRCmd			NOTIFY runsRCmdChanged			)
 	Q_PROPERTY(engineState	state				READ state				WRITE setState				NOTIFY stateChanged				)
 	Q_PROPERTY(QString		analysisStatus		READ analysisStatus									NOTIFY analysisStatusChanged	)	//For updates to EngineSync' list capabilities
+	Q_PROPERTY(QString		module				READ moduleQ										NOTIFY moduleChanged			)
+
 
 public:
 					EngineRepresentation(size_t channelNumber, QProcess * slaveProcess, QObject * parent = nullptr);
@@ -105,6 +107,7 @@ public:
 
 	std::string		currentStateForDebug()	const;
 	std::string		module()				const { return _dynModName;		}
+	QString			moduleQ()				const { return tq(_dynModName);	}
 	std::string		moduleRequested()		const { return _requestModName; }
 	void			moduleLoad();
 
@@ -160,12 +163,12 @@ signals:
 	void			moduleUnloadingFinished(		const QString & moduleName, int channelID);
 	void			moduleUninstallingFinished(		const QString & moduleName);
 
-	void			logCfgReplyReceived(	EngineRepresentation * engine);
-	void			requestEngineRestart(	EngineRepresentation * engine);
-	void			registerForModule(		EngineRepresentation * engine, std::string modName);
-	void			unregisterForModule(	EngineRepresentation * engine, std::string modName);
-	void			stopModuleEngine(		QString moduleName);
-	void			stopAndDestroyEngine(	EngineRepresentation * e);
+	void			logCfgReplyReceived(			EngineRepresentation * engine);
+	void			requestEngineRestartAfterCrash(	EngineRepresentation * engine);
+	void			registerForModule(				EngineRepresentation * engine, std::string modName);
+	void			unregisterForModule(			EngineRepresentation * engine, std::string modName);
+	void			stopModuleEngine(				QString moduleName);
+	void			stopAndDestroyEngine(			EngineRepresentation * e);
 	void			plotEditorRefresh();
 	void			runsAnalysisChanged(	bool runsAnalysis);
 	void			runsUtilityChanged(	bool runsUtility);
@@ -173,12 +176,13 @@ signals:
 
 	bool			moduleHasEngine(const std::string & name);
 
-
 	void			stateChanged();
-
 	void			analysisStatusChanged();
+	void			moduleChanged();
 
 	IPCChannel	*	channelSignal(size_t channelNumber);
+
+
 
 private:
 	void			sendPauseEngine();

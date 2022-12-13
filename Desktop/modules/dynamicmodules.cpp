@@ -136,8 +136,10 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 		
 		
 		if(!module->initialized())
-		{	
-			connect(module, &DynamicModule::registerForInstalling,			this,	&DynamicModules::registerForInstalling		);
+		{
+			connect(module, &DynamicModule::readyForUseChanged,				this,	&DynamicModules::loadedModulesChanged			);
+			connect(module, &DynamicModule::titleChanged,					this,	&DynamicModules::loadedModulesChanged			);
+			connect(module, &DynamicModule::registerForInstalling,			this,	&DynamicModules::registerForInstalling			);
 			connect(module, &DynamicModule::registerForInstallingModPkg,	this,	&DynamicModules::registerForInstallingModPkg	);
 			connect(module, &DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
 			connect(module, &DynamicModule::statusChanged,					module,	[=]()
@@ -159,7 +161,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 		}
 		else if(oldModule)
 		{
-			emit unloadModule(moduleName);
+			unloadModule(moduleName);
 			emit dynamicModuleReplaced(oldModule, module);
 			delete oldModule;
 			emit dynamicModuleChanged(module);
@@ -872,6 +874,28 @@ void DynamicModules::registerQMLTypes()
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",						"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",					"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",			"Superclass for Description info, shouldn't be instantiated manually");
+}
+
+const QStringList DynamicModules::loadedModules() const
+{
+	QStringList mods;
+
+	for(const std::string & mod : _moduleNames)
+		if(_modules.at(mod)->readyForUse())
+			mods << tq(mod);
+
+	return mods;
+}
+
+const QStringList DynamicModules::loadedModulesTitles() const
+{
+	QStringList mods;
+
+	for(const std::string & mod : _moduleNames)
+		if(_modules.at(mod)->readyForUse())
+			mods << _modules.at(mod)->titleQ();
+
+	return mods;
 }
 
 }

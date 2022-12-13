@@ -72,6 +72,8 @@ public slots:
 	void		resumeEngines();
 	void		restartEngines();
 	void		startStoppedEngine(EngineRepresentation * engine);
+	void		restartKilledAndStoppedEngines();
+	void		restartAKilledOrStoppedEngine(EngineRepresentation * engine);
 	void		refreshAllPlots();
 	void		logCfgRequest();
 	void		logToFileChanged(bool) { logCfgRequest(); }
@@ -144,7 +146,6 @@ private slots:
 	void	process();
 
 	void	restartEngineAfterCrash(EngineRepresentation * engine);
-	void	restartKilledAndStoppedEngines();
 
 
 	void	logCfgReplyReceived(		EngineRepresentation * engine);
