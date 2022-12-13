@@ -4,11 +4,12 @@
 #include <QHash>
 #include "altnavscope.h"
 
-class ALTNavRegistry : public QObject
+class ALTNavControl : public QObject
 {
 	Q_OBJECT
 public:
-	explicit ALTNavRegistry(QObject *parent = nullptr);
+	explicit ALTNavControl(QObject *parent = nullptr);
+	~ALTNavControl();
 
 	ALTNavScope* getAttachedScope(QObject* obj);
 	void registerScope(ALTNavScope* scope, QObject* obj);
@@ -34,16 +35,16 @@ public:
 	ALTNavScope* getDefaultRoot();
 
 	//singleton stuff
-	static ALTNavRegistry* getInstance();
-	ALTNavRegistry(ALTNavRegistry& other) = delete;
-	void operator=(const ALTNavRegistry&) = delete;
+	static ALTNavControl* getInstance();
+	ALTNavControl(ALTNavControl& other) = delete;
+	void operator=(const ALTNavControl&) = delete;
 
 signals:
 	void altNavInputChanged();
 	void altNavEnabledChanged();
 
 private:
-	static ALTNavRegistry* instance;
+	static ALTNavControl* instance;
 	QHash<QObject*, ALTNavScope*> attachedScopeMap;
 
 	ALTNavScope* currentNode = nullptr;

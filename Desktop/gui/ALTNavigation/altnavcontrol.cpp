@@ -1,24 +1,29 @@
-#include "altnavroot.h"
-#include "log.h"
+#include "altnavcontrol.h"
 
-ALTNavRegistry* ALTNavRegistry::instance = nullptr;
+ALTNavControl* ALTNavControl::instance = nullptr;
 
-ALTNavRegistry* ALTNavRegistry::getInstance()
+ALTNavControl* ALTNavControl::getInstance()
 {
 	if(!instance)
-		instance = new ALTNavRegistry();
+		instance = new ALTNavControl();
 	return instance;
 }
 
-ALTNavRegistry::ALTNavRegistry(QObject *parent) : QObject{parent}
+ALTNavControl::ALTNavControl(QObject *parent) : QObject{parent}
 {
 	qApp->installEventFilter(this);
 	currentRoot = currentNode = defaultRoot = new ALTNavScope(this);
 	defaultRoot->setScopeOnly(true);
 	defaultRoot->setRoot(true);
+	attachedScopeMap.insert(nullptr, defaultRoot);
 }
 
-ALTNavScope *ALTNavRegistry::getAttachedScope(QObject *obj)
+ALTNavControl::~ALTNavControl()
+{
+
+}
+
+ALTNavScope *ALTNavControl::getAttachedScope(QObject *obj)
 {
 	auto it = attachedScopeMap.find(obj);
 	if (it != attachedScopeMap.end())
@@ -26,17 +31,17 @@ ALTNavScope *ALTNavRegistry::getAttachedScope(QObject *obj)
 	return nullptr;
 }
 
-void ALTNavRegistry::registerScope(ALTNavScope* scope, QObject *obj)
+void ALTNavControl::registerScope(ALTNavScope* scope, QObject *obj)
 {
 	attachedScopeMap.insert(obj, scope);
 }
 
-void ALTNavRegistry::removeScope(QObject *obj)
+void ALTNavControl::removeScope(QObject *obj)
 {
 	attachedScopeMap.remove(obj);
 }
 
-bool ALTNavRegistry::eventFilter(QObject *object, QEvent *event)
+bool ALTNavControl::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
@@ -67,29 +72,28 @@ bool ALTNavRegistry::eventFilter(QObject *object, QEvent *event)
 	return false;
 }
 
-void ALTNavRegistry::resetAltNavInput()
+void ALTNavControl::resetAltNavInput()
 {
 	currenAltNavInput = "";
 	emit altNavInputChanged();
 }
 
-void ALTNavRegistry::setAltNavInput(QString input)
+void ALTNavControl::setAltNavInput(QString input)
 {
 	currenAltNavInput = input;
 	emit altNavInputChanged();
 }
 
 
-void ALTNavRegistry::updateAltNavInput(QString entry)
+void ALTNavControl::updateAltNavInput(QString entry)
 {
 	currenAltNavInput += entry;
 	currentNode->traverse(currenAltNavInput);
 	emit altNavInputChanged();
 }
 
-void ALTNavRegistry::setAltNavEnabled(bool value)
+void ALTNavControl::setAltNavEnabled(bool value)
 {
-	Log::log() << "!!ALTNavEnabled: " << value << std::endl;
 	if(value == altNavEnabled) return;
 
 	altNavEnabled = value;
@@ -98,9 +102,16 @@ void ALTNavRegistry::setAltNavEnabled(bool value)
 	if(altNavEnabled)
 	{
 		_dynamicTreeUpdate = true;
+		currentRoot->setChildrenPrefix();
+		for(ALTNavScope* node : qAsConst(attachedScopeMap))
+		{
+			if (node->foreground())
+			{
+				setAltNavInput(node->prefix());
+				setCurrentNode(node);
+			}
+		}
 		currentNode->setChildrenActive(true);
-		currentNode->setChildrenPrefix();
-		currentNode->traverse(currenAltNavInput);
 	}
 	else
 	{
@@ -110,12 +121,12 @@ void ALTNavRegistry::setAltNavEnabled(bool value)
 	}
 }
 
-bool ALTNavRegistry::AltNavEnabled()
+bool ALTNavControl::AltNavEnabled()
 {
 	return altNavEnabled;
 }
 
-void ALTNavRegistry::setCurrentNode(ALTNavScope *scope)
+void ALTNavControl::setCurrentNode(ALTNavScope *scope)
 {
 	currentNode->setChildrenActive(false);
 	scope->setChildrenActive(altNavEnabled);
@@ -123,33 +134,32 @@ void ALTNavRegistry::setCurrentNode(ALTNavScope *scope)
 	currentNode = scope;
 }
 
-void ALTNavRegistry::setCurrentRoot(ALTNavScope *root)
+void ALTNavControl::setCurrentRoot(ALTNavScope *root)
 {
 	currentRoot = root;
-	setCurrentNode(root);
 }
 
-ALTNavScope *ALTNavRegistry::getCurrentNode()
+ALTNavScope *ALTNavControl::getCurrentNode()
 {
 	return currentNode;
 }
 
-ALTNavScope *ALTNavRegistry::getCurrentRoot()
+ALTNavScope *ALTNavControl::getCurrentRoot()
 {
 	return currentRoot;
 }
 
-ALTNavScope *ALTNavRegistry::getDefaultRoot()
+ALTNavScope *ALTNavControl::getDefaultRoot()
 {
 	return defaultRoot;
 }
 
-QString ALTNavRegistry::getCurrentALTNavInput()
+QString ALTNavControl::getCurrentALTNavInput()
 {
 	return currenAltNavInput;
 }
 
-bool ALTNavRegistry::dynamicTreeUpdate()
+bool ALTNavControl::dynamicTreeUpdate()
 {
 	return _dynamicTreeUpdate;
 }

@@ -2,17 +2,14 @@ import QtQuick
 import QtQuick.Controls
 import JASP
 
-//Text tag shown when alt navigation mode is enabled.
-Item
+//Tag shown when alt navigation mode is enabled.
+ALTNavTagBase
 {
 	id:					tagRoot
-	visible:			tagData.active
-	width:				tagText.contentWidth + jaspTheme.contentMargin
-	height:				tagText.height
+	visible:			active
+	width:				Math.max(jaspTheme.fontALTNavTag.pixelSize, textElem.contentWidth + jaspTheme.contentMargin * jaspTheme.uiScale)
+	height:				textElem.height
 	z:					99999
-	activeFocusOnTab:	false
-
-	required property ALTNavTag tagData
 
 	Rectangle
 	{
@@ -23,8 +20,8 @@ Item
 
 		Text
 		{
-			id:							tagText
-			text:						tagData.tagText
+			id:							textElem
+			text:						tagText
 			color:						"white"
 			font:						jaspTheme.fontALTNavTag
 			anchors.centerIn:			parent

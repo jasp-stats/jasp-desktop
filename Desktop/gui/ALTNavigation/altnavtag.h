@@ -6,7 +6,7 @@
 
 class ALTNavScope;
 
-class ALTNavTag : public QObject
+class ALTNavTagBase : public QQuickItem
 {
 	Q_OBJECT
 
@@ -14,13 +14,11 @@ class ALTNavTag : public QObject
 	Q_PROPERTY( bool		active			READ	getActive		NOTIFY	activeChanged		);
 
 public:
-	explicit ALTNavTag(QQuickItem* attachee);
-	~ALTNavTag();
+	 ALTNavTagBase(QQuickItem* parent = nullptr);
+	~ALTNavTagBase();
 
 	void setFullTag(QString _fullTag);
 	void setActive(bool _active);
-	void setX(qreal x);
-	void setY(qreal y);
 
 	QString fullTag;
 
@@ -34,15 +32,10 @@ signals:
 private:
 	bool getActive() { return active; };
 	QString getTagText() { return tagText; };
-	void position();
 
 private:
-	QQuickItem* attachee;
-	QQuickItem* tagItem;
-
 	QString tagText = "";
 	bool active = false;
-	qreal x = 0, y = 0;
 
 };
 

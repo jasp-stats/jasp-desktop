@@ -78,7 +78,7 @@ FocusScope
 			z:				2
 
 			ALTNavigation.enabled:		true
-			ALTNavigation.root:			true
+			ALTNavigation.parentScope:  ribbon.fileMenuButton
 			ALTNavigation.scopeOnly:	true
 			ALTNavigation.foreground:	fileMenuModel.visible
 
@@ -134,6 +134,7 @@ FocusScope
 							}
 
 							ALTNavigation.enabled:		true
+							ALTNavigation.x:			width * 0.9
 							ALTNavigation.onTagMatch:	{ clicked(); }
 
 							Keys.onLeftPressed:

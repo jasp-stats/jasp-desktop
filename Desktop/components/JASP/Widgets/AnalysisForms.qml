@@ -116,7 +116,7 @@ FocusScope
 
 							ALTNavigation.enabled:		true
 							ALTNavigation.index:		index
-							ALTNavigation.onTagMatch:	{ toggleExpander(); }
+							ALTNavigation.onTagMatch:	{ expand(); }
 						}
 					}
 				}

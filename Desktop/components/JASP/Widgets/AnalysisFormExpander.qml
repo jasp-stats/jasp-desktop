@@ -31,6 +31,13 @@ DropArea
 		else																{ analysesModel.selectAnalysisAtRow(draggableItem.myIndex); }
 	}
 
+	function expand(takeFocus = true)
+	{
+		analysesModel.selectAnalysisAtRow(draggableItem.myIndex);
+		if(takeFocus)
+			draggableItem.forceActiveFocus();
+	}
+
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
 	Rectangle

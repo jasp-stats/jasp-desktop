@@ -16,13 +16,13 @@ class ALTNavScope : public QObject
 	//ALTNavigation Interface
 	Q_PROPERTY( bool						enabled						MEMBER		enabled					WRITE	setEnabled			NOTIFY	enabledChanged													);
 	Q_PROPERTY( bool						root						MEMBER		root					WRITE	setRoot				NOTIFY	rootChanged														);
-	Q_PROPERTY( bool						foreground					MEMBER		foreground				WRITE	setForeground		NOTIFY	foregroundChanged												);
 	Q_PROPERTY( QObject*					parentScope					MEMBER		parentScopeAttachee		WRITE	setParentAttachee	NOTIFY	parentScopeChanged												);
 	Q_PROPERTY( bool						scopeOnly					MEMBER		scopeOnly				WRITE	setScopeOnly		NOTIFY	scopeOnlyChanged												);
-	Q_PROPERTY( bool						propagateActivity			MEMBER		propagateActivity																											);
+	Q_PROPERTY( bool						showChildren				MEMBER		propagateActivity																											);
 	Q_PROPERTY( AssignmentStrategy			strategy					MEMBER		currentStrategy			WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
 	Q_PROPERTY( int							x							MEMBER		x						WRITE	setX																						);
 	Q_PROPERTY( int							y							MEMBER		y						WRITE	setY																						);
+	Q_PROPERTY( bool						foreground					READ		foreground				WRITE	setForeground		NOTIFY	foregroundChanged												);
 	Q_PROPERTY( QString						requestedPostfix			READ		getRequestedPostfix		WRITE	setRequestedPostfix	NOTIFY	requestedPostfixChanged											);
 	Q_PROPERTY( int							scopePriority				READ		getScopePriority		WRITE	setScopePriority	NOTIFY	scopePriorityChanged											);
 	Q_PROPERTY( int							index						READ		getIndex				WRITE	setIndex			NOTIFY	indexChanged													);
@@ -56,6 +56,8 @@ public:
 	QString getRequestedPostfix();
 	int getScopePriority();
 	int getIndex();
+	bool foreground();
+	QString prefix();
 
 	void childEvent(QChildEvent *event) override;
 	void setEnabled(bool value);
@@ -73,17 +75,19 @@ public:
 public slots:
 	void registerWithParent();
 
+private slots:
+	void init();
+
 
 protected:
 	bool scopeActive = false;
-	QString prefix = "";
-
+	QString _prefix = "";
 
 private:
 	//ALTNavigation Interface
 	bool enabled = false;
 	bool root = false;
-	bool foreground = false;
+	bool _foreground = false;
 	bool scopeOnly = false;
 	bool propagateActivity = false;
 	QString requestedPostfix = "";
@@ -93,10 +97,10 @@ private:
 	qreal x, y;
 
 	QQuickItem* attachee;
-	ALTNavTag* attachedTag = nullptr;
+	ALTNavTagBase* attachedTag = nullptr;
 	QQuickItem* parentScopeAttachee = nullptr;
-	int treeDepth;
 	bool parentOverride = false;
+	bool initialized = false;
 
 
 	ALTNavPostfixAssignmentStrategy* postfixBroker = nullptr;

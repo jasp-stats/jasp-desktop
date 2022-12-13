@@ -30,6 +30,10 @@ FocusScope
 	L.Layout.columnSpan	: form ? form.columns : 1
 	objectName			: "Section"
 
+	ALTNavigation.enabled:			visible
+	ALTNavigation.showChildren:		true
+	ALTNavigation.onTagMatch:		{ expanded = true; expanderButton.forceActiveFocus(); }
+
 	default		property alias	content					: expanderArea.children
 				property alias	button					: expanderButton
 				property alias	childControlsArea		: expanderArea

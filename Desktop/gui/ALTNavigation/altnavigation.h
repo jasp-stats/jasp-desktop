@@ -13,6 +13,7 @@ class ALTNavigation : public QObject
 
 public:
 	static ALTNavScope* qmlAttachedProperties(QObject *object);
+	static void registerQMLTypes();
 
 };
 

@@ -19,8 +19,7 @@
 import QtQuick
 import QtWebEngine
 import QtWebChannel
-import JASP.Widgets
-import JASP.Controls
+import JASP
 import QtQuick.Controls
 
 Item
@@ -103,6 +102,11 @@ Item
 		toolTipDrag:		pointingLeft ? qsTr("Resize data/results") : qsTr("Drag to show data")
 		onXChanged:			checkPosition(false)
 		onDraggingChanged:	checkPosition(true)
+
+		ALTNavigation.enabled:				true
+		ALTNavigation.onTagMatch:			{ arrowClicked(); }
+		ALTNavigation.requestedPostfix:		"D"
+		ALTNavigation.y:					height / 2 - 25 * jaspTheme.uiScale
 
 		function checkPosition(forceCheck)
 		{
@@ -223,6 +227,10 @@ Item
 		}
 		visible:				hasAnalysis
 		color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
+
+		ALTNavigation.enabled:				true
+		ALTNavigation.requestedPostfix:		"R"
+		ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
 
 		WebEngineView
 		{

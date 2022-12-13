@@ -64,7 +64,7 @@
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-#include "gui/altnavigation.h"
+#include "gui/ALTNavigation/altnavigation.h"
 #include "utilities/messageforwarder.h"
 
 #include "modules/activemodules.h"
@@ -182,11 +182,10 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"						);
 	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
-	qmlRegisterType<ALTNavigation>								("JASP",		1, 0, "ALTNavigation"					);
-	qmlRegisterType<ALTNavTag>									("JASP",		1, 0, "ALTNavTag"						);
-	qmlRegisterUncreatableType<PriorityStrategy>				("JASP",		1, 0, "AssignmentStrategy",				"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
+
+	ALTNavigation::registerQMLTypes();
 
 	_dynamicModules->registerQMLTypes();
 
@@ -220,8 +219,9 @@ MainWindow::~MainWindow()
 	{
 		//Clean up all QML to get rid of warnings and hopefully fix https://github.com/jasp-stats/jasp-issues/issues/667
 		//Going backwards to make sure the theme isnt deleted before everything that depends on it
-		for(int i=_qml->rootObjects().size() - 1; i >= 0; i--)
+		for(int i=_qml->rootObjects().size() - 1; i >= 0; i--) {
 			delete _qml->rootObjects().at(i);
+		}
 
 
 		delete _qml;
@@ -518,10 +518,6 @@ void MainWindow::loadQML()
 
 	setCurrentJaspTheme();
 
-	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
-	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
-
 	JaspTheme::initializeUIScales(_preferences->uiScale());
 
 	for(const auto & keyval : JaspTheme::themes())
@@ -531,6 +527,10 @@ void MainWindow::loadQML()
 		connect(_preferences,		&PreferencesModel::uiScaleChanged,				keyval.second,		&JaspTheme::uiScaleHandler					);
 		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maxFlickVeloHandler				);
 	}
+
+	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged,		DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 	connect(_preferences, &PreferencesModel::interfaceFontChanged,	DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
