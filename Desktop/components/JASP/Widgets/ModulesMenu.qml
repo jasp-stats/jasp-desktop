@@ -19,8 +19,9 @@ FocusScope
 
 	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
 
-	Keys.onEscapePressed: closeAndFocusRibbon();
-	Keys.onRightPressed:  closeAndFocusRibbon();
+	Keys.onEscapePressed:	closeAndFocusRibbon();
+	Keys.onRightPressed:	closeAndFocusRibbon();
+	Keys.onLeftPressed:		closeAndFocusRibbon();
 
 	function closeAndFocusRibbon()
 	{
@@ -28,32 +29,43 @@ FocusScope
 		ribbon.focus = true;
 	}
 
-	Keys.onPressed: (event)=>
+	Keys.onTabPressed: { increaseIndex(); }
+	Keys.onBacktabPressed: { decreaseIndex(); }
+	Keys.onDownPressed: { increaseIndex(); }
+	Keys.onUpPressed: { decreaseIndex(); }
+
+	function increaseIndex()
 	{
-		if (event.key === Qt.Key_Down)
+		if (preferencesModel.developerMode)
 		{
-			if (preferencesModel.developerMode)
-			{
-				let nextIndex  = currentIndex + 1;
-				if (nextIndex === repeater.count)
-					nextIndex  = -2;
-				currentIndex   = nextIndex;
-			}
-			else
-				currentIndex   = mod(currentIndex + 1, repeater.count);
+			let nextIndex  = currentIndex + 1;
+			if (nextIndex === repeater.count)
+				nextIndex  = -2;
+			currentIndex   = nextIndex;
 		}
-		else if (event.key === Qt.Key_Up)
+		else
+			currentIndex   = mod(currentIndex + 1, repeater.count);
+	}
+
+	function decreaseIndex()
+	{
+		if (preferencesModel.developerMode)
 		{
-			if (preferencesModel.developerMode)
-			{
-				let nextIndex   = currentIndex - 1;
-				if (nextIndex  === -3)
-					nextIndex   = repeater.count -1;
-				currentIndex    = nextIndex;
-			}
-			else
-				currentIndex = mod(currentIndex - 1, repeater.count);
+			let nextIndex   = currentIndex - 1;
+			if (nextIndex  === -3)
+				nextIndex   = repeater.count -1;
+			currentIndex    = nextIndex;
 		}
+		else
+			currentIndex = mod(currentIndex - 1, repeater.count);
+	}
+
+	onCurrentIndexChanged:
+	{
+		if (currentIndex < 0)
+			vertScroller.scrollToElement(addModuleButton)
+		else
+			vertScroller.scrollToElement(repeater.itemAt(currentIndex))
 	}
 
 	Rectangle
@@ -117,6 +129,7 @@ FocusScope
 					toolTip:			qsTr("Install a module")
 					visible:			preferencesModel.developerMode
 					focus:				currentIndex === -2
+					activeFocusOnTab:	false
 				}
 
 				ToolSeparator
@@ -140,6 +153,7 @@ FocusScope
 					visible:			preferencesModel.developerMode
 					enabled:			dynamicModules.developersModuleInstallButtonEnabled
 					focus:				currentIndex === -1
+					activeFocusOnTab:	false
 
 					readonly property bool folderSelected: preferencesModel.developerFolder != ""
 				}
@@ -174,6 +188,7 @@ FocusScope
 							enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
 							font:				jaspTheme.fontRibbon
 							focus:				index === currentIndex
+							Keys.forwardTo:		[modulesMenu]
 
 							toolTip:			isSpecial									? qsTr("Ready") //Always ready!
 												: dynamicModule.installing					? qsTr("Installing: %1\n").arg(dynamicModule.installLog)

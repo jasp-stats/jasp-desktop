@@ -27,8 +27,8 @@ DropArea
 
 	function toggleExpander()
 	{
-		if(analysesModel.currentAnalysisIndex == draggableItem.myIndex)		analysesModel.unselectAnalysis()
-		else																analysesModel.selectAnalysisAtRow(draggableItem.myIndex);
+		if(analysesModel.currentAnalysisIndex === draggableItem.myIndex)	{ analysesModel.unselectAnalysis(); draggableItem.forceActiveFocus(); }
+		else																{ analysesModel.selectAnalysisAtRow(draggableItem.myIndex); }
 	}
 
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
@@ -44,13 +44,13 @@ DropArea
 		visible:				draggableItem.state != "dragging"
 	}
 
-
 	Item
 	{
 		id:					draggableItem
 		height:				loaderAndError.y
 		activeFocusOnTab:	true
 
+		onActiveFocusChanged:	{ if (activeFocus) backgroundFlickable.scrollToElement(expanderButton); }
 
 		property int		myIndex:			-1
 		property int		droppedIndex:		-1
@@ -59,8 +59,6 @@ DropArea
 		Drag.active:		mouseArea.drag.active
 		Drag.hotSpot.x:		width/2
 		Drag.hotSpot.y:		height/2
-
-		Component.onCompleted:	{ forceActiveFocus(); }
 
 		states:
 		[
@@ -138,7 +136,7 @@ DropArea
 		MouseArea
 		{
 			id:				mouseArea
-			onClicked:		{ analysisFormExpander.toggleExpander(); draggableItem.forceActiveFocus(); }
+			onClicked:		{ analysisFormExpander.toggleExpander(); }
 			hoverEnabled:	true
 			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
@@ -182,18 +180,6 @@ DropArea
 
 		Rectangle
 		{
-			id:					focusIndicator
-			visible:			draggableItem.activeFocus && !draggableItem.Drag.active
-			anchors.fill:		draggableItem
-			color:				"transparent"
-			border.width:		jaspTheme.jaspControlHighlightWidth
-			border.color:		jaspTheme.focusBorderColor
-			radius:				jaspTheme.jaspControlHighlightWidth
-			z:					2
-		}
-
-		Rectangle
-		{
 			// This line appears only when the analysis above this one is dragged.
 			anchors
 			{
@@ -221,6 +207,27 @@ DropArea
 			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
 			property bool		loadingQml:			!formParent.loaded
 			property real		formHeight:			formParent.height
+			property bool		firstExpansion:		true //lame but is works
+
+			onExpandedChanged: { if(!expanded) firstExpansion = false; }
+
+			function postExpansionTasks()
+			{
+					if(typeof backgroundFlickable === 'undefined')
+						return;
+
+					backgroundFlickable.scrollToElement(expanderButton);
+					if(firstExpansion) //only focus first item on analysis creation
+						formParent.nextItemInFocusChain().forceActiveFocus();
+					else
+						draggableItem.forceActiveFocus();
+			}
+
+			Connections {
+				target: expanderButton
+				enabled: !preferencesModel.animationsOn
+				function onHeightChanged() { Qt.callLater(expanderButton.postExpansionTasks); }
+			}
 
 			onLoadingQmlChanged:
 			{
@@ -235,9 +242,9 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;			}	},
-				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;	}	},
-				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;											}	}
+				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;											}	},
+				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;									}	},
+				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;																			}	}
 			]
 
 			transitions: Transition
@@ -245,14 +252,19 @@ DropArea
 				enabled:	preferencesModel.animationsOn
 				reversible:	true
 
+				onRunningChanged: { if (expanderButton.expanded) Qt.callLater(expanderButton.postExpansionTasks); } //expansion ended
+
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 			}
 
-			Item
+			FocusScope
 			{
 				id:				expanderRectangle
 				height:			jaspTheme.formExpanderHeaderHeight  //label.contentHeight
+				scale:			mouseArea.containsMouse && !expanderButton.expanded ? 1.015 : 1.0
+
+				onActiveFocusChanged:	{ if (activeFocus) backgroundFlickable.scrollToElement(expanderButton); }
 
 				anchors
 				{
@@ -274,7 +286,7 @@ DropArea
 					rotation:		expanderButton.expanded ? 90 : 0
 					height:			analysisTitle.height * 0.88 //expanderRectangle.height / 1.5
 					width:			height
-					source:			jaspTheme.iconPath + "/large-arrow-right.png"
+					source:			draggableItem.activeFocus ? jaspTheme.iconPath + "/large-arrow-right-selected.png" : jaspTheme.iconPath + "/large-arrow-right.png"
 					sourceSize
 					{
 						width:	expanderIcon.width * 2
@@ -470,6 +482,7 @@ DropArea
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
+						rightMargin:	4 * preferencesModel.uiScale
 					}
 				}
 			}
@@ -576,21 +589,7 @@ DropArea
 
 							const control = myForm.activeJASPControl;
 							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
-							{
-								const coordinates = control.mapToItem(scrollAnalyses, 0, 0);
-								const diffYBottom = coordinates.y + Math.min(control.height, scrollAnalyses.height) - scrollAnalyses.height; //positive if not visible
-								const diffYTop = coordinates.y; //negative if not visible
-								const margin = 50 * jaspTheme.uiScale;
-
-								//check if the object is visisble in the scrollAnalyses (with margin) and scroll to it if not
-								if(contentYBehaviour.animation.running)
-									return;
-								
-								if (diffYBottom > -margin) // scroll up
-									backgroundFlickable.contentY = backgroundFlickable.contentY + Math.max(0, diffYBottom + margin);
-								else if (diffYTop < margin) //scroll down
-									backgroundFlickable.contentY = Math.max(0, backgroundFlickable.contentY + Math.min(0, diffYTop - margin));
-							}
+								backgroundFlickable.scrollToElement(control, 50 * jaspTheme.uiScale);
 						}
 					}
 				}

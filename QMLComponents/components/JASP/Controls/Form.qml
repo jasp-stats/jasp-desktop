@@ -43,6 +43,8 @@ AnalysisForm
 
 	property int    plotHeight			: 320
 	property int    plotWidth			: 480
+
+	Keys.onPressed: (event) => { event.accepted = true; } //dont let leftover input propagate upwards
 					
 	MouseArea
 	{

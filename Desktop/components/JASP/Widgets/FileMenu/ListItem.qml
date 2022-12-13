@@ -59,7 +59,7 @@ FocusScope
 		anchors.margins:	1
 		radius:				jaspTheme.borderRadius
 
-		color:				rectTitleAndDescripton.allPressed || (rectTitleAndDescripton.activeFocus && !datafileMouseArea.containsMouse) ?
+		color:				rectTitleAndDescripton.allPressed || (rectTitleAndDescripton.activeFocus && !datafileMouseArea.containsMouse && !rectTitleAndDataFile.activeFocus) ?
 								jaspTheme.buttonColorPressed :
 								rectTitleAndDescripton.allHovered
 								? jaspTheme.buttonColorHovered : jaspTheme.buttonColor

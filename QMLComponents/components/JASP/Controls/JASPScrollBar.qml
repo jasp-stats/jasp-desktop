@@ -54,7 +54,25 @@ Item
 		bottomMargin:	manualAnchor ? undefined : vertical ? extraMarginRightOrBottom	: undefined
 	}
 
+	//scroll to specified element. works for vertical bars only
+	//Will attempt to scroll element in view with margin
+	function scrollToElement(targetItem, margin = 0, scrollBehavior = null)
+	{
+		if(!vertical) return;
 
+		const coordinates = targetItem.mapToItem(flickable, 0, 0);
+		const diffYBottom = coordinates.y + Math.min(targetItem.height, flickable.height) - flickable.height; //positive if not visible
+		const diffYTop = coordinates.y; //negative if not visible
+
+		//check if the object is visible in the scrollAnalyses (with margin) and scroll to it if not
+		if(scrollBehavior && scrollBehavior.animation && scrollBehavior.animation.running)
+			return;
+
+		if (diffYBottom > -margin) // scroll down
+			flickable.contentY = flickable.contentY + Math.max(0, diffYBottom + margin);
+		else if (diffYTop < margin) //scroll up
+			flickable.contentY = Math.max(0, flickable.contentY + Math.min(0, diffYTop - margin));
+	}
 
 
 	function scroll(movement)

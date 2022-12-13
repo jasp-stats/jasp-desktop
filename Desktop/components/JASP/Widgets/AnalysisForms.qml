@@ -22,37 +22,6 @@ FocusScope
 
 		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing
 
-		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
-
-		function scrollToForm(formIndex)
-		{
-			if(formIndex < 0) return;
-
-			var offset = getOffset(formIndex);
-
-			if(formIndex === 0)
-			{
-				analysesFlickable.contentY = 0;
-				return;
-			}
-
-			if (analysesModel.currentFormHeight + offset + singleButtonHeight <= analysesFlickable.contentHeight || analysesModel.currentFormHeight + singleButtonHeight > scrollAnalyses.height)
-			{
-				analysesFlickable.contentY = offset;
-				return;
-			}
-
-			analysesFlickable.contentY = Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height);
-
-		}
-
-		Connections
-		{
-			target:							analysesModel
-			function onCurrentAnalysisIndexChanged(index) { formsBackground.scrollToForm(index); }
-		}
-
-
 		Item
 		{
 			id:				scrollAnalyses
@@ -109,31 +78,10 @@ FocusScope
 					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
 				}
 
-				Connections
+
+				function scrollToElement(targetItem, margin = 0)
 				{
-					target:							analysesModel
-					function onCurrentFormHeightChanged(formHeight)
-					{ if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
-
-					function reposition()
-					{
-						var row = analysesModel.currentAnalysisIndex;
-
-						if(row > -1 && row === analysesModel.currentAnalysisIndex)
-						{
-							var previousAnalysisButtonBottom	= formsBackground.getOffset(row);
-
-							//Should we scroll the analysis a bit?
-							if(		previousAnalysisButtonBottom	> analysesFlickable.contentY										// We can actually scroll up a bit if necessary
-								||	analysesFlickable.contentY		> previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
-							)
-							{
-
-								if(!contentYBehaviour.animation.running)
-									formsBackground.scrollToForm(row);
-							}
-						}
-					}
+					verticalScrollbar.scrollToElement(targetItem, margin, contentYBehaviour)
 				}
 
 				Column
