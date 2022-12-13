@@ -19,7 +19,7 @@ void ChangeRename::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options already contains '" + newName + "'");
 
 	if(!options.isMember(oldName))
-		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'");
+		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'", true);
 
 	options[newName] = options[oldName];
 	options.removeMember(oldName);

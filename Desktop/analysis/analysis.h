@@ -154,7 +154,7 @@ public:
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
-	const stringvec &		upgradeMsgsForOption(const std::string & name)		const;
+	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
 
 	const QList<std::string>	&	computedColumns()							const				{ return _computedColumns; }
 	const Json::Value			&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
