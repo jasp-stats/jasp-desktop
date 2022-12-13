@@ -23,7 +23,7 @@ ALTNavControl::~ALTNavControl()
 
 }
 
-ALTNavScope *ALTNavControl::getAttachedScope(QObject *obj)
+ALTNavScope* ALTNavControl::getAttachedScope(QObject *obj)
 {
 	auto it = attachedScopeMap.find(obj);
 	if (it != attachedScopeMap.end())
@@ -31,12 +31,12 @@ ALTNavScope *ALTNavControl::getAttachedScope(QObject *obj)
 	return nullptr;
 }
 
-void ALTNavControl::registerScope(ALTNavScope* scope, QObject *obj)
+void ALTNavControl::registrate(ALTNavScope* scope, QObject *obj)
 {
 	attachedScopeMap.insert(obj, scope);
 }
 
-void ALTNavControl::removeScope(QObject *obj)
+void ALTNavControl::unregister(QObject *obj)
 {
 	attachedScopeMap.remove(obj);
 }

@@ -185,7 +185,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
-	ALTNavigation::registerQMLTypes();
+	ALTNavigation::registerQMLTypes("JASP");
 
 	_dynamicModules->registerQMLTypes();
 

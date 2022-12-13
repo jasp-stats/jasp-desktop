@@ -22,6 +22,7 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 			attachedTag->setParentItem(attachee);
 			attachedTag->setParent(attachee);
 
+			//Find parent when attachee parent changes or component is completed (this is when registration of any parent is guaranteed)
 			QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(attachee);
 			connect(attached_component, SIGNAL(completed()), this, SLOT(init()));
 			connect(attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
@@ -31,8 +32,10 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 
 ALTNavScope::~ALTNavScope()
 {
-	ALTNavControl::getInstance()->removeScope(attachee);
+	setForeground(false);
+	ALTNavControl::getInstance()->unregister(attachee);
 	delete postfixBroker;
+
 }
 
 void ALTNavScope::registerWithParent()
@@ -46,6 +49,7 @@ void ALTNavScope::registerWithParent()
 	if(parentOverride)
 		parentScope = ctrl->getAttachedScope(parentScopeAttachee);
 
+	//no parent scope was set explicitly so lets find one
 	if(attachee && !parentScope)
 	{
 		QQuickItem* curr = attachee->parentItem();
@@ -61,7 +65,7 @@ void ALTNavScope::registerWithParent()
 		}
 	}
 
-
+	//no ancestors were registered so set default root
 	if(!parentScope)
 	{
 		parentScope = ctrl->getDefaultRoot();
@@ -161,12 +165,12 @@ void ALTNavScope::setForeground(bool onForeground)
 		ctrl->setCurrentNode(this);
 		ctrl->setAltNavInput(_prefix);
 	}
-	else if (ctrl->getCurrentNode() == this) //we are the current root but we lost foreground so unset ourselfs
+	else if (ctrl->getCurrentNode() == this) //we are the currentNode but lost foreground reset to root
 	{
 		ctrl->setCurrentNode(ctrl->getCurrentRoot());
 		ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
 	}
-	else if (root && ctrl->getCurrentRoot() == this)
+	else if (root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
 	{
 		ctrl->setCurrentRoot(ctrl->getDefaultRoot());
 		ctrl->resetAltNavInput();
@@ -256,8 +260,9 @@ void ALTNavScope::setEnabled(bool value)
 	{
 		setParent(nullptr);
 		setScopeActive(false);
+		setChildrenActive(false);
 	}
-	else if(initialized)
+	else if(initialized) //back in business
 	{
 		registerWithParent();
 	}

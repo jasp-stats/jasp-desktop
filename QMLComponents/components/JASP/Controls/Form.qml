@@ -49,7 +49,7 @@ AnalysisForm
 
 	ALTNavigation.enabled:			visible
 	ALTNavigation.scopeOnly:		true
-	ALTNavigation.parentScope:		null //default root
+	ALTNavigation.parent:			null //default root
 					
 	MouseArea
 	{

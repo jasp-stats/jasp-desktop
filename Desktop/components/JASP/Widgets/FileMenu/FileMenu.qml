@@ -78,7 +78,7 @@ FocusScope
 			z:				2
 
 			ALTNavigation.enabled:		true
-			ALTNavigation.parentScope:  ribbon.fileMenuButton
+			ALTNavigation.parent:		ribbon.fileMenuButton
 			ALTNavigation.scopeOnly:	true
 			ALTNavigation.foreground:	fileMenuModel.visible
 

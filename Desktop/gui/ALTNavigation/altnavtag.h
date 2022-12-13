@@ -6,6 +6,11 @@
 
 class ALTNavScope;
 
+/*!
+ * \brief Base class for the visual ALTNavTag element.
+ *
+ * Connects to ALTNavControl to get updates on input to form visual tag using the unique fulltag and current user input.
+ */
 class ALTNavTagBase : public QQuickItem
 {
 	Q_OBJECT
