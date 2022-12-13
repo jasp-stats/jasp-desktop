@@ -1035,6 +1035,7 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 	msg["fixedDecimals"]		=	 PreferencesModel::prefs()->fixedDecimals();
 	msg["exactPValues"]			=	 PreferencesModel::prefs()->exactPValues();
 	msg["normalizedNotation"]	=	 PreferencesModel::prefs()->normalizedNotation();
+	msg["resultFont"]			= fq(PreferencesModel::prefs()->resultFont());
 }
 
 void EngineRepresentation::processSettingsReply()
