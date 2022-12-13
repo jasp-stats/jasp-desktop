@@ -19,7 +19,7 @@ extern const char			*	logId;
 struct upgradeError  : public std::runtime_error
 {
 	bool isWarning = false;
-	upgradeError(std::string msg, bool _isWarning = false) : std::runtime_error(msg) { isWarning = _isWarning; }
+	upgradeError(std::string msg, bool isWarning = false) : std::runtime_error(msg), isWarning(isWarning) {}
 	const char* what() const noexcept override;
 };
 

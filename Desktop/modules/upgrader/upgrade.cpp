@@ -49,7 +49,7 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 		}
 		catch(upgradeError & error)
 		{
-			Log::log() << "Change had a problem: " << error.what() << std::endl;
+			Log::log() << "Change had a" << ( error.isWarning ? " warning" : "n error") <<  ": " << error.what() << std::endl;
 
 			if(module && module->isDevMod())
 				throw error;
