@@ -14,7 +14,7 @@ void ChangeRemove::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	const std::string name = fq(_name);
 
 	if(!options.isMember(name))
-		throw upgradeError("Could not erase option '" + name + "' because options does not contain it.");
+		throw upgradeError("Could not erase option '" + name + "' because options does not contain it.", true);
 
 	options.removeMember(name);
 	msgs.erase(name);

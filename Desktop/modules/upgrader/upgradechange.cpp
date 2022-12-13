@@ -210,7 +210,7 @@ void UpgradeChange::applyRename(Json::Value & options, const std::string & oldNa
 		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options already contains '" + newName + "'");
 
 	if(!options.isMember(oldName))
-		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'");
+		throw upgradeError("Could not rename option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'", true);
 
 	options[newName] = options[oldName];
 	options.removeMember(oldName);
@@ -226,7 +226,7 @@ void UpgradeChange::applyCopy(Json::Value & options, const std::string & oldName
 	//It is ok to overwrite whatever is in newName? Because it is a sort of "set value"
 
 	if(!options.isMember(oldName))
-		throw upgradeError("Could not copy option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'");
+		throw upgradeError("Could not copy option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'", true);
 
 	options[newName]	= options[oldName];
 	msgs[newName]		= msgs[oldName];
@@ -237,7 +237,7 @@ void UpgradeChange::applyCopy(Json::Value & options, const std::string & oldName
 void UpgradeChange::applyRemove(Json::Value & options, const std::string & name, UpgradeMsgs & msgs) const
 {
 	if(!options.isMember(name))
-		throw upgradeError("Could not erase option '" + name + "' because options does not contain it.");
+		throw upgradeError("Could not erase option '" + name + "' because options does not contain it.", true);
 
 	options.removeMember(name);
 	msgs.erase(name);
@@ -283,7 +283,7 @@ void UpgradeChange::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) cons
 void UpgradeChange::applyModifier(Json::Value & options, const std::string & name,	const ModifyType modifier, UpgradeMsgs & msgs) const
 {
 	if(!options.isMember(name))
-		throw upgradeError("Could not modify option '" + name + "' with operation '"+ ModifyTypeToString(modifier) +"' because options does not contain it.");
+		throw upgradeError("Could not modify option '" + name + "' with operation '"+ ModifyTypeToString(modifier) +"' because options does not contain it.", true);
 
 	switch(modifier)
 	{

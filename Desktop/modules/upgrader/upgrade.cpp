@@ -4,6 +4,7 @@
 #include "upgrades.h"
 #include "upgrade.h"
 #include "log.h"
+#include "modules/dynamicmodules.h"
 
 namespace Modules
 {
@@ -48,12 +49,14 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 		}
 		catch(upgradeError & error)
 		{
-			//If we are not in developermode it would be better to keep going instead of crashing the whole upgradeprocess
-			if(PreferencesModel::prefs()->developerMode())
+			Log::log() << "Change had a problem: " << error.what() << std::endl;
+
+			if(module && module->isDevMod())
 				throw error;
-			else
-				Log::log() << "Change had a problem: " << error.what() << std::endl;
+			if (!error.isWarning)
+				msgs[""].push_back(error.what());
 		}
+
 }
 
 QString Upgrade::toString() 

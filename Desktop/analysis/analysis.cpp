@@ -719,10 +719,8 @@ bool Analysis::readyToCreateForm() const
 
 const stringvec & Analysis::upgradeMsgsForOption(const std::string & name) const
 {
-	static stringvec emptyDummy;
-
 	if(_msgs.count(name) == 0)
-		return emptyDummy;
+		return emptyStringVec;
 
 	return _msgs.at(name);
 }

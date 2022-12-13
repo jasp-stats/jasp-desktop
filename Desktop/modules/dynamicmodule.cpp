@@ -282,6 +282,8 @@ Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, co
 
 	//Log::log() << "Dynamic module " << moduleName << " got upgrades? " << ( upgrades ? "yes!" : "no...") << std::endl;
 
+	upgrades->setModule(tq(moduleName));
+
 	return upgrades;
 }
 

@@ -18,7 +18,7 @@ void ChangeCopy::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 						newName = fq(_to);
 
 	if(!options.isMember(oldName))
-		throw upgradeError("Could not copy option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'");
+		throw upgradeError("Could not copy option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'", true);
 
 	options[newName]	= options[oldName];
 	msgs[newName]		= msgs[oldName];

@@ -4,6 +4,7 @@
 #include "utilities/qmlutils.h"
 
 const std::string AnalysisBase::emptyString;
+const stringvec AnalysisBase::emptyStringVec;
 
 AnalysisBase::AnalysisBase(QObject* parent, Version moduleVersion)
 	: QObject(parent)
