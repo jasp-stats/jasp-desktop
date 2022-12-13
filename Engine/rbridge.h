@@ -78,7 +78,7 @@ extern "C" {
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultsFont);
+	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
 	void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder);
 
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);

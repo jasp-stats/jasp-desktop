@@ -69,7 +69,7 @@ size_t _logWriteFunction(const void * buf, size_t len)
 	return len;
 }
 
-void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultsFont)
+void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont)
 {
 	JASPTIMER_SCOPE(rbridge_init);
 	
@@ -117,7 +117,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					_logWriteFunction,
 					rbridge_system,
 					rbridge_moduleLibraryFixer,
-					resultsFont,
+					resultFont,
 					rbridge_nativeToUtf8,
 					tempDirStatic.c_str()
 	);

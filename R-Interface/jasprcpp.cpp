@@ -70,7 +70,7 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
-	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont,
+	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultFont,
 	EnDecodeDef nativeToUtf8, const char * tempDir)
 {
 	_logFlushFunction		= logFlushFunction;
@@ -258,11 +258,11 @@ void STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bo
 	rInside[".exactPValues"]		= exactPValues;
 }
 
-void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultsFont, const int ppi, const char* imageBackground)
+void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int ppi, const char* imageBackground)
 {
 	RInside &rInside			= rinside->instance();
 
-	rInside[".resultsFont"]			= resultsFont;
+	rInside[".resultFont"]			= resultFont;
 	rInside[".imageBackground"]		= imageBackground;
 	rInside[".ppi"]					= ppi;
 
