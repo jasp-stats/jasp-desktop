@@ -333,7 +333,7 @@ Window
 				values:		 				dynamicModules.loadedModulesTitles
 				//startValue:				 	"Module selection"
 				onValueChanged:				rCmd.loadModule(dynamicModules.loadedModules[currentIndex])
-				height:						runButton.height
+				control.height:						runButton.height
 
 				anchors
 				{
