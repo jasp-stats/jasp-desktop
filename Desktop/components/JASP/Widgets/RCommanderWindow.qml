@@ -89,7 +89,6 @@ Window
 				contentWidth:			width
 				flickableDirection:		Flickable.VerticalFlick
 				interactive:			false
-				onContentYChanged:		if(contentHeight > height) rCmd.countDownToScroll();
 				onContentHeightChanged:	if(contentHeight > height) rCmd.countDownToScroll();
 
 				anchors

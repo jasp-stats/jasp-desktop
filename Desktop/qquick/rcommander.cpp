@@ -233,7 +233,7 @@ void RCommander::processEngineChanges()
 		lastState  = newState;
 		lastModule = newModule;
 
-		_output += "\n" + (stateChanged ? lastState : "") + (!moduleChanged ? "" : (stateChanged ? " and " : "R ") + ("has selected module " + newModule));
+		_output += "\n" + (stateChanged ? lastState : "") + (!moduleChanged ? "" : (stateChanged ? " and " : "R ") + (newModule == "" ? "has unselected module" : ("has selected module " + newModule)));
 		emit outputChanged(_output);
 	}
 
