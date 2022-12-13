@@ -44,6 +44,8 @@ public:
 	void				setUp()												override;
 	ListModel*			model()										const	override	{ return _model;				}
 	void				setUpModel()										override;
+	QString				helpMD(SetConst & markdowned,
+							   int howDeep = 2, bool asList=true)	const	override;
 
 	const QString&		currentText()								const				{ return _currentText;			}
 	const QString&		currentValue()								const				{ return _currentValue;			}
@@ -53,6 +55,8 @@ public:
 	int					currentIndex()								const				{ return _currentIndex;			}
 
 	std::vector<std::string> usedVariables()						const	override;
+
+
 signals:
 	void currentTextChanged();
 	void currentValueChanged();

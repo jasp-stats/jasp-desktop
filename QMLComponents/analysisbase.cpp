@@ -48,13 +48,21 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 	Log::log() << "Analysis(" << this << ")::createForm() called with parentItem " << parentItem << std::endl;
 
 	setQmlError("");
+	
+	if(parentItem)
+		_parentItem = parentItem;
 
 	if(_analysisForm)
 	{
 		Log::log() << "It already has a form, so we destroy it." << std::endl;
-		if (!parentItem) parentItem = _analysisForm->parentItem();
+		
+		if (!parentItem) 
+			parentItem = _analysisForm->parentItem();
+		
 		destroyForm();
 	}
+	else if(!parentItem)
+		parentItem = _parentItem;
 
 	try
 	{
@@ -75,7 +83,12 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 
 		emit formItemChanged();
 	}
-	catch(std::exception e)
+	catch(qmlLoadError & e)
+	{
+		setQmlError(e.what());
+		_analysisForm = nullptr;
+	}
+	catch(std::exception & e)
 	{
 		setQmlError(e.what());
 		_analysisForm = nullptr;

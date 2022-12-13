@@ -306,7 +306,7 @@ void Analysis::imagesRewritten(const Json::Value & results)
 Analysis::Status Analysis::parseStatus(std::string name)
 {
 	if		(name == "empty")			return Analysis::Empty;
-	else if (name == "initializing")	return Analysis::Empty;		//For backwards compatibility ?
+	else if (name == "initializing")	return Analysis::Empty;		//For backwards compatibility
 	else if (name == "waiting")			return Analysis::Running;	//For backwards compatibility
 	else if (name == "running")			return Analysis::Running;
 	else if (name == "runningImg")		return Analysis::RunningImg;

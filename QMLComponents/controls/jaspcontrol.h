@@ -25,7 +25,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								title					READ title					WRITE setTitle					NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
 	Q_PROPERTY( QString								info					READ info					WRITE setInfo					NOTIFY infoChanged					)
 	Q_PROPERTY( QString								toolTip					READ toolTip				WRITE setToolTip				NOTIFY toolTipChanged				)
-	Q_PROPERTY( QString								helpMD					READ helpMD													NOTIFY helpMDChanged				)
+	Q_PROPERTY( QString								helpMD					READ helpMDControl											NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound					READ isBound				WRITE setIsBound				NOTIFY isBoundChanged				)
 	Q_PROPERTY( bool								indent					READ indent					WRITE setIndent					NOTIFY indentChanged				)
 	Q_PROPERTY( bool								isDependency			READ isDependency			WRITE setIsDependency			NOTIFY isDependencyChanged			)
@@ -50,8 +50,9 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									alignment				READ alignment				WRITE setAlignment													)
 	Q_PROPERTY( Qt::FocusReason						focusReason				READ getFocusReason																				)
 
-
-	typedef std::set<JASPControl*> Set;
+protected:
+	typedef std::set<JASPControl*>			Set;
+	typedef std::set<const JASPControl*>	SetConst;
 
 public:
 	struct ParentKey
@@ -107,44 +108,45 @@ public:
 	JASPControl(QQuickItem *parent = nullptr);
 	~JASPControl(); //Disconnecting signals right before destroying the object avoids some crashes with qt >= 6.3 on macos m1
 
-	ControlType			controlType()				const	{ return _controlType;			}
-	const QString	&	name()						const	{ return _name;					}
-	QString				title()						const	{ return _title;				}
-	QString				info()						const	{ return _info;					}
-	QString				toolTip()					const	{ return _toolTip;				}
-	QString				helpMD(int howDeep = 2)		const;
-	bool				isBound()					const	{ return _isBound;				}
-	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;	}
-	bool				indent()					const	{ return _indent;				}
-	bool				isDependency()				const	{ return _isDependency;			}
-	bool				initialized()				const	{ return _initialized;			}
+	ControlType			controlType()				const	{ return _controlType;				}
+	const QString	&	name()						const	{ return _name;						}
+	QString				title()						const	{ return _title;					}
+	QString				info()						const	{ return _info;						}
+	QString				toolTip()					const	{ return _toolTip;					}
+	QString				helpMDControl()				const	{ SetConst tmp; return helpMD(tmp);	} ///< If someone want to get it from qml they can this way.
+	virtual QString		helpMD(SetConst & markdowned, int howDeep = 2, bool asList = false)	const;
+	bool				isBound()					const	{ return _isBound;					}
+	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}
+	bool				indent()					const	{ return _indent;					}
+	bool				isDependency()				const	{ return _isDependency;				}
+	bool				initialized()				const	{ return _initialized;				}
 	bool				initializedFromJaspFile()	const	{ return _initializedFromJaspFile;	}
-	bool				shouldShowFocus()			const	{ return _shouldShowFocus;		}
-	bool				shouldStealHover()			const	{ return _shouldStealHover;		}
-	bool				debug()						const	{ return _debug;				}
-	bool				parentDebug()				const	{ return _parentDebug;			}
+	bool				shouldShowFocus()			const	{ return _shouldShowFocus;			}
+	bool				shouldStealHover()			const	{ return _shouldStealHover;			}
+	bool				debug()						const	{ return _debug;					}
+	bool				parentDebug()				const	{ return _parentDebug;				}
 	bool				hasError()					const;
 	bool				hasWarning()				const;
 	bool				childHasError()				const;
 	bool				childHasWarning()			const;
-	bool				focusOnTab()				const	{ return activeFocusOnTab();	}
+	bool				focusOnTab()				const	{ return activeFocusOnTab();		}
 	bool				hasUserInteractiveValue()	const	{ return _hasUserInteractiveValue;	}
 
-	AnalysisForm	*	form()						const	{ return _form;					}
-	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;	}
-	JASPListControl	*	parentListView()			const	{ return _parentListView;		}
+	AnalysisForm	*	form()						const	{ return _form;						}
+	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;		}
+	JASPListControl	*	parentListView()			const	{ return _parentListView;			}
 	JASPControl		*	parentListViewEx()			const;
-	QString				parentListViewKey()			const	{ return _parentListViewKey;	}
-	QQuickItem		*	innerControl()				const	{ return _innerControl;			}
-	QQuickItem		*	background()				const	{ return _background;			}
-	QQuickItem		*	focusIndicator()			const	{ return _focusIndicator;		}
-	QStringList			dependencyMustContain()		const	{ return _dependencyMustContain; }
-	int					preferredHeight()			const	{ return _preferredHeight;		}
-	int					preferredWidth()			const	{ return _preferredWidth;		}
-	int					cursorShape()				const	{ return _cursorShape;			}
+	QString				parentListViewKey()			const	{ return _parentListViewKey;		}
+	QQuickItem		*	innerControl()				const	{ return _innerControl;				}
+	QQuickItem		*	background()				const	{ return _background;				}
+	QQuickItem		*	focusIndicator()			const	{ return _focusIndicator;			}
+	QStringList			dependencyMustContain()		const	{ return _dependencyMustContain;	}
+	int					preferredHeight()			const	{ return _preferredHeight;			}
+	int					preferredWidth()			const	{ return _preferredWidth;			}
+	int					cursorShape()				const	{ return _cursorShape;				}
 	bool				hovered()					const;
-	int					alignment()					const	{ return _alignment;			}
-	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;			}
+	int					alignment()					const	{ return _alignment;				}
+	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;				}
 
 	QString				humanFriendlyLabel()		const;
 	void				setInitialized(bool byFile = false);
@@ -170,7 +172,6 @@ public:
 
 protected:
 	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
-
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }

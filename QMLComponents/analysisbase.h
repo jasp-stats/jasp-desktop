@@ -79,6 +79,7 @@ protected:
 
 
 	AnalysisForm*	_analysisForm		= nullptr;
+	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
 	Version			_moduleVersion;
 

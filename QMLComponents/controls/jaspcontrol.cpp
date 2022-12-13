@@ -533,8 +533,8 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::TextField:					return tr("Entry Field");			break;
 	case ControlType::RadioButton:					return tr("Radio Button");			break;
 	case ControlType::RadioButtonGroup:				return tr("Radio Buttons");			break;
-	case ControlType::VariablesListView:			return tr("Variables");				break;
-	case ControlType::ComboBox:						return tr("ComboBox");				break;
+	case ControlType::VariablesListView:			return tr("Variables List");		break;
+	case ControlType::ComboBox:						return tr("DropDown");				break;
 	case ControlType::FactorLevelList:				return tr("Factor Level List");		break;
 	case ControlType::InputListView:				return tr("Input ListView");		break;
 	case ControlType::TableView:					return tr("TableView");				break;
@@ -544,24 +544,58 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::FactorsForm:					return tr("Factors Form");			break;
 	case ControlType::ComponentsList:				return tr("List of Components");	break;
 	case ControlType::GroupBox:						return tr("Group Box");				break;
+	case ControlType::TabView:						return tr("Tab View");				break;
+	case ControlType::VariablesForm:				return tr("Variables Form");		break;
 	}
 }
 
-QString JASPControl::helpMD(int howDeep) const
+QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) const
 {
-	if(!isVisible())
+	if(!isEnabled())
 		return "";
+
+	markdowned.insert(this);
+		
+	Log::log() << "Generating markdown for control by name '" << name() << "', title '" << title() << "' and type: '" << JASPControl::ControlTypeToFriendlyString(controlType()) << "'.\n";
+
+	bool shouldChildrenBeAList;
+
+	switch(controlType())
+	{
+	case ControlType::GroupBox:
+	case ControlType::ComboBox:
+	case ControlType::RadioButtonGroup:
+	case ControlType::VariablesForm:
+		shouldChildrenBeAList = true;
+		break;
+
+	default:
+		shouldChildrenBeAList = false;
+		break;
+	}
+
+	if(controlType() == ControlType::Expander)
+		howDeep = 1; //When within a section we can go back to bigger titles. Together with howDeep++ right below here this ends up as default 2
 
 	howDeep++;
 	QStringList markdown, childMDs;
 
 	//First we determine if we have children, and if so if they contain anything.
-	QList<JASPControl*> children = _childControlsArea ? getChildJASPControls(_childControlsArea) : QList<JASPControl*>();
+	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this);
 
 	bool aControlThatEncloses = children.size() > 0;
+		
+	Log::log() << "Control encloses #" << children.size() << " children." << std::endl;
+
+	bool	childrenList = asList || shouldChildrenBeAList || howDeep > 6; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
+	int		newDeep = howDeep;
+
+	if(childrenList && !asList)
+		newDeep = 0;
 
 	for (JASPControl* childControl : children)
-		childMDs << childControl->helpMD(howDeep);
+		if(!markdowned.count(childControl))
+			childMDs << childControl->helpMD(markdowned, newDeep, childrenList);
 
 	QString childMD = childMDs.join("");
 
@@ -577,20 +611,31 @@ QString JASPControl::helpMD(int howDeep) const
 	if(aControlThatEncloses)
 		markdown << "\n\n";
 
-	if(howDeep > 6) markdown << "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
-	else			markdown << QString{howDeep, '#'} + " "; // ;)
+	if(controlType() == ControlType::Expander)
+		markdown << "\n---\n";
 
-	//Ok removing the check for existence of wrapper because
+	if(asList)	markdown << QString{howDeep, ' '} + "- ";
+	else		markdown << QString{howDeep, '#' } + " "; // ;)
+
 	markdown << friendlyName();
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";
 
+
 	markdown << info() + "\n";
 
 	markdown << childMD;
 
-	return markdown.join("") + "\n\n";
+	if(controlType() == ControlType::Expander)
+		markdown << "\n---\n";
+
+
+	QString md = markdown.join("") + "\n\n";
+		
+	Log::log() << "Generated: '" << md << "'\n";
+		
+	return md;
 }
 
 void JASPControl::setChildControlsArea(QQuickItem * childControlsArea)

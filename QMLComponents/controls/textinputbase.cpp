@@ -261,6 +261,24 @@ QString TextInputBase::friendlyName() const
 	}
 }
 
+QString	TextInputBase::helpMD(SetConst & markdowned, int howDeep, bool) const
+{
+	markdowned.insert(this);
+
+	if(info() == "" || (label() == "" && afterLabel() == ""))
+		return "";
+
+	QStringList md;
+
+	md	<< QString{howDeep, '#' } << " " << friendlyName() << "\n"
+		<< "`" << label() << " ... " << afterLabel() << "`\n\n"
+		<< info() << "\n";
+
+
+	return md.join("");
+}
+
+
 bool TextInputBase::_formulaResultInBounds(double result)
 {
 	double min			= property("min").toDouble();
@@ -355,4 +373,30 @@ void TextInputBase::textChangedSlot()
 		}
 	}
 	else setBoundValue(_getJsonValue(_value));
+}
+
+const QString &TextInputBase::label() const
+{
+	return _label;
+}
+
+void TextInputBase::setLabel(const QString &newLabel)
+{
+	if (_label == newLabel)
+		return;
+	_label = newLabel;
+	emit labelChanged();
+}
+
+const QString &TextInputBase::afterLabel() const
+{
+	return _afterLabel;
+}
+
+void TextInputBase::setAfterLabel(const QString &newAfterLabel)
+{
+	if (_afterLabel == newAfterLabel)
+		return;
+	_afterLabel = newAfterLabel;
+	emit afterLabelChanged();
 }

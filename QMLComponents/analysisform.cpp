@@ -715,40 +715,6 @@ bool AnalysisForm::needsRefresh() const
 	return _analysis ? _analysis->needsRefresh() : false;
 }
 
-QString AnalysisForm::metaHelpMD() const
-{
-	std::function<QString(const Json::Value & meta, int deep)> metaMDer = [&metaMDer](const Json::Value & meta, int deep)
-	{
-		QStringList markdown;
-
-		for(const Json::Value & entry : meta)
-		{
-			std::string entryType	= entry.get("type", "").asString();
-			//Sadly enough the following "meta-types" aren't defined properly anywhere, this would be good to do at some point. The types are: table, image, collection, and optionally: htmlNode, column, json
-			QString friendlyObject	= entryType == "table"		? tr("Table")
-									: entryType == "image"		? tr("Plot")
-									: entryType == "collection"	? tr("Collection")
-									: tr("Result"); //Anything else we just call "Result"
-
-			if(entry.get("info", "") != "")
-			{
-				for(int i=0; i<deep; i++) markdown << "#";
-				markdown << " " << friendlyObject;
-				if(entry.get("title", "") != "")	markdown << tq(" - *" + entry["title"].asString() + "*:\n");
-				else								markdown << "\n";
-				markdown << tq(entry["info"].asString() + "\n");
-			}
-
-			if(entry.get("meta", Json::nullValue).isArray())
-				markdown << "\n" << metaMDer(entry["meta"], deep + 1);
-		}
-
-		return markdown.join("");
-	};
-
-	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->resultsMeta(), 2);
-}
-
 bool AnalysisForm::isFormulaName(const QString& name) const
 {
 	return _rSyntax->getFormula(name) != nullptr;
@@ -898,6 +864,7 @@ std::set<string> AnalysisForm::usedVariables()
 	return result;
 }
 
+///Generates documentation based on the "info" entered on each component
 QString AnalysisForm::helpMD() const
 {
 	if(!_analysis) return "";
@@ -907,13 +874,16 @@ QString AnalysisForm::helpMD() const
 		title(), "\n",
 		"=====================\n",
 		_info, "\n\n",
-		"---\n# ", tr("Input"), "\n"
+		"---\n# ", tr("Options"), "\n"
 	};
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
+	std::set<const JASPControl *> markdowned;
+
 	for(JASPControl * control : orderedControls)
-		markdown.push_back(control->helpMD());
+		if(!markdowned.count(control))
+			markdown.push_back(control->helpMD(markdowned));
 
 	markdown.push_back(metaHelpMD());
 	
@@ -923,6 +893,42 @@ QString AnalysisForm::helpMD() const
 		_analysis->preprocessMarkdownHelp(md);
 	
 	return md;
+}
+
+///Collects "info" from results and lists them underneath the output in the help-md window
+QString AnalysisForm::metaHelpMD() const
+{
+	std::function<QString(const Json::Value & meta, int deep)> metaMDer = [&metaMDer](const Json::Value & meta, int deep)
+	{
+		QStringList markdown;
+
+		for(const Json::Value & entry : meta)
+		{
+			std::string entryType	= entry.get("type", "").asString();
+			//Sadly enough the following "meta-types" aren't defined properly anywhere, this would be good to do at some point. The types are: table, image, collection, and optionally: htmlNode, column, json
+			QString friendlyObject	= entryType == "table"		? tr("Table")
+									: entryType == "image"		? tr("Plot")
+									: entryType == "collection"	? tr("Collection")
+									: tr("Result"); //Anything else we just call "Result"
+
+			if(entry.get("info", "") != "")
+			{
+				for(int i=0; i<deep; i++) markdown << "#";
+				markdown << " " << friendlyObject;
+				if(entry.get("title", "") != "")	markdown << tq(" - *" + entry["title"].asString() + "*:\n");
+				else								markdown << "\n";
+				markdown << tq(entry["info"].asString() + "\n");
+			}
+
+			if(entry.get("meta", Json::nullValue).isArray())
+				markdown << "\n" << metaMDer(entry["meta"], deep + 1);
+		}
+
+		return markdown.join("");
+	};
+
+	QString meta = metaMDer(_analysis->resultsMeta(), 2);
+	return meta.isEmpty() ? "" : "---\n# " + tr("Output") + "\n\n" + meta;
 }
 
 void AnalysisForm::setShowRSyntax(bool showRSyntax)

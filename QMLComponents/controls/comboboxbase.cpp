@@ -238,3 +238,38 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 
 	if (bindValue && initialized())	setBoundValue(fq(_currentValue));
 }
+
+
+QString	ComboBoxBase::helpMD(SetConst & markdowned, int howDeep, bool) const
+{
+	QStringList md = { JASPControl::helpMD(markdowned, howDeep, false) };
+	howDeep++;
+
+	if (values().isValid() && !values().isNull())
+	{
+		bool isInteger = false;
+		values().toInt(&isInteger);
+
+		if (!isInteger)
+		{
+			QList<QVariant> list = values().toList();
+			if (!list.isEmpty())
+			{
+				for (const QVariant& itemVariant : list)
+				{
+					QMap<QString, QVariant> labelValueInfoTriplet = itemVariant.toMap();
+					if (labelValueInfoTriplet.contains(labelRole()) && labelValueInfoTriplet.contains("info"))
+					{
+						QString label = labelValueInfoTriplet[labelRole()].toString(),
+								info  = labelValueInfoTriplet["info"].toString();
+
+						md << ( QString{howDeep, ' '} + "- *" + label + "*: " + info);
+					}
+				}
+			}
+		}
+	}
+
+
+	return md.join("\n");
+}

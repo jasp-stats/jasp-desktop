@@ -35,6 +35,7 @@ FocusScope
 				property alias	childControlsArea		: expanderArea
 				property alias	spacing					: expanderArea.rowSpacing
 				property alias	text					: expanderButton.title
+				property alias	info					: expanderButton.info
 				property alias  title					: expanderButton.title
 				property bool	expanded				: false
 				property alias	debug					: expanderButton.debug

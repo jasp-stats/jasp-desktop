@@ -62,6 +62,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
 	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
 	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
+
 public:
 	explicit				AnalysisForm(QQuickItem * = nullptr);
 							~AnalysisForm();
