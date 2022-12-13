@@ -259,7 +259,7 @@ Window
 				text:			qsTr("Run Code")
 				onClicked:		runCode();
 				width:			clearOutput.width
-				height:			(codeRect.height - 2 * jaspTheme.generalAnchorMargin) / 4
+				height:			(codeRect.height - 3 * jaspTheme.generalAnchorMargin) / 4
 				enabled:		codeEntry.text != "" && !rCmd.running
 
 				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
