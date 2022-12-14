@@ -219,9 +219,8 @@ MainWindow::~MainWindow()
 	{
 		//Clean up all QML to get rid of warnings and hopefully fix https://github.com/jasp-stats/jasp-issues/issues/667
 		//Going backwards to make sure the theme isnt deleted before everything that depends on it
-		for(int i=_qml->rootObjects().size() - 1; i >= 0; i--) {
+		for(int i=_qml->rootObjects().size() - 1; i >= 0; i--)
 			delete _qml->rootObjects().at(i);
-		}
 
 
 		delete _qml;
