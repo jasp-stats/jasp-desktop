@@ -131,13 +131,13 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
                 PrefsTextInput
                 {
-                    id:				dbHostnameInput
-                    nextEl:			dbPortInput.textInput
-                    text:			fileMenuModel.database.hostname
-                    onTextChanged:	fileMenuModel.database.hostname = text;
+					id:					dbHostnameInput
+					nextEl:				dbPortInput.textInput
+					text:				fileMenuModel.database.hostname
+					onEditingFinished:	fileMenuModel.database.hostname = text;
 
-                    x:				dbHostnameLabel.width
-                    width:			parent.width - dbHostnameLabel.width
+					x:					dbHostnameLabel.width
+					width:				parent.width - dbHostnameLabel.width
                 }
             }
 
@@ -158,11 +158,11 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
                 PrefsTextInput
                 {
-                    id:				dbPortInput
-                    nextEl:			dbNameInput.textInput
-                    text:			fileMenuModel.database.port
-					onTextChanged:	fileMenuModel.database.port = parsePortNum(text)
-                    textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
+					id:						dbPortInput
+					nextEl:					dbNameInput.textInput
+					text:					fileMenuModel.database.port
+					onEditingFinished:		fileMenuModel.database.port = parsePortNum(text)
+					textInput.validator:	JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
 
                     x:				dbHostnameLabel.width
                     width:			dbHostnameInput.width
@@ -191,13 +191,13 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
                 PrefsTextInput
                 {
-                    id:				dbNameInput
-					nextEl:			browseDbButton
-                    text:			fileMenuModel.database.database
-                    onTextChanged:	fileMenuModel.database.database = text;
+					id:					dbNameInput
+					nextEl:				browseDbButton
+					text:				fileMenuModel.database.database
+					onEditingFinished:	fileMenuModel.database.database = text;
 
-                    x:				dbHostnameLabel.width
-					width:			dbHostnameInput.width - (!browseDbButton.enabled ? 0 : browseDbButton.width + jaspTheme.generalAnchorMargin)
+					x:					dbHostnameLabel.width
+					width:				dbHostnameInput.width - (!browseDbButton.enabled ? 0 : browseDbButton.width + jaspTheme.generalAnchorMargin)
                 }
 
 				RoundedButton
@@ -229,13 +229,13 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
                 PrefsTextInput
                 {
-                    id:				dbUsernameInput
-                    nextEl:			dbPasswordInput.textInput
-                    text:			fileMenuModel.database.username
-                    onTextChanged:	fileMenuModel.database.username = text;
+					id:					dbUsernameInput
+					nextEl:				dbPasswordInput.textInput
+					text:				fileMenuModel.database.username
+					onEditingFinished:	fileMenuModel.database.username = text;
 
-                    x:				dbHostnameLabel.width
-                    width:			dbHostnameInput.width
+					x:					dbHostnameLabel.width
+					width:				dbHostnameInput.width
                 }
             }
 
@@ -258,7 +258,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     id:						dbPasswordInput
 					nextEl:					rememberMe
                     text:					fileMenuModel.database.password
-                    onTextChanged:			fileMenuModel.database.password = text;
+					onEditingFinished:		fileMenuModel.database.password = text;
 
                     textInput.echoMode:		TextInput.Password
 
@@ -313,7 +313,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
                     id:						dbQuery
                     nextEl:					runQuery
                     text:					fileMenuModel.database.query
-                    onTextChanged:			fileMenuModel.database.query = text
+					onEditingFinished:		fileMenuModel.database.query = text
                     LQ.Layout.fillWidth:	true
                 }
 

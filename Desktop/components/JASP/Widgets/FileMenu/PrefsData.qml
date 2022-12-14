@@ -202,11 +202,11 @@ ScrollView
 
 				PrefsTextInput
 				{
-					id:				missingValueDataLabelInput
+					id:					missingValueDataLabelInput
 
-					text:			preferencesModel.dataLabelNA
-					onTextChanged:	preferencesModel.dataLabelNA = text
-					nextEl:			missingValuesList.firstComponent
+					text:				preferencesModel.dataLabelNA
+					onEditingFinished:	preferencesModel.dataLabelNA = text
+					nextEl:				missingValuesList.firstComponent
 
 					anchors
 					{
