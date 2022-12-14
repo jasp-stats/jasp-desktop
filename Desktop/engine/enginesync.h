@@ -77,7 +77,7 @@ public slots:
 	void		refreshAllPlots();
 	void		logCfgRequest();
 	void		logToFileChanged(bool) { logCfgRequest(); }
-	void		cleanUpAfterClose();
+	void		cleanUpAfterClose(bool forgetAnalyses = false);
 	void		filterDone(int requestID);
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); resumeEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	void		killModuleEngine(Modules::DynamicModule * mod);

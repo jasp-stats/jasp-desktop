@@ -1188,7 +1188,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				QApplication::exit();
 			else
 			{
-				_engineSync->cleanUpAfterClose();
+				_engineSync->cleanUpAfterClose(true);
 				setDataAvailable(false);
 			}
 		}
