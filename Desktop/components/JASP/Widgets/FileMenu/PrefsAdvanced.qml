@@ -74,13 +74,13 @@ ScrollView
 				
 				PrefsTextInput
 				{
-					id:				developerFolderText
+					id:					developerFolderText
 					
-					text:			preferencesModel.developerFolder
-					onTextChanged:	preferencesModel.developerFolder = text
-					nextEl:			cranRepoUrl.textInput
+					text:				preferencesModel.developerFolder
+					onEditingFinished:	preferencesModel.developerFolder = text
+					nextEl:				cranRepoUrl.textInput
 					
-					height:			browseDeveloperFolderButton.height
+					height:				browseDeveloperFolderButton.height
 					anchors
 					{
 						left:			browseDeveloperFolderButton.right
@@ -111,20 +111,20 @@ ScrollView
 				
 				PrefsTextInput
 				{
-					id:				cranRepoUrl
+					id:					cranRepoUrl
 					
-					text:			preferencesModel.cranRepoURL
-					onTextChanged:	preferencesModel.cranRepoURL = text
-					nextEl:			githubPatDefault
+					text:				preferencesModel.cranRepoURL
+					onEditingFinished:	preferencesModel.cranRepoURL = text
+					nextEl:				githubPatDefault
 					
-					height:			browseDeveloperFolderButton.height
+					height:				browseDeveloperFolderButton.height
 					anchors
 					{
-						left:		cranRepoUrlLabel.right
-						right:		parent.right
+						left:			cranRepoUrlLabel.right
+						right:			parent.right
 					}
 
-					KeyNavigation.tab:		githubPatDefault
+					KeyNavigation.tab:	githubPatDefault
 				}
 			}
 			
@@ -165,22 +165,22 @@ ScrollView
 				
 				PrefsTextInput
 				{
-					id:				githubPatCustomToken
+					id:					githubPatCustomToken
 					
-					text:			preferencesModel.githubPatCustom
-					onTextChanged:	preferencesModel.githubPatCustom = text
+					text:				preferencesModel.githubPatCustom
+					onEditingFinished:	preferencesModel.githubPatCustom = text
 
-					nextEl:			generateMarkdown
+					nextEl:				generateMarkdown
 					
-					height:			browseDeveloperFolderButton.height
+					height:				browseDeveloperFolderButton.height
 					anchors
 					{
-						left:		githubPatCustomLabel.right
-						right:		parent.right
-						margins:	jaspTheme.generalAnchorMargin
+						left:			githubPatCustomLabel.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
 					}
 
-					textInput.echoMode:	TextInput.PasswordEchoOnEdit
+					textInput.echoMode:	TextInput.Password
 
 					KeyNavigation.tab:		generateMarkdown
 				}

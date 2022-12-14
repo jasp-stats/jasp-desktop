@@ -8,6 +8,9 @@ Rectangle
 	property var	nextEl:		null
 	
 	signal onTextChanged();
+	signal editingFinished();
+
+	Component.onCompleted: textInput.editingFinished.connect(editingFinished)
 	
 	id:					root
 	implicitHeight:		textInput.implicitHeight + jaspTheme.generalAnchorMargin * 2
