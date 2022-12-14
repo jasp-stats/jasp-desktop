@@ -460,7 +460,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 
 void EngineRepresentation::analysisRemoved(Analysis * analysis)
 {
-	Log::log() << "Analysis removed" << " it was " << (_analysisAborted == analysis ? "" : " not " ) << "_analysisAborted" << std::endl;
+//	Log::log() << "Analysis removed" << " it was " << (_analysisAborted == analysis ? "" : " not " ) << "_analysisAborted" << std::endl;
 	if(_analysisAborted == analysis)
 		_analysisAborted = nullptr;
 
