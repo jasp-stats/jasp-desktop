@@ -31,6 +31,13 @@ DropArea
 		else																{ analysesModel.selectAnalysisAtRow(draggableItem.myIndex); }
 	}
 
+	function expand(takeFocus = true)
+	{
+		analysesModel.selectAnalysisAtRow(draggableItem.myIndex);
+		if(takeFocus)
+			draggableItem.forceActiveFocus();
+	}
+
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
 	Rectangle
@@ -588,7 +595,7 @@ DropArea
 								return;
 
 							const control = myForm.activeJASPControl;
-							if (control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.TabFocusReason)
+							if (control.focusReason !== Qt.MouseFocusReason)
 								backgroundFlickable.scrollToElement(control, 50 * jaspTheme.uiScale);
 						}
 					}

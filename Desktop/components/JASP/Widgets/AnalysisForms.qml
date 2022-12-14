@@ -1,6 +1,6 @@
 import QtQuick			2.11
 import QtQuick.Controls	2.4
-import JASP.Widgets		1.0
+import JASP
 import JASP.Controls	1.0
 
 
@@ -90,6 +90,11 @@ FocusScope
 					width:			analysesFlickable.width
 					spacing:		0
 
+					ALTNavigation.enabled:				true
+					ALTNavigation.scopeOnly:			true
+					ALTNavigation.strategy:				AssignmentStrategy.INDEXED
+					ALTNavigation.requestedPostfix:		"A"
+
 					move: Transition
 					{
 						// This animation may interfere during the Analysis expanding animation.
@@ -108,6 +113,10 @@ FocusScope
 							myIndex:				index
 							myAnalysis:				model.analysis
 							backgroundFlickable:	analysesFlickable
+
+							ALTNavigation.enabled:		true
+							ALTNavigation.index:		index
+							ALTNavigation.onTagMatch:	{ expand(); }
 						}
 					}
 				}

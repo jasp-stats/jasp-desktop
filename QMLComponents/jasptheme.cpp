@@ -646,6 +646,15 @@ void JaspTheme::setSliderPartOff(QColor sliderPartOff)
 	emit sliderPartOffChanged(_sliderPartOff);
 }
 
+void JaspTheme::setAltNavTagColor(QColor altNavTagColor)
+{
+	if (_altNavTagColor == altNavTagColor)
+		return;
+
+	_altNavTagColor = altNavTagColor;
+	emit altNavTagColorChanged(_altNavTagColor);
+}
+
 void JaspTheme::setBorderRadius(theme_distanceType borderRadius)
 {
 	if (_borderRadius == borderRadius)
@@ -1245,6 +1254,15 @@ void JaspTheme::setFontCode(QFont fontCode)
 
 	_fontCode = fontCode;
 	emit fontCodeChanged(_fontCode);
+}
+
+void JaspTheme::setFontALTNavTag(QFont fontALTNavTag)
+{
+	if (_fontALTNavTag == fontALTNavTag)
+		return;
+
+	_fontALTNavTag = fontALTNavTag;
+	emit fontALTNavTagChanged(_fontALTNavTag);
 }
 
 void JaspTheme::setIsDark(bool isDark)

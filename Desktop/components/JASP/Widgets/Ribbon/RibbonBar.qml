@@ -17,7 +17,7 @@
 //
 
 import QtQuick 2.11
-import JASP.Widgets 1.0
+import JASP
 
 
 FocusScope
@@ -26,7 +26,8 @@ FocusScope
 	height	: ribbonMenu.height
 
 	// This property is required to show filemenu button press in KeyNavigation
-	property bool isFileMenuPressed: true
+	property bool isFileMenuPressed:	false
+	property alias fileMenuButton:		fileMenuOpenButton
 
 	function focusOnRibbonMenu()
 	{
@@ -158,6 +159,10 @@ FocusScope
 		width		: 0.75 * height
 		focus		: true
 
+		ALTNavigation.enabled: true
+		ALTNavigation.requestedPostfix: "O"
+		ALTNavigation.onTagMatch: { clicked(); }
+
 		onClicked:
 		{
 			fileMenuModel.visible = !fileMenuModel.visible;
@@ -205,6 +210,10 @@ FocusScope
 		width		: 0.75 * height
 		showPressed	: modulesMenu.opened
 		z			: 2
+
+		ALTNavigation.enabled: true
+		ALTNavigation.requestedPostfix: "I"
+		ALTNavigation.onTagMatch: { clicked(); }
 
 		onClicked	:
 		{

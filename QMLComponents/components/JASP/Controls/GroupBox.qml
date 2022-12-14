@@ -33,6 +33,9 @@ JASPControl
 	childControlsArea		: contentArea
 	focusOnTab				: false
 
+	ALTNavigation.enabled:		true
+	ALTNavigation.onTagMatch:	{ contentArea.nextItemInFocusChain().forceActiveFocus(); }
+
 	default property alias	content:			contentArea.children
 			property int	rowSpacing:			jaspTheme.rowGroupSpacing
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing

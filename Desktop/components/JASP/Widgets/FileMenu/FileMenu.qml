@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import JASP
 import FileOperation 1.0
 
 FocusScope
@@ -77,6 +77,11 @@ FocusScope
 			height:			parent.height
 			z:				2
 
+			ALTNavigation.enabled:		true
+			ALTNavigation.parent:		ribbon.fileMenuButton
+			ALTNavigation.scopeOnly:	true
+			ALTNavigation.foreground:	fileMenuModel.visible
+
 			Rectangle
 			{
 				z:				-1
@@ -127,6 +132,10 @@ FocusScope
 								leftMargin: 3  * preferencesModel.uiScale
 								left:		itemActionMenu.left
 							}
+
+							ALTNavigation.enabled:		true
+							ALTNavigation.x:			width * 0.9
+							ALTNavigation.onTagMatch:	{ clicked(); }
 
 							Keys.onLeftPressed:
 							{

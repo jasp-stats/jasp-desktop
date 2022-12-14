@@ -88,6 +88,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QColor             errorMessagesBackgroundColor    READ errorMessagesBackgroundColor    WRITE setErrorMessagesBackgroundColor    NOTIFY errorMessagesBackgroundColorChanged    )
 	Q_PROPERTY(QColor             sliderPartOn                    READ sliderPartOn                    WRITE setSliderPartOn                    NOTIFY sliderPartOnChanged                    )
 	Q_PROPERTY(QColor             sliderPartOff                   READ sliderPartOff                   WRITE setSliderPartOff                   NOTIFY sliderPartOffChanged                   )
+	Q_PROPERTY(QColor             altNavTagColor                  READ altNavTagColor                  WRITE setAltNavTagColor                  NOTIFY altNavTagColorChanged                     )
+
 
 	//Distances:
 	Q_PROPERTY(theme_distanceType borderRadius                    READ borderRadius                    WRITE setBorderRadius                    NOTIFY borderRadiusChanged                    )
@@ -163,6 +165,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QFont              fontRibbon                      READ fontRibbon                      WRITE setFontRibbon                      NOTIFY fontRibbonChanged                      )
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
 	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
+	Q_PROPERTY(QFont              fontALTNavTag                   READ fontALTNavTag                   WRITE setFontALTNavTag                   NOTIFY fontALTNavTagChanged                   )
+
 
 	Q_PROPERTY(QFont              fontRCode                       READ fontRCode                       WRITE setFontRCode                       NOTIFY fontRCodeChanged                       )
 	Q_PROPERTY(QFont              fontCode						  READ fontCode				           WRITE setFontCode                        NOTIFY fontCodeChanged                        )
@@ -244,6 +248,7 @@ public:
 	QColor				errorMessagesBackgroundColor() 		const	{ return _errorMessagesBackgroundColor; }
 	QColor				sliderPartOn() 						const	{ return _sliderPartOn; }
 	QColor				sliderPartOff() 					const	{ return _sliderPartOff; }
+	QColor				altNavTagColor() 					const	{ return _altNavTagColor; }
 	QColor				darkeningColour()					const	{ return _darkeningColour;	}
 	theme_distanceType	borderRadius()						const	{ return _borderRadius						* uiScale(); }
 	theme_distanceType	shadowRadius()						const	{ return _shadowRadius						* uiScale(); }
@@ -309,6 +314,7 @@ public:
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
 	QFont				fontRCode()							const	{ return _fontRCode;					}
 	QFont				fontCode()							const	{ return _fontCode;						}
+	QFont				fontALTNavTag()						const	{ return _fontALTNavTag;				}
 	QString				iconPath()							const	{ return _iconPath;						}
 	QString				themeName()							const	{ return _themeName;					}
 	static QString		currentIconPath();
@@ -376,6 +382,7 @@ signals:
 	void errorMessagesBackgroundColorChanged(QColor errorMessagesBackgroundColor);
 	void sliderPartOnChanged(QColor sliderPartOn);
 	void sliderPartOffChanged(QColor sliderPartOff);
+	void altNavTagColorChanged(QColor altNavTagColor);
 	void darkeningColourChanged(QColor darkeningColour);
 	void borderRadiusChanged();
 	void shadowRadiusChanged();
@@ -441,6 +448,7 @@ signals:
 	void fontPrefOptionsGroupTitleChanged(QFont fontPrefOptionsGroupTitle);
 	void fontRCodeChanged(QFont fontRCode);
 	void fontCodeChanged(QFont fontCode);
+	void fontALTNavTagChanged(QFont fontALTNavTag);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged();
@@ -505,6 +513,7 @@ public slots:
 	void setErrorMessagesBackgroundColor(QColor errorMessagesBackgroundColor);
 	void setSliderPartOn(QColor sliderPartOn);
 	void setSliderPartOff(QColor sliderPartOff);
+	void setAltNavTagColor(QColor altNavTagColor);
 	void setDarkeningColour(QColor darkeningColour);
 	void setBorderRadius(theme_distanceType borderRadius);
 	void setShadowRadius(theme_distanceType shadowRadius);
@@ -571,6 +580,7 @@ public slots:
 	void setThemeName(QString themeName);
 	void setFontRCode(QFont fontRCode);
 	void setFontCode(QFont fontCode);
+	void setFontALTNavTag(QFont fontALTNavTag);
 	void setIsDark(bool isDark);
 	void uiScaleHandler(float newUiScale);
 	void maxFlickVeloHandler(float maxFlickVelo);
@@ -646,7 +656,8 @@ private:
 						_errorMessagesBackgroundColor,
 						_sliderPartOn,
 						_sliderPartOff,
-						_darkeningColour;
+						_darkeningColour,
+						_altNavTagColor;
 
 	theme_distanceType	_borderRadius,
 						_shadowRadius,
@@ -714,7 +725,8 @@ private:
 						_fontRCode,
 						_fontCode,
 						_fontGroupTitle,
-						_fontPrefOptionsGroupTitle;
+						_fontPrefOptionsGroupTitle,
+						_fontALTNavTag;
 
 	QString				_iconPath,
 						_themeName;

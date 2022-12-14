@@ -46,6 +46,11 @@ JaspTheme
 	fontGroupTitle.family:								preferencesModel.interfaceFont
 	fontGroupTitle.weight:								Font.Medium
 
+	fontALTNavTag.bold:									true
+	fontALTNavTag.pixelSize:							Math.round(15 * uiScale)
+	fontALTNavTag.family:								preferencesModel.interfaceFont
+	fontALTNavTag.weight:								Font.Medium
+
 	fontPrefOptionsGroupTitle.bold:						true
 	fontPrefOptionsGroupTitle.pixelSize:				Math.round(13 * uiScale)
 	fontPrefOptionsGroupTitle.family:					preferencesModel.interfaceFont
@@ -115,6 +120,8 @@ JaspTheme
 	itemHoverColor:						blueMuchLighter
 	itemSelectedColor:					blueDarker
 	itemSelectedNoFocusColor:			grayLighter
+
+	altNavTagColor:						"#565756"
 
 	//JASPControl colors mostly:
 	borderColor:						gray
