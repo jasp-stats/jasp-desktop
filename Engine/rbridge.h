@@ -78,7 +78,7 @@ extern "C" {
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultsFont);
+	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
 	void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder);
 
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);
@@ -88,7 +88,7 @@ extern "C" {
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);
 	void rbridge_memoryCleaning();
 
-	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode, const std::string &resultsFont);
+	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode);
 
 	void rbridge_setColumnFunctionSources(			boost::function<int (const std::string &)																		> getTypeSource,
 													boost::function<bool(const std::string &, const std::vector<double>&)											> scaleSource,

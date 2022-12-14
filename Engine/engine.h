@@ -138,7 +138,7 @@ private: // Data:
 						_analysisResultsMeta,
 						_analysisStateKey,
 						_analysisResultsString,
-						_resultsFont,
+						_resultFont,
 						_imageBackground	= "white",
 						_analysisRFile		= "",
 						_dynamicModuleCall	= "",

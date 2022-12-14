@@ -104,7 +104,7 @@ void Engine::initialize()
 		std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 		_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultsFont.c_str());
+		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 	
@@ -554,7 +554,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_resultsFont			= jsonRequest.get("resultsFont",		"").asString();
+		_resultFont			= jsonRequest.get("resultFont",		"").asString();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -617,7 +617,7 @@ void Engine::runAnalysis()
 	Log::log() << "Analysis will be run now." << std::endl;
 
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey,
-												   _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont);
+												   _analysisId, _analysisRevision, _developerMode);
 
 	switch(_analysisStatus)
 	{
@@ -660,7 +660,7 @@ void Engine::saveImage()
 				width	= _imageOptions.get("width",	Json::nullValue).asInt();
 	std::string data	= _imageOptions.get("data",		Json::nullValue).asString(),
 				type	= _imageOptions.get("type",		Json::nullValue).asString(),
-				result	= jaspRCPP_saveImage(data.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+				result	= jaspRCPP_saveImage(data.c_str(), type.c_str(), height, width);
 
 	Json::Reader().parse(result, _analysisResults, false);
 
@@ -682,7 +682,7 @@ void Engine::saveImage()
 void Engine::editImage()
 {
 	std::string optionsJson	= _imageOptions.toStyledString(),
-				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
+				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _analysisId);
 
 	// JSONCPP_STRING          err;
 	// Json::CharReaderBuilder jsonReaderBuilder;
@@ -705,7 +705,7 @@ void Engine::editImage()
 
 void Engine::rewriteImages()
 {
-	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _resultsFont.c_str(), _analysisId);
+	jaspRCPP_rewriteImages(_analysisName.c_str(), _analysisId);
 
 	/* Already sent from R! (Through jaspResultsCPP$send())
 	_analysisStatus				= Status::complete;
@@ -984,6 +984,7 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	_fixedDecimals		= jsonRequest.get("fixedDecimals",		_fixedDecimals		).asBool();
 	_exactPValues		= jsonRequest.get("exactPValues",		_exactPValues		).asBool();
 	_normalizedNotation	= jsonRequest.get("normalizedNotation",	_normalizedNotation	).asBool();
+	_resultFont			= jsonRequest.get("resultFont",			_resultFont		).asString();
 
 	const char	* PAT	= std::getenv("GITHUB_PAT");
 	
@@ -994,6 +995,7 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 #endif
 	rbridge_setLANG(_langR);
 	jaspRCPP_setDecimalSettings(_numDecimals, _fixedDecimals, _normalizedNotation, _exactPValues);
+	jaspRCPP_setFontAndPlotSettings(_resultFont.c_str(), _ppi, _imageBackground.c_str());
 }
 
 
