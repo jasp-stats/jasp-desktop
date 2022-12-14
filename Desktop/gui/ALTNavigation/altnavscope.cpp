@@ -5,27 +5,27 @@
 #include <QQmlProperty>
 #include <QMetaObject>
 
-ALTNavScope::ALTNavScope(QObject* _attachee)
+ALTNavScope::ALTNavScope(QObject* attachee)
 	: QObject{nullptr}
 {
 
-	postfixBroker = ALTNavPostfixAssignmentStrategy::createStrategy(currentStrategy);
-	if(_attachee)
+	_postfixBroker = ALTNavPostfixAssignmentStrategy::createStrategy(_currentStrategy);
+	if(attachee)
 	{
-		connect(_attachee, &QObject::destroyed, this, [&]() {setParent(nullptr); deleteLater();});
-		attachee = qobject_cast<QQuickItem*>(_attachee);
-		if(attachee) //is a visual item
+		connect(attachee, &QObject::destroyed, this, [&]() {setParent(nullptr); deleteLater();});
+		_attachee = qobject_cast<QQuickItem*>(attachee);
+		if(_attachee) //is a visual item
 		{
 			//create a visual tag
-			QQmlComponent component(qmlEngine(attachee), QUrl("qrc:///components/JASP/Widgets/ALTNavTag.qml"), attachee);
-			attachedTag = qobject_cast<ALTNavTagBase*>(component.create());
-			attachedTag->setParentItem(attachee);
-			attachedTag->setParent(attachee);
+			QQmlComponent component(qmlEngine(_attachee), QUrl("qrc:///components/JASP/Widgets/ALTNavTag.qml"), _attachee);
+			_attachedTag = qobject_cast<ALTNavTagBase*>(component.create());
+			_attachedTag->setParentItem(_attachee);
+			_attachedTag->setParent(_attachee);
 
 			//Find parent when attachee parent changes or component is completed (this is when registration of any parent is guaranteed)
-			QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(attachee);
+			QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(_attachee);
 			connect(attached_component, SIGNAL(completed()), this, SLOT(init()));
-			connect(attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
+			connect(_attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
 		}
 	}
 }
@@ -33,26 +33,26 @@ ALTNavScope::ALTNavScope(QObject* _attachee)
 ALTNavScope::~ALTNavScope()
 {
 	setForeground(false);
-	ALTNavControl::getInstance()->unregister(attachee);
-	delete postfixBroker;
+	ALTNavControl::getInstance()->unregister(_attachee);
+	delete _postfixBroker;
 
 }
 
 void ALTNavScope::registerWithParent()
 {
-	if (root)
+	if (_root)
 		return;
 
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 	QObject* parentScope = nullptr;
 
-	if(parentOverride)
-		parentScope = ctrl->getAttachedScope(parentScopeAttachee);
+	if(_parentOverride)
+		parentScope = ctrl->getAttachedScope(_parentScopeAttachee);
 
 	//no parent scope was set explicitly so lets find one
-	if(attachee && !parentScope)
+	if(_attachee && !parentScope)
 	{
-		QQuickItem* curr = attachee->parentItem();
+		QQuickItem* curr = _attachee->parentItem();
 		while (curr)
 		{
 			ALTNavScope* scope = ctrl->getAttachedScope(curr);
@@ -78,7 +78,7 @@ void ALTNavScope::registerWithParent()
 void ALTNavScope::init()
 {
 	registerWithParent();
-	initialized = true;
+	_initialized = true;
 }
 
 
@@ -105,7 +105,7 @@ void ALTNavScope::traverse(QString input)
 		matchPossible |= partialMatch;
 	}
 
-	//end of the road so we disable the mode and return to root
+	//end of the road so we disable the altnavigation mode and return to root
 	if(!matchPossible)
 	{
 		ctrl->setCurrentNode(ctrl->getCurrentRoot());
@@ -123,23 +123,23 @@ void ALTNavScope::match()
 void ALTNavScope::setPrefix(QString prefix)
 {
 	_prefix = prefix;
-	if (attachedTag)
-		attachedTag->setFullTag(_prefix);
+	if (_attachedTag)
+		_attachedTag->setFullTag(_prefix);
 	setChildrenPrefix();
 }
 
 void ALTNavScope::setChildrenPrefix()
 {
-	if(postfixBroker)
-		postfixBroker->assignPostfixes(children(), _prefix);
+	if(_postfixBroker)
+		_postfixBroker->assignPostfixes(children(), _prefix);
 }
 
 void ALTNavScope::setScopeActive(bool value)
 {
-	scopeActive = value;
-	if (!scopeOnly)
-		attachedTag->setActive(value);
-	if (propagateActivity)
+	_scopeActive = value;
+	if (!_scopeOnly)
+		_attachedTag->setActive(value);
+	if (_propagateActivity)
 		setChildrenActive(value);
 }
 
@@ -160,7 +160,7 @@ void ALTNavScope::setForeground(bool onForeground)
 	_foreground = onForeground;
 	if (onForeground) // set ourselfs as the currentNode
 	{
-		if (root)
+		if (_root)
 			ctrl->setCurrentRoot(this);
 		ctrl->setCurrentNode(this);
 		ctrl->setAltNavInput(_prefix);
@@ -170,7 +170,7 @@ void ALTNavScope::setForeground(bool onForeground)
 		ctrl->setCurrentNode(ctrl->getCurrentRoot());
 		ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
 	}
-	else if (root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
+	else if (_root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
 	{
 		ctrl->setCurrentRoot(ctrl->getDefaultRoot());
 		ctrl->resetAltNavInput();
@@ -180,8 +180,8 @@ void ALTNavScope::setForeground(bool onForeground)
 
 void ALTNavScope::setRoot(bool value)
 {
-	root = value;
-	if (root)
+	_root = value;
+	if (_root)
 	{
 		setParent(nullptr);
 		setPrefix("");
@@ -190,31 +190,31 @@ void ALTNavScope::setRoot(bool value)
 	emit rootChanged();
 }
 
-void ALTNavScope::setX(qreal _x)
+void ALTNavScope::setX(qreal x)
 {
-	x = _x;
-	attachedTag->setX(x);
+	_x = x;
+	_attachedTag->setX(_x);
 }
 
-void ALTNavScope::setY(qreal _y)
+void ALTNavScope::setY(qreal y)
 {
-	y = _y;
-	attachedTag->setY(y);
+	_y = y;
+	_attachedTag->setY(_y);
 }
 
 QString ALTNavScope::getRequestedPostfix()
 {
-	return requestedPostfix;
+	return _requestedPostfix;
 }
 
 int ALTNavScope::getScopePriority()
 {
-	return scopePriority;
+	return _scopePriority;
 }
 
 int ALTNavScope::getIndex()
 {
-	return index;
+	return _index;
 }
 
 bool ALTNavScope::foreground()
@@ -229,8 +229,8 @@ QString ALTNavScope::prefix()
 
 void ALTNavScope::setScopeOnly(bool value)
 {
-	scopeOnly = value;
-	propagateActivity = true;
+	_scopeOnly = value;
+	_propagateActivity = true;
 	emit scopeOnlyChanged();
 }
 
@@ -252,17 +252,17 @@ void ALTNavScope::childEvent(QChildEvent* event)
 
 void ALTNavScope::setEnabled(bool value)
 {
-	if(value == enabled)
+	if(value == _enabled)
 		return;
 
-	enabled = value;
-	if(!enabled)
+	_enabled = value;
+	if(!_enabled)
 	{
 		setParent(nullptr);
 		setScopeActive(false);
 		setChildrenActive(false);
 	}
-	else if(initialized) //back in business
+	else if(_initialized) //back in business
 	{
 		registerWithParent();
 	}
@@ -270,25 +270,25 @@ void ALTNavScope::setEnabled(bool value)
 	emit enabledChanged();
 }
 
-void ALTNavScope::setParentAttachee(QObject* _parent)
+void ALTNavScope::setParentAttachee(QObject* parent)
 {
-	parentScopeAttachee = qobject_cast<QQuickItem*>(_parent);
-	parentOverride = true;
+	_parentScopeAttachee = qobject_cast<QQuickItem*>(parent);
+	_parentOverride = true;
 }
 
 void ALTNavScope::setRequestedPostfix(QString postfix)
 {
-	requestedPostfix = postfix;
+	_requestedPostfix = postfix;
 }
 
 void ALTNavScope::setScopePriority(int priority)
 {
-	scopePriority = priority;
+	_scopePriority = priority;
 }
 
-void ALTNavScope::setIndex(int _index)
+void ALTNavScope::setIndex(int index)
 {
-	index = _index;
+	_index = index;
 	//indices changed recalc prefixes
 	ALTNavScope* parentScope = qobject_cast<ALTNavScope*>(parent());
 	if (parentScope)
@@ -304,6 +304,6 @@ void ALTNavScope::setStrategy(AssignmentStrategy strategy)
 
 void ALTNavScope::setStrategy(ALTNavPostfixAssignmentStrategy* strategy)
 {
-	delete postfixBroker;
-	postfixBroker = strategy;
+	delete _postfixBroker;
+	_postfixBroker = strategy;
 }

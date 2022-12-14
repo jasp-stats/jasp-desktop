@@ -86,16 +86,16 @@ signals:
 	void altNavEnabledChanged();
 
 private:
-	static ALTNavControl* instance;
-	QHash<QObject*, ALTNavScope*> attachedScopeMap;
+	static ALTNavControl* _instance;
+	QHash<QObject*, ALTNavScope*> _attachedScopeMap;
 
-	ALTNavScope* currentNode = nullptr;
-	ALTNavScope* currentRoot = nullptr;
-	ALTNavScope* defaultRoot = nullptr;
+	ALTNavScope* _currentNode = nullptr;
+	ALTNavScope* _currentRoot = nullptr;
+	ALTNavScope* _defaultRoot = nullptr;
 
-	bool altNavEnabled = false;
+	bool _altNavEnabled = false;
 	bool _dynamicTreeUpdate = false;
-	QString currenAltNavInput = "";
+	QString _currenAltNavInput = "";
 
 };
 

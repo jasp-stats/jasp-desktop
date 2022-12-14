@@ -18,25 +18,25 @@ ALTNavTagBase::~ALTNavTagBase()
 
 }
 
-void ALTNavTagBase::setFullTag(QString _fullTag)
+void ALTNavTagBase::setFullTag(QString fullTag)
 {
-	fullTag = _fullTag;
+	_fullTag = fullTag;
 	updateTagText();
 }
 
 
 void ALTNavTagBase::updateTagText()
 {
-	int len = fullTag.length() - ALTNavControl::getInstance()->getCurrentALTNavInput().length();
+	int len = _fullTag.length() - ALTNavControl::getInstance()->getCurrentALTNavInput().length();
 	if (len >= 0)
 	{
-		tagText = fullTag.last(len);
+		_tagText = _fullTag.last(len);
 		emit tagTextChanged();
 	}
 }
 
-void ALTNavTagBase::setActive(bool _active)
+void ALTNavTagBase::setActive(bool active)
 {
-	active = _active;	
+	_active = active;
 	emit activeChanged();
 }

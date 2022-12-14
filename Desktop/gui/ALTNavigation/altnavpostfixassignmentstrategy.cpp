@@ -14,7 +14,6 @@ ALTNavPostfixAssignmentStrategy* ALTNavPostfixAssignmentStrategy::createStrategy
 		case PASSTHROUGH:
 			return new PassthroughStrategy();
 		case UNKNOWN:
-			return nullptr;
 		default:
 			return nullptr;
 	}
@@ -54,7 +53,7 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 	}
 
 	//assign the leftover postfixes
-	std::string preferedSacrifices = "";
+	std::string preferredSacrifices = "";
 	for (char option : capitalLetters)
 	{
 		if(unassigned.empty())
@@ -63,7 +62,7 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 			continue;
 		else
 		{
-			preferedSacrifices += option;
+			preferredSacrifices += option;
 			assigned.insert(option);
 			assignments[option - 'A'] = unassigned.last();
 			unassigned.last()->setPrefix(prefix + option);
@@ -78,7 +77,7 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 	//no spots left so we need a sacrifice. If no candidates is available we use Z. Who uses the letter Z anyways
 	if (assigned.size() == 26 && unassigned.size() > 0) //26 letters in alphabet
 	{
-		char sacrifice = preferedSacrifices.length() == 0 ? 'Z' : preferedSacrifices.back();
+		char sacrifice = preferredSacrifices.length() == 0 ? 'Z' : preferredSacrifices.back();
 		assigned.remove(sacrifice);
 		unassigned.push_back(assignments[sacrifice - 'A']);
 		nextLayerPrefix = layerPrefix += sacrifice;
@@ -111,7 +110,7 @@ void PriorityStrategy::assignPostfixes(const QObjectList &children, QString pref
 void IndexedStrategy::assignPostfixes(const QObjectList &children, QString prefix)
 {
 	int maxLeadingZeros = std::log10((double)children.size()); //if needed I can write a fast integer version that never fails but I doubt it will really matter for reasonable input sizes
-	for (auto child : children)
+	for (auto* child : children)
 	{
 		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
 		int n = scope->getIndex() + 1; //get rid of 0 index
@@ -124,7 +123,7 @@ void IndexedStrategy::assignPostfixes(const QObjectList &children, QString prefi
 void PassthroughStrategy::assignPostfixes(const QObjectList &children, QString prefix)
 {
 	assert(children.length() <= 1);
-	for (auto child : children)
+	for (auto* child : children)
 	{
 		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
 		scope->setPrefix(prefix);

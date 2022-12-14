@@ -18,21 +18,21 @@ class ALTNavScope : public QObject
 
 	//ALTNavigation Interface
 	//! When set to false an ALTNavscope unparent itself until enabled is true once again
-	Q_PROPERTY( bool						enabled						MEMBER		enabled					WRITE	setEnabled			NOTIFY	enabledChanged													);
+	Q_PROPERTY( bool						enabled						MEMBER		_enabled				WRITE	setEnabled			NOTIFY	enabledChanged													);
 	//! Defines a scope as a root
-	Q_PROPERTY( bool						root						MEMBER		root					WRITE	setRoot				NOTIFY	rootChanged														);
+	Q_PROPERTY( bool						root						MEMBER		_root					WRITE	setRoot				NOTIFY	rootChanged														);
 	//! Overrules the parent discovered by the normal tree forming parent search method. If null the default root is set as parent
-	Q_PROPERTY( QObject*					parent						MEMBER		parentScopeAttachee		WRITE	setParentAttachee	NOTIFY	parentScopeChanged												);
+	Q_PROPERTY( QObject*					parent						MEMBER		_parentScopeAttachee	WRITE	setParentAttachee	NOTIFY	parentScopeChanged												);
 	//! Set if their should be no visual representation
-	Q_PROPERTY( bool						scopeOnly					MEMBER		scopeOnly				WRITE	setScopeOnly		NOTIFY	scopeOnlyChanged												);
+	Q_PROPERTY( bool						scopeOnly					MEMBER		_scopeOnly				WRITE	setScopeOnly		NOTIFY	scopeOnlyChanged												);
 	//! Children of this scope will also be visible when this node is.
-	Q_PROPERTY( bool						showChildren				MEMBER		propagateActivity																											);
+	Q_PROPERTY( bool						showChildren				MEMBER		_propagateActivity																											);
 	//! Define postfix allocation strategy
-	Q_PROPERTY( AssignmentStrategy			strategy					MEMBER		currentStrategy			WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
+	Q_PROPERTY( AssignmentStrategy			strategy					MEMBER		_currentStrategy		WRITE	setStrategy			NOTIFY	postfixAssignmentStrategyChanged								);
 	//! Defines the x position of the visual tag relative to the attachee
-	Q_PROPERTY( int							x							MEMBER		x						WRITE	setX																						);
+	Q_PROPERTY( int							x							MEMBER		_x						WRITE	setX																						);
 	//! Defines the y position of the visual tag relative to the attachee
-	Q_PROPERTY( int							y							MEMBER		y						WRITE	setY																						);
+	Q_PROPERTY( int							y							MEMBER		_y						WRITE	setY																						);
 	//! This property may be set to true if the scope should be forcefully set to the current node (e.g. submenu is open)
 	Q_PROPERTY( bool						foreground					READ		foreground				WRITE	setForeground		NOTIFY	foregroundChanged												);
 	//! Defines a postfix preference that the current strategy may use
@@ -57,7 +57,7 @@ signals:
 	void rootChanged();
 
 public:
-	explicit ALTNavScope(QObject* _attachee);
+	explicit ALTNavScope(QObject* attachee);
 	~ALTNavScope();
 
 	/*!
@@ -103,7 +103,7 @@ public:
 
 protected:
 	void childEvent(QChildEvent *event) override;
-	void setParentAttachee(QObject* _parent);
+	void setParentAttachee(QObject* parent);
 	void setRequestedPostfix(QString postfix);
 	void setScopePriority(int priority);
 	void setIndex(int index);
@@ -123,30 +123,30 @@ private slots:
 
 
 protected:
-	bool scopeActive = false;
+	bool _scopeActive = false;
 	QString _prefix = "";
 
 private:
 	//ALTNavigation Interface
-	bool enabled = false;
-	bool root = false;
+	bool _enabled = false;
+	bool _root = false;
 	bool _foreground = false;
-	bool scopeOnly = false;
-	bool propagateActivity = false;
-	QString requestedPostfix = "";
-	int index = -1;
-	int scopePriority = 0;
-	AssignmentStrategy currentStrategy = AssignmentStrategy::PRIORITY;
-	qreal x, y;
+	bool _scopeOnly = false;
+	bool _propagateActivity = false;
+	QString _requestedPostfix = "";
+	int _index = -1;
+	int _scopePriority = 0;
+	AssignmentStrategy _currentStrategy = AssignmentStrategy::PRIORITY;
+	qreal _x, _y;
 
-	QQuickItem* attachee;
-	ALTNavTagBase* attachedTag = nullptr;
-	QQuickItem* parentScopeAttachee = nullptr;
-	bool parentOverride = false;
-	bool initialized = false;
+	QQuickItem* _attachee;
+	ALTNavTagBase* _attachedTag = nullptr;
+	QQuickItem* _parentScopeAttachee = nullptr;
+	bool _parentOverride = false;
+	bool _initialized = false;
 
 
-	ALTNavPostfixAssignmentStrategy* postfixBroker = nullptr;
+	ALTNavPostfixAssignmentStrategy* _postfixBroker = nullptr;
 
 	friend class ALTNavPostfixAssignmentStrategy;
 

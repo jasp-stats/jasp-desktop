@@ -22,10 +22,8 @@ public:
 	 ALTNavTagBase(QQuickItem* parent = nullptr);
 	~ALTNavTagBase();
 
-	void setFullTag(QString _fullTag);
-	void setActive(bool _active);
-
-	QString fullTag;
+	void setFullTag(QString fullTag);
+	void setActive(bool active);
 
 private slots:
 	void updateTagText();
@@ -35,12 +33,14 @@ signals:
 	void activeChanged();
 
 private:
-	bool getActive() { return active; };
-	QString getTagText() { return tagText; };
+	bool getActive() { return _active; };
+	QString getTagText() { return _tagText; };
 
 private:
-	QString tagText = "";
-	bool active = false;
+	QString _tagText = "";
+	bool _active = false;
+	QString _fullTag;
+
 
 };
 
