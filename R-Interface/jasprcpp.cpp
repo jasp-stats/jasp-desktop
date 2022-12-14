@@ -266,7 +266,7 @@ void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int 
 	rInside[".imageBackground"]		= imageBackground;
 	rInside[".ppi"]					= ppi;
 
-	jaspRCPP_parseEvalQNT("jaspBase::registerFonts()");
+	jaspRCPP_parseEvalQNT("jaspBase:::registerFonts()");
 }
 
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options,
