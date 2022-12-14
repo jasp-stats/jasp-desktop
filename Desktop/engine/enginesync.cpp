@@ -250,7 +250,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed										);
 		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
 		connect(engine,						&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
-		connect(engine,						&EngineRepresentation::requestEngineRestartAfterCrash,			this,					&EngineSync::restartEngineAfterCrash									);
+		connect(engine,						&EngineRepresentation::requestEngineRestartAfterCrash,	this,					&EngineSync::restartEngineAfterCrash									);
 		connect(engine,						&EngineRepresentation::registerForModule,				this,					&EngineSync::registerEngineForModule									);
 		connect(engine,						&EngineRepresentation::unregisterForModule,				this,					&EngineSync::unregisterEngineForModule									);
 		connect(engine,						&EngineRepresentation::moduleHasEngine,					this,					&EngineSync::moduleHasEngine											);
@@ -1225,7 +1225,7 @@ void EngineSync::processLogCfgRequests()
 	}
 }
 
-void EngineSync::cleanUpAfterClose()
+void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
 {
 	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
 	try {	pauseEngines(true); }
@@ -1244,7 +1244,7 @@ void EngineSync::cleanUpAfterClose()
 	TempFiles::clearSessionDir();
 
 	for(EngineRepresentation * e : _engines)
-		e->cleanUpAfterClose();
+		e->cleanUpAfterClose(forgetAnalyses);
 
 	try { resumeEngines(); }
 	//try { restartEngines(); }

@@ -35,12 +35,12 @@ EngineRepresentation::~EngineRepresentation()
 	}
 }
 
-void EngineRepresentation::cleanUpAfterClose()
+void EngineRepresentation::cleanUpAfterClose(bool forgetAnalyses)
 {
 	disconnect(_analysisInProgressStatusConnection); //Just in case
 
 	Analysis * runMeLater = nullptr;
-	if(_analysisAborted && (_analysisAborted->isAborted() || _analysisAborted->isAborting()))
+	if(!forgetAnalyses && _analysisAborted && (_analysisAborted->isAborted() || _analysisAborted->isAborting()))
 		runMeLater = _analysisAborted;
 
 	_analysisInProgress = nullptr;
@@ -460,6 +460,10 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 
 void EngineRepresentation::analysisRemoved(Analysis * analysis)
 {
+	Log::log() << "Analysis removed" << " it was " << (_analysisAborted == analysis ? "" : " not " ) << "_analysisAborted" << std::endl;
+	if(_analysisAborted == analysis)
+		_analysisAborted = nullptr;
+
 	if(_engineState != engineState::analysis || _analysisInProgress != analysis)
 		return;
 
@@ -507,6 +511,9 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		case analysisResultStatus::validationError:
 			setState(engineState::idle);
 			_idRemovedAnalysis	= -1;
+
+			//If an analysis really was just removed we probably don't care about _analysisAborted
+			_analysisAborted = nullptr;
 
 			Log::log() << "Analysis got the message and we now reset the engineStatus to idle!" << std::endl;
 			break;

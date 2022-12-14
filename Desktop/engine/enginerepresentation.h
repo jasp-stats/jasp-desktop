@@ -34,7 +34,7 @@ public:
 					EngineRepresentation(size_t channelNumber, QProcess * slaveProcess, QObject * parent = nullptr);
 					~EngineRepresentation();
 
-	void			cleanUpAfterClose();
+	void			cleanUpAfterClose(bool forgetAnalyses = false);
 
 	void			clearAnalysisInProgress();
 	void			setAnalysisInProgress(Analysis* analysis);
