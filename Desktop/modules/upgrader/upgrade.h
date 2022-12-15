@@ -42,6 +42,7 @@ public:
 	QString toVersionQ()		const { return _toVersion;			}
 	Version toVersion()			const;
 	QString module()			const;
+	bool	isModuleDev()		const;
 
 	const QString &msg() const;
 	void setMsg(const QString &newMsg);

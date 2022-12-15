@@ -51,12 +51,18 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 		{
 			Log::log() << "Change had a" << ( error.isWarning ? " warning" : "n error") <<  ": " << error.what() << std::endl;
 
-			if(module && module->isDevMod())
+			if(isModuleDev())
 				throw error;
+			
 			if (!error.isWarning)
 				msgs[""].push_back(error.what());
 		}
 
+}
+
+bool Upgrade::isModuleDev() const
+{
+	return DynamicModules::developmentModuleName() == fq(module());
 }
 
 QString Upgrade::toString() 
