@@ -25,7 +25,7 @@ public:
 	/*!
 	 * \brief The AssignmentStrategy enum defines all strategies
 	 */
-	enum AssignmentStrategy { PASSTHROUGH, INDEXED, PRIORITY, UNKNOWN };
+	enum AssignmentStrategy { PASS_THROUGH, INDEXED, PRIORITIZED, UNKNOWN };
 	Q_ENUM(AssignmentStrategy)
 
 

@@ -136,7 +136,7 @@ private:
 	QString _requestedPostfix = "";
 	int _index = -1;
 	int _scopePriority = 0;
-	AssignmentStrategy _currentStrategy = AssignmentStrategy::PRIORITY;
+	AssignmentStrategy _currentStrategy = AssignmentStrategy::PRIORITIZED;
 	qreal _x, _y;
 
 	QQuickItem* _attachee;

@@ -7,11 +7,11 @@ std::string capitalLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 ALTNavPostfixAssignmentStrategy* ALTNavPostfixAssignmentStrategy::createStrategy(AssignmentStrategy strategy)
 {
 	switch (strategy) {
-		case PRIORITY:
+		case PRIORITIZED:
 			return new PriorityStrategy();
 		case INDEXED:
 			return new IndexedStrategy();
-		case PASSTHROUGH:
+		case PASS_THROUGH:
 			return new PassthroughStrategy();
 		case UNKNOWN:
 		default:
