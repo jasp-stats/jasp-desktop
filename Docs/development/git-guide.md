@@ -520,8 +520,8 @@ You may need to make more commits and push them during the PR review.
 After the PR was approved and merged to `jasp-stats/jaspRegression`, delete the feature branch from your computer and from your GitHub repository:
 
 ```
-git delete -b myFeatureBranch
-git push origin --delete myFeatureBranch
+git branch -d myFeatureBranch
+git push origin -d myFeatureBranch
 ```
 
 This needs to be done once for each feature branch. Do not delete it if you want to keep the branch!
