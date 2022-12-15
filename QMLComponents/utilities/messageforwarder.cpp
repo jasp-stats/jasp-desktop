@@ -82,10 +82,10 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 	if(noSaveText == "")	noSaveText	= tr("Don't Save");
 
 	// In order to have the noSaveButton as first in the row of buttons, it has to get the role RejectRole.
-	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::YesRole);
-	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::NoRole);
-	QPushButton* noSaveButton =	box.addButton(noSaveText,	QMessageBox::ButtonRole::RejectRole);
-	box.setDefaultButton(noSaveButton);
+	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::AcceptRole);
+	QPushButton* noSaveButton =	box.addButton(noSaveText,	QMessageBox::ButtonRole::DestructiveRole);
+	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
+	box.setDefaultButton(saveButton);
 
 	box.exec();
 
