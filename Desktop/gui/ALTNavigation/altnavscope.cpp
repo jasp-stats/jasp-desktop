@@ -32,10 +32,8 @@ ALTNavScope::ALTNavScope(QObject* attachee)
 
 ALTNavScope::~ALTNavScope()
 {
-	setForeground(false);
 	ALTNavControl::getInstance()->unregister(_attachee);
 	delete _postfixBroker;
-
 }
 
 void ALTNavScope::registerWithParent()
@@ -145,7 +143,7 @@ void ALTNavScope::setScopeActive(bool value)
 
 void ALTNavScope::setChildrenActive(bool value)
 {
-	for(auto child : children())
+	for(auto* child : children())
 	{
 		qobject_cast<ALTNavScope*>(child)->setScopeActive(value);
 	}
@@ -165,15 +163,18 @@ void ALTNavScope::setForeground(bool onForeground)
 		ctrl->setCurrentNode(this);
 		ctrl->setAltNavInput(_prefix);
 	}
-	else if (ctrl->getCurrentNode() == this) //we are the currentNode but lost foreground reset to root
+	else
 	{
-		ctrl->setCurrentNode(ctrl->getCurrentRoot());
-		ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
-	}
-	else if (_root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
-	{
-		ctrl->setCurrentRoot(ctrl->getDefaultRoot());
-		ctrl->resetAltNavInput();
+		if (_root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
+		{
+			ctrl->setCurrentRoot(ctrl->getDefaultRoot());
+			ctrl->resetAltNavInput();
+		}
+		if (ctrl->getCurrentNode() == this) //we are the currentNode but lost foreground reset to root
+		{
+			ctrl->setCurrentNode(ctrl->getCurrentRoot());
+			ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
+		}
 	}
 	emit foregroundChanged();
 }
