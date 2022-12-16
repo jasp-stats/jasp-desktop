@@ -31,7 +31,7 @@ ALTNavScope::ALTNavScope(QObject* attachee)
 ALTNavScope::~ALTNavScope()
 {
 	setParentScope(nullptr);
-	for (ALTNavScope* child : _children)
+	for (ALTNavScope* child : _childScopes)
 		child->setParentScope(nullptr);
 	ALTNavControl::getInstance()->unregister(_attachee);
 	delete _postfixBroker;
@@ -76,7 +76,7 @@ void ALTNavScope::registerWithParent()
 
 void ALTNavScope::addChild(ALTNavScope *child)
 {
-	_children.push_back(child);
+	_childScopes.push_back(child);
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 	if(ctrl->dynamicTreeUpdate())
 	{
@@ -87,7 +87,7 @@ void ALTNavScope::addChild(ALTNavScope *child)
 
 void ALTNavScope::removeChild(ALTNavScope *child)
 {
-	_children.removeOne(child);
+	_childScopes.removeOne(child);
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 	if(ctrl->dynamicTreeUpdate())
 	{
@@ -122,7 +122,7 @@ void ALTNavScope::traverse(QString input)
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 
 	bool matchPossible = false;
-	for(ALTNavScope* scope : qAsConst(_children))
+	for(ALTNavScope* scope : qAsConst(_childScopes))
 	{
 		//total match, progress in tree
 		if(scope->_prefix == input)
@@ -165,7 +165,7 @@ void ALTNavScope::setPrefix(QString prefix)
 void ALTNavScope::setChildrenPrefix()
 {
 	if(_postfixBroker)
-		_postfixBroker->assignPostfixes(_children, _prefix);
+		_postfixBroker->assignPostfixes(_childScopes, _prefix);
 }
 
 void ALTNavScope::setScopeActive(bool value)
@@ -179,7 +179,7 @@ void ALTNavScope::setScopeActive(bool value)
 
 void ALTNavScope::setChildrenActive(bool value)
 {
-	for(ALTNavScope* child : _children)
+	for(ALTNavScope* child : _childScopes)
 	{
 		child->setScopeActive(value);
 	}

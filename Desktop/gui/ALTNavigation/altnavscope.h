@@ -148,7 +148,7 @@ private:
 	bool _parentOverride = false;
 	bool _initialized = false;
 
-	QList<ALTNavScope*> _children;
+	QList<ALTNavScope*> _childScopes;
 	ALTNavScope* _parentScope = nullptr;
 
 
