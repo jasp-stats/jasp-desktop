@@ -6,13 +6,11 @@
 #include <QMetaObject>
 
 ALTNavScope::ALTNavScope(QObject* attachee)
-	: QObject{nullptr}
+	: QObject{attachee}
 {
-
 	_postfixBroker = ALTNavPostfixAssignmentStrategy::createStrategy(_currentStrategy);
 	if(attachee)
 	{
-		connect(attachee, &QObject::destroyed, this, [&]() {setParent(nullptr); deleteLater();});
 		_attachee = qobject_cast<QQuickItem*>(attachee);
 		if(_attachee) //is a visual item
 		{
@@ -32,6 +30,9 @@ ALTNavScope::ALTNavScope(QObject* attachee)
 
 ALTNavScope::~ALTNavScope()
 {
+	setParentScope(nullptr);
+	for (ALTNavScope* child : _children)
+		child->setParentScope(nullptr);
 	ALTNavControl::getInstance()->unregister(_attachee);
 	delete _postfixBroker;
 }
@@ -42,7 +43,7 @@ void ALTNavScope::registerWithParent()
 		return;
 
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
-	QObject* parentScope = nullptr;
+	ALTNavScope* parentScope = nullptr;
 
 	if(_parentOverride)
 		parentScope = ctrl->getAttachedScope(_parentScopeAttachee);
@@ -70,7 +71,43 @@ void ALTNavScope::registerWithParent()
 	}
 
 	if(parentScope != parent())
-		setParent(parentScope);
+		setParentScope(parentScope);
+}
+
+void ALTNavScope::addChild(ALTNavScope *child)
+{
+	_children.push_back(child);
+	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	if(ctrl->dynamicTreeUpdate())
+	{
+		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavEnabled());
+		setChildrenPrefix();
+	}
+}
+
+void ALTNavScope::removeChild(ALTNavScope *child)
+{
+	_children.removeOne(child);
+	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	if(ctrl->dynamicTreeUpdate())
+	{
+		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavEnabled());
+		setChildrenPrefix();
+	}
+}
+
+void ALTNavScope::setParentScope(ALTNavScope *parent)
+{
+	if (_parentScope)
+		_parentScope->removeChild(this);
+	_parentScope = parent;
+	if(_parentScope)
+		_parentScope->addChild(this);
+	else
+	{
+		setScopeActive(false);
+		setChildrenActive(false);
+	}
 }
 
 void ALTNavScope::init()
@@ -85,9 +122,8 @@ void ALTNavScope::traverse(QString input)
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 
 	bool matchPossible = false;
-	for(QObject* child : children())
+	for(ALTNavScope* scope : qAsConst(_children))
 	{
-		ALTNavScope* scope = qobject_cast<ALTNavScope*>(child);
 		//total match, progress in tree
 		if(scope->_prefix == input)
 		{
@@ -129,7 +165,7 @@ void ALTNavScope::setPrefix(QString prefix)
 void ALTNavScope::setChildrenPrefix()
 {
 	if(_postfixBroker)
-		_postfixBroker->assignPostfixes(children(), _prefix);
+		_postfixBroker->assignPostfixes(_children, _prefix);
 }
 
 void ALTNavScope::setScopeActive(bool value)
@@ -143,9 +179,9 @@ void ALTNavScope::setScopeActive(bool value)
 
 void ALTNavScope::setChildrenActive(bool value)
 {
-	for(auto* child : children())
+	for(ALTNavScope* child : _children)
 	{
-		qobject_cast<ALTNavScope*>(child)->setScopeActive(value);
+		child->setScopeActive(value);
 	}
 }
 
@@ -184,7 +220,7 @@ void ALTNavScope::setRoot(bool value)
 	_root = value;
 	if (_root)
 	{
-		setParent(nullptr);
+		setParentScope(nullptr);
 		setPrefix("");
 	}
 
@@ -235,22 +271,6 @@ void ALTNavScope::setScopeOnly(bool value)
 	emit scopeOnlyChanged();
 }
 
-
-void ALTNavScope::childEvent(QChildEvent* event)
-{
-	QObject::childEvent(event);
-
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
-	if(!ctrl->dynamicTreeUpdate())
-		return;
-
-	if(event->added() || event->removed())
-	{
-		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavEnabled());
-		setChildrenPrefix();
-	}
-}
-
 void ALTNavScope::setEnabled(bool value)
 {
 	if(value == _enabled)
@@ -259,9 +279,7 @@ void ALTNavScope::setEnabled(bool value)
 	_enabled = value;
 	if(!_enabled)
 	{
-		setParent(nullptr);
-		setScopeActive(false);
-		setChildrenActive(false);
+		setParentScope(nullptr);
 	}
 	else if(_initialized) //back in business
 	{
