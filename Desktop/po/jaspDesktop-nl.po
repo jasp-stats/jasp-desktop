@@ -1726,10 +1726,6 @@ msgctxt "AnalysisForm|"
 msgid "Output"
 msgstr "Uitvoer"
 
-msgctxt "AnalysisForm|"
-msgid "Input"
-msgstr "Invoer"
-
 msgctxt "JASPControl|"
 msgid "Option"
 msgstr "Optie"
@@ -1757,14 +1753,6 @@ msgstr "Keuzerondje"
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "Keuzerondjes"
-
-msgctxt "JASPControl|"
-msgid "Variables"
-msgstr "Variabelen"
-
-msgctxt "JASPControl|"
-msgid "ComboBox"
-msgstr "Keuzelijst"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
@@ -4061,4 +4049,49 @@ msgstr ""
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "Analysis not found"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "Not an analysis function: <module name>::<analysis name>(...)"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R is (re)starting"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "R is installing or loading a module %1"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R stopped"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R awaits commands"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Options"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables List"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "DropDown"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Tab View"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables Form"
 msgstr ""

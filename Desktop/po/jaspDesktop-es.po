@@ -1744,10 +1744,6 @@ msgctxt "AnalysisForm|"
 msgid "Output"
 msgstr "Salida"
 
-msgctxt "AnalysisForm|"
-msgid "Input"
-msgstr "Entrada"
-
 msgctxt "JASPControl|"
 msgid "Option"
 msgstr "Opción"
@@ -1775,14 +1771,6 @@ msgstr "Botón de Opción"
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "Botones de Opción"
-
-msgctxt "JASPControl|"
-msgid "Variables"
-msgstr "Variables"
-
-msgctxt "JASPControl|"
-msgid "ComboBox"
-msgstr "Cuadro combinado"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
@@ -4116,3 +4104,48 @@ msgstr "La fórmula con nombre '%1' está definida dos veces"
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
 msgstr "Un control y una fórmula tienen el mismo nombre '%1'"
+
+msgctxt "RCommander|"
+msgid "Analysis not found"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "Not an analysis function: <module name>::<analysis name>(...)"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R is (re)starting"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "R is installing or loading a module %1"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R stopped"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R awaits commands"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Options"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables List"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "DropDown"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Tab View"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables Form"
+msgstr ""

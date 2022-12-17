@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-12-15 17:32+0000\n"
-"Last-Translator: Josée Turcotte <jturcotte@laurentienne.ca>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"fr/>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -1752,10 +1746,6 @@ msgctxt "AnalysisForm|"
 msgid "Output"
 msgstr "Sortie"
 
-msgctxt "AnalysisForm|"
-msgid "Input"
-msgstr "Entrée"
-
 msgctxt "JASPControl|"
 msgid "Option"
 msgstr "Option"
@@ -1783,14 +1773,6 @@ msgstr "Bouton radio"
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "Boutons radio"
-
-msgctxt "JASPControl|"
-msgid "Variables"
-msgstr "Variables"
-
-msgctxt "JASPControl|"
-msgid "ComboBox"
-msgstr "ComboBox"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
@@ -3983,7 +3965,8 @@ msgstr "Revue des procédures"
 #, fuzzy
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr "Bouton droit et bouton central de la souris pour arrêter une procédure."
+msgstr ""
+"Bouton droit et bouton central de la souris pour arrêter une procédure."
 
 #, fuzzy
 msgctxt "PrefsAdvanced|"
@@ -4167,3 +4150,48 @@ msgstr "La formule avec le nom '%1' est définie à deux reprises"
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
 msgstr "Un contrôle et une formule ont le même nom '%1'"
+
+msgctxt "RCommander|"
+msgid "Analysis not found"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "Not an analysis function: <module name>::<analysis name>(...)"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R is (re)starting"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "R is installing or loading a module %1"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R stopped"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "R awaits commands"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Options"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables List"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "DropDown"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Tab View"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Variables Form"
+msgstr ""
