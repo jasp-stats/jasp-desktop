@@ -43,13 +43,13 @@ void ALTNavScope::registerWithParent()
 		return;
 
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
-	ALTNavScope* parentScope = nullptr;
+	ALTNavScope* newParentScope = nullptr;
 
 	if(_parentOverride)
-		parentScope = ctrl->getAttachedScope(_parentScopeAttachee);
+		newParentScope = ctrl->getAttachedScope(_parentScopeAttachee);
 
 	//no parent scope was set explicitly so lets find one
-	if(_attachee && !parentScope)
+	if(_attachee && !newParentScope)
 	{
 		QQuickItem* curr = _attachee->parentItem();
 		while (curr)
@@ -57,7 +57,7 @@ void ALTNavScope::registerWithParent()
 			ALTNavScope* scope = ctrl->getAttachedScope(curr);
 			if(scope) //found a different valid valid scope
 			{
-				parentScope = scope;
+				newParentScope = scope;
 				break;
 			}
 			curr = curr->parentItem();
@@ -65,13 +65,13 @@ void ALTNavScope::registerWithParent()
 	}
 
 	//no ancestors were registered so set default root
-	if(!parentScope)
+	if(!newParentScope)
 	{
-		parentScope = ctrl->getDefaultRoot();
+		newParentScope = ctrl->getDefaultRoot();
 	}
 
-	if(parentScope != parent())
-		setParentScope(parentScope);
+	if(newParentScope != _parentScope)
+		setParentScope(newParentScope);
 }
 
 void ALTNavScope::addChild(ALTNavScope *child)
@@ -309,9 +309,8 @@ void ALTNavScope::setIndex(int index)
 {
 	_index = index;
 	//indices changed recalc prefixes
-	ALTNavScope* parentScope = qobject_cast<ALTNavScope*>(parent());
-	if (parentScope)
-		parentScope->setChildrenPrefix();
+	if (_parentScope)
+		_parentScope->setChildrenPrefix();
 }
 
 void ALTNavScope::setStrategy(AssignmentStrategy strategy)
