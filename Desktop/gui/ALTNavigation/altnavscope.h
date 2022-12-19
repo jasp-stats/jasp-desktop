@@ -102,7 +102,6 @@ public:
 
 
 protected:
-	void childEvent(QChildEvent *event) override;
 	void setParentAttachee(QObject* parent);
 	void setRequestedPostfix(QString postfix);
 	void setScopePriority(int priority);
@@ -120,6 +119,10 @@ private slots:
 	 *		  Registers with default root otherwise. May be overruled by setting parent property
 	 */
 	void registerWithParent();
+
+	void addChild(ALTNavScope* child);
+	void removeChild(ALTNavScope* child);
+	void setParentScope(ALTNavScope* parent);
 
 
 protected:
@@ -144,6 +147,9 @@ private:
 	QQuickItem* _parentScopeAttachee = nullptr;
 	bool _parentOverride = false;
 	bool _initialized = false;
+
+	QList<ALTNavScope*> _childScopes;
+	ALTNavScope* _parentScope = nullptr;
 
 
 	ALTNavPostfixAssignmentStrategy* _postfixBroker = nullptr;

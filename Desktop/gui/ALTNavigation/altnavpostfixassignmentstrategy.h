@@ -20,7 +20,7 @@ public:
 	 * \param children
 	 * \param prefix parent prefix
 	 */
-	virtual void assignPostfixes(QObjectList const&  children, QString prefix) = 0;
+	virtual void assignPostfixes(QList<ALTNavScope*>&  children, QString prefix) = 0;
 
 	/*!
 	 * \brief The AssignmentStrategy enum defines all strategies
@@ -49,7 +49,7 @@ class PriorityStrategy : public ALTNavPostfixAssignmentStrategy
 public:
 	PriorityStrategy(){};
 	~PriorityStrategy(){};
-	void assignPostfixes(QObjectList const&  children, QString prefix);
+	void assignPostfixes(QList<ALTNavScope*>&  children, QString prefix);
 
 };
 
@@ -62,7 +62,7 @@ class IndexedStrategy : public ALTNavPostfixAssignmentStrategy
 public:
 	IndexedStrategy(){};
 	~IndexedStrategy(){};
-	void assignPostfixes(QObjectList const&  children, QString prefix);
+	void assignPostfixes(QList<ALTNavScope*>&  children, QString prefix);
 };
 
 /*!
@@ -73,7 +73,7 @@ class PassthroughStrategy : public ALTNavPostfixAssignmentStrategy
 public:
 	PassthroughStrategy(){};
 	~PassthroughStrategy(){};
-	void assignPostfixes(QObjectList const&  children, QString prefix);
+	void assignPostfixes(QList<ALTNavScope*>&  children, QString prefix);
 };
 
 #endif // ALTNAVPOSTFIXASSIGNMENTSTRATEGY_H

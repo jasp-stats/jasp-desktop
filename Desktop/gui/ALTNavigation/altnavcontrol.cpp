@@ -38,6 +38,21 @@ void ALTNavControl::registrate(ALTNavScope* scope, QObject *obj)
 
 void ALTNavControl::unregister(QObject *obj)
 {
+	auto it = _attachedScopeMap.find(obj);
+	if (it != _attachedScopeMap.end())
+	{
+		ALTNavScope* scope = it.value();
+		if (scope == _currentRoot)
+		{
+			setCurrentRoot(_defaultRoot);
+			resetAltNavInput();
+		}
+		if (scope == _currentNode)
+		{
+			setCurrentNode(_currentRoot);
+			setAltNavInput(_currentRoot->prefix());
+		}
+	}
 	_attachedScopeMap.remove(obj);
 }
 
