@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-12-20 20:17+0000\n"
+"Last-Translator: fedder <fedor.derish@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 "X-Language: ru\n"
 "X-Qt-Contexts: true\n"
 
@@ -34,7 +40,7 @@ msgstr "Выбрать файл для загрузки"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr "Обзор"
+msgstr "Проводник"
 
 msgctxt "Form|"
 msgid ""
@@ -97,7 +103,7 @@ msgstr "Возврат последнего корректного значен�
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr "Информация о JASP"
+msgstr "О программе JASP"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
@@ -413,7 +419,7 @@ msgstr "генерирует данные из распределения Вей
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "Удалить вычисляемый столбец"
+msgstr "Удалить рассчитанный столбец"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -425,7 +431,7 @@ msgstr "Вычислить столбец"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr "Столбец вычисляется"
+msgstr "Столбец рассчитан"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
@@ -1892,7 +1898,7 @@ msgstr "Экспорт данных"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr "Синхронизация данных"
+msgstr "Синхронизация"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
