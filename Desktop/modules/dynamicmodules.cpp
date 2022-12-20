@@ -515,17 +515,20 @@ void DynamicModules::uninstallJASPDeveloperModule()
 		uninstallModule(developmentModuleName());
 }
 
-void DynamicModules::installJASPDeveloperModule()
+void DynamicModules::installJASPDeveloperModule(QString folder)
 {
-	if(Settings::value(Settings::DEVELOPER_FOLDER).toString() == "")
+	if (folder.isEmpty())
 	{
-		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
-		return;
-	}
-	else if(!QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString()).exists())
-	{
-		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(Settings::value(Settings::DEVELOPER_FOLDER).toString()));
-		return;
+		if(Settings::value(Settings::DEVELOPER_FOLDER).toString() == "")
+		{
+			MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
+			return;
+		}
+		else if(!QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString()).exists())
+		{
+			MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(Settings::value(Settings::DEVELOPER_FOLDER).toString()));
+			return;
+		}
 	}
 
 	setDevelopersModuleInstallButtonEnabled(false);
@@ -533,9 +536,9 @@ void DynamicModules::installJASPDeveloperModule()
 	try
 	{
 
-		_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
+		_devModSourceDirectory = !folder.isEmpty() ? QDir(folder) : QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
 
-		DynamicModule * devMod = new DynamicModule(this);
+		DynamicModule * devMod = new DynamicModule(this, _devModSourceDirectory.absolutePath());
 
 		devMod->loadDescriptionFromFolder(fq(_devModSourceDirectory.absolutePath()));
 

@@ -90,6 +90,7 @@ public:
 	void open(const Json::Value & dbJson);
 	void testLoadedJaspFile(int timeOut, bool save);
 	void reportHere(QString dir);
+	void generateWrappers(QString dir);
 
 	~MainWindow() override;
 
@@ -239,6 +240,7 @@ private slots:
 	void setCurrentJaspTheme();
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
+	void generateWrappersForModule(QString moduleName);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

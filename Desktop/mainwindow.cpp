@@ -580,6 +580,22 @@ void MainWindow::setQmlImportPaths()
 	Log::log() << std::endl;
 }
 
+void MainWindow::generateWrappersForModule(QString moduleName)
+{
+	static bool alreadyDone = false; // The moduleInstallationSucceeded is called several times: this prevents to create several times the analyses.
+
+	if (alreadyDone) return;
+	alreadyDone = true;
+
+	for (auto analysisEntry : _dynamicModules->dynamicModule(moduleName)->menu())
+		if (analysisEntry->isAnalysis())
+		{
+			Analysis* analysis = _analyses->create(analysisEntry);
+			analysis->setWatchFileChange(false);
+			connect(analysis, &Analysis::analysisInitialized, analysis, &Analysis::generateFileWrapper, Qt::QueuedConnection);
+		}
+}
+
 QObject * MainWindow::loadQmlData(QString data, QUrl url)
 {
 	QObject *	createdObject = nullptr;
@@ -1649,6 +1665,12 @@ void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 void MainWindow::reportHere(QString dir)
 {
 	_reporter = new Reporter(this, dir);
+}
+
+void MainWindow::generateWrappers(QString dir)
+{
+	connect(_engineSync, &EngineSync::moduleInstallationSucceeded, this, &MainWindow::generateWrappersForModule, Qt::QueuedConnection);
+	_dynamicModules->installJASPDeveloperModule(dir);
 }
 
 void MainWindow::unitTestTimeOut()

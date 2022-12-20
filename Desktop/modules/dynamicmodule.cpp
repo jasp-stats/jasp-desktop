@@ -84,9 +84,9 @@ void DynamicModule::developmentModuleFolderCreate()
 }
 
 ///This constructor is meant specifically for the development module and only *it*!
-DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMod(true)
+DynamicModule::DynamicModule(QObject * parent, QString devFolder) : QObject(parent), _isDeveloperMod(true)
 {
-	_modulePackage	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString();
+	_modulePackage	= fq(devFolder);
 	_moduleFolder	= developmentModuleFolder();
 
 					_name = extractPackageNameFromFolder(_modulePackage);

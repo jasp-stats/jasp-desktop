@@ -86,7 +86,7 @@ public:
 
 	Q_INVOKABLE void		installJASPModule(				const QString & filepath);
 	Q_INVOKABLE	void		uninstallJASPModule(			const QString & moduleName);
-	Q_INVOKABLE void		installJASPDeveloperModule();
+	Q_INVOKABLE void		installJASPDeveloperModule(QString folder = "");
 
 	Q_INVOKABLE QString		getDescriptionFormattedFromArchive(QString archiveFilePath);
 
@@ -110,6 +110,7 @@ public:
 
 	const QStringList loadedModules() const;
 	const QStringList loadedModulesTitles() const;
+	QString devModSourceDirectory() const { return _devModSourceDirectory.absolutePath(); }
 
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleName);

@@ -134,7 +134,7 @@ bool Analysis::checkAnalysisEntry()
 
 		_lastQmlFormPath = qmlFormPath(false, true);
 
-		if(qmlFileChanged)
+		if(qmlFileChanged && _watchFileChange)
 		{
 			Log::log() << "Analysis::checkAnalysisEntry() has a changed qml file path, calling watchQmlForm()" << std::endl;
 			watchQmlForm();
@@ -1008,6 +1008,17 @@ void Analysis::analysisQMLFileChanged()
 	else if(qmlError() != "")				createForm(); //Last time it failed apparently
 	else
 		Log::log() << "Form (" << form() << ") wasn't complete " << ( form() ? std::to_string(form()->formCompleted()) : " because there was no form...") << " yet, and also did not have a QML error set yet, so ignoring it." << std::endl;
+}
+
+void Analysis::generateFileWrapper()
+{
+   QString wrapper = form()->generateWrapper();
+   QFile wrapperFile(Modules::DynamicModules::dynMods()->devModSourceDirectory() + "/R/" + tq(_moduleData->function()) + "Wrapper.R");
+   if (wrapperFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+   {
+	   QTextStream stream(&wrapperFile);
+	   stream << wrapper;
+   }
 }
 
 void Analysis::checkForRSources()

@@ -20,12 +20,13 @@
 
 #include <QFileOpenEvent>
 #include <QString>
+#include <QTimer>
 
 #include "log.h"
 #include "utilities/settings.h"
 #include <iostream>
 
-void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
+void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, bool generateWrapper, const Json::Value & dbJson, QString reportingPath)
 {	
 	std::cout << "Application init entered" << std::endl;
 	
@@ -35,6 +36,12 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 	Dirs::setReportingDir(fq(reportingPath));
 
 	_mainWindow = new MainWindow(this);
+
+	if(generateWrapper)
+	{
+		QTimer::singleShot(0, this, [&]() { _mainWindow->generateWrappers(filePath); } );
+		return;
+	}
 
 	if(unitTest)
 		_mainWindow->testLoadedJaspFile(timeOut, save);

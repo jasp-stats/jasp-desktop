@@ -128,6 +128,7 @@ public:
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
 			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
 			Json::Value			createAnalysisRequestJson();
+			void				setWatchFileChange(bool watchFileChange) { _watchFileChange = watchFileChange; }
 
 	static	Status				parseStatus(std::string name);
 
@@ -193,6 +194,7 @@ public slots:
 	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override	{ emit requestColumnCreation(columnName, this, colType); }
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
+	void					generateFileWrapper();
 
 protected:
 	void					abort();
@@ -241,6 +243,7 @@ private:
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_tryToFixNotes					= false,
+								_watchFileChange				= true,
 								_hasReport						= false;
 	int							_revision						= 0;
 
