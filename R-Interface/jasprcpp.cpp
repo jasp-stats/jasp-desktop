@@ -179,7 +179,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".numDecimals"]						= 3;
 	rInside[".fixedDecimals"]					= false;
 	rInside[".normalizedNotation"]				= true;
-	rInside[".exactPValues"]					= false;
+	rInside[".exactPValues"]					= false;	
+	rInside[".resultFont"]						= "Arial";
+	rInside[".imageBackground"]					= "transparent";
+	rInside[".ppi"]								= 300;
+
 
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
