@@ -20,6 +20,7 @@ Window
 	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];							}
 	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];			}
 
+	onClosing: { helpModel.markdown = ""; } //break binding
 
 	Connections
 	{
