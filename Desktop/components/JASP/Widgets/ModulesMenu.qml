@@ -188,6 +188,7 @@ FocusScope
 							enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
 							font:				jaspTheme.fontRibbon
 							focus:				index === currentIndex
+							forwardKeys:		true
 							Keys.forwardTo:		[modulesMenu]
 
 							toolTip:			isSpecial									? qsTr("Ready") //Always ready!

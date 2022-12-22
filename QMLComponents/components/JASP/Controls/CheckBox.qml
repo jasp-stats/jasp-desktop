@@ -48,6 +48,7 @@ CheckBoxBase
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
+			property bool	forwardKeys:			false
 
 	function click()	{ control.toggle(); }
 	function toggle()	{ control.toggle(); }
@@ -63,7 +64,7 @@ CheckBoxBase
 		onCheckedChanged:		checkBox.clickedSlot()
 		Keys.onReturnPressed:	(event)=>	checked = !checked
 		Keys.onEnterPressed:	checked = !checked
-		Keys.forwardTo:			checkBox.Keys.forwardTo.length ? [checkBox] : [] // If a forward is set on the parent we want to hook on that chain, eg modules menu
+		Keys.forwardTo:			forwardKeys ? [checkBox] : [] // If a forward is set on the parent we want to hook on that chain, eg modules menu
 
 		// When the user clicks on the CheckBox, the clicked signal of the parent (CheckBoxBase) must be emitted.
 		Component.onCompleted: control.clicked.connect(checkBox.clicked)
