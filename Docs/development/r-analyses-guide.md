@@ -38,6 +38,12 @@ Table of Contents:
     + [Step 5.2.5 - Filling the Plot](#step-525---filling-the-plot)
     + [Step 5.2.6 - Reporting Errors](#step-526---reporting-errors)
     + [Step 5.2.7 - Multiple Plots](#step-527---multiple-plots)
+  * [Step 5.3 - Text](#step-53---text)
+    + [Step 5.3.1 - Displaying text in JASP](#step-531---displaying-text-in-jasp)
+    + [Step 5.3.2 - Dependencies](#step-532---dependencies)
+    + [Step 5.3.3 - Adding the Text to the Output](#step-533---adding-the-text-to-the-output)
+    + [Step 5.3.4 - Formatting the Text](#step-534---formatting-the-text)
+    + [Step 5.3.5 - Multiple Texts](#step-535---multiple-texts)
 - [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together)
   * [Creating a JASP Container](#creating-a-jasp-container)
   * [Using a Container](#using-a-container)
@@ -888,6 +894,62 @@ It's entirely possible that an analysis still crashes even after our error check
 #### Step 5.2.7 - Multiple Plots
 You might wish to add more plots to your analysis in which case you can simply repeat the steps above. Of course, it is possible that you have multiple plots that all need the same computed results and you do not wish to compute these again, this situation is described in [ADDENDUM II - Reusing Results for Multiple Output Elements](#addendum-ii---reusing-results-for-multiple-output-elements). Similarly, you might wish to visually group multiple output elements together, the steps needed to accomplish this are described in [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together).
 
+### Step 5.3 - Text
+You might want to display some output in the form of a text block, without attaching it to a table or a plot. All you need to do is create a JASP HTML object with the text you want to display, and define its dependencies similar to the way we defined them for tables and plots.
+
+#### Step 5.3.1 - Displaying Text in JASP
+A JASP HTML element is fairly simple. You just need to provide it the formatted text that you want to display.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  textDescriptives <- createJaspHtml(text = gettextf("If the number of defective items out of %d sampled is <= %d, accept the lot. Reject otherwise.", 50, 3))
+  ```
+
+</details>
+
+#### Step 5.3.2 - Dependencies
+The dependencies for text can be defined the same way as we did for tables and plots. You specify the options on which the text output depends. If the value of any of these options changes, the text is generated again, and if none of the options changes, the same text can be reused.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  textDescriptives <- createJaspHtml(text = gettextf("If the number of defective items out of %d sampled is <= %d, accept the lot. Reject otherwise.", 50, 3))
+  textDescriptives$dependOn(c("sampleSize", "acceptanceNumber"))
+  ```
+
+</details>
+
+#### Step 5.3.3 - Adding the Text to the Output
+We can now give the text to `jaspResults` to display.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  jaspResults[["textDescriptives"]] <- textDescriptives
+  ```
+
+</details>
+
+#### Step 5.3.4 - Formatting the Text
+Text in JASP can be formatted using HTML tags to highlight certain parts. The following code shows an example. Here, the text enclosed between \<b\> and \<\/b\> will be **bold**, and the text between \<i\> and \<\/i\> will be <i>italicized</i>.
+
+<p><details>
+	<summary>Code</summary>
+
+  ```r
+	textDescriptives <- createJaspHtml(text = gettextf("If the number of <b>defective</b> items out of %d <i>sampled</i> is <= %d, accept the lot. Reject otherwise.", 50, 3))
+  }
+  ```
+
+</details></p>
+
+#### Step 5.3.5 - Multiple Texts
+To add more text blocks to your analysis, you can simply repeat the steps above. If you need to reuse certain results to avoid regeneration of some text output, you can look at [ADDENDUM II - Reusing Results for Multiple Output Elements](#addendum-ii---reusing-results-for-multiple-output-elements). Similarly, the steps needed to visually group multiple output elements together are described in [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together).
+	
 
 ADDENDUM I - Grouping Multiple Output Elements Together
 ------------------------------------------------------
