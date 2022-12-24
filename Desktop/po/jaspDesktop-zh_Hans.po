@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-12-20 20:17+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -3897,45 +3903,45 @@ msgstr "控件和公式名称相同 “%1”"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "未找到分析"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "这不是一个分析函数: <module name>::<analysis name>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R 即将（重新）启动"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R 正在安装或加载模块 %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R 停止工作"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R 等待指令"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "选项"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "变量列表"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "下拉菜单"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "选项卡视图"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "变量表单"
