@@ -904,7 +904,7 @@ A JASP HTML element is fairly simple. You just need to provide it the formatted 
 	<summary>Code</summary>
 
   ```r
-  textDescriptives <- createJaspHtml(text = gettextf("If the number of defective items out of %d sampled is <= %d, accept the lot. Reject otherwise.", 50, 3))
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %s has more than %d unique values and is omitted.", variable, 2))
   ```
 
 </details>
@@ -916,8 +916,8 @@ The dependencies for text can be defined the same way as we did for tables and p
 	<summary>Code</summary>
 
   ```r
-  textDescriptives <- createJaspHtml(text = gettextf("If the number of defective items out of %d sampled is <= %d, accept the lot. Reject otherwise.", 50, 3))
-  textDescriptives$dependOn(c("sampleSize", "acceptanceNumber"))
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %s has more than %d unique values and is omitted.", variable, 2))
+  binomTextDescriptives$dependOn(c("variable", "distribution"))
   ```
 
 </details>
@@ -929,19 +929,19 @@ We can now give the text to `jaspResults` to display.
 	<summary>Code</summary>
 
   ```r
-  jaspResults[["textDescriptives"]] <- textDescriptives
+  jaspResults[["binomTextDescriptives"]] <- binomTextDescriptives
   ```
 
 </details>
 
 #### Step 5.3.4 - Formatting the Text
-Text in JASP can be formatted using HTML tags to highlight certain parts. The following code shows an example. Here, the text enclosed between \<b\> and \<\/b\> will be **bold**, and the text between \<i\> and \<\/i\> will be <i>italicized</i>.
+Text in JASP can be formatted using [HTML tags](https://www.w3schools.com/html/html_formatting.asp) to highlight certain parts. The following code shows an example. Here, the text enclosed between \<b\> and \<\/b\> will be **bold**, and the text between \<i\> and \<\/i\> will be <i>italicized</i>.
 
 <p><details>
 	<summary>Code</summary>
 
   ```r
-	textDescriptives <- createJaspHtml(text = gettextf("If the number of <b>defective</b> items out of %d <i>sampled</i> is <= %d, accept the lot. Reject otherwise.", 50, 3))
+	binomTextDescriptives <- createJaspHtml(text = gettextf("The variable <b>%s</b> has more than <i>%d</i> unique values and is omitted.", variable, 2))
   }
   ```
 
