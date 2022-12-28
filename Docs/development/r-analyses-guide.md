@@ -941,7 +941,7 @@ Text in JASP can be formatted using [HTML tags](https://www.w3schools.com/html/h
 	<summary>Code</summary>
 
   ```r
-	binomTextDescriptives <- createJaspHtml(text = gettextf("The variable <b>%s</b> has more than <i>%d</i> unique values and is omitted.", variable, 2))
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable <b>%1$s</b> has more than <i>%2$d</i> unique values and is omitted.", variable, 2))
   }
   ```
 
