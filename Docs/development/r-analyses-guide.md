@@ -916,7 +916,7 @@ The dependencies for text can be defined the same way as we did for tables and p
 	<summary>Code</summary>
 
   ```r
-  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %s has more than %d unique values and is omitted.", variable, 2))
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %1$s has more than %2$d unique values and is omitted.", variable, 2))
   binomTextDescriptives$dependOn(c("variable", "distribution"))
   ```
 
