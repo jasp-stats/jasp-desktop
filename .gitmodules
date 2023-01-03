@@ -110,3 +110,6 @@
 	path = Modules/jaspBsts
 	url = https://github.com/jasp-stats/jaspBsts
 	branch = master
+[submodule "Modules/jaspAcceptanceSampling"]
+	path = Modules/jaspAcceptanceSampling
+	url = https://github.com/jasp-stats/jaspAcceptanceSampling
