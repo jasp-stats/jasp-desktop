@@ -582,10 +582,10 @@ void MainWindow::setQmlImportPaths()
 
 void MainWindow::generateWrappersForModule(QString moduleName)
 {
-	static bool alreadyDone = false; // The moduleInstallationSucceeded is called several times: this prevents to create several times the analyses.
+	static QString wrapperAlreadyGeneratedForThisModule; // The moduleInstallationSucceeded is called several times: this prevents to create several times the analyses.
 
-	if (alreadyDone) return;
-	alreadyDone = true;
+	if (wrapperAlreadyGeneratedForThisModule == moduleName) return;
+	wrapperAlreadyGeneratedForThisModule = moduleName;
 
 	for (auto analysisEntry : _dynamicModules->dynamicModule(moduleName)->menu())
 		if (analysisEntry->isAnalysis())
