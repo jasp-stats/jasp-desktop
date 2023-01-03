@@ -225,7 +225,7 @@ DropArea
 
 					backgroundFlickable.scrollToElement(expanderButton);
 					if(firstExpansion) //only focus first item on analysis creation
-						formParent.nextItemInFocusChain().forceActiveFocus(Qt.OtherFocusReason);
+						formParent.nextItemInFocusChain().forceActiveFocus();
 					else
 						draggableItem.forceActiveFocus();
 			}
@@ -595,8 +595,7 @@ DropArea
 								return;
 
 							const control = myForm.activeJASPControl;
-							var x =  control.focusReason;
-							if (control.focusReason === Qt.TabFocusReason || control.focusReason === Qt.BacktabFocusReason || control.focusReason === Qt.OtherFocusReason)
+							if (control.focusReason !== Qt.MouseFocusReason)
 								backgroundFlickable.scrollToElement(control, 50 * jaspTheme.uiScale);
 						}
 					}
