@@ -32,6 +32,7 @@
 #include <codecvt>
 #include <regex>
 #include <iomanip>
+#include <chrono>
 
 using namespace std;
 
@@ -69,16 +70,12 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 
 long Utils::currentMillis()
 {
-	std::timespec ts;
-	std::timespec_get(&ts, TIME_UTC);
-	return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 long Utils::currentSeconds()
 {
-	std::timespec ts;
-	std::timespec_get(&ts, TIME_UTC);
-	return ts.tv_sec;
+	return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 long Utils::getFileModificationTime(const std::string &filename)
