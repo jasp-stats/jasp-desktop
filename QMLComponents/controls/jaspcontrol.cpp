@@ -93,7 +93,7 @@ void JASPControl::setInnerControl(QQuickItem* control)
 	if (control != _innerControl)
 	{
 		_innerControl = control;
-		if (_innerControl)
+		if (_innerControl && !qobject_cast<JASPControl*>(_innerControl))
 		{
 			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_setShouldShowFocus);
 			//capture focus reason
@@ -793,6 +793,9 @@ void JASPControl::_notifyFormOfActiveFocus()
 	if (!hasActiveFocus())
 		_hasActiveFocus = false;
 
-	if (_form)
+	//All JASP controls are focusscopes when they receive focus due to a child being clicked the reason is 8 for some reason (undocumented as of 3-1-2023)
+	//Objects like jasp groupboxes could unrightfully be marked as the active jasp control when a child jasp control gets focus
+	//For this reason we check if the focus reason is the result of user input or the focus scope system.
+	if (_form && _focusReason >= Qt::MouseFocusReason && _focusReason <= Qt::OtherFocusReason)
 		_form->setActiveJASPControl(this, hasActiveFocus());
 }
