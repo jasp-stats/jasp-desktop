@@ -58,31 +58,30 @@ void ALTNavControl::unregister(QObject *obj)
 
 bool ALTNavControl::eventFilter(QObject *object, QEvent *event)
 {
-	if (event->type() == QEvent::KeyPress)
+	if (event->type() == QEvent::KeyRelease)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if (!_altNavEnabled && key == Qt::Key_Alt)
+		if (key == Qt::Key_Alt)
 		{
 			resetAltNavInput();
 			setAltNavEnabled(!_altNavEnabled);
 			return true;
-
 		}
-		else if(_altNavEnabled)
+	}
+	else if (_altNavEnabled && event->type() == QEvent::KeyPress)
+	{
+		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
+		int key = keyEvent->key();
+		if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
+			updateAltNavInput(keyEvent->text().toUpper());
+		else if (key != Qt::Key_Alt)
 		{
-			if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
-			{
-				updateAltNavInput(keyEvent->text().toUpper());
-				return true;
-			}
-			else
-			{
-				resetAltNavInput();
-				setAltNavEnabled(false);
-				return true;
-			}
+			resetAltNavInput();
+			setAltNavEnabled(false);
 		}
+		return true;
+
 	}
 	return false;
 }
