@@ -881,7 +881,7 @@ getDirs <- function() {
 }
 
 stop2 <- function(..., call. = TRUE, domain = NA) {
-  stop(crayon::red(crayon::bold(paste0(..., collapse = ""))), call. = call., domain = domain)
+  stop(cli::col_red(cli::style_bold(paste0(..., collapse = ""))), call. = call., domain = domain)
 }
 
 options("error" = function() {
