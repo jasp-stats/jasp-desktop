@@ -149,7 +149,7 @@ const char * Log::getTimestamp()
 		min		= durationMin	% 60,
 		hour	= durationHour	% 60;
 
-	std::sprintf(buf, "%02u:%02u:%02u.%03u", hour, min, sec, milli);
+	std::snprintf(buf, 13, "%02u:%02u:%02u.%03u", hour, min, sec, milli);
 
 	return buf;
 }

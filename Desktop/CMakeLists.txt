@@ -122,7 +122,6 @@ target_link_libraries(
     Qt::WebChannel
     Qt::Svg
     Qt::Network
-    Qt::PrintSupport
     Qt::Xml
     Qt::Sql
     Qt::Quick

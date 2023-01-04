@@ -97,7 +97,6 @@ if(NOT FLATPAK_USED)
                WebChannel
                Svg
                Network
-               PrintSupport
                Xml
                Sql
                DBus
@@ -126,7 +125,6 @@ else()
                Svg
                Sql
                Network
-               PrintSupport
                Xml
                DBus
                QuickTemplates2
