@@ -19,7 +19,6 @@
 #include "utils.h"
 #include <QFile>
 #include <QTextDocument>
-#include <QPrinter>
 #include <fstream>
 #include "utilenums.h"
 #include "results/resultsjsinterface.h"
