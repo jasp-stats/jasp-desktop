@@ -12,7 +12,7 @@ ALTNavScope* ALTNavigation::qmlAttachedProperties(QObject *object)
 void ALTNavigation::registerQMLTypes(QString uri)
 {
 	std::string u = uri.toStdString();
-	qmlRegisterType<ALTNavigation>								(u.c_str(),		1, 0, "ALTNavigation"									);
-	qmlRegisterType<ALTNavTagBase>								(u.c_str(),		1, 0, "ALTNavTagBase"									);
-	qmlRegisterUncreatableType<PriorityStrategy>				(u.c_str(),		1, 0, "AssignmentStrategy",				"Can't make it"	);
+	qmlRegisterType<ALTNavigation>									(u.c_str(),		1, 0, "ALTNavigation"									);
+	qmlRegisterType<ALTNavTagBase>									(u.c_str(),		1, 0, "ALTNavTagBase"									);
+	qmlRegisterUncreatableType<ALTNavPostfixAssignmentStrategy>		(u.c_str(),		1, 0, "AssignmentStrategy",				"Can't make it"	);
 }

@@ -8,9 +8,9 @@ class ALTNavScope;
 /*!
  * \brief The ALTNavPostfixAssignmentStrategy class defines the interface which concrete strategies must define
  */
-class ALTNavPostfixAssignmentStrategy
+class ALTNavPostfixAssignmentStrategy : public QObject
 {
-	Q_GADGET
+	Q_OBJECT
 
 public:
 	virtual ~ALTNavPostfixAssignmentStrategy() {};
