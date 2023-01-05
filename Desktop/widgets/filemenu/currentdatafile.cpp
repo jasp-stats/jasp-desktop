@@ -43,7 +43,7 @@ QString CurrentDataFile::getCurrentFilePath()
 
 QString CurrentDataFile::getHeaderText()
 {
-	return QString("Click on the file below to synchronize or use " + getShortCutKey() + "-Y");
+	return QString(tr("Click on the file below to synchronize or use ") + getShortCutKey() + "-Y");
 }
 
 
