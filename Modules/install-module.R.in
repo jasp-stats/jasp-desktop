@@ -26,6 +26,10 @@ if (@IS_FLATPAK_USED@) {
 # it anyway! It gets to if-y. 
 .libPaths(c("@R_LIBRARY_PATH@"))
 
+options(
+  configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
+)
+
 # Related to the comment above, there is variable here called, 
 # `libPathsToUse` but it is not connected to anything. If this works,
 # then, I don't need to set the libPaths() anymore perhaps.
