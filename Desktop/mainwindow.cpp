@@ -1670,7 +1670,9 @@ void MainWindow::reportHere(QString dir)
 void MainWindow::generateWrappers(QString dir)
 {
 	connect(_engineSync, &EngineSync::moduleInstallationSucceeded, this, &MainWindow::generateWrappersForModule, Qt::QueuedConnection);
-	_dynamicModules->installJASPDeveloperModule(dir);
+
+	PreferencesModel::prefs()->setTempDeveloperFolder(dir);
+	_dynamicModules->installJASPDeveloperModule();
 }
 
 void MainWindow::unitTestTimeOut()

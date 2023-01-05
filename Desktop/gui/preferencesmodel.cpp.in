@@ -87,6 +87,11 @@ void PreferencesModel::browseDeveloperFolder()
 		
 }
 
+QString PreferencesModel::developerFolder() const
+{
+	return !_developerFolder.isEmpty() ? _developerFolder : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+}
+
 #define GET_PREF_FUNC(TYPE, NAME, SETTING, TO_FUNC)	TYPE PreferencesModel::NAME() const { return Settings::value(SETTING).TO_FUNC; }
 #define GET_PREF_FUNC_BOOL(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toBool())
 #define GET_PREF_FUNC_INT(NAME, SETTING)					GET_PREF_FUNC(int,		NAME, SETTING, toInt())
@@ -102,7 +107,6 @@ GET_PREF_FUNC_BOOL(	normalizedNotation,			Settings::NORMALIZED_NOTATION						)
 GET_PREF_FUNC_BOOL(	dataAutoSynchronization,	Settings::DATA_AUTO_SYNCHRONIZATION					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
-GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
 GET_PREF_FUNC_BOOL(	useDefaultPPI,				Settings::PPI_USE_DEFAULT							)
 GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
@@ -256,6 +260,13 @@ void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 	if(GET_FUNC() == newVal) return;									\
 	Settings::setValue(SETTING, newVal);								\
 	emit NOTIFY();														\
+}
+
+void PreferencesModel::setTempDeveloperFolder(QString devFolder)
+{
+	if (_developerFolder == devFolder) return;
+	_developerFolder = devFolder;
+	emit developerFolderChanged(devFolder);
 }
 
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)

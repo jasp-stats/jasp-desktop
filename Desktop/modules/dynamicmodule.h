@@ -76,7 +76,7 @@ public:
 	explicit DynamicModule(std::string modulePackageFile, QObject *parent, bool unpack = true);
 
 	///This constructor is meant specifically for the development module and only *it*!
-	explicit DynamicModule(QObject * parent, QString devFolder);
+	explicit DynamicModule(QObject * parent);
 
 	~DynamicModule() override
 	{
