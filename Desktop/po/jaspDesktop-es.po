@@ -3961,8 +3961,8 @@ msgstr ""
 "existente; escogiste '$1' pero no existe."
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
-msgstr "Mostrar la Sintaxis de R"
+msgid "Show R syntax"
+msgstr "Mostrar la sintaxis de R"
 
 msgctxt "MainPage|"
 msgid "Hide input options"

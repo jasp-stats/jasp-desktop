@@ -382,7 +382,7 @@ DropArea
 					iconSource:			jaspTheme.iconPath + "/R.png"
 					enabled:			expanderButton.expanded
 					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
-					toolTip:			qsTr("Show R Syntax")
+					toolTip:			qsTr("Show R syntax")
 					radius:				height
 					opacity:			editButton.opacity
 					visible:            formParent.myForm && formParent.myForm.showRButton

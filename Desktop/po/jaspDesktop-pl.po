@@ -3988,7 +3988,7 @@ msgstr ""
 "folder \"$1\" nie istnieje."
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr "Pokaż składnię języka R"
 
 msgctxt "MainPage|"

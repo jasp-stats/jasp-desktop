@@ -3959,8 +3959,8 @@ msgstr ""
 "Verzeichnis auswählen; Sie haben '$1' ausgewählt, aber es existiert nicht."
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
-msgstr "R-Syntax anzeigen"
+msgid "Show R syntax"
+msgstr "R-syntax anzeigen"
 
 msgctxt "MainPage|"
 msgid "Hide input options"

@@ -3754,7 +3754,7 @@ msgid ""
 msgstr "要安装开发模块，您需要选择现有文件夹，您选择的“$1”文件夹不存在。"
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr "显示 R 语法"
 
 msgctxt "MainPage|"
