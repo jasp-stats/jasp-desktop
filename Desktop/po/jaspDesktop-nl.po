@@ -3918,7 +3918,7 @@ msgid ""
 msgstr ""
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr ""
 
 #, fuzzy

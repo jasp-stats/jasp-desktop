@@ -3465,7 +3465,7 @@ msgid "Help us translate or improve JASP in your language"
 msgstr "幫助我們用您的語言翻譯或改進 JASP"
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr ""
 
 msgctxt "ComputeColumnWindow|"

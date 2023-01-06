@@ -3602,7 +3602,7 @@ msgid "Select a JASP Module to install"
 msgstr "Выберите модуль JASP для установки"
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr ""
 
 msgctxt "ComputeColumnWindow|"

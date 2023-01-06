@@ -21,7 +21,7 @@ msgstr "Enregistrer le fichier dans :"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr "Charger le fichier depuis :"
+msgstr "Charger le fichier depuis :"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
@@ -1024,7 +1024,7 @@ msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr "Bienvenue dans le filtre glisser-déposer !<br>"
+msgstr "Bienvenue dans le filtre glisser-déposer !<br>"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
@@ -1088,7 +1088,7 @@ msgstr "Plus grand que : %1"
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr "Supérieur ou égal à : %1"
+msgstr "Supérieur ou égal à : %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -1184,12 +1184,12 @@ msgstr "Ou : %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "Fractionner : applique le filtre séparément à chaque sous-groupe"
+msgstr "Fractionner : applique le filtre séparément à chaque sous-groupe"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr "Non : %1"
+msgstr "Non : %1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
@@ -1400,12 +1400,12 @@ msgstr "Prêt"
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "Installation : %1\n"
+msgstr "Installation : %1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr "Chargement : %1\n"
+msgstr "Chargement : %1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
@@ -1429,7 +1429,7 @@ msgstr "R dans JASP"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr "Bienvenue dans R dans JASP !"
+msgstr "Bienvenue dans R dans JASP !"
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
@@ -1533,7 +1533,7 @@ msgstr "moyenne :"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr "std :"
+msgstr "std :"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
@@ -1557,7 +1557,7 @@ msgstr "borne inférieure :"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr "borne supérieure :"
+msgstr "borne supérieure :"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
@@ -3107,7 +3107,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr "%1 a été supprimé !"
+msgstr "%1 a été supprimé !"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3183,7 +3183,7 @@ msgid ""
 "is for: '%2'"
 msgstr ""
 "Mauvaise mise à niveau appliquée, cherchait la fonction '%1' mais cette mise "
-"à niveau concerne : '%2'"
+"à niveau concerne : '%2'"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3261,15 +3261,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr "GITHUB_PAT privé :"
+msgstr "GITHUB_PAT privé :"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr "Code R, JAGS ou lavaan :"
+msgstr "Code R, JAGS ou lavaan :"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr "Résultat & aide :"
+msgstr "Résultat & aide :"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
@@ -3874,7 +3874,7 @@ msgid ""
 msgstr ""
 "qui ne peut être utilisé qu'en (in)équivalence, comparison supérieur ou "
 "inférieur. Pas dans les opérations mathématiques comme la soustraction, "
-"etc., pour ce faire : essayez d'abord de convertir en scalaire."
+"etc., pour ce faire : essayez d'abord de convertir en scalaire."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3987,7 +3987,7 @@ msgstr ""
 "dossier existant ; vous avez sélectionné '$1', mais il n'existe pas."
 
 msgctxt "AnalysisFormExpander|"
-msgid "Show R Syntax"
+msgid "Show R syntax"
 msgstr "Montrer la syntaxe R"
 
 msgctxt "MainPage|"
