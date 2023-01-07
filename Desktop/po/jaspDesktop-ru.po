@@ -3,8 +3,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Language: ru\n"
 "X-Qt-Contexts: true\n"
 
@@ -34,7 +34,7 @@ msgstr "Выбрать файл для загрузки"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr "Проводник"
+msgstr "Обзор"
 
 msgctxt "Form|"
 msgid ""
@@ -746,7 +746,7 @@ msgstr "Чтобы хранить журналы отладки JASP в файл
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Максимальное количество файлов журнала для хранения: "
+msgstr "Максимум сохраняемых лог-файлов: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
@@ -754,7 +754,7 @@ msgstr "Показать журналы"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr "Опции движка"
+msgstr "Параметры программного движка"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -774,9 +774,7 @@ msgstr "Выбрать пользовательский редактор"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr ""
-"Добавить количество разных значений для автоматического определения шкалы "
-"измерения"
+msgstr "Пороговое значение для автоопределения шкалы измерения"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -892,7 +890,7 @@ msgstr "Переход на темную тему делает JASP горазд
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr "Прочие опции"
+msgstr "Прочее"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
@@ -3120,8 +3118,8 @@ msgstr "<i>Не удалось загрузить описание модуля 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a "
-"href=\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Версия %2</i><br><p>%3</p><br><br><br><i>Создано %4 и "
 "поддерживается %5.</i><br><i>Подробности смотрите на сайте: <a href=\"http://"
@@ -3234,7 +3232,7 @@ msgstr "Темная тема"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr "Предпочтительный язык"
+msgstr "Язык"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
@@ -3427,7 +3425,7 @@ msgstr "Это приведет к удалению папок «renv» и «Mod
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr "Обходные пути для Windows"
+msgstr "Временные решения для Windows"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
@@ -3610,12 +3608,16 @@ msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
 "odds transform) converts numbers between 0 and 1 to the real line."
 msgstr ""
+"Логит-преобразование (то есть обратное стандартной логистической функции) "
+"преобразует числа от 0 до 1 в вещественную строку."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse logit transform (i.e., the standard logit function) converts numbers "
 "on the real line to numbers between 0 and 1."
 msgstr ""
+"Обратное логит-преобразование (то есть стандартная логистическая функция) "
+"преобразует числа в вещественной строке в числа от 0 до 1."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3623,10 +3625,12 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
+"Двухпараметрическое преобразование Бокса-Кокса для стабилизации дисперсии и "
+"попытки сделать данные более похожими на нормальное распределение."
 
 msgctxt "ComputeColumnWindow|"
 msgid "Inverse two-parameter Box-Cox transform."
-msgstr ""
+msgstr "Обратное двухпараметрическое преобразование Бокса-Кокса."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3634,28 +3638,32 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
+"Двухпараметрическое преобразование Бокса-Кокса для стабилизации дисперсии и "
+"попытки сделать данные более похожими на нормальное распределение."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) to stabilize variance and "
 "attempt to make the data more normal distribution-like."
 msgstr ""
+"Преобразование Йео-Джонсона для стабилизации дисперсии и попытки сделать "
+"данные более похожими на нормальное распределение."
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
-msgstr ""
+msgstr "Обзор Движков"
 
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr ""
+msgstr "Правая и средняя кнопка мыши для остановки движка."
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "Больше не показывать"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "База данных"
 
 msgctxt "Database|"
 msgid ""
@@ -3675,39 +3683,54 @@ msgid ""
 "For a local or toy database this is probably overkill, but use your own "
 "judgement."
 msgstr ""
+"<i>Внимание!</i>\n"
+"<br><br>\n"
+"JASP хранит пароль к вашей базе данных в файлах формата *.jasp, хотя и не "
+"читаются напрямую, но легко извлекаются.\n"
+"Если вы <b>поделитесь этим файлом</b>, это означает, что получатели и все, с "
+"кем они поделятся этим файлом, могут извлечь пароль, приложив некоторые "
+"усилия.\n"
+"<br><br>\n"
+"В случае если вы пытаетесь подключиться к производственной или даже к "
+"доступной по сети базе данных:\n"
+"<br>\n"
+"Мы <b>настоятельно рекомендуем</b> создать специального пользователя для "
+"JASP в вашей базе данных с <i>минимальными правами доступа</i> насколько это "
+"необходимо.\n"
+"<br><br>\n"
+"Для локальной базы данных это, вероятно, лишнее, но судить вам."
 
 msgctxt "Database|"
 msgid "Select database"
-msgstr ""
+msgstr "Выберите базу данных"
 
 msgctxt "Database|"
 msgid "DB driver"
-msgstr ""
+msgstr "Драйвер базы данных"
 
 msgctxt "Database|"
 msgid "Hostname"
-msgstr ""
+msgstr "Имя хоста"
 
 msgctxt "Database|"
 msgid "Port"
-msgstr ""
+msgstr "Логин"
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Browse"
 msgstr "Обзор"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "Имя пользователя"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #, fuzzy
 msgctxt "Database|"
@@ -3716,72 +3739,73 @@ msgstr "Напомнить мне"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "Подключиться к базе данных"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "Запрос"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "Выполнить"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "Предварительный просмотр данных"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "Загрузить в JASP"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr ""
+msgstr "Интервал синхронизации в минутах: "
 
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
 msgstr ""
+"0 означает отсутствие автоматической синхронизации, но вы можете выполнить "
+"синхронизацию вручную, нажав Ctrl/Cmd+Y"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "Максимальное число движков: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "Показать движки"
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr ""
+msgstr "Показать пропущенные значения как: "
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
-msgstr ""
+msgstr "Использовать обозначение экспоненты"
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's textrendering"
-msgstr ""
+msgstr "Использовать Qt-рендеринг текста"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr ""
+msgstr "Если этот параметр отключен, переключит текстовый рендеринг на родной."
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Режим отчета"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Должен ли JASP работать в режиме отчета или нет."
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "Скрыть параметры ввода"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "Показать параметры ввода"
@@ -3793,6 +3817,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Введите свой R-код здесь.\n"
+"Данные без фильтрации доступны как «данные»,\n"
+"а отфильтрованные данные как «filteredData».\n"
+"Вы также можете вставить сюда синтаксис анализов JASP."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3800,14 +3828,19 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Введите свой R-код здесь.\n"
+"\n"
+"Вы также можете вставить сюда синтаксис анализов JASP."
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Добавить анализ"
 
+#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
 msgstr ""
+"которые можно использовать в числовых сравнениях и математических операциях."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3815,6 +3848,9 @@ msgid ""
 "comparisons. Not in mathematical operations as subtraction etc, to do so: "
 "try converting to scalar first."
 msgstr ""
+"которые могут использоваться только в (не)эквивалентности, большей и "
+"меньшей, чем сравнения. Не в математических операциях, таких как вычитание и "
+"т. д.: попробуйте для начала преобразовать в количественную шкалу."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3822,42 +3858,47 @@ msgid ""
 "than comparisons or mathematical operations, to do so: try converting to "
 "ordinal or scalar first."
 msgstr ""
+"которые могут использоваться только в (не)эквивалентных сравнениях. Не в "
+"сравнениях больше/меньше или математических операциях: попробуйте для начала "
+"преобразовать в порядковую или количественную шкалу."
 
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
 msgstr ""
+"JASP думает, что он подключен к базе данных, но QSqlDatabase не "
+"открывается..."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "Запрос не выполнен: \"%1\""
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
-msgstr ""
+msgstr "Запрос не был SELECT-подобным оператором и ничего не возвращал."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr ""
+msgstr "Активных результатов не найдено, возможно ошибка в вашем запросе?"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "Пароль базы данных"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
-msgstr ""
+msgstr "Для подключения к базе данных требуется пароль пользователя «%1»"
 
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password"
-msgstr ""
+msgstr "Для соединения с базой данных требуется пароль"
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "Не удалось установить соединение"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3865,35 +3906,42 @@ msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
 msgstr ""
+"Не удалось подключиться к базе данных из-за '%1', хотите попробовать другой "
+"пароль?"
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
 msgstr ""
+"Не удалось подключиться к базе данных, поэтому синхронизация будет отключена."
 
 #, qt-format
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
 msgstr ""
+"Не удалось подключиться к базе данных %1 в %2 с пользователем %3, последняя "
+"ошибка: «%4»"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "Загрузка обновлений привела к ошибке(ам): %1"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "Выберите существующую папку"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '$1' but it doesn't exist."
 msgstr ""
+"Чтобы установить модуль разработки, вам нужно выбрать существующую папку, вы "
+"выбрали «$ 1», но ее не существует."
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Нет файла данных"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3903,89 +3951,93 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP запущен в режиме отчета, но jasp-файл не связан с файлом данных.\n"
+"Это означает, что обновлений быть не может...\n"
+"\n"
+"Вы все равно хотите продолжить?"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
-msgstr ""
+msgstr "Выберите драйвер базы данных..."
 
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
-msgstr ""
+msgstr "IBM DB2"
 
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
-msgstr ""
+msgstr "Драйвер MySQL"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
-msgstr ""
+msgstr "Драйвер интерфейса вызова Oracle"
 
 msgctxt "DatabaseFileMenu|"
 msgid "ODBC Driver (includes Microsoft SQL Server)"
-msgstr ""
+msgstr "Драйвер ODBC (включает Microsoft SQL Server)"
 
 msgctxt "DatabaseFileMenu|"
 msgid "PostgreSQL Driver"
-msgstr ""
+msgstr "Драйвер PostgreSQL"
 
 msgctxt "DatabaseFileMenu|"
 msgid "SQLite version 3 or above"
-msgstr ""
+msgstr "SQLite версии 3 или выше"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "Не подключен к базе данных!"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Неизвестная ошибка"
 
 msgctxt "ResourceButtons|"
 msgid "Database"
-msgstr ""
+msgstr "База данных"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "Не удалось найти термин %1 в формуле"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "Источник %1 в формуле не найден"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "Источник %1 в формуле не является списком переменных"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "В описании формулы не указано имя"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "Не удается найти элемент %1, указанный в описании формулы"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Не найден источник в формуле randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"randomEffects в формуле можно использовать только с элементом ComponentsList"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "В формуле не найден источник"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "Элемент управления с меткой «%1» не имеет имени"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "Элемент управления не имеет имени"
@@ -3993,9 +4045,9 @@ msgstr "Элемент управления не имеет имени"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "Имя опции '%1' является зарезервированным словом"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
 msgstr "2 элемента управления имеют одинаковое имя: %1"
@@ -4003,59 +4055,64 @@ msgstr "2 элемента управления имеют одинаковое 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Элемент управления и формула имеют одинаковое имя «%1»"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "Формула с именем '%1' определена дважды"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Элемент управления и формула имеют одинаковое имя «%1»"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "Анализ не найден"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
 msgstr ""
+"Не является функцией анализа: <название модуля>::<название анализа>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R (пере)запуск"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R устанавливает или загружает модуль %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R остановился"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R ожидает команд"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "Параметры"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "Список переменных"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "Выпадающий список"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "Вид вкладки"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "Форма переменных"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show R Syntax"
+msgstr "Показать синтаксис R"
