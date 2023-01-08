@@ -22,7 +22,6 @@
 #include <QQuickItem>
 #include "log.h"
 
-
 using namespace std;
 
 RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
@@ -33,50 +32,49 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 
 void RadioButtonsGroupBase::setUp()
 {
-	QList<RadioButtonBase* > buttons;
-	_getRadioButtons(this, buttons);
-	QVariant buttonGroup = property("buttonGroup");
-
-	connect(this,	&RadioButtonsGroupBase::clicked, this,	&RadioButtonsGroupBase::clickedSlot);
-
-	for (RadioButtonBase* button: buttons)
-	{
-		const QString& controlName = button->name();
-		if (controlName.isEmpty())
-			addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
-		else
-		{
-			_buttons[controlName] = button;
-			if (button->property("checked").toBool())	setValue(controlName);
-			button->setProperty("buttonGroup", buttonGroup);
-		}
-	}
-
-	if (value().isEmpty() && _buttons.size() > 0)
-	{
-		RadioButtonBase* firstButton = _buttons.values()[0];
-		Log::log() << "No checked button found in radio buttons " << name() << ". First one (" << firstButton->name() << ") is checked per default" << std::endl;
-		_setCheckedButton(firstButton);
-	}
-
 	JASPControl::setUp();
 }
 
-void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButtonBase *> &buttons) {
-	for (QQuickItem* child : item->childItems())
+void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
+{
+	const QString& controlName = button->name();
+	if (controlName.isEmpty())
+		addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
+	else
 	{
-		JASPControl* jaspControl = qobject_cast<JASPControl*>(child);
-		if (jaspControl)
-		{
-			ControlType controlType = jaspControl->controlType();
-			if (controlType == ControlType::RadioButton)
-				buttons.append(qobject_cast<RadioButtonBase*>(jaspControl));
-			else if (controlType != ControlType::RadioButtonGroup)
-				_getRadioButtons(child, buttons);
-		}
-		else
-			_getRadioButtons(child, buttons);
-	}	
+		if (_valueButtonMap.size() == 0)
+			_setCheckedButton(button);
+		if (button->property("checked").toBool())
+			_setCheckedButton(button);
+		_valueButtonMap[controlName] = button;
+		_buttonValueMap[button] = controlName;
+		emit buttonsChanged();
+	}
+}
+
+void RadioButtonsGroupBase::unregisterRadioButton(RadioButtonBase* button)
+{
+	_valueButtonMap.remove(button->name());
+	_buttonValueMap.remove(button);
+	if (_value == button->name() && _valueButtonMap.size() > 0)
+		_setCheckedButton(_valueButtonMap.first());
+	emit buttonsChanged();
+}
+
+
+void RadioButtonsGroupBase::radioButtonValueChanged(RadioButtonBase *button)
+{
+	if (_buttonValueMap.contains(button))
+	{
+		QString oldValue = _buttonValueMap[button];
+		_valueButtonMap.remove(oldValue);
+		_buttonValueMap.remove(button);
+		_valueButtonMap.insert(button->name(), button);
+		_buttonValueMap.insert(button, button->name());
+		if (_value == oldValue)
+			_setCheckedButton(button);
+		emit buttonsChanged();
+	}
 }
 
 void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
@@ -86,14 +84,14 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 	QString value = tq(jsonValue.asString());
 	if (!value.isEmpty())
 	{
-		if (!_buttons.contains(value))
+		if (!_valueButtonMap.contains(value))
 		{
 			addControlError(tr("No radio button corresponding to name %1").arg(value));
-			QStringList names = _buttons.keys();
+			QStringList names = _valueButtonMap.keys();
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
 		else
-			_setCheckedButton(_buttons[value]);
+			_setCheckedButton(_valueButtonMap[value]);
 	}
 }
 
@@ -107,30 +105,23 @@ bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value) const
 	return value.isString();
 }
 
-void RadioButtonsGroupBase::clickedSlot(const QVariant& button)
+void RadioButtonsGroupBase::clickHandler(RadioButtonBase* button)
 {
-	QObject* objButton = button.value<QObject*>();
-	if (objButton)
-		objButton = objButton->parent();
-	RadioButtonBase *radioButton = qobject_cast<RadioButtonBase*>(objButton);
-	if (radioButton)
-		_setCheckedButton(radioButton);
+	if (button)
+		_setCheckedButton(button);
 	else
-		Log::log() << "Object clicked is not a RadioButton item! Name" << objButton->objectName().toStdString();
+		Log::log() << "Object clicked is not a RadioButton item! Name" << button->objectName().toStdString();
+	emit clicked();
 }
 
 void RadioButtonsGroupBase::_setCheckedButton(RadioButtonBase* button)
 {
 	QString buttonName = button->name();
-	button->setProperty("checked", true);
-
-	// Ensure that other buttons are unchecked
-	for (RadioButtonBase* otherButton : _buttons)
-		if (otherButton != button)
-			otherButton->setProperty("checked", false);
-
 	if (_value != buttonName)
 	{
+		if (_valueButtonMap.contains(_value))
+			_valueButtonMap[_value]->setProperty("checked", false);
+		button->setProperty("checked", true);
 		setValue(buttonName);
 		setBoundValue(fq(buttonName));
 	}

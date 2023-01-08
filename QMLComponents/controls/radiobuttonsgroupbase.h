@@ -29,7 +29,9 @@ class RadioButtonsGroupBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 	
-	Q_PROPERTY( QString		value	READ value	WRITE setValue	NOTIFY valueChanged	)
+	Q_PROPERTY( QString					value			READ value				NOTIFY valueChanged		)
+	Q_PROPERTY( RadioButtonBase*		checkedButton	READ checkedButton		NOTIFY valueChanged		)
+	Q_PROPERTY( QList<RadioButtonBase*>	buttons			READ buttons			NOTIFY buttonsChanged	)
 
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
@@ -38,23 +40,30 @@ public:
 	Json::Value createJson()								const	override;
 	void		bindTo(const Json::Value& value)					override;
 	void		setUp()												override;
+
+	void registerRadioButton(RadioButtonBase* button);
+	void unregisterRadioButton(RadioButtonBase* button);
+	void clickHandler(RadioButtonBase* button);
+	void radioButtonValueChanged(RadioButtonBase* button);
     
 	const QString&	value()									const	{ return _value; }
 
 signals:
 	void valueChanged();
-	void clicked(const QVariant& button);
-
-protected slots:
-	void clickedSlot(const QVariant& button);
+	void clicked();
+	void buttonsChanged();
 
 protected:
 	GENERIC_SET_FUNCTION(Value,		_value,		valueChanged,	QString	)
 
-	void _setCheckedButton(RadioButtonBase* button);
-	void _getRadioButtons(QQuickItem* item, QList<RadioButtonBase* >& buttons);
+	RadioButtonBase* checkedButton() { auto it = _valueButtonMap.find(_value); return it == _valueButtonMap.end() ? nullptr : it.value(); }
+	QList<RadioButtonBase*> buttons() { return _valueButtonMap.values(); }
 
-	QMap<QString, RadioButtonBase *>	_buttons;
+	void _setCheckedButton(RadioButtonBase* button);
+
+
+	QMap<QString, RadioButtonBase *>	_valueButtonMap;
+	QMap<RadioButtonBase*, QString>		_buttonValueMap;
 	QString								_value;
 	
 };

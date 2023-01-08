@@ -30,6 +30,16 @@ class RadioButtonBase : public JASPControl
 public:
 	RadioButtonBase(QQuickItem* parent = nullptr);
 
+public slots:
+	Q_INVOKABLE void registerWithParent();
+	Q_INVOKABLE void clicked();
+
+protected slots:
+	void valueChangeHandler();
+
+private:
+	RadioButtonsGroupBase* _group = nullptr;
+
 };
 
 #endif // RADIOBUTTONBASE_H
