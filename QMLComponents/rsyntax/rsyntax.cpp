@@ -86,7 +86,6 @@ QString RSyntax::generateSyntax() const
 		formulaSources.append(formula->modelSources());
 
 	result = _analysisFullName() + "(\n";
-	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
 	for (FormulaBase* formula : _formulas)
