@@ -77,7 +77,7 @@ bool RSyntax::setControlNameToRSyntaxMap(const QVariantList &conversions)
 	return false;
 }
 
-QString RSyntax::generateSyntax() const
+QString RSyntax::generateSyntax(bool showAllOptions) const
 {
 	QString result;
 
@@ -86,7 +86,8 @@ QString RSyntax::generateSyntax() const
 		formulaSources.append(formula->modelSources());
 
 	result = _analysisFullName() + "(\n";
-	result += FunctionOptionIndent + "data = NULL,\n";
+	if (showAllOptions)
+		result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
 	for (FormulaBase* formula : _formulas)
@@ -109,12 +110,12 @@ QString RSyntax::generateSyntax() const
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
 		const Json::Value& foundValue = boundValues.get(member, Json::Value::null);
-		if (defaultValue != foundValue)
+		if (showAllOptions || (defaultValue != foundValue))
 		{
 			bool isDifferent = true;
 			// Sometimes a double value is set as integer, so their json value is different
 			// Check whether there are really different.
-			if (defaultValue.isNumeric() && foundValue.isNumeric())
+			if (!showAllOptions && defaultValue.isNumeric() && foundValue.isNumeric())
 				isDifferent = !qFuzzyCompare(defaultValue.asDouble(), foundValue.asDouble());
 			if (isDifferent)
 			{
