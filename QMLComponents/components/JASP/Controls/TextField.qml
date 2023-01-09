@@ -73,7 +73,8 @@ TextInputBase
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);
-		lastValidValue = control.text;
+		if (control.text)
+			lastValidValue = control.text;
 	}
 
 	// The value should be checked only when the control is initialized.
@@ -102,7 +103,7 @@ TextInputBase
 			if (textField.useLastValidValue)
 				control.text = textField.lastValidValue
 			msg += "<br><br>"
-			msg += qsTr("Restoring last correct value: %1").arg(text);
+			msg += qsTr("Restoring last correct value: %1").arg(control.text);
 			addControlErrorTemporary(msg)
 		}
 		else
@@ -156,7 +157,7 @@ TextInputBase
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
-		// so the the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
+		// so the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
 		// In not in focus, the acceptableInput can be changed because another control has changed the constraint of this control: in this case, the error should be displayed.
 		onAcceptableInputChanged: checkValue(false, true)
 
