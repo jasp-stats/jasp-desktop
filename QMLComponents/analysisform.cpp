@@ -722,7 +722,7 @@ bool AnalysisForm::isFormulaName(const QString& name) const
 
 QString AnalysisForm::generateRSyntax() const
 {
-	return _rSyntax->generateSyntax();
+	return _rSyntax->generateSyntax(_showAllROptions);
 }
 
 QVariantList AnalysisForm::optionNameConversion() const
@@ -975,6 +975,16 @@ void AnalysisForm::setRSyntaxText()
 		_rSyntaxText = text;
 		emit rSyntaxTextChanged();
 	}
+}
+
+void AnalysisForm::setShowAllROptions(bool showAllROptions)
+{
+	if (_showAllROptions == showAllROptions)
+		return;
+
+	_showAllROptions = showAllROptions;
+
+	emit showAllROptionsChanged();
 }
 
 void AnalysisForm::sendRSyntax(QString text)

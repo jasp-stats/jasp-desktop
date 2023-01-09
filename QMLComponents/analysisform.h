@@ -60,6 +60,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
 	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
+	Q_PROPERTY(bool			showAllROptions			READ showAllROptions		WRITE setShowAllROptions		NOTIFY showAllROptionsChanged		)
 	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
 	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
 
@@ -85,11 +86,12 @@ public:
 	QString					version()						const	{ return _analysis ? tq(_analysis->moduleVersion().asString()) : "";	}
 	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;									}
 	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
-	bool					formCompleted()					const	{ return _formCompleted; }
-	bool					showRSyntax()					const	{ return _showRSyntax;	}
-	bool					showRButton()					const	{ return _showRButton;	}
-	bool					developerMode()					const	{ return _developerMode; }
-	QString					rSyntaxText()					const	{ return _rSyntaxText;	}
+	bool					formCompleted()					const	{ return _formCompleted;	}
+	bool					showRSyntax()					const	{ return _showRSyntax;		}
+	bool					showRButton()					const	{ return _showRButton;		}
+	bool					developerMode()					const	{ return _developerMode;	}
+	QString					rSyntaxText()					const	{ return _rSyntaxText;		}
+	bool					showAllROptions()				const	{ return _showAllROptions;	}
 
 public slots:
 	void					runScriptRequestDone(const QString& result, const QString& requestId, bool hasError);
@@ -102,6 +104,7 @@ public slots:
 	void					setShowRButton(bool showRButton);
 	void					setDeveloperMode(bool developerMode);
 	void					setRSyntaxText();
+	void					setShowAllROptions(bool showAllROptions);
 	void					sendRSyntax(QString text);
 	void					toggleRSyntax()		{ setShowRSyntax(!showRSyntax()); }
 
@@ -126,6 +129,7 @@ signals:
 	void					showRButtonChanged();
 	void					developerModeChanged();
 	void					rSyntaxTextChanged();
+	void					showAllROptionsChanged();
 	void					activeJASPControlChanged();
 
 public:
@@ -232,7 +236,8 @@ private:
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRSyntax					= false,
 													_showRButton					= false,
-													_developerMode					= false;
+													_developerMode					= false,
+													_showAllROptions				= false;
 	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
 };

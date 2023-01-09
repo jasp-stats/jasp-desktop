@@ -216,11 +216,22 @@ AnalysisForm
 				}
 			}
 
+			CheckBox
+			{
+				id:					showAllROptionsCheckBox
+				anchors.top:		generateWrapperButton.visible ? undefined : warningMessagesBox.bottom
+				anchors.bottom:		generateWrapperButton.visible ? generateWrapperButton.bottom : undefined
+				anchors.right:		rSyntaxElement.right
+				label:				qsTr("Show all options")
+				checked:			showAllROptions
+				onClicked:			setShowAllROptions(!showAllROptions)
+			}
+
 			TextArea
 			{
 				id:					rScriptArea
 				name:				form.rSyntaxControlName
-				anchors.top:		generateWrapperButton.bottom
+				anchors.top:		showAllROptionsCheckBox.bottom
 				anchors.topMargin:	jaspTheme.generalAnchorMargin
 				width:				parent.width
 				height:				visible ? 100 * preferencesModel.uiScale : 0
