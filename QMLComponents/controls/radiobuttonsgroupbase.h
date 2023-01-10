@@ -43,10 +43,11 @@ public:
 
 	void registerRadioButton(RadioButtonBase* button);
 	void unregisterRadioButton(RadioButtonBase* button);
-	void clickHandler(RadioButtonBase* button);
 	void radioButtonValueChanged(RadioButtonBase* button);
+
+	void clickHandler(RadioButtonBase* button);
     
-	const QString&	value()									const	{ return _value; }
+	const QString	value()	const;
 
 signals:
 	void valueChanged();
@@ -54,17 +55,15 @@ signals:
 	void buttonsChanged();
 
 protected:
-	GENERIC_SET_FUNCTION(Value,		_value,		valueChanged,	QString	)
 
-	RadioButtonBase* checkedButton() { auto it = _valueButtonMap.find(_value); return it == _valueButtonMap.end() ? nullptr : it.value(); }
-	QList<RadioButtonBase*> buttons() { return _valueButtonMap.values(); }
+	RadioButtonBase* checkedButton() { return _selectedButton; }
+	QList<RadioButtonBase*> buttons() { return _buttons.values(); }
 
 	void _setCheckedButton(RadioButtonBase* button);
 
 
-	QMap<QString, RadioButtonBase *>	_valueButtonMap;
-	QMap<RadioButtonBase*, QString>		_buttonValueMap;
-	QString								_value;
+	QSet<RadioButtonBase*>					_buttons;
+	RadioButtonBase*						_selectedButton = nullptr;
 	
 };
 
