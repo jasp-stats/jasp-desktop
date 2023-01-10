@@ -115,9 +115,9 @@ SliderBase
 
 			onEditingFinished:
 			{
-				if (control.value != value)
+				if (control.value != transientValue)
 				{
-					control.value = value;
+					control.value = transientValue;
 					control.moved();
 				}
 			}

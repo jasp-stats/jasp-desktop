@@ -24,7 +24,7 @@ TextField
 {
 					id:					doubleField
 					defaultValue:		0
-	property string _prevDefaultValue:	"0"
+	property var	_prevDefaultValue:	0
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false
 	property double	min:				negativeValues ? -Infinity : 0
@@ -38,11 +38,8 @@ TextField
 
 	onDefaultValueChanged:
 	{
-		if (_prevDefaultValue === value)
-		{
+		if (_prevDefaultValue == value)
 			value = defaultValue
-			doEditingFinished()
-		}
 
 		_prevDefaultValue = defaultValue;
 	}

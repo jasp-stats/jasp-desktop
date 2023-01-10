@@ -72,8 +72,8 @@ void TextInputBase::bindTo(const Json::Value& value)
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:
-		if (value.isNumeric())		_value = QString::number(value.asInt());
-		else if (value.isString())	_value = QString::number(std::stoi(value.asString()));
+		if (value.isNumeric())		_value = value.asInt();
+		else if (value.isString())	_value = std::stoi(value.asString());
 		break;
 	case TextInputType::NumberInputType:
 	case TextInputType::PercentIntputType:
@@ -84,7 +84,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (_inputType == TextInputType::PercentIntputType)
 			_value = _getPercentValue(dblVal);
 		else
-			_value = tq(Utils::doubleToString(dblVal));
+			_value = dblVal;
 
 		break;
 	}
@@ -113,13 +113,15 @@ void TextInputBase::bindTo(const Json::Value& value)
 	case TextInputType::FormulaType:
 	case TextInputType::FormulaArrayType:
 	{
-		if (value.isString())	_value = tq(value.asString());
+		QString strValue;
+		if (value.isString())	strValue = tq(value.asString());
+		_value = strValue;
 		setIsRCode();
 
-		if (!_value.isEmpty())
+		if (!strValue.isEmpty())
 		{
-			if (_inputType == TextInputType::FormulaType)	runRScript("as.character("   + _value + ")",					true);
-			else											runRScript("paste(as.array(" + _value + "), collapse=\"|\")",	true);
+			if (_inputType == TextInputType::FormulaType)	runRScript("as.character("   + strValue + ")",					true);
+			else											runRScript("paste(as.array(" + strValue + "), collapse=\"|\")",	true);
 		}
 		break;
 	}
@@ -143,14 +145,15 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 	}
 
-	setProperty("value", _value);
+	setTransientValue();
+	emit valueChanged();
 
 	BoundControlBase::bindTo(value);
 }
 
 Json::Value TextInputBase::createJson() const
 {
-	QVariant value = property("value");
+	QVariant value = property("transientValue");
 	if (value.toString() == "" && !_defaultValue.isNull())	value = _defaultValue;
 
 	return _getJsonValue(value);
@@ -186,19 +189,19 @@ void TextInputBase::setUp()
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
 
-	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
 
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
-		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::resetValue);
+		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setTransientValue);
 
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
 }
 
-void TextInputBase::resetValue()
+void TextInputBase::setTransientValue()
 {
-	setProperty("value", _value);
+	setProperty("transientValue", _value);
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)
@@ -240,7 +243,7 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 			setProperty("realValue", values[0]);
 	}
 
-	setBoundValue(fq(_value));
+	setBoundValue(fq(_value.toString()));
 }
 
 QString TextInputBase::friendlyName() const
@@ -343,7 +346,7 @@ Json::Value TextInputBase::_getJsonValue(const QVariant& value) const
 	}
 }
 
-void TextInputBase::textChangedSlot()
+void TextInputBase::valueChangedSlot()
 {
 	if (!isBound() && _inputType != TextInputType::FormulaType && _inputType != TextInputType::FormulaArrayType)
 		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
@@ -351,52 +354,49 @@ void TextInputBase::textChangedSlot()
 		// But as this TextField is not bound, and is not a Formula, we don't need to fetch the value of the item anyway.
 		return;
 
-	_value = property("value").toString();
+	setValue(property("transientValue"));
+}
 
+void TextInputBase::setValue(const QVariant &value)
+{
+	bool hasChanged = _value != value;
+	_value = value;
+
+	setTransientValue();
+
+	if (hasChanged)
+	{
+		emit valueChanged();
+
+		if (_initialized)
+			_setBoundValue();
+	}
+}
+
+void TextInputBase::_setBoundValue()
+{
 	if (_inputType == TextInputType::FormulaType || _inputType == TextInputType::FormulaArrayType)
 	{
+		QString strValue = _value.toString();
+
 		// _formula might be empty (in TableView the FormulaType is not directly bound, and has its own model).
-		if (boundValue().asString() != _value.toStdString())
+		if (boundValue().asString() != fq(strValue))
 		{
 			if (!_parseDefaultValue && _defaultValue == _value)
 			{
 				// The value is the same as the default value and this default value should not be parsed (this might be just a string like '...')
 				// So just set this value and emit that the formula is succesfully checked without running the R script.
-				setBoundValue(_value.toStdString());
+				setBoundValue(fq(strValue));
 				emit formulaCheckSucceeded();
 			}
 			else if (_inputType == TextInputType::FormulaType)
-				runRScript("as.character(" + _value + ")", true);
+				runRScript("as.character(" + strValue + ")", true);
 			else
-				runRScript("paste(as.array(" + _value + "), collapse=\"|\")", true);
+				runRScript("paste(as.array(" + strValue + "), collapse=\"|\")", true);
 
 		}
 	}
 	else setBoundValue(_getJsonValue(_value));
+
 }
 
-const QString &TextInputBase::label() const
-{
-	return _label;
-}
-
-void TextInputBase::setLabel(const QString &newLabel)
-{
-	if (_label == newLabel)
-		return;
-	_label = newLabel;
-	emit labelChanged();
-}
-
-const QString &TextInputBase::afterLabel() const
-{
-	return _afterLabel;
-}
-
-void TextInputBase::setAfterLabel(const QString &newAfterLabel)
-{
-	if (_afterLabel == newAfterLabel)
-		return;
-	_afterLabel = newAfterLabel;
-	emit afterLabelChanged();
-}

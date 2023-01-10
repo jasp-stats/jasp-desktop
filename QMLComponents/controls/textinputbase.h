@@ -30,6 +30,7 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_PROPERTY( QVariant	defaultValue		READ defaultValue			WRITE setDefaultValue		NOTIFY defaultValueChanged			)
 	Q_PROPERTY( QString		label				READ label					WRITE setLabel				NOTIFY labelChanged					)
 	Q_PROPERTY( QString		afterLabel			READ afterLabel				WRITE setAfterLabel			NOTIFY afterLabelChanged			)
+	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
 
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
@@ -48,29 +49,29 @@ public:
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
 	QVariant		defaultValue()							const	{ return _defaultValue;			}
+	QVariant		value()									const	{ return _value;				}
 
-	const QString &label() const;
-	void setLabel(const QString &newLabel);
-
-	const QString &afterLabel() const;
-	void setAfterLabel(const QString &newAfterLabel);
+	const QString &label()									const	{ return _label;				}
+	const QString &afterLabel()								const	{ return _afterLabel;			}
 
 signals:
 	void		formulaCheckSucceeded();
 	void		hasScriptErrorChanged();
 	void		defaultValueChanged();
-
-	void labelChanged();
-
-	void afterLabelChanged();
+	void		valueChanged();
+	void		labelChanged();
+	void		afterLabelChanged();
 
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
 	GENERIC_SET_FUNCTION(DefaultValue,		_defaultValue,		defaultValueChanged,	QVariant	)
+	GENERIC_SET_FUNCTION(Label,				_label,				labelChanged,			QString		)
+	GENERIC_SET_FUNCTION(AfterLabel,		_afterLabel,		afterLabelChanged,		QString		)
+	void setValue(const QVariant &value);
 
 private slots:
-	void		textChangedSlot();
-	void		resetValue();
+	void		valueChangedSlot();
+	void		setTransientValue();
 
 private:
 	Json::Value	_getJsonValue(const QVariant& value) const;
@@ -80,13 +81,15 @@ private:
 	QString		_getIntegerArrayValue(const std::vector<int>& intValues);
 	QString		_getDoubleArrayValue(const std::vector<double>& dblValues);
 
+	void		_setBoundValue();
+
 	TextInputType			_inputType;
-	QString					_value,
-							_label,
+	QString					_label,
 							_afterLabel;
 
 	bool					_parseDefaultValue	= true;
-	QVariant				_defaultValue;
+	QVariant				_defaultValue,
+							_value;
 	bool					_hasScriptError		= false;
 };
 

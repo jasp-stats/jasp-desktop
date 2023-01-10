@@ -22,8 +22,6 @@
 
 QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 {
-	if (top() <= bottom()) return QValidator::Acceptable; // This may happen when 2 controls specify the bottom and top for each other. Just ignore it, the values will get eventually the right values.
-
 	if (s.isEmpty() || (s.startsWith("-") && s.length() == 1 && bottom() < 0))
 	{
 		// allow empty field or standalone minus sign

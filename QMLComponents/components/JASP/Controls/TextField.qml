@@ -33,7 +33,7 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	value:				control.text
+	property alias	transientValue:		control.text
 	property string lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
@@ -58,9 +58,9 @@ TextInputBase
 
 	function doEditingFinished()
 	{
-		if (control.text === "" && defaultValue !== undefined && String(defaultValue) !== "")
-			control.text = defaultValue;
-		lastValidValue = control.text
+		if (transientValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
+			transientValue = defaultValue;
+		lastValidValue = transientValue
 		editingFinished();
 	}
 	
@@ -101,9 +101,9 @@ TextInputBase
 		if (resetLastValidValue)
 		{
 			if (textField.useLastValidValue)
-				control.text = textField.lastValidValue
+				value = textField.lastValidValue
 			msg += "<br><br>"
-			msg += qsTr("Restoring last correct value: %1").arg(control.text);
+			msg += qsTr("Restoring last correct value: %1").arg(value);
 			addControlErrorTemporary(msg)
 		}
 		else
