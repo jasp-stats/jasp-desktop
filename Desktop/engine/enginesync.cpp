@@ -650,6 +650,7 @@ bool EngineSync::processComputedColumnQueue()
 						_waitingScripts.pop();
 						
 						needEngine = false;
+						break;
 					}
 			}
 		}
