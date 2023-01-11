@@ -1479,7 +1479,7 @@ msgid "Enter your R code here."
 msgstr "Inserisci qui il tuo codice in R."
 
 msgctxt "RCommanderWindow|"
-msgid "Run Code"
+msgid "Run code"
 msgstr "Carica codice"
 
 msgctxt "RCommanderWindow|"
@@ -1487,7 +1487,7 @@ msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr ""
 
 msgctxt "RCommanderWindow|"
-msgid "Clear Output"
+msgid "Clear output"
 msgstr "Elimina output"
 
 msgctxt "RCommanderWindow|"

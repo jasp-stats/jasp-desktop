@@ -1429,16 +1429,16 @@ msgid "Welcome to R in JASP!"
 msgstr "¡Bienvenido a R en JASP!"
 
 msgctxt "RCommanderWindow|"
-msgid "Run Code"
-msgstr "Ejecutar Código"
+msgid "Run code"
+msgstr "Ejecutar código"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr "Al presionar Ctrl + Intro o F5 también se ejecutará el código"
 
 msgctxt "RCommanderWindow|"
-msgid "Clear Output"
-msgstr "Borrar la Salida de Resultados"
+msgid "Clear output"
+msgstr "Borrar la Salida de resultados"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."

@@ -255,11 +255,11 @@ Window
 			JC.RoundedButton
 			{
 				id:				runButton
-				text:			qsTr("Run Code")
+				text:			qsTr("Run code")
 				onClicked:		runCode();
 				width:			clearOutput.width
 				height:			(codeRect.height - 3 * jaspTheme.generalAnchorMargin) / 4
-				enabled:		codeEntry.text != "" && !rCmd.running
+				enabled:		codeEntry.text != "" && !rCmd.running && !rCmd.isAnalysisCode
 
 				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
 
@@ -313,7 +313,7 @@ Window
 			JC.RoundedButton
 			{
 				id:			clearOutput
-				text:		qsTr("Clear Output")
+				text:		qsTr("Clear output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
 				width:		Math.max(clearOutput.implicitWidth, Math.max(selectModule.implicitWidth, runButton.implicitWidth))
 				height:		runButton.height

@@ -270,7 +270,7 @@ msgstr "Premendo Ctrl+Intro ou F5 tamén vai executar o código"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr "Borrar a Saída de Resultados"
+msgstr "Borrar a saída de resultados"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
@@ -281,8 +281,8 @@ msgid "Welcome to R in JASP!"
 msgstr "Benvido a R en JASP!"
 
 msgctxt "RCommanderWindow|"
-msgid "Run Code"
-msgstr "Executar Código"
+msgid "Run code"
+msgstr "Executar código"
 
 msgctxt "MainWindow|"
 msgid "Exit"
