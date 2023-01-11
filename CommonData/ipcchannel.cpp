@@ -340,16 +340,21 @@ void IPCChannel::send(string &&data, bool alreadyLockedMutex)
 
 void IPCChannel::send(string &data, bool alreadyLockedMutex)
 {
-	if(!alreadyLockedMutex)
-		_mutexOut->lock();
-
 	try
 	{
+		if(!alreadyLockedMutex)
+			_mutexOut->lock();
 		_dataOut->assign(data.begin(), data.end());
 	}
 	catch (boost::interprocess::bad_alloc &e)	{ goto retryAfterDoublingMemory; }
 	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
-	catch(std::exception & e)
+	catch (boost::interprocess::interprocess_exception &e)
+	{
+		Log::log()	<< "IPCChannel(" << _baseName << ", " << _channelNumber << ", " << (_isSlave ? "slave" : "master") << "): "
+					<< "IPCChannel::send encountered an exception trying to acquire the lock: " << e.what() << std::endl;
+		throw e;
+	}
+	catch (std::exception & e)
 	{
 		Log::log() << "IPCChannel::send encountered an exception: " << e.what() << std::endl;
 		throw e; //no need to unlock because this will crash stuff
