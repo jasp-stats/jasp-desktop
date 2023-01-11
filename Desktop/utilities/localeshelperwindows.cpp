@@ -1,6 +1,8 @@
 #include "localeshelperwindows.h"
-#include <QString>
-#include <QTextStre
+
+#ifdef WIN32
+#include <stringapiset.h>
+#endif
 
 LocalesHelperWindows * LocalesHelperWindows::_singleton = nullptr;
 
@@ -25,7 +27,49 @@ std::string LocalesHelperWindows::convertCodepagedStrToUtf8(const std::string &r
 	);
 			as it the code in rbridge_nativeToUtf8
 #else
-		return QString::fromLocal8Bit(raw.c_str()).toStdString()
+		return raw;
 #endif
 }
 
+
+const QStringList &LocalesHelperWindows::locales() const
+{
+	return _locales;
+}
+
+void LocalesHelperWindows::setLocales(const QStringList &newLocales)
+{
+	if (_locales == newLocales)
+		return;
+	
+	_locales = newLocales;
+	emit localesChanged();
+}
+
+const QString &LocalesHelperWindows::currentLocale() const
+{
+	return _currentLocale;
+}
+
+void LocalesHelperWindows::setCurrentLocale(const QString &newCurrentLocale)
+{
+	if (_currentLocale == newCurrentLocale)
+		return;
+	
+	_currentLocale = newCurrentLocale;
+	emit currentLocaleChanged();
+}
+
+int LocalesHelperWindows::codePage() const
+{
+	return _codePage;
+}
+
+void LocalesHelperWindows::setCodePage(int newCodePage)
+{
+	if (_codePage == newCodePage)
+		return;
+	
+	_codePage = newCodePage;
+	emit codePageChanged();
+}
