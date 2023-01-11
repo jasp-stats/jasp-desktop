@@ -53,6 +53,7 @@
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/reporter.h"
+#include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
 
 #include "utilities/languagemodel.h"
@@ -278,6 +279,7 @@ private:
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
+	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
 
 	QSettings						_settings;
 

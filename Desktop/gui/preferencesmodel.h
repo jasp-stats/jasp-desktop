@@ -60,6 +60,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(int			maxEngines				READ maxEngines					WRITE setMaxEngines					NOTIFY maxEnginesChanged				)
 	Q_PROPERTY(int			maxEnginesAdmin			READ maxEnginesAdmin												NOTIFY maxEnginesAdminChanged			)
 	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
+	Q_PROPERTY(int			windowsChosenCodePage	READ windowsChosenCodePage		WRITE setWindowsChosenCodePage		NOTIFY windowsChosenCodePageChanged		)
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
@@ -116,6 +117,7 @@ public:
 	QString		defaultCodeFont()						const;
 	int			maxEngines()							const;
 	bool		windowsNoBomNative()					const;
+	int			windowsChosenCodePage()					const;
 	bool		dbShowWarning()							const;
 	QString		dataLabelNA()							const;
 	bool		guiQtTextRender()						const;
@@ -173,6 +175,7 @@ public slots:
 	void resetRememberedModules(		bool		clear);
 	void setMaxEngines(					int			maxEngines);
 	void setWindowsNoBomNative(			bool		windowsNoBomNative);
+	void setWindowsChosenCodePage(		int			windowsChosenCodePage);
 	void setDbShowWarning(				bool		dbShowWarning);
 	void setDataLabelNA(				QString		dataLabelNA);
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
@@ -221,6 +224,7 @@ signals:
 	void restartAllEngines();
 	void maxEnginesChanged(				int			maxEngines);
 	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
+	void windowsChosenCodePageChanged(	int			windowsChosenCodePage);
 	void dbShowWarningChanged(			bool		dbShowWarning);
 	void maxEnginesAdminChanged();
 	void dataLabelNAChanged(			QString		dataLabelNA);

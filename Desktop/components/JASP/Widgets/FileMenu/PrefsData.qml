@@ -233,13 +233,26 @@ ScrollView
 				CheckBox
 				{
 					id:					noBomNative
-					label:				qsTr("Assume CSV is in native encoding when no BOM has been specified")
+					label:				qsTr("Assume CSV/SPSS/STATA file is not in UTF-8 but in the below selected codepage, in case of CSV when no BOM was specified.")
 					checked:			preferencesModel.windowsNoBomNative
 					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
 					toolTip:			qsTr("See documentation for more information ")
 
-					KeyNavigation.tab:		synchronizeDataSave
+					KeyNavigation.tab:		codePageSelection
+				}
 
+				DropDown
+				{
+					id:			 			codePageSelection
+					values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
+					addEmptyValue:			true
+					showEmptyValueAsNormal:	true
+					addLineAfterEmptyValue:	true
+					placeholderText:		qsTr("Choose codepage here")
+					startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
+					onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
+
+					KeyNavigation.tab:		synchronizeDataSave
 				}
 			}
 		}

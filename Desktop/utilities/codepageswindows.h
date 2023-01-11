@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QTimer>
+#include <QMap>
 #include <string>
 
 class CodePagesWindows : public QObject
@@ -12,7 +13,6 @@ class CodePagesWindows : public QObject
 
 	Q_PROPERTY(QStringList	codePageIDs		READ codePageIDs									NOTIFY codePageIDsChanged		)
 	Q_PROPERTY(QString		codePageID		READ codePageID			WRITE setCodePageID			NOTIFY codePageIDChanged		)
-	Q_PROPERTY(int			codePage		READ codePage										NOTIFY codePageChanged			)
 	Q_PROPERTY(bool			error			READ error				WRITE setError				NOTIFY errorChanged				)
 
 public:
@@ -20,29 +20,27 @@ public:
 
 	static	std::string					convertCodePageStrToUtf8(	const std::string	& raw					);
 	static	void						addCodepageIdentifier(		const std::wstring	& codePageIdentifier	);
-			void						startTimer();
 	
 			const QStringList		&	codePageIDs()		const;
 			const QString			&	codePageID()		const;
-			int							codePage()			const;
+			bool						error()				const;
 		
-			void						setCodePageID(			const QString		& newCurrentCodePage);
-			void						setCodePage(			int newCodePage);
-			void						determineCodePageNumber();
-	
+			void						setCodePageID(			const QString		&	newCurrentCodePage	);
+			void						setError(				bool					newError			);
+
 signals:
 			void						codePageIDsChanged();
 			void						codePageIDChanged();
-			void						codePageChanged();
-	
+			void                        errorChanged();
+
 private:
 	static	CodePagesWindows		*	_singleton;
 	
-			QStringList					_codePageIDs;
-			QString						_codePageID;
-			int							_codePage;
+			QStringList					_codePageIDs;		///< Human readable descriptions of the codepages
+			QString						_codePageID;		///< Currently selected human-readable codePageID
+			QMap<QString, int>			_codePageIDMap;		///< Maps human-readable to codepage number
 			QTimer						_timer;
-			
+			bool                        _error	= false;	///< Something went wrong if this is true...
 };
 
 #endif // CODEPAGESWINDOWS_H

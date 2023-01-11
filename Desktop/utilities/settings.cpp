@@ -71,6 +71,7 @@ const Settings::Setting Settings::Values[] = {
 	{"GITHUB_PAT_Custom",			""		},
 	{"GITHUB_PAT_UseDefault",		true	},
 	{"WindowsNoBomNative",			false	}, //false as default because then we keep the behaviour we had before.
+	{"WindowsChosenCodepage",		-1		},// -1 is nothing chosen
 	{"dbImportDbType",				0		},
 	{"dbImportDbName",				""		},
 	{"dbImportHostName",			""		},
