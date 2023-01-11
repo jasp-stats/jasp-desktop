@@ -312,7 +312,7 @@ DropArea
 					anchors
 					{
 						left:			expanderIcon.right
-						right:			editButton.left
+						right:			rSyntaxButton.left
 						leftMargin:		expanderIcon.anchors.leftMargin
 						rightMargin:	2 * preferencesModel.uiScale
 						verticalCenter:	parent.verticalCenter
