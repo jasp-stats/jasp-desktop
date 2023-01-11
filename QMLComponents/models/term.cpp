@@ -112,7 +112,7 @@ bool Term::operator==(const Term &other) const
 	if (this == &other)
 		return true;
 
-	return containsAll(other);
+	return (other.size() == size()) && containsAll(other);
 }
 
 bool Term::operator!=(const Term &other) const
