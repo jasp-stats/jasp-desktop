@@ -71,7 +71,7 @@ public slots:
 
 private slots:
 	void		valueChangedSlot();
-	void		setTransientValue();
+	void		setDisplayValue();
 
 private:
 	Json::Value	_getJsonValue(const QVariant& value) const;

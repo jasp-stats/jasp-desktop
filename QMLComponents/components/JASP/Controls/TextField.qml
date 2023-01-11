@@ -33,8 +33,8 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	transientValue:		control.text
-	property string lastValidValue:		defaultValue
+	property alias	displayValue:		control.text
+	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	!parentListView
@@ -58,9 +58,9 @@ TextInputBase
 
 	function doEditingFinished()
 	{
-		if (transientValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
-			transientValue = defaultValue;
-		lastValidValue = transientValue
+		if (displayValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
+			displayValue = defaultValue;
+		lastValidValue = displayValue
 		editingFinished();
 	}
 	

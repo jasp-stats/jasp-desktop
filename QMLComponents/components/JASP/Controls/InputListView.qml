@@ -149,7 +149,7 @@ InputListBase
 				showBorder:						false
 				selectValueOnFocus:				true
 				control.horizontalAlignment:	TextInput.AlignLeft
-				onEditingFinished:				inputListView.itemChanged(index, transientValue)
+				onEditingFinished:				inputListView.itemChanged(index, displayValue)
 			}
 
 			Image

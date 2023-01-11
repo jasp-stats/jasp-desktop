@@ -120,7 +120,7 @@ FactorLevelListBase
 					showBorder:						false
 					selectValueOnFocus:				true
 					control.horizontalAlignment:	model.type === "level" ? TextInput.AlignLeft : TextInput.AlignHCenter
-					onEditingFinished:				itemChanged(index, transientValue)
+					onEditingFinished:				itemChanged(index, displayValue)
 				}
 
 				Image

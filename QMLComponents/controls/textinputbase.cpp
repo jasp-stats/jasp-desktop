@@ -145,7 +145,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 	}
 
-	setTransientValue();
+	setDisplayValue();
 	emit valueChanged();
 
 	BoundControlBase::bindTo(value);
@@ -153,7 +153,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 
 Json::Value TextInputBase::createJson() const
 {
-	QVariant value = property("transientValue");
+	QVariant value = property("displayValue");
 	if (value.toString() == "" && !_defaultValue.isNull())	value = _defaultValue;
 
 	return _getJsonValue(value);
@@ -194,14 +194,14 @@ void TextInputBase::setUp()
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
-		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setTransientValue);
+		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
 
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
 }
 
-void TextInputBase::setTransientValue()
+void TextInputBase::setDisplayValue()
 {
-	setProperty("transientValue", _value);
+	setProperty("displayValue", _value);
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)
@@ -354,7 +354,7 @@ void TextInputBase::valueChangedSlot()
 		// But as this TextField is not bound, and is not a Formula, we don't need to fetch the value of the item anyway.
 		return;
 
-	setValue(property("transientValue"));
+	setValue(property("displayValue"));
 }
 
 void TextInputBase::setValue(const QVariant &value)
@@ -362,7 +362,7 @@ void TextInputBase::setValue(const QVariant &value)
 	bool hasChanged = _value != value;
 	_value = value;
 
-	setTransientValue();
+	setDisplayValue();
 
 	if (hasChanged)
 	{
