@@ -1416,7 +1416,7 @@ msgid "Welcome to R in JASP!"
 msgstr "Welkom bij R in JASP!"
 
 msgctxt "RCommanderWindow|"
-msgid "Run Code"
+msgid "Run code"
 msgstr "Voer code uit"
 
 msgctxt "RCommanderWindow|"
@@ -1424,7 +1424,7 @@ msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr "Als u op Ctrl+Enter of F5 drukt, wordt de code ook uitgevoerd"
 
 msgctxt "RCommanderWindow|"
-msgid "Clear Output"
+msgid "Clear output"
 msgstr "Wis uitvoer"
 
 msgctxt "RCommanderWindow|"
