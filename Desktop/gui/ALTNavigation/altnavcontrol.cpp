@@ -62,7 +62,7 @@ bool ALTNavControl::eventFilter(QObject *object, QEvent *event)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if (key == Qt::Key_Alt)
+		if (key == Qt::Key_Alt && keyEvent->modifiers() == Qt::NoModifier)
 		{
 			resetAltNavInput();
 			setAltNavEnabled(!_altNavEnabled);
