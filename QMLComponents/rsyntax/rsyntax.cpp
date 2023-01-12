@@ -420,10 +420,8 @@ bool RSyntax::_areTermsVariables(ListModel* model, const Terms& terms) const
 	QStringList variables = model->requestInfo(VariableInfo::VariableNames).toStringList();
 
 	for (const Term& term : terms)
-	{
 		for (const QString& comp : term.components())
 			result = result && variables.contains(comp);
-	}
 
 	return result;
 }
