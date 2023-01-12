@@ -415,15 +415,14 @@ QString RSyntax::transformJsonToR(const Json::Value &json, const Json::Value& co
 
 bool RSyntax::_areTermsVariables(ListModel* model, const Terms& terms) const
 {
-	bool result = true;
-
 	QStringList variables = model->requestInfo(VariableInfo::VariableNames).toStringList();
 
 	for (const Term& term : terms)
 		for (const QString& comp : term.components())
-			result = result && variables.contains(comp);
+			if(!variables.contains(comp))
+				return false;
 
-	return result;
+	return true;
 }
 
 QString RSyntax::_transformInteractionTerms(ListModel* model) const
