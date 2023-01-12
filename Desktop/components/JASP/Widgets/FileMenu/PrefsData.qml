@@ -223,6 +223,7 @@ ScrollView
 				navigateTo:     noBomNative
 			}
 			
+
 			PrefsGroupRect
 			{
 				visible:	WINDOWS
@@ -239,11 +240,17 @@ ScrollView
 
 					KeyNavigation.tab:		codePageSelection
 				}
+				
+				ErrorMessage
+				{
+					text: WINDOWS && windowsCodePagesHelper.error ? qsTr("Some problem occured loading the available codepages...") : ""
+				}
+
 
 				DropDown
 				{
 					id:			 			codePageSelection
-					enabled:				preferencesModel.windowsNoBomNative
+					enabled:				preferencesModel.windowsNoBomNative && WINDOWS && !windowsCodePagesHelper.error
 					toolTip:				qsTr("See documentation for more information ")
 					values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
 					addEmptyValue:			true

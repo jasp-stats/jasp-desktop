@@ -1,6 +1,7 @@
 #include "codepageswindows.h"
 #include "log.h"
 #include "gui/preferencesmodel.h"
+#include <stdexcept>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -74,7 +75,7 @@ void CodePagesWindows::addCodepageIdentifier(const std::wstring &codePageIdentif
 
 	if(!worked)
 	{
-		Log::log() << "addCodepageIdentifier got unconvertible codepage: " << converted.toStdString() << std::endl;
+		//Log::log() << "addCodepageIdentifier got unconvertible codepage: " << converted.toStdString() << std::endl;
 		_singleton->setError(true);
 		return;
 	}
@@ -90,7 +91,7 @@ void CodePagesWindows::addCodepageIdentifier(const std::wstring &codePageIdentif
 
 	QString fullName = QString::fromStdWString(info.CodePageName);
 
-	Log::log() << "addCodepageIdentifier: " << codepage << "\t" << fullName << std::endl;
+	//Log::log() << "addCodepageIdentifier: " << codepage << "\t" << fullName << std::endl;
 
 	_singleton->_codePageIDs.push_back(fullName);
 	_singleton->_codePageIDMap[fullName] = codepage;
@@ -105,7 +106,7 @@ void CodePagesWindows::addCodepageIdentifier(const std::wstring &codePageIdentif
 		//Because we get called from a callback we do not know whether more are coming after this or not we put a resetting delay between additions and sending CPIDsChanged
 		_singleton->_timer.start();
 #else
-	throw std::runtime_exception("void CodePagesWindows::addCodepageIdentifier(const std::wstring &codePageIdentifier) doesnt make *ANY* sense on not-windows...");
+	throw std::runtime_error("void CodePagesWindows::addCodepageIdentifier(const std::wstring &codePageIdentifier) doesnt make *ANY* sense on not-windows...");
 #endif
 }
 
