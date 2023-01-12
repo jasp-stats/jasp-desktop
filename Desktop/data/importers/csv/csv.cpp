@@ -137,12 +137,14 @@ void CSV::determineEncoding()
 	}
 	else
 	{
+/* Temporarily disabled until https://github.com/jasp-stats/jasp-issues/issues/1842 is resolved
 #ifdef _WIN32
 		//If we are on windows and there is no BOM, then we can assume it is encoded in the native locale. Unless the user decides otherwise
 		if(Settings::value(Settings::WINDOWS_NO_BOM_NATIVE).toBool())
 			_encoding = Native;
 		else
 #endif
+*/
 		{
 			// tab, lf, cr, space, double-quote, single-quote, comma, semi-colon
 	

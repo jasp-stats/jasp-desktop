@@ -225,8 +225,9 @@ ScrollView
 			
 			PrefsGroupRect
 			{
-				visible:	WINDOWS
-				enabled:	WINDOWS
+				//Temporarily disabled until https://github.com/jasp-stats/jasp-issues/issues/1842 is resolved
+				visible:	false//WINDOWS
+				enabled:	false//WINDOWS
 				title:		qsTr("Windows workaround")
 				
 				CheckBox
