@@ -379,7 +379,7 @@ DropArea
 				{
 					id:					rSyntaxButton
 					width:				height
-					iconSource:			jaspTheme.iconPath + "/R-roundbutton.svg"
+					iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
 					enabled:			expanderButton.expanded
 					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
 					toolTip:			qsTr("Show R syntax")
