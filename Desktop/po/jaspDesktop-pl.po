@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-12-20 20:17+0000\n"
+"PO-Revision-Date: 2023-01-13 12:30+0000\n"
 "Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
@@ -82,7 +82,7 @@ msgstr "Dodaj kartę"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr "Usuń tę kartę"
+msgstr "Usuń kartę"
 
 msgctxt "TabView|"
 msgid "New tab"
@@ -151,19 +151,19 @@ msgstr "Przeciągnij, aby zmienić kolejność analiz"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "Edytuj tytuł tej analizy"
+msgstr "Edytuj tytuł"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "Zduplikuj tę analizę"
+msgstr "Zduplikuj analizę"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "Pokaż informacje o tej analizie"
+msgstr "Pokaż więcej informacji"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr "Usuń tę analizę"
+msgstr "Usuń analizę"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -416,7 +416,7 @@ msgstr "generuje dane z rozkładu Weibulla o określonym kształcie i skali"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "Usuń kolumnę wynikową"
+msgstr "Usuń kolumnę"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -499,7 +499,7 @@ msgstr "Zmodyfikuj dla %1"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "Wstaw kolumnę wynikową"
+msgstr "Wstaw kolumnę"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
@@ -544,7 +544,7 @@ msgstr "Utwórz kolumnę"
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "Kliknij tutaj, aby utworzyć nową kolumnę wynikową \"%1'"
+msgstr "Kliknij tutaj, aby utworzyć nową kolumnę '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
@@ -576,7 +576,7 @@ msgstr "Pokaż filtr"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "Wstaw kolumnę wynikową"
+msgstr "Wstaw kolumnę"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
@@ -972,7 +972,7 @@ msgstr "Proszę podać wszystkie argumenty - patrz pola zaznaczone na czerwono."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr "Dozwolona jest tylko jedna formuła na kolumnę wynikową."
+msgstr "Dozwolona jest tylko jedna formuła dla danej kolumny."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
@@ -1470,7 +1470,7 @@ msgstr "Przywróć domyślne"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr "Posortuj elementy"
+msgstr "Sortuj"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
@@ -3338,7 +3338,7 @@ msgstr "Zmienne"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr "Podziel przez"
+msgstr "Podziel według"
 
 msgctxt "KnownIssues|"
 msgid ""
