@@ -123,7 +123,7 @@ QString RSyntax::generateSyntax(bool showAllOptions) const
 
 				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 				if (listControl && !listControl->hasRowComponent() && listControl->containsInteractions())
-					result += transformInteractionTerms(listControl->model()->terms(), true);
+					result += _transformInteractionTerms(listControl->model());
 				else
 					result += transformJsonToR(foundValue, defaultValue);
 			}
@@ -413,10 +413,28 @@ QString RSyntax::transformJsonToR(const Json::Value &json, const Json::Value& co
 	return result;
 }
 
-QString RSyntax::transformInteractionTerms(const Terms& terms, bool useFormula)
+bool RSyntax::_areTermsVariables(ListModel* model, const Terms& terms) const
 {
+	bool result = true;
+
+	QStringList variables = model->requestInfo(VariableInfo::VariableNames).toStringList();
+
+	for (const Term& term : terms)
+	{
+		for (const QString& comp : term.components())
+			result = result && variables.contains(comp);
+	}
+
+	return result;
+}
+
+QString RSyntax::_transformInteractionTerms(ListModel* model) const
+{
+	const Terms& terms = model->terms();
+
 	if (terms.size() == 0)	return "NULL";
-	if (useFormula)			return "~ " + FormulaSource::generateInteractionTerms(terms);
+
+	if (_areTermsVariables(model, terms))	return "~ " + FormulaSource::generateInteractionTerms(terms);
 
 	QString result = "list(";
 	bool first = true;

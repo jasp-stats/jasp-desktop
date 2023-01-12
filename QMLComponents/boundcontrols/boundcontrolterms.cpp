@@ -33,30 +33,89 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 	_optionKey = _listView->optionKey().toStdString();
 }
 
+
+// For interaction model, if there is no row component, the R Syntax tries to simplify the option value
+// The right json value is an array of abjects of array of strings, like this:
+// [
+//		{
+//			<optionKey> : [  value1 ]
+//		}
+//		{
+//			<optionKey> : [ component1, component2] // In case of interaction, a value is composed by 2 components.
+//		}
+// ]
+//
+// But with R syntax, an array of strings, or an array of array of strings is allowed (the optionKey is not necessary, since no other key is used):
+// [
+//		value1,
+//		[ component1, component2]
+// ]
+//
+Json::Value BoundControlTerms::_adjustBindingValue(const Json::Value &value) const
+{
+	Json::Value valueAdjusted = value;
+
+	if (!_listView->hasRowComponent() && _listView->containsInteractions() && value.isArray())
+	{
+		valueAdjusted = Json::Value(Json::arrayValue);
+		for (const Json::Value& aValue : value)
+		{
+			if (aValue.isObject())
+				valueAdjusted.append(aValue);
+			else
+			{
+				Json::Value row(Json::objectValue);
+				Json::Value keyValue(Json::arrayValue);
+				if (aValue.isString())
+					keyValue.append(aValue);
+				else if (aValue.isArray())
+				{
+					for (const Json::Value& comp : aValue)
+					{
+						if (comp.isString())
+							keyValue.append(comp);
+						else
+							Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
+					}
+				}
+				else
+					Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
+
+				row[_optionKey] = keyValue;
+				valueAdjusted.append(row);
+			}
+		}
+	}
+
+	return valueAdjusted;
+}
+
 void BoundControlTerms::bindTo(const Json::Value &value)
 {
-	BoundControlBase::bindTo(value);
+	Json::Value valueAdjusted = _adjustBindingValue(value);
+
+	BoundControlBase::bindTo(valueAdjusted);
 
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		_readTableValue(value, _optionKey, _listView->containsInteractions(), terms, allControlValues);
+		_readTableValue(valueAdjusted, _optionKey, _listView->containsInteractions(), terms, allControlValues);
 	else
 	{
-		if (value.isArray())
+		if (valueAdjusted.isArray())
 		{
-			for (const Json::Value& variable : value)
+			for (const Json::Value& variable : valueAdjusted)
 				terms.add(Term(variable.asString()));
 		}
-		else if (value.isString())
+		else if (valueAdjusted.isString())
 		{
-			std::string str = value.asString();
+			std::string str = valueAdjusted.asString();
 			if (!str.empty())
 				terms.add(Term(str));
 		}
 		else
-			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << value.toStyledString() << std::endl;
+			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << valueAdjusted.toStyledString() << std::endl;
 	}
 
 	_termsModel->initTerms(terms, allControlValues);
@@ -131,24 +190,22 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 			for (uint i = 0; i < optionValue.size(); i++)
 			{
 				const Json::Value& value = optionValue[i];
-				valid = value.type() == Json::objectValue;
-				if (valid)
+
+				if (!_listView->hasRowComponent() && (value.type() == Json::stringValue || value.type() == Json::arrayValue))
+				{
+					// If there is no row component, allow stringValue (only one value) or arrayValue (for several values)
+					valid = true;
+				}
+				else if (value.type() == Json::objectValue)
 				{
 					const Json::Value& components = value[_optionKey];
-					if (_listView->containsInteractions())
-					{
-						valid = components.type() == Json::arrayValue;
-						if (components.type() == Json::stringValue)
-						{
-							valid = true;
-							Log::log() << "JASP file has a VariableList with interaction but the elements are strings in place of arrays. Probably an old JASP file." << std::endl;
-						}
-					}
-					else
-						valid = components.type() == Json::stringValue;
+					valid = components.type() == Json::arrayValue || components.type() == Json::stringValue;
 				}
 				if (!valid)
+				{
+					Log::log() << "Wrong type: " << value.toStyledString() << std::endl;
 					break;
+				}
 			}
 		}
 	}
