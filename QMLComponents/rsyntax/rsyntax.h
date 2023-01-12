@@ -52,7 +52,6 @@ public:
 	static QString					FunctionOptionIndent,
 									FunctionLineIndent;
 	static QString					transformJsonToR(const Json::Value& json, const Json::Value& comparedValue = Json::nullValue);
-	static QString					transformInteractionTerms(const Terms& terms, bool useFormula = true);
 
 signals:
 	void							somethingChanged();
@@ -60,7 +59,9 @@ signals:
 
 private:
 
-	QString							_analysisFullName()								const;
+	QString							_analysisFullName()											const;
+	QString							_transformInteractionTerms(ListModel* model)				const;
+	bool							_areTermsVariables(ListModel* model, const Terms& terms)	const;
 
 	AnalysisForm*					_form							= nullptr;
 	QVector<FormulaBase*>			_formulas;

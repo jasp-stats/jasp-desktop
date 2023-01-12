@@ -38,6 +38,8 @@ public:
 
 private:
 	Terms		_getValuesFromOptions(const Json::Value& option)	const;
+	Json::Value	_adjustBindingValue(const Json::Value &value)		const;
+
 
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;
