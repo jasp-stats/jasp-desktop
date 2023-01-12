@@ -33,7 +33,7 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	displayValue:		control.text
+	property alias	displayValue:		control.text	///< Only use in onEditingFinished!
 	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
