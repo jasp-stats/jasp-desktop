@@ -117,6 +117,7 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			parser.parse(fq(result), jsonResult);
 			Json::Value options = jsonResult["options"];
 			clearControlError(rSyntaxControl);
+			clearFormErrors();
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
 				bindTo(options);
@@ -526,6 +527,12 @@ void AnalysisForm::clearFormErrors()
 {
 	_formErrors.clear();
 	emit errorsChanged();
+
+	for(auto & control : _controls)
+	{
+		control->setHasError(false);
+		control->setHasWarning(false);
+	}
 }
 
 
