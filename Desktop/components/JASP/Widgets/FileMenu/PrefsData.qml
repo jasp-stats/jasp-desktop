@@ -225,15 +225,14 @@ ScrollView
 			
 			PrefsGroupRect
 			{
-				//Temporarily disabled until https://github.com/jasp-stats/jasp-issues/issues/1842 is resolved
-				visible:	false//WINDOWS
-				enabled:	false//WINDOWS
+				visible:	WINDOWS
+				enabled:	WINDOWS
 				title:		qsTr("Windows workaround")
 				
 				CheckBox
 				{
 					id:					noBomNative
-					label:				qsTr("Assume CSV/SPSS/STATA file is not in UTF-8 but in the below selected codepage, in case of CSV when no BOM was specified.")
+					label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
 					checked:			preferencesModel.windowsNoBomNative
 					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
 					toolTip:			qsTr("See documentation for more information ")
@@ -244,6 +243,8 @@ ScrollView
 				DropDown
 				{
 					id:			 			codePageSelection
+					enabled:				preferencesModel.windowsNoBomNative
+					toolTip:				qsTr("See documentation for more information ")
 					values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
 					addEmptyValue:			true
 					showEmptyValueAsNormal:	true

@@ -42,4 +42,8 @@ Clicking on "Reset" will restore all the default values.
 
 ### Windows workaround
 
-Option here specifically for importing CSV files on Windows. JASP usually try to import `.csv` data file in UTF encoding and/or with a BOM. Changed this option and re-import, JASP will assume a CSV in native encoding with no BOM, and some garbled characters problems may be resolved in this cases.
+Option here specifically for importing CSV files on Windows. JASP usually try to import `.csv` data file in UTF encoding and/or with a BOM.
+If someone saves a CSV from excel in their "local codepage" however there is no BOM and there is no way to determine what the codepage is from the CSV.
+Because JASP now runs exclusively in UTF-8 it can't just use the system codepage, and in any case this wouldnt help if you got the file from someone else (working in a different locale/codepage).
+Without this workaround JASP just assumes it is in some kind of UTF variant, which tends to be true and also is the most interoperable way of sharing files between nations.
+But to help microsoft office users a dropdown has been provided where the expected codepage can be chosen and if the workaround is turned on it will be used to decode such CSV's.
