@@ -29,6 +29,7 @@ using namespace std;
 ListModelFactorsForm::ListModelFactorsForm(JASPListControl* listView)
 	: ListModel(listView)
 {
+	_needsSource = false;
 }
 
 QHash<int, QByteArray> ListModelFactorsForm::roleNames() const
