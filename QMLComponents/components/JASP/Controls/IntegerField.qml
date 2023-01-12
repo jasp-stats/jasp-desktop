@@ -23,7 +23,7 @@ TextField
 {
 					id:					textField
 					defaultValue:		0
-	property string	_prevDefaultValue:	"0"
+	property var	_prevDefaultValue:	0
 	property bool	negativeValues:		false
 	property int	min:				negativeValues ? -2147483647 : 0 // 2^32 - 1
 	property int	max:				2147483647
@@ -37,11 +37,8 @@ TextField
 
 	onDefaultValueChanged:
 	{
-		if (_prevDefaultValue === value)
-		{
+		if (_prevDefaultValue == value)
 			value = defaultValue
-			doEditingFinished()
-		}
 
 		_prevDefaultValue = defaultValue;
 	}

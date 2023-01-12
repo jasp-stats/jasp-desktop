@@ -328,7 +328,7 @@ TableViewBase
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:
 						{
-							tableView.itemChanged(columnIndex, rowIndex, value, inputType)
+							tableView.itemChanged(columnIndex, rowIndex, displayValue, inputType)
 							tableView.setButtons()
 						}
 						editable:				itemEditable

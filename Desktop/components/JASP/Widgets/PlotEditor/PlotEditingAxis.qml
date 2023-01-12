@@ -44,7 +44,7 @@ Column
 			label				: qsTr("Title");
 			fieldWidth			: 200
 			value				: axisModel.title
-			onEditingFinished	: if(axisModel) axisModel.title = value
+			onEditingFinished	: if(axisModel) axisModel.title = displayValue
 		}
 	}
 
@@ -97,7 +97,7 @@ Column
 				id					: axisBreaksRangeFrom
 				label				: qsTr("from")
 				value				: axisModel.from
-				onEditingFinished	: if(axisModel) axisModel.from = value
+				onEditingFinished	: if(axisModel) axisModel.from = displayValue
 				negativeValues		: true
 				fieldWidth			: 2 * jaspTheme.numericFieldWidth
 				max					: axisBreaksRangeSteps.value > 0 ? axisBreaksRangeTo.value : Infinity
@@ -107,7 +107,7 @@ Column
 				id					: axisBreaksRangeTo
 				label				: qsTr("to")
 				value				: axisModel.to
-				onEditingFinished	: if(axisModel) axisModel.to = value
+				onEditingFinished	: if(axisModel) axisModel.to = displayValue
 				negativeValues		: true
 				fieldWidth			: 2 * jaspTheme.numericFieldWidth
 				min					: axisBreaksRangeSteps.value > 0 ? axisBreaksRangeFrom.value : -Infinity
@@ -118,7 +118,7 @@ Column
 				label				: qsTr("steps")
 				value				: axisModel.steps
 				negativeValues		: true
-				onEditingFinished	: if(axisModel) axisModel.steps = value
+				onEditingFinished	: if(axisModel) axisModel.steps = displayValue
 				fieldWidth			: 2 * jaspTheme.numericFieldWidth
 			}
 
@@ -178,7 +178,7 @@ Column
 					negativeValues		: true
 					max					: axisModel.limitUpper
 					value				: axisModel.limitLower
-					onEditingFinished	: if(axisModel) axisModel.limitLower = value
+					onEditingFinished	: if(axisModel) axisModel.limitLower = displayValue
 					decimals			: 20
 					fieldWidth			: 2 * jaspTheme.numericFieldWidth
 				}
@@ -189,7 +189,7 @@ Column
 					negativeValues		: true
 					min					: axisModel.limitLower
 					value				: axisModel.limitUpper
-					onEditingFinished	: if(axisModel) axisModel.limitUpper = value
+					onEditingFinished	: if(axisModel) axisModel.limitUpper = displayValue
 					decimals			: 20
 					fieldWidth			: 2 * jaspTheme.numericFieldWidth
 				}

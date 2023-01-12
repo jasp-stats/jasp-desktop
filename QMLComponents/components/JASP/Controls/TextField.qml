@@ -33,8 +33,8 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	value:				control.text
-	property string lastValidValue:		defaultValue
+	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
+	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	!parentListView
@@ -51,16 +51,16 @@ TextInputBase
 
 	property double controlXOffset:		0
 
-	signal editingFinished()
+	signal editingFinished()	///< To get the entered value use `displayValue` in the slot instead of `value`
 	signal textEdited()
 	signal pressed(var event)
 	signal released(var event)
 
 	function doEditingFinished()
 	{
-		if (control.text === "" && defaultValue !== undefined && String(defaultValue) !== "")
-			control.text = defaultValue;
-		lastValidValue = control.text
+		if (displayValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
+			displayValue = defaultValue;
+		lastValidValue = displayValue
 		editingFinished();
 	}
 	
@@ -73,7 +73,8 @@ TextInputBase
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);
-		lastValidValue = control.text;
+		if (control.text)
+			lastValidValue = control.text;
 	}
 
 	// The value should be checked only when the control is initialized.
@@ -100,9 +101,9 @@ TextInputBase
 		if (resetLastValidValue)
 		{
 			if (textField.useLastValidValue)
-				control.text = textField.lastValidValue
+				value = textField.lastValidValue
 			msg += "<br><br>"
-			msg += qsTr("Restoring last correct value: %1").arg(text);
+			msg += qsTr("Restoring last correct value: %1").arg(value);
 			addControlErrorTemporary(msg)
 		}
 		else
@@ -156,7 +157,7 @@ TextInputBase
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
-		// so the the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
+		// so the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.
 		// In not in focus, the acceptableInput can be changed because another control has changed the constraint of this control: in this case, the error should be displayed.
 		onAcceptableInputChanged: checkValue(false, true)
 

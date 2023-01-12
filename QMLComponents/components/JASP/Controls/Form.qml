@@ -219,7 +219,7 @@ AnalysisForm
 			CheckBox
 			{
 				id:					showAllROptionsCheckBox
-				anchors.top:		generateWrapperButton.visible ? undefined : warningMessagesBox.bottom
+				anchors.top:		generateWrapperButton.visible ? undefined : rSyntaxElement.top
 				anchors.bottom:		generateWrapperButton.visible ? generateWrapperButton.bottom : undefined
 				anchors.right:		rSyntaxElement.right
 				label:				qsTr("Show all options")

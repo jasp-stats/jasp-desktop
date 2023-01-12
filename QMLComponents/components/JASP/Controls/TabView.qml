@@ -120,7 +120,7 @@ ComponentsListBase
 				value				: model.name
 				fieldWidth			: parent.width
 				fieldHeight			: parent.height
-				onEditingFinished	: tabView.nameChanged(index, value)
+				onEditingFinished	: tabView.nameChanged(index, displayValue)
 
 				onActiveFocusChanged: if (!activeFocus) visible = false
 			}
