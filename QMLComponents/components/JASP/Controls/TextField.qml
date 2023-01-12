@@ -33,7 +33,7 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	displayValue:		control.text	///< Only use in onEditingFinished!
+	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
 	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
@@ -51,7 +51,7 @@ TextInputBase
 
 	property double controlXOffset:		0
 
-	signal editingFinished()
+	signal editingFinished()	///< To get the entered value use `displayValue` in the slot instead of `value`
 	signal textEdited()
 	signal pressed(var event)
 	signal released(var event)
