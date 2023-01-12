@@ -42,17 +42,22 @@ std::string CodePagesWindows::convertCodePageStrToUtf8(const std::string &raw)
 #ifdef WIN32
 	assert(_singleton);
 
-	/*this is useful:
-	int MultiByteToWideChar(
-	  [in]            UINT                              CodePage,
-	  [in]            DWORD                             dwFlags,
-	  [in]            _In_NLS_string_(cbMultiByte)LPCCH lpMultiByteStr,
-	  [in]            int                               cbMultiByte,
-	  [out, optional] LPWSTR                            lpWideCharStr,
-	  [in]            int                               cchWideChar
-	);
-			as it the code in rbridge_nativeToUtf8*/
-	return raw;
+	if(PreferencesModel::prefs()->windowsChosenCodePage() < 0)
+		return raw;
+
+	uint codepage(PreferencesModel::prefs()->windowsChosenCodePage());
+
+	int size = MultiByteToWideChar(codepage, MB_COMPOSITE, raw.c_str(), raw.length(), nullptr, 0);
+	std::wstring utf16_str(size, '\0');
+
+	MultiByteToWideChar(codepage, MB_COMPOSITE, raw.c_str(), raw.length(), &utf16_str[0], size);
+
+	int utf8_size = WideCharToMultiByte(CP_UTF8, 0, utf16_str.c_str(), utf16_str.length(), nullptr, 0, nullptr, nullptr);
+	std::string utf8_str(utf8_size, '\0');
+
+	WideCharToMultiByte(CP_UTF8, 0, utf16_str.c_str(), utf16_str.length(), &utf8_str[0], utf8_size,	nullptr, nullptr);
+
+	return utf8_str;
 #else
 	return raw;
 #endif

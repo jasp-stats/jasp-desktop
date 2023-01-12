@@ -18,7 +18,7 @@
 #include "csv.h"
 
 #include <boost/algorithm/string.hpp>
-
+#include "utilities/codepageswindows.h"
 
 #include <cstring>
 #include <stdexcept>
@@ -244,11 +244,11 @@ bool CSV::readUtf8()
 	case Native:
 	{
 		std::string raw	(&_rawBuffer[_rawBufferStartPos], &_rawBuffer[_rawBufferEndPos]),
-					utf8(QString::fromLocal8Bit(raw.c_str()).toStdString());
+					utf8(CodePagesWindows::convertCodePageStrToUtf8(raw));
 		
 		std::memcpy(&_utf8Buffer[_utf8BufferEndPos], utf8.c_str(), utf8.size());
 
-		_utf8BufferEndPos += _rawBufferEndPos - _rawBufferStartPos;
+		_utf8BufferEndPos += utf8.size();
 		_rawBufferStartPos = _rawBufferEndPos;
 		
 		break;
