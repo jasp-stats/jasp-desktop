@@ -1,4 +1,4 @@
-import QtQuick						2.11
+﻿import QtQuick						2.11
 import QtQuick.Controls				2.4
 import JASP.Controls				1.0
 import Qt5Compat.GraphicalEffects
@@ -211,19 +211,21 @@ DropArea
 			color:				jaspTheme.uiBackground
 			clip:				true
 
-			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
+			property bool		expanded:			false
+			property bool		shouldExpand:		analysesModel.currentAnalysisIndex == myIndex
 			property bool		loadingQml:			!formParent.loaded
 			property real		formHeight:			formParent.height
 			property bool		firstExpansion:		true //lame but is works
 
-			onExpandedChanged: { if(!expanded) firstExpansion = false; }
+			onExpandedChanged: { if(!shouldExpand) firstExpansion = false; }
 
-			function postExpansionTasks()
+			function postExpansionTasks(scrollMargin = 0)
 			{
 					if(typeof backgroundFlickable === 'undefined')
 						return;
 
-					backgroundFlickable.scrollToElement(expanderButton);
+					expanded = true;
+					backgroundFlickable.scrollToElement(expanderButton, scrollMargin);
 					if(firstExpansion) //only focus first item on analysis creation
 						formParent.nextItemInFocusChain().forceActiveFocus();
 					else
@@ -233,7 +235,13 @@ DropArea
 			Connections {
 				target: expanderButton
 				enabled: !preferencesModel.animationsOn
-				function onHeightChanged() { Qt.callLater(expanderButton.postExpansionTasks); }
+				function onImplicitHeightChanged()
+				{
+					if (expanderButton.shouldExpand && !expanderButton.expanded)
+						Qt.callLater(expanderButton.postExpansionTasks, 10000);
+					else if (!expanderButton.shouldExpand && expanderButton.expanded)
+						expanderButton.expanded = false;
+				}
 			}
 
 			onLoadingQmlChanged:
@@ -249,9 +257,9 @@ DropArea
 			}
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;											}	},
-				State { name: "loading";	when: expanderButton.expanded &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;									}	},
-				State { name: "imploded";	when: !expanderButton.expanded;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;																			}	}
+				State {	name: "expanded";	when: expanderButton.shouldExpand && !expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;											}	},
+				State { name: "loading";	when: expanderButton.shouldExpand &&  expanderButton.loadingQml ;	PropertyChanges {	target: expanderButton;		implicitHeight: qmlLoadingIndicator.y + qmlLoadingIndicator.implicitHeight;									}	},
+				State { name: "imploded";	when: !expanderButton.shouldExpand;									PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;																			}	}
 			]
 
 			transitions: Transition
@@ -259,7 +267,14 @@ DropArea
 				enabled:	preferencesModel.animationsOn
 				reversible:	true
 
-				onRunningChanged: { if (expanderButton.expanded) Qt.callLater(expanderButton.postExpansionTasks); } //expansion ended
+				onRunningChanged:
+				{
+					if (expanderButton.shouldExpand)
+						Qt.callLater(expanderButton.postExpansionTasks);
+					else
+						expanderButton.expanded = false;
+
+				} //expansion ended
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
@@ -503,7 +518,6 @@ DropArea
 				id:						qmlLoadingIndicator
 				visible:				expanderButton.loadingQml && expanderButton.expanded && formParent.error == ""
 				implicitHeight:			300 * jaspTheme.uiScale
-				height:					implicitHeight
 				autoStartOnVisibility:	false
 
 				anchors
@@ -519,8 +533,7 @@ DropArea
 			Item
 			{
 				id:					loaderAndError
-				implicitHeight:		formParent.loaded ? formParent.height : formParent.error != "" ? errorRect.height * preferencesModel.uiScale : 0
-				height:				implicitHeight
+				implicitHeight:		formParent.loaded ? formParent.implicitHeight : formParent.error != "" ? errorRect.height * preferencesModel.uiScale : 0
 				visible:			expanderButton.expanded && (formParent.loaded || formParent.error != "")
 
 				anchors
@@ -557,7 +570,7 @@ DropArea
 				Item
 				{
 					id:					formParent
-					height:				myForm ? myForm.implicitHeight : 0
+					implicitHeight: 	myForm ? myForm.implicitHeight : 0
 
 					property string error:		!myAnalysis ? "No Analysis!\n" : myAnalysis.qmlError
 					property bool	loaded:		myForm
