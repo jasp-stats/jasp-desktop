@@ -1665,22 +1665,18 @@ msgctxt "JASPControl|"
 msgid "Switch"
 msgstr "開關"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Entry Field"
 msgstr "輸入欄位"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Button"
 msgstr "單選按鈕"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "單選按鈕"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr "輸入清單檢視"
@@ -1689,7 +1685,6 @@ msgctxt "JASPControl|"
 msgid "TableView"
 msgstr "表格方式檢視"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Slider"
 msgstr "滑塊"
@@ -1698,17 +1693,14 @@ msgctxt "JASPControl|"
 msgid "TextArea"
 msgstr "文字區"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Button"
 msgstr "按鈕"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factors Form"
 msgstr "因素形式"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "List of Components"
 msgstr "元件清單"
@@ -1745,7 +1737,6 @@ msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
 msgstr "&lt; %1"
 
-#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
 msgstr "無驗證錯誤"
@@ -2073,7 +2064,6 @@ msgstr ""
 "\n"
 "如果能向 JASP 開發團隊報告錯誤，我們非常感謝您的協助。"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Report"
 msgstr "報告"
@@ -2115,7 +2105,6 @@ msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
 msgstr "啟動試算表編輯器"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Generate Data File"
 msgstr "生成資料檔"
@@ -2124,7 +2113,6 @@ msgctxt "MainWindow|"
 msgid "Find Data File"
 msgstr "尋找資料檔"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Start Editor"
 msgstr "啟動編輯器"
@@ -2171,7 +2159,6 @@ msgctxt "RibbonModel|"
 msgid "R (Beta)"
 msgstr "R(測試版）"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
 msgstr "載入升級時出錯"
@@ -2181,12 +2168,10 @@ msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
 msgstr "為 %1 載入升級時遇到錯誤：%2"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
 msgstr "無法讀取升級"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid ""
 "The necessary upgrades for reading older JASP-files could not be read...\n"
@@ -2198,7 +2183,6 @@ msgstr ""
 "您仍然可以使用 JASP，甚至可以讀取（某些）較舊的檔，但某些選項可能無法正確理"
 "解，並且某些分析可能無法完全載入。"
 
-#, fuzzy
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "檔案已更改"
@@ -2213,7 +2197,6 @@ msgstr ""
 "\n"
 "是否要覆蓋該副本連線檔？"
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr "開始上傳 "
@@ -2234,12 +2217,10 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
 msgstr "開始 osf 操作 "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
 msgstr "上傳 "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
 msgstr "下載 "
@@ -2321,7 +2302,6 @@ msgctxt "ResultMenuModel|"
 msgid "Export Results"
 msgstr "匯出報表文件檔"
 
-#, fuzzy
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
 msgstr "結果警告"
@@ -2560,12 +2540,12 @@ msgctxt "ResourceButtons|"
 msgid "Advanced"
 msgstr "進階設定"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr "對比度 %1"
+msgstr "對比 %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
 msgstr "層 %1"
@@ -2592,12 +2572,10 @@ msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
 msgstr "在%1中有2橫列組件同名"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "None"
 msgstr "無"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
 msgstr "按名稱排序"
@@ -2610,17 +2588,14 @@ msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
 msgstr "按名稱字母 Z-A排序"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
 msgstr "按類型排序"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
 msgstr "按日期排序"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr "按大小排序"
@@ -2641,12 +2616,10 @@ msgctxt "TextInputBase|"
 msgid "Integer Field"
 msgstr "整數欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Number Field"
 msgstr "數位欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "百分比欄位"
@@ -2655,7 +2628,6 @@ msgctxt "TextInputBase|"
 msgid "Integers Field"
 msgstr "整數欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "小數位數"
@@ -2668,22 +2640,19 @@ msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
 msgstr "增加計算直行欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formula Field"
 msgstr "公式欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
 msgstr "公式欄位"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Text Field"
 msgstr "文字欄位"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
 msgstr "值 （%1） 必須為 %2"
@@ -2693,12 +2662,12 @@ msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "%1 的模型來源必須來自因素清單"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
 msgstr "變數清單的來源型態錯誤%1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
 msgstr "未找到變數清單 %1 的相關清單"
@@ -2708,7 +2677,7 @@ msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr "變數清單 %2 的相關列表 （%1）錯誤"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
 msgstr "沒有為 %1 的來源命名"
@@ -2815,12 +2784,10 @@ msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
 msgstr "無法將變數轉換為次序變數：值包含文字或小數。"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Value"
 msgstr "值"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Label"
 msgstr "標籤"
@@ -2848,13 +2815,13 @@ msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "無法載入模組 %1 升級"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr "嘗試從目錄%1 初始化模組時發生錯誤，錯誤為：%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr "嘗試載入模組 %1 時出錯，錯誤為：“%2”"
@@ -2944,7 +2911,7 @@ msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
 msgstr "缺少 %1"
@@ -2975,7 +2942,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
 msgstr "%1 已被刪除！"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
@@ -3017,12 +2984,12 @@ msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "無法從存檔中加載模組描述檔: '%1'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a "
-"href=\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3>版本 %2%3由 [<i></i><br><p></p><br><br><i>X63X] 創建，由 %5 維護。"
 "</i><br><i>有關更多詳細資訊，請參閱網站： <a href=“HTTP：//%6”>%6</a></i><br>"
@@ -3039,7 +3006,7 @@ msgid ""
 "is for: '%2'"
 msgstr "使用了錯誤的升級，正在尋找功能“%1”，但此升級適用於：“%2”"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
@@ -3184,7 +3151,6 @@ msgctxt "jasp-qml-style-example|"
 msgid "Variables"
 msgstr "變數"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
 msgstr "分割"
@@ -3239,7 +3205,7 @@ msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr "在 JASP 啟動期間模組初始化失敗，是否刪除該模組？"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed with the following message:\n"
@@ -3302,10 +3268,9 @@ msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
 msgstr "清除已安裝的模組和套件"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr "這將刪除應用程式數據中的「renv」 和「模組」 資料夾。"
+msgstr "這將刪除應用程式數據中的「renv」 和「Modules」 資料夾。"
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
@@ -3571,7 +3536,6 @@ msgctxt "Database|"
 msgid "Password"
 msgstr ""
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
 msgstr "記得使用者資訊"
@@ -3638,12 +3602,10 @@ msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
 msgstr ""
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "隱藏輸入選項"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "顯示輸入選項"
@@ -3854,12 +3816,11 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "標籤為“%1”的控制元件沒有名稱"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "控制元件沒有名稱"
@@ -3869,7 +3830,7 @@ msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
 msgstr "2 個控制元件有相同的名稱：%1"
@@ -3933,3 +3894,11 @@ msgstr ""
 msgctxt "JASPControl|"
 msgid "Variables Form"
 msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Run Code"
+msgstr "執行語法"
+
+msgctxt "RCommanderWindow|"
+msgid "Clear Output"
+msgstr "清除報表"
