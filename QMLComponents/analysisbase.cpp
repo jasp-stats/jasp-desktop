@@ -156,7 +156,7 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 					{
 						Json::Value &val = boundValue[parent.key];
 						// The value can be a string or an array of strings (for interaction terms)
-						if (val.isString() && parent.value.size() > 0)
+						if (val.isString() && parent.value.size() == 1)
 						{
 							if (val.asString() == parent.value[0])	found = true;
 						}
