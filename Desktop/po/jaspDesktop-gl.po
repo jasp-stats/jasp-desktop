@@ -269,10 +269,6 @@ msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr "Premendo Ctrl+Intro ou F5 tamén vai executar o código"
 
 msgctxt "RCommanderWindow|"
-msgid "Clear Output"
-msgstr "Borrar a saída de resultados"
-
-msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr "Borrado..."
 
@@ -2093,10 +2089,6 @@ msgstr "Fallo ao Cargar Actualizacións"
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
 msgstr "As actualización non poden lerse"
-
-msgctxt "RibbonModel|"
-msgid "R (Beta)"
-msgstr "R (Beta)"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
@@ -4131,3 +4123,32 @@ msgstr "Vista de Táboa"
 msgctxt "JASPControl|"
 msgid "Variables Form"
 msgstr "Formato de Variables"
+
+msgctxt "RCommanderWindow|"
+msgid "Clear output"
+msgstr ""
+
+msgctxt "Form|"
+msgid "Show all options"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "R console"
+msgstr ""
+
+#, fuzzy
+msgctxt "RCommander|"
+msgid " and "
+msgstr " e "
+
+msgctxt "RCommander|"
+msgid "has unselected module"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "has selected module "
+msgstr ""
+
+msgctxt "CurrentDataFile|"
+msgid "Click on the file below to synchronize or use "
+msgstr ""

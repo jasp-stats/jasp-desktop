@@ -2905,12 +2905,12 @@ msgstr ""
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Versão %2</i><br><p>%3</p>>>br>>>br>>i>Criado por %4 e mantido "
-"por %5.</i><br>>i>Veja o website para mais detalhes: <a href=\"http://%6\">"
-"%6</a></i><br>"
+"por %5.</i><br>>i>Veja o website para mais detalhes: <a href=\"http://"
+"%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2927,10 +2927,6 @@ msgstr ""
 "O carregamento do módulo agrupado %1 falhou com o seguinte erro:\n"
 "\n"
 "%2"
-
-msgctxt "RibbonModel|"
-msgid "R (Beta)"
-msgstr "R (Beta)"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -4068,10 +4064,27 @@ msgctxt "JASPControl|"
 msgid "Variables Form"
 msgstr ""
 
-msgctxt "RCommanderWindow|"
-msgid "Run Code"
-msgstr "Executar código"
+msgctxt "Form|"
+msgid "Show all options"
+msgstr ""
 
-msgctxt "RCommanderWindow|"
-msgid "Clear Output"
-msgstr "Limpar Saída"
+msgctxt "RibbonModel|"
+msgid "R console"
+msgstr ""
+
+#, fuzzy
+msgctxt "RCommander|"
+msgid " and "
+msgstr " e "
+
+msgctxt "RCommander|"
+msgid "has unselected module"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "has selected module "
+msgstr ""
+
+msgctxt "CurrentDataFile|"
+msgid "Click on the file below to synchronize or use "
+msgstr ""

@@ -2165,10 +2165,6 @@ msgstr ""
 "\n"
 "%2"
 
-msgctxt "RibbonModel|"
-msgid "R (Beta)"
-msgstr "R (Beta)"
-
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
 msgstr "加载升级时出错"
@@ -3939,3 +3935,28 @@ msgstr "选项卡视图"
 msgctxt "JASPControl|"
 msgid "Variables Form"
 msgstr "变量表单"
+
+msgctxt "Form|"
+msgid "Show all options"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "R console"
+msgstr ""
+
+#, fuzzy
+msgctxt "RCommander|"
+msgid " and "
+msgstr " 和 "
+
+msgctxt "RCommander|"
+msgid "has unselected module"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "has selected module "
+msgstr ""
+
+msgctxt "CurrentDataFile|"
+msgid "Click on the file below to synchronize or use "
+msgstr ""
