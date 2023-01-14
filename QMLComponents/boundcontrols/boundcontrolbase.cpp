@@ -115,37 +115,30 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 	{
 		std::vector<std::string> term;
 		const Json::Value& keyValue = row[key];
-		if (hasMultipleTerms)
+		if (keyValue.isArray())
 		{
-			if (keyValue.isArray())
-			{
-				for (const Json::Value& component : keyValue)
-					term.push_back(component.asString());
-				terms.add(Term(term));
-			}
-			else
-				Log::log() << "Key (" << key << ") bind value is not an array in " << getName() << ": " << value.toStyledString() << std::endl;
+			for (const Json::Value& component : keyValue)
+				term.push_back(component.asString());
 		}
+		else if (keyValue.isString())
+			term.push_back(keyValue.asString());
 		else
+			Log::log() << "Key (" << key << ") bind value is not an array or a string in " << getName() << ": " << value.toStyledString() << std::endl;
+
+		if (term.size() > 0)
 		{
-			if (keyValue.isString())
+			terms.add(Term(term));
+
+			QMap<QString, Json::Value> controlMap;
+			for (auto itr = row.begin(); itr != row.end(); ++itr)
 			{
-				term.push_back(keyValue.asString());
-				terms.add(Term(term));
+				const std::string& name = itr.key().asString();
+				if (name != key)
+					controlMap[tq(name)] = *itr;
 			}
-			else
-				Log::log() << "Key (" << key << ") bind value is not a string in " << getName() << ": " << value.toStyledString() << std::endl;
-		}
 
-		QMap<QString, Json::Value> controlMap;
-		for (auto itr = row.begin(); itr != row.end(); ++itr)
-		{
-			const std::string& name = itr.key().asString();
-			if (name != key)
-				controlMap[tq(name)] = *itr;
+			allControlValues[Term(term).asQString()] = controlMap;
 		}
-
-		allControlValues[Term(term).asQString()] = controlMap;
 	}
 }
 
