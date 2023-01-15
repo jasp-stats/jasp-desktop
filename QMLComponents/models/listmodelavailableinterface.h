@@ -55,6 +55,7 @@ public slots:
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
 			bool sourceLabelsReordered(QString columnName)									override;
 			void removeAssignedModel(ListModelDraggable* model);
+			void clearAssignedModels() { _assignedModels.clear(); }
 
 protected:
 	Terms								_allTerms;
