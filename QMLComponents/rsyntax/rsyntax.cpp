@@ -125,7 +125,7 @@ QString RSyntax::generateSyntax(bool showAllOptions) const
 				if (listControl && !listControl->hasRowComponent() && listControl->containsInteractions())
 					result += _transformInteractionTerms(listControl->model());
 				else
-					result += transformJsonToR(foundValue, defaultValue);
+					result += transformJsonToR(foundValue);
 			}
 		}
 	}
@@ -190,7 +190,7 @@ QString RSyntax::generateWrapper() const
 		}
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
-		result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = " + transformJsonToR(defaultValue, Json::Value::null);
+		result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = " + transformJsonToR(defaultValue);
 
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 		if (listControl)
@@ -350,7 +350,7 @@ bool RSyntax::hasError() const
 	return _form->hasError();
 }
 
-QString RSyntax::transformJsonToR(const Json::Value &json, const Json::Value& comparedValue)
+QString RSyntax::transformJsonToR(const Json::Value &json)
 {
 	QString result;
 
@@ -386,7 +386,6 @@ QString RSyntax::transformJsonToR(const Json::Value &json, const Json::Value& co
 				for (const Json::Value& val : json)
 				{
 					index++;
-					if (!comparedValue.isNull() && comparedValue.isArray() && comparedValue[index] == val) continue;
 					if (!first) result += ", ";
 					result += transformJsonToR(val);
 					first = false;
@@ -401,7 +400,6 @@ QString RSyntax::transformJsonToR(const Json::Value &json, const Json::Value& co
 			for (const std::string& member : json.getMemberNames())
 			{
 				const Json::Value& val = json.get(member, Json::Value::null);
-				if (!comparedValue.isNull() && comparedValue.isObject() && comparedValue.get(member, Json::Value::null) == val) continue;
 				if (!first) result += ", ";
 				result += tq(member) + " = " + transformJsonToR(val);
 				first = false;

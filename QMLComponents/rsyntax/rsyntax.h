@@ -51,7 +51,7 @@ public:
 
 	static QString					FunctionOptionIndent,
 									FunctionLineIndent;
-	static QString					transformJsonToR(const Json::Value& json, const Json::Value& comparedValue = Json::nullValue);
+	static QString					transformJsonToR(const Json::Value& json);
 
 signals:
 	void							somethingChanged();
