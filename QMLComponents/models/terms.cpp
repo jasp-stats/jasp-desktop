@@ -62,61 +62,61 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-void Terms::set(const std::vector<Term> &terms)
+void Terms::set(const std::vector<Term> &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
-void Terms::set(const std::vector<string> &terms)
+void Terms::set(const std::vector<string> &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
-void Terms::set(const std::vector<std::vector<string> > &terms)
+void Terms::set(const std::vector<std::vector<string> > &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
-void Terms::set(const QList<Term> &terms)
+void Terms::set(const QList<Term> &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
-void Terms::set(const Terms &terms)
+void Terms::set(const Terms &terms, bool isUnique)
 {
 	_terms.clear();
 	_hasDuplicate = terms.hasDuplicate();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
-void Terms::set(const QList<QList<QString> > &terms)
+void Terms::set(const QList<QList<QString> > &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const QList<QString> &term : terms)
-		add(Term(term));
+		add(Term(term), isUnique);
 }
 
-void Terms::set(const QList<QString> &terms)
+void Terms::set(const QList<QString> &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const QString &term : terms)
-		add(Term(term));
+		add(Term(term), isUnique);
 }
 
 void Terms::setSortParent(const Terms &parent)
@@ -451,7 +451,7 @@ bool Terms::operator!=(const Terms &terms) const
 	return _terms != terms._terms;
 }
 
-void Terms::set(const QByteArray & array)
+void Terms::set(const QByteArray & array, bool isUnique)
 {
 	QDataStream stream(array);
 
@@ -467,7 +467,7 @@ void Terms::set(const QByteArray & array)
 	{
 		QStringList variable;
 		stream >> variable;
-		add(Term(variable));
+		add(Term(variable), isUnique);
 	}
 }
 

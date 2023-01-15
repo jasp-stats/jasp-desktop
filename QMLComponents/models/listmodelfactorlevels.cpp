@@ -163,7 +163,7 @@ void ListModelFactorLevels::_setAllLevelsCombinations()
 		}		
 	}
 	
-	_allLevelsCombinations.set(allLevelsCombinations);
+	_allLevelsCombinations.set(allLevelsCombinations, false);
 }
 
 QStringList ListModelFactorLevels::_getAllFactors() const
