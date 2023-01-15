@@ -76,7 +76,7 @@ void JASPListControl::_setupSources()
 
 void JASPListControl::setContainsVariables()
 {
-	bool containsVariables = false;
+	bool containsVariables = _containsVariables;
 
 	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
 	if (assignedModel && assignedModel->availableModel())

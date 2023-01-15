@@ -23,6 +23,7 @@
 
 class JASPListControl;
 class VariablesListBase;
+class FactorsFormBase;
 
 class ListModelFactorsForm : public ListModel
 {
@@ -69,7 +70,9 @@ protected:
 		Factor(const QString& _name, const QString& _title, std::vector<std::string> _initTerms = std::vector<std::string>()) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
 	};
+
 	QVector<Factor*>	_factors;
+	FactorsFormBase*	_factorsForm = nullptr;
 	
 };
 

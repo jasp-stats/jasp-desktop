@@ -30,6 +30,7 @@ FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 {
 	_controlType			= ControlType::FactorsForm;
 	_useControlMouseArea	= false;
+	_containsVariables		= true;
 }
 
 void FactorsFormBase::setUpModel()
@@ -40,7 +41,7 @@ void FactorsFormBase::setUpModel()
 
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
-	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
+	_availableVariablesListItem = qobject_cast<JASPListControl *>(availableListVariant.value<QObject *>());
 
 	connect(this, &FactorsFormBase::initializedChanged, this, &FactorsFormBase::countVariablesChanged);
 }

@@ -3,7 +3,7 @@ import JASP.Controls	1.0
 
 AssignedVariablesList
 {
-	property alias editableTitle: titleField.value
+	property alias editableTitle: titleField.displayValue
 	signal titleIsChanged()
 	title: " " //dummy
 

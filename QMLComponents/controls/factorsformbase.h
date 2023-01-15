@@ -46,8 +46,9 @@ public:
 	Q_INVOKABLE void	titleChanged(int index, QString title)						{ _factorsModel->titleChangedSlot(index, title);	}
 	Q_INVOKABLE void	factorAdded(int index, QVariant item);
 
-	int	initNumberFactors()										const				{ return _initNumberFactors;						}
-	int countVariables()										const				{ return _initialized ? _factorsModel->countVariables() : 0; }
+	int					initNumberFactors()						const				{ return _initNumberFactors;						}
+	int					countVariables()						const				{ return _initialized ? _factorsModel->countVariables() : 0; }
+	JASPListControl*	availableVariablesList()				const				{ return _availableVariablesListItem;				}
 
 signals:
 	void initNumberFactorsChanged();
@@ -62,7 +63,7 @@ protected:
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;
 	QString					_availableVariablesListName;
-	JASPControl*			_availableVariablesListItem	= nullptr;
+	JASPListControl*		_availableVariablesListItem	= nullptr;
 	int						_initNumberFactors			= 1;
 };
 
