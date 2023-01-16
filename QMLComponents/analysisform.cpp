@@ -598,7 +598,8 @@ void AnalysisForm::setAnalysisUp()
 
 	_setUpControls();
 
-	const Json::Value & defaultOptions = _analysis->isDuplicate() ? _analysis->boundValues() : _analysis->optionsFromJASPFile();
+	Json::Value defaultOptions = _analysis->boundValues();
+	_analysis->clearOptions();
 	bindTo(defaultOptions);
 
 	blockValueChangeSignal(false, false);

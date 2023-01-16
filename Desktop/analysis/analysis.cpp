@@ -43,7 +43,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 		_moduleVersion = _dynamicModule->version();
 
 	if (data)
-		_optionsDotJASP = *data; //Same story as other constructor
+		setBoundValues(*data); //Same story as other constructor
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
@@ -54,7 +54,6 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	: AnalysisBase(						Analyses::analyses(), duplicateMe				)
 	, _status(							duplicateMe->_status							)
-	, _optionsDotJASP(					duplicateMe->_optionsDotJASP					)
 	, _results(							duplicateMe->_results							)
 	, _resultsMeta(						_results.get(".meta", Json::arrayValue)			)
 	, _imgResults(						duplicateMe->_imgResults						)
@@ -84,7 +83,7 @@ void Analysis::initAnalysis()
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
 
 
-	bool isNewAnalysis = optionsFromJASPFile().size() == 0;
+	bool isNewAnalysis = boundValues().size() == 0;
 
 	if(!_isDuplicate && isNewAnalysis)
 		_status = Empty;
@@ -337,15 +336,6 @@ void Analysis::createForm(QQuickItem* parentItem)
 		emit analysisInitialized();
 	}
 }
-
-void Analysis::destroyForm()
-{
-	AnalysisBase::destroyForm();
-
-	if (_analysisForm)
-		_optionsDotJASP = boundValues();  //So that we can later reload the controls to what we currently have
-}
-
 
 Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)
 {
@@ -1001,8 +991,6 @@ void Analysis::watchQmlForm()
 
 void Analysis::reloadForm()
 {
-	clearOptions();
-
 	QQuickItem* parentForm = nullptr;
 
 	if(readyToCreateForm())

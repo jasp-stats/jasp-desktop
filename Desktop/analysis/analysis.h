@@ -68,8 +68,6 @@ public:
 
 	virtual				~Analysis();
 
-	const Json::Value&	optionsFromJASPFile()		const	override	{ return _optionsDotJASP;	}
-
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
 
@@ -144,8 +142,7 @@ public:
 	bool isErrorState()		const { return status() == ValidationError  || status() == FatalError; }
 
 	std::string				qmlFormPath(bool addFileProtocol = true, bool ignoreReadyForUse = false)	const	override;
-	void Q_INVOKABLE		createForm(QQuickItem* parentItem = nullptr)		override;
-	void					destroyForm()										override;
+	void Q_INVOKABLE		createForm(QQuickItem* parentItem = nullptr)										override;
 
 	performType				desiredPerformTypeFromAnalysisStatus()										const;
 
@@ -220,8 +217,7 @@ private:
 protected:
 	Status						_status				= Empty;
 	bool						_refreshBlocked		= false;
-	Json::Value					_optionsDotJASP		= Json::nullValue, ///< For backward compatibility: _optionsDotJASP = options from (old) JASP file.
-								_results			= Json::nullValue,
+	Json::Value					_results			= Json::nullValue,
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
 								_userData			= Json::nullValue,
