@@ -32,7 +32,8 @@ public:
 
 	virtual void					setAvailableModel(ListModelAvailableInterface *availableModel);
 	ListModelAvailableInterface*	availableModel() const													{ return _availableModel; }
-	
+	bool							checkAllowedTerms(Terms& terms);
+
 public slots:
 	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
 			int  sourceColumnTypeChanged(QString name)												override;
@@ -40,7 +41,7 @@ public slots:
 			bool sourceLabelsReordered(QString columnName)											override;
 
 protected:
-	ListModelAvailableInterface*			_availableModel;
+	ListModelAvailableInterface*			_availableModel = nullptr;
 };
 
 #endif // LISTMODELASSIGNEDINTERFACE_H

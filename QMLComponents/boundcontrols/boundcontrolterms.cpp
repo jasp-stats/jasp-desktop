@@ -94,8 +94,6 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 {
 	Json::Value valueAdjusted = _adjustBindingValue(value);
 
-	BoundControlBase::bindTo(valueAdjusted);
-
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
@@ -117,6 +115,12 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 		else
 			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << valueAdjusted.toStyledString() << std::endl;
 	}
+
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_listView->model());
+	if (assignedModel && !assignedModel->checkAllowedTerms(terms))
+		valueAdjusted = addTermsToOption(Json::Value::null, terms);
+
+	BoundControlBase::bindTo(valueAdjusted);
 
 	_termsModel->initTerms(terms, allControlValues);
 }

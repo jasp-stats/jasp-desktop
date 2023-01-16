@@ -96,3 +96,30 @@ bool ListModelAssignedInterface::sourceLabelsReordered(QString columnName)
 
 	return change;
 }
+
+bool ListModelAssignedInterface::checkAllowedTerms(Terms& terms)
+{
+	if (!_availableModel) return true;
+
+	Terms notAllowedTerms, allowedTerms;
+	for (const Term& term : terms)
+	{
+		if (isAllowed(term))
+			allowedTerms.add(term);
+		else
+			notAllowedTerms.add(term);
+	}
+	if (notAllowedTerms.size() == 0) return true;
+
+	terms.set(allowedTerms);
+	if (!_availableModel->copyTermsWhenDropped())
+		_availableModel->addTerms(notAllowedTerms);
+
+	QString notAllowedTermsStr = notAllowedTerms.asQList().join(", ");
+	if (notAllowedTerms.size() == 1)
+		listView()->addControlWarningTemporary(tr("This variable has been removed, because it is not allowed: %1").arg(notAllowedTermsStr));
+	else
+		listView()->addControlWarningTemporary(tr("These variables have been removed, because they are not allowed: %1").arg(notAllowedTermsStr));
+
+	return false;
+}
