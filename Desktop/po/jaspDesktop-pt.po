@@ -4088,3 +4088,13 @@ msgstr ""
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
 msgstr ""
+
+#, qt-format
+msgctxt "ListModelAssignedInterface|"
+msgid "This variable has been removed, because it is not allowed: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelAssignedInterface|"
+msgid "These variables have been removed, because they are not allowed: %1"
+msgstr ""
