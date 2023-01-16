@@ -46,7 +46,7 @@ public:
 	QVariant			rhs()																const	{ return _rhs;				}
 	QString				name()																const	{ return _name;				}
 
-	QString				toString()															const;
+	QString				toString(bool &isNull)												const;
 	bool				parseRSyntaxOptions(Json::Value &options)							const;
 	RSyntax*			rSyntax()															const	{ return _rSyntax;			}
 	AnalysisForm	*	form()																const;

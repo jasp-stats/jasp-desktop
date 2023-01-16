@@ -81,17 +81,19 @@ QString RSyntax::generateSyntax(bool showAllOptions) const
 {
 	QString result;
 
-	QStringList formulaSources;
-	for (FormulaBase* formula : _formulas)
-		formulaSources.append(formula->modelSources());
-
 	result = _analysisFullName() + "(\n";
 	if (showAllOptions)
 		result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
 
+	QStringList formulaSources;
 	for (FormulaBase* formula : _formulas)
-		result += ",\n" + formula->toString();
+	{
+		bool isNull = false;
+		result += ",\n" + formula->toString(isNull);
+		if (!isNull)
+			formulaSources.append(formula->modelSources());
+	}
 
 	const Json::Value& boundValues = _form->boundValues();
 

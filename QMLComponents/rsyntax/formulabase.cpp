@@ -39,7 +39,7 @@ void FormulaBase::setUp()
 }
 
 // Generate the R Formula
-QString FormulaBase::toString() const
+QString FormulaBase::toString(bool &isNull) const
 {
 	if (!_rSyntax)
 		return "";
@@ -47,14 +47,17 @@ QString FormulaBase::toString() const
 	QString result = _rSyntax->FunctionOptionIndent + _name + " = ";
 	bool isEmpty = true;
 
-	for (FormulaSource* formulaSource : _leftFormulaSources + _rightFormulaSources)
+	for (FormulaSource* formulaSource : _rightFormulaSources)
 		if (isEmpty) isEmpty = formulaSource->isEmpty();
 
 	if (isEmpty)
 	{
+		isNull = true;
 		result += "NULL";
 		return result;
 	}
+
+	isNull = false;
 
 	auto addFormulaTerms = [] (const QVector<FormulaSource*>& formulaSources, bool isLhs) -> QString
 	{
