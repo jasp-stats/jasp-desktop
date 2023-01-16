@@ -364,6 +364,7 @@ void VariablesListBase::_setAllowedVariables()
 			implicitAllowedTypes.insert("nominalText");
 			implicitAllowedTypes.insert("ordinal");
 		}
+		setAllowedColumns(implicitAllowedTypes.values());
 	}
 
 	_variableTypesAllowed.clear();
