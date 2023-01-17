@@ -223,23 +223,44 @@ ScrollView
 				navigateTo:     noBomNative
 			}
 			
+
 			PrefsGroupRect
 			{
-				//Temporarily disabled until https://github.com/jasp-stats/jasp-issues/issues/1842 is resolved
-				visible:	false//WINDOWS
-				enabled:	false//WINDOWS
+				visible:	WINDOWS
+				enabled:	WINDOWS
 				title:		qsTr("Windows workaround")
 				
 				CheckBox
 				{
 					id:					noBomNative
-					label:				qsTr("Assume CSV is in native encoding when no BOM has been specified")
+					label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
 					checked:			preferencesModel.windowsNoBomNative
 					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
 					toolTip:			qsTr("See documentation for more information ")
 
-					KeyNavigation.tab:		synchronizeDataSave
+					KeyNavigation.tab:		codePageSelection
+				}
+				
+				/*ErrorMessage
+				{
+					text: WINDOWS && windowsCodePagesHelper.error ? qsTr("Some problem occured loading the available codepages...") : ""
+				}*/
 
+
+				DropDown
+				{
+					id:			 			codePageSelection
+					enabled:				preferencesModel.windowsNoBomNative && WINDOWS //&& !windowsCodePagesHelper.error
+					toolTip:				qsTr("See documentation for more information ")
+					values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
+					addEmptyValue:			true
+					showEmptyValueAsNormal:	true
+					addLineAfterEmptyValue:	true
+					placeholderText:		qsTr("Choose codepage here")
+					startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
+					onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
+
+					KeyNavigation.tab:		synchronizeDataSave
 				}
 			}
 		}

@@ -149,6 +149,10 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
 
+#ifdef WIN32
+	_windowsWorkaroundCPs	= new CodePagesWindows(this);
+#endif
+
 	new MessageForwarder(this); //We do not need to store this
 
 	startOnlineDataManager();
@@ -440,6 +444,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences			);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface		);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel	);
+	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",	_windowsWorkaroundCPs	); //is nullptr on not-windows!
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered	);
 	_qml->rootContext()->setContextProperty("columnTypesModel",			_columnTypesModel		);
 	_qml->rootContext()->setContextProperty("ribbonModelUncommon",		_ribbonModelUncommon	);

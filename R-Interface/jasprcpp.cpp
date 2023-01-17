@@ -56,8 +56,6 @@ static logWriteDef				_logWriteFunction		= nullptr;
 static sendFuncDef				_sendToDesktop			= nullptr;
 static systemDef				_systemFunc				= nullptr;
 static libraryFixerDef			_libraryFixerFunc		= nullptr;
-static EnDecodeDef				_stringNativeToUtf8		= nullptr;
-
 static std::string				_R_HOME = "";
 
 bool shouldCrashSoon = false; //Simply here to allow a developer to force a crash
@@ -69,16 +67,14 @@ extern char * R_TempDir;
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
-	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
-	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultFont,
-	EnDecodeDef nativeToUtf8, const char * tempDir)
+	logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc,
+	libraryFixerDef libraryFixerFunc, const char* resultFont, const char * tempDir)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
 	_sendToDesktop			= sendToDesktopFunction;
 	_systemFunc				= systemFunc;
 	_libraryFixerFunc		= libraryFixerFunc;
-	_stringNativeToUtf8		= nativeToUtf8;
 
 	jaspRCPP_logString("Creating RInside.\n");
 

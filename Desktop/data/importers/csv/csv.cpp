@@ -18,7 +18,7 @@
 #include "csv.h"
 
 #include <boost/algorithm/string.hpp>
-
+#include "utilities/codepageswindows.h"
 
 #include <cstring>
 #include <stdexcept>
@@ -137,14 +137,12 @@ void CSV::determineEncoding()
 	}
 	else
 	{
-/* Temporarily disabled until https://github.com/jasp-stats/jasp-issues/issues/1842 is resolved
 #ifdef _WIN32
 		//If we are on windows and there is no BOM, then we can assume it is encoded in the native locale. Unless the user decides otherwise
 		if(Settings::value(Settings::WINDOWS_NO_BOM_NATIVE).toBool())
 			_encoding = Native;
 		else
 #endif
-*/
 		{
 			// tab, lf, cr, space, double-quote, single-quote, comma, semi-colon
 	
@@ -244,11 +242,11 @@ bool CSV::readUtf8()
 	case Native:
 	{
 		std::string raw	(&_rawBuffer[_rawBufferStartPos], &_rawBuffer[_rawBufferEndPos]),
-					utf8(QString::fromLocal8Bit(raw.c_str()).toStdString());
+					utf8(CodePagesWindows::convertCodePageStrToUtf8(raw));
 		
 		std::memcpy(&_utf8Buffer[_utf8BufferEndPos], utf8.c_str(), utf8.size());
 
-		_utf8BufferEndPos += _rawBufferEndPos - _rawBufferStartPos;
+		_utf8BufferEndPos += utf8.size();
 		_rawBufferStartPos = _rawBufferEndPos;
 		
 		break;
