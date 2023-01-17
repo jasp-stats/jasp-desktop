@@ -35,7 +35,6 @@ FocusScope
 				left:		parent.left
 				right:		parent.right
 				bottom:		parent.bottom
-				margins:	parent.border.width
 			}
 
 			JASPScrollBar
@@ -59,7 +58,6 @@ FocusScope
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
 				boundsBehavior: Flickable.StopAtBounds
-				width:			parent.width - verticalScrollbar.breadth
 
 				anchors
 				{
@@ -67,8 +65,8 @@ FocusScope
 					//rightMargin:	verticalScrollbar.width
 					top:			parent.top
 					left:			parent.left
+					right:			verticalScrollbar.left
 					bottom:			parent.bottom
-					margins:		formsBackground.border.width
 				}
 
 				Behavior on contentY
