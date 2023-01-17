@@ -8,7 +8,6 @@ FocusScope
 {
 	id:				analysisFormsFocusScope
 	implicitWidth:	analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.visibleBreadth : 0
-	width:			implicitWidth
 
 	Behavior on width { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
@@ -35,7 +34,6 @@ FocusScope
 				left:		parent.left
 				right:		parent.right
 				bottom:		parent.bottom
-				margins:	parent.border.width
 			}
 
 			JASPScrollBar
@@ -59,7 +57,6 @@ FocusScope
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
 				boundsBehavior: Flickable.StopAtBounds
-				width:			parent.width - verticalScrollbar.breadth
 
 				anchors
 				{
@@ -67,8 +64,8 @@ FocusScope
 					//rightMargin:	verticalScrollbar.width
 					top:			parent.top
 					left:			parent.left
+					right:			verticalScrollbar.left
 					bottom:			parent.bottom
-					margins:		formsBackground.border.width
 				}
 
 				Behavior on contentY

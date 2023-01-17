@@ -171,7 +171,7 @@ Item
 		onArrowClicked:			analysesModel.visible = !analysesModel.visible
 		toolTipDrag:			hasData	? (handleAnalysesResults.pointingLeft	? qsTr("Resize data/results")	: qsTr("Drag to show data")) : ""
 		toolTipArrow:			analysesModel.visible							? qsTr("Hide input options")	: qsTr("Show input options")
-		removeLeftBorder:		!analysesModel.visible
+		removeLeftBorder:		true //!analysesModel.visible
 
 		Binding
 		{
