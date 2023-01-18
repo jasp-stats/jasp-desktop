@@ -94,6 +94,9 @@ EngineSync::~EngineSync()
 	_moduleEngines.clear();
 	_engines.clear();
 
+	for(auto* channel : _channels)
+		delete channel;
+	_channels.clear();
 
 	delete _rCmderChannel;
 	_rCmderChannel	= nullptr;

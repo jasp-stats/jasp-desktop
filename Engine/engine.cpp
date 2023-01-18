@@ -133,12 +133,8 @@ void Engine::initialize()
 
 Engine::~Engine()
 {
-	TempFiles::deleteAll();
-
 	delete _channel; //shared memory files will be removed in jaspDesktop
 	_channel = nullptr;
-
-
 }
 
 void Engine::run()

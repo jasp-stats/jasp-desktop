@@ -118,8 +118,13 @@ void SharedMemory::deleteDataSet(DataSet *dataSet)
 	_memory->destroy_ptr(dataSet);
 }
 
-void SharedMemory::unloadDataSet()
+void SharedMemory::unloadDataSet(bool owner)
 {
+	if (owner)
+	{
+		interprocess::shared_memory_object::remove(_memoryName.c_str());
+		return;
+	}
 	Log::log() << "SharedMemory::unloadDataSet " << _memoryName << ( _memory ? "" : " but it wasn't loaded.") << std::endl;
 	delete _memory;
 	_memory = nullptr;
