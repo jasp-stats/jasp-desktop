@@ -31,5 +31,5 @@ MenuButton
 	buttonPadding:		2 * preferencesModel.uiScale
 	_scaledDim:			22 * preferencesModel.uiScale
 	Layout.alignment: 	Qt.AlignRight
-	onClicked: 			helpModel.showOrToggleParticularPageForAnalysis(myAnalysis, helpPage)
+	onClicked: 			helpModel.showOrToggleParticularPageForAnalysis(analysis, helpPage)
 }
