@@ -306,7 +306,7 @@ void EngineSync::start(int )
 	connect(timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles,	Qt::QueuedConnection);
 
 	timerProcess->start(50);
-	timerBeat->start(30000);
+	timerBeat->start(50);
 }
 
 void EngineSync::restartEngines()

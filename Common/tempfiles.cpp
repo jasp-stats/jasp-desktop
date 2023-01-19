@@ -156,7 +156,7 @@ void TempFiles::deleteOrphans()
 					long modTime	= Utils::getFileModificationTime(Utils::osPath(p));
 					long now		= Utils::currentSeconds();
 
-					if (now - modTime > 70)
+					if (now - modTime > 24 * 3600)
 					{
 						Log::log() << "Try to delete: " << fileName << std::endl;
 						std::filesystem::remove(p, error);
@@ -179,7 +179,7 @@ void TempFiles::deleteOrphans()
 					long modTime	= Utils::getFileModificationTime(Utils::osPath(statusFile));
 					long now		= Utils::currentSeconds();
 
-					if (now - modTime > 70)
+					if (now - modTime > 24 * 3600)
 					{
 						std::filesystem::remove_all(p, error);
 
