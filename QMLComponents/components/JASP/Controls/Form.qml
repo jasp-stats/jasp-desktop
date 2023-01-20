@@ -24,7 +24,7 @@ AnalysisForm
 {
 	id					: form
 	implicitWidth		: jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
-	implicitHeight		: formContent.implicitHeight + (jaspTheme.formMargin * 2)
+	implicitHeight		: formContent.height + (jaspTheme.formMargin * 2)
 	width				: implicitWidth
 	height				: implicitHeight
 	//errorMessagesItem	: errorMessagesBox
@@ -66,7 +66,7 @@ AnalysisForm
 	{
 		id:				formContent
 		width:			parent.width
-		implicitHeight: oldFileMessagesBox.implicitHeight + errorMessagesBox.implicitHeight + warningMessagesBox.implicitHeight + rSyntaxElement.implicitHeight + contentArea.implicitHeight
+		height:			oldFileMessagesBox.height + errorMessagesBox.height + warningMessagesBox.height + rSyntaxElement.height + contentArea.implicitHeight
 		anchors
 		{
 			top:		form.top

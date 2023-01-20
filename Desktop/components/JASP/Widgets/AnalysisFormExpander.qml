@@ -533,7 +533,7 @@ DropArea
 			Item
 			{
 				id:					loaderAndError
-				implicitHeight:		formParent.loaded ? formParent.implicitHeight : formParent.error != "" ? errorRect.height * preferencesModel.uiScale : 0
+				implicitHeight:		formParent.loaded ? formParent.height : formParent.error != "" ? errorRect.height * preferencesModel.uiScale : 0
 				visible:			expanderButton.expanded && (formParent.loaded || formParent.error != "")
 
 				anchors
@@ -570,7 +570,7 @@ DropArea
 				Item
 				{
 					id:					formParent
-					implicitHeight: 	myForm ? myForm.implicitHeight : 0
+					height:				myForm ? myForm.implicitHeight : 0
 
 					property string error:		!myAnalysis ? "No Analysis!\n" : myAnalysis.qmlError
 					property bool	loaded:		myForm
