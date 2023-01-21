@@ -2865,11 +2865,6 @@ msgid "Windows workaround"
 msgstr "Windowsの回避策"
 
 msgctxt "PrefsData|"
-msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr ""
-"BOM が指定されていない場合、CSV がネイティブ エンコードであると仮定します"
-
-msgctxt "PrefsData|"
 msgid "See documentation for more information "
 msgstr "詳しくはドキュメントをご覧ください "
 
@@ -4061,4 +4056,12 @@ msgstr ""
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is the selected codepage, when no BOM is specified."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Choose codepage here"
 msgstr ""

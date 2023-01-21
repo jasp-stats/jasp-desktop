@@ -3273,10 +3273,6 @@ msgid "Windows workaround"
 msgstr "Windows系統特別設定"
 
 msgctxt "PrefsData|"
-msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr "如果資料檔案無 BOM 字元， 採用本機編碼儲存CSV 檔"
-
-msgctxt "PrefsData|"
 msgid "See documentation for more information "
 msgstr "請參閱文件以瞭解更多資訊 "
 
@@ -3924,4 +3920,12 @@ msgstr ""
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is the selected codepage, when no BOM is specified."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Choose codepage here"
 msgstr ""

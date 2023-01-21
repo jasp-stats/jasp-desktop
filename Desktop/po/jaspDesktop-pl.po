@@ -3418,10 +3418,6 @@ msgid "Windows workaround"
 msgstr "Zgodność z systemem Windows"
 
 msgctxt "PrefsData|"
-msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr "Przyjmij, że CSV jest kodowane natywnie, gdy BOM nie zostało określone"
-
-msgctxt "PrefsData|"
 msgid "See documentation for more information "
 msgstr "Zobacz dokumentację, aby uzyskać więcej informacji "
 
@@ -4137,4 +4133,12 @@ msgstr ""
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is the selected codepage, when no BOM is specified."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Choose codepage here"
 msgstr ""

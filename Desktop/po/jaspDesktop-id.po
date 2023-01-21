@@ -3232,10 +3232,6 @@ msgid "Windows workaround"
 msgstr ""
 
 msgctxt "PrefsData|"
-msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr ""
-
-msgctxt "PrefsData|"
 msgid "See documentation for more information "
 msgstr ""
 
@@ -3874,4 +3870,12 @@ msgstr ""
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is the selected codepage, when no BOM is specified."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Choose codepage here"
 msgstr ""
