@@ -219,17 +219,23 @@ DropArea
 
 			onExpandedChanged: { if(!shouldExpand) firstExpansion = false; }
 
+			SequentialAnimation {
+				id: postExpansionTasksHandler
+				PauseAnimation { duration: 100 }
+				ScriptAction { script:  expanderButton.postExpansionTasks(10000); }
+			}
+
 			function postExpansionTasks(scrollMargin = 0)
 			{
-					if(typeof backgroundFlickable === 'undefined')
-						return;
+				if(typeof backgroundFlickable === 'undefined')
+					return;
 
-					expanded = true;
-					backgroundFlickable.scrollToElement(expanderButton, scrollMargin);
-					if(firstExpansion) //only focus first item on analysis creation
-						formParent.nextItemInFocusChain().forceActiveFocus();
-					else
-						draggableItem.forceActiveFocus();
+				expanded = true;
+				backgroundFlickable.scrollToElement(expanderButton, scrollMargin);
+				if(firstExpansion) //only focus first item on analysis creation
+					formParent.nextItemInFocusChain().forceActiveFocus();
+				else
+					draggableItem.forceActiveFocus();
 			}
 
 			Connections {
@@ -238,7 +244,7 @@ DropArea
 				function onImplicitHeightChanged()
 				{
 					if (expanderButton.shouldExpand && !expanderButton.expanded)
-						Qt.callLater(expanderButton.postExpansionTasks, 10000);
+						postExpansionTasksHandler.start();
 					else if (!expanderButton.shouldExpand && expanderButton.expanded)
 						expanderButton.expanded = false;
 				}
@@ -273,7 +279,6 @@ DropArea
 						Qt.callLater(expanderButton.postExpansionTasks);
 					else
 						expanderButton.expanded = false;
-
 				} //expansion ended
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
