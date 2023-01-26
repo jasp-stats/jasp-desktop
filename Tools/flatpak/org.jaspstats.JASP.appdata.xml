@@ -35,9 +35,47 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.17.0" date="2023-01-04">
+	<release version="0.17.0" date="2023-01-26">
 		<description>
-			JASP beta test 0.17.0
+JASP Release Notes 0.17.0
+New features and improvements
+	• Syntax mode
+	• Improved keyboard navigation (#4943)
+	• New module: Acceptance Sampling
+	• Structural Equation Modeling
+		◦ New analysis: Partial Least Squares SEM (#354)
+		◦ T-sized adjusted RMSEA and CFI (#1837)
+    • Network
+		◦ New analysis: Bayesian network analysis (#1864)
+    • Meta-Analyses
+		◦ New analysis: Bayesian Penalized Meta-Analysis (Utrecht project)
+    • JAGS
+		◦ Customizable Inference added (#83)
+            Show tables and plots for specific variables or subsets of variables.
+            Order the shown variable in the tables and plots by their posterior mean, posterior median, or a custom order.
+            Compute and plot custom intervals for posterior distributions (CRI, HDI, or the probability of the area between two user-specified values).
+		◦ Save posterior samples generated to external file (#76)
+		◦ Improved for large data files (#1920)
+    • Regression
+		◦ Added multinomial, ordinal and firth logistic regression (#179)
+		◦ Improved performance for logistic regression (#1814)
+    • Descriptives
+		◦ Added confidence intervals for mean, standard deviation, and variance (#123)
+    • Distributions
+		◦ Confidence intervals added to Q-Q and P-P plots (#82)
+    • Prophet
+		◦ Prediction is optional (#60)
+    • Engines and R-library separation behavior improved (#4726)
+    • Improved preference help file (#4881)
+    • Module selection in R commander (#1912)
+    • All plots can now be saved as .pptx, .pdf, and .eps (#113, #1910)
+    • Added documentation on how to connect to Snowflake warehouse (#1888)
+
+Bug fixes
+    • Show strength in centrality table and plot in the network analysis module (#1692)
+    • Variance-covariance matrix could not always be calculated in SEM (#1845)
+    • Errors when using flexplot in visual modeling module (#1327, #1849)
+    • Temporarily disable no-bom-native-codepage workaround for CSVs on windows. Use utf-8 whenever you can to avoid this problem.
 		</description>
 	</release>
 	<release version="0.16.4" date="2022-09-29">
