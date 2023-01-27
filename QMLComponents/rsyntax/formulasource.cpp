@@ -620,7 +620,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 	for (auto sourceMainTermsIt : sourceMainTermsMap)
 		_addTermsToOptions(sourceMainTermsIt.first, options, sourceMainTermsIt.second);
 
-	options[fq(_sourceName)] = _randomEffects.componentsList->getTableValueOptions(randomTermsMap);
+	options[fq(_sourceName)] = _randomEffects.componentsList->getJsonFromComponentValues(randomTermsMap);
 
 	return remainingParsedTerms;
 }
