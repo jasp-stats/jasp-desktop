@@ -142,7 +142,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 void RibbonModel::addSpecialRibbonButtonsLate()
 {
-	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R console")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console"))));
+	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R console")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console"))), size_t(RowType::Analyses));
 }
 
 void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)
