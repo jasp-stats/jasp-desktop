@@ -188,9 +188,13 @@ void ComponentsListBase::termsChangedHandler()
 	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 }
 
-Json::Value ComponentsListBase::getTableValueOptions(const ListModel::RowControlsValues &termsWithComponentValues)
+Json::Value ComponentsListBase::getJsonFromComponentValues(const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _getTableValueOption(_termsModel->terms(), termsWithComponentValues, fq(_optionKey), containsInteractions());
+	Terms terms;
+	for (const QString& term : termsWithComponentValues.keys())
+		terms.add(Term::readTerm(term));
+
+	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKey), containsInteractions());
 }
 
 void ComponentsListBase::addItemHandler()
