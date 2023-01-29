@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-01-29 03:06+0000\n"
+"PO-Revision-Date: 2023-01-30 16:45+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -3978,4 +3978,4 @@ msgstr "在未指定 BOM 的情况下，假设 CSV 采用如下编码。"
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "在这里选择代码页"
