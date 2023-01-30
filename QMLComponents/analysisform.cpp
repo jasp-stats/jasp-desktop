@@ -366,7 +366,7 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
 			if (availableModel)
 			{
-				if (defaultOptions != Json::nullValue || _analysis->isDuplicate())
+				if (defaultOptions.size() != 0 || _analysis->isDuplicate())
 					availableModel->resetTermsFromSources(false);
 				else
 					availableModelsToBeReset.push_back(availableModel);
@@ -376,7 +376,7 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
-			Json::Value optionValue =  defaultOptions != Json::nullValue ? defaultOptions[name] : Json::nullValue;
+			Json::Value optionValue =  defaultOptions.size() != 0 ? defaultOptions[name] : Json::nullValue;
 
 			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 			{
