@@ -1,4 +1,4 @@
-Subject,Gender,Region,Education,Lo D, Lo F,Lo D, Hi F,Hi D, Lo F,Hi D, Hi F
+Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi F"
 1,Female,North,some,6,6,9,10
 2,Female,North,advance,10,,10,10
 3,Female,Europe,college,5,10,10,10
