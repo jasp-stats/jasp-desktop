@@ -64,6 +64,7 @@ protected:
 
 	QSet<RadioButtonBase*>					_buttons;
 	RadioButtonBase*						_selectedButton = nullptr;
+	bool									_initialized = false;
 	
 };
 

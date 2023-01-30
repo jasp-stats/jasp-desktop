@@ -32,7 +32,10 @@ public:
 
 public slots:
 	Q_INVOKABLE void registerWithParent();
-	Q_INVOKABLE void clicked();
+	Q_INVOKABLE void clickHandler();
+
+signals:
+	void clicked();
 
 protected slots:
 	void valueChangeHandler();

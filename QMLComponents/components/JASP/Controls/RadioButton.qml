@@ -48,13 +48,17 @@ RadioButtonBase
 	property bool	enableChildrenOnChecked: true
 	property bool	indentChildren:			true
 
+	function click() { clicked(); }
+	onClicked: { radioButton.clickHandler(); }
+
+
 	RadioButton
 	{
 		id:					control
 		padding:			jaspTheme.jaspControlPadding
 		focus:				true
 
-		onClicked:			{  radioButton.clicked(); }
+		onCheckedChanged:	if (checked) radioButton.clicked()
 
 		indicator: Rectangle
 		{

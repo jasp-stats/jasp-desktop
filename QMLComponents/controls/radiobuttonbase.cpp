@@ -49,7 +49,7 @@ void RadioButtonBase::registerWithParent()
 	}
 }
 
-void RadioButtonBase::clicked()
+void RadioButtonBase::clickHandler()
 {
 	if (_group)
 		_group->clickHandler(this);
