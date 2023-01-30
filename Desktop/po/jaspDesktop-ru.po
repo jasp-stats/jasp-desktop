@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-01-30 16:45+0000\n"
+"PO-Revision-Date: 2023-02-01 03:02+0000\n"
 "Last-Translator: fedder <fedor.derish@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "ru/>\n"
@@ -819,7 +819,7 @@ msgstr "Показать точные p-значения"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr "Укажите количество десятичных знаков после запятой"
+msgstr "Количество десятичных знаков после запятой"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
@@ -827,7 +827,7 @@ msgstr "Параметры графика"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr "Укажите PPI (количество пикселей на дюйм) для отображения графиков: "
+msgstr "Указать количество пикселей на дюйм (PPI) для отображения графиков: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
@@ -1591,15 +1591,15 @@ msgstr "Добро пожаловать в JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr "Новый путь делать статистику: Свободно, Удобно и Гибко"
+msgstr "Новый путь делать статистику: Бесплатно, Понятно и Гибко"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr "Свободно:"
+msgstr "Бесплатно:"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr "Удобно:"
+msgstr "Понятно:"
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
@@ -2452,7 +2452,7 @@ msgstr "Экспорт данных"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "Синхронизация данных"
+msgstr "Синхронизация"
 
 msgctxt "ActionButtons|"
 msgid "Close"
