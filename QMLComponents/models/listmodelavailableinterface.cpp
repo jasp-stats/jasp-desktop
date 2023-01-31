@@ -111,6 +111,8 @@ void ListModelAvailableInterface::sourceNamesChanged(QMap<QString, QString> map)
 {
 	ListModelDraggable::sourceNamesChanged(map);
 
+	// Not only the terms must be changed, but also the allTerms: allTerms keeps all terms that an
+	// available model can have: this is its own terms and the terms assigned in its assigned models.
 	QMap<QString, QString>	allTermsChangedMap;
 	QMapIterator<QString, QString> it(map);
 
