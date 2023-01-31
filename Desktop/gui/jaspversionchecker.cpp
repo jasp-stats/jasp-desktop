@@ -50,14 +50,20 @@ void JASPVersionChecker::downloadVersionFinished()
 
 	if(version != "")
 	{
+		try
+		{
+			Version cv		= AppInfo::version,
+					lv		= version.toStdString();
+			long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
+					latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
 
-		Version cv		= AppInfo::version,
-				lv		= version.toStdString();
-		long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
-				latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
-
-		if (latest > cur)
-			emit showDownloadButton(downloadfile);
+			if (latest > cur)
+				emit showDownloadButton(downloadfile);
+		}
+		catch(std::runtime_error& e)
+		{
+			Log::log() << "Unable to parse version number:\n " << e.what() << std::endl;
+		}
 	}
 
 	if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
