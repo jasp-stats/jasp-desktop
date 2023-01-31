@@ -73,7 +73,14 @@ void JASPVersionChecker::downloadVersionFinished()
 void JASPVersionChecker::downloadIssuesFinished()
 {
 	Log::log() << "New version of knownIssues downloaded!" << std::endl;
-	KnownIssues::issues()->loadJson(_networkReply->readAll().trimmed(), true);
+	try
+	{
+		KnownIssues::issues()->loadJson(_networkReply->readAll().trimmed(), true);
+	}
+	catch (...)
+	{
+		Log::log() << "Something went wrong parsing the known issues" << std::endl;
+	}
 
 	deleteLater(); //Remove yourself!
 }
