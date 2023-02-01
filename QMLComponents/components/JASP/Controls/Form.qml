@@ -223,6 +223,7 @@ AnalysisForm
 				anchors.bottom:		generateWrapperButton.visible ? generateWrapperButton.bottom : undefined
 				anchors.right:		rSyntaxElement.right
 				label:				qsTr("Show all options")
+				isBound:			false
 				checked:			showAllROptions
 				onClicked:			setShowAllROptions(!showAllROptions)
 			}
