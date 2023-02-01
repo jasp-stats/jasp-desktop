@@ -59,6 +59,9 @@ void JASPVersionChecker::downloadVersionFinished()
 
 			if (latest > cur)
 				emit showDownloadButton(downloadfile);
+
+			if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
+			else deleteLater(); //Remove yourself!
 		}
 		catch(std::runtime_error& e)
 		{
@@ -66,8 +69,6 @@ void JASPVersionChecker::downloadVersionFinished()
 		}
 	}
 
-	if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
-	else												deleteLater(); //Remove yourself!
 }
 
 void JASPVersionChecker::downloadIssuesFinished()
