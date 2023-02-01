@@ -196,6 +196,9 @@ void TextInputBase::setUp()
 		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
 
+	if (_value.isNull()) // If the value is not directly set, use the default value.
+		setValue(_defaultValue);
+
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
 }
 
@@ -348,12 +351,6 @@ Json::Value TextInputBase::_getJsonValue(const QVariant& value) const
 
 void TextInputBase::valueChangedSlot()
 {
-	if (!isBound() && _inputType != TextInputType::FormulaType && _inputType != TextInputType::FormulaArrayType)
-		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
-		// possibly making the QML item of the TextField invalid (as this TextField depends on the TabView model).
-		// But as this TextField is not bound, and is not a Formula, we don't need to fetch the value of the item anyway.
-		return;
-
 	setValue(property("displayValue"));
 }
 

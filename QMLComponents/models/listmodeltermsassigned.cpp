@@ -73,31 +73,62 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues& rowValues)
 {
 	Terms termsToSendBack;
-	Terms newTerms = terms();
-	size_t maxRows = size_t(listView()->maxRows());
+	int maxRows = listView()->maxRows(); // maxRows == -1 means no maximum
+
+	if (termsToAdd.size() == 0)
+		return termsToSendBack;
+	else if (maxRows > 0 && dropItemIndex >= maxRows)
+		return termsToAdd;
+
+	Terms newTerms;
 
 	if (dropItemIndex < 0 && maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
-	if (dropItemIndex >= 0 && dropItemIndex < rowCount())
-		newTerms.insert(dropItemIndex, termsToAdd);
-	else
-		newTerms.add(termsToAdd);
-
-	if (newTerms.size() > maxRows)
-	{
-		for (size_t i = maxRows; i < newTerms.size(); i++)
-			termsToSendBack.add(newTerms.at(i));
-		newTerms.remove(maxRows, newTerms.size() - maxRows);
-	}
-
-	beginResetModel();
 
 	for (const auto& it : rowValues.toStdMap())
 		_rowControlsValues[it.first] = it.second;
 
-	_setTerms(newTerms);
+	if (dropItemIndex == 0 && maxRows == termsToAdd.size())
+	{
+		// If we replace all the items, use beginResetModel
+		termsToSendBack = terms();
+		newTerms = termsToAdd;
 
-	endResetModel();
+		beginResetModel();
+		_setTerms(newTerms);
+		endResetModel();
+	}
+	else
+	{
+		// We try to use beginInsertRows/endInsetRows (and beginRemoveRows/endRemoveRows) to set the values instead of beginResetModel: this is indeed the right way to use QAbstractItemModel
+		// By using beginResetModel/endResetModel all QML objects of the list are removed and rebuild again. This should not be a problem, apart from one special case:
+		// in a TabView, if the user changes the title of a Tab and clicks direclty the '+' button to add another tab, adding a new tab will be done first, and will add a new
+		// term to the model: if the model of the TabView is reset, the TextField controls that handle the titles of the Tabs are destroyed and recreated. As the TextField control
+		// that was used to change the title is destroyed, the signal that changes this title is not received, and the title gets back its old value.
+		newTerms = terms();
+		if (dropItemIndex >= 0 && dropItemIndex < terms().size())
+			newTerms.insert(dropItemIndex, termsToAdd);
+		else
+		{
+			dropItemIndex = terms().size();
+			newTerms.add(termsToAdd);
+		}
+
+		beginInsertRows(QModelIndex(), dropItemIndex, dropItemIndex + termsToAdd.size() - 1);
+		_setTerms(newTerms);
+		endInsertRows();
+
+		if (maxRows > 0 && newTerms.size() > maxRows)
+		{
+			for (size_t i = maxRows; i < newTerms.size(); i++)
+				termsToSendBack.add(newTerms.at(i));
+			newTerms.remove(maxRows, newTerms.size() - maxRows);
+
+			beginRemoveRows(QModelIndex(), maxRows, maxRows + termsToSendBack.size());
+			_setTerms(newTerms);
+			endRemoveRows();
+		}
+	}
 
 	return termsToSendBack;
 }

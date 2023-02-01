@@ -47,6 +47,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(this,					&AnalysisForm::formCompletedSignal,	this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+	connect(this,					&AnalysisForm::showAllROptionsChanged, this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
@@ -171,6 +172,12 @@ void AnalysisForm::addControl(JASPControl *control)
 		else
 			_controls[name] = control;
 	}
+	else if (name.isEmpty())
+	{
+		control->setUp();
+		control->setInitialized();
+	}
+
 }
 
 void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
@@ -255,7 +262,6 @@ void AnalysisForm::_setUp()
 {
 	QList<JASPControl*> controls = _controls.values();
 
-	// set the order of the BoundItems according to their dependencies (for binding purpose)
 	for (JASPControl* control : controls)
 		control->setUp();
 

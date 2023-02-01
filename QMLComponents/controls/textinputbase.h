@@ -88,8 +88,8 @@ private:
 							_afterLabel;
 
 	bool					_parseDefaultValue	= true;
-	QVariant				_defaultValue,
-							_value;
+	QVariant				_defaultValue		= "",
+							_value;				// value should not be set: we can then make the difference whether the QML sets directly the value or not
 	bool					_hasScriptError		= false;
 };
 
