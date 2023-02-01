@@ -32,7 +32,6 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 
 void RadioButtonsGroupBase::setUp()
 {
-	_initialized = true;
 	for (auto* button : qAsConst(_buttons))
 	{
 		if (checkedButton() == nullptr)
@@ -50,7 +49,7 @@ void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 		addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 	else
 	{
-		if(_initialized)
+		if(initialized())
 		{
 			if (checkedButton() == nullptr)
 				_setCheckedButton(button);
