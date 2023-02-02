@@ -41,6 +41,7 @@ public:
 	Json::Value		createJson()								const	override;
 	void			bindTo(const Json::Value& value)					override;
 	ListModel*		model()										const	override { return _termsModel; }
+	void			setUp()												override;
 	void			setUpModel()										override;
 
 	QString			newItemName()						const			{ return _newItemName;			}

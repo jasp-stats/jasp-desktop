@@ -51,6 +51,24 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	_termsModel->initTerms(terms, allControlValues);
 }
 
+void ComponentsListBase::setUp()
+{
+	JASPListControl::setUp();
+
+	QQuickItem* ancestor = parentItem();
+	while (ancestor)
+	{
+		JASPControl* control = qobject_cast<JASPControl*>(ancestor);
+		if (control && control->dependsOnDynamicComponents())
+		{
+			control->addDependency(this);
+			return;
+		}
+
+		ancestor = ancestor->parentItem();
+	}
+}
+
 Json::Value ComponentsListBase::createJson() const
 {
 	std::string keyName = fq(_optionKey);

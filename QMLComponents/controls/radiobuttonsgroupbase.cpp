@@ -32,13 +32,14 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 
 void RadioButtonsGroupBase::setUp()
 {
-	for (auto* button : qAsConst(_buttons))
+	for (auto* button : _buttons)
 	{
-		if (checkedButton() == nullptr)
-			_setCheckedButton(button);
 		if (button->property("checked").toBool())
 			_setCheckedButton(button);
 	}
+	if (!checkedButton() && _buttons.size() > 0)
+		_setCheckedButton(*(_buttons.begin()));
+
 	JASPControl::setUp();
 }
 
@@ -49,14 +50,13 @@ void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 		addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 	else
 	{
+		_buttons.insert(button);
 		if(initialized())
 		{
-			if (checkedButton() == nullptr)
-				_setCheckedButton(button);
-			if (button->property("checked").toBool())
+			// Case when Radio Button is dynamically added
+			if (checkedButton() == nullptr || button->property("checked").toBool())
 				_setCheckedButton(button);
 		}
-		_buttons.insert(button);
 		emit buttonsChanged();
 	}
 }
@@ -129,12 +129,19 @@ void RadioButtonsGroupBase::clickHandler(RadioButtonBase* button)
 void RadioButtonsGroupBase::_setCheckedButton(RadioButtonBase* button)
 {
 	QString buttonName = button->name();
+
+	if (!_buttons.contains(button))
+	{
+		Log::log() << "Set Checked button of a radio button " << buttonName << " that is not registered" << std::endl;
+		return;
+	}
+
 	if (_selectedButton != button)
 	{
-		if (_buttons.contains(_selectedButton))
+		if (_selectedButton && _buttons.contains(_selectedButton)) // The selected button might be unregistered and set somewhere else...
 			_selectedButton->setProperty("checked", false);
+		_selectedButton = button; // Setting the checked porperty will call _setCheckedButton: so set first the _selectedButton so that it does set unnecessarily the button
 		button->setProperty("checked", true);
-		_selectedButton = button;
 		emit valueChanged();
 		setBoundValue(fq(buttonName));
 	}

@@ -63,7 +63,7 @@ protected:
 
 
 	QSet<RadioButtonBase*>					_buttons;
-	RadioButtonBase*						_selectedButton = nullptr;	
+	RadioButtonBase*						_selectedButton = nullptr;
 };
 
 #endif // RADIOBUTTONSGROUPBASE_H
