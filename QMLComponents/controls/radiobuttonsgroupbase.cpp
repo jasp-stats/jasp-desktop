@@ -28,6 +28,7 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 	: JASPControl(item), BoundControlBase(this)
 {
 	_controlType = ControlType::RadioButtonGroup;
+	_dependsOnDynamicComponents = true;
 }
 
 void RadioButtonsGroupBase::setUp()
@@ -46,7 +47,7 @@ void RadioButtonsGroupBase::setUp()
 void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 {
 	const QString& controlName = button->name();
-	if (controlName.isEmpty())
+	if (form() && controlName.isEmpty())
 		addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 	else
 	{
@@ -119,6 +120,8 @@ bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value) const
 
 void RadioButtonsGroupBase::clickHandler(RadioButtonBase* button)
 {
+	if (!initialized()) return;
+
 	if (button)
 		_setCheckedButton(button);
 	else

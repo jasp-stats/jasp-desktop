@@ -45,35 +45,30 @@ Json::Value BoundControlBase::createMeta()  const
 
 void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 {
-	if (value == boundValue()) return;
-
 	AnalysisForm* form = _control->form();
 
-	if (form && _control->isBound())
+	if (!form || !_control->isBound() || value == boundValue()) return;
+
+	if (_isColumn && value.isString())
 	{
-		if (_isColumn && value.isString())
+		const Json::Value & orgValue = boundValue();
+		std::string			newName  = value.asString(),
+							orgName  = orgValue.asString();
+
+		if (newName.empty() && !orgName.empty())
+			emit _control->requestComputedColumnDestruction(orgName);
+
+		else if (newName != orgName)
 		{
-			const Json::Value & orgValue = boundValue();
-			std::string			newName  = value.asString(),
-								orgName  = orgValue.asString();
-			
-			if (newName.empty() && !orgName.empty())
+			if (_isComputedColumn)	emit _control->requestComputedColumnCreation(newName);
+			else					emit _control->requestColumnCreation(newName, _columnType);
+
+			if (!orgName.empty())
 				emit _control->requestComputedColumnDestruction(orgName);
-			
-			else if (newName != orgName)
-			{
-				if (_isComputedColumn)	emit _control->requestComputedColumnCreation(newName);
-				else					emit _control->requestColumnCreation(newName, _columnType);
-
-				if (!orgName.empty())
-					emit _control->requestComputedColumnDestruction(orgName);
-			}
 		}
-
-		form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 	}
-	else
-		emitChange = false;
+
+	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 	
 	if (emitChange)	
 		emit _control->boundValueChanged(_control);

@@ -32,16 +32,22 @@ RadioButtonBase::RadioButtonBase(QQuickItem* item)
 
 void RadioButtonBase::registerWithParent()
 {
-	//We are already registered somewhere so lets undo that
-	if (_group)
-		_group->unregisterRadioButton(this);
+	// Warning: this slot can be called either by the Component.onCompleted of the RadioButton.qml or by a parentChanged signal
 
 	QQuickItem* ancestor = parentItem();
 	while(ancestor)
 	{
-		_group = qobject_cast<RadioButtonsGroupBase*>(ancestor);
-		if(_group)
+		RadioButtonsGroupBase* group = qobject_cast<RadioButtonsGroupBase*>(ancestor);
+		if(group)
 		{
+			if (_group)
+			{
+				if (_group == group) return; // Already registered
+
+				//We are already registered somewhere so lets undo that
+				_group->unregisterRadioButton(this);
+			}
+			_group = group;
 			_group->registerRadioButton(this);
 			break;
 		}
