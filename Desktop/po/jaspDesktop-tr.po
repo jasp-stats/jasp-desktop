@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-02-01 03:02+0000\n"
-"Last-Translator: Ünal Halit ÖZDEN <uozden@ticaret.edu.tr>\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"tr/>\n"
-"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16-dev\n"
 "X-Language: tr\n"
 "X-Qt-Contexts: true\n"
 
@@ -418,9 +412,10 @@ msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Açık Belgeler"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
@@ -513,9 +508,10 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
 msgstr ""
 
+#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Açık Belgeler"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
@@ -595,9 +591,10 @@ msgctxt "Computer|"
 msgid "Recent Folders"
 msgstr ""
 
+#, fuzzy
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Gözat"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -663,9 +660,10 @@ msgctxt "OSFLogin|"
 msgid "Sign in"
 msgstr ""
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "Beni Hatırla"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
@@ -1218,9 +1216,10 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Açık Belgeler"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
@@ -1659,10 +1658,10 @@ msgid ""
 "anything (if it evens works)..."
 msgstr ""
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 denetim aynı ada sahip: %1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
