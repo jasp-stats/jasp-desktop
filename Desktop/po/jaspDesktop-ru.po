@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-02-01 03:02+0000\n"
+"Last-Translator: fedder <fedor.derish@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.16-dev\n"
 "X-Language: ru\n"
 "X-Qt-Contexts: true\n"
 
@@ -813,7 +819,7 @@ msgstr "Показать точные p-значения"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr "Укажите количество десятичных знаков после запятой"
+msgstr "Количество десятичных знаков после запятой"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
@@ -821,7 +827,7 @@ msgstr "Параметры графика"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr "Укажите PPI (количество пикселей на дюйм) для отображения графиков: "
+msgstr "Указать количество пикселей на дюйм (PPI) для отображения графиков: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
@@ -1585,15 +1591,15 @@ msgstr "Добро пожаловать в JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr "Новый путь делать статистику: Свободно, Удобно и Гибко"
+msgstr "Новый путь делать статистику: Бесплатно, Понятно и Гибко"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr "Свободно:"
+msgstr "Бесплатно:"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr "Удобно:"
+msgstr "Понятно:"
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
@@ -2446,7 +2452,7 @@ msgstr "Экспорт данных"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "Синхронизация данных"
+msgstr "Синхронизация"
 
 msgctxt "ActionButtons|"
 msgid "Close"
@@ -3591,7 +3597,7 @@ msgstr "Выберите модуль JASP для установки"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "Показать синтаксис R"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3722,10 +3728,9 @@ msgctxt "Database|"
 msgid "Password"
 msgstr "Пароль"
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
-msgstr "Напомнить мне"
+msgstr "Запомнить меня"
 
 msgctxt "Database|"
 msgid "Connect to database"
@@ -3779,10 +3784,10 @@ msgctxt "PrefsUI|"
 msgid "Use Qt's textrendering"
 msgstr "Использовать Qt-рендеринг текста"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr "Если этот параметр отключен, переключит текстовый рендеринг на родной."
+msgstr ""
+"Если этот параметр отключен, переключит текстовый рендеринг на изначальный."
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
@@ -3826,7 +3831,6 @@ msgctxt "RCommanderWindow|"
 msgid "Add analysis"
 msgstr "Добавить анализ"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
 msgstr ""
@@ -4105,43 +4109,43 @@ msgstr "Форма переменных"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Показать все параметры"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "Консоль R"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " и "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "имеет невыбранный модуль"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "имеет выбранный модуль "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Нажмите на файл ниже для синхронизации или использования "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "Переменная была удалена, поскольку она не разрешена: %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "Переменные были удалены, так как они не разрешены: %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
+"Предполагается, что CSV является выбранной кодировкой, когда BOM не указан."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "Выберите кодировку"
