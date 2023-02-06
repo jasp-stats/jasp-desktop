@@ -33,8 +33,26 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
 {
+	// Initialization of the terms can be a re-initialization: in this case the interaction terms can be lost
+	// So the interaction terms must be kept, and if their components are in the new terms, then add this interaction.
+	Terms newTerms = terms;
+	Terms oldInteractions = interactionTerms();
+	for (const Term& oldInteraction : oldInteractions)
+	{
+		if (oldInteraction.size() > 1)
+		{
+			bool add = true;
+			for (const QString& comp : oldInteraction.components())
+			{
+				if (!terms.contains(Term(comp)))
+					add = false;
+			}
+			if (add)
+				newTerms.add(oldInteraction);
+		}
+	}
 	clearInteractions();
-	_addTerms(terms, false);
+	_addTerms(newTerms, false);
 	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap);
 }
 
@@ -221,6 +239,7 @@ void ListModelInteractionAssigned::setTerms()
 
 void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map)
 {
+	// In an interaction model, if a name is changed, maybe a part of the interaction term has to be changed.
 	QSet<int>				allChangedTermsIndex;
 	Terms					oldInteractionTerms = interactionTerms();
 	QMapIterator<QString, QString> it(map);
@@ -230,10 +249,12 @@ void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map
 		it.next();
 		const QString& oldName = it.key(), newName = it.value();
 
+		// changeComponentName changes all interaction terms that have at least one of its components that much be changed.
 		QSet<int> indexes = changeComponentName(oldName.toStdString(), newName.toStdString());
 		allChangedTermsIndex += indexes;
 	}
 
+	// If this model is a source of another model, the namesChanged signal must be also emitted, but with all interaction terms that have been changed.
 	QMap<QString, QString>	allTermsChangedMap;
 	const Terms& newInteractionTerms = interactionTerms();
 	for (int index : allChangedTermsIndex)
@@ -241,4 +262,8 @@ void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map
 
 	if (allTermsChangedMap.size() > 0)
 		emit namesChanged(allTermsChangedMap);
+
+	// setTerms will re-initialize the terms of this model, and will also provoke the re-initialization of the models that depend on this model.
+	// So setTerms must be called after the namesChanged is emitted, so that the other models which depend on this model can change first the names of their terms.
+	setTerms();
 }
