@@ -467,18 +467,22 @@ DropArea
 					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
 										{
 											if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+											{
+												helpModel.analysis	= formParent.myAnalysis;
 												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm.helpMD; });
+											}
 											else
 											{
 												helpModel.visible  = false;
 												helpModel.markdown = ""; //break binding
+												helpModel.analysis = null
 											}
 											
 												
 										}
 										else
 										{
-											helpModel.markdown = "";	
+											helpModel.markdown = "";
 											helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
 										}
 										
