@@ -66,6 +66,9 @@ void HelpModel::setMarkdown(QString markdown)
 		_pagePath = "";
 	
 	_markdown = markdown;
+
+	if(_analysis != nullptr)
+		_analysis->dynamicModule()->preprocessMarkdownHelp(_markdown);
 	
 	emit markdownChanged(_markdown);
 }
@@ -141,6 +144,7 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 {
 	if(!analysis)
 	{
+		setAnalysis(nullptr);
 		setVisible(false);
 		return;
 	}
@@ -157,13 +161,11 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 	else 
 	{
 		_analysis = analysis;
+		emit analysisChanged();
 		
 		if((loadHelpContent(pagePath, false, renderFunc, contentMD) || loadHelpContent(pagePath, true, renderFunc, contentMD)) && renderFunc == "window.render")
 		{
-			//If we get here the file exists and it is a markdown file.			
-			if(analysis->dynamicModule())
-				analysis->dynamicModule()->preprocessMarkdownHelp(contentMD);
-			
+			//If we get here the file exists and it is a markdown file.
 			setMarkdown(contentMD);
 			setVisible(true);
 			
@@ -240,7 +242,6 @@ bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, Q
 
 	if (fileHTML.exists())
 	{
-
 		fileHTML.open(QFile::ReadOnly);
 		content = QString::fromUtf8(fileHTML.readAll());
 		fileHTML.close();
@@ -266,4 +267,12 @@ void HelpModel::loadMarkdown(QString md)
 
 	setVisible(true);
 	runJavaScript("window.render", md);
+}
+
+void HelpModel::setAnalysis(Analysis *newAnalysis)
+{
+	if (_analysis == newAnalysis)
+		return;
+	_analysis = newAnalysis;
+	emit analysisChanged();
 }

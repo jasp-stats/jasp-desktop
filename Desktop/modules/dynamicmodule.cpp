@@ -530,6 +530,7 @@ void DynamicModule::preprocessMarkdownHelp(QString & md) const
 	md.replace("%HELP_FOLDER%",  helpFolderPath());
 }
 
+
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
 {
 	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString(),
