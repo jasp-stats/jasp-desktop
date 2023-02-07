@@ -4143,3 +4143,8 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr "Выберите кодировку"
+
+#, qt-format
+msgctxt "Analysis|"
+msgid "Copy of %1"
+msgstr ""

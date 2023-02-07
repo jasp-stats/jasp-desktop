@@ -4182,3 +4182,8 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr "Zeichensatztabelle hier auswählen"
+
+#, qt-format
+msgctxt "Analysis|"
+msgid "Copy of %1"
+msgstr ""

@@ -3973,3 +3973,8 @@ msgstr "在未指定 BOM 的情况下，假设 CSV 采用如下编码。"
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr "在此处选择代码页"
+
+#, qt-format
+msgctxt "Analysis|"
+msgid "Copy of %1"
+msgstr ""

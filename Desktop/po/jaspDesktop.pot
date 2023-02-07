@@ -3783,3 +3783,8 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr ""
+
+#, qt-format
+msgctxt "Analysis|"
+msgid "Copy of %1"
+msgstr ""
