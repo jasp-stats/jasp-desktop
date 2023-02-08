@@ -35,6 +35,11 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+	<release version="0.17.1" date="2023-02-09">
+		<description>
+JASP Release Notes 0.17.1
+		</description>
+	</release>
 	<release version="0.17.0" date="2023-01-26">
 		<description>
 JASP Release Notes 0.17.0
