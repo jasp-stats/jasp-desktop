@@ -4,9 +4,6 @@
 	<?include $(sys.CURRENTDIR)JASP.wxi ?>
 	<?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.PatchVersion).$(var.TweakVersion)" ?>
 	<?define Program_Files="ProgramFiles64Folder"?>
-	<?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
-	<?endif?>
-
 	<?define ExeProcessName="JASP.exe" ?>
 	<?define UpgradeCode="32d502cb-4752-4861-bc86-b8b4252a7a68" ?>
 	<?define ApplicationName="JASP $(var.VersionNumber)" ?>
