@@ -95,9 +95,9 @@ Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes
 	return result;
 }
 
-void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsValues &allValuesMap)
+void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsValues &allValuesMap, bool reInit)
 {
-	ListModelAssignedInterface::initTerms(terms, allValuesMap);
+	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
 	_fitTermsWithLevels();
 }
 

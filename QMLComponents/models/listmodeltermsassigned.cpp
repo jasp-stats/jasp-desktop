@@ -31,9 +31,9 @@ ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView)
 {
 }
 
-void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
+void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool reInit)
 {
-	ListModelAssignedInterface::initTerms(terms, allValuesMap);
+	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
 
 	if (availableModel() != nullptr)
 	{

@@ -27,7 +27,7 @@ class ListModelMultiTermsAssigned: public ListModelAssignedInterface
 public:
 	ListModelMultiTermsAssigned(JASPListControl* listView, int columns = 2);
 	
-	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues())		override;
+	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues(), bool reInit = false)	override;
 	Terms			addTerms(const Terms &terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)									override;
 	void			removeTerms(const QList<int> &indexes)															override;

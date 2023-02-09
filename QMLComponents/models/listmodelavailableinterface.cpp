@@ -21,7 +21,7 @@
 #include "controls/jasplistcontrol.h"
 #include "log.h"
 
-void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsValues&)
+void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsValues&, bool)
 {
 	beginResetModel();
 	
@@ -187,8 +187,8 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	{
 		Terms assignedTerms = modelAssign->terms();
 		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-			modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
-		else if (!modelAssign->copyTermsWhenDropped())
+			modelAssign->initTerms(assignedTerms, RowControlsValues(), true); // initTerms call removeTermsInAssignedList
+		if (!modelAssign->copyTermsWhenDropped())
 			newTerms.remove(assignedTerms);
 	}
 
