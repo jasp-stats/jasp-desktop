@@ -31,29 +31,33 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 	_addInteractionsByDefault	= addInteractionsByDefault;
 }
 
-void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
+void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool reInit)
 {
 	// Initialization of the terms can be a re-initialization: in this case the interaction terms can be lost
 	// So the interaction terms must be kept, and if their components are in the new terms, then add this interaction.
 	Terms newTerms = terms;
-	Terms oldInteractions = interactionTerms();
-	for (const Term& oldInteraction : oldInteractions)
+
+	if (reInit)
 	{
-		if (oldInteraction.size() > 1)
+		Terms oldInteractions = interactionTerms();
+		for (const Term& oldInteraction : oldInteractions)
 		{
-			bool add = true;
-			for (const QString& comp : oldInteraction.components())
+			if (oldInteraction.size() > 1)
 			{
-				if (!terms.contains(Term(comp)))
-					add = false;
+				bool add = true;
+				for (const QString& comp : oldInteraction.components())
+				{
+					if (!terms.contains(Term(comp)))
+						add = false;
+				}
+				if (add)
+					newTerms.add(oldInteraction);
 			}
-			if (add)
-				newTerms.add(oldInteraction);
 		}
 	}
 	clearInteractions();
 	_addTerms(newTerms, false);
-	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap);
+	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap, reInit);
 }
 
 Terms ListModelInteractionAssigned::filterTerms(const Terms& terms, const QStringList& filters)

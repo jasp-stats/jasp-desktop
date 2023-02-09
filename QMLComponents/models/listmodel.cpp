@@ -74,7 +74,7 @@ void ListModel::addControlError(const QString &error) const
 	_listView->addControlError(error);
 }
 
-void ListModel::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
+void ListModel::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool)
 {
 	_initTerms(terms, allValuesMap, true);
 }

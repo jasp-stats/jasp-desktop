@@ -31,7 +31,7 @@ ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(JASPListControl* listVi
 	_allowDuplicatesInMultipleColumns = listView->property("allowDuplicatesInMultipleColumns").toBool();
 }
 
-void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
+void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool)
 {
 	beginResetModel();
 

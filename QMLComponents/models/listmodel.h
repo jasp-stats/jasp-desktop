@@ -74,7 +74,7 @@ public:
 			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-	virtual void					initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues());
+	virtual void					initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues(), bool reInit = false);
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
