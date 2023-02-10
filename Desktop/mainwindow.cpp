@@ -64,7 +64,7 @@
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-#include "gui/ALTNavigation/altnavigation.h"
+#include "ALTNavigation/altnavigation.h"
 #include "utilities/messageforwarder.h"
 
 #include "modules/activemodules.h"
