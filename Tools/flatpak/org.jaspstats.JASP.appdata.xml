@@ -35,9 +35,15 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.17.1" date="2023-02-09">
+	<release version="0.17.1" date="2023-02-10">
 		<description>
 JASP Release Notes 0.17.1
+Fixes:
+	• https://github.com/jasp-stats/jasp-issues/issues/1987: Repeated Measures ANOVA does not run if the model terms are not explicitly set.
+	• https://github.com/jasp-stats/jasp-issues/issues/1986: JASP crashes sometimes when starting it with an internet proxy.
+	• https://github.com/jasp-stats/jasp-issues/issues/1990: Wrong name in T-Tests “Wilcoxon signed-rank” option should be labelled “Mann-Whitney”
+	• https://github.com/jasp-stats/jasp-issues/issues/1989: Linear Regression: Casewise Diagnostics table shows wrong case ID when having missing data in dependent variable
+	• https://github.com/jasp-stats/jasp-issues/issues/1983: No error bars displayed when running a 2-way ANOVA (edited)
 		</description>
 	</release>
 	<release version="0.17.0" date="2023-01-26">
