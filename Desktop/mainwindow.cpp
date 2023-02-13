@@ -522,7 +522,7 @@ void MainWindow::loadQML()
 
 	setCurrentJaspTheme();
 
-	JaspTheme::initializeUIScales(_preferences->uiScale());
+	JaspTheme::initializeUIScales();
 
 	for(const auto & keyval : JaspTheme::themes())
 	{

@@ -84,7 +84,9 @@ const Settings::Setting Settings::Values[] = {
 	{"dbRememberMe",				false	},
 	{"dataNALabel",					""		},
 	{"guiQtTextRender",				true	},
-	{"showReports",					false	}
+	{"showReports",					false	},
+	{"showRSyntax",					false	},
+	{"showAllROptions",				false	}
 };	
 
 QVariant Settings::value(Settings::Type key)

@@ -182,7 +182,7 @@ AnalysisForm
 			anchors.top:		warningMessagesBox.bottom
 			width:				parent.width
 			height:				visible ? rScriptArea.y + rScriptArea.height : 0
-			visible:			form.showRSyntax
+			visible:			preferencesModel.showRSyntax
 
 			Button
 			{
@@ -232,6 +232,7 @@ AnalysisForm
 			{
 				id:					rScriptArea
 				name:				form.rSyntaxControlName
+
 				anchors.top:		showAllROptionsCheckBox.bottom
 				anchors.topMargin:	jaspTheme.generalAnchorMargin
 				width:				parent.width
@@ -239,6 +240,8 @@ AnalysisForm
 				text:				form.rSyntaxText
 				isBound:			false
 				onApplyRequest:		form.sendRSyntax(text)
+
+				onInitializedChanged: if (preferencesModel.showRSyntax) control.forceActiveFocus() // If the textarea has already some large text, then it does not display it if it does not get temporarly the focus...
 			}
 		}
 

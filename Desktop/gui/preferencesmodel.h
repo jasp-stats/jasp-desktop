@@ -5,12 +5,13 @@
 #include <QFont>
 #include "column.h"
 #include "utilities/qutils.h"
+#include "preferencesmodelbase.h"
 
 class JaspTheme;
 
 ///
 /// Interface between QML and Settings, mostly templated functions to link through directly.
-class PreferencesModel : public QObject
+class PreferencesModel : public PreferencesModelBase
 {
 	Q_OBJECT
 
@@ -65,11 +66,14 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
 	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
+	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
+	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
+
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
-	static PreferencesModel * prefs() { return _singleton; }
+	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
 
 	int			customPPI()								const;
 	int			numDecimals()							const;
@@ -83,7 +87,7 @@ public:
 	bool		useDefaultPPI()							const;
 	bool		whiteBackground()						const;
 	QString		plotBackground()						const;
-	double		uiScale()								;
+	double		uiScale()								override;
 	QString		customEditor()							const;
 	QString		developerFolder()						const;
 	QString		fixedDecimalsForJS()					const;
@@ -92,7 +96,7 @@ public:
 	int			thresholdScale()						const;
 	bool		logToFile()								const;
 	int			logFilesMax()							const;
-	int			maxFlickVelocity()						const;
+	int			maxFlickVelocity()						const override;
 	bool		modulesRemember()						const;
 	QStringList	modulesRemembered()						const;
 	bool		safeGraphics()							const;
@@ -122,13 +126,15 @@ public:
 	QString		dataLabelNA()							const;
 	bool		guiQtTextRender()						const;
 	bool		reportingMode()							const;
+	bool		showRSyntax()							const override;
+	bool		showAllROptions()						const override;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
 	int 		maxEnginesAdmin() 						const;
+	bool		developerMode()							const;
 
 public slots:
-	bool developerMode()								const; //Some 
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
 	void setDefaultPPI(					int			defaultPPI);
@@ -165,7 +171,7 @@ public slots:
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
 	void onDefaultPPIChanged(			int);
-	void setCurrentThemeName(			QString		currentThemeName);
+	void setCurrentThemeName(			QString		currentThemeName)				override;
 	void setInterfaceFont(				QString		interfaceFont);
 	void setCodeFont(					QString		codeFont);
 	void setResultFont(					QString		resultFont);
@@ -181,6 +187,8 @@ public slots:
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
 	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
 	void setReportingMode(				bool		reportingMode);
+	void setShowRSyntax(				bool		showRSyntax)					override;
+	void setShowAllROptions(			bool		showAllROptions)				override;
 	void currentThemeNameHandler();
 	
 signals:
@@ -230,11 +238,6 @@ signals:
 	void dataLabelNAChanged(			QString		dataLabelNA);
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
-	void uiScaleChanged(				float		uiScale);
-	void maxFlickVelocityChanged(		float		flickVelo);
-	void currentJaspThemeChanged();
-	void currentThemeReady();
-	void interfaceFontChanged(			QString		interfaceFont);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);
@@ -249,10 +252,7 @@ private:
 	bool			_githubPatCustom; //Should be initialized on prefs construction
 
 	void			_loadDatabaseFont();
-	QString			_checkFontList(QString fonts) const;
-
-	
-	static	PreferencesModel * _singleton;
+	QString			_checkFontList(QString fonts) const;	
 };
 
 #endif // PREFERENCESDIALOG_H

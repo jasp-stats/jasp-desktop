@@ -70,7 +70,9 @@ public:
 		DB_REMEMBER_ME,
 		DATA_LABEL_NA,
 		GUI_USE_QT_TEXTRENDER,
-		REPORT_SHOW
+		REPORT_SHOW,
+		SHOW_RSYNTAX,
+		SHOW_ALL_R_OPTIONS
 	};
 
 	static QVariant value(Settings::Type key);
