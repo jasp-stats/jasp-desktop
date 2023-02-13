@@ -189,7 +189,7 @@ AnalysisForm
 				id:					generateWrapperButton
 				visible:            DEBUG_MODE || form.developerMode
 				height:				visible ? implicitHeight : 0
-				label:				"Generate Wrapper"
+				label:				qsTr("Generate Wrapper")
 				onClicked:			popup.open()
 
 				Popup
