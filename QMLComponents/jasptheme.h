@@ -183,7 +183,7 @@ public:
 
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
-	static void initializeUIScales(double uiScale = 1);
+	static void initializeUIScales();
 
 	static JaspTheme								* currentTheme()	{ return _currentTheme; }
 	static QFontMetricsF							& fontMetrics()		{ return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
@@ -582,8 +582,8 @@ public slots:
 	void setFontCode(QFont fontCode);
 	void setFontALTNavTag(QFont fontALTNavTag);
 	void setIsDark(bool isDark);
-	void uiScaleHandler(float newUiScale);
-	void maxFlickVeloHandler(float maxFlickVelo);
+	void uiScaleHandler();
+	void maxFlickVeloHandler();
 
 private:
 	void connectSizeDistancesToUiScaleChanged();

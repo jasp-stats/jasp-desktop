@@ -1,6 +1,7 @@
 #include "jasptheme.h"
 #include "log.h"
 #include "utilities/qutils.h"
+#include "preferencesmodelbase.h"
 #include <QFontDatabase>
 
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
@@ -116,10 +117,10 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 	setCurrentTheme(_themes[name]);
 }
 
-void JaspTheme::initializeUIScales(double uiScale)
+void JaspTheme::initializeUIScales()
 {
 	for(auto& keyval : _themes)
-		keyval.second->uiScaleHandler(uiScale);
+		keyval.second->uiScaleHandler();
 }
 
 void JaspTheme::setRibbonScaleHovered(float ribbonScaleHovered)
@@ -1274,15 +1275,15 @@ void JaspTheme::setIsDark(bool isDark)
 	emit isDarkChanged(_isDark);
 }
 
-void JaspTheme::uiScaleHandler(float newUiScale)
+void JaspTheme::uiScaleHandler()
 {
-	_uiScale = newUiScale;
+	_uiScale = PreferencesModelBase::preferences()->uiScale();
 	emit uiScaleChanged(_uiScale);
 }
 
-void JaspTheme::maxFlickVeloHandler(float maxFlickVelo)
+void JaspTheme::maxFlickVeloHandler()
 {
-	_maximumFlickVelocity = maxFlickVelo;
+	_maximumFlickVelocity = PreferencesModelBase::preferences()->maxFlickVelocity();
 	emit maximumFlickVelocityChanged();
 }
 

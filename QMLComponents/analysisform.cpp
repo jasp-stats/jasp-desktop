@@ -32,6 +32,7 @@
 #include <QQmlEngine>
 #include <QTimer>
 #include "controls/variableslistbase.h"
+#include "preferencesmodelbase.h"
 
 using namespace std;
 
@@ -43,11 +44,14 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 
 	_rSyntax = new RSyntax(this);
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
-	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
-	connect(this,					&AnalysisForm::formCompletedSignal,	this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
-	connect(this,					&AnalysisForm::analysisInitialized,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
-	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
-	connect(this,					&AnalysisForm::showAllROptionsChanged, this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::infoChanged,					this, &AnalysisForm::helpMDChanged			);
+	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::analysisInitialized,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::showAllROptionsChanged,		this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showRSyntaxChanged,	this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this, &AnalysisForm::showAllROptionsChanged, Qt::QueuedConnection	);
+	connect(this,									&AnalysisForm::analysisInitialized,			this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
@@ -724,6 +728,13 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 	}
 }
 
+QString AnalysisForm::rSyntaxText() const
+{
+	Log::log() << "rSyntaxText: " << _rSyntaxText << std::endl;
+
+	return _rSyntaxText;
+}
+
 bool AnalysisForm::needsRefresh() const
 {
 	return _analysis ? _analysis->needsRefresh() : false;
@@ -736,7 +747,7 @@ bool AnalysisForm::isFormulaName(const QString& name) const
 
 QString AnalysisForm::generateRSyntax() const
 {
-	return _rSyntax->generateSyntax(_showAllROptions);
+	return _rSyntax->generateSyntax(showAllROptions());
 }
 
 QVariantList AnalysisForm::optionNameConversion() const
@@ -945,18 +956,6 @@ QString AnalysisForm::metaHelpMD() const
 	return meta.isEmpty() ? "" : "---\n# " + tr("Output") + "\n\n" + meta;
 }
 
-void AnalysisForm::setShowRSyntax(bool showRSyntax)
-{
-	if (_showRSyntax == showRSyntax)
-		return;
-	
-	_showRSyntax = showRSyntax;
-	setRSyntaxText();
-
-	emit showRSyntaxChanged();
-
-}
-
 void AnalysisForm::setShowRButton(bool showRButton)
 {
 	if (_showRButton == showRButton)
@@ -979,32 +978,40 @@ void AnalysisForm::setDeveloperMode(bool developerMode)
 
 void AnalysisForm::setRSyntaxText()
 {
-	if (!_showRSyntax)
+	if (!initialized() || !PreferencesModelBase::preferences()->showRSyntax())
 		return;
 
 	QString text = generateRSyntax();
+	Log::log() << "setRSyntaxText: " << text << std::endl;
 
 	if (text != _rSyntaxText)
 	{
 		_rSyntaxText = text;
+		Log::log() << "EMIT rSyntaxTextChanged" << std::endl;
 		emit rSyntaxTextChanged();
 	}
 }
 
+bool AnalysisForm::showAllROptions() const
+{
+	return PreferencesModelBase::preferences()->showAllROptions();
+}
+
 void AnalysisForm::setShowAllROptions(bool showAllROptions)
 {
-	if (_showAllROptions == showAllROptions)
-		return;
-
-	_showAllROptions = showAllROptions;
-
-	emit showAllROptionsChanged();
+	PreferencesModelBase::preferences()->setShowAllROptions(showAllROptions);
 }
 
 void AnalysisForm::sendRSyntax(QString text)
 {
-	setShowRSyntax(true);
+	PreferencesModelBase::preferences()->setShowRSyntax(true);
 	_analysis->sendRScript(text, rSyntaxControlName, false);
+}
+
+void AnalysisForm::toggleRSyntax()
+{
+	PreferencesModelBase* pref = PreferencesModelBase::preferences();
+	pref->setShowRSyntax(!pref->showRSyntax());
 }
 
 void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocus)
