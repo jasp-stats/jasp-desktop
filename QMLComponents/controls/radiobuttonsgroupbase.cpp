@@ -141,10 +141,9 @@ void RadioButtonsGroupBase::_setCheckedButton(RadioButtonBase* button)
 
 	if (_selectedButton != button)
 	{
-		if (_selectedButton && _buttons.contains(_selectedButton)) // The selected button might be unregistered and set somewhere else...
-			_selectedButton->setProperty("checked", false);
-		_selectedButton = button; // Setting the checked porperty will call _setCheckedButton: so set first the _selectedButton so that it does set unnecessarily the button
-		button->setProperty("checked", true);
+		_selectedButton = button; // Setting the checked property will call _setCheckedButton: so set first the _selectedButton so that it does set unnecessarily the button
+		for (auto b : _buttons)
+			b->setProperty("checked", _selectedButton == b);
 		emit valueChanged();
 		setBoundValue(fq(buttonName));
 	}
