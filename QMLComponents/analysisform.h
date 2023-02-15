@@ -54,7 +54,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
 	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
 	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
-	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
+	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisInitialized			)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax											NOTIFY showRSyntaxChanged			)
 	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
@@ -121,7 +121,7 @@ signals:
 	void					helpMDChanged();
 	void					errorsChanged();
 	void					warningsChanged();
-	void					analysisChanged();
+	void					analysisInitialized();
 	void					rSourceChanged(const QString& name);
 	void					optionNameConversionChanged();
 	void					titleChanged();

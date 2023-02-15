@@ -31,9 +31,6 @@ RadioButtonsGroupBase
 	shouldStealHover:	false
 
 	default property alias	content:				contentArea.children
-			property alias	buttons:				buttonGroup.buttons
-			property alias	checkedButton:			buttonGroup.checkedButton
-			property alias	buttonGroup:			buttonGroup
 			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:				contentArea.columns
 			property alias	text:					control.title
@@ -48,11 +45,6 @@ RadioButtonsGroupBase
 						: contentArea.y + contentArea.implicitHeight	
     
 	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
-
-	Component.onCompleted:
-	{
-		buttonGroup.clicked.connect(clicked);
-	}
 	
 	Label
 	{
@@ -67,7 +59,6 @@ RadioButtonsGroupBase
 		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled		
     }
     
-	ButtonGroup { id: buttonGroup }
 
 	GridLayout
 	{

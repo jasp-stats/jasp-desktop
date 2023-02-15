@@ -91,7 +91,7 @@ ComponentsListBase
 		{
 			id						: itemFlickable
 			anchors.fill			: parent
-			anchors.margins			: jaspTheme.contentMargin
+			anchors.margins			: addBorder ? jaspTheme.contentMargin : 0
 			anchors.rightMargin		: itemScrollbar.width + anchors.margins
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds

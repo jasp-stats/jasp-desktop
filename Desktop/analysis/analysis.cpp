@@ -78,6 +78,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 
 void Analysis::initAnalysis()
 {
+	setOrgBoundValues(boundValues());
 	watchQmlForm();
 	connect(&_QMLFileWatcher,	&QFileSystemWatcher::fileChanged,			this,	&Analysis::analysisQMLFileChanged,	Qt::UniqueConnection);
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);

@@ -45,7 +45,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
 	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
 	connect(this,					&AnalysisForm::formCompletedSignal,	this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
-	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+	connect(this,					&AnalysisForm::analysisInitialized,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(this,					&AnalysisForm::showAllROptionsChanged, this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
 }
@@ -604,7 +604,7 @@ void AnalysisForm::setAnalysisUp()
 
 	_setUpControls();
 
-	Json::Value defaultOptions = _analysis->boundValues();
+	Json::Value defaultOptions = _analysis->orgBoundValues();
 	_analysis->clearOptions();
 	bindTo(defaultOptions);
 
@@ -612,7 +612,7 @@ void AnalysisForm::setAnalysisUp()
 
 	_initialized = true;
 
-	emit analysisChanged();
+	emit analysisInitialized();
 }
 
 void AnalysisForm::knownIssuesUpdated()

@@ -147,6 +147,7 @@ public:
 	bool				hovered()					const;
 	int					alignment()					const	{ return _alignment;				}
 	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;				}
+	bool				dependsOnDynamicComponents() const	{ return _dependsOnDynamicComponents; }
 
 	QString				humanFriendlyLabel()		const;
 	void				setInitialized(bool byFile = false);
@@ -302,6 +303,7 @@ protected:
 	int						_cursorShape				= Qt::PointingHandCursor;
 	int						_alignment					= Qt::AlignTop | Qt::AlignLeft;
 	Qt::FocusReason			_focusReason				= Qt::FocusReason::NoFocusReason;
+	bool					_dependsOnDynamicComponents = false;
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;

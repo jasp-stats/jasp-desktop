@@ -17,6 +17,7 @@
 //
 
 #include "radiobuttonbase.h"
+#include "radiobuttonsgroupbase.h"
 
 RadioButtonBase::RadioButtonBase(QQuickItem* item)
 	: JASPControl(item)
@@ -24,4 +25,44 @@ RadioButtonBase::RadioButtonBase(QQuickItem* item)
 	_controlType		= ControlType::RadioButton;
 	_isBound			= false;
 	_nameIsOptionValue	= true;
+
+	connect(this, &QQuickItem::parentChanged, this, &RadioButtonBase::registerWithParent);
+	connect(this, &JASPControl::nameChanged, this, &RadioButtonBase::valueChangeHandler);
+}
+
+void RadioButtonBase::registerWithParent()
+{
+	// Warning: this slot can be called either by the Component.onCompleted of the RadioButton.qml or by a parentChanged signal
+
+	QQuickItem* ancestor = parentItem();
+	while(ancestor)
+	{
+		RadioButtonsGroupBase* group = qobject_cast<RadioButtonsGroupBase*>(ancestor);
+		if(group)
+		{
+			if (_group)
+			{
+				if (_group == group) return; // Already registered
+
+				//We are already registered somewhere so lets undo that
+				_group->unregisterRadioButton(this);
+			}
+			_group = group;
+			_group->registerRadioButton(this);
+			break;
+		}
+		ancestor = ancestor->parentItem();
+	}
+}
+
+void RadioButtonBase::clickHandler()
+{
+	if (_group)
+		_group->clickHandler(this);
+}
+
+void RadioButtonBase::valueChangeHandler()
+{
+	if (_group)
+		_group->radioButtonValueChanged(this);
 }

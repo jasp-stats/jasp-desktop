@@ -43,26 +43,22 @@ RadioButtonBase
 	property alias	label:					control.text
 	property alias	checked:				control.checked
 	property alias	value:					radioButton.name
-	property var	buttonGroup:			null
 	property bool	childrenOnSameRow:		false
 	property alias	columns:				childControlsArea.columns
 	property bool	enableChildrenOnChecked: true
 	property bool	indentChildren:			true
 
-	function click()
-	{
-		if (buttonGroup) buttonGroup.clicked(control)
-	}
+	function click() { clicked(); }
+	onClicked: { radioButton.clickHandler(); }
 
 
 	RadioButton
 	{
 		id:					control
-		ButtonGroup.group:	buttonGroup
 		padding:			jaspTheme.jaspControlPadding
 		focus:				true
 
-		onCheckedChanged:	if (buttonGroup && checked) buttonGroup.clicked(control)
+		onCheckedChanged:	if (checked) radioButton.clicked()
 
 		indicator: Rectangle
 		{
@@ -142,6 +138,7 @@ RadioButtonBase
 					childControlsArea.anchors.topMargin = control.padding - 1 // border width
 			}
 		}
+		registerWithParent();
 	}
 }
 
