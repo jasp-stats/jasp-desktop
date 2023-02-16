@@ -24,7 +24,7 @@ Based on your system, you can install the mentioned libraries using your package
 On Ubuntu, you can use `apt`. 
 
 ```
-sudo apt install libboost libjsoncpp-dev libarchive-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential r-base
+sudo apt install libboost libjsoncpp25 libarchive13 autoconf zlib1g zlib1g-dev cmake gfortran build-essential r-base
 ```
 
 > ⚠️ Some of these libraries might not be up-to-date and as a result JASP will complain. If this happens, you need to download, make and install those libraries individually. Alternatively, you can use the [Linux version of Homebrew](https://docs.brew.sh/Homebrew-on-Linux) and install the up-to-dated libraries locally.
