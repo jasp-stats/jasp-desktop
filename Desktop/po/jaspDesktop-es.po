@@ -4189,3 +4189,16 @@ msgstr "Elige aquí el código de página"
 msgctxt "Analysis|"
 msgid "Copy of %1"
 msgstr "Copia de %1"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Hide R Syntax"
+msgstr ""
+
+msgctxt "Form|"
+msgid "Generate Wrapper"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Waiting for initialization of module: %1"
+msgstr ""

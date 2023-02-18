@@ -4187,3 +4187,16 @@ msgstr "Zeichensatztabelle hier auswählen"
 msgctxt "Analysis|"
 msgid "Copy of %1"
 msgstr "Kopie von %1"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Hide R Syntax"
+msgstr ""
+
+msgctxt "Form|"
+msgid "Generate Wrapper"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Waiting for initialization of module: %1"
+msgstr ""
