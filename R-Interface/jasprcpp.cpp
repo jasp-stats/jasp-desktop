@@ -153,7 +153,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
 	snprintf(baseCitation, 200, baseCitationFormat, buildYear, version);
-	rInside[".baseCitation"]		= baseCitation;
+	rInside[".baseCitation"]	= baseCitation;
+	rInside[".jaspVersion"]		= version;
 
 	//XPtr doesnt like it if it can't run a finalizer so here are some dummy variables:
 	static logFuncDef			_logFuncDef					= jaspRCPP_logString;
