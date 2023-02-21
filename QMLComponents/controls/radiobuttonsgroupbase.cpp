@@ -33,6 +33,12 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 
 void RadioButtonsGroupBase::setUp()
 {
+	JASPControl::setUp();
+	connect(this, &RadioButtonsGroupBase::initializedChanged, this, &RadioButtonsGroupBase::_setCheckedButtonHandler);
+}
+
+void RadioButtonsGroupBase::_setCheckedButtonHandler()
+{
 	for (auto* button : _buttons)
 	{
 		if (button->property("checked").toBool())
@@ -41,7 +47,6 @@ void RadioButtonsGroupBase::setUp()
 	if (!checkedButton() && _buttons.size() > 0)
 		_setCheckedButton(*(_buttons.begin()));
 
-	JASPControl::setUp();
 }
 
 void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
