@@ -26,16 +26,21 @@ class RadioButtonsGroupBase;
 class RadioButtonBase : public JASPControl
 {
 	Q_OBJECT
+	Q_PROPERTY(JASPControl* group READ group NOTIFY groupChanged) // Cannot have a RadioButtonsGroupBase property: compilation error in the moc stuff.
 
 public:
 	RadioButtonBase(QQuickItem* parent = nullptr);
 
+	JASPControl* group();
+
 public slots:
 	Q_INVOKABLE void registerWithParent();
+	Q_INVOKABLE void unregisterRadioButton();
 	Q_INVOKABLE void clickHandler();
 
 signals:
 	void clicked();
+	void groupChanged();
 
 protected slots:
 	void valueChangeHandler();

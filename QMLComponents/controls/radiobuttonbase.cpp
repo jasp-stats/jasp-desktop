@@ -30,6 +30,11 @@ RadioButtonBase::RadioButtonBase(QQuickItem* item)
 	connect(this, &JASPControl::nameChanged, this, &RadioButtonBase::valueChangeHandler);
 }
 
+JASPControl *RadioButtonBase::group()
+{
+	return _group;
+}
+
 void RadioButtonBase::registerWithParent()
 {
 	// Warning: this slot can be called either by the Component.onCompleted of the RadioButton.qml or by a parentChanged signal
@@ -49,10 +54,20 @@ void RadioButtonBase::registerWithParent()
 			}
 			_group = group;
 			_group->registerRadioButton(this);
-			break;
+
+			emit groupChanged();
+			return;
 		}
 		ancestor = ancestor->parentItem();
 	}
+
+	unregisterRadioButton();
+}
+
+void RadioButtonBase::unregisterRadioButton()
+{
+	if (_group)
+		_group->unregisterRadioButton(this);
 }
 
 void RadioButtonBase::clickHandler()

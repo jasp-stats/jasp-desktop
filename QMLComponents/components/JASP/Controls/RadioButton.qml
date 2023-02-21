@@ -140,5 +140,10 @@ RadioButtonBase
 		}
 		registerWithParent();
 	}
+
+	Component.onDestruction:
+	{
+		unregisterRadioButton();
+	}
 }
 
