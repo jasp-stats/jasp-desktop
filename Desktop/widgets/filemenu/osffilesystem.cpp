@@ -339,7 +339,7 @@ void OSFFileSystem::gotFilesAndFolders()
 					return false;
 				};
 
-				static const QStringList readStatFormats = {".sav", ".sas7bdat", ".sas7bcat", ".por", ".xpt", ".dta"};
+				static const QStringList readStatFormats = {".sav", ".zsav", ".sas7bdat", ".sas7bcat", ".por", ".xpt", ".dta"};
 
 				if (kind == "folder")									entryType = FileSystemEntry::Folder;
 				else if (endsWith({".jasp"}))							entryType = FileSystemEntry::JASP;
