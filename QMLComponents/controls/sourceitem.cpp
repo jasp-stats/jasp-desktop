@@ -51,7 +51,7 @@ SourceItem::SourceItem(
 	_isVariableInfoModel		= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
 	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
-
+	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt())	: JASPControl::CombinationType::NoCombination;
 	if (isInfoProviderModel(_nativeModel))									_isVariableInfoModel = true;
 	if (_modelUse.contains("levels"))										_listControl->setUseSourceLevels(true);
 	if (_listControl->useSourceLevels() && !_modelUse.contains("levels"))	_modelUse.append("levels");
