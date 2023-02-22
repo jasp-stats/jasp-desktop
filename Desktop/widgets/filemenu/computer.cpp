@@ -39,7 +39,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = "Data Sets (*.jasp *.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
+	QString filter = "Data Sets (*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
 	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods)";
 

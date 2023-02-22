@@ -117,7 +117,7 @@ const std::string FileEvent::databaseStr() const
 
 QString FileEvent::getProgressMsg() const
 {
-	//jasp = 0, html, csv, txt, tsv, sav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown
+	//jasp = 0, html, csv, txt, tsv, sav, zsav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown
 	switch(_operation)
 	{
 	case FileEvent::FileOpen:
@@ -128,6 +128,7 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::tsv:
 		case Utils::FileType::ods:		return tr("Importing Data from %1").arg(FileTypeBaseToQString(_type).toUpper());
 		case Utils::FileType::sav:
+		case Utils::FileType::zsav:
 		case Utils::FileType::por:		return tr("Importing SPSS File");
 		case Utils::FileType::xpt:
 		case Utils::FileType::sas7bdat:

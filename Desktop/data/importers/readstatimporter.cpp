@@ -62,7 +62,7 @@ int handle_value_label(const char *val_labels, readstat_value_t value, const cha
 
 bool ReadStatImporter::extSupported(const std::string & ext)
 {
-	static std::set<std::string> supportedExts({"dta", "por", "sav", "sas7bdat", "sas7bcat", "xpt", ".dta", ".por", ".sav", ".sas7bdat", ".sas7bcat", ".xpt"});
+	static std::set<std::string> supportedExts({"dta", "por", "sav", "zsav", "sas7bdat", "sas7bcat", "xpt", ".dta", ".por", ".sav", ".zsav", ".sas7bdat", ".sas7bcat", ".xpt"});
 	return supportedExts.count(ext) > 0;
 }
 
@@ -90,6 +90,7 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	readstat_set_value_label_handler(	parser, &handle_value_label	);
 
 	if		(_ext == "sav")			error = readstat_parse_sav(		parser, locator.c_str(), data);
+	else if	(_ext == "zsav")		error = readstat_parse_sav(		parser, locator.c_str(), data);
 	else if	(_ext == "dta")			error = readstat_parse_dta(		parser, locator.c_str(), data);
 	else if	(_ext == "por")			error = readstat_parse_por(		parser, locator.c_str(), data);
 	else if	(_ext == "sas7bdat")	error = readstat_parse_sas7bdat(parser, locator.c_str(), data);
