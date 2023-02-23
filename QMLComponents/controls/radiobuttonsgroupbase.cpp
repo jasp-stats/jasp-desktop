@@ -34,11 +34,21 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 void RadioButtonsGroupBase::setUp()
 {
 	JASPControl::setUp();
+	// During the form initialization:
+	// . all the controls are first setup (mainly to set the sources, models and connections), and the dependecies between the controls can be then deduced.
+	// . the default values are then kept (this is used for the R Syntax to generate only options that do not have their default value)
+	// . by order of dependency, the controls get their value (either their default value, or the one set by a JASP file), and are set as 'initialized'
+	// So we need to know what is the default checked Radio Button during the setUp function.
+	// But for dynamicly created Radio Buttons (ie created by a ComponentsList), the Radio Buttons are created only when the ComponentsList get its value (the terms of its model).
+	// In this case, there is no Radio Buttons during the setup call (and no default value can be known): so we need here to set the checked button only when the RadioButtonGroup is initialzed.
+	_setCheckedButtonHandler();
 	connect(this, &RadioButtonsGroupBase::initializedChanged, this, &RadioButtonsGroupBase::_setCheckedButtonHandler);
 }
 
 void RadioButtonsGroupBase::_setCheckedButtonHandler()
 {
+	if (checkedButton()) return;
+
 	for (auto* button : _buttons)
 	{
 		if (button->property("checked").toBool())
