@@ -182,7 +182,7 @@ AnalysisForm
 			anchors.top:		warningMessagesBox.bottom
 			width:				parent.width
 			height:				visible ? rScriptArea.y + rScriptArea.height : 0
-			visible:			preferencesModel.showRSyntax
+			visible:			preferencesModel.showRSyntax && showRButton
 
 			Button
 			{
