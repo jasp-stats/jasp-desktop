@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-02-23 17:35+0000\n"
-"Last-Translator: fedder <fedor.derish@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"ru/>\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Language: ru\n"
 "X-Qt-Contexts: true\n"
 
@@ -4169,3 +4163,41 @@ msgstr "Создать \"обёртку\""
 msgctxt "QObject|"
 msgid "Waiting for initialization of module: %1"
 msgstr "Ожидание инициализации модуля: %1"
+
+#, fuzzy
+msgctxt "Computer|"
+msgid "Save"
+msgstr "Сохранить"
+
+msgctxt "Computer|"
+msgid "JASP Files (*.jasp)"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Export Result as HTML or PDF"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "HTML Files"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Portable Document Format (*.pdf)"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Export Data as CSV"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "CSV Files (*.csv *.txt *.tsv)"
+msgstr ""
+
+#, fuzzy
+msgctxt "Computer|"
+msgid "Sync Data"
+msgstr "Синхронизация"
+
+msgctxt "Computer|"
+msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
+msgstr ""
