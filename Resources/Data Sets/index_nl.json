@@ -750,6 +750,13 @@
             "description": "De data bevat metingen voor pinguïnsoorten, eiland in de Palmer-archipel, grootte (lengte van de vinnen, lichaamsgewicht, snavelafmetingen) en geslacht. <br><br> <i>Dataset opgenomen in R package palmerpenguins.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
+          },
+          {
+            "name": "Police Cadet Evaluation",
+            "path": "policeCadetEvaluation.jasp",
+            "description": "Gegevens uit de praktijk over de evaluatie van politiecadetten, eind jaren negentig verzameld in Nederland, die werden gebruikt om de effecten te bestuderen van het verlagen van de toelatingsnormen en om te voorspellen of cadetten zouden slagen voor de standaard vijfjaarlijkse evaluatie op basis van verschillende kenmerken. <br><br> <i>Data set beschikbaar gemaakt door het Korps landelijke politiediensten en het Ministerie van Justitie in Nederland.<\/i>",
+            "kind": "file",
+            "associated_datafile": "policeCadetEvaluation.csv"
           }
         ],
         "debug": false

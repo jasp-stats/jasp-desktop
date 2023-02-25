@@ -750,6 +750,13 @@
             "description": "Die Daten enthalten Messungen für Pinguinarten, Inseln im Palmer-Archipel, Größe (Flossenlänge, Körpermasse, Schnabelabmessungen) und Geschlecht. <br><br> <i>Datensatz im R-Paket palmerpenguins enthalten.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
+          },
+          {
+            "name": "Police Cadet Evaluation",
+            "path": "policeCadetEvaluation.jasp",
+            "description": "In den späten 1990er Jahren in den Niederlanden erhobene Felddaten über die Beurteilung von Polizeianwärtern, die zur Untersuchung der Auswirkungen einer Senkung der Zulassungsstandards und zur Vorhersage, ob die Anwärter die standardmäßige Fünfjahresbeurteilung bestehen würden, auf der Grundlage verschiedener Merkmale verwendet wurden. <br><br> <i>Datensatz, der von der Nationalen Agentur für Polizeidienste und dem Justizministerium in den Niederlanden zur Verfügung gestellt wurde.<\/i>",
+            "kind": "file",
+            "associated_datafile": "policeCadetEvaluation.csv"
           }
         ],
         "debug": false

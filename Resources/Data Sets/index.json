@@ -750,6 +750,13 @@
             "description": "Data contains measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. <br><br> <i>Data set included in R package palmerpenguins.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
+          },
+          {
+            "name": "Police Cadet Evaluation",
+            "path": "policeCadetEvaluation.jasp",
+            "description": "Real-world data on police cadet evaluation, collected in the late 1990s in the Netherlands, which was used to study the effects of lowering admission standards and to predict whether cadets would pass the standard five-year evaluation based on various attributes. <br><br> <i>Data set made available by Korps landelijke politiediensten and Ministerie van Justitie the Netherlands.<\/i>",
+            "kind": "file",
+            "associated_datafile": "policeCadetEvaluation.csv"
           }
         ],
         "debug": false
