@@ -754,7 +754,7 @@
           {
             "name": "Police Cadet Evaluation",
             "path": "policeCadetEvaluation.jasp",
-            "description": "Real-world data on police cadet evaluation, collected in the late 1990s in the Netherlands, which was used to study the effects of lowering admission standards and to predict whether cadets would pass the standard five-year evaluation based on various attributes. <br><br> <i>Data set made available by Korps landelijke politiediensten and Ministerie van Justitie the Netherlands.<\/i>",
+            "description": "Real-world data on police cadet evaluation, collected in the late 1990s in the Netherlands, which was used to study the effects of lowering admission standards and to predict whether cadets would pass the standard five-year evaluation based on various attributes. <br><br> <i>Data set made available by the National Police Corps and the Ministry of Justice of the Netherlands.<\/i>",
             "kind": "file",
             "associated_datafile": "policeCadetEvaluation.csv"
           }
