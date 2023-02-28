@@ -93,6 +93,7 @@ void Analysis::initAnalysis()
 
 Analysis::~Analysis()
 {
+	setRefreshBlocked(true);
 	if(form())
 		destroyForm();
 
