@@ -35,7 +35,7 @@ void AnalysisBase::destroyForm()
 		_analysisForm->setParent(		nullptr);
 		_analysisForm->setParentItem(	nullptr);
 
-		_analysisForm->deleteLater();
+		delete _analysisForm;
 		_analysisForm = nullptr;
 
 		emit formItemChanged();
