@@ -1,0 +1,93 @@
+<h1>How to use the Easy Filter constructor</h1>
+
+<p>The following examples will show you how you can create your own filters in a (relatively) simple manner: </p>
+
+
+<details>
+	<summary><b>Filtering a continuous column</b></summary>
+	<p>
+	This example shows how you can use the easy filter to check for equivalence or greater/less than and the like. 
+	We will use the included dataset "Kitchen Rolls" and will filter on the ParticipantNumber-column.
+	The steps taken in the video will be outlined underneath.
+	</p>
+	<img src="other/FilteringParticipant.gif"/>
+	<ul>
+		<li>First we click once the required column (ParticipantNumber) to add it to the overview.</li>
+		<li>Then we select '=' or equivalence, which is added to or previously selected column.</li>
+		<li>The empty space to the right of the equivalence can be filled up by dropping different other operators or columns, but for now we click it and then type the number '2'.</li>
+		<li>Now we apply the filter by pressing the appropriate button and we will see that now only the row where ParticipantNumber is 2 is active.</li>
+		<li>After that we select the '2' again to be able to edit it again. By clearing it completely we could remove it, but for now we just change it to '3'.</li>
+		<li>Once more we apply our pass-through filter and again only the corresponding row is active.</li>
+		<li>To select more than one row we can make use of the less-than operator or '&lt;' and so we remove our constructed formula and create a new one.</li>
+		<li>We add the ParticipantNumber-column again</li>
+		<li>Then add '&lt;' and enter '5' in the empty righthand side.</li> 
+		<li>Applying the filter makes the result immediately visible.</li>
+		<li>Next we clear everything and the animation repeats.</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>Filtering one or more categoricals</b></summary>
+	<p>This example shows you how to filter a certain categorical variable alone and in combination with another. We will do this through both the variable window and the easy filter</p>	
+	<img src="other/FilteringSex.gif"/>
+	<ul>
+		<li>First we open the variable window for the 'Sex' column by clicking the header.</li>
+		<li>Here we turn off the 'M' value, we immediately see that all corresponding rows are turned inactive.</li>
+		<li>Ticking 'M' back on again and turning off 'F' gives us the opposite situation.</li>
+		<li>Next we look at a different categorical, after making sure both 'M' and 'F' are active, we open the variables window for 'Student'.</li>
+		<li>Here we untick 'N' and we see that the only visible row containing this is turned inactive.</li>
+		<li>This we combine with unticking 'M' in 'Sex' and see that now the rows corresponding with either 'M' or 'N' are both inactive.</li>
+		<li>To do this with the easy filter constructor is also possible and to show this we first clean up the current selection by choosing "erase all".</li>
+		<li>Then we open the easy filter and enter 'Sex', followed by '=' and we enter the text 'F' on the empty righthand side.</li>
+		<li>To combine this with the other categorical we enter a new formula below by selecting 'Student', '=' and entering 'N'.</li>
+		<li>After choosing 'Apply pass-through filter' we see only one row active where these values are matched.</li>
+		<li>To show the opposite we remove the last formula and replace it with one that makes 'Student' be inequal to 'N'.</li>
+		<li>After applying we now see that only the one row previously active is now the only inactive one, as expected.</li>
+		<li>Next we clear everything and the animation repeats.</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>Filtering on standard deviation</b></summary>
+	<p>This example shows you how to filter based on being larger than it's own standard deviation.</p>	
+	<img src="other/FilteringStandardDeviation.gif"/>
+	<ul>
+		<li>We will filter 'mean_NEO', so we enter it as the basis of our first formula.</li>
+		<li>Clicking the '>' symbol adds it to the formula.</li>
+		<li>Because we want to check for the standard deviation we click the corresponding &sigma; symbol from the function overview to the right.</li>
+		<li>We then drop another copy of 'mean_NEO' into this and apply our filter.</li>
+		<li>Now we see that only rows 4 and 5 are inactive.</li>
+		<li>To see the contrast with a larger value we multiply the standard deviation by adding '*' and typing 2 on the righthand side.</li>
+		<li>After choosing apply we now see that only row 2 remains active.</li>
+		<li>After that the filter is cleared and the animation repeats.</li>
+	</ul>
+	<p>Of course you can also use the other functions in the list on the right in combination with the operators above to check for many desired values.</p>
+</details>
+
+<details>
+		<summary><b>Conditioned filtering - simple example</b></summary>
+		<p>This is a simple example to show how you can use conditional filtering. In this case we just want the rows that show the maximum age.</p>	
+		<img src="other/FilteringAgeConditional.gif"/>
+		<ul>
+			<li>We will filter 'Age', so we enter it as the basis of our first formula.</li>
+			<li>Clicking the '=' symbol adds it to the formula.</li>
+			<li>Then we add 'max(Age)' and apply it.</li>
+			<li>We now see there is one active row showing a 51 year old female.</li>
+			<li>To get the maximum age per sex we add the 'condition on'-operator or '|' followed by 'Sex'.</li>
+			<li>After applying we see that besides the woman there is now also an active row with a 38 year old male.</li>
+		</ul>
+</details>
+
+<details>
+		<summary><b>Conditioned filtering - outliers per group</b></summary>
+		<p>This is a simple example to show how you can filter outliers per group using conditional filtering.</p>	
+		<img src="other/FilteringExtraConditional.gif"/>
+		<ul>
+			<li>We will filter the absolute value of 'extra'.</li>
+			<li>To this is added '>' and &sigma; for the standard deviation</li>
+			<li>'extra' is placed inside &sigma;() and the result multiplied by 2.</li>
+			<li>After applying we see that there are 3 active rows that pass this criterium, all in group '2'</li>
+			<li>To get the outliers per group we add the 'condition on'-operator or '|' followed by 'group'.</li>
+			<li>After applying we see that there is one more active row, this time from group '1'.</li>
+		</ul>
+</details>

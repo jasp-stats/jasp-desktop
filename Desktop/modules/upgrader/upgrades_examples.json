@@ -1,0 +1,27 @@
+{
+	"from": { "module": "Descriptives",		"version": "0.11.1", "function": "Descriptives"							},
+	"to":	{ "module": "Descriptives",		"version": "0.12"														},
+	"options":
+	[
+		{ "changes": 
+			{ 
+				"variables": { "_renamed": "vars" } 
+			}
+		},
+
+		{ 
+			"conditional": 
+			{
+				"_boolOp":	"AND",
+				"_args":	[ { "splitPlotJitter": true }]
+			},
+
+			"changes": 
+			{ 
+				"splitPlotJitter": null,
+				"splitPlotJittery": false
+
+			}
+		}
+	]
+}

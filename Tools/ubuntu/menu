@@ -1,0 +1,1 @@
+?package(jasp): needs="X11" section="Applications/Science/Data Analysis" title="JASP" command="/usr/lib/JASP/jasp"

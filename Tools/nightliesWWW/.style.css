@@ -1,0 +1,111 @@
+.container
+{
+    text-align:     center;
+    width:          100%;
+}
+
+#tablegrouper
+{
+    display:            inline-block;
+}
+
+.tafel
+{
+    display:            inline-block;
+    background-color:   #FFFFFFE6;    
+}
+
+
+h1
+{
+    margin-left:    8pt;
+    display:        block;
+    
+    font-size:      28pt;
+}
+
+#logo
+{
+    
+    height:     32pt;
+    display:    inline-block;
+
+}
+
+#tafels
+{
+    
+}
+
+table
+{
+    border:         1px solid black;
+    vertical-align: top;
+    margin:         6px;
+}
+
+td
+{
+    padding:    8px;
+}
+
+body
+{
+    margin:      0px;
+    font-family: Arial, Verdana, sans-serif;
+}
+
+#bovenkant
+{
+    height:     60pt;
+    margin-top: 30pt;
+}
+
+#onderkant
+{
+   height:      120pt;
+   display:     block;
+}
+
+#titel
+{
+    text-align: center;
+    display:    fixed;
+}
+
+
+#disclaimer
+{
+    text-align:		center;
+    width:			70%;
+    margin-left:	auto;
+    margin-right:	auto;
+    margin-top:		90pt;
+    display:		block;
+}
+
+
+#blauw
+{
+    
+    width:      100%;
+    height:     auto;
+    top:        0%;
+    left:       0%;
+    position:   fixed;
+    z-index:    -3;
+}
+
+#groen
+{
+    
+    width:      100%;
+    height:     auto;
+
+    bottom:     0%;
+    position:   fixed;
+    z-index:    -4;
+}
+
+
+  

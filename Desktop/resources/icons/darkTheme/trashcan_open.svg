@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="trashcan_open.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="590.02908"
+     inkscape:cy="480.11421"
+     inkscape:document-units="px"
+     inkscape:current-layer="trash"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1396"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Laag 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g3423"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)">
+      <g
+         id="trash">
+        <g
+           id="g3533"
+           transform="matrix(2.5593664,0,0,1.9240443,-2.9403218,-23.563553)">
+          <path
+             sodipodi:nodetypes="ccsssscccssssccs"
+             id="path3426"
+             d="M 3.8836711,9.5189966 3.9612237,11 5.3765397,28.205455 c 0.1814838,2.20623 3.2822514,3.520605 5.4912513,3.520605 l 9.920283,0 c 2.209,0 5.27751,-0.767415 5.491251,-2.972726 L 28,11 28.038776,9.7966847 C 18.928168,9.6331751 13.650732,9.6140102 3.8836711,9.5189966 Z M 24.279325,28.343425 c -0.109146,1.100071 -2.618752,1.733847 -3.720674,1.72606 L 10.867791,30.001 c -1.1029226,-0.0078 -3.2800037,-0.899508 -3.3765396,-2 L 6,11.001 l 20,0 z"
+             fill="white"
+             inkscape:connector-curvature="0" />
+          <path
+             sodipodi:nodetypes="sssssssssccccc"
+             id="path3428"
+             d="m 10.491251,27.799545 1.541154,0.136965 c 0.546973,0.04861 0.924291,-0.379005 0.885288,-0.931515 L 12,14.005 c -0.039,-0.55251 -0.447,-1 -1,-1 l -2,0 c -0.553,0 -1.0632873,0.448293 -1,1 l 1.4912514,13 c 0.063287,0.551707 0.453027,0.745935 0.9999996,0.794545 z M 9,14.004 l 2,0 1.147116,13.205455 -1.770576,-0.06848 z"
+             fill="white"
+             inkscape:connector-curvature="0" />
+          <path
+             sodipodi:nodetypes="sssssssssccccc"
+             id="path3430"
+             d="m 15,28.005 2,0 c 0.553,0 1,-0.447 1,-1 l 0,-13 c 0,-0.553 -0.447,-1 -1,-1 l -2,0 c -0.553,0 -1,0.447 -1,1 l 0,13 c 0,0.553 0.447,1 1,1 z m 0,-14.001 2,0 0,13.27394 -2,0 z"
+             fill="white"
+             inkscape:connector-curvature="0" />
+          <path
+             sodipodi:nodetypes="sssssssssccccc"
+             id="path3432"
+             d="m 20.197018,27.86803 1.770577,-0.136975 c 0.548415,-0.04243 0.83656,-0.173826 0.885289,-0.72606 L 24,14.005 c 0.04873,-0.552234 -0.447,-1 -1,-1 l -2,0 c -0.553,0 -0.965866,0.447376 -1,1 l -0.802982,13 c -0.03413,0.552624 0.451585,0.905456 1,0.86303 z M 21,14.004 l 2,0 -0.917693,13 -2.000001,0.06848 z"
+             fill="white"
+             inkscape:connector-curvature="0" />
+        </g>
+        <g
+           transform="matrix(2.4590033,0.42452097,-0.89190774,1.8485948,6.9091681,-37.544745)"
+           id="g3577">
+          <path
+             inkscape:connector-curvature="0"
+             fill="white"
+             d="M 29.98,6.818 C 29.884,5.248 28.593,4.002 27,4.002 l -3,0 0,-1 L 24,3 C 24,1.343 22.656,0 21,0 L 11,0 C 9.343,0 8,1.343 8,3 l 0,10e-4 0,1 -3,0 c -1.595,0 -2.885,1.246 -2.981,2.816 L 2,6.817 2,8 2,9 c 0,1.104 0.896,2 2,2 l 0,0 c 12.793645,-0.03085 12.318828,-0.06726 23.495908,0.09256 l 0.697974,0 C 29.297882,11.092563 30,10.104 30,9 L 30,8 30,6.818 Z M 10,3.001 c 0,-0.553 0.447,-1.4793944 1,-1.4793944 l 9.885288,0 C 21.438288,1.5216056 22,2.448 22,3.001 l 0,1 -12,0 z M 28,8 27.885288,9.6848492 4,9.5478793 4,8 4,7.001 C 4,6.448 5.8235492,5.4511876 6.3765397,5.4531207 L 25.967595,5.5216056 C 26.520586,5.5235387 28,6.448 28,7.001 Z"
+             id="path3579"
+             sodipodi:nodetypes="csccssssccscccsccccscccssssccsccccssssc" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g3434"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3436"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3438"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3440"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3442"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3444"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3446"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3448"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3450"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3452"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3454"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3456"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3458"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3460"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+    <g
+       id="g3462"
+       transform="matrix(8.8060157,0,0,14.75,16.959397,490.64792)" />
+  </g>
+</svg>

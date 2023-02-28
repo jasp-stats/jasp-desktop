@@ -1,0 +1,224 @@
+Gender,Age,RelLen,Condition,PartnerAttractiveness,LoveForPartner,AveragePleasantness
+Male,43,3.75,Nudes,21,76,5.9375
+Female,26,3,Nudes,19,66,4.75
+Female,35,5.25,Abstract Art,27,103,6.25
+Female,31,2,Abstract Art,22,76,5.5625
+Female,23,4,Abstract Art,27,109,2.375
+Male,36,19.91666667,Nudes,16,98,5.125
+Male,58,22.5,Abstract Art,23,102,4.875
+Female,28,3.416666667,Abstract Art,23,109,5.3125
+Male,55,4.75,Nudes,21,116,6.75
+Female,47,26.25,Abstract Art,24,67,4.875
+Female,38,5.25,Nudes,27,114,6.1875
+Male,32,6.416666667,Abstract Art,22,91,4.75
+Male,35,8.583333333,Nudes,14,73,6.3125
+Female,33,4,Abstract Art,27,112,6.8125
+Female,32,14.08333333,Abstract Art,19,106,3.75
+Female,33,7.833333333,Nudes,21,78,3.8125
+Male,30,3.5,Abstract Art,25,70,4.8125
+Male,39,16.75,Abstract Art,25,88,4.8125
+Male,35,12,Nudes,21,103,4.6875
+Female,24,3.25,Nudes,24,107,5.625
+Male,44,18,Abstract Art,20,84,4.0625
+Male,42,8,Nudes,18,69,5.625
+Male,29,2,Abstract Art,13,81,5.125
+Male,29,2.166666667,Abstract Art,27,48,5.3125
+Female,31,7.25,Abstract Art,3,45,3.25
+Female,33,4,Abstract Art,27,112,6.5625
+Male,24,3.5,Abstract Art,21,97,3.9375
+Male,28,5.25,Abstract Art,27,107,4.6875
+Male,34,1.416666667,Nudes,13,97,5.75
+Female,62,42.75,Abstract Art,20,103,3.625
+Female,41,13.25,Nudes,21,110,4.5
+Female,22,4.166666667,Abstract Art,16,81,5.5625
+Male,36,1.75,Abstract Art,19,82,5.25
+Male,31,5.166666667,Abstract Art,17,62,4.3125
+Female,43,15,Nudes,27,114,3.25
+Female,23,1.333333333,Abstract Art,27,115,5.25
+Male,48,7.416666667,Nudes,24,101,4.125
+Female,26,2.25,Nudes,22,103,5.625
+Female,28,10.41666667,Abstract Art,12,91,5.5
+Male,55,33.33333333,Abstract Art,19,75,3.625
+Female,51,8,Abstract Art,24,108,4.5
+Male,32,1.5,Abstract Art,18,101,4.625
+Male,38,12.91666667,Abstract Art,18,75,4.8125
+Male,28,3.166666667,Nudes,21,73,6
+Male,52,28,Abstract Art,27,114,6.1875
+Male,28,5.25,Nudes,21,96,5.625
+Male,27,6.583333333,Nudes,27,82,5.5
+Male,43,3,Nudes,25,109,6.5625
+Female,29,12.5,Abstract Art,21,82,5.0625
+Female,38,2.083333333,Abstract Art,27,111,4.75
+Female,42,2.5,Abstract Art,13,80,6.1875
+Male,44,23.5,Abstract Art,16,93,3.875
+Female,21,5.333333333,Abstract Art,27,112,5.8125
+Male,45,2.916666667,Abstract Art,24,107,5.8125
+Male,32,15.25,Nudes,15,60,4.9375
+Male,24,1.833333333,Nudes,25,90,5.3125
+Female,28,3.5,Nudes,18,85,4.5625
+Female,22,0.583333333,Nudes,24,100,2.875
+Male,18,0.25,Nudes,19,107,5.25
+Female,23,3.25,Nudes,27,112,3.375
+Male,33,6,Abstract Art,22,100,6.1875
+Male,46,3.666666667,Nudes,21,100,6.875
+Female,40,10.16666667,Abstract Art,27,86,5.0625
+Female,41,21.91666667,Abstract Art,17,103,4.4375
+Male,40,15.83333333,Nudes,21,84,7
+Male,28,3,Nudes,25,92,5.75
+Female,21,4,Nudes,25,109,4.375
+Female,36,6.75,Nudes,27,91,6.8125
+Male,38,11,Abstract Art,25,97,3.3125
+Male,37,9.083333333,Nudes,27,94,5
+Male,41,11.08333333,Nudes,24,98,6.3125
+Female,52,8.333333333,Abstract Art,25,98,4.625
+Female,36,1.916666667,Abstract Art,19,93,4.8125
+Female,24,7,Abstract Art,26,115,4.125
+Male,63,7.416666667,Nudes,23,108,5
+Female,29,1.333333333,Abstract Art,15,88,1
+Male,29,2.25,Nudes,17,107,4.6875
+Female,56,6.583333333,Nudes,25,111,5.9375
+Male,26,0.333333333,Abstract Art,16,70,4.9375
+Male,29,11.91666667,Nudes,27,116,6.9375
+Female,38,5.333333333,Nudes,14,77,3.9375
+Male,46,15.16666667,Abstract Art,25,97,4.5
+Female,38,14.58333333,Abstract Art,22,83,5.375
+Male,31,3.333333333,Abstract Art,20,87,4.6875
+Male,32,4.333333333,Abstract Art,16,93,5.5625
+Female,36,12.66666667,Abstract Art,26,106,6.9375
+Female,,3.166666667,Nudes,23,104,0
+Male,55,3,Nudes,21,80,5.5
+Female,49,6.75,Abstract Art,18,69,4.875
+Male,37,2,Nudes,21,91,7
+Female,36,9.416666667,Nudes,23,106,3.1875
+Male,30,,Nudes,25,103,5.1875
+Male,20,0.833333333,Nudes,23,92,4.0625
+Female,29,7.25,Nudes,23,76,5.5
+Male,64,6.833333333,Abstract Art,21,115,5.6875
+Female,28,9.833333333,Nudes,25,115,1
+Female,27,5,Abstract Art,21,106,4.75
+Male,58,30.33333333,Nudes,14,112,7
+Female,46,10.5,Abstract Art,21,62,4.9375
+Female,25,2,Nudes,19,117,4.375
+Female,56,15.5,Abstract Art,18,87,4.4375
+Male,26,4,Nudes,17,117,1.125
+Male,36,2.25,Abstract Art,20,94,5.6875
+Female,24,1.25,Nudes,20,86,3.8125
+Male,31,6.083333333,Abstract Art,19,67,3.3125
+Male,32,4.75,Abstract Art,22,93,5.625
+Female,43,23.58333333,Abstract Art,27,96,5.75
+Male,37,8.583333333,Nudes,22,97,5.1875
+Female,26,5.333333333,Abstract Art,21,103,5.0625
+Female,52,30,Nudes,19,78,1.1875
+Female,62,1.833333333,Nudes,24,102,2
+Male,24,3,Nudes,20,89,5.6875
+Female,33,4,Nudes,18,76,5.375
+Male,34,5.333333333,Nudes,16,75,5.625
+Female,52,37.08333333,Nudes,20,86,5
+Female,31,12.33333333,Abstract Art,21,108,5.375
+Female,49,30,Abstract Art,27,100,2.5625
+Male,32,16,Nudes,22,102,5.625
+Male,49,22.16666667,Abstract Art,22,100,6.125
+Female,30,5.666666667,Abstract Art,21,86,4.625
+Female,23,2.333333333,Nudes,24,91,6
+Male,41,2.833333333,Abstract Art,24,113,5
+Male,61,30.83333333,Abstract Art,22,94,4.4375
+Male,39,4.166666667,Nudes,20,64,6.3125
+Female,33,12.16666667,Abstract Art,27,105,4.4375
+Male,29,,Abstract Art,15,77,4.25
+Male,20,3.166666667,Abstract Art,25,92,4.625
+Female,25,7,Abstract Art,26,109,3.625
+Female,30,9.166666667,Nudes,27,111,5
+Male,39,5.5,Abstract Art,21,78,3.8125
+Male,58,32,Abstract Art,22,88,3.5625
+Male,30,5.25,Nudes,22,86,3.5
+Male,31,2,Abstract Art,26,114,5.1875
+Female,25,4.333333333,Abstract Art,21,83,5
+Female,30,8.25,Abstract Art,18,103,4.125
+Male,27,2,Abstract Art,23,88,6
+Male,25,1.166666667,Nudes,11,29,2.3125
+Male,19,1.583333333,Nudes,25,102,6.6875
+Male,25,8.5,Abstract Art,24,78,4.8125
+Male,25,1.166666667,Abstract Art,16,68,3.625
+Male,25,2.416666667,Nudes,20,96,5.1875
+Male,42,8.416666667,Abstract Art,22,98,1.875
+Male,36,3.416666667,Nudes,24,101,5.125
+Female,20,0.666666667,Nudes,23,107,4.3125
+Male,42,10.5,Abstract Art,21,68,3.5
+Female,36,12.91666667,Nudes,23,114,4.8125
+Male,,3.333333333,Nudes,24,101,3.8125
+Male,64,34.75,Nudes,12,55,5.0625
+Male,61,,Abstract Art,3,65,4.25
+Male,19,2.5,Abstract Art,24,68,5.1875
+Female,53,34.75,Nudes,15,79,3.625
+Male,53,24.83333333,Nudes,23,77,7
+Male,43,3.166666667,Abstract Art,21,73,5.0625
+Male,31,9.333333333,Nudes,23,109,6.125
+Female,37,16,Abstract Art,18,83,4.625
+Male,33,5.833333333,Nudes,15,64,4.25
+Female,34,1,Abstract Art,22,102,5.4375
+Male,37,60,Abstract Art,22,117,1.3125
+Male,42,24,Abstract Art,25,112,5.1875
+Female,26,2.75,Nudes,25,106,2.5625
+Female,28,4.666666667,Nudes,25,110,6.5625
+Male,37,10,Nudes,21,99,6.25
+Male,34,4,Abstract Art,24,83,4.1875
+Female,28,8,Abstract Art,21,112,5
+Female,30,5.5,Abstract Art,27,109,6.5
+Female,30,4,Nudes,22,71,3.25
+Male,39,6.333333333,Abstract Art,25,53,5.3125
+Male,22,1.5,Nudes,27,102,3
+Female,28,5.75,Abstract Art,15,86,5.3125
+Female,20,1.416666667,Nudes,16,108,5.8125
+Female,32,17.66666667,Abstract Art,22,106,4.1875
+Male,53,30.5,Nudes,25,109,6.1875
+Male,41,13.5,Abstract Art,27,112,4.375
+Male,28,4.25,Abstract Art,18,94,4.875
+Female,33,7.25,Abstract Art,19,94,4
+Female,26,3.333333333,Abstract Art,24,84,5.1875
+Male,33,1,Abstract Art,24,99,4.25
+Male,29,10,Nudes,20,96,6.125
+Female,34,13.91666667,Abstract Art,27,109,7
+Female,41,23.08333333,Nudes,24,98,1.1875
+Female,26,5.416666667,Abstract Art,22,104,4.5
+Male,52,10.5,Nudes,26,78,5.25
+Female,26,8.333333333,Nudes,19,87,4
+Male,28,2.416666667,Abstract Art,24,99,5.8125
+Male,32,10.25,Nudes,22,95,4.875
+Male,29,5.5,Abstract Art,21,76,4.0625
+Male,28,8.166666667,Nudes,26,88,6
+Female,45,8.25,Abstract Art,23,87,5.875
+Male,25,5.083333333,Nudes,24,106,7
+Female,21,1.166666667,Nudes,19,85,3.6875
+Female,40,11,Nudes,15,58,4.8125
+Female,53,3.166666667,Abstract Art,26,117,5.6875
+Male,50,15.91666667,Abstract Art,22,70,4.25
+Female,83,2.083333333,Nudes,24,53,3.625
+Female,33,2.083333333,Abstract Art,18,67,4.1875
+Male,30,14.25,Nudes,25,108,6.3125
+Female,34,11.5,Nudes,6,60,4.75
+Male,69,53.66666667,Abstract Art,27,116,5.5625
+Female,24,3.333333333,Abstract Art,18,78,5.1875
+Male,34,10.08333333,Nudes,25,109,4.9375
+Female,30,8.166666667,Abstract Art,17,92,4.875
+Male,31,16.08333333,Abstract Art,27,98,5
+Male,33,6.333333333,Abstract Art,20,79,4.25
+Female,32,14.16666667,Abstract Art,27,110,5.5
+Male,33,3.166666667,Abstract Art,24,91,4.75
+Male,31,2,Nudes,27,113,6.0625
+Male,24,0.666666667,Nudes,17,71,5.5625
+Female,25,0.583333333,Abstract Art,20,100,4.125
+Female,26,7.166666667,Nudes,27,101,4.625
+Male,48,27.16666667,Nudes,24,109,6.9375
+Male,28,2.25,Abstract Art,23,92,4
+Male,31,9,Abstract Art,25,107,4.1875
+Male,54,25.08333333,Abstract Art,23,95,6.375
+Female,21,1.833333333,Abstract Art,26,104,5
+Male,35,8.333333333,Nudes,8,62,4.0625
+Male,34,13.25,Abstract Art,24,95,4.9375
+Female,22,1.416666667,Abstract Art,9,68,5.3125
+Male,33,8.75,Abstract Art,16,75,4.8125
+Male,33,5,Nudes,27,103,4.375
+Male,30,2.5,Nudes,24,110,7
+Female,33,4.833333333,Nudes,12,72,6.5625
+Male,29,5,Abstract Art,15,86,4.75
+Male,40,7.333333333,Abstract Art,23,107,4.1875

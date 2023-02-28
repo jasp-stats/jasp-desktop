@@ -1,0 +1,22 @@
+# This file is generated from `Deploy.mac.cmake.in`.
+#
+# It is being used to run the `macdeployqt` on the `JASP.app` binary, as well
+# as the JASPEngine. Notice that we are double signing some of the Qt libraries,
+# once here, and once at the end of the install stage. This is necessary because
+# Qt libraries are framework, and the `ParallelSigner.sh.in` might not deal with
+# them appropriately
+
+set(IDENTITY "@APPLE_CODESIGN_IDENTITY@")
+
+execute_process(
+  COMMAND_ECHO STDOUT
+  WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@
+  COMMAND
+    @DEPLOYQT_EXECUTABLE@ JASP.app -executable=@JASP_INSTALL_BINDIR@/JASPEngine
+    -sign-for-notarization=${IDENTITY} -verbose=3 -qmldir=@JASP_QML_FILES@
+    -hardened-runtime
+  RESULT_VARIABLE result)
+
+if(result)
+  message(FATAL_ERROR "Executing @DEPLOYQT_EXECUTABLE@ failed: ${result}")
+endif()

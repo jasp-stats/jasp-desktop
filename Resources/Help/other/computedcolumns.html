@@ -1,0 +1,54 @@
+<h1>Computed Columns</h1>
+
+<details>
+	<summary><b>Adding a Computed Column</b></summary>
+	<img src="other/CreatingComputedColumn.gif"/>
+	<p>When you have the dataview of JASP in front of you then in the top-right corner there should be a '+'-symbol.
+		When you click this it opens a dialog that lets you create a computed column, you are required to enter a valid and unused column name for it.</p>
+	<p>	You can choose whether you want to define it through R code or through the drag &amp; drop constructor, similar to those used in filtering.</p>
+	<p>	The initial type for your column can be selected as well. This can be changed at any later point anyway, just like the other columns (through the type dropdown menu from the columnheader icon). </p>
+</details>
+
+<details>
+	<summary><b>Using Drag &amp; Drop Constructor</b></summary>
+	<p>Computing new data using the Drag &amp; Drop constructor is quite straight-forward, especially if you've already used it for filtering. Still, some examples follow:</p>
+	<ul>
+		<li>
+			<b>Converting a Scale (Height Ratio -> Height)</b>
+			<img src="other/ComputedColumnHeight.gif"/>
+			<p>Supposing we have a column <i>Height Ratio</i> and we want to convert it back to proper heights. We assume that 180cm is the norm and with this knowledge the animation above should be clear.</p> 
+		</li>
+		<li>
+				<b>Converting to Logical (as text)</b>
+				<img src="other/ComputedColumnPopularVote.gif"/>
+				<p>Supposing we have a column <i>Popular Vote</i> and we want to show clearly who got it and who didn't. We create a column with <i>Nominal Text</i> as type and specify the requested formula, see above animation for details.</p> 
+			</li>
+			<li>
+				<b>Dividing a scalar (Height Ratio) into 3 named fields</b>
+				<img src="other/ComputedColumnHeightCategoryDragNDrop.gif"/>
+				<p>Supposing we have a column <i>Height Ratio</i> and we want divide the rows up based on if they are <i>Short</i> or <i>Tall</i> or not. We create a column with <i>Nominal Text</i> as type and use the <i>cut</i> function to divide <i>Height Ratio</i> into 3 levels. Afterwards we give each of the intervals a nice name to clarify what's what.</p> 
+			</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>Using R</b></summary>
+	<p>Computing new data using R is quite straightforward, you can use many standard functions and can refer to other columns through name.</p>
+	<p>Some examples:
+			<ul>
+				<li><p><b>Multiplying a scalar (Height Ratio) by some fixed value</b></p>
+					<p>Make sure that your column is defined as <i>Scale</i>, even though the other types would also work.</p>
+				<p class="code">Height Ratio * 180</p>
+			</li>
+				<li><p><b>Dividing a scalar (Height Ratio) into 3 named fields</b></p>
+					<p>Make sure that your column is defined as <i>Nominal Text</i></p>
+					<p class="code">cut(Height Ratio, 3, c("Short", "Average", "Tall"))</p>
+				</li>
+			</ul>
+			There are of course many possibilities and you are only limited by the availability of (safe) functions in JASP. Should you miss something than don't hesitate to contact us so we may add it to the next version.
+	</p>
+
+	
+</details>
+
+

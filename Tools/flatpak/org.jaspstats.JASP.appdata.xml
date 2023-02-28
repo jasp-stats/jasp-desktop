@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 University of Amsterdam -->
+<component type="desktop">
+	<id>org.jaspstats.JASP</id>
+	<launchable type="desktop-id">org.jaspstats.JASP.desktop</launchable>
+	<name>JASP</name>
+	<summary>Standard statistical analyses, both classical and Bayesian</summary>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>AGPL-3.0+</project_license>
+	<content_rating type="oars-1.1" />
+	<developer_name>University of Amsterdam</developer_name>
+    <update_contact>joris@jorisgoosen.nl</update_contact>
+	<description>
+		<p>
+			​JASP is a cross platform statistical software program with a state-of-the-art graphical user interface. 
+			It offers standard analysis procedures in both	their classical and Bayesian form. 
+		</p>
+		<p>
+			It was designed with the user in mind: APA-formatted tables can be copy-pasted in your word processor, output can be extensively annotated, adjustment of input options dynamically changes the output, and selecting 
+			old output revives the associated input choices for inspection and adjustment.
+		</p>
+		<p>
+			JASP is also statistically inclusive, as it offers both frequentist and Bayesian analysis methods. 
+			Indeed, the primary motivation for JASP is to make it easier for statistical practitioners to conduct Bayesian analyses.
+		</p>
+	</description>
+	<translation/>
+	<screenshots>
+		<screenshot type="default">
+			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
+			<image type="source" width="1600" height="900">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot-0.png</image>
+		</screenshot>
+	</screenshots>
+	<url type="homepage">http://www.jasp-stats.org</url>
+	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
+	<url type="donation">https://jasp-stats.org/donate/</url>
+	<releases>
+	<release version="0.17.1" date="2023-02-10">
+		<description>
+JASP Release Notes 0.17.1
+Fixes:
+	• https://github.com/jasp-stats/jasp-issues/issues/1987: Repeated Measures ANOVA does not run if the model terms are not explicitly set.
+	• https://github.com/jasp-stats/jasp-issues/issues/1986: JASP crashes sometimes when starting it with an internet proxy.
+	• https://github.com/jasp-stats/jasp-issues/issues/1990: Wrong name in T-Tests “Wilcoxon signed-rank” option should be labelled “Mann-Whitney”
+	• https://github.com/jasp-stats/jasp-issues/issues/1989: Linear Regression: Casewise Diagnostics table shows wrong case ID when having missing data in dependent variable
+	• https://github.com/jasp-stats/jasp-issues/issues/1983: No error bars displayed when running a 2-way ANOVA (edited)
+		</description>
+	</release>
+	<release version="0.17.0" date="2023-01-26">
+		<description>
+JASP Release Notes 0.17.0
+New features and improvements
+	• Syntax mode
+	• Improved keyboard navigation (#4943)
+	• New module: Acceptance Sampling
+	• Structural Equation Modeling
+		◦ New analysis: Partial Least Squares SEM (#354)
+		◦ T-sized adjusted RMSEA and CFI (#1837)
+    • Network
+		◦ New analysis: Bayesian network analysis (#1864)
+    • Meta-Analyses
+		◦ New analysis: Bayesian Penalized Meta-Analysis (Utrecht project)
+    • JAGS
+		◦ Customizable Inference added (#83)
+            Show tables and plots for specific variables or subsets of variables.
+            Order the shown variable in the tables and plots by their posterior mean, posterior median, or a custom order.
+            Compute and plot custom intervals for posterior distributions (CRI, HDI, or the probability of the area between two user-specified values).
+		◦ Save posterior samples generated to external file (#76)
+		◦ Improved for large data files (#1920)
+    • Regression
+		◦ Added multinomial, ordinal and firth logistic regression (#179)
+		◦ Improved performance for logistic regression (#1814)
+    • Descriptives
+		◦ Added confidence intervals for mean, standard deviation, and variance (#123)
+    • Distributions
+		◦ Confidence intervals added to Q-Q and P-P plots (#82)
+    • Prophet
+		◦ Prediction is optional (#60)
+    • Engines and R-library separation behavior improved (#4726)
+    • Improved preference help file (#4881)
+    • Module selection in R commander (#1912)
+    • All plots can now be saved as .pptx, .pdf, and .eps (#113, #1910)
+    • Added documentation on how to connect to Snowflake warehouse (#1888)
+
+Bug fixes
+    • Show strength in centrality table and plot in the network analysis module (#1692)
+    • Variance-covariance matrix could not always be calculated in SEM (#1845)
+    • Errors when using flexplot in visual modeling module (#1327, #1849)
+    • Temporarily disable no-bom-native-codepage workaround for CSVs on windows. Use utf-8 whenever you can to avoid this problem.
+		</description>
+	</release>
+	<release version="0.16.4" date="2022-09-29">
+		<description>
+JASP Release Notes 0.16.4
+New features and improvements
+	• SQL Database can be connected to JASP (#4798)
+	• ANOVA
+		◦ SE and coefficient of variation added to the descriptives tables (#150)
+		◦ Friedman test checks “unreplicated block design” requirement (#177)
+		◦ Improved help file (#1772)
+		◦ Laplace approximation added to BANOVA (#194)
+	• T-Tests
+		◦ Brown-Forsythe test added (as default) to equality of variance tests in independent t-tests (#124)
+		◦ SEs for effect sizes added to all frequentist t-tests (#129)
+	• Factor (#75, #93)
+		◦ Ordinal variables allowed (#1624)
+		◦ Option for poly/tetrachoric correlations (#903)
+		◦ Mardia's tests of multivariate normality
+		◦ Detailed output of the parallel analysis results
+		◦ Help file improved
+	• Frequencies
+		◦ Contingency tables
+			▪ Unstandardized, Pearson and Standardized residuals added (#88, #1442)
+	• Cochrane Meta-Analyses (#12)
+		◦ Export selected datasets
+		◦ Improved error message for dataset with one estimate
+		◦ Improved Add Estimates
+	• Machine Learning
+		◦ New dataset: Palmerpenguins (#128)
+	• Mixed Models
+		◦ New dataset: Larks and Owls (#4806)
+		◦ Ability to remove random intercept (#97)
+		◦ Ability to show individual random effect estimates (#97)
+	• Network
+		◦ Improved Graphical Options (#51)
+	• Regression
+		◦ Offset included to GLM (#161)
+		◦ Improved help file for VIF (#1800)
+	• Reliability
+		◦ New analysis: Bland-Altman Plots (#111, #494)
+	• SEM (#90)
+		◦ Improved error message for unavailable missing data handlers of categorical data
+		◦ Fixed release constraints for multigroup SEM (#1687)
+		◦ Path coefficients table added (#95)
+	• Summary Statistics
+		◦ New analysis: Bayesian z-test (#77)
+	• New transformations added to Compute Column (#4799)
+		◦ Power transformations (Box-Cox, inverse Box-Cox, two parameter power transformation, Yeo-Johnson) 
+		◦ Logit and inverse logit transformations
+	• JASP now uses R 4.2.1 (#4801) (Improves unicode handling on windows)
+	• Maximum amount of engines used by JASP can be forced by admin (#1693, #4838)
+	• Exponent notation available for Table Options (#4824)
+	• Userdefined label for missing values in data (#4833)
+Bug fixes
+    • PCA results based on covariance instead of correlation did not change output (#1667)
+    • Custom contrasts in ANOVA did not update after filtering data (#627, #4741)
+    • Special character in username results crashes plots (#1758)
+    • Raincloud plot title fix (#181)
+    • Posterior model probabilities should update when the model prior changes (#195, #1816)
+    • Fix to Column Filter (#4736, #1661)
+    • (Partial) fix to results displaying ugly on windows (#1747) 
+    • Solves a crash on macOS in linear regression for extremely small numbers (#1777)
+    • Fix Prophet to allow it to find timezone and date-format information (#1714)
+		</description>
+	</release>
+	<release version="0.16.3" date="2022-06-15">
+			<description>
+JASP Release Notes 0.16.3
+New features and improvements
+* New Module: Quality Control.
+* New Module: Bayesian State Space Models.
+* New analysis added: Frequentist/ Classical Generalized Linear Model to the Regression module (#1656).
+* ANOVA:
+   * Bayesian ANOVA, Bayesian ANCOVA, and Bayesian repeated-measures ANOVA (#151)
+      * The value for the r-scale of the prior distribution on the coefficients can now be set individually for fixed effects.
+      * The principle of marginality can be violated individually for fixed effects and random slopes. By default it is respected for fixed effects and violated for random slopes.
+      * The prior on the model space can now be adjusted. Possible options are Uniform (default), Beta binomial, Wilson, Castillo, Bernoulli, and Custom. Custom allows for specifying individual inclusion probabilities for each effect. Note that the inclusion probabilities for interactions change if the principle of marginality is violated.
+      * Nuisance predictors and other predictors common to all models can be shown in the model by unchecking “Hide nuisance in model”.
+      * Warning message about changes (#158).
+   * Message added when Welch correction fails (#131).
+   * Improvements to Order restricted hypotheses (#153)
+* Regression:
+   * Bayesian linear regression now exports residuals and residual standard deviations (#110, #1596).
+   * Add bootstrapped p-value to linear regression (#120).
+   * Improved part and partial correlations (#1638).
+* T-Tests
+   * Coefficient of variation added to the descriptives tables of all T-Tests (#122, #1599).
+* Bain:
+   * Draw correct posterior probability plot in all AN(C)OVA / regression / SEM situations (#80)
+* Descriptives:
+   * Improved interface (#1635)
+* Frequencies:
+   * Bayesian Binomial Test (#83, #1605)
+      * Improved help files. 
+      * Improved lay-out.
+      * Footnote added to display what kind of beta prior is used on the alternative hypothesis.
+   * Multinomial Test (#87)
+      * Increased number of decimals in the input table (from 1 to 3).
+      * Expected counts can be decimals (#1652).
+* Machine Learning:
+   * Matthews correlation coefficient added to evaluation metrics for classification (#134, #750).
+   * Decision Trees able to only show relevant splits (#152).
+   * Improvement to decision boundary matrix (#152).
+* Audit:
+   * UI improvements
+* Reliability:
+   * Krippendorff's alpha added to Rater Agreement (#1665).
+   * Improvements to fit measure table for Bayesiansingle factor model (#94).
+Bug fixes
+* Raincloud plot lines that connect data points within-subject (#155).
+* In RM ANOVA contrast couldn’t be negative (#1704).
+* ANOVA affected coding options in Regression (#1677).
+* Error in JAGS (#1691).
+* Help button not clickable in Bayesian Unidimensional Reliability (#1621).
+* Flatpak no longer crashes on certain actions (#1424).
+			</description>
+		</release>
+		<release version="0.16.1" date="2022-02-15">
+			<description>
+				New release 0.16.1
+
+				New features and improvements
+
+				Translated to French (incomplete)
+
+				ANOVA
+				- Improved effect size calculation, including interactions, multiplicity, and confidence intervals.
+				- Effect sizes now computed with emmeans, which also allows effect sizes for interactions and confidence intervals 
+				- Update help file to explain Levene test
+
+				Machine Learning
+				- New analyses decision tree regression and classification
+				- New analyses Support vector machine regression and classification
+				- K-medoids and K-medians clustering techniques added to Neighborhood-based (formerly K-means)
+				- Extra plot in k-nn regression and classification showing the relative weights as a function of the distance
+				- Extra evaluation metrics for all classification analyses
+
+				New module: Cochrane Meta-Analysis
+				- Allows users to select and analyze data from Cochrane Database of Systematic Reviews.
+
+				Logistic Regression:
+				-- Total percentage in confusion matrix added
+				-- Multicollinearity Diagnostics added 
+				-- Improved the help file
+
+				Bain
+				- An extra column showing PMPc has been added to the ANOVA, ANCOVA, SEM, and linear regression standard table outputs.
+
+				ANOVA
+				- Improved effect size calculation, including interactions, multiplicity, and confidence intervals.
+				- Effect sizes now computed with emmeans, which also allows effect sizes for interactions and confidence intervals 
+				- Update help file to explain Levene test 
+
+				Descriptive Statistics
+				- Option to hide/ show Valid and Missing cases
+
+				Factor Analysis
+				- New option for parallel analysis: 1) can be based on FA or 2) PCA 
+				- Scree plot is overhauled to be more concise. New option to turn parallel analysis results on and off in the plot. .
+
+				Reliability
+				- New analysis for Cohen's &amp; Fleiss' kappa
+
+				Bayesian Unidimensional Reliability added:
+				- Standardized coefficients
+				- Standardized single-factor loadings
+				- Control over the priors
+				- Median option as a point estimate
+				- Fit measures for single-factor model (rmsea, LR, cfi, tli)
+				- Improved help file
+
+				Audit
+				- Added an option to specify the maximum sample size
+				- Fixed a bug in the Bayesian workflow where the sample size started counting at 5, sometimes resulting in sample sizes that did not match the desired input criteria.
+				- Improvements to “About”
+				- Improved layout of network graphs in Network module
+
+				Bug fixes
+				- Path plots in Factor module fixed
+				- Factor correlation matrix showed the correlations of the estimated factor scores. Now  the proper factor intercorrelations are used.
+				- Computing Z-scores does not give an error anymore
+				- Pairwise plots able to handle ordinal variables
+			</description>
+		</release>
+		<release version="0.16.0" date="2021-11-17">
+			<description>
+				New release 0.16
+
+				New Features:
+
+				- Meta analysis:
+				-- WAAP-WLS and PET-PEESE
+				-- Predictive Performance
+    			- Cochrane Meta-Analyses
+    			- Summary statistics - General Bayesian Tests
+				- Machine learning:
+				-- Neural Networks
+				-- Model Saving
+				-- Prediction
+				- Audit has a revamped UI
+				- ANOVA now includes GORICA
+				- Descriptives now has tile plots
+				- Circular Statistics are added
+				- Regression now has proportions in confusion matrix and adds marginal effect plots
+			</description>
+		</release>
+		<release version="0.15.0" date="2021-09-21">
+					<description>
+						New release 0.15
+
+						New features and improvements
+
+						- Plot editing
+						-- Allow custom fonts in plots
+						-- Resized plots are kept after refreshing 
+						- Supports more languages, English, German, Dutch, Galician, Japanese, Portuguese and rudimentary Chinese and Spanish
+						- Windows workarounds:
+						-- Support reading "native" locale encoded csvs and utf-8 both, dependent on BOM. (Aka save as csv vs csv with utf-8 in excel)
+						-- Support installing jasp for user with username in native locale characters
+						- New module “Prophet” for time series prediction
+						- Descriptives: 
+						-- Dot plots
+						-- Stem-and-leaf tables
+						-- Descriptives table can now be transposed
+						- SEM: 
+						-- Possibility to define several models
+						-- MIMIC model analysis
+						-- Latent Growth analysis
+						-- Improved labels in tables
+						-- Footnote fit-table listwise deletion
+						- T-Tests and ANOVAs: Raincloud plots
+						- Distributions: Major update including 23 new continuous and 5 discrete distributions
+						- Learn Bayes:
+						-- Binary classification
+						-- Game of chance
+						-- Game of skill
+						-- Buffon’s needle
+						-- Some edge case scenario and esthetical fixes for binomial estimation
+						- Regression:
+						-- Bootstrapping in correlation
+						-- Categorical variables can be used as predictors in linear regression
+						-- Adjusted lower limit for wls weights 
+						-- Relaxed error check on the covariance matrix of predictors 
+						- Frequencies:
+						- Show more informative footnote when phi cannot be calculated
+						-- Choose odds ratio for contingency table
+						-- Guttman and Kruskal’s lambda for contingency tables
+						- Factor analysis: Factor loadings can now be sorted in EFA and CFA
+						- Mixed Models
+						-- Fixing plotting themes
+						-- Improving warning messages
+						-- Changing default links for gamma and negative binomial family
+						- Meta-Analyses - Complete update of the RoBMA module
+						- Reliability
+						-- Classical intraclass correlation coefficients 
+						-- Adding options for mean and SD
+						-- Restructuring of R-code to improve computational time and reduce error-proneness
+						-- Manage huge .jasp file sizes produced by sampling in reliability analysis
+						- Audit - Added mean and median to descriptive output of prior and posterior distribution
+
+					Bug fixes
+						- Several fixes to sav loading (spss files)
+						- Loading data repeated measures ANOVA
+						- Cohen’s d was incorrectly calculated
+						- Fixed error in density graph Bayesian meta-analysis
+						- Fixed error in computing the total number of edges in Network analysis
+			</description>
+		</release>
+		<release version="0.14.1" date="2020-10-14">
+					<description>
+						New release 0.14
+
+						New features and improvements 
+							- Adjusting for publication bias in meta-analysis
+							- Robust Bayesian meta-analysis
+							- Selection models
+							- Learn Bayes module
+							- PDF export of results
+							- Choose your font
+							- German translation
+							- Frequentist partial correlations
+							- Confidence and prediction intervals in linear regression
+							- New distributions in the Distributions module (log-normal and logistic)
+
+						Bug fixes 
+							- Large dataset: Crash when changing variable type #938
+							- Jasp cannot be installed without admin privileges #861
+							- Mangled name in 0.13 #851
+							- Analysis of Effects: Across Matched Models #852
+							- Corrections of bugs found during the workshop #4257
+							- Summary Statistics Bayesian Independent Samples T-Test: Labels in prior and posterior plots switch upon changing from BF10 to BF01, while they shouldn't #796
+							- Quill: Add the ability to change line width, as in docs via paragraph (singel, double spacing, etc) #694
+							- Quill: Ghost text? #695
+							- Quill: Tooltip for Quill #696
+							- Issues with display of icons and characters #929
+							- ROC and PR curve (after classification) #277
+							- Plots on linux are only saved as png #889
+							- Labels not being displayed anymore in spreadsheet #933
+							- Minor display glitch in spreadsheet #935
+							- Major inconsistency between frequentist and bayesian non parametric paired t-test #868
+							- Add methods median, ward.d, ward.d2 and mcquitty #4222
+							- Column order option does not work #914
+							- Contingency tables properly reverse column labels #4211
+							- Save image as SVG #873
+							- Selecting a custom spreadsheet editor not working #901
+							- Further Customization of Plots #279
+							- Posterior summaries in Bayesian linear regression and Bayesian ANOVAs now show exclusion probabilities #625
+							- Log Odds Ratio value not updated #915
+							- Bayesian Mixed Effect Models with aggregated binomial family #957 
+							- Reliability: Average interitem correlation 95%CI, do not include point estimate! #888
+			</description>
+		</release>
+		<release version="0.13.1" date="2020-07-13">
+					<description>
+						Bug fixing release for 0.13
+
+						Fixes:
+							- Make sure analyses actually work on (windows) systems where the user has non-ascii characters in their name
+							- PPTX not save saved on signed mac
+							- Fixed a bug with changing column type
+							- Stabilised the macOS intel iris GPU bug (upgrade to Qt 5.15)
+			</description>
+		</release>
+		<release version="0.13.0" date="2020-07-01">
+						<description>
+							New Features and improvements: 
+							- Engine improvements 
+
+							New modules and analyses: 
+							- Generalized Linear Mixed Models (both Bayesian and classical)
+							- Reliability module (both Bayesian and classical) 
+							- R-console (beta) 
+
+							Analyses improvements 
+							- SEM module: Allow ordinal variables in CFA 
+							- Network analysis module: Added expected influence 'centrality' (jasp-issue #411)
+							- Saving plots as powerpoint files
+
+							Bug fixes: 
+							- P value shown as 0.00 instead of &lt;.001 (jasp-issue #706)
+							- JASP "quits unexpectedly" after opening a file and then quitting by closing the menu (jasp-issue #667)
+							- Pixelated user interface with JASP 0.12.2.0 (jasp-issue #720)
+							- Issue with Informed Prior for Bayesian Independent Samples T-Test (jasp-issue #730)
+							- Bug on Bayesian Repeated Measures ANOVA (jasp-issues #737 #774)
+							- JASP has difficulty handling extended missing value codes in Stata (jasp-issue #733) 
+							- Audit selection analysis (jasp-issue #699)
+							- Variable type not updated in Post Hoc Tests (jasp-issue #708) 
+							- Error in an independent sample T-test (jasp-issue #724) 
+							- JASP crashes on exit (jasp-issue #777)
+							- Very slow estimation of correlation matrix (jasp-issues #679 #712)
+							- Tjur R^2 wrongly calculated (jasp-issue #764)
+							- App does not display correctly (jasp-issue #775) 
+							- Mixed Modeling (Visual Modeling [BETA]) (jasp-issue #763)
+							- Network analysis: SPELLING MISTAKE (jasp-issue #751) 
+							- Network analysis - Changing Legend does not change the Centrality Plot (jasp-issue #702)
+							- Paired T-tests - Changing the hypothesis provides a more informative footnote (jasp-issue#758)
+				</description>
+		</release>
+		<release version="0.12.2" date="2020-04-22">
+			<description>
+				- Fix a bug where ANOVA RM would crash if there were columns named with certain single letters
+				- Some more smaller points
+			</description>
+		</release>
+		<release version="0.12.1" date="2020-04-15">
+			<description>
+				Small fix for 0.12.
+			</description>
+		</release>
+		<release version="0.12" date="2020-04-10">
+			<description>
+				Updated R to 3.6.1 and rewrote (almost) all analyses to make use of new internal API (jaspResults).
+				Added a dark theme and support for dutch language.
+				Modules added: Bayesian meta-analysis, JAGS, Discover Distributions, Visual Modeling and Equivalence Testing.
+				And much more, see our blog for more information!
+			</description>
+		</release>
+		<release version="0.11.1" date="2019-10-11">
+			<description>
+				This version fixes a bug with certain systems having trouble running certain analyses when the path contains non-latin characters.
+				It also removes the inherit-gl-extension which causes some trouble for certain flatpak users.
+			</description>
+		</release>
+		<release version="0.11.0" date="2019-09-24">
+			<description>
+				This version adds the Machine Learning Module, which adds a variety of classification, regression and clustering analyses.
+				It also adds support for reading Stata and SAS files while updating the SPSS support through the use of ReadStat.
+			</description>
+		</release>
+		<release version="0.10.2" date="2019-07-18">
+			<description>
+				This version adds the AUDIT Module, includes Mediation Analysis, and contains improvements for other analyses.
+			</description>
+		</release>
+		<release version="0.10.0" date="2019-06-11">
+			<description>
+				User Interface completely rewritten and many many other changes.
+				See https://jasp-stats.org/blog/ for more info!
+			</description>
+		</release>
+		<release version="0.9.2" date="2018-12-10">
+			<description>
+				Computed columns stabilized and some extra stuff.
+			</description>
+		</release>
+		<release version="0.9.1" date="2018-10-11">
+			<description>
+				New version of JASP with a first version of computed columns and many other things.
+			</description>
+		</release>
+		<release version="0.9.0" date="2018-06-27">
+			<description>
+				New version of JASP with filtering, a partially rebuilt interface and many other things.
+			</description>
+		</release>
+		<release version="0.8.6" date="2018-02-22">
+			<description>
+				First flatpak release
+			</description>
+		</release>
+	</releases>
+​</component>

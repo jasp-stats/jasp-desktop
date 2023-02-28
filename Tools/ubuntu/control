@@ -1,0 +1,26 @@
+Source: jasp
+Maintainer: jasp-uva <b.boutin@uva.nl>
+Section: science
+Priority: optional
+Standards-Version: 3.9.8
+Build-Depends: pkg-config, libboost-dev, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-ggplot2, r-cran-jsonlite, r-cran-rjson, qtquickcontrols2-5-dev, qml-module-qtquick-controls2, libqt5widgets5, qtwebengine5-dev, libqt5webchannel5-dev, libqt5svg5-dev, qt5-qmake, libarchive-dev, libboost-filesystem-dev, libboost-system-dev, libjsoncpp-dev, qtbase5-dev, debhelper (>= 9)
+
+Package: jasp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, r-cran-ggplot2, r-cran-jsonlite, libqt5quickcontrols2-5, libqt5webenginewidgets5, libqt5webengine5, libqt5webenginecore5, libqt5svg5, openssl, qml-module-qtquick-controls2, libcurl4-openssl-dev, qml-module-qtquick-layouts, qml-module-qtquick2, qml-module-qtquick-controls, r-cran-bas, r-cran-bdgraph, r-cran-bms, r-cran-bayesfactor, r-cran-epi, r-cran-formula, r-cran-gparotation, r-cran-genenet, r-cran-hmisc, r-cran-kernsmooth, r-cran-mass, r-cran-matrix, r-cran-matrixmodels, r-cran-r.matlab, r-cran-r.methodss3, r-cran-r.oo, r-cran-r.utils, r-cran-r6, r-cran-rcolorbrewer, r-cran-rcpp, r-cran-sparsem, r-cran-suppdists, r-cran-th.data, r-cran-ttr, r-cran-abind, r-cran-acepack, r-cran-afex, r-cran-arm, r-cran-assertthat, r-cran-backports, r-cran-base64enc, r-cran-bindr, r-cran-bindrcpp, r-cran-boot, r-cran-ca, r-cran-car, r-cran-cardata, r-cran-cellranger, r-cran-checkmate, r-cran-class, r-cran-cli, r-cran-cluster, r-cran-cmprsk, r-cran-coda, r-cran-codetools, r-cran-coin, r-cran-colorspace, r-cran-colourpicker, r-cran-contfrac, r-cran-conting, r-cran-corpcor, r-cran-corrplot, r-cran-crayon, r-cran-curl, r-cran-d3network, r-cran-data.table, r-cran-desolve, r-cran-dichromat, r-cran-digest, r-cran-dosnow, r-cran-dplyr, r-cran-e1071, r-cran-ellipse, r-cran-elliptic, r-cran-estimability, r-cran-etm, r-cran-evaluate, r-cran-fdrtool, r-cran-forcats, r-cran-foreach, r-cran-foreign, r-cran-ggm, r-cran-ggplot2, r-cran-ggrepel, r-cran-glasso, r-cran-glmnet, r-cran-glue, r-cran-gnm, r-cran-gridextra, r-cran-gtable, r-cran-gtools, r-cran-haven, r-cran-highr, r-cran-hms, r-cran-htmltable, r-cran-htmltools, r-cran-htmlwidgets, r-cran-httpuv, r-cran-huge, r-cran-hypergeo, r-cran-igraph, r-cran-iterators, r-cran-jpeg, r-cran-jsonlite, r-cran-knitr, r-cran-labeling, r-cran-later, r-cran-lattice, r-cran-latticeextra, r-cran-lavaan, r-cran-lazyeval, r-cran-lme4, r-cran-lmertest, r-cran-lmtest, r-cran-logspline, r-cran-longitudinal, r-cran-magrittr, r-cran-maptools, r-cran-markdown, r-cran-matrixcalc, r-cran-metafor, r-cran-mgcv, r-cran-mi, r-cran-mime, r-cran-miniui, r-cran-minqa, r-cran-mitools, r-cran-mnormt, r-cran-modeltools, r-cran-multcomp, r-cran-munsell, r-cran-mvtnorm, r-cran-network, r-cran-nlme, r-cran-nloptr, r-cran-nnet, r-cran-numderiv, r-cran-openxlsx, r-cran-parcor, r-cran-pbapply, r-cran-pbivnorm, r-cran-pbkrtest, r-cran-pillar, r-cran-pkgconfig, r-cran-plotrix, r-cran-plyr, r-cran-png, r-cran-ppls, r-cran-promises, r-cran-psych, r-cran-purrr, r-cran-pwr, r-cran-qgraph, r-cran-quadprog, r-cran-quantmod, r-cran-quantreg, r-cran-qvcalc, r-cran-readr, r-cran-readxl, r-cran-relaimpo, r-cran-relimp, r-cran-rematch, r-cran-reshape2, r-cran-rio, r-cran-rjson, r-cran-rlang, r-cran-rpart, r-cran-rstudioapi, r-cran-sandwich, r-cran-scales, r-cran-sem, r-cran-semtools, r-cran-shiny, r-cran-shinyace, r-cran-shinybs, r-cran-shinyjs, r-cran-sna, r-cran-snow, r-cran-sourcetools, r-cran-sp, r-cran-spatial, r-cran-statnet.common, r-cran-stringi, r-cran-stringr, r-cran-survey, r-cran-survival, r-cran-tibble, r-cran-tidyr, r-cran-tidyselect, r-cran-tseries, r-cran-utf8, r-cran-vcd, r-cran-vcdextra, r-cran-viridis, r-cran-viridislite, r-cran-whisker, r-cran-xtable, r-cran-xts, r-cran-yaml, r-cran-zip, r-cran-zoo
+Description: Offers standard analysis procedures in both their classical and Bayesian form
+ JASP is a cross platform statistical software program with a state-of-the-art
+ graphical user interface. It offers standard analysis procedures in both 
+ their classical and Bayesian form. 
+ .
+ It was designed with the user in mind: APA-formatted tables can be 
+ copy-pasted in your word processor, output can be extensively annotated,
+ adjustment of input options dynamically changes the output, and selecting 
+ old output revives the associated input choices for inspection and adjustment.
+ .
+ JASP is also statistically inclusive, 
+ as it offers both frequentist and Bayesian analysis methods. 
+ Indeed, the primary motivation for JASP is to make it easier for statistical 
+ practitioners to conduct Bayesian analyses. 
+ .
+ For more information and tutorials see: https://jasp-stats.org/

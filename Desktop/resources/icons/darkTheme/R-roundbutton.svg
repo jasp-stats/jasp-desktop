@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   preserveAspectRatio="xMidYMid"
+   width="336.56635"
+   height="336.56635"
+   viewBox="0 0 336.56635 336.56635"
+   version="1.1"
+   id="svg18"
+   sodipodi:docname="R-roundbutton.svg"
+   xml:space="preserve"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview20"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     showguides="true"
+     inkscape:zoom="2.5195627"
+     inkscape:cx="154.78877"
+     inkscape:cy="171.45833"
+     inkscape:window-width="1728"
+     inkscape:window-height="1080"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg18" /><defs
+     id="defs12"><linearGradient
+       id="gradientFill-2"
+       x1="301.02603"
+       x2="703.0675"
+       y1="151.4006"
+       y2="553.44208"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="pad"
+       gradientTransform="matrix(0.50929261,0,0,0.58027781,-78.452846,-40.89328)"><stop
+         offset="0"
+         stop-color="rgb(39,109,195)"
+         stop-opacity="1"
+         id="stop7" /><stop
+         offset="1"
+         stop-color="rgb(22,92,170)"
+         stop-opacity="1"
+         id="stop9" /></linearGradient></defs><style
+     type="text/css"
+     id="style126">
+	.st0{fill:#FFFFFF;stroke:#231F20;stroke-miterlimit:10;}
+	.st1{fill:#555658;}
+</style><path
+     id="circle128"
+     style="fill:#276dc3;fill-opacity:1;stroke:none"
+     class="st0"
+     d="M 168.2832 0 A 168.28317 168.28317 0 0 0 0 168.2832 A 168.28317 168.28317 0 0 0 168.2832 336.56641 A 168.28317 168.28317 0 0 0 336.56641 168.2832 A 168.28317 168.28317 0 0 0 168.2832 0 z M 93.908203 69.230469 L 195.36523 69.230469 C 195.36523 69.230469 241.57422 70.160217 241.57422 119.25 C 241.57422 168.33978 197.41797 171.99414 197.41797 171.99414 C 197.41797 171.99414 206.38233 175.01485 211.58984 177.95703 C 213.39675 178.97798 216.52232 181.01466 218.77734 183.68945 C 220.98637 186.30922 222.0625 188.96484 222.0625 188.96484 L 257.38867 255.4668 L 200.29297 255.49609 L 173.59375 199.51367 C 173.59375 199.51367 168.12774 189.02367 164.76367 185.98242 C 161.95741 183.44567 160.76097 182.54297 157.98633 182.54297 L 144.41992 182.54297 L 144.43164 255.45508 L 93.908203 255.47852 L 93.908203 69.230469 z M 144.85742 109.60742 L 144.8418 141.27734 L 175.44336 141.26562 C 175.44336 141.26562 189.61328 141.21693 189.61328 125.15625 C 189.61328 108.77266 175.44336 109.63086 175.44336 109.63086 L 144.85742 109.60742 z " /></svg>

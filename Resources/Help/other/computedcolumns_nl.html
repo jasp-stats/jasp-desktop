@@ -1,0 +1,53 @@
+<h1>Berekende kolommen</h1>
+
+<details>
+	<summary><b>Een berekende kolom toevoegen</b></summary>
+	<img src="other/CreatingComputedColumn.gif"/>
+	<p>Als de dataview van JASP zichtbaar is, dan zou er in de rechterbovenhoek een '+' - symbool moeten staan.
+		Wanneer u hierop klikt, wordt een dialoogvenster geopend waarin u een berekende kolom kunt maken, u moet hiervoor een geldige en ongebruikte kolomnaam invoeren.</p>
+	<p>	U kunt kiezen of u het wilt definiëren via R-code of door middel van slepen &amp; drop constructor, vergelijkbaar met die gebruikt bij het filteren.</p>
+	<p>	Het initiële type voor uw kolom kan ook worden geselecteerd. Dit kan hoe dan ook op elk later moment worden gewijzigd, net als de andere kolommen (via het vervolgkeuzemenu type van het kolomkoppictogram). </p>
+</details>
+
+<details>
+	<summary><b>Drag gebruiken &amp; Drop Constructor </b></summary>
+	<p>Nieuwe gegevens berekenen met de Drag &amp; Drop constructor is vrij eenvoudig, vooral als u het al hebt gebruikt voor filteren. Toch volgen enkele voorbeelden:</p>
+	<ul>
+		<li>
+			<b>Een schaal omzetten (Height Ratio -> hoogte)</b>
+			<img src="other/ComputedColumnHeight.gif"/>
+			<p>Stel dat we een kolom hebben <i>Height Ratio</i> en we willen het terug omzetten naar de juiste hoogte. We gaan ervan uit dat 180cm de norm is en met deze kennis moet bovenstaande animatie duidelijk zijn.</p>
+		</li>
+		<li>
+				<b>Converteren naar logisch (als tekst)</b>
+				<img src="other/ComputedColumnPopularVote.gif"/>
+				<p>Stel dat we een kolom hebben <i>Popular Vote</i> en we willen duidelijk laten zien wie het heeft gekregen en wie niet. We maken een kolom met <i>Nominaal Tekst</i> als type en specificeer de gevraagde formule, zie bovenstaande animatie voor details.</p>
+			</li>
+			<li>
+				<b>Verdeel een scalair (Height Ratio) in 3 benoemde velden</b>
+				<img src="other/ComputedColumnHeightCategoryDragNDrop.gif"/>
+				<p>Stel dat we een kolom hebben <i>Height Ratio</i> en we willen de rijen verdelen op basis van of ze <i>Short</i> of <i>Tall</i> zijn of niet. We maken een kolom met <i>Nominal Text</i> als type en gebruik de <i>cut</i> functie om te verdelen <i>Height Ratio</i> in 3 niveaus. Daarna geven we elk van de intervallen een mooie naam om te verduidelijken wat wat is.</p>
+			</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>R gebruiken</b></summary>
+	<p>Het berekenen van nieuwe gegevens met R is vrij eenvoudig, u kunt veel standaardfuncties gebruiken en via de naam naar andere kolommen verwijzen.</p>
+	<p>Enkele voorbeelden:
+			<ul>
+				<li><p><b>Vermenigvuldig een scalair (Height Ratio) met een vaste waarde</b></p>
+					<p>Zorg ervoor dat uw kolom is gedefinieerd als <i>Schaal</i>, ook al zouden de andere typen ook werken.</p>
+				<p class="code">Height Ratio * 180</p>
+			</li>
+				<li><p><b>Verdeel een scalair (Height Ratio) in 3 benoemde velden</b></p>
+					<p>Zorg ervoor dat uw kolom is gedefinieerd als <i>Nominaal Tekst</i></p>
+					<p class="code">cut(Height Ratio, 3, c("Short", "Average", "Tall"))</p>
+				</li>
+			</ul>
+			Er zijn natuurlijk veel mogelijkheden en u wordt alleen beperkt door de beschikbaarheid van (veilige) functies in JASP. Mocht u iets missen, aarzel dan niet om contact met ons op te nemen, zodat we het aan de volgende versie kunnen toevoegen.
+	</p>
+
+</details>
+
+
