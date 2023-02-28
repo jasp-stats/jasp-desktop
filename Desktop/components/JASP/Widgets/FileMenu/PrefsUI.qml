@@ -157,7 +157,7 @@ ScrollView
 					id:					lightThemeButton
 					label:				qsTr("Light theme")
 					checked:			preferencesModel.currentThemeName === "lightTheme"
-					onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
+					onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "lightTheme"
 					toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
 
 					KeyNavigation.tab:		darkThemeButton
@@ -168,7 +168,7 @@ ScrollView
 					id:					darkThemeButton
 					label:				qsTr("Dark theme")
 					checked:			preferencesModel.currentThemeName === "darkTheme"
-					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
+					onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
 					
 					KeyNavigation.tab:		languages

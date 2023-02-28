@@ -66,7 +66,7 @@ void RadioButtonBase::registerWithParent()
 
 void RadioButtonBase::unregisterRadioButton()
 {
-	if (_group)
+	if (_group && _form) //On destruction of static buttons outside of form values would change in RadioButtonGroup
 		_group->unregisterRadioButton(this);
 }
 
