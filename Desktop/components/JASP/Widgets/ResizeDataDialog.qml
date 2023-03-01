@@ -148,7 +148,7 @@ Popup
 				id:						resizeButton
 				activeFocusOnTab:		true
 				text:					qsTr("Resize")
-				onClicked:				{ dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
+				onClicked:				{ forceActiveFocus(); dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
 				toolTip:				qsTr("Resize data to set values")
 
 				KeyNavigation.tab:		closeButtonCross
