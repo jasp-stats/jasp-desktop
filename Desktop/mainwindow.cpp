@@ -654,6 +654,12 @@ void MainWindow::setCurrentJaspTheme()
 	_qml->rootContext()->setContextProperty("jaspTheme", JaspTheme::currentTheme());
 }
 
+void MainWindow::onDataModeChanged(bool dataMode)
+{
+	if(dataMode && welcomePageVisible())
+		setWelcomePageVisible(false);
+}
+
 void MainWindow::initLog()
 {
 	assert(_engineSync != nullptr && _preferences != nullptr);
