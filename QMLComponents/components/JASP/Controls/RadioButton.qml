@@ -47,6 +47,7 @@ RadioButtonBase
 	property alias	columns:				childControlsArea.columns
 	property bool	enableChildrenOnChecked: true
 	property bool	indentChildren:			true
+	property string toolTip: 				""
 
 	function click() { clicked(); }
 	onClicked: { radioButton.clickHandler(); }
@@ -59,6 +60,11 @@ RadioButtonBase
 		focus:				true
 
 		onCheckedChanged:	if (checked) radioButton.clicked()
+
+		ToolTip.text:		radioButton.toolTip
+        ToolTip.timeout:	jaspTheme.toolTipTimeout
+        ToolTip.delay:		jaspTheme.toolTipDelay
+        ToolTip.visible:	radioButton.toolTip !== "" && hovered
 
 		indicator: Rectangle
 		{

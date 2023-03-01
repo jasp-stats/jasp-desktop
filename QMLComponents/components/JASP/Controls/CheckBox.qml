@@ -49,6 +49,7 @@ CheckBoxBase
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
 			property bool	forwardKeys:			false
+			property string toolTip: 				""
 
 	function click()	{ control.toggle(); }
 	function toggle()	{ control.toggle(); }
@@ -67,7 +68,12 @@ CheckBoxBase
 		Keys.forwardTo:			forwardKeys ? [checkBox] : [] // If a forward is set on the parent we want to hook on that chain, eg modules menu
 
 		// When the user clicks on the CheckBox, the clicked signal of the parent (CheckBoxBase) must be emitted.
-		Component.onCompleted: control.clicked.connect(checkBox.clicked)
+		Component.onCompleted: 	control.clicked.connect(checkBox.clicked)
+
+        ToolTip.text:			checkBox.toolTip
+        ToolTip.timeout:		jaspTheme.toolTipTimeout
+        ToolTip.delay:			jaspTheme.toolTipDelay
+        ToolTip.visible:		checkBox.toolTip !== "" && hovered
 
 		indicator: Rectangle
 		{
