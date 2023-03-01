@@ -39,7 +39,7 @@ Item
 	// position of the rest)
 
 	property bool hasData:		mainWindow.dataAvailable
-	property bool hasAnalysis:	mainWindow.analysesAvailable
+	property bool hasAnalysis:	mainWindow.analysesAvailable && !ribbonModel.dataMode
 
 	function minimizeDataPanel()
 	{
