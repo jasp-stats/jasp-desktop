@@ -963,9 +963,7 @@ void EngineSync::heartbeatTempFiles()
 }
 
 void EngineSync::stopEngines()
-{
-	_stopProcessing = true; 
-	
+{	
 	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
 
 	for(EngineRepresentation * e : _engines)
@@ -1030,8 +1028,6 @@ void EngineSync::resumeEngines()
 	for(EngineRepresentation * engine : _engines)
 		startStoppedEngine(engine);
 	
-	_stopProcessing = false;
-
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->processReplies();
@@ -1071,13 +1067,19 @@ bool EngineSync::allEnginesInitializing(std::set<EngineRepresentation *> these)
 
 void EngineSync::dataModeChanged(bool dataMode)
 {
+	_stopProcessing = dataMode;
+
 	if(!dataMode)
 	{
-		Log::log() << "Data mode turned off, so restarting engines." << std::endl;
-
-		pauseEngines();
+		Log::log() << "Data mode turned off, resuming engines." << std::endl;
 		resumeEngines();
 	}
+	else
+	{
+		Log::log() << "Data mode turned on, pausing engines." << std::endl;
+		pauseEngines();
+	}
+
 }
 
 void EngineSync::enginesPrepareForData()
