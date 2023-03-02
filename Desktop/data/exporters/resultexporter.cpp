@@ -34,11 +34,31 @@ ResultExporter::ResultExporter()
 	_allowedFileTypes.push_back(Utils::FileType::pdf);
 }
 
+
+//waiting is an anti pattern for async stuff like this. But since we already do it I might aswell make it even worse.
+bool ResultExporter::prepareForExport()
+{
+	_exportPrepMutex.lock();
+	QMetaObject::Connection exportPrepConnection = QObject::connect(ResultsJsInterface::singleton(), &ResultsJsInterface::exportPrepFinished, [&]()
+	{
+		Log::log() << "Export preparations completed, telling thread to continue!" << std::endl;
+		_exportPrep.wakeAll();
+	});
+
+	Log::log() << "Thread for export preparation will wait until preparations are done." << std::endl;
+	emit ResultsJsInterface::singleton()->prepForExport();
+
+	_exportPrep.wait(&_exportPrepMutex, 5000); //wait for 5 seconds max
+	_exportPrepMutex.unlock();
+	QObject::disconnect(exportPrepConnection);
+	Utils::sleep(200); //why? because the webview lies and says some script are done but while on some systems they are not.
+	return true;
+}
+
 void ResultExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {
-
-	DataSetPackage::pkg()->waitForExportResultsReady();
-
+	//set the needed settings and wait for their application to be finished
+	prepareForExport();
 
 	if (_currentFileType == Utils::FileType::pdf)
 	{
@@ -72,6 +92,8 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void(i
 	}
 	else
 	{
+		ResultsJsInterface::singleton()->exportHTML();
+		DataSetPackage::pkg()->waitForExportResultsReady(); //waits for html export to be ready
 		std::ofstream outfile(path.c_str(), std::ios::out);
 
 		outfile << DataSetPackage::pkg()->analysesHTML() << std::flush;

@@ -985,14 +985,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
 		connectFileEventCompleted(event);
-
-		if(!event->path().endsWith(".pdf"))
-		{
-			if(_preferences->currentThemeName() != "lightTheme")
-				_resultsJsInterface->setThemeCss("lightTheme");
-			_resultsJsInterface->exportHTML();
-		}
-
 		_loader->io(event);
 		showProgress();
 	}
