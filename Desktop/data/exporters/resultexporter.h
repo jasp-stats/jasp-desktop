@@ -32,7 +32,12 @@ public:
 	void saveDataSet(const std::string &path, boost::function<void (int)> progressCallback) OVERRIDE;
 
 private:
+	bool prepareForExport();
+
+private:
 	QString			_pdfPath;
+	QMutex			_exportPrepMutex;
+	QWaitCondition	_exportPrep;
 	QMutex			_writingToPdfMutex;
 	QWaitCondition	_writingToPdf;
 

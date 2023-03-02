@@ -282,11 +282,13 @@ Item
 
 				function onExportToPDF(pdfPath)
 				{
-					if(preferencesModel.currentThemeName !== "lightTheme")
-						resultsJsInterface.setThemeCss("lightTheme");
-
-					resultsJsInterface.unselect(); //Otherwise we get the selected analysis highlighted in the pdf...
 					resultsView.printToPdf(pdfPath);
+				}
+
+				function onPrepForExport()
+				{
+					//set light theme and unselect
+					resultsView.runJavaScript("window.unselect(); window.setTheme(\"lightTheme\");", function() { resultsJsInterface.exportPrepFinished(); });
 				}
 			}
 			onPdfPrintingFinished: (filePath)=>
