@@ -48,8 +48,9 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
 		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
 		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
-		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									}
-   };
+		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									},
+		{	"hasHideDeps",				ResultMenuEntry(tr("Hide Dependencies"),	"hasHideDeps",				"",							"window.hideDependenciesClicked()")	}
+	};
 }
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
@@ -126,11 +127,19 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 		}
 		else if (key == "hasShowDeps")
 		{
-			if(Settings::value(Settings::DEVELOPER_MODE).toBool())
+			if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 			{
 				//It's developerMode time!
-				entries.push_back(separator);
-				entries.push_back(entry);
+				if (!_dependenciesShown)
+				{
+					entries.push_back(separator);
+					entries.push_back(entry);
+				}
+				else
+				{
+					entries.push_back(separator);
+					entries.push_back(_allResultEntries.find("hasHideDeps")->second);
+				}
 			}
 		}
 		else

@@ -327,6 +327,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedInResults,	_analyses,				&Analyses::analysisTitleChangedInResults					);
 	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showDependenciesInAnalysis,	_analyses,				&Analyses::showDependenciesInAnalysis						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::hideDependenciesInAnalysis,	_analyses,				&Analyses::hideDependenciesInAnalysis						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showPlotEditor,				_plotEditorModel,		&PlotEditorModel::showPlotEditor							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsMetaChanged,			_analyses,				&Analyses::resultsMetaChanged								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::allUserDataChanged,			_analyses,				&Analyses::allUserDataChanged								);

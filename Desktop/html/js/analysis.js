@@ -102,7 +102,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.model.on("SaveImage:clicked",			function (options)			{											this.trigger("saveimage",			this.model.get("id"), options)	},	this);
 		this.model.on("EditImage:clicked",			function (image, options)	{ this.imageBeingEdited = image;			this.trigger("editimage",			this.model.get("id"), options)	},	this);
 		this.model.on("ShowDependencies:clicked",	function (optName)			{											this.trigger("showDependencies",	this.model.get("id"), optName)	},	this);
-
+		this.model.on("HideDependencies:clicked",	function (optName)			{											this.trigger("hideDependencies",	this.model.get("id"), optName)	},	this);
 		this.$el.on("changed:userData",	this, this.onUserDataChanged);
 	},
 

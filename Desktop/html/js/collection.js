@@ -88,6 +88,8 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	},
 
 	showDependenciesClicked:	function()  { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
+	hideDependenciesClicked:	function()  { this.model.trigger("HideDependencies:clicked", this.model.get("name")); },
+
 	collapseMenuClicked:		function()  { this.setCollapsedState(!this.model.get('collapsed'));	},
 	noteOptions:				function()  { return [ { key: this.noteBoxKey, visible: this.noteBox.visible } ];			},
 	hasNotes:					function()  { return this.model.get('name') !== null;															},

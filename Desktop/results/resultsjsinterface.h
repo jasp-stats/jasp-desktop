@@ -81,6 +81,7 @@ signals:
 	Q_INVOKABLE void removeAnalysisRequest(			int id);
 	Q_INVOKABLE void duplicateAnalysis(				int id);
 	Q_INVOKABLE void showDependenciesInAnalysis(	int id, QString optionName);
+	Q_INVOKABLE void hideDependenciesInAnalysis(	int id, QString optionName);
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();

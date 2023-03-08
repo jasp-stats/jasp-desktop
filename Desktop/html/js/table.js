@@ -38,6 +38,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	},
 
 	showDependenciesClicked: function() { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
+	hideDependenciesClicked: function() { this.model.trigger("HideDependencies:clicked", this.model.get("name")); },
 
 	hasLaTeXCode: function () {
 	  var optLaTeXCode = this.model.get("latexCode");

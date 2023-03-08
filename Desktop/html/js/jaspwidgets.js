@@ -967,6 +967,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasRemove:				(parent.hasRemove		=== undefined || parent.hasRemove())		&& parent.removeMenuClicked			!== undefined,
 			hasDuplicate:			(parent.hasDuplicate	=== undefined || parent.hasDuplicate())		&& parent.duplicateMenuClicked		!== undefined,
 			hasShowDeps:			(parent.hasShowDeps		=== undefined || parent.hasShowDeps())		&& parent.showDependenciesClicked	!== undefined,
+			hasHideDeps:			true,
 			hasCollapse:			(parent.hasCollapse		=== undefined || parent.hasCollapse())		&& parent.collapseMenuClicked		!== undefined,
 			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())		&& parent.latexCodeMenuClicked		!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',

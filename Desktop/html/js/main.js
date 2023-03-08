@@ -146,6 +146,7 @@ $(document).ready(function () {
 	window.editTitleMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.editTitleClicked			.bind(window.menuObject) ); }
 	window.collapseMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.collapseMenuClicked		.bind(window.menuObject) ); }
 	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
+	window.hideDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.hideDependenciesClicked	.bind(window.menuObject) ); }
 	window.duplicateMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.duplicateMenuClicked		.bind(window.menuObject) ); }
 	window.removeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.removeMenuClicked		.bind(window.menuObject) ); }
 	window.citeMenuClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.citeMenuClicked			.bind(window.menuObject),	"Citations copied to clipboard"	); }
@@ -471,6 +472,7 @@ $(document).ready(function () {
 			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
 			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
+			jaspWidget.on("hideDependencies",			function (id, optName)	{ jasp.hideDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
 			jaspWidget.on("analysis:userDataChanged",	function ()				{ window.getAllUserData();										});

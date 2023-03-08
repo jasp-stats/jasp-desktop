@@ -51,6 +51,7 @@ public:
 	Q_INVOKABLE void						setOptions(QString, QStringList);
 	Q_INVOKABLE QString						getJSFunction(int index)									const			{	return _resultMenuEntries.at(index).jsFunction();	}
 	Q_INVOKABLE QString						getName(int index)											const			{	return _resultMenuEntries.at(index).name();			}
+	Q_INVOKABLE void						setDependenciesShown(bool value)	{ _dependenciesShown = value; }
 
 private slots:
 	void									_generateCorrectlyTranslatedResultEntries();
@@ -59,6 +60,7 @@ private:
 	std::vector<ResultMenuEntry>			_resultMenuEntries;
 	std::map<QString, ResultMenuEntry>		_allResultEntries;
 	QStringList								_entriesOrder;
+	bool _dependenciesShown = false;
 
 };
 

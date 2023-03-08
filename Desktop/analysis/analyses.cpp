@@ -741,6 +741,15 @@ void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName
 	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
 }
 
+void Analyses::hideDependenciesInAnalysis(size_t analysis_id, QString optionName)
+{
+	//just hide it for all analysis, probably desired
+	for (auto& analysis : _analysisMap)
+	{
+		analysis.second->hideDependencies();
+	}
+}
+
 void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, string newTitle)
 {
 	applyToAll([&](Analysis * a)
