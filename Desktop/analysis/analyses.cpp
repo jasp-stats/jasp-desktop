@@ -339,8 +339,9 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 			{
 				Analysis * a = keyval.second;
 
-				if(a->readyToCreateForm())
+				if(a->readyToCreateForm() && !a->justTranslated())
 					a->createForm();
+				a->setJustTranslated(false);
 			}
 		}
 
@@ -775,6 +776,7 @@ void Analyses::languageChangedHandler()
 	applyToAll([&](Analysis * a)
 	{
 		a->setRefreshBlocked(false);
+		a->setJustTranslated(true);
 		emit a->form()->languageChanged();
 	});
 	refreshAllAnalyses();

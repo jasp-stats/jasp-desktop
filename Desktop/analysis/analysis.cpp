@@ -339,6 +339,8 @@ void Analysis::createForm(QQuickItem* parentItem)
 
 		emit analysisInitialized();
 	}
+
+	_lastQmlFormPath = qmlFormPath(false, true); //dont leave this uninitialized
 }
 
 Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)
