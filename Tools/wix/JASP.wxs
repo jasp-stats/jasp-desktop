@@ -9,7 +9,7 @@
 	<?define ApplicationName="JASP $(var.VersionNumber)" ?>
 
 	<Product Id="*" Name="$(var.ApplicationName)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
-		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
+		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" CompressionLevel="high"/>
 
 		<Upgrade Id="$(var.UpgradeCode)">
@@ -39,7 +39,7 @@
 
 	<Directory Id="TARGETDIR" Name="SourceDir">
 
-		<Directory Id="ProgramFilesFolder">
+		<Directory Id="ProgramFiles64Folder">
 			<Directory Id="APPLICATIONFOLDER" Name="JASP">
 				<!-- files added in JASPFilesFragment.wxs -->
 			</Directory>
