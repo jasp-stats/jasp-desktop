@@ -524,7 +524,7 @@ VariablesListBase
 						ParentChange
 						{
 							target:						itemRectangle
-							parent:						form
+							parent:						jaspForm
 						}
 						AnchorChanges
 						{
