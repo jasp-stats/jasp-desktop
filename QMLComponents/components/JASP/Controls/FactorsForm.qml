@@ -9,7 +9,7 @@ FactorsFormBase
     id:					    factorsForm
 
 	implicitHeight		: jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
-	implicitWidth		: form.width
+	implicitWidth		: jaspForm.width
 	height				: implicitHeight
 	width				: implicitWidth
 	Layout.columnSpan	: parent.columns

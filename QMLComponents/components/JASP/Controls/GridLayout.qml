@@ -62,7 +62,7 @@ GridLayout
 
 	function checkFormOverflow()
 	{
-		if ((typeof form === 'undefined') || !form) return false;
+		if ((typeof jaspForm === 'undefined') || !jaspForm) return false;
 
 		var startColumns = gridLayout.columns;
 
@@ -77,7 +77,7 @@ GridLayout
 			for (var i = 0; i < gridLayout.children.length; i++)
 			{
 				var child = gridLayout.children[i];
-				if (child.mapToItem(form, child.width, 0).x > form.width)
+				if (child.mapToItem(jaspForm, child.width, 0).x > jaspForm.width)
 					decrementColumns = true;
 			}
 

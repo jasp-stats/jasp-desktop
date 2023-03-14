@@ -24,7 +24,7 @@ VariablesFormBase
 {
 	id							: variablesForm
 	implicitHeight				: jaspTheme.defaultVariablesFormHeight
-	implicitWidth				: form.width
+	implicitWidth				: jaspForm.width
 	Layout.columnSpan			: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
 	isBound						: false
 	shouldStealHover			: false
