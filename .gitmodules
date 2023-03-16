@@ -126,7 +126,7 @@
 	path = Modules/jaspTimeSeries
 	url = https://github.com/jasp-stats/jaspTimeSeries.git
 	branch = master
-[submodule "Modules/jaspRobustTTests"]
-	path = Modules/jaspRobustTTests
-	url = https://github.com/jasp-stats/jaspRobustTTests
+[submodule "Modules/jaspLearnStats"]
+	path = Modules/jaspLearnStats
+	url = https://github.com/jasp-stats/jaspLearnStats
 	branch = master
