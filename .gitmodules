@@ -116,3 +116,12 @@
 [submodule "Modules/jaspPower"]
 	path = Modules/jaspPower
 	url = https://github.com/jasp-stats/jaspPower
+	branch = master
+[submodule "Modules/jaspPredictiveAnalytics"]
+	path = Modules/jaspPredictiveAnalytics
+	url = https://github.com/jasp-stats/jaspPredictiveAnalytics
+	branch = main
+[submodule "Modules/jaspLearnStats"]
+	path = Modules/jaspLearnStats
+	url = https://github.com/jasp-stats/jaspLearnStats
+	branch = master
