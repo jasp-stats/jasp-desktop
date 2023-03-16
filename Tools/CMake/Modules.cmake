@@ -19,14 +19,14 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
-    "jaspDescriptives"
+  "jaspDescriptives"
 	"jaspTTests"
 	"jaspAnova"
 	"jaspMixedModels"
 	"jaspRegression"
 	"jaspFrequencies"
 	"jaspFactor"
-    )
+)
 
 set(JASP_EXTRA_MODULES
     "jaspAcceptanceSampling"
@@ -39,6 +39,7 @@ set(JASP_EXTRA_MODULES
     "jaspEquivalenceTTests"
     "jaspJags"
     "jaspLearnBayes"
+    "jaspLearnStats"
     "jaspMachineLearning"
     "jaspMetaAnalysis"
     "jaspNetwork"
