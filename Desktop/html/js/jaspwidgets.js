@@ -827,7 +827,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		element.focus();
 
-		element.on("paste", function (event) {
+		element.on("focus", "paste", function (event) {
 			var pastedData = event.originalEvent.clipboardData.getData('text/plain');
 			this.innerHTML = pastedData;
 			event.preventDefault();
