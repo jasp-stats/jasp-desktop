@@ -49,7 +49,7 @@ public:
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
 	QVariant		defaultValue()							const	{ return _defaultValue;			}
-	QVariant		value()									const	{ return _value;				}
+	QVariant		value()									const	{ return _value.isNull() ? _defaultValue : _value; } // Sometimes the value is asked before the control is setup, so in this case give the default value
 
 	const QString &label()									const	{ return _label;				}
 	const QString &afterLabel()								const	{ return _afterLabel;			}
