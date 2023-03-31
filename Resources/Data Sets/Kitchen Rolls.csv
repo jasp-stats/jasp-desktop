@@ -1,0 +1,103 @@
+﻿ParticipantNumber,Condition,q1_check,q2_check,q1_NEO,q2_NEO,q3_NEO,q4_NEO,q5_NEO,q6_NEO,q7_NEO,q8_NEO,q9_NEO,q10_NEO,q11_NEO,q12_NEO,mean_NEO,q3_check,q4_check,Include,Rotation,Age,Sex,Student,Major.Occupation
+1,1,2,6,4,2,1,3,4,4,3,4,5,5,4,5,0.666666666666667,5,5,TRUE,counter,25,M,Y,Rechten
+2,2,3,5,5,3,4,4,3,5,4,4,4,5,5,4,1.16666666666667,8,1,TRUE,clock,20,F,Y,Taal- en Cultuurstudies
+3,3,7,3,4,2,4,4,4,5,5,4,2,4,4,4,0.833333333333333,7,2,TRUE,counter,25,F,Y,Politicologie
+4,4,4,5,3,3,2,2,2,3,5,4,3,2,4,3,0,7,4,TRUE,clock,19,F,Y,Psychologie
+5,1,3,3,1,1,1,3,3,4,4,3,4,2,5,2,-0.25,5,2,TRUE,counter,20,F,Y,Geneeskunde
+6,2,3,1,3,5,4,5,4,5,4,4,4,2,4,2,0.833333333333333,6,2,TRUE,clock,26,F,Y,Communicatiewetenschap
+7,3,4,7,5,4,2,5,4,4,3,4,3,2,4,4,0.666666666666667,5,7,TRUE,counter,23,M,Y,Psychobiologie
+8,4,7,2,4,5,4,3,3,3,3,5,4,4,4,4,0.833333333333333,7,4,TRUE,clock,22,F,Y,Psychologie
+9,1,5,3,5,4,4,4,4,5,4,5,2,3,3,4,0.916666666666667,7,6,TRUE,counter,18,F,Y,x
+10,2,4,6,4,4,2,2,4,4,4,5,5,4,4,4,0.833333333333333,8,2,TRUE,clock,19,F,Y,Sociologie
+11,3,4,2,2,2,2,4,4,4,4,4,2,4,4,3,0.25,7,2,TRUE,counter,24,F,Y,Psychologie
+12,4,7,2,3,1,4,5,4,4,5,5,3,4,5,2,0.75,8,2,TRUE,clock,20,F,Y,Psychobiologie
+13,1,6,3,4,3,2,5,3,4,2,5,4,4,4,4,0.666666666666667,6,4,TRUE,counter,21,F,Y,Psychobiologie
+14,2,3,5,4,4,2,3,3,3,4,4,3,4,4,2,0.333333333333333,5,5,TRUE,clock,19,F,Y,Psychologie
+15,3,4,5,3,4,5,5,4,4,3,4,4,3,3,4,0.833333333333333,3,7,TRUE,counter,21,F,N,Tekenaar
+16,4,7,4,5,2,3,4,4,3,4,3,4,4,4,5,0.75,7,3,TRUE,clock,19,F,Y,Pedagogische Wetenschappen
+17,1,4,5,1,2,2,4,3,4,2,2,4,3,4,3,-0.166666666666667,7,1,TRUE,counter,21,F,Y,Oudheidkunde
+18,2,0,3,4,1,1,5,2,5,5,2,2,4,4,4,0.25,6,4,TRUE,clock,26,F,Y,Bestuurskunde
+19,3,2,2,5,3,4,4,4,4,2,4,5,5,3,4,0.916666666666667,5,4,TRUE,counter,21,M,Y,Psychologie & Wijsbegeerte
+20,4,0,6,5,5,4,5,5,5,4,5,5,5,5,5,1.83333333333333,8,5,TRUE,clock,23,M,Y,Psychologie
+21,1,0,5,3,3,4,4,3,3,3,4,5,5,5,5,0.916666666666667,6,6,TRUE,counter,41,F,N,Boekhouder
+23,3,3,4,5,5,5,5,5,3,5,5,3,5,5,5,1.66666666666667,5,7,TRUE,counter,25,M,Y,History & Philosophy of Science
+24,4,6,2,4,4,4,3,5,4,5,4,3,4,5,4,1.08333333333333,7,4,TRUE,clock,31,F,Y,Psychologie
+25,1,3,5,1,2,3,4,2,1,5,5,5,4,5,1,0.166666666666667,7,2,TRUE,counter,22,F,Y,Algemene Sociale Wetenschappen
+26,2,1,7,1,1,1,3,1,3,5,3,5,1,4,1,-0.583333333333333,7,0,TRUE,clock,19,F,Y,Psychologie
+27,3,4,0,5,1,2,2,3,5,4,4,3,5,5,5,0.666666666666667,8,1,TRUE,counter,23,M,Y,Psychobiologie
+28,4,5,7,3,3,3,2,2,4,3,3,2,2,4,2,-0.25,8,3,TRUE,clock,19,F,Y,Psychologie
+29,1,4,4,5,5,5,4,5,5,4,5,2,1,4,4,1.08333333333333,6,5,TRUE,counter,19,M,Y,Psychobiologie
+30,2,0,1,4,4,3,4,4,2,5,4,2,4,4,3,0.583333333333333,3,6,TRUE,clock,21,F,Y,Taal & Communicatie
+31,3,1,7,5,3,4,4,4,5,4,4,3,5,4,4,1.08333333333333,3,8,TRUE,counter,21,F,Y,Psychobiologie & Wijsbegeerte
+32,4,7,2,2,3,3,4,4,4,4,5,2,5,5,2,0.583333333333333,6,1,TRUE,clock,21,F,Y,Psychologie
+33,1,10,10,5,4,3,2,4,5,5,5,5,2,5,3,1,0,0,TRUE,counter,21,F,Y,Psychologie
+34,2,5,2,2,2,2,4,1,2,4,4,2,2,4,4,-0.25,6,4,TRUE,clock,20,F,Y,Psychobiologie
+35,3,4,1,3,1,1,3,4,5,4,4,3,1,5,2,0,3,1,TRUE,counter,21,F,Y,Algemene Sociale Wetenschappen - A&O + COM
+36,4,1,4,5,4,2,4,2,3,1,5,1,5,4,3,0.25,6,1,TRUE,clock,19,F,Y,Psychologie
+37,1,7,2,5,5,5,4,4,3,4,4,2,1,5,4,0.833333333333333,4,4,TRUE,counter,22,F,Y,Psychologie
+38,2,0,3,5,1,2,5,4,5,3,1,5,5,4,3,0.583333333333333,6,2,TRUE,clock,19,F,Y,Psychologie
+39,3,3,4,4,1,5,5,5,4,5,4,3,5,4,4,1.08333333333333,8,1,TRUE,counter,22,M,Y,Bedrijfskunde
+40,4,9,2,5,4,3,4,4,4,4,2,3,5,4,5,0.916666666666667,7,3,TRUE,clock,22,M,Y,Media & Cultuur
+41,1,3,7,3,4,4,2,4,4,4,4,5,4,5,2,0.75,8,2,TRUE,counter,26,F,Y,Rechten
+42,2,0,1,3,4,3,4,2,4,3,5,4,5,3,3,0.583333333333333,4,6,TRUE,clock,21,F,Y,Psychologie
+43,3,3,4,4,4,2,3,2,5,2,5,5,4,4,4,0.666666666666667,6,7,TRUE,counter,22,M,Y,Psychobiologie
+44,4,2,1,4,3,2,5,4,3,3,4,5,4,3,3,0.583333333333333,6,2,TRUE,clock,20,F,Y,Psychologie
+46,2,1,3,4,4,4,4,2,5,4,5,4,2,5,4,0.916666666666667,7,1,TRUE,clock,22,F,Y,Psychologie
+47,3,6,6,4,2,3,4,3,4,5,4,3,3,4,2,0.416666666666667,8,2,TRUE,counter,25,F,N,Orthopedagoog (ZZP)
+48,4,8,8,4,2,4,2,3,4,2,5,3,3,3,2,0.0833333333333335,7,2,TRUE,clock,19,F,Y,Psychobiologie
+50,2,5,4,2,4,4,5,4,3,2,5,5,3,4,3,0.666666666666667,3,3,TRUE,clock,24,F,Y,Psychologie
+51,3,5,6,5,2,2,4,2,5,4,4,4,5,5,4,0.833333333333333,6,3,TRUE,counter,19,F,Y,Psychologie
+52,4,3,3,5,2,3,2,3,5,5,5,2,2,4,3,0.416666666666667,7,3,TRUE,clock,20,F,Y,Psychobiologie
+53,1,5,4,5,4,4,3,4,5,4,4,2,4,4,4,0.916666666666667,7,3,TRUE,counter,22,M,Y,Toegepaste psychologie
+54,2,7,2,5,4,4,4,4,4,3,5,2,5,3,3,0.833333333333333,4,5,TRUE,clock,28,M,Y,Psychologie
+55,3,2,4,5,4,1,5,3,4,5,5,2,5,5,3,0.916666666666667,8,1,TRUE,counter,20,F,Y,Psychobiologie
+56,4,4,4,2,2,3,3,3,4,4,4,4,4,4,3,0.333333333333333,6,2,TRUE,clock,21,F,Y,Psychologie
+57,1,2,5,5,4,4,4,4,5,4,2,4,5,5,4,1.16666666666667,5,7,TRUE,counter,25,F,Y,Geschiedenis/Hebreeuws
+58,2,6,2,4,3,2,4,4,5,2,4,3,4,4,3,0.5,4,2,TRUE,clock,20,F,Y,Algemene Sociale Wetenschappen
+59,3,2,5,4,5,5,5,1,5,3,5,4,3,5,5,1.16666666666667,6,3,TRUE,counter,18,F,N,Geen
+60,4,6,3,2,2,3,2,2,4,3,4,4,4,4,2,0,7,2,TRUE,clock,20,F,Y,Psychologie
+61,1,2,8,5,4,2,4,2,5,2,5,5,5,5,4,1,7,3,TRUE,counter,23,M,Y,Psychobiologie
+62,2,4,2,4,4,4,4,4,2,5,5,5,5,4,4,1.16666666666667,7,3,TRUE,clock,21,F,Y,Psychologie
+64,4,8,1,5,4,4,4,4,3,5,4,5,5,4,4,1.25,7,2,TRUE,clock,21,M,Y,Geschiedenis
+65,1,7,7,4,4,4,2,2,3,3,4,3,4,4,4,0.416666666666667,6,4,TRUE,counter,17,F,Y,6 VWO
+66,2,3,4,4,2,2,2,4,4,5,3,5,5,5,5,0.833333333333333,7,4,TRUE,clock,19,F,Y,Biomedische Wetenschappen
+67,3,3,7,5,4,2,3,5,5,4,3,4,5,5,5,1.16666666666667,8,0,TRUE,counter,23,M,Y,Psychobiologie
+68,4,4,2,5,5,3,5,4,4,3,5,5,5,5,5,1.5,7,2,TRUE,clock,25,F,Y,HBO Sociaal Juridische Dienstverlening
+69,1,1,2,3,4,2,3,4,3,4,3,3,3,3,3,0.166666666666667,1,9,TRUE,counter,38,M,N,Scheikunde
+70,2,5,0,4,3,4,3,5,3,5,4,3,4,4,4,0.833333333333333,10,0,TRUE,clock,51,F,N,n.v.t.
+71,3,7,0,4,5,4,5,4,3,5,5,2,2,4,3,0.833333333333333,7,2,TRUE,counter,21,F,Y,Communicatiewetenschap
+72,4,8,1,3,5,4,4,4,2,5,4,4,4,5,2,0.833333333333333,9,1,TRUE,clock,21,F,Y,Psychologie
+73,1,2,1,2,2,2,3,2,2,4,4,3,2,4,2,-0.333333333333333,7,5,TRUE,counter,21,F,Y,Communicatiewetenschap
+74,2,2,8,4,4,4,4,2,4,4,4,3,3,3,2,0.416666666666667,3,5,TRUE,clock,21,F,Y,Psychologie
+75,3,4,5,2,4,2,4,3,4,4,4,3,2,5,4,0.416666666666667,7,2,TRUE,counter,22,F,Y,Communicatiewetenschap
+78,2,4,6,2,2,3,4,4,4,3,4,4,5,4,2,0.416666666666667,6,6,TRUE,clock,21,F,Y,Psychobiologie
+79,3,3,3,4,3,1,3,4,4,3,5,4,4,5,4,0.666666666666667,7,1,TRUE,counter,18,F,Y,Psychologie
+80,4,2,2,5,4,4,4,4,4,5,4,3,5,4,4,1.16666666666667,7,2,TRUE,clock,24,M,Y,Spaanse Taal & Cultuur
+81,1,1,8,4,2,4,2,2,4,4,4,5,2,5,3,0.416666666666667,4,3,TRUE,counter,20,F,Y,Communicatiewetenschap
+82,2,5,1,5,5,5,4,3,4,5,5,5,5,5,4,1.58333333333333,7,4,TRUE,clock,19,F,Y,Geschiedenis
+83,3,4,3,4,4,2,2,2,4,5,2,5,1,5,3,0.25,8,3,TRUE,counter,27,F,N,x
+85,1,3,4,2,2,1,4,1,3,5,4,4,1,4,2,-0.25,7,5,TRUE,counter,21,F,Y,Biomedical Sciences
+86,2,2,2,4,3,2,2,3,3,4,4,5,4,4,4,0.5,8,2,TRUE,clock,22,F,Y,Psychobiologie
+87,3,4,4,3,3,2,4,3,2,4,4,2,4,4,2,0.0833333333333335,7,3,TRUE,counter,20,F,Y,Biomedisch
+88,4,6,7,2,5,4,2,4,3,5,4,4,4,5,3,0.75,7,7,TRUE,clock,28,F,Y,Psychologie
+89,1,8,0,5,4,4,4,2,5,4,4,5,3,5,2,0.916666666666667,9,1,TRUE,counter,18,F,Y,Psychologie
+90,2,7,8,4,2,1,3,2,5,4,4,3,5,4,2,0.25,5,6,TRUE,clock,21,F,Y,Psychobiologie
+91,3,6,6,5,5,5,5,5,5,5,5,5,5,5,5,2,4,7,TRUE,counter,25,F,Y,ACW/Kunstgeschiedenis
+92,4,3,5,4,5,4,3,5,5,5,5,3,4,5,3,1.25,6,5,TRUE,clock,19,F,Y,Nederlands
+93,1,6,5,5,4,4,5,3,3,4,4,5,5,3,4,1.08333333333333,7,3,TRUE,counter,22,M,Y,Psychobiologie
+94,2,3,2,4,3,2,4,2,3,2,5,4,3,3,2,0.0833333333333335,5,4,TRUE,clock,19,F,Y,Psychologie
+95,3,3,6,5,5,4,4,3,3,4,3,2,4,4,2,0.583333333333333,7,3,TRUE,counter,21,F,Y,Psychologie
+97,1,3,5,4,2,4,2,4,4,5,5,5,2,4,5,0.833333333333333,7,2,TRUE,counter,20,M,Y,Media & Cultuur
+98,2,0,4,5,5,4,2,5,5,4,4,2,5,4,5,1.16666666666667,6,4,TRUE,clock,25,M,Y,Bestuurs- en Organisatiewetenschappen
+99,3,1,7,5,2,2,4,4,4,5,5,3,5,4,5,1,5,3,TRUE,counter,21,F,Y,Psychologie
+101,1,3,7,5,4,2,5,4,5,4,4,3,4,4,4,1,5,4,TRUE,counter,19,M,Y,Psychobiologie
+102,2,2,6,1,1,1,5,2,5,3,4,3,3,4,4,0,5,3,TRUE,clock,20,M,Y,Psychobiologie
+103,3,5,0,4,4,3,4,3,5,5,4,3,3,4,2,0.666666666666667,6,4,TRUE,counter,19,F,Y,Psychologie
+105,1,4,4,4,4,4,4,4,3,3,4,4,4,5,2,0.75,4,7,TRUE,counter,22,F,Y,Psychobiologie
+106,2,4,2,3,1,1,4,3,5,5,4,3,3,5,3,0.333333333333333,7,3,TRUE,clock,19,F,Y,Psychobiologie
+107,3,5,7,5,3,4,4,4,5,4,5,3,5,4,5,1.25,8,0,TRUE,counter,20,M,Y,Psychologie
+109,1,6,4,4,1,1,4,2,4,4,3,3,4,5,2,0.0833333333333335,3,7,TRUE,counter,19,F,Y,ASW
+110,2,0,10,5,4,2,5,4,2,5,4,5,5,5,2,1,4,0,TRUE,clock,22,F,Y,Psychologie
+111,3,5,5,5,4,4,4,4,5,4,4,4,5,4,5,1.33333333333333,7,1,TRUE,counter,22,M,Y,Psychobiologie en filosofie
+113,1,0,10,5,5,1,2,2,5,1,2,3,5,5,4,0.333333333333333,5,10,TRUE,counter,27,M,Y,Economie
+115,3,2,6,5,4,2,4,4,5,5,4,5,4,5,3,1.16666666666667,7,4,TRUE,counter,18,F,Y,Psychologie

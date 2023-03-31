@@ -1,0 +1,949 @@
+{
+  "name": "Categorien",
+  "path": "Data Library",
+  "description": "Algemene Voorbeelden",
+  "kind": "folder",
+  "children": [
+    {
+      "name": "Boeken",
+      "path": "Books",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Field - Discovering Statistics",
+          "path": "Field - Discovering Statistics",
+          "description": "Deze map bevat datasets van Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. Deze datasets zijn gemaakt door Andy Field, aan wie dus het copyright toebehoort. Andy Field heeft vriendelijk toegezegd dat we deze datasets in de JASP datalibrary mogen gebruiken. Deze datasets zijn ook beschikbaar op de website die bij Andy Field's boek hoort: https://edge.sagepub.com/field5e. Zonder Andy Field's expliciete toestemming mogen deze datasets niet voor commerciele doeleinden worden gebruikt, de data mag niet worden aangepast, en de data mag niet worden gepresenteerd zonder dat de bron is genoemd (i.e., the terms of  a CC BY-NC-ND license <br><br> ",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Albumverkoop",
+              "path": "../../../Data Library/4. Regression/Album Sales.jasp",
+              "description": "Factoren die albumverkoop zouden kunnen beinvloeden. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Album Sales.csv"
+            },
+            {
+              "name": "Alcohol Attitudes",
+              "path": "../../../Data Library/3. ANOVA/Alcohol Attitudes.jasp",
+              "description": "Attitudes naar water, wijn, en bier na het bekijken van positieve, neutrale, of negatieve beelden van het drinken - iedere participant komt terug in iedere cel van het 3x3 design. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Alcohol Attitudes.csv"
+            },
+            {
+              "name": "Bierbril",
+              "path": "../../../Data Library/3. ANOVA/Beer Goggles.jasp",
+              "description": "Mediaan aantrekkelijkheidsbeoordelingen van 50 aantrekkelijke of onaantrekkelijke gezichten na het drinken van verschillende hoeveelheden alcohol. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Beer Goggles.csv"
+            },
+            {
+              "name": "Bush Tucker Food",
+              "path": "../../../Data Library/3. ANOVA/Bush Tucker Food.jasp",
+              "description": "Het aantal seconden voordat een beroemdheid overgeeft na het eten van vies eten - iedere beroemdheid heeft vier verschillende soorten vies eten gegeten. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Bush Tucker Food.csv"
+            },
+            {
+              "name": "Dansende Katten",
+              "path": "../../../Data Library/5. Frequencies/Dancing Cats.jasp",
+              "description": "Het aantal katten dat heeft geleerd te dansen, getraind door een van de twee types van conditioneren. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats.csv"
+            },
+            {
+              "name": "Dansende Katten en Honden",
+              "path": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.jasp",
+              "description": "Het aantal katten en honden dat heeft geleerd te dansen, getraind door een van de twee types van conditioneren. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.csv"
+            },
+            {
+              "name": "Examenangst",
+              "path": "../../../Data Library/4. Regression/Exam Anxiety.jasp",
+              "description": "Vragenlijst van studenten voor een examen (variabelen zijn angst, voorbereiding, en cijfer). <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Exam Anxiety.csv"
+            },
+            {
+              "name": "Angst voor Statistiek",
+              "path": "../../../Data Library/1. Descriptives/Fear of Statistics.jasp",
+              "description": "Responses van 2571 studenten op een SPSS Angst Vragenlijst. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/1. Descriptives/Fear of Statistics.csv"
+            },
+            {
+              "name": "Onzichtbaarheidsmantel",
+              "path": "../../../Data Library/2. T-Tests/Invisibility Cloak.jasp",
+              "description": "Het aantal snode plannen uitgevoerd door twee groepen mensen, mensen met en zonder een onzichtbaarheidsmantel. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Invisibility Cloak.csv"
+            },
+            {
+              "name": "Uiterlijk of Persoonlijkheid",
+              "path": "../../../Data Library/3. ANOVA/Looks or Personality.jasp",
+              "description": "Voorkeurscores van tien mannen en tien vrouwen voor negen speed-date partners die varieerden in aantrekkelijkheid (hoog, gemiddeld, laag) en charisma (hoog, ietwat, geen). <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Looks or Personality.csv"
+            },
+            {
+              "name": "De Grootste Leugenaar",
+              "path": "../../../Data Library/4. Regression/The Biggest Liar.jasp",
+              "description": "Creativiteit testscores en een rangorde in een liegwedstrijd. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/The Biggest Liar.csv"
+            },
+            {
+              "name": "Viagra",
+              "path": "../../../Data Library/3. ANOVA/Viagra.jasp",
+              "description": "Mannen hun libido (en dat van hun partners) nadat zij verschillende doseringen Viagra hebben gehad. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Viagra.csv"
+            }
+          ]
+        },
+        {
+          "name": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+          "path": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+          "description": "Deze map bevat datasets van Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library. These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e. Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license <br><br> ",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Universiteitsucces",
+              "path": "../../../Data Library/4. Regression/College Success.jasp",
+              "description": "Middelbare schoolcijfers, SAT scores, en Grade Point Average van 224 universiteitsstudenten. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/College Success.csv"
+            },
+            {
+              "name": "Directed Reading Activities",
+              "path": "../../../Data Library/2. T-Tests/Directed Reading Activities.jasp",
+              "description": "Leesprestaties van twee groepen leerlingen - een controle groep en een groep die Directed Reading Activities heeft uitgevoerd. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Directed Reading Activities.csv"
+            },
+            {
+              "name": "Facebook Vrienden",
+              "path": "../../../Data Library/3. ANOVA/Facebook Friends.jasp",
+              "description": "Voorkeurswaarderingen voor Facebookprofielen - vijf groepen beoordelen dezelfde profielen, alleen het aantal vrienden op dat profiel is gemanipuleerd. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Facebook Friends.csv"
+            },
+            {
+              "name": "Vetopslag en Friemelen",
+              "path": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.jasp",
+              "description": "Vetopslag van participanten en hun onbewuste fysieke activiteiten. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.csv"
+            },
+            {
+              "name": "Gezondheidsgewoontes",
+              "path": "../../../Data Library/5. Frequencies/Health Habits.jasp",
+              "description": "fysieke activiteiten en fruitconsumptie van 1184 studenten. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Health Habits.csv"
+            },
+            {
+              "name": "Hartslag",
+              "path": "../../../Data Library/3. ANOVA/Heart Rate.jasp",
+              "description": "Hartslag van mannelijke en vrouwelijke hardlopers en vaak stilzittende participanten na 6 minuten oefeningen. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Heart Rate.csv"
+            },
+            {
+              "name": "Maan en Agressie",
+              "path": "../../../Data Library/2. T-Tests/Moon and Aggression.jasp",
+              "description": "Het aantal disruptieve gedragingen door dementiepatienten tijdens twee verschillende fases van de maancyclus. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Moon and Aggression.csv"
+            },
+            {
+              "name": "Fysieke Activiteit en BMI",
+              "path": "../../../Data Library/4. Regression/Physical Activity and BMI.jasp",
+              "description": "Participanten hun Body Mass Index en het gemiddeld aantal stappen per dag. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Physical Activity and BMI.csv"
+            },
+            {
+              "name": "Reactie op Oogkleur",
+              "path": "../../../Data Library/3. ANOVA/Response to Eye Color.jasp",
+              "description": "Attitudes na advertenties over een merk zoals ervaren door vier verschillende groepen - elke groep kreeg dezelfde advertentie te zien, alleen de oogkleur van het model was gemanipuleerd. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Response to Eye Color.csv"
+            },
+            {
+              "name": "Gewichtstoename",
+              "path": "../../../Data Library/2. T-Tests/Weight Gain.jasp",
+              "description": "Gewicht van 16 participanten voor en na een achtweekse periode van extreme kalorie inname. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Weight Gain.csv"
+            }
+          ]
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "1. Beschrijvingen",
+      "path": "1. Descriptives",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Slaap",
+          "path": "Sleep.jasp",
+          "description": "Het extra aantal uren dat tien patienten sliepen na inname van twee 'soporific drugs' (dat wil zeggen, slaaptabletten). <br><br> Het voorbeeldsbestand in JASP laat zien hoe beschrijvende statistieken worden gebruikt. <br><br> <i>Dataset bijgesloten in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Sleep.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "2. T-Toetsen",
+      "path": "2. T-Tests",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Directed Reading Activities",
+          "path": "Directed Reading Activities.jasp",
+          "description": "Leesprestaties van twee groepen leerlingen - een controlegroep en een groep die Directed Reading Activities heeft uitgevoerd. <br><br> Het voorbeeldbestand in JASP laat zien hoe een onafhankelijke steekproeven t-toets kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Directed Reading Activities.csv"
+        },
+        {
+          "name": "Oogbewegingen",
+          "path": "Eye Movements.jasp",
+          "description": "Het aantal correct herinnerde woorden in twee groepen participanten - tijdens de retentie interval kreeg een groep de instructie om te focussen op een stip centraal getoond in de taak. <br><br> Het voorbeeldbestand in JASP laat zien hoe een 'Bayesiaanse t-toets onafhankelijke steekproeven' kan worden toegepast.<br><br> <i>Subset van de data gerapporteerd in Matzke et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Eye Movements.csv"
+        },
+        {
+          "name": "Onzichtbaarheidsmantel",
+          "path": "Invisibility Cloak.jasp",
+          "description": "Het aantal snode plannen uitgevoerd door twee groepen mensen, mensen met en zonder een onzichtbaarheidsmantel.  <br><br> Het voorbeeldbestand in JASP laat zien hoe een onafhankelijke steekproeven t-toets kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Invisibility Cloak.csv"
+        },
+        {
+          "name": "Keukenrollen",
+          "path": "Kitchen Rolls.jasp",
+          "description": "Openness to Experience scores voor twee groepen studenten - terwijl de persoonlijkheidsvragenlijst werd ingevuld, roteerden beide groepen een keukenpapierrol met hun handen (een groep met de klok mee, de andere groep tegen de klok in). <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse en frequentistische onafhankelijke steekproeven t-toets kan worden toegepast. <br><br> <i>Data gerapporteerd in Wagenmakers et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Kitchen Rolls.csv"
+        },
+        {
+          "name": "Maan en Agressie",
+          "path": "Moon and Aggression.jasp",
+          "description": "Het aantal disruptieve gedragingen door dementiepatienten tijdens twee verschillende fases van de maancyclus. <br><br> Het voorbeeldbestand in JASP laat zien hoe een gepaarde t-toets kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Moon and Aggression.csv"
+        },
+        {
+          "name": "Stereogrammen",
+          "path": "Stereograms.jasp",
+          "description": "De tijd die twee groepen participanten nodig hadden om de voorwerpen verborgen in een stereogram te vinden - de ene groep werd vooraf ingelicht over de scene, de andere groep niet. <br><br> Het voorbeeldbestand in JASP laat zien hoe een 'Bayesiaanse t-toets onafhankelijke steekproeven' kan worden toegepast.<br><br> <i>Data gerapporteerd in Frisby & Clatworthy (1975).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stereograms.csv"
+        },
+        {
+          "name": "Gewichtstoename",
+          "path": "Weight Gain.jasp",
+          "description": "Gewicht van 16 participanten voor en na een achtweekse periode van extreme kalorie inname. <br><br> Het voorbeeldbestand in JASP laat zien hoe een one sample t-toets kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Weight Gain.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "3. ANOVA",
+      "path": "3. ANOVA",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Alcohol Gedrag",
+          "path": "Alcohol Attitudes.jasp",
+          "description": "Attitudes naar water, wijn, en bier na het bekijken van positieve, neutrale, of negatieve beelden van het drinken - iedere participant komt terug in iedere cel van het 3x3 design. <br><br> Het voorbeeldbestand in JASP laat zien hoe een herhaalde metingen ANOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Alcohol Attitudes.csv"
+        },
+        {
+          "name": "Bierbril",
+          "path": "Beer Goggles.jasp",
+          "description": "Mediaan aantrekkelijkheidsbeoordelingen van 50 aantrekkelijke of onaantrekkelijke gezichten na het drinken van verschillende hoeveelheden alcohol. <br><br> Het voorbeeldbestand in JASP laat zien hoe een ANOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Beer Goggles.csv"
+        },
+        {
+          "name": "Beestjes",
+          "path": "Bugs.jasp",
+          "description": "In hoeverre mensen geleedpotigen willen vermoorden, op basis van hoe zij verschillen in hoe eng ze zijn (laag, hoog) en hoe vies ze eruit zien (laag, hoog) - elke participant beoordeeld iedere geleedpotige op beide maten.  <br><br> Het voorbeeldbestand in JASP laat zien hoe een mixed design ANOVA kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in Ryan, Wilde, & Crist (2013).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Bugs.csv"
+        },
+        {
+          "name": "Bush Tucker Food",
+          "path": "Bush Tucker Food.jasp",
+          "description": "Het aantal seconden voordat een beroemdheid overgeeft na het eten van vies eten - iedere beroemdheid heeft vier verschillende soorten vies eten gegeten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een herhaalde metingen ANOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Bush Tucker Food.csv"
+        },
+        {
+          "name": "Erotische Foto's en Liefde",
+          "path": "Erotic Pictures and Love.jasp",
+          "description": "Mannen en vrouwen hun gevoelens voor hun partners na het zien van erotische of artistische foto's. <br><br> Het voorbeeldbestand in JASP laat zien hoe een factorial 2 x 2 ANOVA kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in  Balzarini et al. (2016).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Erotic Pictures and Love.csv"
+        },
+        {
+          "name": "Facebook Vrienden",
+          "path": "Facebook Friends.jasp",
+          "description": "Voorkeurswaarderingen voor Facebookprofielen - vijf groepen beoordelen dezelfde profielen, alleen het aantal vrienden op dat profiel is gemanipuleerd. <br><br> Het voorbeeldbestand in JASP laat zien hoe een eenzijdige ANOVA kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Facebook Friends.csv"
+        },
+        {
+          "name": "Hartslag",
+          "path": "Heart Rate.jasp",
+          "description": "Hartslag van mannelijke en vrouwelijke hardlopers en vaak stilzittende participanten na 6 minuten oefeningen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een 2 x 2 tussen-subjects ANOVA kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Heart Rate.csv"
+        },
+        {
+          "name": "Uiterlijk of Persoonlijkheid",
+          "path": "Looks or Personality.jasp",
+          "description": "Voorkeurscores van tien mannen en tien vrouwen voor negen speed-date partners die varieerden in aantrekkelijkheid (hoog, gemiddeld, laag) en charisma (hoog, ietwat, geen). <br><br> Het voorbeeldbestand in JASP laat zien hoe een mixed design ANOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Looks or Personality.csv"
+        },
+        {
+          "name": "Pijngrenzen",
+          "path": "Pain Thresholds.jasp",
+          "description": "Pijngrenzen voor mensen met verschillende haarkleuren.  <br><br> Het voorbeeldbestand in JASP laat zien hoe een eenzijdige ANOVA kan worden toegepast. <br><br> <i>Data van McClave & Dietrich (1991).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Pain Thresholds.csv"
+        },
+        {
+          "name": "Reactie op Oogkleur",
+          "path": "Response to Eye Color.jasp",
+          "description": "Attitudes na advertenties over een merk zoals ervaren door vier verschillende groepen - elke groep kreeg dezelfde advertentie te zien, alleen de oogkleur van het model was gemanipuleerd. <br><br> Het voorbeeldbestand in JASP laat zien hoe een eenzijdige ANOVA kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Response to Eye Color.csv"
+        },
+        {
+          "name": "Zangers",
+          "path": "Singers.jasp",
+          "description": "\"Lengte in inches van de zangers in de New York Choral Society in 1979. De data zijn gegroepeerd op basis van stemdeel. Het stembereik voor ieder stemdeel neemt toe in hoogte op de volgende volgorde: Bass 2, Bass 1, Tenor 2, Tenor 1, Alto 2, Alto 1, Soprano 2, Soprano 1.\" <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse tussen-subjects ANOVA kan worden toegepast. <br><br> <i>Data set in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Singers.csv"
+        },
+        {
+          "name": "Tandgroei",
+          "path": "Tooth Growth.jasp",
+          "description": "\"De response is de lengte van odontoblasts (cellen verantwoordelijk voor tandgroei) in 60 cavia's. Elk dier kreeg een van de drie doseringen van vitamine C (0.5, 1, en 2 mg/dag), toegediend op een van de volgende twee manieren: in sinaasappelsap of in ascorbinezuur (een vorm van vitamine C en gecodeerd als VC).\" <br><br> Het voorbeeldbestand in JASP laat zien hoe een 2 x 2 ANOVA kan worden toegepast. <br><br> <i>Data set in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Tooth Growth.csv"
+        },
+        {
+          "name": "Viagra",
+          "path": "Viagra.jasp",
+          "description": "Mannen hun libido (en dat van hun partners) nadat zij verschillende doseringen Viagra hebben gehad. <br><br> Het voorbeeldbestand in JASP laat zien hoe een ANCOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Viagra.csv"
+        },
+        {
+          "name": "Stroop",
+          "path": "Stroop.jasp",
+          "description": "Responstijden van 19 participanten op een Stroop taak. <br><br> Het voorbeeldbestand in JASP laat zien hoe een ANOVA voor herhaalde metingen kan worden toegepast.<br><br> <i>Data aangeboden door Ronen Hershman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stroop.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "4. Regressie",
+      "path": "4. Regression",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Adam Sandler",
+          "path": "Adam Sandler.jasp",
+          "description": "Rotten Tomatoes beoordelingen en box office succes van films waarin Adam Sandler de hoofdrol speelt. <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse Pearson's correlatie kan worden toegepast. <br><br> <i>Data verzameld op Rotten Tomatoes in 2015 door E.J. Wagenmakers.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Adam Sandler.csv"
+        },
+        {
+          "name": "Albumverkoop",
+          "path": "Album Sales.jasp",
+          "description": "Factoren die albumverkoop zouden kunnen beinvloeden. <br><br> Het voorbeeldbestand in JASP laat zien hoe een lineaire regressie kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Album Sales.csv"
+        },
+        {
+          "name": "Veiling",
+          "path": "Auction.jasp",
+          "description": "De verkoopprijs en leeftijd van antieke klokken, en het aantal bieders in iedere veiling. <br><br> Het voorbeeldbestand in JASP laat zien hoe een lineaire regressie kan worden toegepast. <br><br> <i>Data van Mendenhall & Sincich (1993).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Auction.csv"
+        },
+        {
+          "name": "Big Five Persoonlijkheidskenmerken",
+          "path": "Big Five Personality Traits.jasp",
+          "description": "Scores op de Big Five persoonlijkheidskenmerken vragenlijst van 500 participanten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een Pearson's correlatie kan worden toegepast. <br><br> <i>Data gerapporteerd in Dolan et al. (2009).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Big Five Personality Traits.csv"
+        },
+        {
+          "name": "Universiteitsucces",
+          "path": "College Success.jasp",
+          "description": "Middelbare school cijfers, SAT scores, en Grade Point Average van 224 universiteitstudenten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een lineaire regressie kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "College Success.csv"
+        },
+        {
+          "name": "Examenangst",
+          "path": "Exam Anxiety.jasp",
+          "description": "Vragenlijst van studenten voor een examen (variabelen zijn angst, voorbereiding, en cijfer). <br><br> Het voorbeeldbestand in JASP laat zien hoe een Pearson correlatiecoefficient kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Exam Anxiety.csv"
+        },
+        {
+          "name": "Vetopslag en Friemelen",
+          "path": "Fidgeting and Fat Gain.jasp",
+          "description": "Vetopslag van participanten en hun niet-bewuste fysieke activiteiten.  <br><br> Het voorbeeldbestand in JASP laat zien hoe een lineaire regressie kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Fidgeting and Fat Gain.csv"
+        },
+        {
+          "name": "Glasgow Norms",
+          "path": "Glasgow Norms.jasp",
+          "description": "Een set van normatieve beoordelingen voor 5,553 Engelse woorden op negen psycholinguistische dimensies. <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse correlatie kan worden toegepast. <br><br> <i>Data van Scott et al. (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Glasgow Norms.csv"
+        },
+        {
+          "name": "Fysieke Activiteit en BMI",
+          "path": "Physical Activity and BMI.jasp",
+          "description": "Participanten hun Body Mass Index en het gemiddeld aantal stappen per dag. <br><br> Het voorbeeldbestand in JASP laat zien hoe een lineaire regressie kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Physical Activity and BMI.csv"
+        },
+        {
+          "name": "De Lengte van Presidenten",
+          "path": "Presidents' Height.jasp",
+          "description": "De lengte van presidenten van de VS en hun aandeel van de populariteitsstemming. <br><br> Het voorbeeldbestand in JASP laat zien hoe een interval - nulhypothese kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in Stulp et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Presidents' Height.csv"
+        },
+        {
+          "name": "World Happiness",
+          "path": "World Happiness.jasp",
+          "description": "National happiness scores and various life factors of 155 countries reported in 2017. <br><br> The example JASP file demonstrates the use of Bayesian linear regression.<br><br> <i>Data from Helliwell, Layard, & Sachs (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "World Happiness.csv"
+        },
+        {
+          "name": "De Grootste Leugenaar",
+          "path": "The Biggest Liar.jasp",
+          "description": "Creativiteit testscores en een rangorde in een liegwedstrijd <br><br> Het voorbeeldbestand in JASP laat zien hoe Spearman's en Kendall's correlatie kunnen worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "The Biggest Liar.csv"
+        },
+        {
+          "name": "Titanic",
+          "path": "Titanic.jasp",
+          "description": "Leeftijd, kabineklasse, en overlevingstatus van 1313 passagiers op de Titanic. <br><br> Het voorbeeldbestand in JASP laat zien hoe een logistische regressie kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Titanic.csv"
+        },
+        {
+          "name": "Turbines",
+          "path": "Turbines.jasp",
+          "description": "Het aantal en het aandeel van de turbinewielen die na een bepaald aantal draaiuren scheuren vertonen. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van binomiale logistische regressie.<br><br> <i>Gegevens van Nelsen, W. (1982).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Turbines.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "5. Frequenties",
+      "path": "5. Frequencies",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Dansende Katten en Honden",
+          "path": "Dancing Cats and Dogs.jasp",
+          "description": "Het aantal katten en honden die hebben geleerd te dansen, getraind door een van de twee types van conditioneren <br><br> Het voorbeeldbestand in JASP laat zien hoe een log-lineaire analyse kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Dancing Cats and Dogs.csv"
+        },
+        {
+          "name": "Dansende Katten",
+          "path": "Dancing Cats.jasp",
+          "description": "Het aantal katten dat heeft geleerd te dansen, getraind door een van de twee types van conditioneren <br><br> Het voorbeeldbestand in JASP laat zien hoe een chi-kwadraat toets van onafhankelijkheid kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Dancing Cats.csv"
+        },
+        {
+          "name": "Doodstraf",
+          "path": "Death Penalty.jasp",
+          "description": "Beslissingen van de rechtbank over de doodstraf (ja of nee) verdeeld op ras van de aangeklaagde (i.e., wit of zwart) en het ras van het slachtoffer (i.e., wit of zwart). <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse log-lineaire analyse kan worden toegepast. <br><br> <i>Data van Radelet & Pierce (1991).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Death Penalty.csv"
+        },
+        {
+          "name": "Emily Rosa",
+          "path": "Emily Rosa.jasp",
+          "description": "Correcte en incorrecte beslissingen van Therapeutic Touch beoefenaars in Emily Rosa's beroemde experiment. \"In de eerste trial konden de participanten de locatie van de beoefenaars hand in 70 (47%) van de 150 gevallen juist localiseren.\" <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse binomiale toets kan worden toegepast. <br><br> <i>Dataset gereconstrueerd van de samengevatte informatie van Rosa et al. (1998).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Emily Rosa.csv"
+        },
+        {
+          "name": "Gezondheidsgewoontes",
+          "path": "Health Habits.jasp",
+          "description": "fysieke activiteiten en fruitconsumptie van 1184 studenten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een chi-kwadraat toets van onafhankelijkheid kan worden toegepast.<br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Health Habits.csv"
+        },
+        {
+          "name": "Hongerige Zombies",
+          "path": "Hungry Zombies.jasp",
+          "description": "Het antwoord van 12 zombies op de vraag: \"Hoeveel honger ervaar je op dit moment?\" <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse binomiale toets kan worden toegepast.<br><br> <i>Fictieve data van E.J. Wagenmakers.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Hungry Zombies.csv"
+        },
+        {
+          "name": "Listerism",
+          "path": "Listerism.jasp",
+          "description": "De herstelstatus van patienten behandeld met Lister's methode of normaal verband. <br><br> Het voorbeeldbestand in JASP laat zien hoe Bayesiaanse contingency tables kunnen worden toegepast. <br><br> <i>Dataset gereconstrueerd aan de hand van de samenvattende informatie van MacAlister (1881) en gerapporteerd in Jamil et al. (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Listerism.csv"
+        },
+        {
+          "name": "Herinnering aan Stress-Situaties",
+          "path": "Memory of Life Stresses.jasp",
+          "description": "Het aantal gerapporteerde stress-situaties (opgeteld over alle participanten) die voorkwamen in de maanden voor het interview. <br><br> Het voorbeeldbestand in JASP laat zien hoe een multinomiale toets kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in Uhleman et al. (1974) aangeboden door Haberman (1978).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Memory of Life Stresses.csv"
+        },
+        {
+          "name": "MOOC Bias",
+          "path": "MOOC Bias.jasp",
+          "description": "Het responspercentage van MOOC docenten op vragen gesteld met acht verschillende identiteitsconstructen [i.e., geslacht (man, vrouw) x ras (Wit, Indiaas, Zwart, Chinees)]. <br><br> Het voorbeeldbestand in JASP laat zien hoe een chi-kwadraat toets van onafhankelijkheid kan worden toegepast.<br><br> <i>Data van Baker et al. (2018).<\/i>",
+          "kind": "file",
+          "associated_datafile": "MOOC Bias.csv"
+        },
+        {
+          "name": "Zonnebrandcreme",
+          "path": "Sun Block Lotions.jasp",
+          "description": "Reacties van 20 participanten op de vraag: \"Welke van deze twee zonnebrandcremes is beter?\" <br><br> Het voorbeeldbestand in JASP laat zien hoe een binomiale toets kan worden toegepast. <br><br> <i>Fictieve data van Moore, McCaib, & Craig (2012).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Sun Block Lotions.csv"
+        },
+        {
+          "name": "Driezijdige Munt",
+          "path": "Three-Sided Coin.jasp",
+          "description": "Het aantal keren dat beide experimentele munten op hun rand terecht kwamen (uit 1000 gooien).  <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse binomiale toets, die gebruik maakt van samenvattingsstatistiek, kan worden toegepast.<br><br> <i>Data verzameld door Matthew Parker.<\/i>",
+          "kind": "file"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "6. Factor",
+      "path": "6. Factor",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "G Factor",
+          "path": "G Factor.jasp",
+          "description": "Charles Spearman's data van leerlingen hun schoolcijfers en sensorisch onderscheidingsvermogen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een exploratorische factoranalyse kan worden toegepast. <br><br> <i>Data gerapporteerd in Spearman (1904).<\/i>",
+          "kind": "file",
+          "associated_datafile": "G Factor.csv"
+        },
+        {
+          "name": "Mental Ability",
+          "path": "Mental Ability.jasp",
+          "description": "De klassieke dataset van Holzinger en Swineford (1939) bevat mentale vaardigheidstestscores van kinderen uit groep 7 en 8 van twee verschillende scholen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een confirmatieve factoranalyse kan worden toegepast. <br><br> <i>De gegevens uit Holzinger en Swineford (1939) zijn beschikbaar in het R-package lavaan (Rosseel, 2012).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Mental Ability.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+        "name": "7. Audit",
+        "path": "7. Audit",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+              "name": "Testen van de Interne Systemen",
+              "path": "controlTestBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 100 observaties uit interne systemen en hun relevante criteria. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "controlTest.csv"
+          },
+          {
+              "name": "Testen voor Overwaarderingen",
+              "path": "substantiveTestBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Plannen en Selecteren van een Steekproef",
+              "path": "planningAndSelectingBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse planning en de selectie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Evalueren van een Steekproef",
+              "path": "evaluationBayesian.jasp",
+              "description": "Een fictieve steekproef bestaande uit 60 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse evaluatie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "auditSample.csv"
+          },
+          {
+              "name": "Vaststellen van de Wet van Benford",
+              "path": "sinoForest.jasp",
+              "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\/i>",
+              "kind": "file",
+              "associated_datafile": "sinoForest.csv"
+          },
+          {
+              "name": "BuildIt Binary",
+              "path": "BuildIt_Binary.jasp",
+              "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "8. Bain",
+        "path": "8. Bain",
+        "description": "",
+        "kind": "folder",
+        "children": [
+        {
+          "name": "One Sample T-Test",
+          "path": "bainOneSample.jasp",
+          "description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+           "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Welch's T-Test",
+          "path": "bainIndependentSamples.jasp",
+          "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Paired Samples T-Test",
+          "path": "bainPairedSamples.jasp",
+          "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+           "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "ANOVA",
+          "path": "bainAnova.jasp",
+          "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "ANCOVA",
+          "path": "bainAncova.jasp",
+          "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Regressie",
+          "path": "bainRegression.jasp",
+          "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Structural Equation Model",
+          "path": "bainSem.jasp",
+          "description": "Dit JASP bestand toont een Bain Structual Equation Model met behulp van de Sesamstraat gegevens. <br><br> <i>Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        }
+      ],
+        "debug": false
+      },
+      {
+        "name": "9. Ontdek Verdelingen",
+        "path": "9. Discover Distributions",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Distributions",
+            "path": "Normal distribution.jasp",
+            "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\ / I>",
+            "kind": "file",
+            "associated_datafile": "Distributions.csv"
+          }
+        ]
+      },
+      {
+        "name": "10. Machine Learning",
+        "path": "10. Machine Learning",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Iris Bloemen",
+            "path": "iris.jasp",
+            "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "iris.csv"
+          },
+          {
+            "name": "Telco's Overstappende Klanten",
+            "path": "telcoCustomerChurn.jasp",
+            "description": "Telecomdata van 7043 klanten van een telefoonprovider. Variabelen varieren van persoonlijke beschrijvingen tot subscriptiekosten en geven zo informatie over overstapgedrag van klanten. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "kind": "file",
+            "associated_datafile": "telcoCustomerChurn.csv"
+          },
+          {
+            "name": "Studentcijfers",
+            "path": "studentGrades.jasp",
+            "description": "De data bevat informatie van 357 middelbare scholieren in Portugal (Cortez & Silva, 2008). <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "kind": "file",
+            "associated_datafile": "studentGrades.csv"
+          },
+          {
+            "name": "Wijnsoorten",
+            "path": "wine.jasp",
+            "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "wine.csv"
+          },
+          {
+            "name": "Spiraal",
+            "path": "spiral.jasp",
+            "description": "De data bevat een spiraalvormig figuur op een twee-dimensionaal vlak. Twee klassen zijn vertegenwoordigd in de 200 observaties. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "spiral.csv"
+          },
+          {
+            "name": "Penguins",
+            "path": "penguins.jasp",
+            "description": "De data bevat metingen voor pinguïnsoorten, eiland in de Palmer-archipel, grootte (lengte van de vinnen, lichaamsgewicht, snavelafmetingen) en geslacht. <br><br> <i>Dataset opgenomen in R package palmerpenguins.<\/i>",
+            "kind": "file",
+            "associated_datafile": "penguins.csv"
+          },
+          {
+            "name": "Police Cadet Evaluation",
+            "path": "policeCadetEvaluation.jasp",
+            "description": "Gegevens uit de praktijk over de evaluatie van politiecadetten, eind jaren negentig verzameld in Nederland, die werden gebruikt om de effecten te bestuderen van het verlagen van de toelatingsnormen en om te voorspellen of cadetten zouden slagen voor de standaard vijfjaarlijkse evaluatie op basis van verschillende kenmerken. <br><br> <i>Data set beschikbaar gemaakt door het Korps landelijke politiediensten en het Ministerie van Justitie in Nederland.<\/i>",
+            "kind": "file",
+            "associated_datafile": "policeCadetEvaluation.csv"
+          }
+        ],
+        "debug": false
+      },
+    {
+      "name": "11. Meta-Analyse",
+      "path": "11. Meta-Analysis",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "BCG-Vaccin",
+          "path": "BCG Vaccine.jasp",
+          "description": "Toetsstatistiek van studies die de effectiviteit van het BCG-Vaccin onderzochten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een vast-effect en willekeurig-effect meta-analyse kan worden toegepast. <br><br> <i>Data aangeboden door Raoul Grasman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "BCG Vaccine.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "12. Netwerk Analyse",
+      "path": "12. Network Analysis",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "BFI Netwerk",
+          "path": "BFI Network.jasp",
+          "description": "Reacties van 2800 participanten op 25 Big Five Inventory items. <br><br> Het voorbeeldbestand in JASP laat zien hoe een netwerk analyse kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "BFI Network.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "13. Betrouwbaarheid",
+      "path": "13. Reliability",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Angst voor Statistiek",
+          "path": "Fear of Statistics.jasp",
+          "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
+          "kind": "file",
+          "associated_datafile": "Fear of Statistics.csv"
+        },
+        {
+          "name": "ASRM - Manie Schaal",
+          "path": "ASRM - Mania Scale.jasp",
+          "description": "Antwoorden van 78 deelnemers op de Altman self-rating manie schaal (ASRM), van Nicolai & Moshagen (2018). Het bestand demonstreert het gebruik van een Bayesiaanse unidimensionale betrouwbaarheidsanalyse",
+          "kind": "file",
+          "associated_datafile": "ASRM - Mania Scale.csv"
+        },
+        {
+          "name": "Interbeoordelaarsgegevens van Shrout en Fleiss (1979)",
+          "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+          "description": "Hypothetische dataset uit een artikel over ICC's van Shrout en Fleiss (1979). Het bestand demonstreert het gebruik van klassieke intra-klasse correlatiecoëfficiënten",
+          "kind": "file",
+          "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "14. SEM",
+      "path": "14. SEM",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Politieke Democratie",
+          "path": "Political Democracy.jasp",
+          "description": "Indicatoren van industrialisatie in 1960, en politieke democratie in 1960 en 1965. <br><br> Het voorbeeldbestand in JASP laat zien hoe structural equation modeling kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Political Democracy.csv"
+        },
+        {
+          "name": "Grand Point Average",
+          "path": "Grand Point Average.jasp",
+          "description": "Gemiddeld aantal studiepunten van 200 studenten over 6 semesters, samen met informatie over geslacht, aantal studiepunten op de middelbare school en of ze zijn toegelaten tot de universiteit van hun keuze. <br><br>Het JASP-bestand bevat momenteel geen analyses. <br><br> <i>Dataset van Hox, Moerbeek, en Van de Schoot (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Grand Point Average.csv"
+        },
+        {
+          "name": "Social Participation",
+          "path": "Social Participation.jasp",
+          "description": "Metingen van sociale participatie (kerklidmaatschap, lidmaatschappen van vrijwilligersorganisaties, en aantal vrienden dat wordt gezien), alsmede metingen van mogelijke oorzaken van sociale interactie (inkomen, beroep en opleiding). <br><br> Het JASP-bestand bevat momenteel geen analyses. <br><br> <i>Gesimuleerde gegevens gebaseerd op Hodge en Treiman (1986).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Social Participation.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "15. Prophet",
+      "path": "15. Prophet",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "JASP Webpage Visits",
+          "path": "JASP Webpage Visits.jasp",
+          "description": "Number of visits to the JASP website from January to October 2020.<br><br> <i>Data set collected by the JASP team.<\/i>",
+          "kind": "file",
+          "associated_datafile": "JASP Webpage Visits.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "16. Circular Statistics",
+      "path": "16. Circular Statistics",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "El Nino",
+          "path": "El Nino.jasp",
+          "description": "Metingen van de windrichting in Hawaii gedurende de maanden augustus, juli en september. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van circulaire beschrijvingen en vergelijking van meerdere circulaire variabelen. <br><br> <i>Fictieve gegevens van Aaron Bahde onder CC-BY 4.0 licentie.<\/i>",
+          "kind": "file",
+          "associated_datafile": "El Nino.csv"
+        }
+      ]
+    },
+    {
+      "name": "17. Mixed Models",
+      "path": "17. Mixed Models",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Larks and Owls",
+          "path": "Larks and Owls.jasp",
+          "description": "Gedachtewisselingen in de volgehouden aandachtstaak op verschillende tijdstippen van de dag en chronotype-indeling verkregen via de ochtend-avondvragenlijst.<br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een Generalized Linear Mixed Models.<br><br> <i>Dataset overgenomen van Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Larks and Owls.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "18. Overig",
+      "path": "18. Miscellaneous",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Anscombe's Kwartet",
+          "path": "Anscombe's Quartet.jasp",
+          "description": "Een klassiek voorbeeld van het nut van het visualiseren van data.  <br><br> Het voorbeeldbestand in JASP laat zien hoe data grondig kan worden geinspecteerd met grafieken in plaats van statistische uitvoer. <br><br> <i>Fictieve data van Anscombe (1973).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Anscombe's Quartet.csv"
+        },
+        {
+          "name": "The Datasaurus Dozen (Long)",
+          "path": "The Datasaurus Dozen (Long).jasp",
+          "description": "Twaalf variaties van twee variabelen die dezelfde beschrijvende statistieken hebben maar verschillende verdelingen geven. Een grilliger voorbeeld van de les die het traditionele Anscombe's Quartet geeft. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van het inspecteren van gegevens aan de hand van figuren. <br><br> <i>Synthetische gegevens van Matejka & Fitzmaurice (2018). Dataset overgenomen van R (Locke & McGowan, 2018).",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Long).csv"
+        },
+        {
+          "name": "The Datasaurus Dozen (Wide)",
+          "path": "The Datasaurus Dozen (Wide).jasp",
+          "description": "Twaalf variaties van twee variabelen die dezelfde beschrijvende statistieken hebben maar verschillende verdelingen geven. Een grilliger voorbeeld van de les die het traditionele Anscombe's Quartet geeft. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van het inspecteren van gegevens aan de hand van figuren. <br><br> <i>Synthetische gegevens van Matejka & Fitzmaurice (2018). Dataset overgenomen van R (Locke & McGowan, 2018).",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Wide).csv"
+        },
+        {
+          "name": "Missing Data",
+          "path": "Missing Data.jasp",
+          "description": "Synthetische data met missende waardes. <br><br> Het voorbeeldbestand in JASP laat zien hoe een XXX kan worden toegepast. Missende waardes.<br><br> <i>Fictieve data van Alexander Ly.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Missing Data.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "Debug Dataset (JASP Team, 2017)",
+      "path": "../debug.csv",
+      "description": "For testing. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"],
+      "debug": true
+    }
+  ]
+}

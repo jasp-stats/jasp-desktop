@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="40px"
+   height="40px"
+   viewBox="0 0 40 40"
+   enable-background="new 0 0 40 40"
+   xml:space="preserve"
+   sodipodi:docname="variable-scale-inactive.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:export-filename="E:\Broncode\jasp-desktop\JASP-Desktop\resources\icons\darkTheme\variable-scale-inactive.png"
+   inkscape:export-xdpi="307.20001"
+   inkscape:export-ydpi="307.20001"><metadata
+   id="metadata29"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs27" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="3840"
+   inkscape:window-height="2050"
+   id="namedview25"
+   showgrid="false"
+   inkscape:zoom="32"
+   inkscape:cx="-1.2260706"
+   inkscape:cy="26.2718"
+   inkscape:window-x="-12"
+   inkscape:window-y="-12"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />
+<rect
+   x="13.451"
+   y="-0.965"
+   transform="matrix(-0.7273 0.6863 -0.6863 -0.7273 48.5706 20.1129)"
+   fill="#FFD5A1"
+   width="13.676"
+   height="41.341"
+   id="rect2"
+   style="fill:#744000;fill-opacity:1" />
+<polyline
+   points="10.598,1.281 37.266,29.543 29.127,37.225 "
+   id="polyline4"
+   style="fill:#6e3702;fill-opacity:1"
+   fill="#FDCD9F" />
+<g
+   id="g8">
+	
+		<rect
+   x="18.264999"
+   y="0.59200001"
+   transform="matrix(0.7249,-0.6888,0.6888,0.7249,-9.5366,18.6446)"
+   width="0.62199998"
+   height="41.341"
+   id="rect6"
+   style="fill:#696969;fill-opacity:1" />
+</g>
+<rect
+   x="0.893"
+   y="6.194"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -2.2903 7.0545)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.431"
+   id="rect10"
+   style="fill:#696969;fill-opacity:1" />
+<rect
+   x="-5.5417333"
+   y="16.824381"
+   transform="rotate(-43.338661)"
+   width="13.677815"
+   height="0.43099418"
+   id="rect12"
+   style="fill:#696969;fill-opacity:1;stroke-width:0.99998647" />
+<rect
+   x="-5.5143509"
+   y="23.85277"
+   transform="rotate(-43.338661)"
+   width="13.677815"
+   height="0.43099418"
+   id="rect14"
+   style="fill:#696969;fill-opacity:1;stroke-width:0.99998647" />
+<rect
+   x="14.893"
+   y="21.191"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -8.7656 20.7532)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.432"
+   id="rect16"
+   style="fill:#696969;fill-opacity:1" />
+<rect
+   x="-5.6283422"
+   y="37.451435"
+   transform="rotate(-43.342828)"
+   width="13.678755"
+   height="0.43202382"
+   id="rect18"
+   style="fill:#696969;fill-opacity:1;stroke-width:1.00005507" />
+<rect
+   x="-5.6487951"
+   y="44.347988"
+   transform="rotate(-43.338661)"
+   width="13.677815"
+   height="0.43199417"
+   id="rect20"
+   style="fill:#696969;fill-opacity:1;stroke-width:0.99998647" />
+<polyline
+   fill="none"
+   stroke="#BDC2C6"
+   stroke-miterlimit="10"
+   points="11.076,-0.024 1.128,9.363 29.503,39.432 39.449,30.046 "
+   id="polyline22"
+   style="stroke:#32363a;stroke-opacity:1" />
+</svg>

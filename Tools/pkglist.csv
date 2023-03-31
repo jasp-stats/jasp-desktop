@@ -1,0 +1,1125 @@
+"Package";"Version";"Author"
+"BAS";"1.5.3";"Merlise Clyde [aut, cre, cph] (<https://orcid.org/-5469>);
+  Michael Littman [ctb];
+  Quanli Wang [ctb];
+  Joyee Ghosh [ctb];
+  Yingbo Li [ctb]"
+"BDgraph";"2.55";"Reza Mohammadi [aut, cre] <https://orcid.org/0000-0001-9538-0648>;
+		Ernst Wit [aut];
+        Adrian Dobra [ctb]"
+"BMS";"0.3.4";"Martin Feldkircher and Stefan Zeugner"
+"BSDA";"1.2.0";"Alan T. Arnholt [aut, cre];
+  Ben Evans [aut]"
+"Bain";"0.1.3";"Xin Gu; Herbert Hoijtink; Joris Mulder; Caspar van Lissa"
+"BayesFactor";"0.9.12-4.2";"Richard D. Morey [aut, cre, cph];
+  Jeffrey N. Rouder [aut];
+  Tahira Jamil [ctb, cph];
+  Simon Urbanek [ctb, cph];
+  Karl Forner [ctb, cph];
+  Alexander Ly [ctb, cph]"
+"Epi";"2.34";"Bendix Carstensen [aut, cre];
+  Martyn Plummer [aut];
+  Esa Laara [ctb];
+  Michael Hills [ctb]"
+"Formula";"1.2-3";"Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>);
+  Yves Croissant [aut]"
+"GPArotation";"2014.11-1";"Coen Bernaards and Robert Jennrich"
+"GeneNet";"1.2.13";"Juliane Schaefer; Rainer Opgen-Rhein; and
+        Korbinian Strimmer."
+"Hmisc";"4.2-0";"Frank E Harrell Jr <f.harrell@vanderbilt.edu>; with
+  contributions from Charles Dupont and many others."
+"IsingFit";"0.3.1";"Claudia van Borkulo; Sacha Epskamp; with contributions from Alexander Robitzsch"
+"IsingSampler";"0.2";"Sacha Epskamp"
+"KernSmooth";"2.23-15";"Matt Wand [aut];
+  Brian Ripley [trl; cre, ctb] (R port and updates)"
+"MASS";"7.3-51.1";"Brian Ripley [aut, cre, cph];
+  Bill Venables [ctb];
+  Douglas M. Bates [ctb];
+  Kurt Hornik [trl] (partial port ca 1998);
+  Albrecht Gebhardt [trl] (partial port ca 1998);
+  David Firth [ctb]"
+"Matrix";"1.2-15";"Douglas Bates [aut];
+  Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>);
+  Timothy A. Davis [ctb] (SuiteSparse and 'cs' C libraries; notably
+	CHOLMOD; AMD; collaborators listed in dir(pattern =
+	'^[A-Z]+[.]txt$'; full.names=TRUE; system.file('doc';
+	'SuiteSparse'; package='Matrix')));
+  Jens Oehlschlägel [ctb] (initial nearPD());
+  Jason Riedy [ctb] (condest() and onenormest() for octave; Copyright:
+	Regents of the University of California);
+  R Core Team [ctb] (base R matrix implementation)"
+"MatrixModels";"0.4-1";"Douglas Bates <bates@stat.wisc.edu> and Martin Maechler <maechler@stat.math.ethz.ch>"
+"NetworkComparisonTest";"2.0.1";"Claudia D. van Borkulo; with contributions from Sacha Epskamp and Alex Millner"
+"NetworkToolbox";"1.2.3";"Alexander Christensen"
+"OpenMx";"2.12.2";"Steven M. Boker [aut];
+  Michael C. Neale [aut];
+  Hermine H. Maes [aut];
+  Michael J. Wilde [ctb];
+  Michael Spiegel [aut];
+  Timothy R. Brick [aut];
+  Ryne Estabrook [aut];
+  Timothy C. Bates [aut];
+  Paras Mehta [ctb];
+  Timo von Oertzen [ctb];
+  Ross J. Gore [aut];
+  Michael D. Hunter [aut];
+  Daniel C. Hackett [ctb];
+  Julian Karch [ctb];
+  Andreas M. Brandmaier [ctb];
+  Joshua N. Pritikin [aut, cre];
+  Mahsa Zahery [aut];
+  Robert M. Kirkpatrick [aut];
+  Yang Wang [ctb];
+  Charles Driver [ctb];
+  Massachusetts Institute of Technology [cph];
+  S. G. Johnson [cph];
+  Association for Computing Machinery [cph];
+  Dieter Kraft [cph];
+  Stefan Wilhelm [cph];
+  Sarah Medland [cph];
+  Carl F. Falk [cph];
+  Matt Keller [cph];
+  Manjunath B G [cph];
+  The Regents of the University of California [cph];
+  Lester Ingber [cph];
+  Wong Shao Voon [cph]"
+"R.matlab";"3.6.2";"Henrik Bengtsson [aut, cre, cph];
+  Andy Jacobson [ctb] (Internal MAT v4 reader);
+  Jason Riedy [ctb] (Support for reading compressed files; sparse
+    matrices and UTF-encoded strings.)"
+"R.methodsS3";"1.7.1";"Henrik Bengtsson [aut, cre, cph]"
+"R.oo";"1.22.0";"Henrik Bengtsson [aut, cre, cph]"
+"R.utils";"2.8.0";"Henrik Bengtsson [aut, cre, cph]"
+"R6";"2.4.0";"Winston Chang [aut, cre]"
+"RColorBrewer";"1.1-2";"Erich Neuwirth [aut, cre]"
+"RUnit";"0.4.32";"Matthias Burger <burgerm@users.sourceforge.net>; Klaus
+		Juenemann <k.junemann@gmx.net>; Thomas Koenig
+        <thomas.koenig@epigenomics.com>"
+"Rcpp";"1.0.0";"Dirk Eddelbuettel; Romain Francois; JJ Allaire; Kevin Ushey; Qiang Kou;
+ Nathan Russell; Douglas Bates and John Chambers"
+"RcppArmadillo";"0.9.200.7.0";"Dirk Eddelbuettel; Romain Francois; Doug Bates and Binxiang Ni"
+"Rsolnp";"1.16";"Alexios Ghalanos and Stefan Theussl"
+"SparseM";"1.77";"Roger Koenker <rkoenker@uiuc.edu> and Pin Ng <Pin.Ng@NAU.EDU>"
+"SuppDists";"1.1-9.4";"Bob Wheeler <bwheelerg@gmail.com>"
+"TH.data";"1.0-10";"Torsten Hothorn [aut, cre]"
+"TTR";"0.23-4";"Joshua Ulrich"
+"VGAM";"1.1-1";"Thomas W. Yee <t.yee@auckland.ac.nz>"
+"XML";"3.98-1.19";"Duncan Temple Lang and the CRAN Team (including Tomas Kalibera)"
+"abind";"1.4-5";"Tony Plate <tplate@acm.org> and Richard Heiberger"
+"abtest";"0.1.3";"Quentin F. Gronau [aut, cre];
+  Akash Raj [ctb];
+  Eric-Jan Wagenmakers [ths]"
+"acepack";"1.4.1";"Phil Spector; Jerome Friedman; Robert Tibshirani; Thomas Lumley; Shawn Garbett; Jonathan Baron"
+"afex";"0.23-0";"Henrik Singmann [aut, cre] (<https://orcid.org/0000-0002-4842-3657>);
+  Ben Bolker [aut];
+  Jake Westfall [aut];
+  Frederik Aust [aut] (<https://orcid.org/0000-0003-4900-788X>);
+  Søren Højsgaard [ctb];
+  John Fox [ctb];
+  Michael A. Lawrence [ctb];
+  Ulf Mertens [ctb];
+  Jonathon Love [ctb];
+  Russell Lenth [ctb];
+  Rune Haubo Bojesen Christensen [ctb]"
+"arm";"1.10-1";"Andrew Gelman [aut];
+  Yu-Sung Su [aut, cre];
+  Masanao Yajima [ctb];
+  Jennifer Hill [ctb];
+  Maria Grazia Pittau [ctb];
+  Jouni Kerman [ctb];
+  Tian Zheng [ctb];
+  Vincent Dorie [ctb]"
+"askpass";"1.1";"Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)"
+"assertthat";"0.2.0";"Hadley Wickham [aut, cre]"
+"backports";"1.1.3";"Michel Lang [cre, aut] (<https://orcid.org/0000-0001-9754-0393>);
+  R Core Team [aut]"
+"base";"3.5.2";"R Core Team and contributors worldwide"
+"base64enc";"0.1-3";"Simon Urbanek <Simon.Urbanek@r-project.org>"
+"boot";"1.3-20";"Angelo Canty [aut];
+  Brian Ripley [aut, trl; cre] (author of parallel support)"
+"bootnet";"1.2";"Sacha Epskamp [aut, cre];
+  Eiko I. Fried [ctb]"
+"broom";"0.5.1";"David Robinson [aut];
+  Alex Hayes [aut, cre] (<https://orcid.org/0000-0002-4985-5160>);
+  Matthieu Gomez [ctb];
+  Boris Demeshev [ctb];
+  Dieter Menne [ctb];
+  Benjamin Nutter [ctb];
+  Luke Johnston [ctb];
+  Ben Bolker [ctb];
+  Francois Briatte [ctb];
+  Jeffrey Arnold [ctb];
+  Jonah Gabry [ctb];
+  Luciano Selzer [ctb];
+  Gavin Simpson [ctb];
+  Jens Preussner [ctb];
+  Jay Hesselberth [ctb];
+  Hadley Wickham [ctb];
+  Matthew Lincoln [ctb];
+  Alessandro Gasparini [ctb];
+  Lukasz Komsta [ctb];
+  Frederick Novometsky [ctb];
+  Wilson Freitas [ctb];
+  Michelle Evans [ctb];
+  Jason Cory Brunson [ctb];
+  Simon Jackson [ctb];
+  Ben Whalley [ctb];
+  Michael Kuehn [ctb];
+  Jorge Cimentada [ctb];
+  Erle Holgersen [ctb];
+  Karl Dunkle Werner [ctb]"
+"ca";"0.71";"Michael Greenacre [aut];
+  Oleg Nenadic [aut, cre];
+  Michael Friendly [ctb]"
+"callr";"3.1.1";"Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>);
+  Winston Chang [aut];
+  RStudio [cph, fnd];
+  Mango Solutions [cph, fnd]"
+"candisc";"0.8-0";"Michael Friendly [aut, cre]; John Fox [aut]"
+"car";"3.0-2";"John Fox [aut, cre];
+  Sanford Weisberg [aut];
+  Brad Price [aut];
+  Daniel Adler [ctb];
+  Douglas Bates [ctb];
+  Gabriel Baud-Bovy [ctb];
+  Ben Bolker [ctb];
+  Steve Ellison [ctb];
+  David Firth [ctb];
+  Michael Friendly [ctb];
+  Gregor Gorjanc [ctb];
+  Spencer Graves [ctb];
+  Richard Heiberger [ctb];
+  Rafael Laboissiere [ctb];
+  Martin Maechler [ctb];
+  Georges Monette [ctb];
+  Duncan Murdoch [ctb];
+  Henric Nilsson [ctb];
+  Derek Ogle [ctb];
+  Brian Ripley [ctb];
+  William Venables [ctb];
+  Steve Walker [ctb];
+  David Winsemius [ctb];
+  Achim Zeileis [ctb];
+  R-Core [ctb]"
+"carData";"3.0-2";"John Fox [aut, cre];
+  Sanford Weisberg [aut];
+  Brad Price [aut]"
+"cellranger";"1.1.0";"Jennifer Bryan [cre, aut];
+  Hadley Wickham [ctb]"
+"checkmate";"1.9.1";"Michel Lang [cre, aut] (<https://orcid.org/0000-0001-9754-0393>);
+  Bernd Bischl [ctb]"
+"class";"7.3-14";"Brian Ripley [aut, cre, cph];
+  William Venables [cph]"
+"cli";"1.0.1";"Gábor Csárdi [aut, cre];
+  Hadley Wickham [ctb];
+  Kirill Müller [ctb]"
+"clipr";"0.5.0";"Matthew Lincoln [aut, cre] (<https://orcid.org/0000-0002-4387-3384>);
+  Louis Maddox [ctb];
+  Steve Simpson [ctb];
+  Jennifer Bryan [ctb]"
+"clisymbols";"1.2.0";"Gábor Csárdi [aut, cre];
+  Sindre Sorhus [aut]"
+"cluster";"2.0.7-1";"Martin Maechler [aut, cre];
+  Peter Rousseeuw [aut] (Fortran original);
+  Anja Struyf [aut] (S original);
+  Mia Hubert [aut] (S original);
+  Kurt Hornik [trl; ctb] (port to R; maintenance(1999-2000));
+  Matthias Studer [ctb];
+  Pierre Roudier [ctb];
+  Juan Gonzalez [ctb];
+  Kamil Kozlowski [ctb]"
+"cmprsk";"2.2-7";"Bob Gray <gray@jimmy.harvard.edu>"
+"cocor";"1.1-3";"Birk Diedenhofen [aut, cre]"
+"coda";"0.19-2";"Martyn Plummer [aut, cre, trl];
+  Nicky Best [aut];
+  Kate Cowles [aut];
+  Karen Vines [aut];
+  Deepayan Sarkar [aut];
+  Douglas Bates [aut];
+  Russell Almond [aut];
+  Arni Magnusson [aut]"
+"codetools";"0.2-16";"Luke Tierney <luke-tierney@uiowa.edu>"
+"colorspace";"1.4-0";"Ross Ihaka [aut];
+  Paul Murrell [aut] (<https://orcid.org/0000-0002-3224-8858>);
+  Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>);
+  Jason C. Fisher [aut] (<https://orcid.org/0000-0001-9032-8912>);
+  Reto Stauffer [aut] (<https://orcid.org/0000-0002-3798-5507>);
+  Claus O. Wilke [aut] (<https://orcid.org/0000-0002-7470-9261>);
+  Claire D. McWhite [aut] (<https://orcid.org/0000-0001-7346-3047>);
+  Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>)"
+"colourpicker";"1.0";"Dean Attali [aut, cre];
+  David Griswold [ctb]"
+"compiler";"3.5.2";"Luke Tierney <luke-tierney@uiowa.edu>"
+"contfrac";"1.1-12";"Robin K. S. Hankin"
+"conting";"1.6.1";"Antony M. Overstall"
+"corpcor";"1.6.9";"Juliane Schafer; Rainer Opgen-Rhein; Verena Zuber; Miika Ahdesmaki;
+ A. Pedro Duarte Silva; and Korbinian Strimmer."
+"corrplot";"0.84";"Taiyun Wei [cre, aut];
+  Viliam Simko [aut];
+  Michael Levy [ctb];
+  Yihui Xie [ctb];
+  Yan Jin [ctb];
+  Jeff Zemla [ctb]"
+"cowplot";"0.9.4";"Claus O. Wilke [aut, cre];
+  RStudio [cph] (Copyright for ggplot2 code copied to cowplot)"
+"crayon";"1.3.4";"Gábor Csárdi [aut, cre];
+  Brodie Gaslam [ctb]"
+"curl";"3.3";"Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>);
+  Hadley Wickham [ctb];
+  RStudio [cph]"
+"d3Network";"0.5.2.1";"Christopher Gandrud"
+"data.table";"1.12.0";"Matt Dowle [aut, cre];
+  Arun Srinivasan [aut];
+  Jan Gorecki [ctb];
+  Michael Chirico [ctb];
+  Pasha Stetsenko [ctb];
+  Tom Short [ctb];
+  Steve Lianoglou [ctb];
+  Eduard Antonyan [ctb];
+  Markus Bonsch [ctb];
+  Hugh Parsonage [ctb];
+  Scott Ritchie [ctb]"
+"datasets";"3.5.2";"R Core Team and contributors worldwide"
+"deSolve";"1.21";"Karline Soetaert [aut];
+  Thomas Petzoldt [aut, cre];
+  R. Woodrow Setzer [aut];
+  odepack authors [cph]"
+"desc";"1.2.0";"Gábor Csárdi [aut, cre];
+  Kirill Müller [aut];
+  Jim Hester [aut]"
+"devtools";"2.0.1";"Hadley Wickham [aut];
+  Jim Hester [aut, cre];
+  Winston Chang [aut];
+  RStudio [cph];
+  R Core team [ctb] (Some namespace and vignette code extracted from base
+    R)"
+"digest";"0.6.18";"Dirk Eddelbuettel <edd@debian.org> with contributions
+ by Antoine Lucas; Jarek Tuszynski; Henrik Bengtsson; Simon Urbanek;
+ Mario Frasca; Bryan Lewis; Murray Stokely; Hannes Muehleisen;
+ Duncan Murdoch; Jim Hester; Wush Wu; Qiang Kou; Thierry Onkelinx;
+ Michel Lang; Viliam Simko; Kurt Hornik and Radford Neal."
+"doParallel";"1.0.14";"Rich Calaway [cre];
+  Microsoft Corporation [aut, cph];
+  Steve Weston [aut];
+  Dan Tenenbaum [ctb]"
+"doSNOW";"1.0.16";"Rich Calaway [cre];
+  Microsoft Corporation [aut, cph];
+  Stephen Weston [aut]"
+"dplyr";"0.8.0.1";"Hadley Wickham [aut, cre] (<https://orcid.org/0000-0003-4757-117X>);
+  Romain François [aut] (<https://orcid.org/0000-0002-2444-4226>);
+  Lionel Henry [aut];
+  Kirill Müller [aut] (<https://orcid.org/0000-0002-1416-3412>);
+  RStudio [cph, fnd]"
+"e1071";"1.7-0.1";"David Meyer [aut, cre];
+  Evgenia Dimitriadou [aut, cph];
+  Kurt Hornik [aut];
+  Andreas Weingessel [aut];
+  Friedrich Leisch [aut];
+  Chih-Chung Chang [ctb, cph] (libsvm C++-code);
+  Chih-Chen Lin [ctb, cph] (libsvm C++-code)"
+"eigenmodel";"1.10";"Peter Hoff"
+"ellipse";"0.4.1";"Duncan Murdoch <murdoch@stats.uwo.ca> and E. D. Chow
+    (porting to R by Jesus M. Frias Celayeta <iosu@bureau.ucc.ie>)"
+"ellipsis";"0.1.0";"Hadley Wickham [aut, cre];
+  RStudio [cph]"
+"elliptic";"1.3-9";"Robin K. S. Hankin"
+"emmeans";"1.3.2";"Russell Lenth [aut, cre, cph];
+  Henrik Singmann [ctb];
+  Jonathon Love [ctb];
+  Paul Buerkner [ctb];
+  Maxime Herve [ctb]"
+"estimability";"1.3";"Russell Lenth [aut, cre, cph]"
+"etm";"1.0.4";"Arthur Allignol"
+"evaluate";"0.13";"Hadley Wickham [aut];
+  Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>);
+  Michael Lawrence [ctb];
+  Thomas Kluyver [ctb];
+  Jeroen Ooms [ctb];
+  Barret Schloerke [ctb];
+  Adam Ryczkowski [ctb];
+  Hiroaki Yutani [ctb];
+  Michel Lang [ctb]"
+"fansi";"0.4.0";"Brodie Gaslam [aut, cre];
+  Elliott Sales De Andrade [ctb];
+  R Core Team [cph] (UTF8 byte length calcs from src/util.c)"
+"fdrtool";"1.2.15";"Bernd Klaus and Korbinian Strimmer."
+"forcats";"0.4.0";"Hadley Wickham [aut, cre];
+  RStudio [cph, fnd]"
+"foreach";"1.4.4";"Rich Calaway [cre];
+  Microsoft [aut, cph];
+  Steve Weston [aut]"
+"foreign";"0.8-71";"R Core Team [aut, cph, cre];
+  Roger Bivand [ctb, cph];
+  Vincent J. Carey [ctb, cph];
+  Saikat DebRoy [ctb, cph];
+  Stephen Eglen [ctb, cph];
+  Rajarshi Guha [ctb, cph];
+  Swetlana Herbrandt [ctb];
+  Nicholas Lewin-Koh [ctb, cph];
+  Mark Myatt [ctb, cph];
+  Ben Pfaff [ctb];
+  Brian Quistorff [ctb];
+  Frank Warmerdam [ctb, cph];
+  Stephen Weigand [ctb, cph];
+  Free Software Foundation; Inc. [cph]"
+"fs";"1.2.6";"Jim Hester [aut, cre];
+  Hadley Wickham [aut];
+  libuv project contributors [cph] (libuv library);
+  Joyent; Inc. and other Node contributors [cph] (libuv library);
+  RStudio [cph, fnd]"
+"gdata";"2.18.0";"Gregory R. Warnes; Ben Bolker; Gregor Gorjanc; Gabor
+		Grothendieck; Ales Korosec; Thomas Lumley; Don MacQueen; Arni
+		Magnusson; Jim Rogers; and others"
+"generics";"0.0.2";"Max Kuhn [aut, cre];
+  Hadley Wickham [aut];
+  Davis Vaughan [aut];
+  RStudio [cph]"
+"ggedit";"0.3.0";"Jonathan Sidi [aut, cre]"
+"ggm";"2.3";"Giovanni M. Marchetti; Mathias Drton; Kayvan Sadeghi"
+"ggplot2";"3.1.0";"Hadley Wickham [aut, cre];
+  Winston Chang [aut];
+  Lionel Henry [aut];
+  Thomas Lin Pedersen [aut];
+  Kohske Takahashi [aut];
+  Claus Wilke [aut];
+  Kara Woo [aut];
+  RStudio [cph]"
+"ggrepel";"0.8.0";"Kamil Slowikowski [aut, cre] (<https://orcid.org/0000-0002-2843-6370>);
+  Alicia Schep [ctb] (<https://orcid.org/0000-0002-3915-0618>);
+  Sean Hughes [ctb];
+  Saulius Lukauskas [ctb];
+  Jean-Olivier Irisson [ctb] (<https://orcid.org/0000-0003-4920-3880>);
+  Zhian N Kamvar [ctb] (<https://orcid.org/0000-0003-1458-7108>);
+  Thompson Ryan [ctb] (<https://orcid.org/0000-0002-0450-8181>);
+  Dervieux Christophe [ctb] (<https://orcid.org/0000-0003-4474-2498>);
+  Yutani Hiroaki [ctb];
+  Pierre Gramme [ctb]"
+"gh";"1.0.1";"Gábor Csárdi [cre, ctb];
+  Jennifer Bryan [aut];
+  Hadley Wickham [aut]"
+"git2r";"0.24.0";"See AUTHORS file."
+"glasso";"1.10";"Jerome Friedman; Trevor Hastie and Rob Tibshirani"
+"glmnet";"2.0-16";"Jerome Friedman [aut, cre];
+	Trevor Hastie [aut, cre];
+	Rob Tibshirani [aut, cre];
+	Noah Simon [aut, ctb];
+	Balasubramanian Narasimhan [ctb];
+	Junyang Qian [ctb]"
+"glue";"1.3.0";"Jim Hester [aut, cre]"
+"gnm";"1.1-0";"Heather Turner [aut, cre] (<https://orcid.org/0000-0002-1256-3375>);
+  David Firth [aut] (<https://orcid.org/0000-0003-0302-2312>);
+  Brian Ripley [ctb];
+  Bill Venables [ctb];
+  Douglas M. Bates [ctb];
+  Martin Maechler [ctb] (<https://orcid.org/0000-0002-8685-9910>)"
+"grDevices";"3.5.2";"R Core Team and contributors worldwide"
+"graphicalVAR";"0.2.2";"Sacha Epskamp"
+"graphics";"3.5.2";"R Core Team and contributors worldwide"
+"grid";"3.5.2";"Paul Murrell <paul@stat.auckland.ac.nz>"
+"gridExtra";"2.3";"Baptiste Auguie [aut, cre];
+  Anton Antonov [ctb]"
+"gtable";"0.2.0";"Hadley Wickham [aut, cre]"
+"gtools";"3.8.1";"Gregory R. Warnes; Ben Bolker; and Thomas Lumley"
+"haven";"2.1.0";"Hadley Wickham [aut, cre];
+  Evan Miller [aut, cph] (Author of included ReadStat code);
+  RStudio [cph, fnd]"
+"heplots";"1.3-5";"John Fox [aut];
+  Michael Friendly [aut, cre];
+  Georges Monette [ctb]"
+"highr";"0.7";"Christopher Gandrud [ctb];
+  Qiang Li [ctb];
+  Yixuan Qiu [aut];
+  Yihui Xie [aut, cre]"
+"hmeasure";"1.0-2";"Christoforos Anagnostopoulos
+    <christoforos.anagnostopoulos06@imperial.ac.uk> and David J.
+    Hand <d.j.hand@imperial.ac.uk>"
+"hms";"0.4.2";"Kirill Müller [aut, cre];
+  The R Consortium [fnd]"
+"htmlTable";"1.13.1";"Max Gordon [aut, cre];
+  Stephen Gragg [aut];
+  Peter Konings [aut]"
+"htmltools";"0.3.6";"RStudio; Inc."
+"htmlwidgets";"1.3";"Ramnath Vaidyanathan [aut, cph];
+  Yihui Xie [aut];
+  JJ Allaire [aut];
+  Joe Cheng [aut, cre];
+  Kenton Russell [aut, cph];
+  RStudio [cph]"
+"httpuv";"1.4.5.1";"Joe Cheng; Hector Corrada Bravo [ctb]; Jeroen Ooms [ctb];
+    Winston Chang [ctb]"
+"httr";"1.4.0";"Hadley Wickham [aut, cre];
+  RStudio [cph]"
+"huge";"1.3.0";"Haoming Jiang; Xinyu Fei; Yukun Ma; Xingguo Li; Han Liu; Kathryn Roeder; John Lafferty; Larry
+		Wasserman; Tuo Zhao"
+"hypergeo";"1.2-13";"Robin K. S. Hankin"
+"igraph";"1.2.4";"See AUTHORS file."
+"ini";"0.3.1";"David Valentim Dias"
+"iterators";"1.0.10";"Rich Calaway [cre];
+  Revolution Analytics [aut, cph];
+  Steve Weston [aut]"
+"jomo";"2.6-7";"Matteo Quartagno; James Carpenter"
+"jpeg";"0.1-8";"Simon Urbanek <Simon.Urbanek@r-project.org>"
+"jsonlite";"1.6";"Jeroen Ooms; Duncan Temple Lang; Lloyd Hilaiel"
+"knitr";"1.21";"Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>);
+  Adam Vogt [ctb];
+  Alastair Andrew [ctb];
+  Alex Zvoleff [ctb];
+  Andre Simon [ctb] (the CSS files under inst/themes/ were derived from
+	the Highlight package http://www.andre-simon.de);
+  Aron Atkins [ctb];
+  Aaron Wolen [ctb];
+  Ashley Manton [ctb];
+  Ben Baumer [ctb];
+  Brian Diggs [ctb];
+  Brian Zhang [ctb];
+  Cassio Pereira [ctb];
+  Christophe Dervieux [ctb];
+  David Hugh-Jones [ctb];
+  David Robinson [ctb];
+  Donald Arseneau [ctb, cph] (the framed package at inst/misc/framed.sty);
+  Doug Hemken [ctb];
+  Duncan Murdoch [ctb];
+  Elio Campitelli [ctb];
+  Fabian Hirschmann [ctb];
+  Fitch Simeon [ctb];
+  Forest Fang [ctb];
+  Frank E Harrell Jr [ctb] (the Sweavel package at inst/misc/Sweavel.sty);
+  Garrick Aden-Buie [ctb];
+  Gregoire Detrez [ctb];
+  Hadley Wickham [ctb];
+  Hao Zhu [ctb];
+  Heewon Jeon [ctb];
+  Henrik Bengtsson [ctb];
+  Hiroaki Yutani [ctb];
+  Ian Lyttle [ctb];
+  Hodges Daniel [ctb];
+  Jake Burkhead [ctb];
+  James Manton [ctb];
+  Jared Lander [ctb];
+  Jason Punyon [ctb];
+  Javier Luraschi [ctb];
+  Jeff Arnold [ctb];
+  Jenny Bryan [ctb];
+  Jeremy Ashkenas [ctb, cph] (the CSS file at
+	inst/misc/docco-classic.css);
+  Jeremy Stephens [ctb];
+  Jim Hester [ctb];
+  Joe Cheng [ctb];
+  Johannes Ranke [ctb];
+  John Honaker [ctb];
+  John Muschelli [ctb];
+  Jonathan Keane [ctb];
+  JJ Allaire [ctb];
+  Johan Toloe [ctb];
+  Jonathan Sidi [ctb];
+  Joseph Larmarange [ctb];
+  Julien Barnier [ctb];
+  Kaiyin Zhong [ctb];
+  Kamil Slowikowski [ctb];
+  Karl Forner [ctb];
+  Kevin K. Smith [ctb];
+  Kirill Mueller [ctb];
+  Kohske Takahashi [ctb];
+  Lorenz Walthert [ctb];
+  Lucas Gallindo [ctb];
+  Martin Modrák [ctb];
+  Michael Chirico [ctb];
+  Michael Friendly [ctb];
+  Michal Bojanowski [ctb];
+  Michel Kuhlmann [ctb];
+  Nacho Caballero [ctb];
+  Nick Salkowski [ctb];
+  Noam Ross [ctb];
+  Obada Mahdi [ctb];
+  Qiang Li [ctb];
+  Ramnath Vaidyanathan [ctb];
+  Richard Cotton [ctb];
+  Robert Krzyzanowski [ctb];
+  Romain Francois [ctb];
+  Ruaridh Williamson [ctb];
+  Scott Kostyshak [ctb];
+  Sebastian Meyer [ctb];
+  Sietse Brouwer [ctb];
+  Simon de Bernard [ctb];
+  Sylvain Rousseau [ctb];
+  Taiyun Wei [ctb];
+  Thibaut Assus [ctb];
+  Thibaut Lamadon [ctb];
+  Thomas Leeper [ctb];
+  Tim Mastny [ctb];
+  Tom Torsney-Weir [ctb];
+  Trevor Davis [ctb];
+  Viktoras Veitas [ctb];
+  Weicheng Zhu [ctb];
+  Wush Wu [ctb];
+  Zachary Foster [ctb]"
+"kutils";"1.67";"Paul Johnson [aut, cre];
+  Benjamin Kite [aut];
+  Charles Redmon [aut];
+  Jared Harpole [ctb];
+  Kenna Whitley [ctb];
+  Po-Yi Chen [ctb];
+  Shadi Pirhosseinloo [ctb]"
+"labeling";"0.3";"Justin Talbot"
+"later";"0.8.0";"Joe Cheng [aut, cre];
+  RStudio [cph];
+  Winston Chang [aut];
+  Marcus Geelnard [ctb, cph] (TinyCThread library;
+	https://tinycthread.github.io/);
+  Evan Nemerson [ctb, cph] (TinyCThread library;
+    https://tinycthread.github.io/)"
+"lattice";"0.20-38";"Deepayan Sarkar <deepayan.sarkar@r-project.org>"
+"latticeExtra";"0.6-28";"Deepayan Sarkar <deepayan.sarkar@r-project.org>; Felix Andrews <felix@nfrac.org>"
+"lavaan";"0.6-3";"Yves Rosseel [aut, cre] (<https://orcid.org/0000-0002-4129-4477>);
+  Daniel Oberski [ctb];
+  Jarrett Byrnes [ctb];
+  Leonard Vanbrabant [ctb];
+  Victoria Savalei [ctb];
+  Ed Merkle [ctb];
+  Michael Hallquist [ctb];
+  Mijke Rhemtulla [ctb];
+  Myrsini Katsikatsou [ctb];
+  Mariska Barendse [ctb];
+  Michael Chow [ctb];
+  Terrence D. Jorgensen [ctb] (<https://orcid.org/0000-0001-5111-6773>)"
+"lazyeval";"0.2.1";"Hadley Wickham [aut, cre];
+  RStudio [cph]"
+"lisrelToR";"0.1.4";"Sacha Epskamp"
+"lme4";"1.1-20";"Douglas Bates [aut] (<https://orcid.org/0000-0001-8316-9503>);
+  Martin Maechler [aut] (<https://orcid.org/0000-0002-8685-9910>);
+  Ben Bolker [aut, cre] (<https://orcid.org/0000-0002-2127-0443>);
+  Steven Walker [aut] (<https://orcid.org/0000-0002-4394-9078>);
+  Rune Haubo Bojesen Christensen [ctb]
+	(<https://orcid.org/0000-0002-4494-3399>);
+  Henrik Singmann [ctb] (<https://orcid.org/0000-0002-4842-3657>);
+  Bin Dai [ctb];
+  Fabian Scheipl [ctb] (<https://orcid.org/0000-0001-8172-3603>);
+  Gabor Grothendieck [ctb];
+  Peter Green [ctb] (<https://orcid.org/0000-0002-0238-9852>);
+  John Fox [ctb]"
+"lmerTest";"3.1-0";"Alexandra Kuznetsova [aut];
+  Per Bruun Brockhoff [aut, ths; cre];
+  Rune Haubo Bojesen Christensen [aut]"
+"lmtest";"0.9-36";"Torsten Hothorn [aut] (<https://orcid.org/0000-0001-8301-0471>);
+  Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>);
+  Richard W. Farebrother [aut] (pan.f);
+  Clint Cummins [aut] (pan.f);
+  Giovanni Millo [ctb];
+  David Mitchell [ctb]"
+"logspline";"2.1.12";"Charles Kooperberg <clk@fredhutch.org>"
+"longitudinal";"1.1.12";"Rainer Opgen-Rhein and Korbinian Strimmer."
+"magrittr";"1.5";"Stefan Milton Bache <stefan@stefanbache.dk> and
+    Hadley Wickham <h.wickham@gmail.com>"
+"maptools";"0.9-5";"Roger Bivand [cre, aut] (<https://orcid.org/0000-0003-2392-6140>);
+  Nicholas Lewin-Koh [aut];
+  Edzer Pebesma [ctb];
+  Eric Archer [ctb];
+  Adrian Baddeley [ctb];
+  Nick Bearman [ctb];
+  Hans-Jörg Bibiko [ctb];
+  Steven Brey [ctb];
+  Jonathan Callahan [ctb];
+  German Carrillo [ctb];
+  Stéphane Dray [ctb];
+  David Forrest [ctb];
+  Michael Friendly [ctb];
+  Patrick Giraudoux [ctb];
+  Duncan Golicher [ctb];
+  Virgilio Gómez Rubio [ctb];
+  Patrick Hausmann [ctb];
+  Karl Ove Hufthammer [ctb];
+  Thomas Jagger [ctb];
+  Kent Johnson [ctb];
+  Sebastian Luque [ctb];
+  Don MacQueen [ctb];
+  Andrew Niccolai [ctb];
+  Edzer Pebesma [ctb];
+  Oscar Perpiñán Lamigueiro [ctb];
+  Ethan Plunkett [ctb];
+  Tom Short [ctb];
+  Greg Snow [ctb];
+  Ben Stabler [ctb];
+  Murray Stokely [ctb];
+  Rolf Turner [ctb]"
+"markdown";"0.9";"JJ Allaire [aut];
+  Jeffrey Horner [aut];
+  Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>);
+  Henrik Bengtsson [ctb];
+  Jim Hester [ctb];
+  Yixuan Qiu [ctb];
+  Kohske Takahashi [ctb];
+  Adam November [ctb];
+  Nacho Caballero [ctb];
+  Jeroen Ooms [ctb];
+  Thomas Leeper [ctb];
+  Joe Cheng [ctb];
+  Andrzej Oles [ctb];
+  Vicent Marti [aut, cph] (The Sundown library);
+  Natacha Porte [aut, cph] (The Sundown library);
+  RStudio [cph]"
+"matrixStats";"0.54.0";"Henrik Bengtsson [aut, cre, cph];
+  Hector Corrada Bravo [ctb];
+  Robert Gentleman [ctb];
+  Ola Hossjer [ctb];
+  Harris Jaffee [ctb];
+  Dongcan Jiang [ctb];
+  Peter Langfelder [ctb];
+  Peter Hickey [ctb]"
+"matrixcalc";"1.0-3";"Frederick Novomestky <fnovomes@poly.edu>"
+"mdscore";"0.1-3";"Antonio Hermes M. da Silva-Junior [aut, cre]; Damiao N. da Silva [aut]; Silvia L. P. Ferrari [ctb]"
+"memoise";"1.1.0";"Hadley Wickham [aut];
+  Jim Hester [aut, cre];
+  Kirill Müller [aut];
+  Daniel Cook [aut]"
+"metafor";"2.0-0";"Wolfgang Viechtbauer [aut, cre]"
+"methods";"3.5.2";"R Core Team"
+"mgcv";"1.8-26";"Simon Wood <simon.wood@r-project.org>"
+"mgm";"1.2-5";"Jonas Haslbeck"
+"mi";"1.0";"Andrew Gelman [ctb];
+  Jennifer Hill [ctb];
+  Yu-Sung Su [aut];
+  Masanao Yajima [ctb];
+  Maria Pittau [ctb];
+  Ben Goodrich [cre, aut];
+  Yajuan Si [ctb];
+  Jon Kropko [aut]"
+"mice";"3.3.0";"Stef van Buuren [aut, cre];
+  Karin Groothuis-Oudshoorn [aut];
+  Alexander Robitzsch [ctb];
+  Gerko Vink [ctb];
+  Lisa Doove [ctb];
+  Shahab Jolani [ctb];
+  Rianne Schouten [ctb];
+  Philipp Gaffert [ctb];
+  Florian Meinfelder [ctb];
+  Bernie Gray [ctb]"
+"mime";"0.6";"Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>);
+  Jeffrey Horner [ctb];
+  Beilei Bian [ctb]"
+"miniUI";"0.1.1.1";"Joe Cheng [cre, aut];
+  RStudio [cph]"
+"minqa";"1.2.4";"Douglas Bates; Katharine M. Mullen; John C. Nash; Ravi Varadhan"
+"mitml";"0.3-7";"Simon Grund [aut,cre]; Alexander Robitzsch [aut]; Oliver Luedtke [aut]"
+"mitools";"2.3";"Thomas Lumley"
+"mnormt";"1.5-5";"Fortran code by Alan Genz; R code by Adelchi Azzalini "
+"modules";"0.8.0";"Sebastian Warnholz [aut, cre]"
+"moments";"0.14";"Lukasz Komsta <lukasz.komsta@umlub.pl>; Frederick Novomestky
+        <fnovomes@poly.edu>"
+"multcomp";"1.4-8";"Torsten Hothorn [aut, cre];
+  Frank Bretz [aut];
+  Peter Westfall [aut];
+  Richard M. Heiberger [ctb];
+  Andre Schuetzenmeister [ctb];
+  Susan Scheibe [ctb]"
+"munsell";"0.5.0";"Charlotte Wickham <cwickham@gmail.com>"
+"mvtnorm";"1.0-8";"Alan Genz [aut];
+  Frank Bretz [aut];
+  Tetsuhisa Miwa [aut];
+  Xuefei Mi [aut];
+  Friedrich Leisch [ctb];
+  Fabian Scheipl [ctb];
+  Bjoern Bornkamp [ctb];
+  Martin Maechler [ctb];
+  Torsten Hothorn [aut, cre] (<https://orcid.org/0000-0001-8301-0471>)"
+"networktools";"1.2.0";"Payton Jones [aut, cre]"
+"nlme";"3.1-137";"José Pinheiro [aut] (S version);
+  Douglas Bates [aut] (up to 2007);
+  Saikat DebRoy [ctb] (up to 2002);
+  Deepayan Sarkar [ctb] (up to 2005);
+  EISPACK authors [ctb] (src/rs.f);
+  Siem Heisterkamp [ctb] (Author fixed sigma);
+  Bert Van Willigen [ctb] (Programmer fixed sigma);
+  R-core [aut, cre]"
+"nloptr";"1.2.1";"Jelmer Ypma <uctpjyy@ucl.ac.uk>; with contributions by
+        Hans W. Borchers <hwborchers@googlemail.com> and 
+        Dirk Eddelbuettel <edd@debian.org>"
+"nnet";"7.3-12";"Brian Ripley [aut, cre, cph];
+  William Venables [cph]"
+"nnls";"1.4";"Katharine M. Mullen and Ivo H. M. van Stokkum"
+"nortest";"1.0-4";"Juergen Gross [aut];
+  Uwe Ligges [aut, cre]"
+"numDeriv";"2016.8-1";"Paul Gilbert and Ravi Varadhan"
+"onewaytests";"2.0";"Osman Dag [aut, cre]; Anil Dolgun [aut]; N. Meric Konar [aut]"
+"openssl";"1.2.1";"Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>);
+  Oliver Keyes [ctb]"
+"openxlsx";"4.1.0";"Alexander Walker [aut, cre];
+  Luca Braglia [ctb]"
+"ordinal";"2018.8-25";"Rune Haubo Bojesen Christensen [aut, cre]"
+"pan";"1.6";"Original by Joseph L. Schafer "
+"parallel";"3.5.2";"R Core Team"
+"parcor";"0.2-6";"Nicole Kraemer; Juliane Schaefer"
+"pbapply";"1.4-0";"Peter Solymos [aut, cre]; Zygmunt Zawadzki [aut]"
+"pbivnorm";"0.6.0";"Fortran code by Alan Genz.  R code by Brenton Kenkel;
+    based on Adelchi Azzalini's 'mnormt' package."
+"pbkrtest";"0.4-7";"Ulrich Halekoh <uhalekoh@health.sdu.dk> Søren Højsgaard
+    <sorenh@math.aau.dk>"
+"pillar";"1.3.1";"Kirill Müller [aut, cre];
+  Hadley Wickham [aut];
+  RStudio [cph]"
+"pkgbuild";"1.0.2";"Hadley Wickham [aut];
+  Jim Hester [aut, cre];
+  RStudio [cph]"
+"pkgconfig";"2.0.2";"Gábor Csárdi"
+"pkgload";"1.0.2";"Hadley Wickham [aut];
+  Jim Hester [aut, cre];
+  Winston Chang [aut];
+  RStudio [cph];
+  R Core team [ctb] (Some namespace and vignette code extracted from base
+    R)"
+"plotrix";"3.7-4";"Jim Lemon; Ben Bolker; Sander Oom;
+	Eduardo Klein; Barry Rowlingson;
+	Hadley Wickham; Anupam Tyagi;
+	Olivier Eterradossi; Gabor Grothendieck;
+	Michael Toews; John Kane; Rolf Turner;
+	Carl Witthoft; Julian Stander; Thomas Petzoldt;
+	Remko Duursma; Elisa Biancotto; Ofir Levy;
+	Christophe Dutang; Peter Solymos; Robby Engelmann;
+	Michael Hecker; Felix Steinbeck; Hans Borchers;
+	Henrik Singmann; Ted Toal; Derek Ogle; Darshan Baral;
+	Ulrike Groemping"
+"plyr";"1.8.4";"Hadley Wickham [aut, cre]"
+"png";"0.1-7";"Simon Urbanek <Simon.Urbanek@r-project.org>"
+"polynom";"1.3-9";"Bill Venables [aut] (S original);
+  Kurt Hornik [aut, cre] (R port);
+  Martin Maechler [aut] (R port)"
+"ppcor";"1.1";"Seongho Kim"
+"ppls";"1.6-1.1";"Nicole Kraemer <kraemer_r_packages@yahoo.de> Anne-Laure Boulesteix
+        <boulesteix@ibe.med.uni-muenchen.de>"
+"prettyunits";"1.0.2";"Gabor Csardi"
+"processx";"3.2.1";"Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>);
+  Winston Chang [aut];
+  RStudio [cph, fnd];
+  Mango Solutions [cph, fnd]"
+"promises";"1.0.1";"Joe Cheng [aut, cre];
+  RStudio [cph, fnd]"
+"ps";"1.3.0";"Jay Loden [aut];
+  Dave Daeschler [aut];
+  Giampaolo Rodola' [aut];
+  Gábor Csárdi [aut, cre];
+  RStudio [cph]"
+"psych";"1.8.12";"William Revelle [aut, cre] (<https://orcid.org/0000-0003-4880-9610>)"
+"purrr";"0.3.0";"Lionel Henry [aut, cre];
+  Hadley Wickham [aut];
+  RStudio [cph, fnd]"
+"pwr";"1.2-2";"Stephane Champely [aut];
+  Claus Ekstrom [ctb];
+  Peter Dalgaard [ctb];
+  Jeffrey Gill [ctb];
+  Stephan Weibelzahl [ctb];
+  Aditya Anandkumar [ctb];
+  Clay Ford [ctb];
+  Robert Volcic [ctb];
+  Helios De Rosario [cre]"
+"qgraph";"1.6.1";"Sacha Epskamp [aut, cre];
+  Giulio Costantini [aut];
+  Jonas Haslbeck [aut];
+  Angelique O. J. Cramer [ctb];
+  Lourens J. Waldorp [ctb];
+  Verena D. Schmittmann [ctb];
+  Denny Borsboom [ctb]"
+"quadprog";"1.5-5";"S original by Berwin A. Turlach <Berwin.Turlach@gmail.com> R
+        port by Andreas Weingessel <Andreas.Weingessel@ci.tuwien.ac.at>"
+"quantmod";"0.4-13";"Jeffrey A. Ryan [aut, cph];
+  Joshua M. Ulrich [cre, aut];
+  Wouter Thielen [ctb];
+  Paul Teetor [ctb];
+  Steve Bronder [ctb]"
+"quantreg";"5.38";"Roger Koenker [cre, aut];
+  Stephen Portnoy [ctb] (Contributions to Censored QR code);
+  Pin Tian Ng [ctb] (Contributions to Sparse QR code);
+  Achim Zeileis [ctb] (Contributions to dynrq code essentially identical
+	to his dynlm code);
+  Philip Grosjean [ctb] (Contributions to nlrq code);
+  Brian D Ripley [trl; ctb] (Initial (2001) R port from S (to my
+    everlasting shame -- how could I have been so slow to adopt R!) and
+    for numerous other suggestions and useful advice)"
+"qvcalc";"0.9-1";"David Firth"
+"rcmdcheck";"1.3.2";"Gábor Csárdi"
+"readr";"1.3.1";"Hadley Wickham [aut];
+  Jim Hester [aut, cre];
+  Romain Francois [aut];
+  R Core Team [ctb] (Date time code adapted from R);
+  RStudio [cph, fnd];
+  Jukka Jylänki [ctb, cph] (grisu3 implementation);
+  Mikkel Jørgensen [ctb, cph] (grisu3 implementation)"
+"readxl";"1.3.0";"Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>);
+  Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>);
+  RStudio [cph, fnd] (Copyright holder of all R code and all C/C++ code
+	without explicit copyright attribution);
+  Marcin Kalicinski [ctb, cph] (Author of included RapidXML code);
+  Komarov Valery [ctb, cph] (Author of included libxls code);
+  Christophe Leitienne [ctb, cph] (Author of included libxls code);
+  Bob Colbert [ctb, cph] (Author of included libxls code);
+  David Hoerl [ctb, cph] (Author of included libxls code);
+  Evan Miller [ctb, cph] (Author of included libxls code)"
+"regsem";"1.3.3";"Ross Jacobucci[aut,cre];
+		Kevin J. Grimm [ctb];
+		Andreas M. Brandmaier [ctb];
+		Sarfaraz Serang [ctb];
+		Rogier A. Kievit [ctb];
+        Florian Scharf [ctb]"
+"relaimpo";"2.2-3";"Ulrike Groemping [aut, cre];
+  Lehrkamp Matthias [ctb]"
+"relimp";"1.0-5";"David Firth with contributions from Heather Turner and John Fox"
+"rematch";"1.0.1";"Gabor Csardi"
+"remotes";"2.0.2";"Gábor Csárdi [aut, cre];
+  Hadley Wickham [aut];
+  Winston Chang [aut];
+  Jim Hester [aut];
+  RStudio [cph];
+  Martin Morgan [aut];
+  Dan Tenenbaum [aut];
+  Mango Solutions [cph]"
+"reshape2";"1.4.3";"Hadley Wickham <h.wickham@gmail.com>"
+"rio";"0.5.16";"Jason Becker [ctb];
+  Chung-hong Chan [aut];
+  Geoffrey CH Chan [ctb];
+  Thomas J. Leeper [aut, cre] (<https://orcid.org/0000-0003-4097-6326>);
+  Christopher Gandrud [ctb];
+  Andrew MacDonald [ctb];
+  Ista Zahn [ctb];
+  Stanislaus Stadlmann [ctb];
+  Ruaridh Williamson [ctb];
+  Patrick Kennedy [ctb];
+  Ryan Price [ctb];
+  Trevor L Davis [ctb]"
+"rjson";"0.2.20";"Alex Couture-Beil <rjson_pkg@mofo.ca>"
+"rlang";"0.3.1";"Lionel Henry [aut, cre];
+  Hadley Wickham [aut];
+  RStudio [cph]"
+"rockchalk";"1.8.144";"Paul E. Johnson [aut, cre];
+  Gabor Grothendieck [ctb]"
+"rpart";"4.1-13";"Terry Therneau [aut];
+  Beth Atkinson [aut, cre];
+  Brian Ripley [trl] (producer of the initial R port; maintainer
+    1999-2017)"
+"rprojroot";"1.3-2";"Kirill Müller [aut, cre]"
+"rstudioapi";"0.9.0";"Kevin Ushey [aut, cre];
+  JJ Allaire [aut];
+  Hadley Wickham [aut];
+  Gary Ritchie [aut];
+  RStudio [cph]"
+"sandwich";"2.5-0";"Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>);
+  Thomas Lumley [aut];
+  Susanne Berger [ctb];
+  Nathaniel Graham [ctb]"
+"scales";"1.0.0";"Hadley Wickham [aut, cre];
+  RStudio [cph]"
+"sem";"3.1-9";"John Fox [aut, cre];
+  Zhenghua Nie [aut];
+  Jarrett Byrnes [aut];
+  Michael Culbertson [ctb];
+  Saikat DebRoy [ctb];
+  Michael Friendly [ctb];
+  Benjamin Goodrich [ctb];
+  Richard H. Jones [ctb];
+  Adam Kramer [ctb];
+  Georges Monette [ctb];
+  R-Core [ctb]"
+"semPlot";"1.1.1";"Sacha Epskamp [aut, cre];
+  Simon Stuber [ctb];
+  Jason Nak [ctb];
+  Myrthe Veenman [ctb]"
+"semTools";"0.5-1";"Terrence D. Jorgensen [aut, cre]
+	(<https://orcid.org/0000-0001-5111-6773>);
+  Sunthud Pornprasertmanit [aut];
+  Alexander Schoemann [aut];
+  Yves Rosseel [aut];
+  Patrick Miller [ctb];
+  Corbin Quick [ctb];
+  Mauricio Garnier-Villarreal [ctb];
+  James Selig [ctb];
+  Aaron Boulton [ctb];
+  Kristopher Preacher [ctb];
+  Donna Coffman [ctb];
+  Mijke Rhemtulla [ctb];
+  Alexander Robitzsch [ctb];
+  Craig Enders [ctb];
+  Ruber Arslan [ctb];
+  Bell Clinton [ctb];
+  Pavel Panko [ctb];
+  Edgar Merkle [ctb];
+  Steven Chesnut [ctb];
+  Jarrett Byrnes [ctb];
+  Jason D. Rights [ctb];
+  Ylenio Longo [ctb];
+  Maxwell Mansolf [ctb]"
+"sessioninfo";"1.1.1";"Gábor Csárdi; R core; Hadley Wickham; Winston Chang;
+	Robert M Flight; Kirill Müller; Jim Hester"
+"shiny";"1.2.0";"Winston Chang [aut, cre];
+  Joe Cheng [aut];
+  JJ Allaire [aut];
+  Yihui Xie [aut];
+  Jonathan McPherson [aut];
+  RStudio [cph];
+  jQuery Foundation [cph] (jQuery library and jQuery UI library);
+  jQuery contributors [ctb, cph] (jQuery library; authors listed in
+	inst/www/shared/jquery-AUTHORS.txt);
+  jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in
+	inst/www/shared/jqueryui/AUTHORS.txt);
+  Mark Otto [ctb] (Bootstrap library);
+  Jacob Thornton [ctb] (Bootstrap library);
+  Bootstrap contributors [ctb] (Bootstrap library);
+  Twitter; Inc [cph] (Bootstrap library);
+  Alexander Farkas [ctb, cph] (html5shiv library);
+  Scott Jehl [ctb, cph] (Respond.js library);
+  Stefan Petre [ctb, cph] (Bootstrap-datepicker library);
+  Andrew Rowls [ctb, cph] (Bootstrap-datepicker library);
+  Dave Gandy [ctb, cph] (Font-Awesome font);
+  Brian Reavis [ctb, cph] (selectize.js library);
+  Kristopher Michael Kowal [ctb, cph] (es5-shim library);
+  es5-shim contributors [ctb, cph] (es5-shim library);
+  Denis Ineshin [ctb, cph] (ion.rangeSlider library);
+  Sami Samhuri [ctb, cph] (Javascript strftime library);
+  SpryMedia Limited [ctb, cph] (DataTables library);
+  John Fraser [ctb, cph] (showdown.js library);
+  John Gruber [ctb, cph] (showdown.js library);
+  Ivan Sagalaev [ctb, cph] (highlight.js library);
+  R Core Team [ctb, cph] (tar implementation from R)"
+"shinyAce";"0.3.3";"Vincent Nijs [aut, cre];
+  Forest Fang [aut];
+  Trestle Technology; LLC [aut];
+  Jeff Allen [aut];
+  Institut de Radioprotection et de Surete Nucleaire [cph];
+  Ajax.org B.V. [ctb, cph] (Ace)"
+"shinyBS";"0.61";"Eric Bailey"
+"shinyjs";"1.0";"Dean Attali [aut, cre]"
+"smacof";"1.10-8";"Patrick Mair [aut, cre];
+  Jan De Leeuw [aut];
+  Ingwer Borg [ctb];
+  Patrick J. F. Groenen [ctb]"
+"sn";"1.5-4";"Adelchi Azzalini <adelchi.azzalini@unipd.it>"
+"snow";"0.4-3";"Luke Tierney; A. J. Rossini; Na Li; H. Sevcikova"
+"sourcetools";"0.1.7";"Kevin Ushey"
+"sp";"1.3-1";"Edzer Pebesma [aut, cre];
+  Roger Bivand [aut];
+  Barry Rowlingson [ctb];
+  Virgilio Gomez-Rubio [ctb];
+  Robert Hijmans [ctb];
+  Michael Sumner [ctb];
+  Don MacQueen [ctb];
+  Jim Lemon [ctb];
+  Josh O'Brien [ctb];
+  Joseph O'Rourke [ctb]"
+"spatial";"7.3-11";"Brian Ripley [aut, cre, cph];
+  Roger Bivand [ctb];
+  William Venables [cph]"
+"splines";"3.5.2";"Douglas M. Bates <bates@stat.wisc.edu> and
+ William N. Venables <Bill.Venables@csiro.au>"
+"stats";"3.5.2";"R Core Team and contributors worldwide"
+"stats4";"3.5.2";"R Core Team and contributors worldwide"
+"stringi";"1.3.1";"Marek Gagolewski [aut, cre]; Bartek Tartanus [ctb];
+    and other contributors (stringi source code);
+	IBM; Unicode; Inc.; and other contributors (ICU4C source code);
+	Unicode; Inc. (Unicode Character Database)"
+"stringr";"1.4.0";"Hadley Wickham [aut, cre, cph];
+  RStudio [cph, fnd]"
+"survey";"3.35-1";"Thomas Lumley"
+"survival";"2.43-3";"Terry M Therneau [aut, cre];
+  Thomas Lumley [ctb, trl] (original S->R port and R maintainer until
+    2009)"
+"sys";"3.0";"Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>);
+  Gábor Csárdi [ctb]"
+"tcltk";"3.5.2";"R Core Team"
+"tibble";"2.0.1";"Kirill Müller [aut, cre];
+  Hadley Wickham [aut];
+  Romain Francois [ctb];
+  Jennifer Bryan [ctb];
+  RStudio [cph]"
+"tidyr";"0.8.2";"Hadley Wickham [aut, cre];
+  Lionel Henry [aut];
+  RStudio [cph]"
+"tidyselect";"0.2.5";"Lionel Henry [aut, cre];
+  Hadley Wickham [aut];
+  RStudio [cph]"
+"tools";"3.5.2";"R Core Team"
+"truncnorm";"1.0-8";"Olaf Mersmann [aut, cre];
+  Heike Trautmann [aut];
+  Detlef Steuer [aut];
+  Björn Bornkamp [aut]"
+"tseries";"0.10-46";"Adrian Trapletti [aut];
+  Kurt Hornik [aut, cre];
+  Blake LeBaron [ctb] (BDS test code)"
+"ucminf";"1.1-4";"Hans Bruun Nielsen and Stig Bousgaard Mortensen"
+"usethis";"1.4.0";"Hadley Wickham [aut, cre] (<https://orcid.org/0000-0003-4757-117X>);
+  Jennifer Bryan [aut] (<https://orcid.org/0000-0002-6983-2759>);
+  RStudio [cph, fnd]"
+"utf8";"1.1.4";"Patrick O. Perry [aut, cph, cre];
+  Unicode; Inc. [cph, dtc] (Unicode Character Database)"
+"utils";"3.5.2";"R Core Team and contributors worldwide"
+"vcd";"1.4-4";"David Meyer [aut, cre];
+  Achim Zeileis [aut] (<https://orcid.org/0000-0003-0918-3766>);
+  Kurt Hornik [aut];
+  Florian Gerber [ctb];
+  Michael Friendly [ctb]"
+"vcdExtra";"0.7-1";"Michael Friendly [aut, cre]; Heather Turner [ctb]; Achim Zeileis [ctb]; Duncan Murdoch [ctb]; David Firth [ctb]"
+"viridis";"0.5.1";"Simon Garnier [aut, cre];
+  Noam Ross [ctb, cph];
+  Bob Rudis [ctb, cph];
+  Marco Sciaini [ctb, cph];
+  Cédric Scherer [ctb, cph]"
+"viridisLite";"0.3.0";"Simon Garnier [aut, cre];
+  Noam Ross [ctb, cph];
+  Bob Rudis [ctb, cph];
+  Marco Sciaini [ctb, cph];
+  Cédric Scherer [ctb, cph]"
+"weights";"1.0";"Josh Pasek [aut, cre]; with some assistance from Alex Tahk and some code modified from R-core; Additional contributions by Gene Culter and Marcus Schwemmle."
+"whisker";"0.3-2";"Edwin de Jonge"
+"withr";"2.1.2";"Jim Hester [aut, cre];
+  Kirill Müller [aut];
+  Kevin Ushey [aut];
+  Hadley Wickham [aut];
+  Winston Chang [aut];
+  Richard Cotton [ctb];
+  RStudio [cph]"
+"wordcloud";"2.6";"Ian Fellows"
+"xfun";"0.5";"Yihui Xie [aut, cre, cph] (<https://orcid.org/0000-0003-0645-5666>);
+  Daijiang Li [ctb];
+  Xianying Tan [ctb]"
+"xopen";"1.0.0";"Gábor Csárdi [aut, cre];
+  Fathi Boudra [aut];
+  Rex Dieter [aut];
+  Kevin Krammer [aut];
+  Jeremy White [aut]"
+"xtable";"1.8-3";"David B. Dahl [aut];
+  David Scott [aut, cre];
+  Charles Roosen [aut];
+  Arni Magnusson [aut];
+  Jonathan Swinton [aut];
+  Ajay Shah [ctb];
+  Arne Henningsen [ctb];
+  Benno Puetz [ctb];
+  Bernhard Pfaff [ctb];
+  Claudio Agostinelli [ctb];
+  Claudius Loehnert [ctb];
+  David Mitchell [ctb];
+  David Whiting [ctb];
+  Fernando da Rosa [ctb];
+  Guido Gay [ctb];
+  Guido Schulz [ctb];
+  Ian Fellows [ctb];
+  Jeff Laake [ctb];
+  John Walker [ctb];
+  Jun Yan [ctb];
+  Liviu Andronic [ctb];
+  Markus Loecher [ctb];
+  Martin Gubri [ctb];
+  Matthieu Stigler [ctb];
+  Robert Castelo [ctb];
+  Seth Falcon [ctb];
+  Stefan Edwards [ctb];
+  Sven Garbade [ctb];
+  Uwe Ligges [ctb]"
+"xts";"0.11-2";"Jeffrey A. Ryan [aut, cph];
+  Joshua M. Ulrich [cre, aut];
+  Ross Bennett [ctb];
+  Corwin Joy [ctb]"
+"yaml";"2.2.0";"Jeremy Stephens [aut, cre]; Kirill Simonov [aut]; Yihui Xie [ctb];
+  Zhuoer Dong [ctb]; Hadley Wickham [ctb]; Jeffrey Horner [ctb]; reikoch [ctb];
+  Will Beasley [ctb]; Brendan O'Connor [ctb]; Gregory R. Warnes [ctb]"
+"zip";"2.0.0";"Gábor Csárdi; Kuba Podgórski; Rich Geldreich"
+"zoo";"1.8-4";"Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>);
+  Gabor Grothendieck [aut];
+  Jeffrey A. Ryan [aut];
+  Joshua M. Ulrich [ctb];
+  Felix Andrews [ctb]"

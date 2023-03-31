@@ -1,0 +1,51 @@
+//
+// Copyright (C) 2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+//
+//	NOTICE:
+//		`appinfo.cpp` is generated from `appinfo.cpp.in` and you should edit 
+//		that file instead if you want your changes to reflect in the app
+//
+
+#ifndef ACTIVEMODULES_H
+#define ACTIVEMODULES_H
+
+/**
+ * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
+ * 
+ * @details 	This class exists only to dynamically adjust the active modules of the ribbon, in
+ *           	case we decide not to have them all. So, the changes in `JASP_COMMON_MODULES` and
+ *           	`JASP_EXTRA_MODULES` variables in `Tools/CMake/Modules.cmake` will be reflected 
+ *           	here. By commenting any of the modules in the CMake file, they'll be excluded from
+ *           	the build, and will not be available to JASP.
+ */
+class ActiveModules {
+public:
+
+	static std::vector<std::string> getActiveCommonModules() {
+		return {
+			"@JASP_COMMON_MODULES_QUOTED@"
+		};
+	}
+
+	static std::vector<std::string> getActiveExtraModules() {
+		return {
+			"@JASP_EXTRA_MODULES_QUOTED@"
+		};
+	}
+};
+
+#endif // ACTIVEMODULES_H

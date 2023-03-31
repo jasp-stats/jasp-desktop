@@ -1,0 +1,26 @@
+Source: jasp
+Maintainer: jasp-uva <b.boutin@uva.nl>
+Section: science
+Priority: optional
+Standards-Version: 3.9.8
+Build-Depends: libboost-dev, r-base-core, r-cran-rcpp, r-cran-rinside, libqt5widgets5, qtwebengine5-dev, libqt5webchannel5-dev, libqt5svg5-dev, qt5-qmake, libarchive-dev, libboost-filesystem-dev, libboost-system-dev, libjsoncpp-dev, qtbase5-dev, debhelper (>= 9)
+
+Package: jasp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, libqt5webkit5, libqt5svg5, openssl
+Description: Offers standard analysis procedures in both their classical and Bayesian form
+ JASP is a cross platform statistical software program with a state-of-the-art
+ graphical user interface. It offers standard analysis procedures in both 
+ their classical and Bayesian form. 
+ .
+ It was designed with the user in mind: APA-formatted tables can be 
+ copy-pasted in your word processor, output can be extensively annotated,
+ adjustment of input options dynamically changes the output, and selecting 
+ old output revives the associated input choices for inspection and adjustment.
+ .
+ JASP is also statistically inclusive, 
+ as it offers both frequentist and Bayesian analysis methods. 
+ Indeed, the primary motivation for JASP is to make it easier for statistical 
+ practitioners to conduct Bayesian analyses. 
+ .
+ For more information and tutorials see: https://jasp-stats.org/

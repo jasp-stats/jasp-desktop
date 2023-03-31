@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"           content="width=device-width, initial-scale=1"/>
+
+    <title>JASP</title>
+
+    <link rel="stylesheet" href="css/jquery-ui-1.10.1.custom.css"			type="text/css" />
+	<link rel="stylesheet" href="css/etch.css"								type="text/css" />
+	
+    <link rel="stylesheet" href="css/jasp.css"					            type="text/css"/>
+    <link rel="stylesheet" href="css/lightTheme-jasp.css"					type="text/css" id="style"/>
+    <link rel="stylesheet" href="css/printing.css"							type="text/css" />
+
+    <script type="text/javascript" >   var insideJASP = false;  </script>
+
+    <script type="text/javascript" src="js/jquery-1.9.1.js">                </script>
+	<script type="text/javascript" src="js/jquery-ui-1.10.1.custom.js">    </script>
+	<script type="text/javascript" src="js/underscore-min.js">            </script>
+	<script type="text/javascript" src="js/backbone-1.1.2.js">           </script>
+	<script type="text/javascript" src="js/mrkdwn.js">                </script>
+	<script type="text/javascript" src="js/jaspwidgets.js">          </script>
+	<script type="text/javascript" src="js/object.js">              </script>
+	<script type="text/javascript" src="js/utils.js">              </script>
+	<script type="text/javascript" src="js/table.js">             </script>
+	<script type="text/javascript" src="js/image.js">            </script>
+	<script type="text/javascript" src="js/collection.js">      </script>
+	<script type="text/javascript" src="js/analysis.js">      </script>
+	<script type="text/javascript" src="js/analyses.js">     </script>
+	<script type="text/javascript" src="js/reportNode.js">  </script>
+	<script type="text/javascript" src="js/htmlNode.js">   </script>
+	<script type="text/javascript" src="js/column.js">    </script>
+	<script type="text/javascript" src="js/main.js">     </script>
+
+</head>
+<body>
+	<div id="results">
+          <div id="spacer" style="height: 1px;"></div>
+	</div>
+
+	<div id="bottomSpacer" style="height: 0px;"></div>
+
+	<script type="text/javascript">
+            console.log("JASP standalone html was loaded")
+
+			jasp = { reportingVisible: true }; 
+
+            function readResults()
+            {
+                $.getJSON("results.json", function(results) {
+					for(var analysis in results.analyses)
+						window.analysisChanged(results.analyses[analysis])
+                    window.setResultsMeta(results.meta);
+					
+                });
+
+            };
+
+            readResults();
+
+            setInterval(readResults, 15000); //try reading 15 sec
+
+	</script>
+</body>
+</html>

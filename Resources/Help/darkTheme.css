@@ -1,0 +1,56 @@
+
+body
+{
+  font-size:        12px ;
+  color:            #EEE;
+  background-color: #333;
+}
+
+h1
+{
+	font-size: 175% ; ;
+}
+
+h2
+{
+	font-size: 150% ;
+}
+
+h3
+{
+	font-size: 125% ;
+}
+
+details
+{
+  background-color: #111;
+  padding:          5px;
+  border-radius:    6px;
+  border:           3px groove #444;
+  margin:           5px;
+}
+
+img
+{
+  display:      block;
+  margin-left:  auto;
+  margin-right: auto;
+  /*width: 100%;*/
+  max-width:    100%;
+  filter:       invert(1);
+}
+
+li
+{
+  padding: 4px
+}
+
+.code
+{
+  font-family: "Courier New", Courier, monospace;
+}
+
+a
+{
+  color: lightBlue
+}

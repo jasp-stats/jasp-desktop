@@ -1,0 +1,80 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Generate resource headers
+*.R.h
+*.js.h
+
+# QT files
+*.pro.user
+*.pro.user.*
+
+# Annoying OSX files
+*.DS_Store
+Thumbs.db
+
+# R
+Engine/R-*
+.Rapp.history
+
+# .exe
+*.exe
+
+# diff ORIG files.
+*.orig
+
+# .nsi
+Tools/deleteFiles*.nsi
+Tools/includeFiles*.nsi
+JASP.pro.user.b601785
+.Rproj.user
+
+#Extracted testfiles
+Resources/TestFiles
+
+*.autosave
+Engine/jaspBase/R/.Rhistory
+Tests/.Rhistory
+
+flatpak-builder-folder/
+
+.RData
+.Rhistory
+.vscode
+
+
+# CMake Stuff
+build/
+build*/
+bundle/
+bundle*/
+CMakeLists.txt.user
+
+# CLion Stuff
+cmake-build-*
+.idea
+
+# Xcode project
+xcode-project/
+
+
+# Temporary 
+Frameworks/
+R.framework/
+.cache/
+Modules/renv-root/
+Desktop/utilities/simplecryptkey.h
+Desktop/modules/activemodules.h
+Common/appinfo.cpp
+QMLComponents/utilities/appdirs.h
