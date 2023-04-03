@@ -205,8 +205,46 @@ ScrollView
 				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
-				KeyNavigation.tab:		logToFile
+				KeyNavigation.tab:		remoteSettingsURL
 				activeFocusOnTab:		true
+			}
+
+
+			Item
+			{
+				id:		remoteSettingsItem
+				width:	parent.width
+				height:	cranRepoUrl.height
+
+				Label
+				{
+					id:		remoteSettingsLabel
+					text:	qsTr("Settings URL: ")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					remoteSettingsURL
+
+					text:				preferencesModel.remoteSettingsURL
+					onEditingFinished:	preferencesModel.remoteSettingsURL = text
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			remoteSettingsLabel.right
+						right:			parent.right
+					}
+
+					KeyNavigation.tab:	logToFile
+				}
 			}
 		}
 		
