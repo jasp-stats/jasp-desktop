@@ -89,8 +89,9 @@ const Settings::Setting Settings::Values[] = {
 	{"showReports",					false	},
 	{"showRSyntax",					false	},
 	{"showAllROptions",				false	},
-	{"showRSyntaxInResults",		false	},
-	{"guiQtTextRender",				true	}
+	{"guiQtTextRender",				true	},
+    {"showRSyntaxInResults",		false	},
+	{"remoteSettingsURL",			""		}
 };	
 
 QVariant Settings::value(Settings::Type key)
