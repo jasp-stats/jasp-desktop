@@ -40,6 +40,7 @@
 #include "gui/aboutmodel.h"
 #include "gui/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
+#include "gui/remotesettings.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
@@ -281,6 +282,7 @@ private:
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+	RemoteSettings				*	_remoteSettings			= nullptr;
 
 	QSettings						_settings;
 
