@@ -26,17 +26,14 @@ private slots:
 private:
 	void processTasks();
 	void parse(const QString& settings);
-	int32_t getVersion(const QString& settings);
-	QNetworkReply* download(const QString& path);
-	bool saveToDisk(const QString& path, QNetworkReply* data);
-
+//	int32_t getVersion(const QString& settings);
 
 	QNetworkAccessManager	_networkManager;
-	int32_t _version = -1;
-	QList<QString> _patches;
+//	int32_t _version = -1;
+	QSet<QString> _patches;
 
-	const QString configurationFilename = "jasp.conf";
-	static QRegularExpression versionRE;
+	const QString configurationFilename = "remote_settings.conf";
+//	static QRegularExpression versionRE;
 
 };
 
