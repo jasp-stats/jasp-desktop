@@ -282,7 +282,7 @@ private:
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
-	RemoteSettings				*	_remoteSettings			= nullptr;
+	JASPSettings				*	_remoteSettings			= nullptr;
 
 	QSettings						_settings;
 
