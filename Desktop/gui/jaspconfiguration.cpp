@@ -13,6 +13,10 @@
 JASPConfiguration::JASPConfiguration(QObject *parent)
 	: QObject{parent}
 {
+	versionRE.setPattern(versionPattern);
+	versionRE.setPatternOptions(QRegularExpression::MultilineOption);
+
+	keyValueRE.setPattern(keyValuePattern);
 
 }
 
@@ -36,117 +40,120 @@ QString &JASPConfiguration::getAnalysisOptionValue(const QString &module, const 
 
 }
 
-void JASPConfiguration::processSettings()
+void JASPConfiguration::processConfiguration()
 {
-	//read & parse local
-	QString confPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	QDir confDir;
-	confDir.mkpath(confPath);
+	bool localOK = processLocal();
 
-	QString settingsPath = confPath + "/" + configurationFilename;
-	QFile localSettingsFile(settingsPath);
-	if (!localSettingsFile.open(QIODevice::ReadWrite | QIODevice::Text))
-	{
-		Log::log() << "!!!Could not open local configuration file " << settingsPath.toStdString() << ": " << localSettingsFile.errorString().toStdString() << std::endl;
-		return;
-	}
-	QTextStream in(&localSettingsFile);
-	parse(in.readAll());
-	localSettingsFile.close();
-
-
-    //read, parse & save remote settings
-    if(Settings::value(Settings::REMOTE_SETTINGS_URL).toString() != "")
+	//read, parse & save remote settings
+	if(Settings::value(Settings::REMOTE_CONFIGURATION_URL).toString() != "")
     {
         auto conn = std::make_shared<QMetaObject::Connection>();
-        *conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [&, this, settingsPath, conn](QNetworkReply* reply) {
-            QObject::disconnect(*conn);
-            reply->deleteLater();
+		*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [=, this](QNetworkReply* reply) {
+			QObject::disconnect(*conn);
+			reply->deleteLater();
 
-            if(reply->error())
-            {
-                Log::log() << "!!!Error fetching remote settings file " << reply->request().url().toString().toStdString() << " : " << reply->errorString().toStdString() << std::endl;
-                emit this->settingsProcessed("FAIL");
-                return;
-            }
-            QString payload = reply->readAll();
-            parse(payload);
+			try
+			{
+				if(reply->error())
+					throw std::runtime_error("Error fetching remote configuration file " + reply->request().url().toString().toStdString() + " : " + reply->errorString().toStdString());
+				QByteArray payload = reply->readAll();
+				parse(payload);
 
-            QFile localSettingsFile(settingsPath);
-            if (!localSettingsFile.open(QIODevice::ReadWrite | QIODevice::Text))
-            {
-                Log::log() << "!!!Could not open local configuration file " << settingsPath.toStdString() << ": " << localSettingsFile.errorString().toStdString() << std::endl;
-                emit this->settingsProcessed("FAIL");
-                return;
-            }
-            localSettingsFile.write(payload.toUtf8());
-            localSettingsFile.close();
-
-            Log::log() << "!!!Updated local copy of remote settings" << std::endl;
-            emit this->settingsProcessed("OK");
+				auto localConfFile = getLocalConfFile();
+				localConfFile->write(payload);
+				localConfFile->close();
+				Log::log() << "!!!Updated local copy of remote configuration" << std::endl;
+				emit this->configurationProcessed("OK");
+			}
+			catch (std::runtime_error& e)
+			{
+				Log::log() << "!!!Failed to process remote configuration: " << e.what() << std::endl;
+				if(!localOK)
+					emit this->configurationProcessed("FAIL");
+				else
+					emit this->configurationProcessed("OK");
+				return;
+			}
         });
 
         //make the request
-        QNetworkRequest request(Settings::value(Settings::REMOTE_SETTINGS_URL).toString());
+		QNetworkRequest request(Settings::value(Settings::REMOTE_CONFIGURATION_URL).toString());
         QNetworkReply* reply = _networkManager.get(request);
         connect(reply, &QNetworkReply::sslErrors, this, &JASPConfiguration::sslErrors);
     }
     else
-        emit settingsProcessed("OK");
+		emit configurationProcessed("OK");
+}
+
+bool JASPConfiguration::processLocal()
+{
+	try
+	{
+		auto localConfFile = getLocalConfFile();
+		QTextStream in(localConfFile.get());
+		parse(in.readAll());
+	}
+	catch(std::runtime_error& e)
+	{
+		Log::log() <<  "!!!Could not parse local configuration: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
 }
 
 void JASPConfiguration::remoteChanged(QString remoteURL)
 {
-	processSettings();
+	processConfiguration();
 }
 
-void JASPConfiguration::parse(const QString &settings)
+void JASPConfiguration::parse(const QString &conf)
 {
+	getVersion(conf);
 	_patches.clear();
-	QStringList lines = settings.split("\n");
+	QStringList lines = conf.split("\n");
 	for(auto& line : lines)
 	{
 		_patches.insert(line);
 	}
 }
 
+void JASPConfiguration::getVersion(const QString& conf)
+{
+
+	auto match =  versionRE.match(conf);
+	if(match.hasCaptured("versionNum"))
+	{
+		try
+		{
+			jaspVersion = Version(match.captured("versionNum").toStdString());
+			return;
+		}
+		catch (std::runtime_error& e)
+		{
+			throw std::runtime_error("Could not parse JASP Version number in configuration file: " + std::string(e.what()));
+		}
+	}
+	throw std::runtime_error("No JASP Version number present in configuration file");
+}
+
+std::shared_ptr<QFile> JASPConfiguration::getLocalConfFile() {
+	QString confPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	QDir confDir;
+	if(!confDir.mkpath(confPath))
+		throw std::runtime_error("Could not Access app configuration path");
+
+	QString configurationFilePath = confPath + "/" + configurationFilename;
+	std::shared_ptr<QFile> localConfFile = std::make_shared<QFile>(configurationFilePath);
+	if (!localConfFile->open(QIODevice::ReadWrite | QIODevice::Text))
+		throw std::runtime_error("Could not open local configuration file " + configurationFilePath.toStdString() + ": " + localConfFile->errorString().toStdString());
+	return localConfFile;
+}
+
 void JASPConfiguration::sslErrors(const QList<QSslError> &errors)
 {
 	for (const QSslError &error : errors)
-		Log::log() << "!!!Error fetching remote settings:" << error.errorString().toStdString() << std::endl;
+		Log::log() << "Error fetching remote settings:" << error.errorString().toStdString() << std::endl;
 }
 
-//void RemoteSettings::parse(const QString &settings)
-//{
-//	_version = getVersion(settings);
 
-//	_patches.clear();
-//	QStringList lines = settings.split("\n");
-//	for(auto& line : lines)
-//	{
-//		auto match =  versionRE.match(line);
-//		if(!match.hasMatch())
-//			_patches.append(line);
-//	}
-//}
 
-bool JASPConfiguration::getVersion(const QString& settings)
-{
-    static QRegularExpression versionRE("JASP_Version:\\s*(?<versionNum>\\w+)\\s*$", QRegularExpression::MultilineOption);
-    auto match =  versionRE.match(settings);
-    if(match.hasCaptured("versionNum"))
-    {
-        try
-        {
-            jaspVersion = Version(match.captured("versionNum").toStdString());
-            return true;
-        }
-        catch (std::runtime_error& e)
-        {
-            Log::log() << "Could not parse JASP Version number in configuration file: " << e.what() << std::endl;
-            return false;
-        }
-    }
-    Log::log() << "No JASP Version number present in configuration file" << std::endl;
-    return false;
-}
