@@ -519,11 +519,14 @@ $(document).ready(function () {
 	$("body").click(window.unselectByClickingBody)
 })
 
+// We want to insert header information according to the elements of note editor
+var headLinkStuff = "";
 var wrapHTML = function (html, exportParams) {
 	var completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+	completehtml += headLinkStuff
 	completehtml += "		<title>JASP</title>"
 	completehtml += "		<style>"
 	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"

@@ -474,7 +474,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'],
+			['bold', 'italic', 'underline', 'link'],['formula'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -492,6 +492,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var options = {
 			theme: 'snow',
 			modules: {
+				formula: true,
 				toolbar: toolbarOptions,
 				keyboard: {
 					bindings: {
@@ -538,11 +539,19 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 		
 		this.$quillTooltip     = this.$el.find(".ql-tooltip");
-        	var quillTooltipTheme  = this.$quill.theme.tooltip;
+		var quillTooltipTheme  = this.$quill.theme.tooltip;
 
-        	// Change example link from quilljs.com to a sample link
-        	var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
-        	linkInput.dataset.link = 'https://jasp-stats.org';
+		// Change example link from quilljs.com to a sample link
+		var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
+		linkInput.dataset.link = 'https://jasp-stats.org';
+		
+		// Render the formula correctly in the exported html file, must add stylesheet and script into html file,
+		// Note that this requires access to the network when user opening html
+		this.$formulaBotton = this.$el.find(".ql-formula")
+		this.$formulaBotton.on('click', function (){
+			headLinkStuff = "<link rel='stylesheet' href= 'https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.css' crossorigin=''>\n"
+                          + "<script defer src='https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.js' crossorigin= ''></script>\n"
+                           });
 
 		// Add tooltips to the toolbar buttons
 		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
@@ -554,6 +563,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', 'Italic');
 		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', 'Underline');
 		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Link');
+
+		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', 'Formula');
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', 'Header');
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
