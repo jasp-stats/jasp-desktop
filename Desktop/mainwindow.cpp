@@ -148,7 +148,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
-	_remoteSettings			= new RemoteSettings(this);
+	_remoteSettings			= new JASPSettings(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -160,7 +160,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	_remoteSettings->processRemoteSettings();
+	_remoteSettings->processSettings();
 
 	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
@@ -368,7 +368,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
 
-	connect(_preferences,			&PreferencesModel::remoteSettingsURLChanged,		_remoteSettings,		&RemoteSettings::remoteChanged								);
+    connect(_preferences,			&PreferencesModel::remoteSettingsURLChanged,		_remoteSettings,		&JASPConfiguration::remoteChanged								);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
