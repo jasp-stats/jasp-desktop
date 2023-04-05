@@ -74,7 +74,7 @@ public:
 		SHOW_RSYNTAX,
 		SHOW_ALL_R_OPTIONS,
         SHOW_RSYNTAX_IN_RESULTS,
-		REMOTE_SETTINGS_URL
+		REMOTE_CONFIGURATION_URL
 	};
 
 	static QVariant value(Settings::Type key);

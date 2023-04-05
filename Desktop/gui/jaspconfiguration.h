@@ -1,10 +1,11 @@
-#ifndef JASPSETTINGS_H
-#define JASPSETTINGS_H
+#ifndef JASPCONFIGURATION_H
+#define JASPCONFIGURATION_H
 
 #include <QNetworkAccessManager>
 #include <QObject>
 #include <QVariant>
-#include "qregularexpression.h"
+#include <QFile>
+#include <QRegularExpression>
 #include "version.h"
 
 class JASPConfiguration : public QObject
@@ -21,22 +22,25 @@ public:
 	bool isSet(const QString& module, const QString& analysis, const QString& optionName);
 	QString& getAnalysisOptionValue(const QString& module, const QString& analysis, const QString& optionName, const QString& defaultValue = "");
 
-    //read and parse local and remote settings
-	void processSettings();
+	//read and parse local and remote configuration
+	void processConfiguration();
 
 public slots:
 	void remoteChanged(QString remoteURL);
 
 signals:
-    void settingsProcessed(QString results);
+	void configurationProcessed(QString results);
 
 private slots:
 	void sslErrors(const QList<QSslError> &errors);
 
 private:
+	bool processLocal();
+
 	void processTasks();
-	void parse(const QString& settings);
-    bool getVersion(const QString& settings);
+	void parse(const QString& conf);
+	void getVersion(const QString& conf);
+	std::shared_ptr<QFile> getLocalConfFile();
 
 	QNetworkAccessManager	_networkManager;
     Version jaspVersion;
@@ -44,6 +48,13 @@ private:
 
     const QString configurationFilename = "userConfiguration.conf";
 
+
+	const QString versionPattern = "JASP_Version:\\s*(?<versionNum>[\\S]+)\\s*$";
+	const QString keyValuePattern = "\\s*(?<key>[\\S+)\\s*=\\s*(?<value>[\\S+)\\s*$";
+
+	QRegularExpression versionRE;
+	QRegularExpression keyValueRE;
+
 };
 
-#endif // JASPSETTINGS_H
+#endif // JASPCONFIGURATION_H

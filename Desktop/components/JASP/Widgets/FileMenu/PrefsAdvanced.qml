@@ -205,14 +205,14 @@ ScrollView
 				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
-				KeyNavigation.tab:		remoteSettingsURL
+				KeyNavigation.tab:		remoteConfURL
 				activeFocusOnTab:		true
 			}
 
 
 			Item
 			{
-				id:		remoteSettingsItem
+				id:		remoteConfItem
 				width:	parent.width
 				height:	cranRepoUrl.height
 
@@ -231,10 +231,10 @@ ScrollView
 
 				PrefsTextInput
 				{
-					id:					remoteSettingsURL
+					id:					remoteConfURL
 
-					text:				preferencesModel.remoteSettingsURL
-					onEditingFinished:	preferencesModel.remoteSettingsURL = text
+					text:				preferencesModel.remoteConfigurationURL
+					onEditingFinished:	preferencesModel.remoteConfigurationURL = text
 
 					height:				browseDeveloperFolderButton.height
 					anchors
