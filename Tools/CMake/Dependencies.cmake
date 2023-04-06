@@ -35,9 +35,9 @@ if(APPLE)
 
   fetchcontent_declare(
     readstat
-    URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
+	URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz"
     URL_HASH
-      SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
+	  SHA256=3a232b9e852d10173e2f25da9155afe2e129a30d1fc6c9aac142cdc5cbfe527e)
 
   message(CHECK_START "Downloading 'readstat'")
 
@@ -53,7 +53,7 @@ if(APPLE)
     message(CHECK_PASS "successful.")
 
     set(READSTAT_CFLAGS
-        "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+		"-g -O2 -Wno-strict-prototypes -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
     )
     set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
     set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
