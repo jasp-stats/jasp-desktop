@@ -8,31 +8,26 @@ set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
 if(APPLE)
 
+  execute_process(COMMAND uname -m OUTPUT_VARIABLE HOST_PROCESSOR OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  message(STATUS "Host processor is ${HOST_PROCESSOR}")
+
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
-    set(CMAKE_OSX_ARCHITECTURES
-        ${CMAKE_HOST_SYSTEM_PROCESSOR}
-        CACHE STRING "" FORCE)
+	set(CMAKE_OSX_ARCHITECTURES ${HOST_PROCESSOR})
     set(CROSS_COMPILING 0)
     message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
   else()
-    if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
+	if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL HOST_PROCESSOR))
       set(CROSS_COMPILING 1)
-      message(
-        STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
+	  message(STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
     endif()
   endif()
 
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-    set(CMAKE_OSX_DEPLOYMENT_TARGET
-        11.0
-        CACHE STRING "Minimum macOS version the build will be able to run on"
-              FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "armv8")
   else()
-    set(CMAKE_OSX_DEPLOYMENT_TARGET
-        10.15
-        CACHE STRING "Minimum macOS version the build will be able to run on"
-              FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
 
