@@ -44,7 +44,7 @@ private:
 
 	QNetworkAccessManager	_networkManager;
     Version jaspVersion;
-	QSet<QString> _patches;
+    QMap<QString, QVariant> _keyValueConstants;
 
     const QString configurationFilename = "userConfiguration.conf";
 

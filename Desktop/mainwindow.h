@@ -281,8 +281,8 @@ private:
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
-	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
-	JASPConfiguration			*	_remoteSettings			= nullptr;
+    CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+    JASPConfiguration			*	_jaspConfiguration		= nullptr;
 
 	QSettings						_settings;
 
