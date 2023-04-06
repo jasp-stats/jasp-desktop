@@ -22,12 +22,14 @@ JASPConfiguration::JASPConfiguration(QObject *parent)
 
 bool JASPConfiguration::exists(const QString &constant, const QString &module, const QString &analysis)
 {
-
+    return _keyValueConstants.contains(constant);
 }
 
 QVariant JASPConfiguration::get(const QString &constant, QVariant defaultValue, const QString &module, const QString &analysis)
 {
-
+    if(exists(constant, module, analysis))
+        return _keyValueConstants[constant];
+    return defaultValue;
 }
 
 bool JASPConfiguration::isSet(const QString &module, const QString &analysis, const QString &optionName)
@@ -109,18 +111,27 @@ void JASPConfiguration::remoteChanged(QString remoteURL)
 void JASPConfiguration::parse(const QString &conf)
 {
 	getVersion(conf);
-	_patches.clear();
+    QMap<QString, QVariant> keyValuePairs;
 	QStringList lines = conf.split("\n");
 	for(auto& line : lines)
-	{
-		_patches.insert(line);
+    {
+        auto match = versionRE.match(conf);
+        if(match.hasMatch())
+        {
+            QString key = match.captured("key");
+            QVariant value = QVariant(match.captured("value"));
+            keyValuePairs.insert(key, value);
+        }
+        Log::log() << "invalid line in configuration: " + line.toStdString() << std::endl;
 	}
+
+    _keyValueConstants = keyValuePairs;
 }
 
 void JASPConfiguration::getVersion(const QString& conf)
 {
 
-	auto match =  versionRE.match(conf);
+    auto match = versionRE.match(conf);
 	if(match.hasCaptured("versionNum"))
 	{
 		try

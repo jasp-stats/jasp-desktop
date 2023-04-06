@@ -80,7 +80,7 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
     endif()
 
     message(CHECK_START "Looking for libjags.so")
-    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib REQUIRED)
+    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib ${JAGS_HOME} REQUIRED)
     if(EXISTS ${LIBJAGS})
       message(CHECK_PASS "found")
       message(STATUS "  ${LIBJAGS}")

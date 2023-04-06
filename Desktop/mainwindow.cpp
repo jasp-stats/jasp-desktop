@@ -147,8 +147,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
-	_columnTypesModel		= new ColumnTypesModel(this);
-	_remoteSettings			= new JASPConfiguration(this);
+    _columnTypesModel		= new ColumnTypesModel(this);
+    _jaspConfiguration			= new JASPConfiguration(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -160,7 +160,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	_remoteSettings->processConfiguration();
+    _jaspConfiguration->processConfiguration();
 
 	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
@@ -368,7 +368,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
 
-	connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_remoteSettings,		&JASPConfiguration::remoteChanged								);
+    connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_jaspConfiguration,		&JASPConfiguration::remoteChanged								);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
@@ -471,7 +471,9 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(columnType::scale)			);
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
+    _qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
+    _qml->rootContext()->setContextProperty("jaspConfiguration",		_jaspConfiguration              );
+
 
 	bool	debug	= false,
 			isMac	= false,
