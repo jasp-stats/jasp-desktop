@@ -115,14 +115,15 @@ void JASPConfiguration::parse(const QString &conf)
 	QStringList lines = conf.split("\n");
 	for(auto& line : lines)
     {
-        auto match = versionRE.match(conf);
+        auto match = keyValueRE.match(line);
         if(match.hasMatch())
         {
             QString key = match.captured("key");
             QVariant value = QVariant(match.captured("value"));
             keyValuePairs.insert(key, value);
         }
-        Log::log() << "invalid line in configuration: " + line.toStdString() << std::endl;
+        else
+            Log::log() << "!!!invalid line in configuration: " + line.toStdString() << std::endl;
 	}
 
     _keyValueConstants = keyValuePairs;
