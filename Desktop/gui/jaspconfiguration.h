@@ -49,8 +49,11 @@ private:
     const QString configurationFilename = "userConfiguration.conf";
 
 
-	const QString versionPattern = "JASP_Version:\\s*(?<versionNum>[\\S]+)\\s*$";
-	const QString keyValuePattern = "\\s*(?<key>[\\S+)\\s*=\\s*(?<value>[\\S+)\\s*$";
+    const QString versionPattern = "JASP_Version:\\s*(?<versionNum>\\S+)\\s*$";
+    const QString keyValuePattern = "\\s*(?<key>\\S+)\\s*=\\s*(?<value>\\S+)\\s*$";
+//    const QString keyValuePattern = "\\s*\\S+\\s*=\\s*\\S+\\s*";
+
+
 
 	QRegularExpression versionRE;
 	QRegularExpression keyValueRE;
