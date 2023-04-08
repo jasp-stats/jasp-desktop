@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-04-04 18:40+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.17-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -1636,8 +1642,8 @@ msgid ""
 msgstr ""
 "Pamiętaj, że jest to wersja rozwojowa i brakuje jeszcze wielu funkcji.\n"
 "\n"
-"Jeśli JASP dzisiaj nie robi wszystkiego, czego chcesz, sprawdź jutro: JASP "
-"jest rozbudowywany z zawrotną prędkością!"
+"Jeśli JASP dzisiaj nie robi tego czego chcesz, sprawdź jutro: JASP jest "
+"rozbudowywany z zawrotną prędkością!"
 
 #, qt-format
 msgctxt "Analysis|"
@@ -2196,7 +2202,7 @@ msgstr "Wygeneruj plik danych"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr "Znajdź plik z danymi"
+msgstr "Znajdź plik danymi"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
@@ -2484,7 +2490,7 @@ msgstr ""
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr "Znajdź plik z danymi"
+msgstr "Znajdź plik danych"
 
 msgctxt "FileMenu|"
 msgid "Data File"
@@ -3993,61 +3999,60 @@ msgstr "Nie znaleziono źródła w formule"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Tryb raportowania"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Zaznacz, jeżeli JASP ma działać w trybie raportowania."
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Pokaż wszystkie opcje"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "Konsola języka R"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "Analiza nie została znaleziona"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "Nie jest to funkcja analizy: <module name>::<analysis name>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R jest (ponownie) uruchamiany"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R instaluje lub ładuje moduł %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R został zatrzymany"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R oczekuje na polecenia"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
-msgstr " i "
+msgstr " oraz "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "ma niewybrany moduł"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "ma wybrany moduł "
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Brak pliku danych"
 
 msgctxt "Reporter|"
 msgid ""
@@ -4057,25 +4062,29 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP został uruchomiony w trybie raportowania, ale plik jasp nie jest "
+"powiązany z plikiem danych.\n"
+"Oznacza to, że nie będzie wykonywana aktualizacja...\n"
+"\n"
+"Czy kontynuować pomimo tego?"
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Kliknij na poniższy plik, aby go zsynchronizować lub użyć "
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Nieznany błąd"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "Opcje"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "Kontrolka z etykietą '%1' nie ma nazwy"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "Kontrolka nie ma nazwy"
@@ -4083,9 +4092,9 @@ msgstr "Kontrolka nie ma nazwy"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "Nazwa opcji '%1' jest słowem zastrzeżonym"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
 msgstr "2 kontrolki mają taką samą nazwę: %1"
@@ -4093,108 +4102,106 @@ msgstr "2 kontrolki mają taką samą nazwę: %1"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Kontrolka i formuła mają tę samą nazwę '%1'"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "Lista zmiennych"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "Lista rozwijana"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "Wyświetlaj w kartach"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "Formularz zmiennych"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "Ta zmienna została usunięta, ponieważ jest niedozwolona: %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "Te zmienne zostały usunięte, ponieważ są niedozwolone: %1"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "Nie podano nazwy dla opisu formuły"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "Formuła o nazwie '%1' jest zdefiniowana dwukrotnie"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Kontrolka i formuła mają tę samą nazwę '%1'"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "Jeśli BOM nie zostało określone, to używaj CSV jako strony kodowej."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "Wybierz stronę kodową"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "Kopia %1"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "Ukryj składnię języka R"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "Wygeneruj wrapper"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization of module: %1"
-msgstr ""
+msgstr "Oczekiwanie na inicjalizację modułu: %1"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Save"
 msgstr "Zapisz"
 
 msgctxt "Computer|"
 msgid "JASP Files (*.jasp)"
-msgstr ""
+msgstr "Pliki JASP (*.jasp)"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Eksportuj wynik jako HTML lub PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "Pliki HTML"
 
 msgctxt "Computer|"
 msgid "Portable Document Format (*.pdf)"
-msgstr ""
+msgstr "Plik PDF (*.pdf)"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Eksportuj dane do pliku CSV"
 
 msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr ""
+msgstr "Pliki CSV (*.csv *.txt *.tsv)"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "Synchronizuj dane"
 
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr ""
+msgstr "Pliki danych (*.csv *.txt *.tsv *.sav *.ods)"
