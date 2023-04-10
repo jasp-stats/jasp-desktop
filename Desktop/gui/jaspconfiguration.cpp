@@ -15,20 +15,24 @@ JASPConfiguration::JASPConfiguration(QObject *parent)
 {
 	versionRE.setPattern(versionPattern);
 	versionRE.setPatternOptions(QRegularExpression::MultilineOption);
-
+	loadModulesRE.setPattern(loadModulesPattern);
+	loadModulesRE.setPatternOptions(QRegularExpression::MultilineOption);
+	moduleStatementRE.setPattern(moduleSectionPattern);
+	moduleStatementRE.setPatternOptions(QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
+	analysisStatementRE.setPattern(analysisSectionPattern);
+	analysisStatementRE.setPatternOptions(QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
 	keyValueRE.setPattern(keyValuePattern);
-
 }
 
 bool JASPConfiguration::exists(const QString &constant, const QString &module, const QString &analysis)
 {
-    return _keyValueConstants.contains(constant);
+	return _definedConstants.contains(module) && _definedConstants[module].contains(analysis) && _definedConstants[module][analysis].contains(constant);
 }
 
 QVariant JASPConfiguration::get(const QString &constant, QVariant defaultValue, const QString &module, const QString &analysis)
 {
     if(exists(constant, module, analysis))
-        return _keyValueConstants[constant];
+		return _definedConstants[module][analysis][constant];
     return defaultValue;
 }
 
@@ -61,7 +65,7 @@ void JASPConfiguration::processConfiguration()
 				QByteArray payload = reply->readAll();
 				parse(payload);
 
-				auto localConfFile = getLocalConfFile();
+				auto localConfFile = getLocalConfFile(true);
 				localConfFile->write(payload);
 				localConfFile->close();
 				Log::log() << "!!!Updated local copy of remote configuration" << std::endl;
@@ -108,36 +112,23 @@ void JASPConfiguration::remoteChanged(QString remoteURL)
 	processConfiguration();
 }
 
-void JASPConfiguration::parse(const QString &conf)
+void JASPConfiguration::parse(QString conf)
 {
-	getVersion(conf);
-    QMap<QString, QVariant> keyValuePairs;
-	QStringList lines = conf.split("\n");
-	for(auto& line : lines)
-    {
-        auto match = keyValueRE.match(line);
-        if(match.hasMatch())
-        {
-            QString key = match.captured("key");
-            QVariant value = QVariant(match.captured("value"));
-            keyValuePairs.insert(key, value);
-        }
-        else
-            Log::log() << "!!!invalid line in configuration: " + line.toStdString() << std::endl;
-	}
-
-    _keyValueConstants = keyValuePairs;
+	parseVersion(conf);
+	parseModulesToLoad(conf);
+	parseModuleStatements(conf);
+	parseKeyValuePairs(conf);
 }
 
-void JASPConfiguration::getVersion(const QString& conf)
+void JASPConfiguration::parseVersion(QString& conf)
 {
-
     auto match = versionRE.match(conf);
 	if(match.hasCaptured("versionNum"))
 	{
 		try
 		{
-			jaspVersion = Version(match.captured("versionNum").toStdString());
+			_jaspVersion = Version(match.captured("versionNum").toStdString());
+			conf.remove(match.capturedStart(), match.capturedLength());
 			return;
 		}
 		catch (std::runtime_error& e)
@@ -148,7 +139,67 @@ void JASPConfiguration::getVersion(const QString& conf)
 	throw std::runtime_error("No JASP Version number present in configuration file");
 }
 
-std::shared_ptr<QFile> JASPConfiguration::getLocalConfFile() {
+void JASPConfiguration::parseModulesToLoad(QString &conf)
+{
+	auto match = loadModulesRE.match(conf);
+	if(match.hasCaptured("list"))
+	{
+		QStringList list = match.captured("list").split(",", Qt::SkipEmptyParts);
+		for(const QString& item : list)
+			_modulesToLoad.push_back(item.trimmed());
+		conf.remove(match.capturedStart(), match.capturedLength());
+	}
+}
+
+void JASPConfiguration::parseModuleStatements(QString &conf)
+{
+	auto match = moduleStatementRE.match(conf);
+	while (match.hasMatch()) {
+		QString section = match.captured("section");
+		QString moduleName = match.captured("name");
+		parseAnalysisStatements(section, moduleName);
+		parseKeyValuePairs(section, moduleName);
+
+		conf.remove(match.capturedStart(), match.capturedLength());
+		match = moduleStatementRE.match(conf);
+	}
+}
+
+void JASPConfiguration::parseAnalysisStatements(QString &conf, const QString& moduleName)
+{
+	auto match = analysisStatementRE.match(conf);
+	while (match.hasMatch()) {
+		QString section = match.captured("section");
+		QString analysisName = match.captured("name");
+		//TODO: parse analysis options
+		parseKeyValuePairs(section, moduleName, analysisName);
+
+		conf.remove(match.capturedStart(), match.capturedLength());
+		match = analysisStatementRE.match(conf);
+	}
+}
+
+void JASPConfiguration::parseKeyValuePairs(const QString &conf, const QString moduleName, const QString analysisName)
+{
+
+	QStringList lines = conf.split("\n");
+	for(auto& line : lines)
+	{
+		auto match = keyValueRE.match(line);
+		if(match.hasMatch())
+		{
+			QString key = match.captured("key");
+			QVariant value = QVariant(match.captured("value"));
+			_definedConstants[moduleName][analysisName][key] = value;
+
+			Log::log() << "!!!: " << moduleName.toStdString() << " " << analysisName.toStdString() << " " << key.toStdString() << ": " << match.captured("value").toStdString() << std::endl;
+		}
+		else
+			Log::log() << "!!!invalid line in configuration: " + line.toStdString() << std::endl;
+	}
+}
+
+std::shared_ptr<QFile> JASPConfiguration::getLocalConfFile(bool truncate) {
 	QString confPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 	QDir confDir;
 	if(!confDir.mkpath(confPath))
@@ -156,7 +207,8 @@ std::shared_ptr<QFile> JASPConfiguration::getLocalConfFile() {
 
 	QString configurationFilePath = confPath + "/" + configurationFilename;
 	std::shared_ptr<QFile> localConfFile = std::make_shared<QFile>(configurationFilePath);
-	if (!localConfFile->open(QIODevice::ReadWrite | QIODevice::Text))
+	QIODeviceBase::OpenMode flags = QIODeviceBase::ReadWrite | QIODeviceBase::Text | (truncate ? QIODeviceBase::Truncate : QIODeviceBase::NotOpen);
+	if (!localConfFile->open(flags))
 		throw std::runtime_error("Could not open local configuration file " + configurationFilePath.toStdString() + ": " + localConfFile->errorString().toStdString());
 	return localConfFile;
 }

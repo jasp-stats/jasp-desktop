@@ -38,25 +38,37 @@ private:
 	bool processLocal();
 
 	void processTasks();
-	void parse(const QString& conf);
-	void getVersion(const QString& conf);
-	std::shared_ptr<QFile> getLocalConfFile();
+	std::shared_ptr<QFile> getLocalConfFile(bool truncate = false);
+
+	void parse(QString conf);
+	void parseVersion(QString& conf);
+	void parseModulesToLoad(QString& conf);
+	void parseModuleStatements(QString& conf);
+	void parseAnalysisStatements(QString& conf, const QString& moduleName);
+	void parseKeyValuePairs(const QString& conf, const QString moduleName = "", const QString analysisName = "");
 
 	QNetworkAccessManager	_networkManager;
-    Version jaspVersion;
-    QMap<QString, QVariant> _keyValueConstants;
+
+	Version _jaspVersion;
+	QMap<QString, QMap<QString, QMap<QString, QVariant>>> _definedConstants;
+	QStringList _modulesToLoad;
 
     const QString configurationFilename = "userConfiguration.conf";
 
 
-    const QString versionPattern = "JASP_Version:\\s*(?<versionNum>\\S+)\\s*$";
-    const QString keyValuePattern = "\\s*(?<key>\\S+)\\s*=\\s*(?<value>\\S+)\\s*$";
-//    const QString keyValuePattern = "\\s*\\S+\\s*=\\s*\\S+\\s*";
+	const QString versionPattern = "^\\s*JASP_Version:\\s*(?<versionNum>\\S+)\\s*$";
+	const QString keyValuePattern = "^\\s*(?<key>\\S+)\\s*=\\s*(?<value>\\S+)\\s*$";
+	const QString moduleSectionPattern = "^\\s*Module\\s*(?<name>\\S+)\\s*$(?<section>.*)\\s*END\\s*Module\\s*$";
+	const QString analysisSectionPattern = "^\\s*Analysis\\s*(?<name>\\S+)\\s*$(?<section>.*)\\s*END\\s*Analysis\\s*$";
+	const QString loadModulesPattern = "^\\s*Load\\s*Modules\\s*:\\s*(?<list>\\w+(\\s*,\\s*\\w*)*)?\\s*$";
 
 
 
 	QRegularExpression versionRE;
 	QRegularExpression keyValueRE;
+	QRegularExpression loadModulesRE;
+	QRegularExpression moduleStatementRE;
+	QRegularExpression analysisStatementRE;
 
 };
 
