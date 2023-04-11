@@ -22,9 +22,13 @@
 		<Merge Id="VCRedist" SourceFile="$(var.RedistMergeModule)" DiskId="1" Language="0"/>
 	</DirectoryRef>
 
-	<Condition Message="JASP only supports Windows 7 and newer!">
-		<![CDATA[Installed OR (VersionNT >= 601)]]>
-	</Condition>
+        <Condition Message="JASP is only supported on Windows 10 version 1809 or newer!">
+                <![CDATA[Installed OR (VersionNT >= 1000)]]>
+        </Condition>
+        
+        <Condition Message="JASP can only be installed on 64-bit OS.">
+          <![CDATA[VersionNT64]]>
+        </Condition>
 
 	<CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
 	<InstallExecuteSequence>
