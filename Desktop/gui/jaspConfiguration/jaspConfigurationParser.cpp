@@ -149,7 +149,10 @@ std::any JASPConfigurationParser::parseAnalysisStmt(const peg::SemanticValues &v
 	for(int i = 1; i < vs.size(); i++)
 	{
 		if(vs[i].type() == typeid(std::vector<Option>)) //OptionStmt
-			res.options.insert(res.options.end(), any_cast<std::vector<Option>>(vs[i]).begin(), any_cast<std::vector<Option>>(vs[i]).end());
+		{
+			std::vector<Option> options = any_cast<std::vector<Option>>(vs[i]);
+			res.options.insert(res.options.end(), options.begin(), options.end());
+		}
 		else if(vs[i].type() == typeid(KeyValue)) //KeyValuePair
 			res.constants.push_back(any_cast<KeyValue>(vs[i]));
 	}

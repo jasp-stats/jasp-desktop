@@ -41,17 +41,24 @@ QVariant JASPConfiguration::get(const QString &constant, QVariant defaultValue, 
 
 bool JASPConfiguration::optionSet(const QString &module, const QString &analysis, const QString &optionName)
 {
+	return _analysisOptions.contains(module) && _analysisOptions[module].contains(analysis) && _analysisOptions[module][analysis].isMember(optionName.toStdString());
+}
 
+bool JASPConfiguration::optionsSet(const QString &module, const QString &analysis)
+{
+	return _analysisOptions.contains(module) && _analysisOptions[module].contains(analysis);
 }
 
 bool JASPConfiguration::optionLocked(const QString &module, const QString &analysis, const QString &optionName)
 {
-
+	//Todo
 }
 
-QString &JASPConfiguration::getAnalysisOptionValue(const QString &module, const QString &analysis)
+Json::Value JASPConfiguration::getAnalysisOptionValues(const QString &module, const QString &analysis)
 {
-
+	if(optionsSet(module, analysis))
+		return _analysisOptions[module][analysis];
+	return Json::nullValue;
 }
 
 void JASPConfiguration::processConfiguration()
@@ -156,7 +163,7 @@ bool JASPConfiguration::addOption(QString key, QVariant value, bool locked, QStr
 	if(!(_analysisOptions.contains(moduleName) && _analysisOptions[moduleName].contains(analysisName)))
 		_analysisOptions[moduleName][analysisName] = Json::Value(Json::objectValue);
 
-	//TODO fix very suboptimal way can only add simple values
+	//TODO fix very suboptimal way of doing things
 	if(value.userType() == QMetaType::Double)
 		_analysisOptions[moduleName][analysisName][key.toStdString()] = value.value<double>();
 	else if(value.userType() == QMetaType::LongLong)

@@ -19,8 +19,9 @@ public:
 
 	//Predefined analysis options interface
 	bool optionSet(const QString& module, const QString& analysis, const QString& optionName);
+	bool optionsSet(const QString& module, const QString& analysis);
 	bool optionLocked(const QString& module, const QString& analysis, const QString& optionName);
-	QString& getAnalysisOptionValue(const QString& module, const QString& analysis);
+	Json::Value getAnalysisOptionValues(const QString& module, const QString& analysis);
 
 	const QStringList* getAdditionalModules() { return &_modulesToLoad; }
 

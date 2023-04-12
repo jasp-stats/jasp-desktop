@@ -15,6 +15,7 @@
 #define CPPPEGLIB_HEURISTIC_ERROR_TOKEN_MAX_CHAR_COUNT 32
 #endif
 
+#define NDEBUG
 #include <algorithm>
 #include <any>
 #include <cassert>

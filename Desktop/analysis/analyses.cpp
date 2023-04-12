@@ -22,6 +22,7 @@
 #include "processinfo.h"
 #include "modules/ribbonmodel.h"
 #include "analysisform.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 #include <QFile>
 #include <QTimer>
@@ -129,6 +130,11 @@ Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEn
 
 
 	return analysis;
+}
+
+Analysis *Analyses::create(Modules::AnalysisEntry * analysisEntry, Json::Value* options)
+{
+	return create(Json::nullValue, analysisEntry, _nextId++, Analysis::Empty, true, "", "", options);
 }
 
 void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
@@ -517,8 +523,15 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 Analysis* Analyses::createAnalysis(const QString& module, const QString& analysis)
 {
 	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
+	Json::Value options = JASPConfiguration::getInstance()->getAnalysisOptionValues(module, analysis);
 
-	if (dynamicModule)	return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
+	if (dynamicModule)
+	{
+		if(options != Json::nullValue)
+			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)), &options);
+		else
+			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
+	}
 	else				return nullptr;
 
 }
