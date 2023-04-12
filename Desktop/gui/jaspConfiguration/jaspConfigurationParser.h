@@ -49,7 +49,7 @@ private:
 	peg::parser _parser;
 	bool _validGrammar;
 	const char* _jaspConfigGrammar = R"(
-		JASPConf			<- Statement* Version Statement*
+		JASPConf			<- Format? Statement* Version Statement*
 
 		Statement			<- ModuleStmt / LoadModuleList / KeyValuePair / Comment
 		ModuleStmt			<- 'Module' Name Comment? ( AnalysisStmt / KeyValuePair / Comment )* 'End Module' Comment?
@@ -58,6 +58,7 @@ private:
 		OptionDef			<- KeyValuePair Comment? / KeyValuePair 'lock'? Comment?
 
 		LoadModuleList    	<- 'Load Modules' ':' List(Name, ',') Comment?
+		Format				<- 'Format' ':' < [0-9.]* > Comment?
 		Version				<- 'JASP_Version' ':' < [0-9.]* >  Comment?
 		KeyValuePair		<- Name '=' Value Comment?
 
@@ -69,7 +70,7 @@ private:
 		Float				<- < Int '.' Digits > / < Int 'e' Int >
 		Bool				<- ('true' / 'True' / 'TRUE') / ('false' / 'False' / 'FALSE')
 
-		Comment				<- '#' (!EndOfLine .)* EndOfLine
+		~Comment			<- '#' (!EndOfLine .)* EndOfLine
 		EndOfLine			<- '\r\n' / '\n' / '\r'
 		%whitespace 		<- [ \t\n]*
 
