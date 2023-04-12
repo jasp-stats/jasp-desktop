@@ -40,7 +40,7 @@
 #include "gui/aboutmodel.h"
 #include "gui/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
-#include "gui/jaspconfiguration.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
@@ -241,6 +241,8 @@ private slots:
 	void onDataModeChanged(bool dataMode);
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
+
+	void loadModulesFromUserConfiguration(QString state);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

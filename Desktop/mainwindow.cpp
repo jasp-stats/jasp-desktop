@@ -148,7 +148,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
     _columnTypesModel		= new ColumnTypesModel(this);
-    _jaspConfiguration			= new JASPConfiguration(this);
+	_jaspConfiguration		= JASPConfiguration::getInstance(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -434,6 +434,8 @@ void MainWindow::makeConnections()
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
 	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
+
+	connect(_jaspConfiguration,		&JASPConfiguration::configurationProcessed,			this,					&MainWindow::loadModulesFromUserConfiguration				);
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
@@ -1902,4 +1904,18 @@ QString MainWindow::versionString()
 		+	" (" + QString::fromStdString(AppInfo::getArchLabel()) + ")"
 #endif
 			;
+}
+
+
+void MainWindow::loadModulesFromUserConfiguration(QString state)
+{
+	if(state == "FAIL")
+		return;
+
+	for(const QString& moduleName : *_jaspConfiguration->getAdditionalModules())
+	{
+		auto button = _ribbonModel->ribbonButtonModel(moduleName.toStdString());
+		int index = _ribbonModel->ribbonButtonModelIndex(button);
+		_ribbonModel->setModuleEnabled(index, true);
+	}
 }
