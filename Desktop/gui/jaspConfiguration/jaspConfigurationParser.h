@@ -57,7 +57,7 @@ private:
 		OptionStmt			<- 'Options' Comment? OptionDef* 'End Options' Comment?
 		OptionDef			<- KeyValuePair Comment? / KeyValuePair 'lock'? Comment?
 
-		LoadModuleList    	<- 'Load Modules' ':' List(Name, ',') Comment?
+		LoadModuleList    	<- 'Enable Modules' ':' List(Name, ',') Comment?
 		Format				<- 'Format' ':' < [0-9.]* > Comment?
 		Version				<- 'JASP_Version' ':' < [0-9.]* >  Comment?
 		KeyValuePair		<- Name '=' Value Comment?
