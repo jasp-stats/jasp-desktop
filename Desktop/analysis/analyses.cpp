@@ -341,7 +341,7 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 
 				if(a->readyToCreateForm() && !a->justTranslated())
 					a->createForm();
-				a->setJustTranslated(false);
+				a->aboutToBeTranslated(false);
 			}
 		}
 
@@ -765,6 +765,7 @@ void Analyses::prepareForLanguageChange()
 {
 	applyToAll([&](Analysis * a)
 	{ 
+		a->aboutToBeTranslated(true);
 		a->setRefreshBlocked(true); 
 		a->abort();
 	});
@@ -776,7 +777,6 @@ void Analyses::languageChangedHandler()
 	applyToAll([&](Analysis * a)
 	{
 		a->setRefreshBlocked(false);
-		a->setJustTranslated(true);
 		emit a->form()->languageChanged();
 	});
 	refreshAllAnalyses();
