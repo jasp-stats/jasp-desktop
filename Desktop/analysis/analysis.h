@@ -116,8 +116,8 @@ public:
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
 			bool				utilityRunAllowed() const				{ return  isSaveImg() || isEditImg() || isRewriteImgs();							}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && form();	}
-			bool				justTranslated()                        { return _justTranslated; };
-			void				setJustTranslated(bool value)           { _justTranslated = value; };
+			bool				justTranslated()                        { return _aboutToBeTranslated; };
+			void				aboutToBeTranslated(bool value)           { _aboutToBeTranslated = value; };
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -244,7 +244,7 @@ private:
 								_wasUpgraded					= false,
 								_tryToFixNotes					= false,
 								_hasReport						= false,
-								_justTranslated					= false;
+	_aboutToBeTranslated					= false;
 	int							_revision						= 0;
 
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;
