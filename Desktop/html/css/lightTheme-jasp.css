@@ -210,6 +210,9 @@ div.jasp-image-image.no-data.error {
 	color: gray;
 }
 
+.jasp-rsyntax-container {
+    background-color: rgb(235, 235, 235);
+}
 
 /* Track */
 ::-webkit-scrollbar-track {

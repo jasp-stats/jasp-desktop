@@ -704,6 +704,16 @@ void Analyses::moveAnalysesResults(Analysis* fromAnalysis, int index)
 		emit moveAnalyses(fromAnalysis->id(), toAnalysis->id());
 }
 
+void Analyses::showRSyntaxInResults(bool show)
+{
+	Settings::setValue(Settings::SHOW_RSYNTAX_IN_RESULTS, show);
+
+	applyToAll([&](Analysis * a)
+	{
+		a->setRSyntaxTextInResult();
+	});
+}
+
 void Analyses::analysisTitleChangedInResults(int id, QString title)
 {
 	Analysis * analysis = get(id);

@@ -104,6 +104,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.model.on("ShowDependencies:clicked",	function (optName)			{											this.trigger("showDependencies",	this.model.get("id"), optName)	},	this);
 
 		this.$el.on("changed:userData",	this, this.onUserDataChanged);
+
+		var rSyntaxModel = new JASPWidgets.RSyntaxModel({analysis: this});
+		this.rSyntaxView = new JASPWidgets.RSyntaxView({ model: rSyntaxModel})
 	},
 
 	onUserDataChanged: function (event, details, dataValues) {
@@ -644,6 +647,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes.firstNoteNoteBox.render();
 		$innerElement.prepend(this.viewNotes.firstNoteNoteBox.$el);
 
+		this.rSyntaxView.render();
+		$innerElement.prepend(this.rSyntaxView.$el);
+
 		this.toolbar.setStatus(this.model.get("status"));
 		this.toolbar.render();
 		$innerElement.prepend(this.toolbar.$el);
@@ -657,6 +663,14 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.setHeightErroredAnalysis($innerElement);
 
 		return this;
+	},
+
+	setRSyntax: function(syntax) {
+		if (syntax) {
+			this.rSyntaxView.setScript(syntax);
+			this.rSyntaxView.setVisibility(true)
+		} else
+			this.rSyntaxView.setVisibility(false)
 	},
 
 	unselect: function () {

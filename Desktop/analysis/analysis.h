@@ -193,6 +193,7 @@ public slots:
 	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override	{ emit requestColumnCreation(columnName, this, colType); }
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
+	void					setRSyntaxTextInResult();
 
 protected:
 	void					abort();

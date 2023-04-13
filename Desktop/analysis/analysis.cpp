@@ -28,6 +28,7 @@
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/reporter.h"
+#include "results/resultsjsinterface.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses(), moduleVersion),
@@ -330,7 +331,8 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
-		connect(this,					&Analysis::boundValuesChanged,		_analysisForm,	&AnalysisForm::setRSyntaxText, Qt::QueuedConnection	);
+		connect(this,					&Analysis::boundValuesChanged,		_analysisForm,	&AnalysisForm::setRSyntaxText,		Qt::QueuedConnection	);
+		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,	Qt::QueuedConnection	);
 
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
 		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
@@ -1010,6 +1012,14 @@ void Analysis::analysisQMLFileChanged()
 	else if(qmlError() != "")				createForm(); //Last time it failed apparently
 	else
 		Log::log() << "Form (" << form() << ") wasn't complete " << ( form() ? std::to_string(form()->formCompleted()) : " because there was no form...") << " yet, and also did not have a QML error set yet, so ignoring it." << std::endl;
+}
+
+void Analysis::setRSyntaxTextInResult()
+{
+	if (!form() || !_moduleData->hasWrapper()) return;
+
+	bool generateRSyntax = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
+	ResultsJsInterface::singleton()->setRSyntax(id(), generateRSyntax ? form()->generateRSyntax(true) : "");
 }
 
 void Analysis::checkForRSources()

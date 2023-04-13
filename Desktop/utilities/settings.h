@@ -72,7 +72,8 @@ public:
 		GUI_USE_QT_TEXTRENDER,
 		REPORT_SHOW,
 		SHOW_RSYNTAX,
-		SHOW_ALL_R_OPTIONS
+		SHOW_ALL_R_OPTIONS,
+		SHOW_RSYNTAX_IN_RESULTS
 	};
 
 	static QVariant value(Settings::Type key);

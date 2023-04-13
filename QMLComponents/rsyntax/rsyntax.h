@@ -37,7 +37,7 @@ public:
 	QVariantList					controlNameToRSyntaxMap()						const;
 	bool							setControlNameToRSyntaxMap(const QVariantList& conv);
 
-	QString							generateSyntax(bool showAllOptions = true)		const;
+	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false) const;
 	QString							generateWrapper()								const;
 	QString							getRSyntaxFromControlName(JASPControl* control)	const;
 	QString							getRSyntaxFromControlName(const QString& name)	const;

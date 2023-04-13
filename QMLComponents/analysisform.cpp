@@ -745,9 +745,9 @@ bool AnalysisForm::isFormulaName(const QString& name) const
 	return _rSyntax->getFormula(name) != nullptr;
 }
 
-QString AnalysisForm::generateRSyntax() const
+QString AnalysisForm::generateRSyntax(bool useHtml) const
 {
-	return _rSyntax->generateSyntax(showAllROptions());
+	return _rSyntax->generateSyntax(!useHtml && showAllROptions(), useHtml);
 }
 
 QVariantList AnalysisForm::optionNameConversion() const
@@ -982,12 +982,10 @@ void AnalysisForm::setRSyntaxText()
 		return;
 
 	QString text = generateRSyntax();
-	Log::log() << "setRSyntaxText: " << text << std::endl;
 
 	if (text != _rSyntaxText)
 	{
 		_rSyntaxText = text;
-		Log::log() << "EMIT rSyntaxTextChanged" << std::endl;
 		emit rSyntaxTextChanged();
 	}
 }

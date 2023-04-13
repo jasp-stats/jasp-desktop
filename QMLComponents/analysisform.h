@@ -163,7 +163,7 @@ public:
 	QString			warnings()				const	{ return msgsListToString(_formWarnings);	}
 	QVariant		analysis()				const	{ return QVariant::fromValue(_analysis);	}
 	RSyntax*		rSyntax()				const	{ return _rSyntax;							}
-	QString			generateRSyntax()		const;
+	QString			generateRSyntax(bool useHtml = false) const;
 	QVariantList	optionNameConversion()	const;
 	bool			isFormulaName(const QString& name)	const;
 

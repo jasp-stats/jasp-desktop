@@ -77,20 +77,24 @@ bool RSyntax::setControlNameToRSyntaxMap(const QVariantList &conversions)
 	return false;
 }
 
-QString RSyntax::generateSyntax(bool showAllOptions) const
+QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 {
 	QString result;
 
-	result = _analysisFullName() + "(\n";
+	QString newLine = useHtml ? "<br>" : "\n",
+			indent = useHtml ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : FunctionOptionIndent;
+
+
+	result = _analysisFullName() + "(" + newLine;
 	if (showAllOptions)
-		result += FunctionOptionIndent + "data = NULL,\n";
-	result += FunctionOptionIndent + "version = \"" + _form->version() + "\"";
+		result += indent + "data = NULL," + newLine;
+	result += indent + "version = \"" + _form->version() + "\"";
 
 	QStringList formulaSources;
 	for (FormulaBase* formula : _formulas)
 	{
 		bool isNull = false;
-		result += ",\n" + formula->toString(isNull);
+		result += "," + newLine + formula->toString(newLine, indent, isNull);
 		if (!isNull)
 			formulaSources.append(formula->modelSources());
 	}
@@ -121,7 +125,7 @@ QString RSyntax::generateSyntax(bool showAllOptions) const
 				isDifferent = !qFuzzyCompare(defaultValue.asDouble(), foundValue.asDouble());
 			if (isDifferent)
 			{
-				result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = ";
+				result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
 
 				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 				if (listControl && !listControl->hasRowComponent() && listControl->containsInteractions())
