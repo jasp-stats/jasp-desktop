@@ -339,6 +339,8 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 			{
 				Analysis * a = keyval.second;
 
+				//This function is called once after 300 ms upon translation due to delayedUpdate in description
+				//and causes the set analysis options to be cleared without this additional boolean
 				if(a->readyToCreateForm() && !a->justTranslated())
 					a->createForm();
 				a->aboutToBeTranslated(false);
