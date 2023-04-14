@@ -68,6 +68,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
+	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
 
 
 public:
@@ -128,6 +129,7 @@ public:
 	bool		reportingMode()							const;
 	bool		showRSyntax()							const override;
 	bool		showAllROptions()						const override;
+	bool		showRSyntaxInResults()					const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
@@ -189,6 +191,7 @@ public slots:
 	void setReportingMode(				bool		reportingMode);
 	void setShowRSyntax(				bool		showRSyntax)					override;
 	void setShowAllROptions(			bool		showAllROptions)				override;
+	void setShowRSyntaxInResults(		bool		showRSyntax);
 	void currentThemeNameHandler();
 	
 signals:
@@ -238,6 +241,7 @@ signals:
 	void dataLabelNAChanged(			QString		dataLabelNA);
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
+	void showRSyntaxInResultsChanged(	bool		showRSyntax);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);

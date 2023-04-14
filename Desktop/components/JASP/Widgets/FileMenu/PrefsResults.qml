@@ -142,10 +142,29 @@ ScrollView
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
 
-					KeyNavigation.tab:		displayExactPVals
+					KeyNavigation.tab:		showRSyntaxInResults
 				}
 			}
 		}
+
+		PrefsGroupRect
+		{
+			title:				qsTr("Miscellaneous options")
+
+			CheckBox
+			{
+				id:					showRSyntaxInResults
+				label:				qsTr("Show R syntax")
+				checked:			preferencesModel.showRSyntaxInResults
+				onCheckedChanged:	preferencesModel.showRSyntaxInResults = checked
+				height:				implicitHeight * preferencesModel.uiScale
+				toolTip:			qsTr("Add R syntax for each analysis")
+				focus:				true
+
+				KeyNavigation.tab:		displayExactPVals
+			}
+		}
+
 
 		Item
 		{

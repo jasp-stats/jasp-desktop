@@ -126,6 +126,7 @@ GET_PREF_FUNC_BOOL( guiQtTextRender,			Settings::GUI_USE_QT_TEXTRENDER						)
 GET_PREF_FUNC_BOOL( reportingMode,				Settings::REPORT_SHOW								)
 GET_PREF_FUNC_BOOL( showRSyntax,				Settings::SHOW_RSYNTAX								)
 GET_PREF_FUNC_BOOL( showAllROptions,			Settings::SHOW_ALL_R_OPTIONS						)
+GET_PREF_FUNC_BOOL( showRSyntaxInResults,		Settings::SHOW_RSYNTAX_IN_RESULTS					)
 
 int PreferencesModel::maxEngines() const
 {
@@ -305,6 +306,7 @@ SET_PREF_FUNCTION(				bool,		setGuiQtTextRender,			guiQtTextRender,			guiQtTextR
 SET_PREF_FUNCTION(				bool,		setReportingMode,			reportingMode,				reportingModeChanged,			Settings::REPORT_SHOW								)
 SET_PREF_FUNCTION_EMIT_NO_ARG(	bool,		setShowRSyntax,				showRSyntax,				showRSyntaxChanged,				Settings::SHOW_RSYNTAX								)
 SET_PREF_FUNCTION_EMIT_NO_ARG(	bool,		setShowAllROptions,			showAllROptions,			showAllROptionsChanged,			Settings::SHOW_ALL_R_OPTIONS						)
+SET_PREF_FUNCTION(				bool,		setShowRSyntaxInResults,	showRSyntaxInResults,		showRSyntaxInResultsChanged,	Settings::SHOW_RSYNTAX_IN_RESULTS					)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

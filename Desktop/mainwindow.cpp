@@ -379,6 +379,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::restartAllEngines,				_engineSync,			&EngineSync::haveYouTriedTurningItOffAndOnAgain				);
 	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
+	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
 
 	//Needed to allow for a hard split between Desktop/QMLComps:
 	connect(_preferences,						&PreferencesModel::uiScaleChanged,					DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged			);

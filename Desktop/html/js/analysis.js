@@ -621,6 +621,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.destroyViews();
 
+		this.views.push(this.rSyntaxView)
+
 		this.views.push(this.viewNotes.firstNoteNoteBox);
 
 		$innerElement.empty();

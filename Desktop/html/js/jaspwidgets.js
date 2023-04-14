@@ -1074,7 +1074,31 @@ JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
 	clear: function() {
 		this.$el.empty();
 		this.initialize();
+	},
+
+	exportBegin: function (exportParams, completedCallback) {
+		if (exportParams == undefined)
+			exportParams = new JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		var html = '';
+		if (this.visible === true) {
+			html += '<div ' + JASPWidgets.Exporter.getStyles(this.$el, ["padding", "border", "background-color", "font-size", "font", "font-weight", "display"]) + '>' + this.$el.get(0).innerHTML + '</div>';
+		}
+
+		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
+	},
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(exportContent, exportParams);
 	}
+
 });
 
 JASPWidgets.Progressbar = Backbone.Model.extend({

@@ -24,3 +24,9 @@ Hier kan worden gespecificeerd hoeveel pixels per inch een grafiek zou moeten he
 ### Achtergrondkleur van afbeeldingen
 
 Deze optie laat de gebruiker kiezen of grafieken met een witte of transparante worden gegenereerd. Dit kan erg handig zijn voor het kopiëren en plakken van grafieken.  
+
+## Overige Opties
+
+### Toon R syntax
+
+Voeg R syntax toe voor elke analyse
