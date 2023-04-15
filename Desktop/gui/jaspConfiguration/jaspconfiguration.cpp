@@ -86,12 +86,12 @@ void JASPConfiguration::processConfiguration()
 				auto localConfFile = getLocalConfFile(true);
 				localConfFile->write(payload);
 				localConfFile->close();
-				Log::log() << "!!!Updated local copy of remote configuration" << std::endl;
+				Log::log() << "Updated local copy of remote configuration" << std::endl;
 				emit this->configurationProcessed("REMOTE");
 			}
 			catch (std::runtime_error& e)
 			{
-				Log::log() << "!!!Failed to process remote configuration: " << e.what() << std::endl;
+				Log::log() << "Failed to process remote configuration: " << e.what() << std::endl;
 				if(!localOK)
 					emit this->configurationProcessed("FAIL");
 				else
@@ -120,7 +120,7 @@ bool JASPConfiguration::processLocal()
 	}
 	catch(std::runtime_error& e)
 	{
-		Log::log() <<  "!!!Could not parse local configuration: " << e.what() << std::endl;
+		Log::log() <<  "Could not parse local configuration: " << e.what() << std::endl;
 		return false;
 	}
 	return true;
