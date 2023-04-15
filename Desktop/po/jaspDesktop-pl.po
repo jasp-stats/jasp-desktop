@@ -4199,3 +4199,52 @@ msgstr "Synchronizuj dane"
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
 msgstr "Pliki danych (*.csv *.txt *.tsv *.sav *.ods)"
+
+msgctxt "AboutModel|"
+msgid ""
+"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
+"<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
+"PARTICULAR PURPOSE."
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid "Select a file..."
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid "Select a folder..."
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid "Safe Graphics mode changed"
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid ""
+"You've changed the Safe Graphics mode of JASP, for this option to take "
+"effect you need to restart JASP"
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid "Text rendering setting changed"
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid ""
+"The textrendering setting has been changed, this will only take full effect "
+"after JASP is restarted."
+msgstr ""
+
+msgctxt "JASPListControl|"
+msgid "<no choice>"
+msgstr ""
+
+#, fuzzy
+msgctxt "ListModelInputValue|"
+msgid "New Value"
+msgstr "Nowa wartość"
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "Row %1"
+msgstr ""
