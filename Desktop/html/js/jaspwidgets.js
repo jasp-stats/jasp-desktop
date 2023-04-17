@@ -537,7 +537,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
         	// Change example link from quilljs.com to a sample link
         	var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
-        	linkInput.dataset.link = 'https://example.com';
+        	linkInput.dataset.link = 'https://jasp-stats.org';
 
 		// Add tooltips to the toolbar buttons
 		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
