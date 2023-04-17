@@ -44,8 +44,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
-	showDependenciesClicked:	function() {	this.model.trigger("ShowDependencies:clicked",	this.model.get("name")); },
-	hideDependenciesClicked:	function() {	this.model.trigger("HideDependencies:clicked",	this.model.get("name")); },
+	showDependenciesClicked:	function(show) {	this.model.trigger("ShowDependencies:clicked",	this.model.get("name"), show); },
 
 
 	menuName:			"Plot",

@@ -129,8 +129,7 @@ public slots:
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
 	void duplicateAnalysis(size_t id);
-	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
-	void hideDependenciesInAnalysis(size_t analysis_id, QString optionName);
+	void showDependenciesInAnalysis(size_t analysis_id, QString optionName, bool show);
 	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitlesendRScriptHandler);
 	void prepareForLanguageChange();
 	void languageChangedHandler();

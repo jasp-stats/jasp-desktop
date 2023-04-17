@@ -734,19 +734,19 @@ void Analyses::duplicateAnalysis(size_t id)
 	analysis->refresh();
 }
 
-void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName)
+void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName, bool show)
 {
 	if(!get(analysis_id)) return;
 
-	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
-}
-
-void Analyses::hideDependenciesInAnalysis(size_t analysis_id, QString optionName)
-{
-	//just hide it for all analysis, probably desired
-	for (auto& analysis : _analysisMap)
+	if(show)
+		get(analysis_id)->showDependenciesOnQMLForObject(optionName);
+	else
 	{
-		analysis.second->hideDependencies();
+		//just hide it for all analysis, probably desired
+		for (auto& analysis : _analysisMap)
+		{
+			analysis.second->hideDependencies();
+		}
 	}
 }
 

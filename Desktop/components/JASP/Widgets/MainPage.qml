@@ -341,8 +341,10 @@ Item
 				function setAllUserDataFromJavascript(json)			{ resultsJsInterface.setAllUserDataFromJavascript(json)			}
 				function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
 				function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
-				function showDependenciesInAnalysis(id, optName)	{ resultsJsInterface.showDependenciesInAnalysis(id, optName); resultMenuModel.setDependenciesShown(true)	}
-				function hideDependenciesInAnalysis(id, optName)	{ resultsJsInterface.hideDependenciesInAnalysis(id, optName); resultMenuModel.setDependenciesShown(false)	}
+
+				function showDependenciesInAnalysis(id, optName, show)	{
+					resultsJsInterface.showDependenciesInAnalysis(id, optName, show);
+					resultMenuModel.setDependenciesShown(show);	}
 
 				function showAnalysesMenu(options)
 				{

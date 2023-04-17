@@ -49,7 +49,6 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
 		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
 		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									},
-		{	"hasHideDeps",				ResultMenuEntry(tr("Hide Dependencies"),	"hasHideDeps",				"",							"window.hideDependenciesClicked()")	}
 	};
 }
 
@@ -129,17 +128,10 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 		{
 			if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 			{
-				//It's developerMode time!
-				if (!_dependenciesShown)
-				{
-					entries.push_back(separator);
-					entries.push_back(entry);
-				}
-				else
-				{
-					entries.push_back(separator);
-					entries.push_back(_allResultEntries.find("hasHideDeps")->second);
-				}
+                entry.setDisplayText(_dependenciesShown ? "Hide Dependencies" : "Show Dependencies");
+                entry.setJSFunction(QString("window.showDependenciesClicked(%1)").arg(_dependenciesShown ? "false" : "true"));
+                entries.push_back(separator);
+                entries.push_back(entry);
 			}
 		}
 		else
