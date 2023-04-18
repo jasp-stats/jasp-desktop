@@ -331,9 +331,9 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
-		connect(this,					&Analysis::boundValuesChanged,		_analysisForm,	&AnalysisForm::setRSyntaxText,		Qt::QueuedConnection	);
-		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,	Qt::QueuedConnection	);
+		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
 
+		setRSyntaxTextInResult();
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
 		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
 
@@ -1016,7 +1016,7 @@ void Analysis::analysisQMLFileChanged()
 
 void Analysis::setRSyntaxTextInResult()
 {
-	if (!form() || !_moduleData->hasWrapper()) return;
+	if (!form() || !_moduleData->hasWrapper() || !form()->initialized()) return;
 
 	bool generateRSyntax = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
 	ResultsJsInterface::singleton()->setRSyntax(id(), generateRSyntax ? form()->generateRSyntax(true) : "");
