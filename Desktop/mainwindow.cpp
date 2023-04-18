@@ -474,8 +474,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
     _qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
-    _qml->rootContext()->setContextProperty("jaspConfiguration",		_jaspConfiguration              );
-
 
 	bool	debug	= false,
 			isMac	= false,

@@ -84,6 +84,20 @@ QString AnalysisForm::generateWrapper() const
 	return _rSyntax->generateWrapper();
 }
 
+QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const
+{
+	if(_analysis)
+		return _analysis->getConstant(key, defaultValue);
+	return defaultValue;
+}
+
+QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const
+{
+	if(_analysis)
+		return _analysis->getConstant(key, defaultValue, module, analysis);
+	return defaultValue;
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)

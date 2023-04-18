@@ -145,6 +145,9 @@ public:
 	Q_INVOKABLE void		runAnalysis();
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QString		generateWrapper()		const;
+	Q_INVOKABLE QVariant	getConstant(QString key, QVariant defaultValue)	const;
+	Q_INVOKABLE QVariant	getConstant(QString key, QVariant defaultValue, QString module, QString analysis)	const;
+
 
 	void			addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
 	void			clearControlError(JASPControl* control);
