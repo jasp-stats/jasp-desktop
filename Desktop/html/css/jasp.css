@@ -561,6 +561,13 @@ pre {
     font-style: italic;
 }
 
+.jasp-rsyntax-container {
+    padding-left: 0.6em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    border-style: ridge;
+}
+
 /*.jasp-indent {
 	margin-left: .5em ;
 	padding-left: 0.8em ;

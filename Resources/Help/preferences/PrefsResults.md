@@ -29,3 +29,9 @@ Here you can specify the number of pixels per inch your plots should have. By de
 ### Image background colour
 
 This option let's you toggle the background colour of plots between white and transparant. You may find this especially useful when copying and/or pasting plots.
+
+## Miscellaneous options
+
+### Show R syntax
+
+Add R syntax for each analysis

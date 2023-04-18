@@ -56,6 +56,7 @@ public:
 	void exportPreviewHTML();
 	void exportHTML();
 	void resetResults();
+	void setRSyntax(		int			id, const QString& syntax);
 
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webEngineZoom;	}
@@ -88,6 +89,7 @@ signals:
 	Q_INVOKABLE void exportToPDF(			QString pdfPath);
 	void prepForExport();
 	Q_INVOKABLE void exportPrepFinished();
+	Q_INVOKABLE void showRSyntaxInResults(	bool show);
 
 
 public slots:

@@ -24,7 +24,7 @@
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
 	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg", "hasExportResults",
-				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowDeps"})
+				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowRSyntax", "hasShowDeps"})
 {
 	_generateCorrectlyTranslatedResultEntries();
 
@@ -48,7 +48,8 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
 		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
 		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
-		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									}
+		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									},
+		{	"hasShowRSyntax",			ResultMenuEntry(tr("Show R Syntax"),		"hasShowRSyntax",			"R-roundbutton.svg",		"")									}
    };
 }
 
@@ -133,8 +134,20 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 				entries.push_back(entry);
 			}
 		}
+		else if (key == "hasShowRSyntax")
+		{
+			entries.push_back(separator);
+			bool shown = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
+
+			QString jsFunction = QString("window.showRSyntaxClicked(%1);").arg(shown ? "false" : "true");
+			entry.setJSFunction(jsFunction);
+			entry.setDisplayText(shown ? tr("Hide R Syntax") : tr("Show R Syntax"));
+
+			entries.push_back(entry);
+
+		}
 		else
-				entries.push_back(entry);
+			entries.push_back(entry);
 	}
 
 	_resultMenuEntries = entries;

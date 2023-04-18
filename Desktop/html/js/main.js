@@ -159,7 +159,16 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.showRSyntaxClicked = function (show) {
+		jasp.showRSyntaxInResults(show);
+	}
 
+	window.setRSyntaxText = function (id, syntax) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis === undefined) return;
+
+		analysis.setRSyntax(syntax);
+	}
 
 	window.analysisMenuHidden = function () {
 		if (window.menuObject !== undefined && window.menuObject !== null) {

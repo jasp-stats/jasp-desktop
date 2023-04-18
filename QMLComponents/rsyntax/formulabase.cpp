@@ -39,12 +39,12 @@ void FormulaBase::setUp()
 }
 
 // Generate the R Formula
-QString FormulaBase::toString(bool &isNull) const
+QString FormulaBase::toString(const QString& newLine, const QString& indent, bool &isNull) const
 {
 	if (!_rSyntax)
 		return "";
 
-	QString result = _rSyntax->FunctionOptionIndent + _name + " = ";
+	QString result = indent + _name + " = ";
 	bool isEmpty = true;
 
 	for (FormulaSource* formulaSource : _rightFormulaSources)
@@ -91,9 +91,9 @@ QString FormulaBase::toString(bool &isNull) const
 		for (const QString& key : extraOptions.keys())
 		{
 			if (!result.isEmpty())	
-				result += ",\n";
+				result += "," + newLine;
 
-			result += _rSyntax->FunctionOptionIndent + _rSyntax->getRSyntaxFromControlName(key) + " = " + extraOptions[key];
+			result += indent + _rSyntax->getRSyntaxFromControlName(key) + " = " + extraOptions[key];
 		}
 	}
 
@@ -111,9 +111,9 @@ QString FormulaBase::toString(bool &isNull) const
 			continue;
 
 		if (!result.isEmpty())	
-			result += ",\n";
+			result += "," + newLine;
 
-		result += _rSyntax->FunctionOptionIndent + _rSyntax->getRSyntaxFromControlName(optionToSpecify) + " = ";
+		result += indent + _rSyntax->getRSyntaxFromControlName(optionToSpecify) + " = ";
 
 		if (elements.length() == 0)			result += "\"\"";
 		else if (elements.length() == 1)	result += "\"" + elements[0] + "\"";

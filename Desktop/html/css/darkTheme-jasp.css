@@ -202,6 +202,10 @@ div.jasp-image-image.no-data.error {
   color:			#5c5c5c;
 }
 
+.jasp-rsyntax-container {
+    background-color: #555
+}
+
 
 /* Track */
 ::-webkit-scrollbar-track {

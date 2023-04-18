@@ -342,6 +342,7 @@ Item
 				function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
 				function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
 				function showDependenciesInAnalysis(id, optName)	{ resultsJsInterface.showDependenciesInAnalysis(id, optName)	}
+				function showRSyntaxInResults(show)					{ resultsJsInterface.showRSyntaxInResults(show)					}
 
 				function showAnalysesMenu(options)
 				{

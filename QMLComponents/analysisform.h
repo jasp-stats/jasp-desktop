@@ -54,7 +54,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
 	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
 	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
-	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisInitialized			)
+	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
 	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
 	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
@@ -118,7 +118,7 @@ signals:
 	void					helpMDChanged();
 	void					errorsChanged();
 	void					warningsChanged();
-	void					analysisInitialized();
+	void					analysisChanged();
 	void					rSourceChanged(const QString& name);
 	void					optionNameConversionChanged();
 	void					titleChanged();
@@ -163,7 +163,7 @@ public:
 	QString			warnings()				const	{ return msgsListToString(_formWarnings);	}
 	QVariant		analysis()				const	{ return QVariant::fromValue(_analysis);	}
 	RSyntax*		rSyntax()				const	{ return _rSyntax;							}
-	QString			generateRSyntax()		const;
+	QString			generateRSyntax(bool useHtml = false) const;
 	QVariantList	optionNameConversion()	const;
 	bool			isFormulaName(const QString& name)	const;
 

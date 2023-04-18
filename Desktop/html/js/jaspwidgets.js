@@ -990,6 +990,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
 			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
 			hasExportResults:		parent.menuName			=== 'All',
+			hasShowRSyntax:			parent.menuName			=== 'All',
 
 			objectName:				parent.menuName
 		};
@@ -1026,6 +1027,97 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.setFixedness(0);
 	}
 })
+
+JASPWidgets.RSyntaxModel = Backbone.Model.extend({
+	defaults: {
+		analysis: {},
+		script: ""
+	},
+	getFromAnalysis: function(item) {
+		return this.attributes.analysis.model.get(item);
+	}
+
+});
+
+JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
+	initialize: function() {
+		this.$el.addClass("jasp-rsyntax-container");
+		this.$el.addClass("jasp-hide");
+		this.$el.addClass("jasp-code");
+		this._insertRSyntax()
+	},
+	setVisibility: function (value) {
+		var self = this;
+		self.$el.css("opacity", value ? 0 : 1);
+
+		if (value === true) {
+			self.$el.slideDown(200, function () {
+				self._setVisibility(value);
+				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
+					window.scrollIntoView(self.$el, function () {});
+				});
+			});
+		}
+		else {
+			self.$el.slideUp(200, function () {
+				self._setVisibility(value);
+			});
+		}
+	},
+
+	_setVisibility: function(value) {
+		this.visible = value
+		if (value)
+			this.$el.removeClass('jasp-hide');
+		else
+			this.$el.addClass('jasp-hide');
+	},
+	render: function() {
+		this.$el.find(".jasp-rsyntax").html(this.model.get("script"));
+		return this;
+	},
+	_insertRSyntax: function() {
+		$script = $("<span/>");
+		$script.attr({
+		  class: "jasp-rsyntax",
+		  id: "rsyntax-" + this.model.getFromAnalysis("id")
+		});
+
+		this.$el.append($script);
+	},
+	setScript: function(value) {
+		this.model.set("script", value);
+		this.render();
+	},
+	clear: function() {
+		this.$el.empty();
+		this.initialize();
+	},
+
+	exportBegin: function (exportParams, completedCallback) {
+		if (exportParams == undefined)
+			exportParams = new JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		var html = '';
+		if (this.visible === true) {
+			html += '<div ' + JASPWidgets.Exporter.getStyles(this.$el, ["padding", "border", "background-color", "font-size", "font", "font-weight", "display"]) + '>' + this.$el.get(0).innerHTML + '</div>';
+		}
+
+		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
+	},
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(exportContent, exportParams);
+	}
+
+});
 
 JASPWidgets.Progressbar = Backbone.Model.extend({
 	defaults: {

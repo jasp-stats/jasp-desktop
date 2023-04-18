@@ -303,6 +303,11 @@ void ResultsJsInterface::resetResults()
 	emit resultsPageUrlChanged(_resultsPageUrl);
 }
 
+void ResultsJsInterface::setRSyntax(int id, const QString &syntax)
+{
+	runJavaScript("window.setRSyntaxText(" + QString::number(id) + ", '" + escapeJavascriptString(syntax) + "')");
+}
+
 void ResultsJsInterface::unselect()
 {
 	runJavaScript("window.unselect()");
@@ -431,6 +436,7 @@ void ResultsJsInterface::runJavaScript(const QString & js)
 	if(_resultsLoaded)	emit runJavaScriptSignal(js);
 	else				_delayedJs.push(js);
 }
+
 
 void ResultsJsInterface::dequeueJsQueue()
 {
