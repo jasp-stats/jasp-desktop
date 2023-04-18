@@ -43,8 +43,9 @@ public:
 	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem=nullptr);
 	virtual				void	destroyForm();
 
-	virtual QVariant getConstant(QString key, QVariant defaultValue)										const	{ return defaultValue;		}
-	virtual QVariant getConstant(QString key, QVariant defaultValue, QString module, QString analysis)		const	{ return defaultValue;		}
+	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue)										const	{ return defaultValue;		}
+	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)		const	{ return defaultValue;		}
+	virtual bool optionLocked(const QString& name) const { return false; };
 
 	const Json::Value&	boundValues()										const	{ return _boundValues;		}
 	const Json::Value&	orgBoundValues()									const	{ return _orgBoundValues;	}

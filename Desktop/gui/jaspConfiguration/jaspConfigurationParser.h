@@ -55,7 +55,7 @@ private:
 		ModuleStmt			<- 'Module' Name Comment? ( AnalysisStmt / KeyValuePair / Comment )* 'End Module' Comment?
 		AnalysisStmt		<- 'Analysis' Name Comment? ( OptionStmt / KeyValuePair / Comment )* 'End Analysis' Comment?
 		OptionStmt			<- 'Options' Comment? OptionDef* 'End Options' Comment?
-		OptionDef			<- KeyValuePair Comment? / KeyValuePair 'lock'? Comment?
+		OptionDef			<- (KeyValuePair 'lock' Comment?) / (KeyValuePair Comment?)
 
 		LoadModuleList    	<- 'Enable Modules' ':' List(Name, ',') Comment?
 		Format				<- 'Format' ':' < [0-9.]* > Comment?

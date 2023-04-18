@@ -159,14 +159,19 @@ bool Analysis::checkAnalysisEntry()
 	}
 }
 
-QVariant Analysis::getConstant(QString key, QVariant defaultValue) const
+QVariant Analysis::getConstant(const QString& key, const QVariant& defaultValue) const
 {
-	return JASPConfiguration::getInstance()->get(key, defaultValue, tq(module()), tq(name()));
+    return JASPConfiguration::getInstance()->getConstant(key, defaultValue, tq(module()), tq(name()));
 }
 
-QVariant Analysis::getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const
+QVariant Analysis::getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis) const
 {
-	return JASPConfiguration::getInstance()->get(key, defaultValue, module, analysis);
+	return JASPConfiguration::getInstance()->getConstant(key, defaultValue, module, analysis);
+}
+
+bool Analysis::optionLocked(const QString& name) const
+{
+	return JASPConfiguration::getInstance()->optionLocked(tq(module()), tq(this->name()), name);
 }
 
 void Analysis::setTitle(const std::string& title)

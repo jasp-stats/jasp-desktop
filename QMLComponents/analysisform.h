@@ -202,6 +202,7 @@ private:
 	void			setAnalysisUp();
 	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 	QString			msgsListToString(const QStringList & list) const;
+	void			lockOptions();
 
 private slots:
 	   void			formCompletedHandler();

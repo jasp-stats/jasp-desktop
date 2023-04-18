@@ -27,18 +27,18 @@ JASPConfiguration::JASPConfiguration(QObject *parent)
 
 }
 
-bool JASPConfiguration::exists(const QString &constant, const QString &module, const QString &analysis)
+bool JASPConfiguration::constantExists(const QString &constant, const QString &module, const QString &analysis)
 {
 	return _definedConstants.contains(module) && _definedConstants[module].contains(analysis) && _definedConstants[module][analysis].contains(constant);
 }
 
-QVariant JASPConfiguration::get(const QString &constant, QVariant defaultValue, const QString &module, const QString &analysis)
+QVariant JASPConfiguration::getConstant(const QString &constant, const QVariant& defaultValue, const QString &module, const QString &analysis)
 {
-    if(exists(constant, module, analysis))
+    if(constantExists(constant, module, analysis))
 		return _definedConstants[module][analysis][constant];
-	else if(exists(constant, module))
+    else if(constantExists(constant, module))
 		return _definedConstants[module][""][constant];
-	else if(exists(constant))
+    else if(constantExists(constant))
 		return _definedConstants[""][""][constant];
     return defaultValue;
 }
@@ -55,7 +55,7 @@ bool JASPConfiguration::optionsSet(const QString &module, const QString &analysi
 
 bool JASPConfiguration::optionLocked(const QString &module, const QString &analysis, const QString &optionName)
 {
-	//Todo
+	return _analysisOptionsLocked[module][analysis][optionName];
 }
 
 Json::Value JASPConfiguration::getAnalysisOptionValues(const QString &module, const QString &analysis)
