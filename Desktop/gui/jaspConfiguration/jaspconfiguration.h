@@ -14,8 +14,8 @@ class JASPConfiguration : public QObject
 	Q_OBJECT
 public:
 	//QML programming constants interface
-	Q_INVOKABLE bool exists(const QString& constant, const QString& module = "", const QString& analysis = "");
-	Q_INVOKABLE QVariant get(const QString& constant, QVariant defaultValue = QVariant(), const QString& module = "", const QString& analysis = "");
+	Q_INVOKABLE bool constantExists(const QString& constant, const QString& module = "", const QString& analysis = "");
+	Q_INVOKABLE QVariant getConstant(const QString& constant, const QVariant& defaultValue = QVariant(), const QString& module = "", const QString& analysis = "");
 
 	//Predefined analysis options interface
 	bool optionSet(const QString& module, const QString& analysis, const QString& optionName);

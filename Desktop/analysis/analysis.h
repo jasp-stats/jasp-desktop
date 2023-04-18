@@ -95,8 +95,10 @@ public:
 	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
 	bool				checkAnalysisEntry();
 
-	QVariant getConstant(QString key, QVariant defaultValue) const override;
-	QVariant getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const override;
+	QVariant getConstant(const QString& key, const QVariant& defaultValue) const override;
+	QVariant getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis) const override;
+	bool optionLocked(const QString& name) const override;
+
 
 
 	const	Json::Value		&	results()			const				{ return _results;							}

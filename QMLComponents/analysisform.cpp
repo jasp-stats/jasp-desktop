@@ -321,6 +321,18 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
 }
 
+void AnalysisForm::lockOptions()
+{
+	if(!_analysis)
+		return;
+
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if(_analysis->optionLocked(control->name()))
+			control->setEnabled(false);
+	}
+}
+
 void AnalysisForm::setInfo(QString info)
 {
 	if (_info == info)
@@ -625,6 +637,7 @@ void AnalysisForm::setAnalysisUp()
 	Json::Value defaultOptions = _analysis->orgBoundValues();
 	_analysis->clearOptions();
 	bindTo(defaultOptions);
+	lockOptions();
 
 	blockValueChangeSignal(false, false);
 

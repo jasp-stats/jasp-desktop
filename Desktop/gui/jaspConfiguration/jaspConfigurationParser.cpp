@@ -127,10 +127,10 @@ std::any JASPConfigurationParser::parseLoadModuleList(const peg::SemanticValues 
 std::any JASPConfigurationParser::parseOptionDef(const peg::SemanticValues &vs, std::any &dt)
 {
 	switch (vs.choice()) {
-	case 0: //no lock
-		return Option{any_cast<KeyValue>(vs[0]), false};
-	default: //lock
+	case 0: //lock
 		return Option{any_cast<KeyValue>(vs[0]), true};
+	default: //no lock
+		return Option{any_cast<KeyValue>(vs[0]), false};
 	}
 }
 
