@@ -575,6 +575,14 @@ void Analysis::showDependenciesOnQMLForObject(QString uniqueName)
 	processResultsForDependenciesToBeShown();
 }
 
+void Analysis::hideDependencies()
+{
+	_analysisForm->setMustBe({});
+	_analysisForm->setMustContain({});
+	_showDepsName = "";
+}
+
+
 bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array)
 {
 	if(!array.isArray())

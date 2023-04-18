@@ -734,11 +734,20 @@ void Analyses::duplicateAnalysis(size_t id)
 	analysis->refresh();
 }
 
-void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName)
+void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName, bool show)
 {
 	if(!get(analysis_id)) return;
 
-	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
+	if(show)
+		get(analysis_id)->showDependenciesOnQMLForObject(optionName);
+	else
+	{
+		//just hide it for all analysis, probably desired
+		for (auto& analysis : _analysisMap)
+		{
+			analysis.second->hideDependencies();
+		}
+	}
 }
 
 void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, string newTitle)

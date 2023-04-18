@@ -145,11 +145,12 @@ $(document).ready(function () {
 	window.editImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.editImageClicked			.bind(window.menuObject) ); }
 	window.editTitleMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.editTitleClicked			.bind(window.menuObject) ); }
 	window.collapseMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.collapseMenuClicked		.bind(window.menuObject) ); }
-	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
 	window.duplicateMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.duplicateMenuClicked		.bind(window.menuObject) ); }
 	window.removeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.removeMenuClicked		.bind(window.menuObject) ); }
 	window.citeMenuClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.citeMenuClicked			.bind(window.menuObject),	"Citations copied to clipboard"	); }
 	window.latexCodeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.latexCodeMenuClicked		.bind(window.menuObject),	"LaTeX code copied to clipboard"); }
+
+	window.showDependenciesClicked	= function (show) { window.menuObject.showDependenciesClicked(show); }
 
 	window.notesMenuClicked = function (noteType, visibility) {
 		if (window.menuObject.notesMenuClicked && window.menuObject.notesMenuClicked(noteType, visibility))
@@ -470,7 +471,7 @@ $(document).ready(function () {
 			jaspWidget.on("optionschanged",				function (id, options)	{ jasp.analysisChangedDownstream(id, JSON.stringify(options))	});
 			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
 			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
-			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
+			jaspWidget.on("showDependencies",			function (id, optName, show)	{ jasp.showDependenciesInAnalysis(id, optName, show);	});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
 			jaspWidget.on("analysis:userDataChanged",	function ()				{ window.getAllUserData();										});

@@ -188,6 +188,7 @@ public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
+	void					hideDependencies();
 	void					boundValueChangedHandler()																	override;
 	void					requestComputedColumnCreationHandler(	const std::string & columnName)						override;
 	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override	{ emit requestColumnCreation(columnName, this, colType); }
