@@ -37,7 +37,9 @@ QVariant JASPConfiguration::get(const QString &constant, QVariant defaultValue, 
     if(exists(constant, module, analysis))
 		return _definedConstants[module][analysis][constant];
 	else if(exists(constant, module))
-		return _definedConstants[module][constant];
+		return _definedConstants[module][""][constant];
+	else if(exists(constant))
+		return _definedConstants[""][""][constant];
     return defaultValue;
 }
 

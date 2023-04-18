@@ -43,6 +43,9 @@ public:
 	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem=nullptr);
 	virtual				void	destroyForm();
 
+	virtual QVariant getConstant(QString key, QVariant defaultValue)										const	{ return defaultValue;		}
+	virtual QVariant getConstant(QString key, QVariant defaultValue, QString module, QString analysis)		const	{ return defaultValue;		}
+
 	const Json::Value&	boundValues()										const	{ return _boundValues;		}
 	const Json::Value&	orgBoundValues()									const	{ return _orgBoundValues;	}
 	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
