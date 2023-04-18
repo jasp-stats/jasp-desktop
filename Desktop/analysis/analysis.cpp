@@ -579,6 +579,7 @@ void Analysis::hideDependencies()
 {
 	_analysisForm->setMustBe({});
 	_analysisForm->setMustContain({});
+	_showDepsName = "";
 }
 
 
