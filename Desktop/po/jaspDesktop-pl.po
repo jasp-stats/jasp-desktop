@@ -4207,34 +4207,6 @@ msgid ""
 "PARTICULAR PURPOSE."
 msgstr ""
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
-
 msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr ""
@@ -4248,3 +4220,26 @@ msgstr "Nowa wartość"
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr ""
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Miscellaneous options"
+msgstr "Dodatkowe opcje"
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Show R syntax"
+msgstr "Pokaż składnię języka R"
+
+msgctxt "PrefsResults|"
+msgid "Add R syntax for each analysis"
+msgstr ""
+
+msgctxt "ResultMenuModel|"
+msgid "Show R Syntax"
+msgstr ""
+
+#, fuzzy
+msgctxt "ResultMenuModel|"
+msgid "Hide R Syntax"
+msgstr "Ukryj składnię języka R"
