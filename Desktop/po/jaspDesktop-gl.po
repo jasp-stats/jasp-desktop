@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-04-16 13:59+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/gl/>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -4237,38 +4231,6 @@ msgstr ""
 "TIPO, INCLUÍDA <br>A GARANTÍA DE DESEÑO, COMERCIABILIDADE E ADECUACIÓN PARA "
 "<br> UN PROPÓSITO CONCRETO."
 
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr "Escolle un ficheiro..."
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr "Escolle un cartafol..."
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr "Trocouse o modo Gráfico Seguro"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-"Trocaches o modo Gráfico Seguro de JASP, e para que teña efecto esta opción "
-"precisas reiniciar JASP"
-
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr "Trocouse a configuración do procesamento de texto"
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
-"Trocouse a configuración do procesamento de texto; isto só terá un efecto "
-"completo despois de reiniciar JASP."
-
 msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr "<sen opcións>"
@@ -4281,3 +4243,26 @@ msgstr "Novo Valor"
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr "Fila %1"
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Miscellaneous options"
+msgstr "Opcións diversas"
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Show R syntax"
+msgstr "Amosar a sintaxe de R"
+
+msgctxt "PrefsResults|"
+msgid "Add R syntax for each analysis"
+msgstr ""
+
+msgctxt "ResultMenuModel|"
+msgid "Show R Syntax"
+msgstr ""
+
+#, fuzzy
+msgctxt "ResultMenuModel|"
+msgid "Hide R Syntax"
+msgstr "Agochar a Sinaxe de R"
