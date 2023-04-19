@@ -4245,40 +4245,14 @@ msgid ""
 "<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
 "PARTICULAR PURPOSE."
 msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Select a file..."
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Select a folder..."
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Safe Graphics mode changed"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid ""
-"You've changed the Safe Graphics mode of JASP, for this option to take "
-"effect you need to restart JASP"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid "Text rendering setting changed"
-msgstr ""
-
-msgctxt "PreferencesModel|"
-msgid ""
-"The textrendering setting has been changed, this will only take full effect "
-"after JASP is restarted."
-msgstr ""
+"Este programa se proporciona TAL COMO ESTÁ sin NINGUNA GARANTÍA DE NINGÚN "
+"TIPO, INCLUIDA <br>LA GARANTÍA DE DISEÑO, COMERCIABILIDAD Y ADECUACIÓN PARA "
+"<br> UN PROPÓSITO CONCRETO."
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<sin opciones>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "Nuevo Valor"
@@ -4286,4 +4260,27 @@ msgstr "Nuevo Valor"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
+msgstr "Fila %1"
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Miscellaneous options"
+msgstr "Opciones diversas"
+
+#, fuzzy
+msgctxt "PrefsResults|"
+msgid "Show R syntax"
+msgstr "Mostrar la sintaxis de R"
+
+msgctxt "PrefsResults|"
+msgid "Add R syntax for each analysis"
 msgstr ""
+
+msgctxt "ResultMenuModel|"
+msgid "Show R Syntax"
+msgstr ""
+
+#, fuzzy
+msgctxt "ResultMenuModel|"
+msgid "Hide R Syntax"
+msgstr "Ocultar la Sintaxis de R"
