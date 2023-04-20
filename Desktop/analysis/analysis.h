@@ -116,6 +116,8 @@ public:
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
 			bool				utilityRunAllowed() const				{ return  isSaveImg() || isEditImg() || isRewriteImgs();							}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && form();	}
+			bool				beingTranslated()                        { return _beingTranslated; };
+			void				setBeingTranslated(bool value)           { _beingTranslated = value; };
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -123,7 +125,6 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-
 			Json::Value			asJSON(bool withRSources = false)	const;
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
 			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
@@ -242,7 +243,8 @@ private:
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_tryToFixNotes					= false,
-								_hasReport						= false;
+								_hasReport						= false,
+								_beingTranslated				= false;
 	int							_revision						= 0;
 
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;

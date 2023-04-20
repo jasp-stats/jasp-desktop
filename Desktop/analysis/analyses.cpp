@@ -339,8 +339,11 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 			{
 				Analysis * a = keyval.second;
 
-				if(a->readyToCreateForm())
+				//This function is called once after 300 ms upon translation due to delayedUpdate in description
+				//and causes the set analysis options to be cleared without this additional flag check set at the start of translations
+				if(a->readyToCreateForm() && !a->beingTranslated())
 					a->createForm();
+				a->setBeingTranslated(false);
 			}
 		}
 
@@ -764,6 +767,7 @@ void Analyses::prepareForLanguageChange()
 {
 	applyToAll([&](Analysis * a)
 	{ 
+		a->setBeingTranslated(true);
 		a->setRefreshBlocked(true); 
 		a->abort();
 	});
