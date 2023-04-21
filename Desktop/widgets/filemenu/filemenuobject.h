@@ -36,7 +36,7 @@ signals:
 
 protected:
 	FileEvent::FileMode mode();
-	virtual void		setMode(FileEvent::FileMode mode);
+	void                setMode(FileEvent::FileMode mode);
 	
 	FileMenu		*	_filemenu = nullptr;
 

@@ -37,6 +37,7 @@ OSF::OSF(FileMenu *parent): FileMenuObject(parent)
 
 	setListModel(new OSFListModel(this, _osfFileSystem, _osfBreadCrumbsListModel));
 
+	connect(parent,                     &FileMenu::modeChanged,                         this,           &OSF::onModeChanged);
 	connect(_osfFileSystem,				&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
 	connect(_osfFileSystem,				&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
 	connect(_osfFileSystem,				&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
@@ -216,11 +217,9 @@ void OSF::setCurrentFileName(QString currentFileName)
 	setSavefilename(currentFileName);
 }
 
-void OSF::setMode(FileEvent::FileMode mode)
+void OSF::onModeChanged(FileEvent::FileMode mode)
 {
-	FileMenuObject::setMode(mode);
-	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileGenerateData || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
-	setShowfiledialog(showfiledialog);
+	setShowfiledialog(mode == FileEvent::FileExportResults || mode == FileEvent::FileGenerateData || mode == FileEvent::FileExportData || mode == FileEvent::FileSave);
 }
 
 SortMenuModel *OSF::sortedMenuModel() const

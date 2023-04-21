@@ -79,6 +79,8 @@ void FileMenu::setMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
 	_OSF->setCurrentFileName(getDefaultOutFileName());
+
+	emit modeChanged(_mode);
 }
 
 void FileMenu::setOnlineDataManager(OnlineDataManager *odm)
@@ -360,12 +362,12 @@ void FileMenu::dataColumnAdded(QString columnName)
 		event->setPath(_currentDataFile->getCurrentFilePath());
 
 		dataSetIORequestHandler(event);
-    }
+	}
 }
 
 void FileMenu::analysesExportResults()
 {
-    _computer->analysesExportResults();
+	_computer->analysesExportResults();
 }
 
 void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
@@ -377,15 +379,13 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::ExportResults:		setMode(FileEvent::FileExportResults);	break;
 	case ActionButtons::FileOperation::ExportData:  		setMode(FileEvent::FileExportData);		break;
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
-	case ActionButtons::FileOperation::Close:				close();									break;
+	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
 		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
 		break;
-
-
 
 	case ActionButtons::FileOperation::About:
 		setVisible(false);
