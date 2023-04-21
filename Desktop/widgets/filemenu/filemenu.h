@@ -56,7 +56,7 @@ class FileMenu : public QObject
 	Q_PROPERTY(bool							visible					READ visible					WRITE setVisible					NOTIFY visibleChanged			)
 	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		) 
 
 public:
 
@@ -110,6 +110,7 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
+	void modeChanged(FileEvent::FileMode mode);
 
 public slots:
 	void analysisAdded(Analysis *analysis);
@@ -124,7 +125,7 @@ public slots:
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
 	void dataColumnAdded(QString columnName);
-    void analysesExportResults();
+	void analysesExportResults();
 	void refresh();
 	void close();
 

@@ -68,7 +68,6 @@ public:
 	void setOnlineDataManager(OnlineDataManager *odm);
 	Q_INVOKABLE void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
-	void setMode(FileEvent::FileMode mode) override;
 
 	OSFListModel * listModel()				const	{ return _osfListModel;	}
 	OSFBreadCrumbsListModel * breadCrumbs() const	{ return _osfBreadCrumbsListModel;	}
@@ -101,6 +100,7 @@ private slots:
 	void updateUserDetails();
 	void newFolderCreated();
 	void resetOSFListModel();
+	void onModeChanged(FileEvent::FileMode mode);
 
 public slots:
 	void logoutClicked();
