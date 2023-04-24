@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-04-24 11:37+0000\n"
+"PO-Revision-Date: 2023-04-24 18:54+0000\n"
 "Last-Translator: Rens <rdofferhoff@protonmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -3904,12 +3904,10 @@ msgctxt "PrefsAdvanced|"
 msgid "Show engines"
 msgstr "Toon engines"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "Selecteer een bestaande map"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
@@ -3918,17 +3916,14 @@ msgstr ""
 "Om een ontwikkelingsmodule te installeren moet je een bestaande map "
 "selecteren, je hebt '$1' geselecteerd maar die bestaat niet."
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr "Toon R syntax"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
 msgstr "Verberg invoeropties"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
 msgstr "Toon invoeropties"
@@ -3955,7 +3950,6 @@ msgstr ""
 "\n"
 "U kunt hier ook syntax-mode JASP analyses plakken."
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
 msgstr "Analyse toevoegen"
@@ -3999,7 +3993,6 @@ msgctxt "FormulaSource|"
 msgid "No source found in Formula"
 msgstr "Geen bron gevonden in de Formule"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
 msgstr "Rapportagemodus"
@@ -4008,7 +4001,6 @@ msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
 msgstr "Moet JASP in rapportagemodus draaien of niet."
 
-#, fuzzy
 msgctxt "Reporter|"
 msgid "No datafile"
 msgstr "Geen databestand"
@@ -4109,19 +4101,20 @@ msgstr "DropDown"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "Tab View"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "Variabelen Formulier"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Toon alle opties"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "R-console"
 
 #, fuzzy
 msgctxt "RCommander|"
@@ -4130,7 +4123,7 @@ msgstr " en "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "heeft niet geselecteerde module"
 
 msgctxt "RCommander|"
 msgid "has selected module "
@@ -4178,19 +4171,20 @@ msgstr ""
 
 msgctxt "Computer|"
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
 msgctxt "Computer|"
 msgid "JASP Files (*.jasp)"
-msgstr ""
+msgstr "JASP-bestanden (*.jasp)"
 
+#, fuzzy
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Exporteer het resultaat als HTML of PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTML-bestanden"
 
 msgctxt "Computer|"
 msgid "Portable Document Format (*.pdf)"
@@ -4198,13 +4192,12 @@ msgstr ""
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Data exporteren als CSV"
 
 msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr ""
+msgstr "CSV-bestanden (*.csv *.txt *.tsv)"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "Sync data"
@@ -4220,9 +4213,10 @@ msgid ""
 "PARTICULAR PURPOSE."
 msgstr ""
 
+#, fuzzy
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<geen keuze>"
 
 #, fuzzy
 msgctxt "ListModelInputValue|"
