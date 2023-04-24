@@ -14,7 +14,12 @@ if(insideJASP)
 	// See https://github.com/quilljs/quill/issues/262
 	var Link = Quill.import('formats/link');
 	Link.sanitize = function(url) {
-	return url;
+        // Check if the url contains the protocol, otherwise add it automatically
+        var checkUrl = url.match(/^(http|https):\/\//i); 
+        if (!checkUrl) {
+            url = "https://" + url;
+          }
+        return url;
 	}
 }
 
