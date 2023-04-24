@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-04-24 11:37+0000\n"
+"Last-Translator: Rens <rdofferhoff@protonmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-Language: nl\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -3884,33 +3890,38 @@ msgstr "DB stuurprogramma"
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
-msgstr ""
+msgstr "Engines Overzicht"
 
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr ""
+msgstr "Rechter en middelste muisknop om een engine te verwijderen."
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "Maximum aantal Engines: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "Toon engines"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "Selecteer een bestaande map"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '$1' but it doesn't exist."
 msgstr ""
+"Om een ontwikkelingsmodule te installeren moet je een bestaande map "
+"selecteren, je hebt '$1' geselecteerd maar die bestaat niet."
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "Toon R syntax"
 
 #, fuzzy
 msgctxt "MainPage|"
@@ -3929,6 +3940,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Voer hier uw R-code in.\n"
+"De gegevens zijn ongefilterd beschikbaar als 'data'\n"
+"en gefilterd als 'filteredData'.\n"
+"U kunt hier ook syntax-mode JASP analyses plakken."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3936,59 +3951,67 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Voer uw R-code hier in.\n"
+"\n"
+"U kunt hier ook syntax-mode JASP analyses plakken."
 
+#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Analyse toevoegen"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "Het laden van upgrades gaf de volgende fout(en): %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "Kon term %1 niet vinden in de Formule"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "Bron %1 in Formule niet gevonden"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "Bron %1 in Formule is geen variabelenlijst"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "Kan item %1 niet vinden in de formulebeschrijving"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Geen bron gevonden in Formule randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"randomEffects in Formule kan alleen worden gebruikt met een ComponentsList "
+"item"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "Geen bron gevonden in de Formule"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Rapportagemodus"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Moet JASP in rapportagemodus draaien of niet."
 
+#, fuzzy
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Geen databestand"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3998,14 +4021,19 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP is gestart in rapportagemodus, maar het jasp-bestand is niet gekoppeld "
+"aan een databestand.\n"
+"Dit betekent dat er geen updates kunnen zijn...\n"
+"\n"
+"Wilt u toch doorgaan?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Onbekende fout"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "Geen naam vermeld in de formulebeschrijving"
 
 #, fuzzy, qt-format
 msgctxt "JASPControl|"
@@ -4020,7 +4048,7 @@ msgstr "Een control heeft geen naam"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "Optienaam '%1' is een gereserveerd woord"
 
 #, fuzzy, qt-format
 msgctxt "JASPControl|"
@@ -4030,54 +4058,54 @@ msgstr "Twee controles hebben dezelfde naam: %1"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Een JASPControl en een formule hebben dezelfde naam '%1'"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "Formule met naam '%1' is tweemaal gedefinieerd"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Een JASPControl en een formule hebben dezelfde naam '%1'"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "Analyse niet gevonden"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "Geen analysefunctie: <modulenaam>::<analysenaam>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R is aan het (her)starten"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R installeert of laadt een module %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R is gestopt"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R wacht op commands"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "Opties"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "Variabelenlijst"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "DropDown"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
