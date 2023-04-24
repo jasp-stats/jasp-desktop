@@ -1053,9 +1053,7 @@ JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
 		if (value === true) {
 			self.$el.slideDown(200, function () {
 				self._setVisibility(value);
-				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-					window.scrollIntoView(self.$el, function () {});
-				});
+				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {});
 			});
 		}
 		else {
