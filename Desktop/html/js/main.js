@@ -519,8 +519,11 @@ $(document).ready(function () {
 	$("body").click(window.unselectByClickingBody)
 })
 
-// We want to insert header information according to the elements of note editor
-var headLinkStuff = "";
+// We set head for exported HTML file to make sure it render correctly,
+// Note that means user requires access to the network when opening html
+var headLinkStuff = "<link rel='stylesheet' href= 'https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.css' crossorigin=''>\n"
+        + "<script defer src='https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.js' crossorigin= ''></script>\n";
+		
 var wrapHTML = function (html, exportParams) {
 	var completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"

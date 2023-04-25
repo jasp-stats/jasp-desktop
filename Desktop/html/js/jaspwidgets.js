@@ -544,14 +544,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		// Change example link from quilljs.com to a sample link
 		var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
 		linkInput.dataset.link = 'https://jasp-stats.org';
-		
-		// Render the formula correctly in the exported html file, must add stylesheet and script into html file,
-		// Note that this requires access to the network when user opening html
-		this.$formulaBotton = this.$el.find(".ql-formula")
-		this.$formulaBotton.on('click', function (){
-			headLinkStuff = "<link rel='stylesheet' href= 'https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.css' crossorigin=''>\n"
-                          + "<script defer src='https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.js' crossorigin= ''></script>\n"
-                           });
 
 		// Add tooltips to the toolbar buttons
 		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
