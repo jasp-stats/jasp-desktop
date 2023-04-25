@@ -38,6 +38,7 @@ FocusScope
 				Text
 				{
 					text:				itemText
+					textFormat:			Text.RichText
 					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:				jaspTheme.font
 					verticalAlignment:	Text.AlignVCenter
@@ -192,6 +193,7 @@ FocusScope
 					text:			headerText
 					font:			jaspTheme.font
 					color:			jaspTheme.textEnabled
+					textFormat:		Text.RichText
 
 					horizontalAlignment:		Text.AlignHCenter
 
