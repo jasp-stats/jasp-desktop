@@ -544,7 +544,17 @@ int ListModel::sourceColumnTypeChanged(QString name)
 	if (i >= 0)
 	{
 		QModelIndex ind = index(i, 0);
-		emit dataChanged(ind, ind);
+
+		//keep selected item types up to date
+		if(_selectedItems.contains(i))
+		{
+			_selectedItemsTypes.clear();
+			for(int item : _selectedItems)
+				_addSelectedItemType(item);
+			emit selectedItemsTypesChanged();
+		}
+
+		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole});
 		emit columnTypeChanged(name);
 	}
 

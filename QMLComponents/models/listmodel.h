@@ -105,6 +105,7 @@ signals:
 			void columnsChanged(QStringList columns);
 			void selectedItemsChanged();
 			void oneTermChanged(const QString& oldName, const QString& newName);
+			void selectedItemsTypesChanged();
 
 public slots:	
 	virtual void sourceTermsReset();

@@ -32,6 +32,18 @@ Button
 
 	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
+
+	Connections
+	{
+		target: source.model
+		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
+	}
+
+	Connections
+	{
+		target: target.model
+		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
+	}
 	
 	text:			""
 	enabled:		false
