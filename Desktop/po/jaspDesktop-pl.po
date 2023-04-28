@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-04-26 18:52+0000\n"
+"PO-Revision-Date: 2023-04-29 02:53+0000\n"
 "Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
@@ -1495,7 +1495,7 @@ msgstr "skala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr "Informed"
+msgstr "Informacyjne"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
