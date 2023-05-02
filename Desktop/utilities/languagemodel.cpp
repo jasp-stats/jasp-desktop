@@ -132,11 +132,15 @@ void LanguageModel::setCurrentLanguage(QString language)
 
 	//On linux it somehow ignores the newer settings, so instead of pausing we kill the engines... https://github.com/jasp-stats/jasp-test-release/issues/1046
 	//But I do not know if it necessary, because the modules-translations aren't working.
-#ifdef __gnu_linux__
+//#ifdef __gnu_linux__
+//	emit stopEngines();
+//#else
+//	emit pauseEngines();										//Hopefully avoids process being called while we are in the middle of changing the language
+//#endif
+
+	//Seemingly there are two possible race conditions on translations that can be fixed by just killing the engines
+	//Which is fine since retranslation is not a common occurence anyway.
 	emit stopEngines();
-#else
-	emit pauseEngines();										//Hopefully avoids process being called while we are in the middle of changing the language
-#endif
 
 	_qml->retranslate();
 	Settings::setValue(Settings::PREFERRED_LANGUAGE , _currentLanguageCode);
