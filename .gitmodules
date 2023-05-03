@@ -125,4 +125,7 @@
 [submodule "Modules/jaspTimeSeries"]
 	path = Modules/jaspTimeSeries
 	url = https://github.com/jasp-stats/jaspTimeSeries.git
+[submodule "RPkgs/multibridge"]
+	path = RPkgs/multibridge
+	url = https://github.com/Asarafoglou/multibridge
 	branch = master
