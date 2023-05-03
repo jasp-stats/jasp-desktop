@@ -118,3 +118,7 @@
 	path = Modules/jaspPower
 	url = https://github.com/jasp-stats/jaspPower
 	branch = master
+[submodule "RPkgs/multibridge"]
+	path = RPkgs/multibridge
+	url = https://github.com/Asarafoglou/multibridge
+	branch = master
