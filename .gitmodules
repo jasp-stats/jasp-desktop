@@ -122,3 +122,7 @@
 	path = Modules/jaspPredictiveAnalytics
 	url = https://github.com/jasp-stats/jaspPredictiveAnalytics
 	branch = main
+[submodule "RPkgs/multibridge"]
+	path = RPkgs/multibridge
+	url = https://github.com/Asarafoglou/multibridge
+	branch = master
