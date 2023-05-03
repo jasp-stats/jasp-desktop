@@ -3,6 +3,5 @@
 .libPaths(c("@R_LIBRARY_PATH@"))
 install.packages('renv', lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
 
-install.packages('@JASP_SOURCE_DIR@/RPkgs/multibridge', lib='@R_LIBRARY_PATH@', repos=NULL, type='source', INSTALL_opts=c("--html", "--no-multiarch", "--no-test-load"))
-
-#remotes::install_github("", lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts=c("--html", "--no-multiarch", "--no-test-load"))
+if(.Platform$pkgType == "mac.binary.big-sur-arm64")
+  install.packages('@JASP_SOURCE_DIR@/RPkgs/multibridge', lib='@R_LIBRARY_PATH@', repos=NULL, type='source', INSTALL_opts=c("--html", "--no-multiarch", "--no-test-load"))
