@@ -125,4 +125,7 @@
 [submodule "Modules/jaspLearnStats"]
 	path = Modules/jaspLearnStats
 	url = https://github.com/jasp-stats/jaspLearnStats
+[submodule "RPkgs/multibridge"]
+	path = RPkgs/multibridge
+	url = https://github.com/Asarafoglou/multibridge
 	branch = master
