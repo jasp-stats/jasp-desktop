@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-05-04 19:40+0000\n"
+"PO-Revision-Date: 2023-05-05 21:50+0000\n"
 "Last-Translator: Josée Turcotte <jturcotte@laurentienne.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "fr/>\n"
@@ -4272,7 +4272,6 @@ msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
 msgstr "Fichiers de données (*.csv *.txt *.tsv *.sav *.ods)"
 
-#, fuzzy
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
@@ -4308,7 +4307,6 @@ msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
 msgstr "Ajouter la syntaxe R pour chaque analyse"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
 msgstr "Montrer la syntaxe R"
