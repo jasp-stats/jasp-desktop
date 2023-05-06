@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-05-05 21:50+0000\n"
+"Last-Translator: Josée Turcotte <jturcotte@laurentienne.ca>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -940,8 +946,8 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"Passe à un mode plus sûr pour les graphiques, c'est-à-dire le rendu "
-"logiciel.\n"
+"Passe à un mode plus sûr pour les graphiques, c'est-à-dire le rendu logiciel."
+"\n"
 "L'interface sera plus lente, mais si vous avez des problèmes (problèmes "
 "bizarres, impossibilité de voir les résultats ou autre), cela peut les "
 "résoudre.\n"
@@ -4170,55 +4176,55 @@ msgstr "Format des Variables"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Afficher toutes les options"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "Console R"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " et "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "a un module non sélectionné"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "a un module sélectionné "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Cliquer sur le fichier ci-dessous pour le synchroniser ou l'utiliser "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "Cette variable a été supprimée car elle n'est pas autorisée : %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "Ces variables ont été supprimées, car elles ne sont pas autorisées : %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "Choisir le codepage ici"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "Copie de %1"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "Masquer la syntaxe R"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
@@ -4227,36 +4233,35 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization of module: %1"
-msgstr ""
+msgstr "En attente de l'initialisation du module : %1"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Save"
 msgstr "Enregistrer"
 
 msgctxt "Computer|"
 msgid "JASP Files (*.jasp)"
-msgstr ""
+msgstr "Fichiers JASP (*.jasp)"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Exporter les résultats en format HTML ou PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "Fichiers HTML"
 
 msgctxt "Computer|"
 msgid "Portable Document Format (*.pdf)"
-msgstr ""
+msgstr "Format PDF (*.pdf)"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Exporter les données en format CSV"
 
 msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr ""
+msgstr "Fichiers CSV (*.csv *.txt *.tsv)"
 
 #, fuzzy
 msgctxt "Computer|"
@@ -4265,7 +4270,7 @@ msgstr "Synchroniser les Données"
 
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr ""
+msgstr "Fichiers de données (*.csv *.txt *.tsv *.sav *.ods)"
 
 msgctxt "AboutModel|"
 msgid ""
@@ -4273,12 +4278,14 @@ msgid ""
 "<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
 "PARTICULAR PURPOSE."
 msgstr ""
+"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
+"<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
+"PARTICULAR PURPOSE."
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<pas de choix>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "Nouvelle valeur"
@@ -4286,26 +4293,24 @@ msgstr "Nouvelle valeur"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "Rangée %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
 msgstr "Options diverses"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
 msgstr "Montrer la syntaxe R"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "Ajouter la syntaxe R pour chaque analyse"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "Montrer la syntaxe R"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "Masquer la syntaxe R"
