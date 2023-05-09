@@ -206,7 +206,11 @@ void ResultsJsInterface::pushToClipboard(const QString &mimeType, const QString 
 	if ( ! html.isEmpty())
 	{
 		mimeData->setHtml(html);
-		mimeData->setText(html);
+
+		if (mimeType != "text/plain")
+		{
+			mimeData->setText(html);
+		}
 	}
 
 	QClipboard *clipboard = QApplication::clipboard();
