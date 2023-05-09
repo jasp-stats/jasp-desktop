@@ -398,6 +398,19 @@ Json::Value	DynamicModules::getJsonForPackageInstallationRequest(const std::stri
 	return _modules[installMe]->requestJsonForPackageInstallationRequest(onlyModPkg);
 }
 
+DynamicModule *DynamicModules::dynamicModuleLowerCased(QString moduleName) const
+{
+	moduleName = moduleName.toLower(); //just enforce it
+
+	for(const std::string & modName : _moduleNames)
+		if(tq(modName).toLower() == moduleName)
+		{
+			return dynamicModule(modName);
+		}
+
+	return nullptr;
+}
+
 
 void DynamicModules::installationPackagesFailed(const QString & moduleName, const QString & errorMessage)
 {
