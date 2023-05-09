@@ -28,6 +28,7 @@
 #include "timers.h"
 #include <QMessageBox>
 #include "utilities/plotschemehandler.h"
+#include "utilities/imgschemehandler.h"
 #include <json/json.h>
 
 #ifdef linux
@@ -406,6 +407,7 @@ int main(int argc, char *argv[])
 			}
 
 			PlotSchemeHandler::createUrlScheme(); //Needs to be done *before* creating PlotSchemeHandler instance and also before QApplication is instantiated
+			ImgSchemeHandler::createUrlScheme();
 
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
@@ -447,6 +449,7 @@ int main(int argc, char *argv[])
 			std::cout << "Application initialized" << std::endl;
 
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
+			ImgSchemeHandler  imgSchemeHandler;
 
 #ifdef _WIN32
 			// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths

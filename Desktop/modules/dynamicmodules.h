@@ -77,8 +77,9 @@ public:
 
 	Json::Value				getJsonForPackageInstallationRequest(const std::string & module = "???");
 
-	Modules::DynamicModule*	dynamicModule(	const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
-	Modules::DynamicModule*	operator[](		const std::string & moduleName)	const { return dynamicModule(moduleName); }
+	Modules::DynamicModule*	dynamicModuleLowerCased(	  QString		moduleName)	const;
+	Modules::DynamicModule*	dynamicModule(			const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
+	Modules::DynamicModule*	operator[](				const std::string & moduleName)	const { return dynamicModule(moduleName); }
 
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 

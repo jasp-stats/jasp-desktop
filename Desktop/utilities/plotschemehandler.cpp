@@ -1,4 +1,5 @@
 #include "plotschemehandler.h"
+#include "tempfiles.h"
 
 PlotSchemeHandler::PlotSchemeHandler(QObject *parent) : QWebEngineUrlSchemeHandler(parent)
 {
