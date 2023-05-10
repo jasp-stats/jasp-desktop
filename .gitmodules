@@ -113,3 +113,6 @@
 [submodule "Modules/jaspAcceptanceSampling"]
 	path = Modules/jaspAcceptanceSampling
 	url = https://github.com/jasp-stats/jaspAcceptanceSampling
+[submodule "Modules/jaspPower"]
+	path = Modules/jaspPower
+	url = https://github.com/jasp-stats/jaspPower
