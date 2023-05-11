@@ -26,7 +26,7 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "id"		,	false	},
 	{ "fr"		,	false   },
 	{ "ru"		,	false	},
-	{ "pl"		,	false	}
+	{ "pl"		,	true	}
 };
 QString LanguageModel::LanguageInfo::_incompleteFlag = "(incomplete)";
 

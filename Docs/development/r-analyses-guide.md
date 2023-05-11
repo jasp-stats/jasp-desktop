@@ -50,6 +50,7 @@ Table of Contents:
   * [Computing Results](#computing-results)
   * [Storing Results in the State](#storing-results-in-the-state)
   * [Retrieving the State Object](#retrieving-the-state-object)
+- [ADDENDUM III - Images](#addendum-iii---images)
 
 ## Step 1 - Creating the Main Analysis Function
 Each analysis in JASP needs a main analysis function. This function will provide an overview of all output elements and steps that are needed to conduct the full analysis. The name of your analysis must match the (case sensitive) name you specified in your description.json file under `"function":`.
@@ -1269,3 +1270,18 @@ And now we can call `.binomFillTableMain()` with the added `binomResults` argume
   ```
 
 </details>
+
+ADDENDUM III - Images
+---------------------------------------------------------
+It is possible to ship images in your R-package (in inst/), these can be either png or svg.
+They can then be used as desired in `<img>`'s in  `jaspHtml` to clarify things like introductory texts.
+An example would be:
+
+```
+createJaspHtml(title="an image", text="<img src = "img:jaspLearnBayes/icons/bayes.png", width="500">")
+```
+
+As you might or might not have noticed, it doesnt say "file://" but "img:", this is important because JASP has to understand the path.
+The first element of the path must always be the name of the module that shipped the image, in this case `jaspLearnBayes`.
+JASP then replaces that part with the actual directory on the users computer. 
+The end result is an image in the results, enjoy! 

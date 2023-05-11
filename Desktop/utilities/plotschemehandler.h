@@ -1,7 +1,6 @@
 #ifndef PLOTSCHEMEHANDLER_H
 #define PLOTSCHEMEHANDLER_H
 
-#include "tempfiles.h"
 #include <QWebEngineUrlRequestJob>
 #include <QWebEngineUrlScheme>
 #include <QWebEngineUrlSchemeHandler>

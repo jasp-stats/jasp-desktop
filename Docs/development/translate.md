@@ -23,6 +23,7 @@ To aid the internationalization of JASP, the source files were heavily modified.
 
 ### 2. Inventory: Identifying all the source file types that contain strings that are shown to the user.
 This section describes which files types needed to be adapted such that the translation tools, described below, can extract the appropriate messages to the user. All the actions described here have already been carried out in the latest JASP 0.12 version. But if some translation is still missing, then the source code must be changed according to the procedure described here. Of course this also applies to new code.
+Pay attention that the strings you want to be translated will be displayed in WebLate without context, so it can be quite tricky for the translators to know what the right translations are. So if possible, do not cut the sentences in small parts.
 
 1. Qml Files
 
@@ -42,12 +43,12 @@ This section describes which files types needed to be adapted such that the tran
 3. R-files
 
 	*  a. All literal strings such as titles and messages must be embedded in the gettext() function, e.g, title=gettext("Hypothesis")
-	*  b.  A single % character in a gettext must be transformed within a gettextf with a double %%. Please let us know if you have a better solution.
+	*  b. A single % character in a gettext must be transformed within a gettextf with a double %%. Please let us know if you have a better solution.
 	*  c. All paste and paste0 functions must be replaced by the gettext or the gettextf functions. For example:
 
        overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
-
-			 should be coded as:
+	   
+	   should be coded as:
 
        overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
 
@@ -71,7 +72,16 @@ This section describes which files types needed to be adapted such that the tran
        should be coded as:
 
        xName <- bquote(paste(.(gettext("Population proportion")), ~theta))
+   
+	*  g. Another important issue is when unicode characters are used with \uxxxx: these characters must be set as arguments of gettextf. For example:
 
+		gettext("Hypothesized rate (\u03BB\u2080)")
+		
+		should be coded as
+			
+		gettextf("Hypothesized rate (%s)", "\u03BB\u2080")
+		
+		Also, when only unicode characters are used, it is most of the time not needed to translate them: if place of `alpha <- gettext("\u03B1")`, just write  `alpha <- "\u03B1"`
 
 
 ### 3. Definitions and terms.
