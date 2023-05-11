@@ -64,7 +64,7 @@ Bug fixes:
 		◦ Added eigenvalue factor characteristics to EFA (#114)
 	• In the Summary Stats Bayesian independent t-test module, both groups used to be assigned number 1 (#2095)
 	• The incorrect eta-square used to be show in unequal-cells ANOVA, Type III (#2024)
-	• Non parametric correlations (Spearman's & Kendall's tau) no longer return NaN (#2022)
+	• Non parametric correlations (Spearman's &amp; Kendall's tau) no longer return NaN (#2022)
 	• Analysis would terminate unexpectedly when performing certain linear regressions (#2016)
 	• Bayesian network estimation now with improved centrality plots and more informative error messages
 	• Issues with the Tile heatmap in the Descriptives module is fixed
