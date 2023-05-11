@@ -35,6 +35,45 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+	<release version="0.17.2" date="2023-05-11">
+		<description>
+JASP Release Notes 0.17.2
+New Features and Improvements:
+	• New language added: Polish
+	• Show R Syntax in Results[a] (#2008)
+	• Support for SPSS[b] zsav file import (#5032)
+	• New module: Power Analysis
+	• Regression
+		◦ Added Bayesian Logistic Regression #205
+	• Audit
+		◦ Audit module supports evaluation of stratified audit samples
+	• Frequencies
+		◦ Informed Multinomial Tests analyses (#113)
+		◦ Informed Multi-Binomial Test analyses
+	• Quality Control
+		◦ Handling of unequal subgroup sizes in subgroup charts (#237)
+Bug fixes:
+	• No error bars displayed when running a 2-way ANOVA (#1983)
+	• R commander drops Random Effect terms from a formula
+	• Repeated Measures ANOVA now runs when the model terms are not explicitly set (#1987)
+	• Regression Casewise Diagnostics table now shows the correct case ID when having missing data in dependent variable (#1989)
+	• Coefficient test and Confidence Interval (#173)
+	• Improvements to the Factor module
+		◦ Tables in multigroup CFA are aligned with those in the SEM module (#162)
+		◦ Added reliability, AVE, and HTMT option for CFA (#754, #671)
+		◦ Added eigenvalue factor characteristics to EFA (#114)
+	• In the Summary Stats Bayesian independent t-test module, both groups used to be assigned number 1 (#2095)
+	• The incorrect eta-square used to be show in unequal-cells ANOVA, Type III (#2024)
+	• Non parametric correlations (Spearman's & Kendall's tau) no longer return NaN (#2022)
+	• Analysis would terminate unexpectedly when performing certain linear regressions (#2016)
+	• Bayesian network estimation now with improved centrality plots and more informative error messages
+	• Issues with the Tile heatmap in the Descriptives module is fixed
+	• Binomial estimation had an issue with the observed count data in the Learn Bayes module #137
+	• The Meta Analysis module did not show estimated coefficients for models with 1 continuous covariate and no intercept #168
+	• Small fixes for the Mixed Models module
+	• Warning text was inconsistent with menu options jasp-issues #2093
+		</description>
+	</release>
 	<release version="0.17.1" date="2023-02-10">
 		<description>
 JASP Release Notes 0.17.1
