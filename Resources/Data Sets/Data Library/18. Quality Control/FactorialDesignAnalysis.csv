@@ -1,0 +1,17 @@
+﻿StdOrder,RunOrder,CenterPt,Blocks,Exposure_time,Develop_time,Mask_dimension,Yield
+1,2,1,1,below,30,small,8
+2,9,1,1,below,30,small,9
+3,12,1,1,above,30,small,34
+4,3,1,1,above,30,small,52
+5,11,1,1,below,45,small,16
+6,6,1,1,below,45,small,22
+7,13,1,1,above,45,small,45
+8,16,1,1,above,45,small,60
+9,15,1,1,below,30,large,6
+10,10,1,1,below,30,large,10
+11,7,1,1,above,30,large,30
+12,8,1,1,above,30,large,50
+13,4,1,1,below,45,large,15
+14,1,1,1,below,45,large,21
+15,14,1,1,above,45,large,44
+16,5,1,1,above,45,large,63

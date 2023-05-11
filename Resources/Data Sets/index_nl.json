@@ -907,9 +907,144 @@
       ],
       "debug": false
     },
+	  {
+      "name": "18. Quality Control",
+      "path": "18. Quality Control",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Type 1 Instrument Capability",
+          "path": "Type1InstrumentCapability.jasp",
+          "description": "A dataset containing 50 measurements of a similar part.  <br><br> The example JASP file demonstrates the use of the Type 1 Instrument Capability.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Type1InstrumentCapability.csv"
+        },
+        {
+          "name": "Linearity Study",
+          "path": "LinearityStudy.jasp",
+          "description": "A dataset containing 12 repeated measurements of five different parts and a reference value for each part.  <br><br> The example JASP file demonstrates the use of the Linearity Study.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "LinearityStudy.csv"
+        },
+        {
+          "name": "Gauge r & R Study (Long Format)",
+          "path": "GaugerRLongFormat.jasp",
+          "description": "A dataset containing measurements of ten different parts in the long format. Each part was measured three times each by three different operators.  <br><br> The example JASP file demonstrates the use of the Gauge r & R Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRLongFormat.csv"
+        },
+        {
+          "name": "Gauge r & R Study (Wide Format)",
+          "path": "GaugerRWideFormat.jasp",
+          "description": "A dataset containing measurements of ten different parts in the wide format. Each part was measured three times each by three different operators.  <br><br> The example JASP file demonstrates the use of the Gauge r & R Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRWideFormat.csv"
+        },
+        {
+          "name": "Nested Gauge r & R Study (Long Format)",
+          "path": "GaugerRNestedLongFormat.jasp",
+          "description": "A dataset containing measurements of 30 different parts in the long format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRNestedLongFormat.csv"
+        },
+        {
+          "name": "Nested Gauge r & R Study (Wide Format)",
+          "path": "GaugerRNestedWideFormat.jasp",
+          "description": "A dataset containing measurements of 30 different parts in the wide format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRNestedWideFormat.csv"
+        },
+        {
+          "name": "Attribute Agreement Analysis (Long Format)",
+          "path": "AttributesAgreementAnalysisLongFormat.jasp",
+          "description": "A dataset containing binary ratings (yes/no) of 15 different parts in the long format. Three raters rated each part three times.  <br><br> The example JASP file demonstrates the use of the Attribute Agreement Analyisis with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "AttributesAgreementAnalysisLongFormat.csv"
+        },
+        {
+          "name": "Attribute Agreement Analysis (Wide Format)",
+          "path": "AttributesAgreementAnalysisWideFormat.jasp",
+          "description": "A dataset containing binary ratings (yes/no) of 15 different parts in the wide format. Three raters rated each part three times.  <br><br>  The example JASP file demonstrates the use of the Attribute Agreement Analyisis with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
+        },
+        {
+          "name": "Range Method Study (Wide Format)",
+          "path": "RangeMethodDataWideFormat.jasp",
+          "description": "A dataset containing two repeated measurements for five different parts in the wide format.  <br><br> The example JASP file demonstrates the use of the Range Method Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "RangeMethodDataWideFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Subgroups (Long Format)",
+          "path": "SubgroupChartLongFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the long format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Subgroups wiht long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "SubgroupChartLongFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Subgroups (Wide Format)",
+          "path": "SubgroupChartWideFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the wide format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Subgroups wiht wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "SubgroupChartWideFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Individuals",
+          "path": "IndividualChartStages.jasp",
+          "description": "A dataset containing the yield for each month over one year. A column that specifies the stage for each month is added.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Individuals.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "IndividualChartStages.csv"
+        },
+        {
+          "name": "Attributes Chart (P Chart)",
+          "path": "PAttributesChart.jasp",
+          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (variable) sample sizes.  <br><br> The example JASP file demonstrates the use of the P chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "PAttributesChart.csv"
+        },
+        {
+          "name": "Attributes Chart (NP Chart)",
+          "path": "NPAttributesChart.jasp",
+          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (fixed) sample sizes.  <br><br> The example JASP file demonstrates the use of the NP chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "NPAttributesChart.csv"
+        },
+        {
+          "name": "Process Capability Study (Long Format)",
+          "path": "ProcessCapabilityStudyLongFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the long format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Process Capability Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ProcessCapabilityStudyLongFormat.csv"
+        },
+        {
+          "name": "Process Capability Study (Wide Format)",
+          "path": "ProcessCapabilityStudyWideFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the wide format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Process Capability Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ProcessCapabilityStudyWideFormat.csv"
+        },
+        {
+          "name": "Factorial Design Analysis",
+          "path": "FactorialDesignAnalysis.jasp",
+          "description": "A dataset containing the yield of a machine operated under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Factorial Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "FactorialDesignAnalysis.csv"
+        },
+        {
+          "name": "Response Surface Design Analysis",
+          "path": "ResponseSurfaceDesignAnalysis.jasp",
+          "description": "A dataset containing the measurements of the parts produced under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Response Surface Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ResponseSurfaceDesignAnalysis.csv"
+        }
+      ],
+      "debug": false
+    },
     {
-      "name": "18. Overig",
-      "path": "18. Miscellaneous",
+      "name": "19. Overig",
+      "path": "19. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
