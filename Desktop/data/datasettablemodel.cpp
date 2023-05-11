@@ -19,10 +19,9 @@
 #include "datasettablemodel.h"
 
 
-DataSetTableModel* DataSetTableModel::_singleton = nullptr;
-
-DataSetTableModel::DataSetTableModel() : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel())
+DataSetTableModel::DataSetTableModel(bool showInactive) : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel())
 {
+	_showInactive = showInactive;
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &DataSetTableModel::columnTypeChanged				);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this, &DataSetTableModel::labelChanged					);
@@ -30,8 +29,6 @@ DataSetTableModel::DataSetTableModel() : DataSetTableProxy(DataSetPackage::pkg()
 	//connect(this,		&DataSetTableModel::dataChanged,				this, &DataSetTableModel::onDataChanged,				Qt::QueuedConnection);
 
 	setFilterRole(int(DataSetPackage::specialRoles::filter));
-
-	if (_singleton == nullptr) _singleton = this;
 }
 
 

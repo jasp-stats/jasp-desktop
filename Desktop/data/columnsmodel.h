@@ -21,10 +21,10 @@ public:
 		ToolTipRole
 	 };
 
-	static ColumnsModel* singleton()	{ return _singleton; }
+	static ColumnsModel* modelForVariableInfo()	{ return _columnsModelForVariableInfo; }
 
-	ColumnsModel(DataSetTableModel * tableModel);
-	~ColumnsModel()		override { if(_singleton == this) _singleton = nullptr; }
+	ColumnsModel(DataSetTableModel * tableModel, bool forVariableInfo = false);
+	~ColumnsModel()		override { if(_columnsModelForVariableInfo == this) _columnsModelForVariableInfo = nullptr; }
 
 	QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>		roleNames()																			const	override;
@@ -54,7 +54,7 @@ private:
 
 	DataSetTableModel * _tableModel = nullptr;
 
-	static ColumnsModel* _singleton;
+	static ColumnsModel* _columnsModelForVariableInfo;
 };
 
 
