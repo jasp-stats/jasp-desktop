@@ -38,7 +38,8 @@ public:
 	void operator=(const JASPConfiguration&) = delete;
 
 public slots:
-	void remoteChanged(QString remoteURL);
+    void remoteChanged();
+
 
 signals:
 	void configurationProcessed(QString result);
