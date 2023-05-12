@@ -71,7 +71,7 @@ void JASPConfiguration::processConfiguration()
 	bool localOK = processLocal();
 
 	//read, parse & save remote settings
-	if(Settings::value(Settings::REMOTE_CONFIGURATION_URL).toString() != "")
+    if(Settings::value(Settings::REMOTE_CONFIGURATION).toBool())
     {
         auto conn = std::make_shared<QMetaObject::Connection>();
 		*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [=, this](QNetworkReply* reply) {
@@ -136,7 +136,7 @@ void JASPConfiguration::clear()
 	_modulesToLoad.clear();
 }
 
-void JASPConfiguration::remoteChanged(QString remoteURL)
+void JASPConfiguration::remoteChanged()
 {
 	processConfiguration();
 }

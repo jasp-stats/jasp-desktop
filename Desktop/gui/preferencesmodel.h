@@ -68,8 +68,9 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
-	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
-	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
+    Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
+    Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged	)
+    Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
 
 
 public:
@@ -137,6 +138,7 @@ public:
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
 	QString		remoteConfigurationURL()				const;
+    bool		remoteConfiguration()           		const;
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -195,6 +197,7 @@ public slots:
 	void setShowAllROptions(			bool		showAllROptions)				override;
 	void setShowRSyntaxInResults(		bool		showRSyntax);
 	void currentThemeNameHandler();
+    void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
 	
 signals:
@@ -245,6 +248,7 @@ signals:
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
+    void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
 
 private slots:

@@ -367,8 +367,8 @@ void MainWindow::makeConnections()
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
-
-    connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_jaspConfiguration,		&JASPConfiguration::remoteChanged								);
+    connect(_preferences,			&PreferencesModel::remoteConfigurationChanged,      _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+    connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_jaspConfiguration,		&JASPConfiguration::remoteChanged							);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
