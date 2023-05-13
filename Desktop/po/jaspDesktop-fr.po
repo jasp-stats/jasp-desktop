@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-05-09 13:24+0000\n"
+"Last-Translator: Josée Turcotte <jturcotte@laurentienne.ca>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4207,7 +4213,6 @@ msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr "Choisir le codepage ici"
@@ -4258,10 +4263,9 @@ msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
 msgstr "Fichiers CSV (*.csv *.txt *.tsv)"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr "Synchroniser les Données"
+msgstr "Synchroniser les données"
 
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
