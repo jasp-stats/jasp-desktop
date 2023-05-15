@@ -1,18 +1,9 @@
-#include "jaspConfParser.h"
+#include "jaspConfFormatParser.h"
 #include "log.h"
 
 #include<iostream>
 
-JASPConfigurationParser* JASPConfParser::_instance = nullptr;
-
-JASPConfigurationParser* JASPConfParser::getInstance()
-{
-	if(!_instance)
-        _instance = new JASPConfParser();
-	return _instance;
-}
-
-JASPConfParser::JASPConfParser()
+JASPConfFormatParser::JASPConfFormatParser()
 {
 	_parser.set_logger([](size_t line, size_t col, const std::string& msg, const std::string &rule) {
 		Log::log() << "JASPConfiguration parse error: line" << line << " column:" << col << ": " << msg << "\n";
@@ -25,6 +16,7 @@ JASPConfParser::JASPConfParser()
 	_parser["JASPConf"] = parseJASPConf;
 	_parser["ModuleStmt"] = parseModuleStmt;
 	_parser["AnalysisStmt"] = parseAnalysisStmt;
+	_parser["CommandStmt"] = parseCommandStmt;
 	_parser["OptionStmt"] = parseOptionStmt;
 	_parser["OptionDef"] = parseOptionDef;
 	_parser["LoadModuleList"] = parseLoadModuleList;
@@ -38,7 +30,7 @@ JASPConfParser::JASPConfParser()
 	_parser["Bool"] = parseBool;
 }
 
-std::any JASPConfParser::parseBool(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseBool(const peg::SemanticValues &vs, std::any &dt)
 {
 	switch (vs.choice()) {
 	case 0: //true
@@ -48,7 +40,7 @@ std::any JASPConfParser::parseBool(const peg::SemanticValues &vs, std::any &dt)
 	}
 }
 
-bool JASPConfParser::parse(JASPConfiguration* target, const QString &input)
+bool JASPConfFormatParser::parse(JASPConfiguration* target, const QString &input)
 {
 	try {
 		std::any dt = target;
@@ -60,27 +52,27 @@ bool JASPConfParser::parse(JASPConfiguration* target, const QString &input)
     return false;
 }
 
-std::any JASPConfParser::parseInt(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseInt(const peg::SemanticValues &vs, std::any &dt)
 {
 	return vs.token_to_number<long long>();
 }
 
-std::any JASPConfParser::parseFloat(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseFloat(const peg::SemanticValues &vs, std::any &dt)
 {
 	return vs.token_to_number<double>();
 }
 
-std::any JASPConfParser::parseString(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseString(const peg::SemanticValues &vs, std::any &dt)
 {
 	return QString(vs.token_to_string().c_str());
 }
 
-std::any JASPConfParser::parseName(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseName(const peg::SemanticValues &vs, std::any &dt)
 {
 	return QString(vs.token_to_string().c_str());
 }
 
-std::any JASPConfParser::parseValue(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseValue(const peg::SemanticValues &vs, std::any &dt)
 {
 	switch (vs.choice()) {
 	case 0: //Bool
@@ -98,12 +90,12 @@ std::any JASPConfParser::parseValue(const peg::SemanticValues &vs, std::any &dt)
 	}
 }
 
-std::any JASPConfParser::parseKeyValuePair(const peg::SemanticValues &vs, std::any& dt)
+std::any JASPConfFormatParser::parseKeyValuePair(const peg::SemanticValues &vs, std::any& dt)
 {
 	return KeyValue{any_cast<QString>(vs[0]), any_cast<QVariant>(vs[1])};
 }
 
-std::any JASPConfParser::parseVersion(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseVersion(const peg::SemanticValues &vs, std::any &dt)
 {
 	try
 	{
@@ -116,7 +108,7 @@ std::any JASPConfParser::parseVersion(const peg::SemanticValues &vs, std::any &d
 	}
 }
 
-std::any JASPConfParser::parseLoadModuleList(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseLoadModuleList(const peg::SemanticValues &vs, std::any &dt)
 {
 	QStringList list;
 	for(int i = 0; i < vs.size(); i++)
@@ -124,7 +116,7 @@ std::any JASPConfParser::parseLoadModuleList(const peg::SemanticValues &vs, std:
 	return list;
 }
 
-std::any JASPConfParser::parseOptionDef(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseOptionDef(const peg::SemanticValues &vs, std::any &dt)
 {
 	switch (vs.choice()) {
 	case 0: //lock
@@ -134,7 +126,7 @@ std::any JASPConfParser::parseOptionDef(const peg::SemanticValues &vs, std::any 
 	}
 }
 
-std::any JASPConfParser::parseOptionStmt(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseOptionStmt(const peg::SemanticValues &vs, std::any &dt)
 {
 	std::vector<Option> options;
 	for(auto& option : vs)
@@ -142,7 +134,13 @@ std::any JASPConfParser::parseOptionStmt(const peg::SemanticValues &vs, std::any
 	return options;
 }
 
-std::any JASPConfParser::parseAnalysisStmt(const peg::SemanticValues &vs, std::any &dt)
+
+std::any JASPConfFormatParser::parseCommandStmt(const peg::SemanticValues &vs, std::any &dt)
+{
+	return Commands{vs.token_to_string().c_str()};
+}
+
+std::any JASPConfFormatParser::parseAnalysisStmt(const peg::SemanticValues &vs, std::any &dt)
 {
 	Analysis res;
 	res.name = any_cast<QString>(vs[0]);
@@ -159,7 +157,7 @@ std::any JASPConfParser::parseAnalysisStmt(const peg::SemanticValues &vs, std::a
 	return res;
 }
 
-std::any JASPConfParser::parseModuleStmt(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseModuleStmt(const peg::SemanticValues &vs, std::any &dt)
 {
 	Module res;
 	res.name = any_cast<QString>(vs[0]);
@@ -173,7 +171,7 @@ std::any JASPConfParser::parseModuleStmt(const peg::SemanticValues &vs, std::any
 	return res;
 }
 
-std::any JASPConfParser::parseJASPConf(const peg::SemanticValues &vs, std::any &dt)
+std::any JASPConfFormatParser::parseJASPConf(const peg::SemanticValues &vs, std::any &dt)
 {
 	JASPConfiguration* conf = any_cast<JASPConfiguration*>(dt);
 	for(int i = 0; i < vs.size(); i++)
@@ -200,11 +198,15 @@ std::any JASPConfParser::parseJASPConf(const peg::SemanticValues &vs, std::any &
 		}
 		else if(vs[i].type() == typeid(LoadModulesList)) //LoadModulesList
 		{
-			conf->_modulesToLoad += any_cast<LoadModulesList>(vs[i]);
+			conf->setAdditionalModules(any_cast<LoadModulesList>(vs[i]));
 		}
 		else if(vs[i].type() == typeid(Version)) //Version
 		{
-			conf->_jaspVersion = any_cast<Version>(vs[i]);
+			conf->setJASPVersion(any_cast<Version>(vs[i]));
+		}
+		else if(vs[i].type() == typeid(Commands)) //Commands
+		{
+			conf->setStartupCommands(any_cast<Commands>(vs[i]).commands);
 		}
 	}
 	return conf;

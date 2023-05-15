@@ -84,7 +84,7 @@ void JASPConfiguration::processConfiguration()
 					throw std::runtime_error("Error fetching remote configuration file " + reply->request().url().toString().toStdString() + " : " + reply->errorString().toStdString());
 				QByteArray payload = reply->readAll();
 				clear();
-				if(!JASPConfigurationParser::getInstance()->parse(this, payload))
+				if(!JASPConfigurationParser::getParser(JASPConfigurationParser::Format::JASP)->parse(this, payload))
 					throw std::runtime_error("Parsing failed");
 
 				auto localConfFile = getLocalConfFile(true);
@@ -119,7 +119,7 @@ bool JASPConfiguration::processLocal()
 	{
 		auto localConfFile = getLocalConfFile();
 		QTextStream in(localConfFile.get());
-		if(!JASPConfigurationParser::getInstance()->parse(this, in.readAll()))
+		if(!JASPConfigurationParser::getParser(JASPConfigurationParser::Format::JASP)->parse(this, in.readAll()))
 			throw std::runtime_error("Parsing failed");
 	}
 	catch(std::runtime_error& e)
