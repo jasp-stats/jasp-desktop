@@ -160,8 +160,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-    _jaspConfiguration->processConfiguration();
-
 	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
 
@@ -210,6 +208,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
 	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
+
+	QTimer::singleShot(0, this, [&]() { _jaspConfiguration->processConfiguration();  });
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }

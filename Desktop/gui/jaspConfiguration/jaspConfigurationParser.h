@@ -7,22 +7,17 @@ class JASPConfigurationParser
 {
 
 public:
-    virtual bool parse(JASPConfiguration* target, const QString& input);
+	enum class Format {
+		JASP
+	};
 
-    //factory function
-    static JASPConfigurationParser* getParser(const QString& inputPath = "", const QString& input = "");
+	//factory function
+	static JASPConfigurationParser* getParser(const Format format);
+
+	virtual bool parse(JASPConfiguration* target, const QString& input) = 0;
 
 protected:
-    // singleton stuff
-    virtual JASPConfigurationParser* getInstance();
-    JASPConfigurationParser(JASPConfigurationParser& other) = delete;
-    void operator=(const JASPConfigurationParser&) = delete;
-    JASPConfigurationParser();
-
-private:
-    JASPConfigurationParser* _instance = nullptr;
-
-
+	JASPConfigurationParser();
 };
 
 #endif // JASPCONFIGURATION_PARSER_H
