@@ -1,3 +1,24 @@
+/*! @file altnavigation.h
+ *  @brief Defines a singleton that can be commanded to gather and parse local and remote configuration files.
+ *  It provides an interface that allows querying of the configuration data from both qml and cpp environments.
+ *  Configuration includes: Modules to enable, analysis options, qml runtime constants, startup commands, etc.
+ *
+ *  Defines a singleton that can be commanded to gather and parse local and remote configuration files.
+ *  It provides an interface that allows querying of the configuration data from both qml and cpp environments.
+ *  Configuration includes: Modules to enable, analysis options, qml runtime constants, startup commands,etc.
+ *
+ *	This subsystem will parse the local configuration file.
+ *	Additionally when a remote is provided in settings, the remote configuration and override
+ *	the local configuration file with the remote as a local cache (in case of offline JASP use)
+ *
+ *	This subsystem is made of this frontend class along with a Parser base class.
+ *	This class contains a factory function and associated enum so that additional formats can be added easily.
+ *	The parser classes make use of the interface of the JASPConfiguration class to fill in the internal data structures.
+ *
+ *
+ *  @author Rens Dofferhoff
+ */
+
 #ifndef JASPCONFIGURATION_H
 #define JASPCONFIGURATION_H
 
@@ -25,6 +46,7 @@ public:
 	bool optionLocked(const QString& module, const QString& analysis, const QString& optionName);
 	Json::Value getAnalysisOptionValues(const QString& module, const QString& analysis);
 	const QStringList* getAdditionalModules() { return &_modulesToLoad; }
+	QString getStartupCommands() { return _startupCommands; }
 
 
 	//Parser set functions
