@@ -67,7 +67,7 @@ public slots:
 
 
 private:
-	bool					_showInactive	= true;
+	bool					_showInactive;
 
 };
 

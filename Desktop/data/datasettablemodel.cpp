@@ -19,9 +19,10 @@
 #include "datasettablemodel.h"
 
 
-DataSetTableModel::DataSetTableModel(bool showInactive) : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel())
+DataSetTableModel::DataSetTableModel(bool showInactive) 
+: DataSetTableProxy(DataSetPackage::pkg()->dataSubModel()), _showInactive(showInactive)
 {
-	_showInactive = showInactive;
+	
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &DataSetTableModel::columnTypeChanged				);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this, &DataSetTableModel::labelChanged					);
