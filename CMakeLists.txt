@@ -155,6 +155,11 @@ include(Install)
 
 # Packs and creates installer executable for Windows, and macOS
 if(NOT LINUX)
+  if("${NIGHTLY_BUILD}" STREQUAL "ON")
+    SET(MACOS_JENKINS_SKIPPER "--skip-jenkins")
+  else()
+    SET(MACOS_JENKINS_SKIPPER "")
+  endif()
 	include(Pack)
 endif()
 
