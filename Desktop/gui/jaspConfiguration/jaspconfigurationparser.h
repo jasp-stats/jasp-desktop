@@ -8,7 +8,7 @@ class JASPConfigurationParser
 
 public:
 	enum class Format {
-		JASP
+        TOML
 	};
 
 	//factory function
