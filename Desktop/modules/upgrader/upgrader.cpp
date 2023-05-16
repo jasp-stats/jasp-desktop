@@ -130,7 +130,6 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 
 	if(_searcher.count(module) > 0)
 	{
-	
 		const StepsPerVersion & perVersion = _searcher.at(module);
 	
 		Version closestVersion = version;
@@ -162,11 +161,22 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 	
 			step->applyChanges(options, msgs);
 			stepsTaken.insert(aboutToStep); //And remember where we are going
-	
-			analysis["module"]	= step->toModule();
-			analysis["version"] = step->toVersion().asString();
-			analysis["name"]	= toFunction;
-	
+			
+			
+			if(analysis.isMember("module"))
+			{
+				analysis["module"]	= step->toModule();
+				analysis["version"] = step->toVersion().asString();
+				analysis["name"]	= toFunction;
+			}
+			else //It must have already been in a "dynamicModule" sub entry
+			{
+				analysis["dynamicModule"]["moduleName"]		= step->toModule();
+				analysis["dynamicModule"]["moduleVersion"]	= step->toVersion().asString();
+				analysis["dynamicModule"]["analysisEntry"]	= toFunction;
+				
+			}
+				
 			for(const std::string & optionLog : msgs[logId])
 				Log::log() << optionLog << std::endl;
 			msgs[logId].clear();
