@@ -20,11 +20,8 @@ public:
 		IconSourceRole,
 		ToolTipRole
 	 };
-
-	static ColumnsModel* modelForVariableInfo()	{ return _columnsModelForVariableInfo; }
-
-	ColumnsModel(DataSetTableModel * tableModel, bool forVariableInfo = false);
-	~ColumnsModel()		override { if(_columnsModelForVariableInfo == this) _columnsModelForVariableInfo = nullptr; }
+								ColumnsModel(DataSetTableModel * tableModel, bool forVariableInfo = false);
+								~ColumnsModel()		override;
 
 	QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>		roleNames()																			const	override;
@@ -33,7 +30,8 @@ public:
 	QStringList					getColumnNames()																	const;
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
-	QAbstractItemModel*			providerModel()																				override	{ return this;	}
+	QAbstractItemModel		*	providerModel()																				override	{ return this;	}
+	static ColumnsModel		*	modelForVariableInfo()	{ return _columnsModelForVariableInfo; }
 
 signals:
 	void namesChanged(QMap<QString, QString> changedNames);

@@ -256,9 +256,11 @@ private:
 	Analyses					*	_analyses				= nullptr;
 	ResultsJsInterface			*	_resultsJsInterface		= nullptr;
 	DataSetPackage				*	_package				= nullptr;
-	DataSetTableModel			*	_datasetTableModel		= nullptr;
+	DataSetTableModel			*	_datasetTableModel		= nullptr,
+								*	_dataSetModelVarInfo	= nullptr;
 	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
-	ColumnsModel				*	_columnsModel			= nullptr;
+	ColumnsModel				*	_columnsModel			= nullptr,
+								*	_columnsModelVarInfo	= nullptr;
 	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;

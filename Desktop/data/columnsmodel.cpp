@@ -5,7 +5,8 @@
 
 ColumnsModel* ColumnsModel::_columnsModelForVariableInfo = nullptr;
 
-ColumnsModel::ColumnsModel(DataSetTableModel *tableModel, bool forVariableInfo) : QTransposeProxyModel(tableModel), _tableModel(tableModel)
+ColumnsModel::ColumnsModel(DataSetTableModel *tableModel, bool forVariableInfo) 
+: QTransposeProxyModel(tableModel), _tableModel(tableModel)
 {
 	setSourceModel(tableModel);
 
@@ -13,16 +14,27 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel, bool forVariableInfo) 
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
-	if (!forVariableInfo && !_columnsModelForVariableInfo)
+	if (forVariableInfo)
 	{
-		_columnsModelForVariableInfo = new ColumnsModel(new DataSetTableModel(false), true);
+		assert(!_columnsModelForVariableInfo);
+		_columnsModelForVariableInfo = this;
+		
 		VariableInfo* info = new VariableInfo(_columnsModelForVariableInfo);
+		
 		connect(_columnsModelForVariableInfo, &ColumnsModel::namesChanged,		info, &VariableInfo::namesChanged		);
 		connect(_columnsModelForVariableInfo, &ColumnsModel::columnsChanged,	info, &VariableInfo::columnsChanged		);
 		connect(_columnsModelForVariableInfo, &ColumnsModel::columnTypeChanged, info, &VariableInfo::columnTypeChanged	);
 		connect(_columnsModelForVariableInfo, &ColumnsModel::labelsChanged,		info, &VariableInfo::labelsChanged		);
 		connect(_columnsModelForVariableInfo, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
 	}
+}
+
+
+
+ColumnsModel::~ColumnsModel()
+{ 
+	if(_columnsModelForVariableInfo == this) 
+		_columnsModelForVariableInfo = nullptr; 
 }
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
@@ -108,14 +120,16 @@ QStringList ColumnsModel::getColumnNames() const
 QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
 {
 	ColumnsModel* colModel = ColumnsModel::modelForVariableInfo();
-	if (!colModel) return QVariant();
+
+	if (!colModel) 
+		return QVariant();
 
 	try
 	{
 		int colIndex = colName.isEmpty() ? 0 : colModel->getColumnIndex(fq(colName));
 
 		if (colIndex < 0)
-			return "";
+			return QVariant();
 
 		switch(info)
 		{
@@ -141,5 +155,6 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
 		throw e;
 	}
-	return QVariant("");
+
+	return QVariant();
 }
