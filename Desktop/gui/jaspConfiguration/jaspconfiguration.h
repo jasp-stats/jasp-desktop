@@ -89,7 +89,7 @@ private:
 	QString _startupCommands;
 	QStringList _modulesToLoad;
 
-    const QString configurationFilename = "userConfiguration.conf";
+	const QString configurationFilename = "conf.toml";
 
 	explicit JASPConfiguration(QObject *parent = nullptr);
 	static JASPConfiguration* _instance;
