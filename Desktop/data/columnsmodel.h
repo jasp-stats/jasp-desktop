@@ -20,7 +20,7 @@ public:
 		IconSourceRole,
 		ToolTipRole
 	 };
-								ColumnsModel(DataSetTableModel * tableModel, bool forVariableInfo = false);
+								ColumnsModel(DataSetTableModel * tableModel);
 								~ColumnsModel()		override;
 
 	QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
@@ -31,14 +31,14 @@ public:
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
 	QAbstractItemModel		*	providerModel()																				override	{ return this;	}
-	static ColumnsModel		*	modelForVariableInfo()	{ return _columnsModelForVariableInfo; }
+	static ColumnsModel		*	singleton()	{ return _singleton; }
 
 signals:
-	void namesChanged(QMap<QString, QString> changedNames);
-	void columnsChanged(QStringList changedColumns);
-	void columnTypeChanged(QString colName);
-	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
-	void labelsReordered(QString columnName);
+	void namesChanged(		QMap<QString, QString>	changedNames);
+	void columnsChanged(	QStringList				changedColumns);
+	void columnTypeChanged(	QString					colName);
+	void labelsChanged(		QString					columnName, QMap<QString, QString> changedLabels);
+	void labelsReordered(	QString					columnName);
 
 public slots:
 	void datasetChanged(	QStringList				changedColumns,
@@ -50,9 +50,10 @@ public slots:
 private:
 	void refresh();
 
-	DataSetTableModel * _tableModel = nullptr;
+	DataSetTableModel	* _tableModel	= nullptr;
+	VariableInfo		* _info			= nullptr;	
 
-	static ColumnsModel* _columnsModelForVariableInfo;
+	static ColumnsModel	* _singleton;
 };
 
 

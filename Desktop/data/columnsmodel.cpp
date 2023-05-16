@@ -3,38 +3,35 @@
 #include "log.h"
 #include "utilities/qutils.h"
 
-ColumnsModel* ColumnsModel::_columnsModelForVariableInfo = nullptr;
+ColumnsModel* ColumnsModel::_singleton = nullptr;
 
-ColumnsModel::ColumnsModel(DataSetTableModel *tableModel, bool forVariableInfo) 
+ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) 
 : QTransposeProxyModel(tableModel), _tableModel(tableModel)
 {
+	assert(!_singleton);
+	_singleton = this;
+	
 	setSourceModel(tableModel);
 
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
-	if (forVariableInfo)
-	{
-		assert(!_columnsModelForVariableInfo);
-		_columnsModelForVariableInfo = this;
-		
-		VariableInfo* info = new VariableInfo(_columnsModelForVariableInfo);
-		
-		connect(_columnsModelForVariableInfo, &ColumnsModel::namesChanged,		info, &VariableInfo::namesChanged		);
-		connect(_columnsModelForVariableInfo, &ColumnsModel::columnsChanged,	info, &VariableInfo::columnsChanged		);
-		connect(_columnsModelForVariableInfo, &ColumnsModel::columnTypeChanged, info, &VariableInfo::columnTypeChanged	);
-		connect(_columnsModelForVariableInfo, &ColumnsModel::labelsChanged,		info, &VariableInfo::labelsChanged		);
-		connect(_columnsModelForVariableInfo, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
-	}
+	_info = new VariableInfo(_singleton);
+	
+	connect(this, &ColumnsModel::namesChanged,		_info, &VariableInfo::namesChanged		);
+	connect(this, &ColumnsModel::columnsChanged,	_info, &VariableInfo::columnsChanged	);
+	connect(this, &ColumnsModel::columnTypeChanged, _info, &VariableInfo::columnTypeChanged	);
+	connect(this, &ColumnsModel::labelsChanged,		_info, &VariableInfo::labelsChanged		);
+	connect(this, &ColumnsModel::labelsReordered,	_info, &VariableInfo::labelsReordered	);
 }
 
 
 
 ColumnsModel::~ColumnsModel()
 { 
-	if(_columnsModelForVariableInfo == this) 
-		_columnsModelForVariableInfo = nullptr; 
+	if(_singleton == this) 
+		_singleton = nullptr; 
 }
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
@@ -119,7 +116,7 @@ QStringList ColumnsModel::getColumnNames() const
 
 QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
 {
-	ColumnsModel* colModel = ColumnsModel::modelForVariableInfo();
+	ColumnsModel* colModel = ColumnsModel::singleton();
 
 	if (!colModel) 
 		return QVariant();

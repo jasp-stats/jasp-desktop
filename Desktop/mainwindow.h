@@ -259,8 +259,7 @@ private:
 	DataSetTableModel			*	_datasetTableModel		= nullptr,
 								*	_dataSetModelVarInfo	= nullptr;
 	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
-	ColumnsModel				*	_columnsModel			= nullptr,
-								*	_columnsModelVarInfo	= nullptr;
+	ColumnsModel				*	_columnsModel			= nullptr;
 	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
