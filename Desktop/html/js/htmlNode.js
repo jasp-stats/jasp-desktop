@@ -141,6 +141,13 @@ JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-message');
 		}
 
+		// Add more attributes element has, such as class name and mathml things...
+		let attrObj = $elObj.prop("attributes");
+		let elementAttr = ""
+		$.each(attrObj, function() {
+			elementAttr += this.name + '= "' + this.value + '"';
+		});
+		attrs  += elementAttr;
 
 		if (style)
 			attrs = style + ' ' + attrs
