@@ -127,6 +127,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_analyses				= new Analyses();
 	_engineSync				= new EngineSync(this);
 	_datasetTableModel		= new DataSetTableModel();
+	_dataSetModelVarInfo	= new DataSetTableModel(false);
 	_labelModel				= new LabelModel();
 	
 	initLog(); //initLog needs _preferences and _engineSync!
@@ -135,8 +136,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
-	_labelFilterGenerator	= new labelFilterGenerator(_labelModel, this);
-	_columnsModel			= new ColumnsModel(_datasetTableModel);
+	_labelFilterGenerator	= new labelFilterGenerator(_labelModel,		this);
+	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
 	_ribbonModel			= new RibbonModel();

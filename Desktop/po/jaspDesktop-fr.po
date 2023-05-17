@@ -4207,7 +4207,6 @@ msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
 msgstr "Choisir le codepage ici"
@@ -4258,10 +4257,9 @@ msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
 msgstr "Fichiers CSV (*.csv *.txt *.tsv)"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr "Synchroniser les Données"
+msgstr "Synchroniser les données"
 
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
