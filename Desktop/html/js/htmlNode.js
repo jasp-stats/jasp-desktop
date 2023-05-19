@@ -143,14 +143,12 @@ JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 
 		// Add more attributes element has, such as class name and mathml things...
 		let attrObj = $elObj.prop("attributes");
-		let elementAttr = ""
 		$.each(attrObj, function() {
-			elementAttr += this.name + '= "' + this.value + '"';
+			attrs += this.name + '="' + this.value + '" ';
 		});
-		attrs  += elementAttr;
 
 		if (style)
-			attrs = style + ' ' + attrs
+			attrs = attrs + style
 
 		return attrs;
 	},

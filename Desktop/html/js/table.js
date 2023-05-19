@@ -826,8 +826,13 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		}
 
 
+		let attrObj = $elObj.prop("attributes");
+		$.each(attrObj, function() {
+			attrs += this.name + '="' + this.value + '" ';
+		});
+
 		if (style)
-			attrs = style + ' ' + attrs
+			attrs = attrs + style
 
 		return attrs;
 	},

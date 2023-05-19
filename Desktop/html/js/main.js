@@ -518,18 +518,12 @@ $(document).ready(function () {
 
 	$("body").click(window.unselectByClickingBody)
 })
-
-// We set head for exported HTML file to make sure it render correctly,
-// Note that means user requires access to the network when opening html
-var headLinkStuff = "<link rel='stylesheet' href= 'https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.css' crossorigin=''>\n"
-        + "<script defer src='https://cdn.jsdelivr.net/npm/katex@0.16.6/dist/katex.min.js' crossorigin= ''></script>\n";
 		
 var wrapHTML = function (html, exportParams) {
 	var completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
-	completehtml += headLinkStuff
 	completehtml += "		<title>JASP</title>"
 	completehtml += "		<style>"
 	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
@@ -539,9 +533,16 @@ var wrapHTML = function (html, exportParams) {
 	completehtml += "	</head>\n"
 
 	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
-
 	completehtml += "	<body " + styles + ">\n";
-	completehtml += html;
+
+	// Yeah I know it's not smart, but I don't have time to fully clean up them right now:)
+	// So we make formula only render as matmml outside JASP to exported/pasting html in browser/docs
+	const htmlObj = $.parseHTML(html);
+	$(htmlObj).find('.katex-html').remove();
+	$(htmlObj).find('math').find('annotation').remove();
+	const result = $(htmlObj).prop('outerHTML');
+
+	completehtml += result;
 	completehtml += "	</body>\n"
 	completehtml += "</html>";
 	return completehtml;
