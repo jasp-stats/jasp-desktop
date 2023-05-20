@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-05-21 07:18+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -3475,7 +3481,7 @@ msgstr "不再顯示"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "資料庫"
 
 msgctxt "Database|"
 msgid ""
@@ -3538,7 +3544,7 @@ msgstr "用戶名"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "密碼"
 
 msgctxt "Database|"
 msgid "Remember me"
@@ -3546,65 +3552,65 @@ msgstr "記得使用者資訊"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "連接到數據庫"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "查詢"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "執行"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "預覽數據"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "載入到JASP"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr ""
+msgstr "以分鐘為單位的同步間隔： "
 
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
-msgstr ""
+msgstr "0 表示不自動同步，但您仍然可以通過按 Ctrl/Cmd+Y 手動同步"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "最大引擎數： "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "顯示引擎"
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr ""
+msgstr "將缺失值顯示為： "
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
-msgstr ""
+msgstr "使用指數符號"
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's textrendering"
-msgstr ""
+msgstr "使用 Qt 的文本渲染"
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr ""
+msgstr "如果禁用會將文本渲染切換為本機。"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "報告模式"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "JASP 是否應該以報告模式運行。"
 
 msgctxt "MainPage|"
 msgid "Hide input options"
@@ -3616,15 +3622,15 @@ msgstr "顯示輸入選項"
 
 msgctxt "ModuleInstaller|"
 msgid "Install"
-msgstr ""
+msgstr "安裝"
 
 msgctxt "ModuleInstaller|"
 msgid "Press this to install your selected Module"
-msgstr ""
+msgstr "按此鍵安裝所選模組"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module to install"
-msgstr ""
+msgstr "選擇要安裝的 JASP 模組"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3643,7 +3649,7 @@ msgstr ""
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "添加分析"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
@@ -3672,7 +3678,7 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "查詢失敗：'%1'"
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
@@ -3680,11 +3686,11 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr ""
+msgstr "未找到活動結果，也許您的查詢有問題？"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "數據庫密碼"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3697,14 +3703,14 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "連接失敗"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
-msgstr ""
+msgstr "由於“%1”無法連接到數據庫，要嘗試使用不同的密碼嗎？"
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
@@ -3723,13 +3729,13 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "選擇現有資料夾"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '$1' but it doesn't exist."
-msgstr ""
+msgstr "要安裝開發模組，您需要選擇現有資料夾，您選擇了“$1”，但它不存在。"
 
 msgctxt "Reporter|"
 msgid "No datafile"
@@ -3864,16 +3870,16 @@ msgstr ""
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R 正在（重新）啟動"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R 正在安裝或載入模組 %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R 已停止"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
@@ -3881,11 +3887,11 @@ msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "選項"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "變數清單"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
@@ -3893,36 +3899,35 @@ msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "選項卡視圖"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "變數表單"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "顯示所有選項"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "R 控制台"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " 與 "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "具有未選擇的模組"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "已選擇模組 "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "按下下面的檔案進行同步或使用 "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
