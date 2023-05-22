@@ -664,8 +664,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		// Config Katex auto-render to render formula in result page(except JASP note)
 		renderMathInElement(this.el, {
 			delimiters: [
-				{left: "$$", 				right: "$$",				display: true},
-				{left: "$", 				right: "$",					display: false}
+				{left: "\\[", 				right: "\\]",				display: true},
+				{left: "\\(", 				right: "\\)",				display: false}
 			  ],
 			output: "htmlAndMathml", // ["html","mathml","htmlAndMathml"(default)]
 			throwOnError : false

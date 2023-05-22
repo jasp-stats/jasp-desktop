@@ -528,7 +528,7 @@ var wrapHTML = function (html, exportParams) {
 	completehtml += "		<style>"
 	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
 	if (exportParams.isFormatted())
-		completehtml += "			body {font-family: sans-serif;}"
+		completehtml += "			body {font-family: sans-serif;} math {height: 2em;}"
 	completehtml += "		</style>"
 	completehtml += "	</head>\n"
 

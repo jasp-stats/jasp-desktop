@@ -241,12 +241,20 @@ JASPWidgets.Exporter = {
 			return "";
 
 		var style = "";
-		for (var i = 0; i < styleItems.length; i++)
-		{
-			var styleItem = styleItems[i];
-			if (css[styleItem])
-				style += styleItem + ": " + css[styleItem] + "; "
-		}
+		element.each(function() {
+			// So let's temporarily use the parent to fix showing inline
+			// TODO: to be cleaned up after the overall refactoring
+			if (this.className.match(/(^|\s)katex*/)) {
+				style = "";
+			} else {
+				for (var i = 0; i < styleItems.length; i++)
+				{
+					var styleItem = styleItems[i];
+					if (css[styleItem])
+						style += styleItem + ": " + css[styleItem] + "; "
+				}
+			}
+		});
 
 		if (style)
 			style = "style='" + style + "'";
