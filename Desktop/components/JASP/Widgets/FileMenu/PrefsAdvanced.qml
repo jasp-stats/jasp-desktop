@@ -205,8 +205,58 @@ ScrollView
 				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
-				KeyNavigation.tab:		logToFile
+				KeyNavigation.tab:		useRemoteConf
 				activeFocusOnTab:		true
+			}
+
+
+			CheckBox
+			{
+				id:					useRemoteConf
+				label:				qsTr("Use remote configuration file.")
+				checked:			preferencesModel.remoteConfiguration
+				onCheckedChanged:	preferencesModel.remoteConfiguration = checked
+				toolTip:			qsTr("Use the remote configuration file pointed to by URL")
+
+				KeyNavigation.tab:		remoteConfURL
+			}
+
+			Item
+			{
+				id:		remoteConfItem
+				width:	parent.width
+				height:	cranRepoUrl.height
+				enabled: preferencesModel.remoteConfiguration
+
+				Label
+				{
+					id:		remoteSettingsLabel
+					text:	qsTr("Configuration URL: ")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					remoteConfURL
+
+					text:				preferencesModel.remoteConfigurationURL
+					onEditingFinished:	preferencesModel.remoteConfigurationURL = text
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			remoteSettingsLabel.right
+						right:			parent.right
+					}
+
+					KeyNavigation.tab:	logToFile
+				}
 			}
 		}
 		

@@ -148,7 +148,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
-	_columnTypesModel		= new ColumnTypesModel(this);
+    _columnTypesModel		= new ColumnTypesModel(this);
+	_jaspConfiguration		= JASPConfiguration::getInstance(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -208,6 +209,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
 	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
+
+	QTimer::singleShot(0, this, [&]() { _jaspConfiguration->processConfiguration();  });
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -365,7 +368,8 @@ void MainWindow::makeConnections()
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
-
+    connect(_preferences,			&PreferencesModel::remoteConfigurationChanged,      _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+    connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_jaspConfiguration,		&JASPConfiguration::remoteChanged							);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
@@ -421,6 +425,8 @@ void MainWindow::makeConnections()
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
 	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
+
+	connect(_jaspConfiguration,		&JASPConfiguration::configurationProcessed,			this,					&MainWindow::loadModulesFromUserConfiguration				);
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
@@ -468,7 +474,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(columnType::scale)			);
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
+    _qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
 	bool	debug	= false,
 			isMac	= false,
@@ -1879,4 +1885,18 @@ QString MainWindow::versionString()
 		+	" (" + QString::fromStdString(AppInfo::getArchLabel()) + ")"
 #endif
 			;
+}
+
+
+void MainWindow::loadModulesFromUserConfiguration(QString state)
+{
+	if(state == "FAIL")
+		return;
+
+	for(const QString& moduleName : *_jaspConfiguration->getAdditionalModules())
+	{
+		auto button = _ribbonModel->ribbonButtonModel(moduleName.toStdString());
+		int index = _ribbonModel->ribbonButtonModelIndex(button);
+		_ribbonModel->setModuleEnabled(index, true);
+	}
 }

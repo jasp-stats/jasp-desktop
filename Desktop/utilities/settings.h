@@ -73,7 +73,9 @@ public:
 		REPORT_SHOW,
 		SHOW_RSYNTAX,
 		SHOW_ALL_R_OPTIONS,
-		SHOW_RSYNTAX_IN_RESULTS
+        SHOW_RSYNTAX_IN_RESULTS,
+        REMOTE_CONFIGURATION,
+		REMOTE_CONFIGURATION_URL
 	};
 
 	static QVariant value(Settings::Type key);

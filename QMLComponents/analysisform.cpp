@@ -84,6 +84,20 @@ QString AnalysisForm::generateWrapper() const
 	return _rSyntax->generateWrapper();
 }
 
+QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const
+{
+	if(_analysis)
+		return _analysis->getConstant(key, defaultValue);
+	return defaultValue;
+}
+
+QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const
+{
+	if(_analysis)
+		return _analysis->getConstant(key, defaultValue, module, analysis);
+	return defaultValue;
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)
@@ -305,6 +319,18 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 			text.append("<li>").append(msg).append("</li>");
 
 	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
+}
+
+void AnalysisForm::lockOptions()
+{
+	if(!_analysis)
+		return;
+
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if(_analysis->optionLocked(control->name()))
+			control->setEnabled(false);
+	}
 }
 
 void AnalysisForm::setInfo(QString info)
@@ -611,6 +637,7 @@ void AnalysisForm::setAnalysisUp()
 	Json::Value defaultOptions = _analysis->orgBoundValues();
 	_analysis->clearOptions();
 	bindTo(defaultOptions);
+	lockOptions();
 
 	blockValueChangeSignal(false, false);
 

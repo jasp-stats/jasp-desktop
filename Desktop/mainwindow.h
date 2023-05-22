@@ -40,6 +40,7 @@
 #include "gui/aboutmodel.h"
 #include "gui/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
@@ -240,6 +241,8 @@ private slots:
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
 
+	void loadModulesFromUserConfiguration(QString state);
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 	void makeAppleMenu();
@@ -280,7 +283,8 @@ private:
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
-	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+    CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+    JASPConfiguration			*	_jaspConfiguration		= nullptr;
 
 	QSettings						_settings;
 

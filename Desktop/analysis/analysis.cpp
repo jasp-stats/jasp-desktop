@@ -29,6 +29,7 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/reporter.h"
 #include "results/resultsjsinterface.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses(), moduleVersion),
@@ -156,6 +157,21 @@ bool Analysis::checkAnalysisEntry()
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
 		return false;
 	}
+}
+
+QVariant Analysis::getConstant(const QString& key, const QVariant& defaultValue) const
+{
+    return JASPConfiguration::getInstance()->getConstant(key, defaultValue, tq(module()), tq(name()));
+}
+
+QVariant Analysis::getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis) const
+{
+	return JASPConfiguration::getInstance()->getConstant(key, defaultValue, module, analysis);
+}
+
+bool Analysis::optionLocked(const QString& name) const
+{
+	return JASPConfiguration::getInstance()->optionLocked(tq(module()), tq(this->name()), name);
 }
 
 void Analysis::setTitle(const std::string& title)
