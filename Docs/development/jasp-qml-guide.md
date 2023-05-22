@@ -44,6 +44,7 @@ Table of Contents:
       - [Layout.rowSpan](#layoutrowspan)
       - [Layout.columnSpan](#layoutcolumnspan)
   - [Connecting Multiple Components](#connecting-multiple-components)
+  - [Configurable Constants](#configurable-constants)
   - [An Example](#an-example)
     - [1. Specifying Imports](#1-specifying-imports)
     - [2. Adding the Form](#2-adding-the-form)
@@ -897,7 +898,7 @@ Example:
 		id:                 cr
 		name:               "cr"
 		indexDefaultValue:  0
-		startValue:	        "high"
+		startValue:         "high"
 		values: [
 			{ label: qsTr("High"),		value: "high"},
 			{ label: qsTr("Low"), 		value: "low"},
@@ -906,8 +907,8 @@ Example:
 
 	PercentField
 	{
-		name: 				"crCustom"
-		defaultValue:	form.getConstant(ir.value, ir.value == "high" ? 100 : 50)
+		name:           "crCustom"
+		defaultValue:   form.getConstant(ir.value, ir.value == "high" ? 100 : 50)
 	}
   ```
 
