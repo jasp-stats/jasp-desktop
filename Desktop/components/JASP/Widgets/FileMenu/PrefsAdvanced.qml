@@ -208,6 +208,7 @@ ScrollView
 				KeyNavigation.tab:		useRemoteConf
 				activeFocusOnTab:		true
 			}
+			
 
 
 			CheckBox
@@ -255,7 +256,44 @@ ScrollView
 						right:			parent.right
 					}
 
-					KeyNavigation.tab:	logToFile
+					KeyNavigation.tab:	localconf
+				}
+			}
+
+			Item
+			{
+				id:					localconf
+				//enabled:			!preferencesModel.remoteConfiguration
+				width:				parent.width
+				height:				browseLocalconfButton.height
+
+				RectangularButton
+				{
+					id:					browseLocalconfButton
+					text:				qsTr("Select configuration file")
+					onClicked:			preferencesModel.browseConfigurationFile()
+					anchors.left:		parent.left
+					toolTip:			qsTr("Select configuration file.")
+
+					KeyNavigation.tab:		browseLocalconfFolderText.textInput
+					activeFocusOnTab:		true
+				}
+
+				PrefsTextInput
+				{
+					id:					browseLocalconfFolderText
+
+					text:				preferencesModel.localConfigurationPATH
+					onEditingFinished:	preferencesModel.localConfigurationPATH = text
+					nextEl:				logToFile
+
+					height:				browseLocalconfButton.height
+					anchors
+					{
+						left:			browseLocalconfButton.right
+						right:			parent.right
+						top:			parent.top
+					}
 				}
 			}
 		}

@@ -63,6 +63,8 @@ public:
 	JASPConfiguration(JASPConfiguration& other) = delete;
 	void operator=(const JASPConfiguration&) = delete;
 
+	QString getDefaultConfigurationPath() { return defaultConfigurationPath; };
+
 public slots:
     void remoteChanged();
 
@@ -77,8 +79,9 @@ private:
 	bool processLocal();
 	void clear();
 
-
 	std::shared_ptr<QFile> getLocalConfFile(bool truncate = false);
+	std::shared_ptr<QFile> getDefaultConfFile(bool truncate = false);
+	std::shared_ptr<QFile> getConfFile(QString path, bool truncate = false);
 
 	QNetworkAccessManager	_networkManager;
 
@@ -89,10 +92,12 @@ private:
 	QString _startupCommands;
 	QStringList _modulesToLoad;
 
-	const QString configurationFilename = "conf.toml";
-
 	explicit JASPConfiguration(QObject *parent = nullptr);
 	static JASPConfiguration* _instance;
+
+	const QString defaultConfigurationFilename = "conf.toml";
+	QString defaultConfigurationFolder;
+	QString defaultConfigurationPath;
 };
 
 #endif // JASPCONFIGURATION_H

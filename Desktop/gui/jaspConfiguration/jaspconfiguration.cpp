@@ -1,6 +1,7 @@
 #include "jaspconfiguration.h"
 #include "jaspconfigurationparser.h"
 #include "utilities/settings.h"
+#include "gui/preferencesmodel.h"
 #include "log.h"
 #include <QNetworkReply>
 #include <QStandardPaths>
@@ -24,7 +25,6 @@ JASPConfiguration* JASPConfiguration::getInstance(QObject *parent)
 JASPConfiguration::JASPConfiguration(QObject *parent)
 	: QObject{parent}
 {
-
 }
 
 bool JASPConfiguration::constantExists(const QString &constant, const QString &module, const QString &analysis)
@@ -87,10 +87,10 @@ void JASPConfiguration::processConfiguration()
                 if(!JASPConfigurationParser::getParser(JASPConfigurationParser::Format::TOML)->parse(this, payload))
 					throw std::runtime_error("Parsing failed");
 
-				auto localConfFile = getLocalConfFile(true);
-				localConfFile->write(payload);
-				localConfFile->close();
-				Log::log() << "Updated local copy of remote configuration" << std::endl;
+				auto conf = getDefaultConfFile(true);
+				conf->write(payload);
+				conf->close();
+				Log::log() << "Stored local copy of remote configuration" << std::endl;
 				emit this->configurationProcessed("REMOTE");
 			}
 			catch (std::runtime_error& e)
@@ -142,16 +142,38 @@ void JASPConfiguration::remoteChanged()
 }
 
 std::shared_ptr<QFile> JASPConfiguration::getLocalConfFile(bool truncate) {
-	QString confPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	QDir confDir;
-	if(!confDir.mkpath(confPath))
-		throw std::runtime_error("Could not Access app configuration path");
 
-	QString configurationFilePath = confPath + "/" + configurationFilename;
-	std::shared_ptr<QFile> localConfFile = std::make_shared<QFile>(configurationFilePath);
+	//the right default path can only be determined here, so after jasp init
+	if(PreferencesModel::prefs()->localConfigurationPATH() == "")
+	{
+		defaultConfigurationFolder = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+		defaultConfigurationPath = defaultConfigurationFolder + "/" + defaultConfigurationFilename;
+		PreferencesModel::prefs()->setLocalConfigurationPATH(defaultConfigurationPath);
+	}
+
+	if(Settings::value(Settings::REMOTE_CONFIGURATION).toBool()) //if we use a remote but we are offline
+		return getDefaultConfFile(truncate);
+	else //user specified local file
+		return getConfFile(Settings::value(Settings::LOCAL_CONFIGURATION_PATH).toString(), truncate);
+}
+
+std::shared_ptr<QFile> JASPConfiguration::getDefaultConfFile(bool truncate)
+{
+	QDir confDir;
+	defaultConfigurationFolder = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	defaultConfigurationPath = defaultConfigurationFolder + "/" + defaultConfigurationFilename;
+	if(!confDir.mkpath(defaultConfigurationFolder))
+		throw std::runtime_error("Could not access app configuration path");
+
+	return getConfFile(defaultConfigurationPath, truncate);
+}
+
+std::shared_ptr<QFile> JASPConfiguration::getConfFile(QString path, bool truncate)
+{
+	std::shared_ptr<QFile> localConfFile = std::make_shared<QFile>(path);
 	QIODeviceBase::OpenMode flags = QIODeviceBase::ReadWrite | QIODeviceBase::Text | (truncate ? QIODeviceBase::Truncate : QIODeviceBase::NotOpen);
 	if (!localConfFile->open(flags))
-		throw std::runtime_error("Could not open local configuration file " + configurationFilePath.toStdString() + ": " + localConfFile->errorString().toStdString());
+		throw std::runtime_error("Could not open local configuration file " + path.toStdString() + ": " + localConfFile->errorString().toStdString());
 	return localConfFile;
 }
 

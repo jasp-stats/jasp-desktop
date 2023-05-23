@@ -1,6 +1,8 @@
 #include "settings.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "utilities/qutils.h"
 #include "enginedefinitions.h"
+
 
 QSettings* Settings::_settings = nullptr;
 
@@ -89,10 +91,10 @@ const Settings::Setting Settings::Values[] = {
 	{"showReports",					false	},
 	{"showRSyntax",					false	},
 	{"showAllROptions",				false	},
-	{"guiQtTextRender",				true	},
     {"showRSyntaxInResults",		false	},
     {"remoteConfiguration",			false   },
-    {"remoteConfigurationURL",		""      }
+	{"remoteConfigurationURL",		""      },
+	{"localConfigurationPath",		""		}
 };	
 
 QVariant Settings::value(Settings::Type key)

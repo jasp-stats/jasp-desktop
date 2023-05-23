@@ -69,7 +69,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
     Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
-    Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged	)
+	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
+	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
     Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
 
 
@@ -137,6 +138,7 @@ public:
 	void		zoomReset();
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
+	QString		localConfigurationPATH()				const;
 	QString		remoteConfigurationURL()				const;
     bool		remoteConfiguration()           		const;
 
@@ -158,6 +160,7 @@ public slots:
 	void setDataAutoSynchronization(	bool		dataAutoSynchronization);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
+	void browseConfigurationFile();
 	void updateUtilsMissingValues();
 	void removeMissingValue(			QString		value);
 	void addMissingValue(				QString		value);
@@ -197,6 +200,7 @@ public slots:
 	void setShowAllROptions(			bool		showAllROptions)				override;
 	void setShowRSyntaxInResults(		bool		showRSyntax);
 	void currentThemeNameHandler();
+	void setLocalConfigurationPATH(		QString		path);
     void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
 	
@@ -248,6 +252,7 @@ signals:
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
+	void localConfigurationPATHChanged(	QString		path);
     void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
 
