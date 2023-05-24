@@ -221,6 +221,65 @@ In certain cases you might need to decode and encode the columns used in a JASP 
 - `qmlUtils.decodeJson(jsonVal, qmlItem)`: converts all occurences of encoded  columnnames in the `jsonVal` into original columnames. The same goes here for `qmlItem`.
 All of the above return the changed string/json.
 
+### Reusing jsFunction
+
+Sometimes the `jsFunction` passed to `ChangeJS` might be quite complex (e.g., when dealing with `RowComponent` and the like). Additionally, if the upgrade was done on a reusable QML component, and the component was actually reused multiple times, you might want to define a reusable `jsFunction` and reuse it as well. Note that the function must be defined *outside* of the `Upgrade` component.
+
+In this example we will assume that there is a component that outputs an array of objects where each objects had four keys: `name`, `type`, `parAlpha`, `parBeta`. However, we decided to rename `parAlpha` to just `alpha`, and `parBeta` to just `beta`.
+
+```qml
+Upgrades
+{
+	// Reusable component upgrader function
+	function reusableComponentUpgrader(name) {
+		// It actually returns a function which gets passed to ChangeJS
+		return function(options) {
+			let newModels = options[name].map(model => {
+				let newModel = {
+					name:	model.name,
+					type:	model.type,
+					alpha:	model.parAlpha,
+					beta:	model.parBeta
+				}
+
+				return newModel;
+			});
+
+			return newModels;
+		}
+	}
+
+	Upgrade
+	{
+		from: "x.x.x"
+		to: "x.x.y"
+
+		ChangeJS
+		{
+			name:		"optionWithReusableComponent"
+			jsFunction:	reusableComponentUpgrader("someOptionWithReusableComponent")
+		}
+	}
+}
+```
+
+In case you have reused the QML component many times, you might want to avoid copy pasting the `ChangeJS` statements as well. You can achieve this by using `Repeater` in QML:
+
+```qml
+Repeater
+{
+	model: ["componentOne", "componentTwo", "componentThree", "componentFour"]
+	ChangeJS
+	{
+		name:		modelData
+		jsFunction:	reusableComponentUpgrader(modelData)
+	}
+}
+```
+
+This way you apply the `someComponentUpgrader` function on the four components.
+
+
 ## Remove option
 For completion's sake a `ChangeRemove` item was added and it allows for an option to be completely removed from an option list if it isn't necessary anymore.
 But honestly, this is not very useful because it would be silently dropped by JASP anyway. However, you can use it like:
