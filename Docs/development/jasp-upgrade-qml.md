@@ -234,7 +234,9 @@ Upgrades
 	function reusableComponentUpgrader(name) {
 		// It actually returns a function which gets passed to ChangeJS
 		return function(options) {
+			// Map over the original array
 			let newModels = options[name].map(model => {
+				// Apply the upgrades to each object in the array
 				let newModel = {
 					name:	model.name,
 					type:	model.type,
@@ -251,13 +253,15 @@ Upgrades
 
 	Upgrade
 	{
-		from: "x.x.x"
-		to: "x.x.y"
+		functionName:	"SomeAnalysis"
+		fromVersion:	"0.1"
+		toVersion:		"0.2"
+
 
 		ChangeJS
 		{
 			name:		"optionWithReusableComponent"
-			jsFunction:	reusableComponentUpgrader("someOptionWithReusableComponent")
+			jsFunction:	reusableComponentUpgrader("optionWithReusableComponent")
 		}
 	}
 }
@@ -277,7 +281,7 @@ Repeater
 }
 ```
 
-This way you apply the `someComponentUpgrader` function on the four components.
+This way you apply the `reusableComponentUpgrader` function on all components specified in the `model` array.
 
 
 ## Remove option
