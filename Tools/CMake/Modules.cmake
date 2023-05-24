@@ -43,6 +43,7 @@ set(JASP_EXTRA_MODULES
     "jaspMachineLearning"
     "jaspMetaAnalysis"
     "jaspNetwork"
+    "jaspPower"
     "jaspPredictiveAnalytics"
     "jaspProphet"
     "jaspQualityControl"
