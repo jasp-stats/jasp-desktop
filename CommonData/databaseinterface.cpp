@@ -352,7 +352,6 @@ void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> & v
 	});
 
 	filterIncRevision(filterIndex);
-		
 
 	transactionWriteEnd();
 }

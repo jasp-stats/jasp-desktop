@@ -50,9 +50,8 @@ public slots:
 private:
 	void refresh();
 
-	DataSetTableModel	* _tableModel	= nullptr;
-
-	static ColumnsModel	* _singleton;
+	DataSetTableModel		* _tableModel	= nullptr;
+	static ColumnsModel		* _singleton;
 };
 
 

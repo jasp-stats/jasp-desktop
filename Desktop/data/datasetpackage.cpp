@@ -1834,6 +1834,9 @@ void DataSetPackage::columnInsert(size_t column)
 {
 	setSynchingExternally(false); //Don't synch with external file after editing
 	beginSynchingData(false);
+	
+	if(column > dataColumnCount())
+		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
 	_dataSet->insertColumn(column);
 	setColumnName(column, freeNewColumnName(column));
@@ -1863,6 +1866,9 @@ void DataSetPackage::rowInsert(size_t row)
 	stringvec changed;
 
 	setDataSetSize(dataColumnCount(), dataRowCount()+1);
+	
+	if(row >= dataRowCount())
+		row = dataRowCount() - 1; //in columnInsert we do not first expand the columncount so here is -1 and not there
 
 	for(int c=0; c<dataColumnCount(); c++)
 	{

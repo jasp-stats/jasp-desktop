@@ -230,7 +230,6 @@ MainWindow::~MainWindow()
 		for(int i=_qml->rootObjects().size() - 1; i >= 0; i--)
 			delete _qml->rootObjects().at(i);
 
-
 		delete _qml;
 
 	}
