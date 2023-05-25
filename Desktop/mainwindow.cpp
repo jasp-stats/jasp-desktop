@@ -65,6 +65,7 @@
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
 #include "ALTNavigation/altnavigation.h"
+#include "ALTNavigation/altnavcontrol.h"
 #include "utilities/messageforwarder.h"
 
 #include "modules/activemodules.h"
@@ -191,6 +192,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
 	ALTNavigation::registerQMLTypes("JASP");
+	ALTNavControl::getInstance()->enableAlTNavigation(_preferences->ALTNavModeActive());
 
 	_dynamicModules->registerQMLTypes();
 
@@ -381,6 +383,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
+	connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::getInstance(),	&ALTNavControl::enableAlTNavigation					);
 
 	//Needed to allow for a hard split between Desktop/QMLComps:
 	connect(_preferences,						&PreferencesModel::uiScaleChanged,					DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged			);

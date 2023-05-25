@@ -18,6 +18,9 @@ Select the language in which you would like to use JASP.
 
 If you would like to improve our translations, or to add a new language, please visit https://jasp-stats.org/translation-guidelines/
 
+### ALT-Navigation mode
+Turn the ALT activated navigation mode on or off.
+
 ### Zoom
 This number specifies how the JASP interface will be scaled.
 All menus and results are scaled by this factor.

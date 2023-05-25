@@ -14,6 +14,7 @@ public:
 	virtual int		maxFlickVelocity()		const	{ return 808;	}
 	virtual bool	showRSyntax()			const	{ return false; }
 	virtual bool	showAllROptions()		const	{ return false; }
+	virtual bool	ALTNavModeActive()		const	{ return false; }
 
 	static PreferencesModelBase* preferences();
 

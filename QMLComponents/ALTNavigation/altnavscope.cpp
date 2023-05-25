@@ -80,7 +80,7 @@ void ALTNavScope::addChild(ALTNavScope *child)
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 	if(ctrl->dynamicTreeUpdate())
 	{
-		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavEnabled());
+		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavActive());
 		setChildrenPrefix();
 	}
 }
@@ -91,7 +91,7 @@ void ALTNavScope::removeChild(ALTNavScope *child)
 	ALTNavControl* ctrl = ALTNavControl::getInstance();
 	if(ctrl->dynamicTreeUpdate())
 	{
-		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavEnabled());
+		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavActive());
 		setChildrenPrefix();
 	}
 }
@@ -143,7 +143,7 @@ void ALTNavScope::traverse(QString input)
 	if(!matchPossible)
 	{
 		ctrl->setCurrentNode(ctrl->getCurrentRoot());
-		ctrl->setAltNavEnabled(false);
+		ctrl->setAltNavActive(false);
 	}
 
 }
