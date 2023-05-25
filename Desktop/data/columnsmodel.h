@@ -51,7 +51,6 @@ private:
 	void refresh();
 
 	DataSetTableModel	* _tableModel	= nullptr;
-	VariableInfo		* _info			= nullptr;	
 
 	static ColumnsModel	* _singleton;
 };
