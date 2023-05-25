@@ -134,7 +134,7 @@ ScrollView
 			CheckBox
 			{
 				id:					qtTextRendering
-				label:				qsTr("Use Qt's textrendering")
+				label:				qsTr("Use Qt's text rendering")
 				checked:			preferencesModel.guiQtTextRender
 				onCheckedChanged:	preferencesModel.guiQtTextRender = checked
 				toolTip:			qsTr("If disabled will switch the textrendering to native.")
