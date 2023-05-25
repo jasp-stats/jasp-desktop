@@ -1,4 +1,5 @@
 #include "altnavcontrol.h"
+#include "log.h"
 
 ALTNavControl* ALTNavControl::_instance = nullptr;
 
@@ -58,30 +59,41 @@ void ALTNavControl::unregister(QObject *obj)
 
 bool ALTNavControl::eventFilter(QObject *object, QEvent *event)
 {
+	static int specialCharInput = 0;
+
 	if (event->type() == QEvent::KeyRelease)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if (key == Qt::Key_Alt && keyEvent->modifiers() == Qt::NoModifier)
+		if (key == Qt::Key_Alt)
 		{
-			resetAltNavInput();
-			setAltNavEnabled(!_altNavEnabled);
-			return true;
+			Log::log() << "!!!alt release " << specialCharInput << std::endl;
+			if(!specialCharInput && keyEvent->modifiers() == Qt::NoModifier)
+			{
+				resetAltNavInput();
+				setAltNavEnabled(!_altNavEnabled);
+				return true;
+			}
+			specialCharInput--;
 		}
 	}
-	else if (_altNavEnabled && event->type() == QEvent::KeyPress)
+	else if (event->type() == QEvent::KeyPress)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
-			updateAltNavInput(keyEvent->text().toUpper());
-		else if (key != Qt::Key_Alt)
+		if(_altNavEnabled)
 		{
-			resetAltNavInput();
-			setAltNavEnabled(false);
+			if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
+				updateAltNavInput(keyEvent->text().toUpper());
+			else if (key != Qt::Key_Alt)
+			{
+				resetAltNavInput();
+				setAltNavEnabled(false);
+			}
+			return true;
 		}
-		return true;
-
+		else if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9) & keyEvent->modifiers() == Qt::AltModifier)
+			specialCharInput = 5;
 	}
 	return false;
 }
