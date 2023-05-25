@@ -228,7 +228,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
 
 	std::string emptyVals;
 
-	db().dataSetLoad(_dataSetID, _dataFilePath, emptyVals, _databaseJson, _revision);
+	db().dataSetLoad(_dataSetID, _dataFilePath, _databaseJson, emptyVals, _revision);
 	progressCallback(0.1);
 
 	if(!_filter)
