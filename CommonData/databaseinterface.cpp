@@ -652,6 +652,8 @@ void DatabaseInterface::columnSetValue(int columnId, size_t row, int value)
 
 void DatabaseInterface::_doubleTroubleBinder(sqlite3_stmt * stmt, int param, double dbl)
 {
+	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleBinder);
+	
 	if(std::isnan(dbl)	|| std::isinf(dbl))
 	{
 		const std::string storeThis = dbDblToString(std::isnan(dbl) ? dbDbl::nan : dbl < 0 ? dbDbl::neg_inf : dbDbl::inf);
@@ -662,29 +664,26 @@ void DatabaseInterface::_doubleTroubleBinder(sqlite3_stmt * stmt, int param, dou
 }
 
 double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI)
-{
+{	
+	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader);
+
 	const std::string strVal = _wrap_sqlite3_column_text(stmt, colI);
 	
-	try
+	if(!strVal.empty())
 	{
-		dbDbl converted = dbDblFromString(strVal);
-		switch(converted)
-		{
-		case dbDbl::inf:
-			return std::numeric_limits<double>::infinity();
-			
-		case dbDbl::neg_inf:
-			return -1 * std::numeric_limits<double>::infinity();
-			
-		case dbDbl::nan:
-			return NAN;
-		}
-	}
-	catch(missingEnumVal e)
-	{
-		//Do nothing		
-	}
+		JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader-TRY);
 		
+		//Optimization:
+		static const std::string _inf		= dbDblToString(dbDbl::inf);
+		static const std::string _neg_inf	= dbDblToString(dbDbl::neg_inf);
+		static const std::string _nan		= dbDblToString(dbDbl::nan);
+		
+		if(strVal == _inf)				return std::numeric_limits<double>::infinity();
+		else if(strVal == _neg_inf)		return -1 * std::numeric_limits<double>::infinity();
+		else if(strVal == _nan)			return NAN;
+		
+	}
+
 	return sqlite3_column_double(stmt, colI);
 }
 

@@ -924,6 +924,9 @@ void Engine::receiveReloadData()
 	_engineState = engineState::idle;
 
 	Log::log() << "Engine reloadData, reloading columnnames now" << std::endl;
+	
+	JASPTIMER_PRINTALL();
+	
 
 	provideDataSet(); //Also triggers loading from DB
 

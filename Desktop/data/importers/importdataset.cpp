@@ -1,4 +1,5 @@
 #include "importdataset.h"
+#include "timers.h"
 
 using namespace std;
 
@@ -8,8 +9,10 @@ ImportDataSet::ImportDataSet(Importer *importer) : _importer(importer)
 
 ImportDataSet::~ImportDataSet()
 {
-	for (ImportColumns::iterator it = _columns.begin(); it != _columns.end(); ++it)
-		delete *it;
+	JASPTIMER_SCOPE(ImportDataSet::~ImportDataSet());
+	
+	for (ImportColumn * col : _columns)
+		delete col;
 }
 
 void ImportDataSet::addColumn(ImportColumn *column)
