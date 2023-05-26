@@ -424,9 +424,9 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 		QVector<SourceItem*> discards;
 		QVector<QMap<QString, QVariant> > conditionVariables;
 
-		if (map.contains("discard"))
+		if (map.contains("discard") || map.contains("discardSource"))
 		{
-			QList<QVariant> discardSources = getListVariant(map["discard"]);
+			QList<QVariant> discardSources = map.contains("discard") ? getListVariant(map["discard"]) : getListVariant(map["discardSource"]);
 
 			for (const QVariant& discardSource : discardSources)
 			{
