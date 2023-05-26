@@ -393,8 +393,11 @@ Properties
 - `name`: identifier of the variables list, this is never send to R
 - `label`: [optional, default: `""`] text that will be shown above the variable field
 - `source`: [optional, default: `""`] this can be set to the `id` or the `name` (or a list of id or names) of one or more Variables Lists. If no source is specified, then all variables of the data file are used as source. To specify several sources, you need to use an array: `["source1", "source2"]`. If you want to specify what you want to read from the source, you can add extra attributes:<br>
-  * `use` attribute: if you want to read the levels of a `singleVariable` Variables List source, type: `source: [{name: "splitby", use: "levels"}]`. If you want only some variables with some types, type: `[{name: "source", use: "type=nominal|ordinal"}]`
-  * `discard` attribute: if you want to discard some of the values of the source, set the discard attribute to another source or values. For example `source: [{ name: "modelTerms", discard: "covariates" }]`
+  * `use` attribute: you can specify what you want to read in the source:
+  	* if you want to read the levels of a `singleVariable` Variables List source, type: `source: [{name: "splitby", use: "levels"}]`.
+  	* if you want only some variables with specific types, type: `[{name: "source", use: "type=nominal|ordinal"}]`.
+  	* if you want to discard some of the values, specify which index you want to remove. For example, if you don't want the first value of the source, type: `[{name: "source", use: "discardIndex=0"}]`.
+  * `discardSource` attribute: if you want to discard some values of the source, set the discard attribute to another source or values: this will remove all values of this `discardSource`. For example `source: [{ name: "modelTerms", discard: "covariates" }]`
   * `condition` attribute: if a Variables List source has some components, and you want to retrieve the variables whose components have some specific values, type: `[ { name: "contrasts", condition: "contrast.currentValue == 'custom'" } ]` where `contrast` is the name of a DropDown component (added in the `contrasts` Variables List). In this example only variables with contrast having `custom` as value will be read from the source `contrasts`.
   * `values` attribute: if you want to add specific values to the list, you can add them in this way `source: [ { values: ["one", "two"] }, "myvariables" ]`. Here the values `one` and `two` are prepend to the names of the variables of the Variables List `myvariables`. If you want to display a label (that can be translated) different from the value used in the analysis, use: `source: [ { values: [ { label: qsTr("One"), value: "one" }, { label: qsTr("Two"), value: "two" } ], "myvariables" ]` (qsTr is the function you need to use if you want the string to be translatable).
   * `rSource`: name of a R source. This source should be generated in R with the jaspQmlSource function.
@@ -563,6 +566,7 @@ ComponentsList, TabView, InputListView and TableView are complex components that
 This allows to displays a list of components either from a source or from user input.
 - `name`: identifier of this component (in your R code you will be able to retrieve the text value(s) through this identifier)
 - `title`: [optional, default: `""`] text that will be shown above this component
+- `titles`: [optional, default: `[]`] list of titles that will be placed as header above each column of components
 - `rowComponent`: as for the Variables List, you can specify all the components that will be repeated for each row.
 - `source`: [optional, default: empty] as for Variables List you can specify any kind of source (see [Variable Specification]). It a source is used, the number of rows will automatically depends on the number of elements of this source. You can then also use the `rowValue` context property if you want to use the value of the source in one of the component.
 - `values`: [optional, default: empty] In place of a source, you can specify direcly a list of values or value/label list as in the DropDown component.
