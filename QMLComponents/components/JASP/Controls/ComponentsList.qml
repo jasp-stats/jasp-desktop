@@ -65,15 +65,9 @@ ComponentsListBase
 			model: titles
 			Text
 			{
-				function getDefaultOffset(index)
-				{
-					if (index === 0) return 0;
+				property int defaultOffset: index === 0 ? 0 : rep.itemAt(index-1).x + rep.itemAt(index-1).width + jaspTheme.contentMargin
 
-					let previousTitle = rep.itemAt(index-1)
-					return previousTitle.x + previousTitle.width + jaspTheme.contentMargin
-				}
-
-				x		: (addBorder ? jaspTheme.contentMargin : 0) + (componentsList.offsets.length > index ? componentsList.offsets[index] : getDefaultOffset(index))
+				x		: (addBorder ? jaspTheme.contentMargin : 0) + (componentsList.offsets.length > index ? componentsList.offsets[index] : defaultOffset)
 				text	: titles[index]
 				font	: jaspTheme.font
 				color	: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
