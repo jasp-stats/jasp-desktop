@@ -15,6 +15,7 @@ DataSet::DataSet(int index)
 
 DataSet::~DataSet()
 {
+	JASPTIMER_SCOPE(DataSet::~DataSet);
 	//delete columns before dataNode as they depend on it via DataSetBaseNode inheritance
 	for(Column * col : _columns)
 		delete col;
@@ -30,6 +31,8 @@ DataSet::~DataSet()
 
 void DataSet::dbDelete()
 {
+	JASPTIMER_SCOPE(DataSet::dbDelete);
+
 	assert(_dataSetID != -1);
 
 	db().transactionWriteBegin();
@@ -187,6 +190,8 @@ stringvec DataSet::getColumnNames()
 
 void DataSet::dbCreate()
 {
+	JASPTIMER_SCOPE(DataSet::dbCreate);
+
 	assert(!_filter && _dataSetID == -1);
 
 	db().transactionWriteBegin();
@@ -212,6 +217,8 @@ void DataSet::dbUpdate()
 void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
 {
 	//Log::log() << "loadDataSet(index=" << index << "), _dataSetID="<< _dataSetID <<";" << std::endl;
+
+	JASPTIMER_SCOPE(DataSet::dbLoad);
 
 	assert(_dataSetID == -1 || _dataSetID == index || (_dataSetID != -1 && index == -1));
 
