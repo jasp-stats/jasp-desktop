@@ -48,12 +48,12 @@ void Column::dbLoadIndex(int index, bool getValues)
 	dbLoad(db().columnIdForIndex(_data->id(), index), getValues);
 }
 
-void Column::dbDelete()
+void Column::dbDelete(bool cleanUpRest)
 {
 	assert(_id != -1);
 
 	labelsClear();
-	db().columnDelete(_id);
+	db().columnDelete(_id, cleanUpRest);
 
 	_id = -1;
 }

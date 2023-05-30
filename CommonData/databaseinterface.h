@@ -86,7 +86,7 @@ public:
 	int			dataSetGetFilter(		int dataSetId);
 	void		dataSetInsertEmptyRow(	int dataSetId, size_t row);
 
-	void		dataSetBatchedValuesUpdate(DataSet * data);
+	void		dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Filters
 	std::string filterName(				int filterIndex) const;
@@ -118,7 +118,7 @@ public:
 
 	//id stuff:
 	int			columnGetDataSetId(			int columnId);
-	void		columnDelete(				int columnId);			///< Also makes sure indices stay as contiguous and correct as before.
+	void		columnDelete(				int columnId, bool cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
 	void		columnSetType(				int columnId, columnType colType);
 	void		columnSetInvalidated(		int columnId, bool invalidated);
 	void		columnSetName(				int columnId, const std::string & name);

@@ -33,7 +33,7 @@ public:
 			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
 			void					dbLoadIndex(int index, bool getValues = true);
 			void					dbUpdateComputedColumnStuff();
-			void					dbDelete();
+			void					dbDelete(bool cleanUpRest = true);
 																														
 			
 			void					setName(			const std::string & name			);

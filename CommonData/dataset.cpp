@@ -42,7 +42,7 @@ void DataSet::dbDelete()
 	_filter = nullptr;
 
 	for(Column * col : _columns)
-		col->dbDelete();
+		col->dbDelete(false);
 
 	db().dataSetDelete(_dataSetID);
 
@@ -57,12 +57,12 @@ void DataSet::beginBatchedToDB()
 	_writeBatchedToDB = true;
 }
 
-void DataSet::endBatchedToDB()
+void DataSet::endBatchedToDB(std::function<void(float)> progressCallback)
 {
 	assert(_writeBatchedToDB);
 	_writeBatchedToDB = false;
 
-	db().dataSetBatchedValuesUpdate(this);
+	db().dataSetBatchedValuesUpdate(this, progressCallback);
 	incRevision(); //Should trigger reload at engine end
 }
 

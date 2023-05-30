@@ -38,7 +38,7 @@ public:
 			void			dbDelete();
 
 			void			beginBatchedToDB();
-			void			endBatchedToDB();
+			void			endBatchedToDB(std::function<void(float)> progressCallback = [](float){});
 
 			void			removeColumn(	const	std::string &	name	);
 			void			removeColumn(			size_t			index	);

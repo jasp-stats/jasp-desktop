@@ -447,7 +447,7 @@ int DatabaseInterface::columnIndexForId(int columnId)
 	});
 }
 
-void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data)
+void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetBatchedValuesUpdate);
 
@@ -486,14 +486,28 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data)
 		sqlite3_bind_int(stmt,	i++, rowOutside+1);
 	};
 
+	const float rowsInverse		= 1.0 / float(data->rowCount());
+	const int	updateInterval	= std::max(1, data->rowCount() / 100);
+
 	_runStatementsRepeatedly(
 		statement.str(),
 		[&](bindParametersType ** bindParameters, size_t row)
 		{
 			if(row >= data->rowCount())
+			{
+				progressCallback(1);
 				return false;
+			}
 
 			rowOutside = row;
+
+			static int prevUpdate = 0;
+
+			if(prevUpdate + updateInterval <= rowOutside)
+			{
+				progressCallback(float(rowOutside) * rowsInverse);
+				prevUpdate = rowOutside;
+			}
 
 			(*bindParameters) = &bindParamStore;
 
@@ -861,7 +875,7 @@ std::string DatabaseInterface::filterName(int filterIndex) const
 	return "Filter_"  + std::to_string(filterIndex);
 }
 
-void DatabaseInterface::columnDelete(int columnId)
+void DatabaseInterface::columnDelete(int columnId, bool cleanUpRest)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnDelete);
 	transactionWriteBegin();
@@ -870,11 +884,15 @@ void DatabaseInterface::columnDelete(int columnId)
 	int dataSetId	= columnGetDataSetId(columnId),
 		columnIndex	= columnIndexForId(columnId);
 
-	const std::string & alterDatasetPrefix = "ALTER TABLE Dataset_"  + std::to_string(dataSetId)	+ " ";
-	const std::string & addColumnFragment  = "DROP COLUMN  " + columnBaseName(columnId);
+	if(cleanUpRest)
+	{
 
-	runStatements(alterDatasetPrefix + addColumnFragment + "_DBL;");
-	runStatements(alterDatasetPrefix + addColumnFragment + "_INT;");
+		const std::string & alterDatasetPrefix = "ALTER TABLE Dataset_"  + std::to_string(dataSetId)	+ " ";
+		const std::string & addColumnFragment  = "DROP COLUMN  " + columnBaseName(columnId);
+
+		runStatements(alterDatasetPrefix + addColumnFragment + "_DBL;");
+		runStatements(alterDatasetPrefix + addColumnFragment + "_INT;");
+	}
 
 	//Delete column entry
 	runStatements("DELETE FROM Columns WHERE dataSet=? AND id=?;", [&](sqlite3_stmt * stmt)
@@ -883,7 +901,8 @@ void DatabaseInterface::columnDelete(int columnId)
 		sqlite3_bind_int(stmt,	2, columnId);
 	});
 	
-	columnIndexDecrements(dataSetId, columnIndex);
+	if(cleanUpRest)
+		columnIndexDecrements(dataSetId, columnIndex);
 
 	transactionWriteEnd();
 }
