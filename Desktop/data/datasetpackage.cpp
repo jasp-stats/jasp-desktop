@@ -1832,6 +1832,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 
 void DataSetPackage::columnInsert(size_t column)
 {
+	Log::log() << "DataSetPackage::columnInsert(" << column << ")" << std::endl;
 	setSynchingExternally(false); //Don't synch with external file after editing
 	beginSynchingData(false);
 	

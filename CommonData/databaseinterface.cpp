@@ -7,14 +7,14 @@
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
 
-//#define SIR_LOG_A_LOT
+#define SIR_LOG_A_LOT
 
 const std::string DatabaseInterface::_dbConstructionSql =
 //"PRAGMA foreign_keys=TRUE;\n"
 "CREATE TABLE DataSets		( id INTEGER PRIMARY KEY, dataFilePath TEXT, databaseJson TEXT, emptyValuesJson TEXT, revision INT DEFAULT 0);\n"
 "CREATE TABLE Filters		( id INTEGER PRIMARY KEY, dataSet INT, rFilter TEXT, generatedFilter TEXT, constructorJson TEXT, constructorR TEXT, errorMsg TEXT"
 							", revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
-"CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, columnType TEXT, colIdx INT UNIQUE, isComputed INT, invalidated INT NULL, "
+"CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, columnType TEXT, colIdx INT, isComputed INT, invalidated INT NULL, "
 							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL, "
 							"analysisId INT NULL, revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Labels		( id INTEGER PRIMARY KEY, columnId INT, value INT, ordering INT, filterAllows INT, label TEXT, originalValueJson TEXT, description TEXT, FOREIGN KEY(columnId) REFERENCES Columns(id));\n";

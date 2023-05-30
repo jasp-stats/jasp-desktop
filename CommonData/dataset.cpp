@@ -132,7 +132,12 @@ void DataSet::insertColumn(size_t index)
 {
 
 	assert(_dataSetID > 0);
-	_columns.insert(_columns.begin()+index, new Column(this, db().columnInsert(_dataSetID, index)));
+
+	Column * newColumn = new Column(this, db().columnInsert(_dataSetID, index));
+
+	_columns.insert(_columns.begin()+index, newColumn);
+
+	newColumn->setRowCount(_rowCount);
 
 	incRevision();
 }
