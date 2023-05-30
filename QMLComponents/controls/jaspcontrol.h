@@ -10,7 +10,6 @@
 class AnalysisForm;
 class JASPListControl;
 class BoundControl;
-class Column;
 
 ///
 /// Basic class for all our qml controls
