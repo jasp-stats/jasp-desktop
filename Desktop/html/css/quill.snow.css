@@ -1,4 +1,5 @@
-/*!
+/*!! JASP note customized some line of this css !!
+ * See comment with '!!' for details
  * Quill Editor v1.3.1
  * https://quilljs.com/
  * Copyright (c) 2014, Jason Chen
@@ -635,11 +636,14 @@
   font-size: 85%;
   padding: 2px 4px;
 }
+/* !! We customized here for jasp note code block !! */
 .ql-snow .ql-editor pre.ql-syntax {
-  background-color: #23241f;
-  color: #f8f8f2;
+  background-color: #ebebeb;
+  color: #555555;
   overflow: visible;
+  display:block;
 }
+/* !! End of customized !! */
 .ql-snow .ql-editor img {
   max-width: 100%;
 }
