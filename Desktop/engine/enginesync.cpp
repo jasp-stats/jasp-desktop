@@ -408,6 +408,13 @@ void EngineSync::process()
 	if(moduleInstallRunning()) return; //First finish any module install running.
 
 	processReloadData();
+
+	//If we are waiting for an engine to load data, this might take a while, so lets not kill it for for instance a filterscript or something
+	bool anEngineIsLoadingData = false;
+	for(const EngineRepresentation * e : _engines)
+		if(e->reloadingData())
+			anEngineIsLoadingData = true;
+
 	processSettingsChanged();
 	
 	if(_stopProcessing || _dataMode)
@@ -416,10 +423,14 @@ void EngineSync::process()
 		return;
 	}	
 	
-	processFilterScript();
+	if(!anEngineIsLoadingData)
+	{
+		processFilterScript();
 
-	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
-	
+		if(_filterRunning)
+			return; //Do not do anything else while waiting for a filter to return
+	}
+
 	processLogCfgRequests();
 
 	if(_engines.size() == 0)
@@ -480,6 +491,13 @@ void EngineSync::process()
 	//We might still want some engines and if we can kill some idle ones to make space it ain't bad
 	if(wantThisManyEngines)
 		startExtraEngines(wantThisManyEngines);
+
+
+	/*//So, in the end all the code above here is a bit complicated and does many things. but...
+	// We probably want to have as many engines loaded as allowed. Especially if the dataset is large
+	// This will make it seem smoother to the user, because they will have to wait less for data loading
+	if(enginesStartableCount() > 0)
+		startExtraEngines();*/
 }
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)

@@ -545,6 +545,8 @@ void MainWindow::loadQML()
 		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maxFlickVeloHandler				);
 	}
 
+
+
 	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
@@ -565,8 +567,13 @@ void MainWindow::loadQML()
 		ActiveModules::getActiveCommonModules(),
 		ActiveModules::getActiveExtraModules());
 	
-	qmlLoaded();
-	
+	qmlLoaded();	
+
+#ifdef JASP_DEBUG
+	Log::log() << "Loading EnginesWindow for debugging"  << std::endl;
+	showEnginesWindow();
+#endif
+
 }
 
 

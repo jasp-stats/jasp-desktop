@@ -818,10 +818,8 @@ void EngineRepresentation::processEngineResumedReply()
 {
 	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
 
-	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
+	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::reloadData)
 		throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply!");
-
-	//_settingsChanged = true; //Make sure we send the settings at least once. We now do this be also sending the settings in the resume request
 
 	setState(engineState::idle);
 }
@@ -835,6 +833,16 @@ void EngineRepresentation::processEngineStoppedReply()
 
 	disconnect(_slaveFinishedConnection);
 }
+
+
+void EngineRepresentation::processReloadDataReply()
+{
+	Log::log() << "EngineRepresentation::processReloadDataReply() for engine #" << channelNumber() << std::endl;
+
+	_reloadData = false;
+	setState(engineState::reloadData); //Its probably already in this state
+}
+
 
 void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
 {

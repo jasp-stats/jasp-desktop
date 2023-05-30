@@ -88,6 +88,7 @@ private: // Methods:
 	void resumeEngine(	const Json::Value & jsonRequest); 
 	void sendEnginePaused();
 	void sendEngineResumed();
+	void sendEngineLoadingData();
 	void sendEngineStopped();
 
 	void saveImage();

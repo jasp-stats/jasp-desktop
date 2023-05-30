@@ -82,6 +82,7 @@ public:
 	bool			killed()				const { return _engineState == engineState::killed;										}
 	bool			idle()					const { return _engineState == engineState::idle;										}
 	bool			installingModule()		const { return _engineState == engineState::moduleInstallRequest;						}
+	bool			reloadingData()			const { return _engineState == engineState::reloadData;						}
 	bool			moduleLoading()			const { return _engineState == engineState::moduleLoadRequest;							}
 	bool			idleSoon()				const;
 	bool			shouldSendSettings()	const { return idle() && _settingsChanged;												}
@@ -122,7 +123,7 @@ protected:
 	void			processAnalysisReply(		Json::Value & json);
 	void			processComputeColumnReply(	Json::Value & json);
 	void			processModuleRequestReply(	Json::Value & json);
-	void			processReloadDataReply()							{ _reloadData = false; setState(engineState::idle); }
+	void			processReloadDataReply();
 	void			processEnginePausedReply();
 	void			processEngineStoppedReply();
 	void			processEngineResumedReply();

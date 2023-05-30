@@ -111,6 +111,8 @@ void Engine::initialize()
 
 		Log::log() << "rbridge_init completed" << std::endl;
 	
+		sendEngineLoadingData();
+
 		//Is there maybe already some data? Like, if we just killed and restarted the engine
 		std::vector<std::string> columns;
 		if(provideDataSet())
@@ -136,12 +138,8 @@ void Engine::initialize()
 
 Engine::~Engine()
 {
-	TempFiles::deleteAll();
-
 	delete _channel; //shared memory files will be removed in jaspDesktop
 	_channel = nullptr;
-
-
 }
 
 void Engine::run()
@@ -912,6 +910,8 @@ void Engine::pauseEngine(const Json::Value & json)
 
 void Engine::receiveReloadData()
 {
+	Log::log() << "Engine::receiveReloadData()" << std::endl;
+
 	//Im doing the following switch as a copy from Engine::pauseEngine, but probably the engine is always going to be idle anyway.
 	switch(_engineState)
 	{
@@ -923,18 +923,14 @@ void Engine::receiveReloadData()
 
 	_engineState = engineState::idle;
 
-	Log::log() << "Engine reloadData, reloading columnnames now" << std::endl;
-	
-	JASPTIMER_PRINTALL();
-	
+	//First send state, then load data
+	sendEngineLoadingData();
 
 	provideDataSet(); //Also triggers loading from DB
 
 	reloadColumnNames();
 
-	Json::Value rCodeResponse		= Json::objectValue;
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::reloadData);
-	sendString(rCodeResponse.toStyledString());
+	sendEngineResumed();
 }
 
 void Engine::sendEnginePaused()
@@ -954,7 +950,6 @@ void Engine::reloadColumnNames()
 void Engine::resumeEngine(const Json::Value & jsonRequest)
 {
 	Log::log() << "Engine resuming and absorbing settings from request." << std::endl;
-	reloadColumnNames();
 
 	absorbSettings(jsonRequest);
 
@@ -968,7 +963,15 @@ void Engine::sendEngineResumed()
 	Json::Value rCodeResponse		= Json::objectValue;
 	rCodeResponse["typeRequest"]	= engineStateToString(engineState::resuming);
 
-	sendString(rCodeResponse.toStyledString());	
+	sendString(rCodeResponse.toStyledString());
+}
+
+void Engine::sendEngineLoadingData()
+{
+	Json::Value rCodeResponse		= Json::objectValue;
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::reloadData);
+
+	sendString(rCodeResponse.toStyledString());
 }
 
 void Engine::receiveLogCfg(const Json::Value & jsonRequest)
