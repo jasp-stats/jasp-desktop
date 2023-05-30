@@ -46,7 +46,7 @@ public:
 			void			insertColumn(			size_t			index	);
 			Column		*	newColumn(		const	std::string &	name);
 			int				getColumnIndex(	const	std::string &	name	) const;
-			int				columnIndex( const	Column		*	col		) const;
+			int				columnIndex(	const	Column		*	col		) const;
 
 			bool			allColumnsPassFilter()					const;
 

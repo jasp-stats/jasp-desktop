@@ -1841,6 +1841,7 @@ void DataSetPackage::columnInsert(size_t column)
 
 	_dataSet->insertColumn(column);
 	setColumnName(column, freeNewColumnName(column));
+	_dataSet->column(column)->setDefaultValues(columnType::scale);
 
 	stringvec changed({getColumnName(column)});
 	endSynchingDataChangedColumns(changed, true, false);
@@ -1866,29 +1867,22 @@ void DataSetPackage::rowInsert(size_t row)
 	beginSynchingData(false);
 	stringvec changed;
 
-	setDataSetSize(dataColumnCount(), dataRowCount()+1);
-	
-	if(row >= dataRowCount())
-		row = dataRowCount() - 1; //in columnInsert we do not first expand the columncount so here is -1 and not there
+	dataSet()->beginBatchedToDB();
 
 	for(int c=0; c<dataColumnCount(); c++)
 	{
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
 
-		stringvec	colVals = getColumnDataStrs(c);
-
-		colVals.insert(colVals.begin() + row, "");
-
-		if(int(colVals.size()) > dataRowCount())
-		{
-			colVals.resize(dataRowCount());
-		}
-		initColumnWithStrings(c, name, colVals);
+		dataSet()->column(c)->insertEmptyValInVector(row);
 	}
 
+	dataSet()->setRowCount(dataSet()->rowCount() + 1);
+	dataSet()->incRevision();
+	dataSet()->endBatchedToDB();
+
 	strstrmap		changeNameColumns;
-	stringvec				missingColumns;
+	stringvec		missingColumns;
 
 	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
 }
