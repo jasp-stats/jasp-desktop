@@ -295,7 +295,7 @@ void EngineRepresentation::processReplies()
 			case engineState::analysis:				processAnalysisReply(json);			break;
 			case engineState::computeColumn:		processComputeColumnReply(json);	break;
 			case engineState::paused:				processEnginePausedReply();			break;
-			case engineState::resuming:				processEngineResumedReply();		break;
+			case engineState::resuming:				processEngineResumedReply(json);	break;
 			case engineState::stopped:				processEngineStoppedReply();		break;
 			case engineState::moduleInstallRequest:
 			case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
@@ -814,12 +814,15 @@ void EngineRepresentation::processEnginePausedReply()
 	setState(engineState::paused);
 }
 
-void EngineRepresentation::processEngineResumedReply()
+void EngineRepresentation::processEngineResumedReply(Json::Value & json)
 {
 	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
 
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::reloadData)
 		throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply!");
+	
+	if(json.get("justReloadedData", false))
+		_reloadData = false;
 
 	setState(engineState::idle);
 }

@@ -568,12 +568,6 @@ void MainWindow::loadQML()
 		ActiveModules::getActiveExtraModules());
 	
 	qmlLoaded();	
-
-#ifdef JASP_DEBUG
-	Log::log() << "Loading EnginesWindow for debugging"  << std::endl;
-	showEnginesWindow();
-#endif
-
 }
 
 

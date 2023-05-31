@@ -87,7 +87,7 @@ private: // Methods:
 	void pauseEngine(	const Json::Value & jsonRequest);
 	void resumeEngine(	const Json::Value & jsonRequest); 
 	void sendEnginePaused();
-	void sendEngineResumed();
+	void sendEngineResumed(bool justReloadedData = false);
 	void sendEngineLoadingData();
 	void sendEngineStopped();
 

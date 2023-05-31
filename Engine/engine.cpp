@@ -957,21 +957,25 @@ void Engine::resumeEngine(const Json::Value & jsonRequest)
 	sendEngineResumed();
 }
 
-void Engine::sendEngineResumed()
+void Engine::sendEngineResumed(bool justReloadedData)
 {
+	Log::log() << "Engine::sendEngineResumed()" << std::endl;
+	
+	Json::Value response			= Json::objectValue;
+	response["typeRequest"]			= engineStateToString(engineState::resuming);
+	response["justReloadedData"]	= justReloadedData;
 
-	Json::Value rCodeResponse		= Json::objectValue;
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::resuming);
-
-	sendString(rCodeResponse.toStyledString());
+	sendString(response.toStyledString());
 }
 
 void Engine::sendEngineLoadingData()
 {
-	Json::Value rCodeResponse		= Json::objectValue;
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::reloadData);
+	Log::log() << "Engine::sendEngineLoadingData()" << std::endl;
+	
+	Json::Value response	= Json::objectValue;
+	response["typeRequest"]	= engineStateToString(engineState::reloadData);
 
-	sendString(rCodeResponse.toStyledString());
+	sendString(response.toStyledString());
 }
 
 void Engine::receiveLogCfg(const Json::Value & jsonRequest)

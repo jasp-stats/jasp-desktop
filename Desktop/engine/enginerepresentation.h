@@ -119,14 +119,14 @@ public:
 
 protected:
 	void			processRCodeReply(			Json::Value & json);
-	void			processFilterReply(		Json::Value & json);
+	void			processFilterReply(			Json::Value & json);
 	void			processAnalysisReply(		Json::Value & json);
 	void			processComputeColumnReply(	Json::Value & json);
 	void			processModuleRequestReply(	Json::Value & json);
 	void			processReloadDataReply();
 	void			processEnginePausedReply();
 	void			processEngineStoppedReply();
-	void			processEngineResumedReply();
+	void			processEngineResumedReply(	Json::Value & json);
 	void			processLogCfgReply();
 	void			processSettingsReply();
 
