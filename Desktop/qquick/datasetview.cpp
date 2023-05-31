@@ -911,12 +911,20 @@ void DataSetView::destroyEditItem()
 	_editItemContextual->item		->setVisible(false);
 	_editItemContextual->item		->deleteLater();
 	_editItemContextual->item		= nullptr;
+	
 	_editItemContextual->context	->deleteLater();
 	_editItemContextual->context	= nullptr;
+	
+	delete _editItemContextual;
 	_editItemContextual				= nullptr;
-
-	Log::log() << "Restoring text item for old edit item" << std::endl;
-	createTextItem(_prevEditRow, _prevEditCol);
+	
+	Log::log() << "Restoring text item for old edit item at " << _prevEditRow << ", " << _prevEditCol << std::endl;
+	QQuickItem * item = createTextItem(_prevEditRow, _prevEditCol);
+    
+    size_t col=_prevEditCol, row=_prevEditRow;
+    
+	//A delay might help the focus problem? No it doesnt...
+	QTimer::singleShot(10, [col, row, this](){ _cellTextItems[col][row]->item->forceActiveFocus(); });
 
 	//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
 

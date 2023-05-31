@@ -120,8 +120,7 @@ public:
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)
-	
-	
+	 
 	
 signals:
 	void		modelChanged();
