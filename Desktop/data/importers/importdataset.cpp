@@ -66,7 +66,7 @@ ImportColumns::reverse_iterator ImportDataSet::rend()
 
 void ImportDataSet::clear()
 {
-	_columns.clear();
+	clearColumns();
 	_nameToColMap.clear();
 }
 

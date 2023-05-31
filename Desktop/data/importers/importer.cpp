@@ -28,17 +28,20 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 
 
 		int colNo = 0;
-		for (ImportColumn *importColumn : *importDataSet)
+		for (ImportColumn *& importColumn : *importDataSet)
 		{
 			progressCallback(50 + 25 * colNo / columnCount);
 			initColumn(colNo, importColumn);
+			delete importColumn;
+			importColumn = nullptr;
 			colNo++;
 		}
 
 		DataSetPackage::pkg()->dataSet()->endBatchedToDB([&](float f){ progressCallback(75 + f * 25); });
 	}
 	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
-
+	
+	importDataSet->clearColumns();
 	delete importDataSet;
 	DataSetPackage::pkg()->endLoadingData();
 }

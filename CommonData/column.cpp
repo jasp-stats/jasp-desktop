@@ -1085,7 +1085,6 @@ intstrmap Column::setAsNominalText(const stringvec &values, const strstrmap & la
 	stringset	foundAlready;
 
 	//were not sorting here to keep the order of the labels the same as how we got them in the data, I guess this would make more sense then alphanumerical sort?
-	unicifiedValues.reserve(values.size());
 
 	for(const std::string & val : values)
 		if(!foundAlready.count(val) && !ColumnUtils::isEmptyValue(val))

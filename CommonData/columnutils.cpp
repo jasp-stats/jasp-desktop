@@ -253,7 +253,10 @@ bool ColumnUtils::convertVecToInt(const std::vector<std::string> &values, std::v
 			intValues.push_back(intValue);
 		}
 		else
+		{
+			intValues.clear();
 			return false;
+		}
 
 		row++;
 	}

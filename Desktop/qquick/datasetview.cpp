@@ -916,7 +916,8 @@ void DataSetView::destroyEditItem()
 	_editItemContextual				= nullptr;
 
 	Log::log() << "Restoring text item for old edit item" << std::endl;
-	createTextItem(_prevEditRow, _prevEditCol)->forceActiveFocus();
+	createTextItem(_prevEditRow, _prevEditCol);
+
 	//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
 
 	_prevEditRow = -1;
