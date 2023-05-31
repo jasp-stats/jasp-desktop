@@ -1079,7 +1079,7 @@ intstrmap Column::setAsNominalText(const stringvec &values, const strstrmap & la
 
 	if(changedSomething != nullptr)
 		*changedSomething = type() != columnType::nominalText;
-
+	
 	intstrmap	emptyValuesMap;
 	stringvec	unicifiedValues;
 	stringset	foundAlready;
@@ -1093,9 +1093,9 @@ intstrmap Column::setAsNominalText(const stringvec &values, const strstrmap & la
 			unicifiedValues.push_back(val);
 			foundAlready.insert(val);
 		}
-	
-	std::map<std::string, int> labelValueMap = labelsSyncStrings(unicifiedValues, labels, changedSomething);
-	
+
+	strintmap labelValueMap = labelsSyncStrings(unicifiedValues, labels, changedSomething);
+
 	if(values.size() != _ints.size() && changedSomething != nullptr)
 			*changedSomething = true;
 
@@ -1320,10 +1320,10 @@ bool Column::labelsSyncInts(const std::set<int> &uniqueValues)
 	
 	beginBatchedLabelsDB();
 
-	intintmap		modifiedValues;
-	std::set<int>	valuesToAdd		= uniqueValues,
-					valuesToRemove;
-	bool			isChanged		= false;
+	intintmap	modifiedValues;
+	intset		valuesToAdd		= uniqueValues,
+				valuesToRemove;
+	bool		isChanged		= false;
 
 	for (Label * label : _labels)
 	{
@@ -1336,8 +1336,6 @@ bool Column::labelsSyncInts(const std::set<int> &uniqueValues)
 			// this behaviour was there in the original Labels::syncInts(const std::set<int> &values) function.
 			// Not sure if this is what we want though. (this would be the equivalent of setting _hasInt = true)
 			label->setOriginalValue(label->value());
-
-
 		}
 
 		if(uniqueValues.count(label->value()))	valuesToAdd.erase(label->value());
@@ -1368,7 +1366,7 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	//Prepare a list of values we might have to add, labeltext -> labelkey, if they aren't there yet.
 	//Keep in mind that new_values have been sorted and duplicates removed higher up in stack
 	for(size_t valuesToAddIndex = 0; valuesToAddIndex < new_values.size(); valuesToAddIndex++)
-		mapValuesToAdd[new_values[valuesToAddIndex]] = valuesToAddIndex;
+		mapValuesToAdd[new_values[valuesToAddIndex]] = valuesToAddIndex + 1; //Add +1 to make sure _ints values dont start at 0!
 
 	intset		valuesToRemove;
 	strintmap	result;
