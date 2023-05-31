@@ -1644,10 +1644,16 @@ void Column::setValues(const doublevec & values)
 		db().columnSetValues(_id, _dbls);
 }
 
-void Column::insertEmptyValInVector(size_t row)
+void Column::rowInsertEmptyVal(size_t row)
 {
 	if(type() == columnType::scale)	_dbls.insert(_dbls.begin() + row, NAN);
 	else							_ints.insert(_ints.begin() + row, std::numeric_limits<int>::lowest());
+}
+
+void Column::rowDelete(size_t row)
+{
+	if(type() == columnType::scale)	_dbls.erase(_dbls.begin() + row);
+	else							_ints.erase(_ints.begin() + row);
 }
 
 void Column::setRowCount(size_t rows)

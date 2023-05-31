@@ -1874,7 +1874,7 @@ void DataSetPackage::rowInsert(size_t row)
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
 
-		dataSet()->column(c)->insertEmptyValInVector(row);
+		dataSet()->column(c)->rowInsertEmptyVal(row);
 	}
 
 	dataSet()->setRowCount(dataSet()->rowCount() + 1);
@@ -1895,23 +1895,22 @@ void DataSetPackage::rowDelete(size_t row)
 	beginSynchingData(false);
 	stringvec changed;
 
+	dataSet()->beginBatchedToDB();
+	
 	for(int c=0; c<dataColumnCount(); c++)
 	{
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
-
-		stringvec	colVals = getColumnDataStrs(c);
-
-		colVals.erase(colVals.begin() + row);
-		colVals.push_back("");
-
-		initColumnWithStrings(c, name, colVals);
+	
+		dataSet()->column(c)->rowDelete(row);
 	}
 
 	setDataSetSize(dataColumnCount(), dataRowCount()-1);
+	dataSet()->incRevision();
+	dataSet()->endBatchedToDB();
 
 	strstrmap		changeNameColumns;
-	stringvec				missingColumns;
+	stringvec		missingColumns;
 
 	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
 }

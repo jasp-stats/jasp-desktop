@@ -117,7 +117,8 @@ public:
 			void					setValue(					size_t row, double				value, bool writeToDB = true);
 			void					setValues(								const intvec	&	values);
 			void					setValues(								const doublevec	&	values);
-			void					insertEmptyValInVector(size_t row);
+			void					rowInsertEmptyVal(size_t row);
+			void					rowDelete(size_t row);
 			void					setRowCount(size_t row);
 
 			Labels				&	labels()												{ return _labels; }

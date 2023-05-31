@@ -7,7 +7,7 @@
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
 
-#define SIR_LOG_A_LOT
+//#define SIR_LOG_A_LOT
 
 const std::string DatabaseInterface::_dbConstructionSql =
 //"PRAGMA foreign_keys=TRUE;\n"
