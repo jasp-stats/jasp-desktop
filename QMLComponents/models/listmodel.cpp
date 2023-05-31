@@ -438,22 +438,77 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 {
 	if (filters.empty())	return terms;
 
-	Terms result = terms;
+	QStringList values = terms.asQList(); // Use QStringList instead of Terms type because Terms eliminates automatically double values and that can generate mistakes expecially when indexes are used with the discard predicate.
 
-	const QString typeIs = "type=";
-	const QString controlIs = "control=";
+	const static QString typeIs = "type=";
+	const static QString controlIs = "control=";
+	const static QString discardIs = "discardIndex=";
 
-	QString useTheseVariableTypes, useThisControl;
+	QString useTheseVariableTypes, useThisControl, discardIndexes;
 
 	for (const QString& filter : filters)
 	{
 		if (filter.startsWith(typeIs))		useTheseVariableTypes	= filter.right(filter.length() - typeIs.length());
 		if (filter.startsWith(controlIs))	useThisControl			= filter.right(filter.length() - controlIs.length());
+		if (filter.startsWith(discardIs))	discardIndexes			= filter.right(filter.length() - discardIs.length());
+	}
+
+	if (!useThisControl.isEmpty())
+	{
+		QStringList controlValues;
+		for (const QString& value : values)
+		{
+			RowControls* rowControls = _rowControlsMap.value(value);
+			if (rowControls)
+			{
+				JASPControl* control = rowControls->getJASPControl(useThisControl);
+
+				if (control)	controlValues.append(control->property("value").toString());
+				else			Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
+			}
+		}
+		values = controlValues;
+	}
+
+	if (!discardIndexes.isEmpty())
+	{
+		std::vector<bool> discarded(values.size(), false );
+		QStringList indexes = discardIndexes.split("|");
+		for (const QString& index : indexes)
+		{
+			QString cleanIndex = index;
+			if (index.contains('-'))
+			{
+				bool lowOk = false, highOk = false;
+				int low = index.first(index.indexOf('-')).toInt(&lowOk);
+				int high = index.sliced(index.indexOf('-') + 1).toInt(&highOk);
+				if (lowOk && highOk && low >= 0 && high > low)
+				{
+					for (int i = low; i <= high; i++)
+						if (i < discarded.size())
+							discarded[i] = true;
+				}
+			}
+			else
+			{
+				bool ok = false;
+				int i = index.toInt(&ok);
+				if (ok && i >= 0 && i < discarded.size())
+					discarded[i] = true;
+			}
+		}
+
+		QStringList selectedValues;
+		for (int i = 0; i < discarded.size(); i++)
+		{
+			if (!discarded[i])
+				selectedValues.append(values.at(i));
+		}
+		values = selectedValues;
 	}
 
 	if (!useTheseVariableTypes.isEmpty())
 	{
-		result.clear();
 		QStringList typesStr = useTheseVariableTypes.split("|");
 		QList<columnType> types;
 
@@ -464,45 +519,31 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 				types.push_back(type);
 		}
 
-		for (const Term& term : terms)
+		QStringList rightValues;
+		for (const QString& value : rightValues)
 		{
-			columnType type = columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt());
+			columnType type = columnType(requestInfo(VariableInfo::VariableType, value).toInt());
 			if (types.contains(type))
-				result.add(term);
+				rightValues.append(value);
 		}
-	}
-
-	if (!useThisControl.isEmpty())
-	{
-		Terms controlTerms;
-		for (const Term& term : result)
-		{
-			RowControls* rowControls = _rowControlsMap.value(term.asQString());
-			if (rowControls)
-			{
-				JASPControl* control = rowControls->getJASPControl(useThisControl);
-
-				if (control)	controlTerms.add(control->property("value").toString());
-				else			Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
-			}
-		}
-		result = controlTerms;
+		values = rightValues;
 	}
 
 	if (filters.contains("levels"))
 	{
-		Terms allLabels;
-		for (const Term& term : result)
+		QStringList allLabels;
+		for (const QString& value : values)
 		{
-			Terms labels = requestInfo(VariableInfo::Labels, term.asQString()).toStringList();
-			if (labels.size() > 0)	allLabels.add(labels);
-			else					allLabels.add(term);
+			QStringList labels = requestInfo(VariableInfo::Labels, value).toStringList();
+			if (labels.size() > 0)	allLabels.append(labels);
+			else					allLabels.append(value);
 		}
 
-		result = allLabels;
+		values = allLabels;
 	}
 
-	return result;
+
+	return values;
 }
 
 Terms ListModel::termsEx(const QStringList &filters)

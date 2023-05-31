@@ -26,7 +26,7 @@ ComponentsListBase
 	id						: componentsList
 	background				: itemRectangle
 	implicitWidth 			: parent.width
-	implicitHeight			: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
+	implicitHeight			: itemTitles.height + itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
 	shouldStealHover		: false
 	innerControl			: itemGrid
 	addItemManually			: !source && !rSource
@@ -38,14 +38,43 @@ ComponentsListBase
 	property alias	itemRectangle		: itemRectangle
 	property alias	itemScrollbar		: itemScrollbar
 	property alias	itemTitle			: itemTitle
+	property alias	itemTitles			: itemTitles
 	property alias	rowSpacing			: itemGrid.rowSpacing
 	property alias	columnSpacing		: itemGrid.columnSpacing
+	property alias	addIconItem			: addIconItem
 	property bool	showAddIcon			: addItemManually
 	property string	removeIcon			: "cross.png"
 	property string	addIcon				: "duplicate.png"
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
     property bool   addBorder           : true
+	property var	titles
+
+	Item
+	{
+		id				: itemTitles
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		height			: titles ? jaspTheme.variablesListTitle : 0
+		width			: parent.width
+		visible			: !title && titles
+
+		Repeater
+		{
+			id: rep
+			model: titles
+			Text
+			{
+				property int defaultOffset: index === 0 ? 0 : rep.itemAt(index-1).x + rep.itemAt(index-1).width + jaspTheme.contentMargin
+
+				x		: (addBorder ? jaspTheme.contentMargin : 0) + (componentsList.offsets.length > index ? componentsList.offsets[index] : defaultOffset)
+				text	: titles[index]
+				font	: jaspTheme.font
+				color	: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+
+			}
+		}
+	}
 
 	Text
 	{
@@ -61,7 +90,7 @@ ComponentsListBase
 	Rectangle
 	{
 		id				: itemRectangle
-		anchors.top		: itemTitle.bottom
+		anchors.top		: itemTitles.visible ? itemTitles.bottom : itemTitle.bottom
 		anchors.left	: parent.left
 		height			: componentsList.height - itemTitle.height
 		width			: parent.width
@@ -126,6 +155,7 @@ ComponentsListBase
 		iconSource			: jaspTheme.iconPath + addIcon
 		onClicked			: addItem()
 		toolTip				: addTooltip
+		opacity				: enabled ? 1 : .5
 		anchors
 		{
 			bottom			: parent.bottom
@@ -162,7 +192,7 @@ ComponentsListBase
 				source					: jaspTheme.iconPath + removeIcon
 				anchors.right			: parent.right
 				anchors.verticalCenter	: parent.verticalCenter
-				visible					: itemWrapper.isDeletable && componentsList.count > componentsList.minimumItems
+				visible					: rowComponentItem.enabled && itemWrapper.isDeletable && componentsList.count > componentsList.minimumItems
 				height					: jaspTheme.iconSize
 				width					: jaspTheme.iconSize
 				z						: 2

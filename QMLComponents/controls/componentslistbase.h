@@ -33,6 +33,7 @@ class ComponentsListBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString			newItemName			READ newItemName			WRITE setNewItemName			NOTIFY newItemNameChanged			)
 	Q_PROPERTY( QList<QVariant>	defaultValues		READ defaultValues			WRITE setDefaultValues			NOTIFY defaultValuesChanged			)
 	Q_PROPERTY( bool			duplicateWhenAdding	READ duplicateWhenAdding	WRITE setDuplicateWhenAdding	NOTIFY duplicateWhenAddingChanged	)
+	Q_PROPERTY( QList<int>		offsets				READ offsets												NOTIFY offsetsChanged				)
 
 public:
 	ComponentsListBase(QQuickItem* item = nullptr);
@@ -50,8 +51,11 @@ public:
 	int				maximumItems()						const			{ return _maximumItems;			}
 	QList<QVariant>	defaultValues()						const			{ return _defaultValues;		}
 	bool			duplicateWhenAdding()				const			{ return _duplicateWhenAdding;	}
+	void			bindOffsets();
+	QList<int>		offsets();
 
 	Json::Value		getJsonFromComponentValues(const ListModel::RowControlsValues& termsWithComponentValues);
+
 signals:
 	void			addItem();
 	void			removeItem(int index);
@@ -62,6 +66,7 @@ signals:
 	void			maximumItemsChanged();
 	void			defaultValuesChanged();
 	void			duplicateWhenAddingChanged();
+	void			offsetsChanged();
 
 public slots:
 	GENERIC_SET_FUNCTION(NewItemName,			_newItemName,			newItemNameChanged,				QString			)

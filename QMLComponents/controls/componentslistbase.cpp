@@ -204,6 +204,35 @@ bool ComponentsListBase::isJsonValid(const Json::Value &value) const
 void ComponentsListBase::termsChangedHandler()
 {
 	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+	bindOffsets();
+	emit offsetsChanged();
+}
+
+void ComponentsListBase::bindOffsets()
+{
+	if (_termsModel && _termsModel->rowCount() > 0)
+	{
+		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
+		if (row)
+			for (JASPControl* control : row->getJASPControlsMap().values())
+				connect(control, &JASPControl::xChanged, this, &ComponentsListBase::offsetsChanged, Qt::UniqueConnection);
+	}
+}
+
+QList<int> ComponentsListBase::offsets()
+{
+	QList<int> result;
+	if (_termsModel && _termsModel->rowCount() > 0)
+	{
+		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
+		if (row)
+			for (JASPControl* control : row->getJASPControlsMap().values())
+				result.append(control->x());
+
+		std::sort(result.begin(), result.end());
+	}
+
+	return result;
 }
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const ListModel::RowControlsValues &termsWithComponentValues)
