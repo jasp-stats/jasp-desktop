@@ -416,7 +416,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 
 bool DataSetPackage::getRowFilter(int row) const
 {
-	return data(this->index(row, 0, indexForSubNode(_dataSet->filtersNode()))).toBool();
+	return !_dataSet ? false : data(this->index(row, 0, indexForSubNode(_dataSet->filtersNode()))).toBool();
 }
 
 QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right) const

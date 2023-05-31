@@ -61,7 +61,7 @@ public:
 	 */
 	size_t size() const override;
 
-	std::vector<std::string>	allValuesAsStrings()					const	override;
+	const stringvec &	allValuesAsStrings()					const	override;
 
 	/**
 	 * @brief hasCall Checks for presence of a cell at row.
@@ -101,9 +101,7 @@ public:
 	columnType	getColumnType() const { return _columnType; }
 
 	// Getters.
-	columnType getJASPColumnType() const { return _columnType; }
-
-	std::vector<std::string> getData() const;
+	columnType	getJASPColumnType() const { return _columnType; }
 
 private:
 
@@ -113,7 +111,7 @@ private:
 	typedef std::map< int, size_t > CellIndex;
 	CellIndex			_index;		///< cell indexes indexed by row.
 	int					_columnNumber; //<- We know our own column number
-	columnType	_columnType; // Our column type.
+	columnType			_columnType; // Our column type.
 
 	/**
 	 * @brief colNumberAsExcel Returns the column number as a string (base 26 A-Z).

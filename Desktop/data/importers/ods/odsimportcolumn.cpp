@@ -51,10 +51,17 @@ const
 	return _rows.size();
 }
 
-std::vector<std::string> ODSImportColumn::allValuesAsStrings() const
+const stringvec & ODSImportColumn::allValuesAsStrings() const
 {
-	return getData();
+	static stringvec values;
+	values.resize(_rows.size());
+	
+	for(size_t i=0; i<_rows.size(); i++)
+		values[i] = _rows[i].valueAsString();
+
+	return values;
 }
+
 
 /**
  * @brief insert Inserts string value for cell, irrespective of type.
@@ -108,17 +115,6 @@ void ODSImportColumn::setValue(int row, const string &data)
  */
 void ODSImportColumn::postLoadProcess()
 {
-}
-
-vector<string> ODSImportColumn::getData() const
-{
-	vector<string> values;
-	for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)
-	{
-		const string &value = i->valueAsString();
-		values.push_back(value);
-	}
-	return values;
 }
 
 /**

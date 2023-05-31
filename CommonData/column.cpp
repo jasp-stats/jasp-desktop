@@ -791,7 +791,7 @@ intstrmap Column::initAsNominalText(size_t colNo, std::string newName, const str
 	JASPTIMER_SCOPE(Column::initAsNominalText);
 
 	setName(newName);
-
+	
 	return setAsNominalText(values, labels);
 }
 
@@ -1093,9 +1093,9 @@ intstrmap Column::setAsNominalText(const stringvec &values, const strstrmap & la
 			unicifiedValues.push_back(val);
 			foundAlready.insert(val);
 		}
-
+	
 	std::map<std::string, int> labelValueMap = labelsSyncStrings(unicifiedValues, labels, changedSomething);
-
+	
 	if(values.size() != _ints.size() && changedSomething != nullptr)
 			*changedSomething = true;
 
@@ -1508,7 +1508,7 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue) const
 			Label * label = labelByValue(_ints[row]);
 
 			if(label)
-				label->originalValueAsString();
+				return label->originalValueAsString();
 		}
 	}
 
