@@ -145,9 +145,8 @@ FocusScope
 					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:					jaspTheme.font
 					verticalAlignment:		Text.AlignVCenter
-					onEditingFinished:		finishEdit();
+					onTextChanged:			dataTableView.view.editFinishedKeepEditing(index, text);
 					z:						10
-
 
 					Component.onCompleted:	focusTimer.start();
 					Timer

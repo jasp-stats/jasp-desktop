@@ -196,7 +196,8 @@ public slots:
 
 	void		edit(QModelIndex here);
 	void		destroyEditItem();
-	void		editFinished(QModelIndex here, QVariant  editedValue);
+	void		editFinished(			QModelIndex here, QVariant editedValue);
+	void		editFinishedKeepEditing(QModelIndex here, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);
 	void		contextMenuClickedAtIndex(QModelIndex index);
 	

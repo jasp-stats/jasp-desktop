@@ -1313,6 +1313,23 @@ void DataSetView::edit(QModelIndex here)
 	}
 }
 
+void DataSetView::editFinishedKeepEditing(QModelIndex here, QVariant editedValue)
+{
+	if(!editing())
+	{
+		Log::log() << "editFinishedKeepEditing called while not editing..." << std::endl;
+	}
+	else
+	{
+		QVariant oldValue = _model->data(here);
+
+		Log::log() << "editing finished! old value: '" << oldValue.toString() << "'  and new value: '" << editedValue.toString() << "' (row=" << here.row() << ", col=" << here.column() << ")" << std::endl;
+
+		if(oldValue.toString() != editedValue.toString())
+			_model->setData(here, editedValue);
+	}
+}
+
 void DataSetView::editFinished(QModelIndex here, QVariant editedValue)
 {
 	if(!editing())
@@ -1321,15 +1338,10 @@ void DataSetView::editFinished(QModelIndex here, QVariant editedValue)
 	}
 	else
 	{
-		QVariant oldValue = _model->data(here);
-		
-		Log::log() << "editing finished! old value: '" << oldValue.toString() << "'  and new value: '" << editedValue.toString() << "' (row=" << here.row() << ", col=" << here.column() << ")" << std::endl;
-		
-		if(oldValue.toString() != editedValue.toString())
-			_model->setData(here, editedValue);
-		
+		editFinishedKeepEditing(here, editedValue);
+
 		setEditing(false);
-		
+
 		destroyEditItem();
 	}
 
