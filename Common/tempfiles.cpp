@@ -28,6 +28,7 @@
 #include "log.h"
 using namespace std;
 
+const long 				outOfDateDelta = 24 * 3600;
 long					TempFiles::_sessionId		= 0;
 std::string				TempFiles::_sessionDirName	= "";
 std::string				TempFiles::_statusFileName	= "";
@@ -122,7 +123,6 @@ void TempFiles::deleteOrphans()
 
 	try
 	{
-		long outOfDateDelta = 24 * 3600;
 		std::filesystem::path tempPath		= Utils::osPath(Dirs::tempDir());
 		std::filesystem::path sessionPath	= Utils::osPath(_sessionDirName); 
 		stringvec aliveIDs;
