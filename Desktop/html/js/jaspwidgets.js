@@ -590,9 +590,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			'display': 'block',
 			'color': '#555555'
 		};
-        this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
-            $('pre.ql-syntax').css(codeBlockCss);
-        });
+		this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
+			$('pre.ql-syntax').css(codeBlockCss);
+		});
 
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
