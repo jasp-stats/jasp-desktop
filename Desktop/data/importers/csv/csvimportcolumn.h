@@ -9,6 +9,7 @@ class CSVImportColumn : public ImportColumn
 {
 public:
 							CSVImportColumn(ImportDataSet* importDataSet, std::string name);
+							CSVImportColumn(ImportDataSet* importDataSet, std::string name, long reserve);
 							~CSVImportColumn()	override;
 
 			size_t			size()									const	override;

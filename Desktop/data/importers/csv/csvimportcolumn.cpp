@@ -5,6 +5,11 @@ CSVImportColumn::CSVImportColumn(ImportDataSet* importDataSet, std::string name)
 {
 }
 
+CSVImportColumn::CSVImportColumn(ImportDataSet *importDataSet, std::string name, long reserve) : ImportColumn(importDataSet, name)
+{
+	_data.reserve(reserve);
+}
+
 CSVImportColumn::~CSVImportColumn()
 {
 	JASPTIMER_SCOPE(CSVImportColumn::~CSVImportColumn());

@@ -64,7 +64,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 
 		*it = colName;
 
-		importColumns.push_back(new CSVImportColumn(result, colName));
+		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows()));
 	}
 
 	unsigned long long progress;
