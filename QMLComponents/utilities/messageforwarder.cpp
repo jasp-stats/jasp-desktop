@@ -34,7 +34,10 @@ MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)
 {
-	QMessageBox::warning(nullptr, title, message);
+	QMessageBox box;
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setIcon(QMessageBox::Warning);
 }
 
 bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
@@ -42,7 +45,11 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 	if(YesButtonText == "")		YesButtonText	= tr("Yes");
 	if(NoButtonText == "")		NoButtonText	= tr("No");
 
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setIcon(QMessageBox::Question);
 
 	QPushButton* yesButton =	box.addButton(YesButtonText,	QMessageBox::ButtonRole::YesRole);
 	QPushButton* noButton =		box.addButton(NoButtonText,		QMessageBox::ButtonRole::NoRole);
@@ -57,7 +64,12 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 	if(NoButtonText == "")		NoButtonText		= tr("No");
 	if(CancelButtonText == "")	CancelButtonText	= tr("Cancel");
 
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	box.setIcon(QMessageBox::Question);
 
 	QPushButton* yesButton =	box.addButton(YesButtonText,		QMessageBox::ButtonRole::YesRole);
 	QPushButton* noButton =		box.addButton(NoButtonText,			QMessageBox::ButtonRole::NoRole);
@@ -66,24 +78,28 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 
 	box.exec();
 
-	QAbstractButton* clicked = box.clickedButton();
-	if (clicked == yesButton)		return DialogResponse::Yes;
+	QAbstractButton * clicked = box.clickedButton();
+	if		(clicked == yesButton)	return DialogResponse::Yes;
 	else if (clicked == noButton)	return DialogResponse::No;
 
 	return DialogResponse::Cancel;
 }
 
-MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveText, QString noSaveText, QString cancelText)
+MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveText, QString discardText, QString cancelText)
 {
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setIcon(QMessageBox::Question);
 
 	if(saveText == "")		saveText	= tr("Save");
+	if(discardText == "")	discardText = tr("Don't Save");
 	if(cancelText == "")	cancelText	= tr("Cancel");
-	if(noSaveText == "")	noSaveText	= tr("Don't Save");
 
 	// In order to have the noSaveButton as first in the row of buttons, it has to get the role RejectRole.
 	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::AcceptRole);
-	QPushButton* noSaveButton =	box.addButton(noSaveText,	QMessageBox::ButtonRole::DestructiveRole);
+	QPushButton* noSaveButton =	box.addButton(discardText,	QMessageBox::ButtonRole::DestructiveRole);
 	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
 	box.setDefaultButton(saveButton);
 
@@ -91,7 +107,7 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 
 	QAbstractButton* clicked = box.clickedButton();
 
-	if (clicked == saveButton)			return DialogResponse::Save;
+	if		(clicked == saveButton)		return DialogResponse::Save;
 	else if (clicked == noSaveButton)	return DialogResponse::Discard;
 
 	return DialogResponse::Cancel;
@@ -131,7 +147,7 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << selectedFilter << std::endl;
 
 	//Lets make sure the extension is added:
-	const QRegularExpression extReg("\\*\\.(\\w+)");
+	static const QRegularExpression extReg("\\*\\.(\\w+)");
 	QRegularExpressionMatch  possibleMatch = extReg.match(selectedFilter);
 
 	if(possibleMatch.hasMatch())
