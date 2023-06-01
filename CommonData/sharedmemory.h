@@ -36,7 +36,7 @@ public:
 	static DataSet	*retrieveDataSet(unsigned long parentPID = 0);
 	static DataSet	*enlargeDataSet(DataSet *dataSet);
 	static void		deleteDataSet(DataSet *dataSet);
-	static void		unloadDataSet();
+	static void		unloadDataSet(bool owner = false);
 private:
 
 	static std::string _memoryName;

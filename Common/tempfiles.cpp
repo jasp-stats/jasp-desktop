@@ -28,6 +28,7 @@
 #include "log.h"
 using namespace std;
 
+const long 				outOfDateDelta = 24 * 3600;
 long					TempFiles::_sessionId		= 0;
 std::string				TempFiles::_sessionDirName	= "";
 std::string				TempFiles::_statusFileName	= "";
@@ -122,9 +123,9 @@ void TempFiles::deleteOrphans()
 
 	try
 	{
-
 		std::filesystem::path tempPath		= Utils::osPath(Dirs::tempDir());
-		std::filesystem::path sessionPath	= Utils::osPath(_sessionDirName);
+		std::filesystem::path sessionPath	= Utils::osPath(_sessionDirName); 
+		stringvec aliveIDs;
 
 		std::filesystem::directory_iterator itr(tempPath, error);
 
@@ -134,6 +135,7 @@ void TempFiles::deleteOrphans()
 			return;
 		}
 
+		//find the Dirs that must be deleted and store their PIDs (name)
 		for (; itr != std::filesystem::directory_iterator(); itr++)
 		{
 			std::filesystem::path p = itr->path();
@@ -149,26 +151,8 @@ void TempFiles::deleteOrphans()
 			if (error)
 				continue;
 
-			if (!is_directory)
+			if (is_directory)
 			{
-				if (fileName.substr(0, 5).compare("JASP-") == 0)
-				{
-					long modTime	= Utils::getFileModificationTime(Utils::osPath(p));
-					long now		= Utils::currentSeconds();
-
-					if (now - modTime > 24 * 3600)
-					{
-						Log::log() << "Try to delete: " << fileName << std::endl;
-						std::filesystem::remove(p, error);
-
-						if (error)
-							Log::log() << "Error when deleting file: " << error.message() << std::endl;
-					}
-				}
-			}
-			else
-			{
-
 				if (std::atoi(fileName.c_str()) == 0)
 					continue;
 
@@ -179,23 +163,26 @@ void TempFiles::deleteOrphans()
 					long modTime	= Utils::getFileModificationTime(Utils::osPath(statusFile));
 					long now		= Utils::currentSeconds();
 
-					if (now - modTime > 24 * 3600)
+					if (now - modTime > outOfDateDelta)
 					{
 						std::filesystem::remove_all(p, error);
-
 						if (error)
 							Log::log() << "Error when deleting directory: " << error.message() << std::endl;
 					}
+					else
+						aliveIDs.push_back(p.filename().string());
 				}
 				else // no status file
 				{
 					std::filesystem::remove_all(p, error);
-
 					if (error)
 						Log::log() << "Error when deleting directory, had no status file and " << error.message() << std::endl;
 				}
 			}
 		}
+
+		//Delete files in the root not associated with the IDs that have been active for x time
+		deleteStrayRootFiles(aliveIDs, outOfDateDelta);
 
 	}
 	catch (runtime_error e)
@@ -204,6 +191,8 @@ void TempFiles::deleteOrphans()
 		return;
 	}
 }
+
+
 
 
 void TempFiles::heartbeat()
@@ -339,3 +328,55 @@ void TempFiles::deleteList(const vector<string> &files)
 	}
 }
 
+void TempFiles::deleteStrayRootFiles(const stringvec& validIDs, long outOfDateDelta)
+{
+	std::filesystem::path tempPath = Utils::osPath(Dirs::tempDir());
+	std::error_code error;
+	std::filesystem::directory_iterator itr(tempPath, error);
+
+	if (error)
+	{
+		Log::log() << error.message() << std::endl;
+		return;
+	}
+
+	for (; itr != std::filesystem::directory_iterator(); itr++)
+	{
+		std::filesystem::path p = itr->path();
+
+		Log::log() << "looking at file " << p.string() << std::endl;
+
+		string fileName		= Utils::osPath(p.filename());
+		bool is_directory	= std::filesystem::is_directory(p, error);
+
+		if (error)
+			continue;
+
+		if (!is_directory)
+		{					
+			long modTime	= Utils::getFileModificationTime(Utils::osPath(p));
+			long now		= Utils::currentSeconds();
+
+			if (now - modTime <= outOfDateDelta || fileName.substr(0, 5).compare("JASP-") != 0)
+				continue;
+
+			bool valid = false;
+			for (auto& id : validIDs)
+			{
+				if (fileName.find(id) != std::string::npos)
+				{
+					valid = true;
+					break;
+				}
+			}
+			if (valid)
+				continue;
+
+			Log::log() << "Try to delete: " << fileName << std::endl;
+			std::filesystem::remove(p, error);
+
+			if (error)
+				Log::log() << "Error when deleting file: " << error.message() << std::endl;
+		}
+	}
+}

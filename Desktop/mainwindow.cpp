@@ -240,8 +240,11 @@ MainWindow::~MainWindow()
 
 		delete _resultsJsInterface;
 
-		if (_package->hasDataSet())
-			_package->reset();
+//probably too late for signals
+//		if (_package->hasDataSet())
+//			_package->reset();
+
+		SharedMemory::unloadDataSet(true);
 
 		//delete _engineSync; it will be deleted by Qt!
 	}

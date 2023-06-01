@@ -60,6 +60,8 @@ public:
 	static void			deleteAll(int id = -1);
 	static void			deleteOrphans();
 
+	static void			deleteStrayRootFiles(const stringvec& validIDs, long outOfDateDelta);
+
 private:
 						TempFiles() {}
 	static long			_sessionId;
