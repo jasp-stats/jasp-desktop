@@ -1096,9 +1096,8 @@ JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
 	},
 	render: function() {
 		let rScript = this.model.get("script").replace(/<br>/g, "\n");
-        this.$el.find(".jasp-rsyntax")
-				.html("<pre><code class='language-r'>" + rScript + "</code></pre>");
-
+		this.$el.find(".jasp-rsyntax")
+					.html("<pre><code class='language-r'>" + rScript + "</code></pre>");
 		setTimeout(() => {
 			this.$el.find(".jasp-rsyntax")[0].querySelectorAll('pre code').forEach((el) => {
 				hljs.highlightElement(el);
