@@ -163,11 +163,11 @@ FocusScope
 
 					property bool alreadyFinished:	false
 
-					Connections
+					/*Connections
 					{
 						target:							ribbonModel
 						function onFinishCurrentEdit() {	finishEdit(); }
-					}
+					}*/
 
 					function finishEdit()
 					{
@@ -219,10 +219,10 @@ FocusScope
 
 						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 
-						case Qt.Key_Up:		if(rowIndex		> 0)								{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex - 1,	columnIndex);		} break;
-						case Qt.Key_Down:	if(rowIndex		< dataSetModel.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex + 1,	columnIndex);		} break;
-						case Qt.Key_Left:	if(columnIndex	> 0)								{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex,		columnIndex - 1);	} break;
-						case Qt.Key_Right:	if(columnIndex	< dataSetModel.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex,		columnIndex + 1);	} break;
+						case Qt.Key_Up:		if(rowIndex		> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex - 1,	columnIndex);		} break;
+						case Qt.Key_Down:	if(rowIndex		< dataTableView.model.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex + 1,	columnIndex);		} break;
+						case Qt.Key_Left:	if(columnIndex	> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex,		columnIndex - 1);	} break;
+						case Qt.Key_Right:	if(columnIndex	< dataTableView.model.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex,		columnIndex + 1);	} break;
 						}
 
 						if(arrowPressed)
