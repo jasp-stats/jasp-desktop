@@ -240,7 +240,7 @@ MainWindow::~MainWindow()
 
 		delete _resultsJsInterface;
 
-//probably to late for signals
+//probably too late for signals
 //		if (_package->hasDataSet())
 //			_package->reset();
 
