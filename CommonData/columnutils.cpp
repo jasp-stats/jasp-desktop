@@ -254,7 +254,7 @@ bool ColumnUtils::convertVecToInt(const std::vector<std::string> &values, std::v
 		}
 		else
 		{
-			intValues.clear();
+			std::vector<int>().swap(intValues); //this clears intValues and guarentees its memory is released
 			return false;
 		}
 
@@ -287,7 +287,7 @@ bool ColumnUtils::convertVecToDouble(const stringvec & values, doublevec & doubl
 		}
 		else
 		{
-			doubleValues.clear();
+			std::vector<double>().swap(doubleValues); //this clears doubleValues and guarentees its memory is released
 			return false;
 		}
 
