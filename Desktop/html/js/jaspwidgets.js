@@ -583,6 +583,17 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', 'Font Size');
 		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', 'Clear Formatting');
 
+		// Customized quill editor syntax to fix code-block
+  		// FIXME: Fix css styles on export html when refactoring
+		let codeBlockCss = {
+			'background-color': '#ebebeb',
+			'display': 'block',
+			'color': '#555555'
+		};
+        this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
+            $('pre.ql-syntax').css(codeBlockCss);
+        });
+
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
 			event.preventDefault();
