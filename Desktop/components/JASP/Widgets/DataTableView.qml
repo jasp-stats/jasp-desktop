@@ -48,80 +48,64 @@ FocusScope
 
 				var copyPasteMenuModel =
 				[
-							qsTr("Select All"),
+					{ text: qsTr("Select All"),									func: function() { dataTableView.view.selectAll() },		icon: "menu-select-all" },
 
-							"---",
+					{ text: "---" },
 
-							qsTr("Cut             (%1+X)").arg(ctrlCmd),
-							qsTr("Copy            (%1+C)").arg(ctrlCmd),
-							qsTr("Paste           (%1+V)").arg(ctrlCmd),
+					{ text: qsTr("Cut             (%1+X)").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },			icon: "menu-data-cut"	},
+					{ text: qsTr("Copy            (%1+C)").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },		icon: "menu-data-copy"	},
+					{ text: qsTr("Paste           (%1+V)").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },		icon: "menu-data-paste" },
 
-							"---", //Works but is ugly:  + qsTr("Including header:"),
+					{ text: "---" },
 
-							qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),
-							qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),
-							qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),
+					{ text: qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) } },
+					{ text: qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) } },
+					{ text: qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } },
 
-							"---",
+					{ text: "---" },
 
-							qsTr("Select column"),
-							qsTr("Insert column before"),
-							qsTr("Insert column after"),
-							qsTr("Delete column"),
+					{ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			indexClicked.column) }, icon: "menu-column-select"			},
+					{ text: qsTr("Insert column before"),						func: function() { dataTableView.view.columnInsertBefore(	indexClicked.column) }, icon: "menu-column-insert-before"	},
+					{ text: qsTr("Insert column after"),						func: function() { dataTableView.view.columnInsertAfter(	indexClicked.column) }, icon: "menu-column-insert-after"	},
+					{ text: qsTr("Delete column"),								func: function() { dataTableView.view.columnDelete(			indexClicked.column) }, icon: "menu-column-remove"			},
 
-							"---",
+					{ text: "---" },
 
-							qsTr("Select row"),
-							qsTr("Insert row before"),
-							qsTr("Insert row after"),
-							qsTr("Delete row"),
-
-				]
-
-				var copyPasteMenuFunctions =
-				[
-						function() { dataTableView.view.selectAll() },
-
-						function(){},
-
-						function() { dataTableView.view.cut(  false)},
-						function() { dataTableView.view.copy( false)},
-						function() { dataTableView.view.paste(false)},
-
-						function (){},
-
-						function() { dataTableView.view.cut(  true )},
-						function() { dataTableView.view.copy( true )},
-						function() { dataTableView.view.paste(true )},
-
-						function (){},
-
-						function() { dataTableView.view.columnSelect(		indexClicked.column) },
-						function() { dataTableView.view.columnInsertBefore(	indexClicked.column) },
-						function() { dataTableView.view.columnInsertAfter(	indexClicked.column) },
-						function() { dataTableView.view.columnDelete(		indexClicked.column) },
-
-						function (){},
-
-						function() { dataTableView.view.rowSelect(			indexClicked.row) },
-						function() { dataTableView.view.rowInsertBefore(	indexClicked.row) },
-						function() { dataTableView.view.rowInsertAfter(		indexClicked.row) },
-						function() { dataTableView.view.rowDelete(			indexClicked.row) }
+					{ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			indexClicked.row) }, icon: "menu-row-select"				},
+					{ text: qsTr("Insert row before"),							func: function() { dataTableView.view.rowInsertBefore(		indexClicked.row) }, icon: "menu-row-insert-before"			},
+					{ text: qsTr("Insert row after"),							func: function() { dataTableView.view.rowInsertAfter(		indexClicked.row) }, icon: "menu-row-insert-after"			},
+					{ text: qsTr("Delete row"),									func: function() { dataTableView.view.rowDelete(			indexClicked.row) }, icon: "menu-row-remove"				}
 
 				]
+
+				var copyPasteMenuText = []
+				var copyPasteMenuFunctions = []
+				var copyPasteMenuIcons = []
+
+				for (var i = 0; i < copyPasteMenuModel.length; i++)
+				{
+					var menu = copyPasteMenuModel[i]
+					copyPasteMenuText.push(menu["text"])
+					if (menu.hasOwnProperty("func"))
+						copyPasteMenuFunctions.push(menu["func"])
+					else
+						copyPasteMenuFunctions.push(function() {})
+					if (menu.hasOwnProperty("icon"))
+						copyPasteMenuIcons.push(jaspTheme.iconPath + menu["icon"] + ".svg")
+					else
+						copyPasteMenuIcons.push("")
+				}
 
 				var props = {
-					"model":		copyPasteMenuModel,
+					"hasIcons": true,
+					"model":		copyPasteMenuText,
 					"functionCall": function (index)
 					{
-						var chosenElement = copyPasteMenuModel[index];
-
-					//	console.log("Option " + chosenElement + " chosen, running function.");
-
 						copyPasteMenuFunctions[index]();
 
 						customMenu.hide()
-					}
+					},
+					"icons": copyPasteMenuIcons
 				};
 
 				//customMenu.scrollOri.x	= __JASPDataViewRoot.contentX;
