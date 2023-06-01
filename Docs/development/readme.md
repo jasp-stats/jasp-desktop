@@ -2,6 +2,8 @@
 
 - [`JASP building guide`](jasp-building-guide.md) How to set up your environment to build JASP
 - [`JASP git guide`](git-guide.md) Brief intro to how we work with Git
+- [Using `development`](using-development-repository.md) Working with modularized JASP and git submodules
+- [Developing modules](jasp-module-workflow.md) How to develop a (new) module for JASP
 
 ### Building a JASP Analysis
 
@@ -16,11 +18,3 @@
 - [`How to add a module`](jasp-adding-module.md) adding a new module in JASP (will change soon!)
 - [`Software for humans`](jasp-human-guide.md) opinion piece on JASP analysis UI
 - [`JASP error list`](jasp-error-list.md) list of errors produced by JASP
-
-
-### Old / outdated documentation
-- [`Vovk-Sellke MPR`](r-vs-mpr.md) How to add the Vovk-Sellke MPR in old analyses
-- [`JASP R Style guide`](r-style-guide-old.md) R style guide for old analyses
-- [`Saving images`](r-saveimage.md) Saving images old style
-- [`R packages list`](jasp-r-packages-list.md) for version 0.8.4
-- [`JASP preview guide`](jasppreview-guide.md) guide for JASP 0.5-2

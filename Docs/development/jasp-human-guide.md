@@ -29,6 +29,86 @@ Hence, in developing an analysis, it is good to think through each and every sor
 
 Error messages can either be placed over the top of the results table, or put in the footnotes. In general, an error which makes the whole analysis meaningless, should be placed over the top of the results table. A t-test where the user has specified an independent variable with three levels would be one such example. In contrast, if the error only affects one or a handful of values in the table, then an NaN should be placed in that cell, and a footnote marker added.
 
+### Writing for internationalization
+
+Internationalization (i18n) is the process of preparing the source code such as message and other user-visible information in various human languages. An inspiring news is that JASP is moving towards i18n. Therefore, it is necessary to pay attention to the readability and flexibility of the message during writing.
+
+
+Passing your messages with [gettext() or gettextf()](https://www.gnu.org/software/gettext/manual/gettext.html), JASP will add automatically the strings in a .po file, that will be exposed in [WebLate](https://jasp-stats.org/translation-guidelines) so that people can translate them in their own language.
+
+Most general messages can be internationalized with a simple `gettext()` calls, like this:
+
+ ```r
+  gettextf("Number of factor levels is %s", "{{factorLevels.amount}}")
+  ```
+
+**Specialized Messages**
+
+If there are some arguments to be substituted into the message, you can provide them inside `gettextf()` as `$1`, `$2`, and `$3` and so on. `gettextf()` should be used in place of gettext when arguments are needed, or when special characters are used in the string (non latin characters like 'β', or the '%' character which is used for placeholder).
+
+<p><details>
+	<summary>Some examples:</summary>
+
+
+
+  ```r
+  # Bad writing
+  01. gettextf("Number of factor levels is %s in %s", "{{factorLevels.amount}}", "{{variables}}") # same %s 
+  02. gettextf("%s Of the observations, %1.f complete cases were used. ","str",numbers)           # amixed %s,%f,%d...mixed in a message 
+  
+  # Good writing
+  01. gettextf("Number of factor levels is %1$s in %2$s", "{{factorLevels.amount}}", "{{variables}}")
+  02. gettextf("%1$s Of the observations, %2$1.f complete cases were used. ","str",numbers)       # using <num$>
+
+  ```
+</details></p>
+
+It is important to know that the translator will just see the string (without the value of the arguments) inside gettext. So for example:
+
+<p><details>
+	<summary>Some examples:</summary>
+	
+```r
+# Bad writing
+gettextf("File %s is %s protected", filename, rw ? "write" : "read");
+	
+# Good writing
+gettextf (rw ? "File %s is write protected" : "File %s is read protected", filename);
+
+ ```
+</details></p>
+
+It's also **not good** to split a whole sentence. Good [plural forms](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) is understandable for translators, `ngettext` is used where the message needs to vary by a single integer, `msg1` is returned if n == 1 and `msg2` in all other cases:
+
+<p><details>
+	<summary>Some examples:</summary>
+	
+```r
+# Bad
+cat(ngettext(length(miss), "variable", "variables"),
+paste(sQuote(miss), collapse = ", "),
+ngettext(length(miss), "contains", "contain"), "missing values\n")
+
+# Good
+cat(sprintf(ngettext(length(miss),
+				 "variable %s contains missing values\n",
+				 "variables %s contain missing values\n"),
+		paste(sQuote(miss), collapse = ", ")))
+```
+</details></p>
+
+
+
+**Using Unicode everywhere**
+
+The message text may contain arbitrary Unicode characters, Try to always keep messages in the plain 7-bit ASCII or in the UTF-8 character sets, but avoid using any other character sets. This allows your writing characters available on multiple language environments.
+So, then you have to use `gettextf` with a placeholder `%s` and argument `\u03B2`.
+Another tricky point is that the `%` character is a special character in `gettext()`: it means that it expects a placeholder. So if you just want to print a `%` character, you need to double it, like: `gettextf("%s%% CI for Mean Difference")`.
+
+**Do not** mark empty strings for translation, because in the po format, the empty string (“”) is reserved and has a [special use](https://www.gnu.org/software/gettext/manual/gettext.html#Concepts).
+
+Refer to our [translation rules](https://github.com/shun2wang/jasp-desktop/blob/moreSamples/Docs/development/jasp-translation-rules.md) for more information and help.
+
 ### Thorough testing
 
 It is important that software is thoroughly tested, and that a proactive approach (proactively thinking through what sorts of problems may occur) is taken rather than reactive (simply waiting until people complain about things not working).

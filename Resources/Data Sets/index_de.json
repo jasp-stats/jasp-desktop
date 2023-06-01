@@ -353,6 +353,13 @@
           "description": "Men's libido (and that of their partners) after having been administered different doses of Viagra. <br><br> The example JASP file demonstrates the use of an ANCOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
           "kind": "file",
           "associated_datafile": "Viagra.csv"
+        },
+        {
+          "name": "Stroop",
+          "path": "Stroop.jasp",
+          "description": "Reaktionszeiten von 19 Probanden bei einer Stroop-Aufgabe <br><br> Die JASP-Beispieldatei demonstriert die Verwendung einer ANOVA mit wiederholten Messungen.<br><br> <i>Daten mit freundlicher Genehmigung von Ronen Hershman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stroop.csv"
         }
       ],
       "debug": false
@@ -427,6 +434,20 @@
           "associated_datafile": "Physical Activity and BMI.csv"
         },
         {
+          "name": "Presidents' Height",
+          "path": "Presidents' Height.jasp",
+          "description": "Heights of US presidents and their proportion of the popular vote. <br><br> The example JASP file demonstrates the use of conducting an interval-null hypothesis.<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Presidents' Height.csv"
+        },
+        {
+          "name": "World Happiness",
+          "path": "World Happiness.jasp",
+          "description": "National happiness scores and various life factors of 155 countries reported in 2017. <br><br> The example JASP file demonstrates the use of Bayesian linear regression.<br><br> <i>Data from Helliwell, Layard, & Sachs (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "World Happiness.csv"
+        },
+        {
           "name": "The Biggest Liar",
           "path": "The Biggest Liar.jasp",
           "description": "Creativity test scores and ranking in a lying competition. <br><br> The example JASP file demonstrates the use of Spearman's and Kendall's correlation.<br><br> <i>Fictional data from Andy Field.<\/i>",
@@ -439,6 +460,13 @@
           "description": "Age, cabin class, and survival status of 1313 passengers on the Titanic. <br><br> The example JASP file demonstrates the use of logistic regression.<br><br> <i>Data set included in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Titanic.csv"
+        },
+        {
+          "name": "Turbines",
+          "path": "Turbines.jasp",
+          "description": "Die Anzahl und der Anteil der Turbinenräder, die nach einer bestimmten Anzahl von Betriebsstunden Risse aufweisen. <br><br> Die JASP-Beispieldatei demonstriert die Verwendung der binomialen logistischen Regression.<br><br> <i>Daten von Nelsen, W. (1982).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Turbines.csv"
         }
       ],
       "debug": false
@@ -540,6 +568,13 @@
           "description": "Charles Spearman's data of pupils' school grades and sensory discrimination scores. <br><br> The example JASP file demonstrates the use of an exploratory factor analysis.<br><br> <i>Data reported in Spearman (1904).<\/i>",
           "kind": "file",
           "associated_datafile": "G Factor.csv"
+        },
+        {
+          "name": "Mental Ability",
+          "path": "Mental Ability.jasp",
+          "description": "Der klassische Datensatz von Holzinger und Swineford (1939) enthält Testergebnisse zu geistigen Fähigkeiten von Kindern der Klassen 7 und 8 aus zwei verschiedenen Schulen. <br><br> Die Beispieldatei in JASP zeigt, wie eine konfirmatorische Faktorenanalyse angewendet werden kann.<br><br> <i>Die Daten von Holzinger und Swineford (1939) sind im R-Paket lavaan (Rosseel, 2012) verfügbar.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Mental Ability.csv"
         }
       ],
       "debug": false
@@ -577,6 +612,13 @@
               "description": "A fictitious audit sample consisting of 60 transactions. <br><br> The example JASP file demonstrates the use of a Bayesian evaluation analysis.<br><br> <i>Data set used in R package jfa<\/i>",
               "kind": "file",
               "associated_datafile": "auditSample.csv"
+          },
+          {
+              "name": "Evaluating a Stratified Sample",
+              "path": "stratifiedEvaluation.jasp",
+              "description": "A fictitious audit population consisting of 1414 items divided into 3 strata. <br><br> The example JASP file demonstrates the use of a stratified Bayesian evaluation analysis.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "stratification.csv"
           },
           {
               "name": "Assessing Benford's Law",
@@ -642,6 +684,13 @@
             "description": "This JASP file demonstrates a Bain regression using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
             "kind": "file",
             "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "Structural Equation Modeling",
+            "path": "bainSem.jasp",
+            "description": "This JASP file demonstrates a Bain Structural Equation Model using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
           }
         ],
         "debug": false
@@ -694,6 +743,27 @@
             "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
+          },
+          {
+            "name": "Spirale",
+            "path": "spiral.jasp",
+            "description": "Die Daten enthalten eine Spiralfigur auf einer zweidimensionalen Ebene. In den 200 Beobachtungen sind zwei Klassen vertreten. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "spiral.csv"
+          },
+          {
+            "name": "Penguins",
+            "path": "penguins.jasp",
+            "description": "Die Daten enthalten Messungen für Pinguinarten, Inseln im Palmer-Archipel, Größe (Flossenlänge, Körpermasse, Schnabelabmessungen) und Geschlecht. <br><br> <i>Datensatz im R-Paket palmerpenguins enthalten.<\/i>",
+            "kind": "file",
+            "associated_datafile": "penguins.csv"
+          },
+          {
+            "name": "Police Cadet Evaluation",
+            "path": "policeCadetEvaluation.jasp",
+            "description": "In den späten 1990er Jahren in den Niederlanden erhobene Felddaten über die Beurteilung von Polizeianwärtern, die zur Untersuchung der Auswirkungen einer Senkung der Zulassungsstandards und zur Vorhersage, ob die Anwärter die standardmäßige Fünfjahresbeurteilung bestehen würden, auf der Grundlage verschiedener Merkmale verwendet wurden. <br><br> <i>Datensatz, der von der Nationalen Agentur für Polizeidienste und dem Justizministerium in den Niederlanden zur Verfügung gestellt wurde.<\/i>",
+            "kind": "file",
+            "associated_datafile": "policeCadetEvaluation.csv"
           }
         ],
         "debug": false
@@ -731,21 +801,35 @@
       "debug": false
     },
     {
-        "name": "13. Reliability",
-        "path": "13. Reliability",
-        "description": "",
-        "kind": "folder",
-        "children": [
-          {
-            "name": "Fear of Statistics",
-            "path": "Fear of Statistics.jasp",
-            "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
-            "kind": "file",
-            "associated_datafile": "Fear of Statistics.csv"
-          }
-        ],
-        "debug": false
-      },
+      "name": "13. Reliabilität",
+      "path": "13. Reliability",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Fear of Statistics",
+          "path": "Fear of Statistics.jasp",
+          "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Fear of Statistics.csv"
+        },
+        {
+          "name": "ASRM - Manie Skala",
+          "path": "ASRM - Mania Scale.jasp",
+          "description": "Antworten von 78 Teilnehmern auf der Altman Selbstbericht Manie Skala (ASRM), aus Nicolai & Moshagen (2018). Die Datei demonstriert die Verwendung einer eindimensionalen Bayes'schen Reliabilitätsanalyse",
+          "kind": "file",
+          "associated_datafile": "ASRM - Mania Scale.csv"
+        },
+        {
+          "name": "Interrater-Daten von Shrout und Fleiss (1979)",
+          "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+          "description": "Hypothetischer Datensatz aus einer Arbeit über ICCs von Shrout und Fleiss (1979). Die Datei demonstriert die Verwendung der klassischen Intraklassen-Korrelationskoeffizienten",
+          "kind": "file",
+          "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        }
+      ],
+      "debug": false
+    },
     {
       "name": "14. SEM",
       "path": "14. SEM",
@@ -758,13 +842,209 @@
           "description": "Indicators of industralization in 1960, and political democracy in 1960 and 1965. <br><br> The example JASP file demonstrates the use of structural equation modeling.<br><br> <i>Data set included in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Political Democracy.csv"
+        },
+        {
+          "name": "Grand Point Average",
+          "path": "Grand Point Average.jasp",
+          "description": "Grand Point Average of 200 college students across 6 semesters, along with information on gender, high school GPA and whether they were admitted to their university of choice. <br><br> The JASP file currently does not contain any analysis. <br><br> <i>Data from Hox, Moerbeek, and Van de Schoot (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Grand Point Average.csv"
+        },
+        {
+          "name": "Social Participation",
+          "path": "Social Participation.jasp",
+          "description": "Measurements of Social Participation (church membership, memberships in voluntary organizations, and number of friends seen), as well as measures on potential causes of social interaction (income, occupation and education). <br><br> The JASP file currently does not contain any analysis. <br><br>  <i>Simulated data based on Hodge and Treiman (1986).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Social Participation.csv"
         }
       ],
       "debug": false
-    },	
+    },
     {
-      "name": "15. Miscellaneous",
-      "path": "15. Miscellaneous",
+      "name": "15. Prophet",
+      "path": "15. Prophet",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "JASP Webpage Visits",
+          "path": "JASP Webpage Visits.jasp",
+          "description": "Number of visits to the JASP website from January to October 2020.<br><br> <i>Data set collected by the JASP team.<\/i>",
+          "kind": "file",
+          "associated_datafile": "JASP Webpage Visits.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "16. Circular Statistics",
+      "path": "16. Circular Statistics",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "El Nino",
+          "path": "El Nino.jasp",
+          "description": "Wind direction measurements in Hawaii during the months August, July, and September. <br><br> The example JASP file demonstrates the use of circular descriptives and comparison of multiple circular variables. <br><br> <i>Fictional data from Aaron Bahde under CC-BY 4.0 license.<\/i>",
+          "kind": "file",
+          "associated_datafile": "El Nino.csv"
+        }
+      ]
+    },
+    {
+      "name": "17. Mixed Models",
+      "path": "17. Mixed Models",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Larks and Owls",
+          "path": "Larks and Owls.jasp",
+          "description": "Geistiges Umherschweifen bei der Aufgabe Anhaltende Aufmerksamkeit zu verschiedenen Tageszeiten und Klassifizierung des Chronotyps anhand des Fragebogens Morgens und Abends.<br><br> Die JASP-Beispieldatei demonstriert die Verwendung eines verallgemeinerten linearen gemischten Modells.<br><br> <i>Daten von Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Larks and Owls.csv"
+        }
+      ],
+      "debug": false
+    },
+	  {
+      "name": "18. Quality Control",
+      "path": "18. Quality Control",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Type 1 Instrument Capability",
+          "path": "Type1InstrumentCapability.jasp",
+          "description": "A dataset containing 50 measurements of a similar part.  <br><br> The example JASP file demonstrates the use of the Type 1 Instrument Capability.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Type1InstrumentCapability.csv"
+        },
+        {
+          "name": "Linearity Study",
+          "path": "LinearityStudy.jasp",
+          "description": "A dataset containing 12 repeated measurements of five different parts and a reference value for each part.  <br><br> The example JASP file demonstrates the use of the Linearity Study.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "LinearityStudy.csv"
+        },
+        {
+          "name": "Gauge r & R Study (Long Format)",
+          "path": "GaugerRLongFormat.jasp",
+          "description": "A dataset containing measurements of ten different parts in the long format. Each part was measured three times each by three different operators.  <br><br> The example JASP file demonstrates the use of the Gauge r & R Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRLongFormat.csv"
+        },
+        {
+          "name": "Gauge r & R Study (Wide Format)",
+          "path": "GaugerRWideFormat.jasp",
+          "description": "A dataset containing measurements of ten different parts in the wide format. Each part was measured three times each by three different operators.  <br><br> The example JASP file demonstrates the use of the Gauge r & R Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRWideFormat.csv"
+        },
+        {
+          "name": "Nested Gauge r & R Study (Long Format)",
+          "path": "GaugerRNestedLongFormat.jasp",
+          "description": "A dataset containing measurements of 30 different parts in the long format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRNestedLongFormat.csv"
+        },
+        {
+          "name": "Nested Gauge r & R Study (Wide Format)",
+          "path": "GaugerRNestedWideFormat.jasp",
+          "description": "A dataset containing measurements of 30 different parts in the wide format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "GaugerRNestedWideFormat.csv"
+        },
+        {
+          "name": "Attribute Agreement Analysis (Long Format)",
+          "path": "AttributesAgreementAnalysisLongFormat.jasp",
+          "description": "A dataset containing binary ratings (yes/no) of 15 different parts in the long format. Three raters rated each part three times.  <br><br> The example JASP file demonstrates the use of the Attribute Agreement Analyisis with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "AttributesAgreementAnalysisLongFormat.csv"
+        },
+        {
+          "name": "Attribute Agreement Analysis (Wide Format)",
+          "path": "AttributesAgreementAnalysisWideFormat.jasp",
+          "description": "A dataset containing binary ratings (yes/no) of 15 different parts in the wide format. Three raters rated each part three times.  <br><br>  The example JASP file demonstrates the use of the Attribute Agreement Analyisis with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
+        },
+        {
+          "name": "Range Method Study (Wide Format)",
+          "path": "RangeMethodDataWideFormat.jasp",
+          "description": "A dataset containing two repeated measurements for five different parts in the wide format.  <br><br> The example JASP file demonstrates the use of the Range Method Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "RangeMethodDataWideFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Subgroups (Long Format)",
+          "path": "SubgroupChartLongFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the long format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Subgroups wiht long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "SubgroupChartLongFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Subgroups (Wide Format)",
+          "path": "SubgroupChartWideFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the wide format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Subgroups wiht wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "SubgroupChartWideFormat.csv"
+        },
+        {
+          "name": "Variables Charts for Individuals",
+          "path": "IndividualChartStages.jasp",
+          "description": "A dataset containing the yield for each month over one year. A column that specifies the stage for each month is added.  <br><br> The example JASP file demonstrates the use of the Variables Charts for Individuals.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "IndividualChartStages.csv"
+        },
+        {
+          "name": "Attributes Chart (P Chart)",
+          "path": "PAttributesChart.jasp",
+          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (variable) sample sizes.  <br><br> The example JASP file demonstrates the use of the P chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "PAttributesChart.csv"
+        },
+        {
+          "name": "Attributes Chart (NP Chart)",
+          "path": "NPAttributesChart.jasp",
+          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (fixed) sample sizes.  <br><br> The example JASP file demonstrates the use of the NP chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "NPAttributesChart.csv"
+        },
+        {
+          "name": "Process Capability Study (Long Format)",
+          "path": "ProcessCapabilityStudyLongFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the long format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Process Capability Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ProcessCapabilityStudyLongFormat.csv"
+        },
+        {
+          "name": "Process Capability Study (Wide Format)",
+          "path": "ProcessCapabilityStudyWideFormat.jasp",
+          "description": "A dataset containing 100 measurements made at 20 different timepoints in the wide format. At each timepoint 5 measurements were made.  <br><br> The example JASP file demonstrates the use of the Process Capability Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ProcessCapabilityStudyWideFormat.csv"
+        },
+        {
+          "name": "Factorial Design Analysis",
+          "path": "FactorialDesignAnalysis.jasp",
+          "description": "A dataset containing the yield of a machine operated under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Factorial Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "FactorialDesignAnalysis.csv"
+        },
+        {
+          "name": "Response Surface Design Analysis",
+          "path": "ResponseSurfaceDesignAnalysis.jasp",
+          "description": "A dataset containing the measurements of the parts produced under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Response Surface Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "ResponseSurfaceDesignAnalysis.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "19. Miscellaneous",
+      "path": "19. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
@@ -776,18 +1056,25 @@
           "associated_datafile": "Anscombe's Quartet.csv"
         },
         {
+          "name": "The Datasaurus Dozen (Long)",
+          "path": "The Datasaurus Dozen (Long).jasp",
+          "description": "Zwölf Variablen Paare mit der gleichen zusammengefassten Statistik (u.a., Mittelwert, Standardabweichung und Pearson Korrelationskoeffizient), aber dramatisch unterschiedlichen Verteilungen. <br><br> Die Beispiel JASP Datei illustriert den Nutzen von Datenvisualisierung. <br><br> <i>Synthetische Daten von Matejka & Fitzmaurice (2018). Das Datenset is integriert in R (Locke & McGowan, 2018).</i>",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Long).csv"
+        },
+        {
+          "name": "The Datasaurus Dozen (Wide)",
+          "path": "The Datasaurus Dozen (Wide).jasp",
+          "description": "Zwölf Variablen Paare mit der gleichen zusammengefassten Statistik (u.a., Mittelwert, Standardabweichung und Pearson Korrelationskoeffizient), aber dramatisch unterschiedlichen Verteilungen. <br><br> Die Beispiel JASP Datei illustriert den Nutzen von Datenvisualisierung. <br><br> <i>Synthetische Daten von Matejka & Fitzmaurice (2018). Das Datenset is integriert in R (Locke & McGowan, 2018).</i>",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Wide).csv"
+        },
+        {
           "name": "Missing Data",
           "path": "Missing Data.jasp",
           "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
-        },
-        {
-          "name": "Presidents' Height",
-          "path": "Presidents' Height.jasp",
-          "description": "Heights of US presidents and their proportion of the popular vote. <br><br> The example JASP file demonstrates the use of conducting an interval-null hypothesis.<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
-          "kind": "file",
-          "associated_datafile": "Presidents' Height.csv"
         }
       ],
       "debug": false

@@ -25,7 +25,7 @@
 Thumbs.db
 
 # R
-JASP-Engine/R-*
+Engine/R-*
 .Rapp.history
 
 # .exe
@@ -44,11 +44,37 @@ JASP.pro.user.b601785
 Resources/TestFiles
 
 *.autosave
-JASP-Engine/JASP/R/.Rhistory
-JASP-Tests/.Rhistory
+Engine/jaspBase/R/.Rhistory
+Tests/.Rhistory
 
 flatpak-builder-folder/
 
 .RData
 .Rhistory
 .vscode
+
+
+# CMake Stuff
+build/
+build*/
+bundle/
+bundle*/
+CMakeLists.txt.user
+
+# CLion Stuff
+cmake-build-*
+.idea
+
+# Xcode project
+xcode-project/
+
+
+# Temporary 
+Frameworks/
+R.framework/
+.cache/
+Modules/renv-root/
+Desktop/utilities/simplecryptkey.h
+Desktop/modules/activemodules.h
+Common/appinfo.cpp
+QMLComponents/utilities/appdirs.h

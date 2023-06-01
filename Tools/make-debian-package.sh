@@ -1,9 +1,9 @@
 #!/bin/sh
 # Assumption: this is run from jasp-desktop/Tools/
-MajorVersion=`grep -oP		'VersionMajor\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
-MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp` 
-RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
-#BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
+MajorVersion=`grep -oP		'VersionMajor\(\K[0123456789]+(?=\))' ../Common/appinfo.cpp`
+MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../Common/appinfo.cpp` 
+RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../Common/appinfo.cpp`
+#BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../Common/appinfo.cpp`
 
 JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion
 JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.orig.tar.gz

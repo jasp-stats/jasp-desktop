@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>fonts/FiraCode-Retina.ttf</file>
-        <file>icons/darkTheme/jasp-logo-black.svg</file>
-        <file>../modules/upgrader/upgrades.json</file>
-        <file>fonts/FreeSans.ttf</file>
-    </qresource>
-</RCC>

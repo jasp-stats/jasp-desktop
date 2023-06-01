@@ -9,13 +9,13 @@ JASP is made up of two parts, or executables. The *JASP* graphical user interfac
 
 The JASP source code itself is licensed:
 
- - JASP-Common: GPL2+
- - JASP-Engine: GPL2+
- - JASP-Desktop: AGPL3+
+ - Common: GPL2+
+ - Engine: GPL2+
+ - Desktop: AGPL3+
 
-The JASP graphical user interface, with the filename *JASP*, is built from the *JASP-Desktop* and *JASP-Common* folders in the JASP source tree. As a binary, it is released under the AGPL3 (JASP-Desktop and JASP-Common can be combined because GPL2+ can be treated as GPL3, and the GPL3 and the AGPL3 are compatible)
+The JASP graphical user interface, with the filename *JASP*, is built from the *Desktop* and *Common* folders in the JASP source tree. As a binary, it is released under the AGPL3 (Desktop and Common can be combined because GPL2+ can be treated as GPL3, and the GPL3 and the AGPL3 are compatible)
 
-The JASP engine, with the filename *JASPEngine* is built from the *JASP-Engine* and *JASP-Common* folders in the JASP source tree. As a binary, it is released under the GPL2 (and cannot be released under the GPL3 because, at present, it has a number of R package dependencies which are GPL2 only).
+The JASP engine, with the filename *JASPEngine* is built from the *Engine* and *Common* folders in the JASP source tree. As a binary, it is released under the GPL2 (and cannot be released under the GPL3 because, at present, it has a number of R package dependencies which are GPL2 only).
 
 Contributing to JASP
 ====================
@@ -43,9 +43,9 @@ License statement in source code
 
 Following the copyright statement, a statement of the license should follow.
 
-### JASP-Desktop
+### Desktop
 
-.c, .cpp, and .h files in JASP-Desktop should have the following AGPL3+ header (year and copyright holders may vary).
+.c, .cpp, and .h files in Desktop should have the following AGPL3+ header (year and copyright holders may vary).
 
     //
     // Copyright (C) 2015 University of Amsterdam
@@ -65,9 +65,9 @@ Following the copyright statement, a statement of the license should follow.
     // <http://www.gnu.org/licenses/>.
     //
 
-### JASP-Engine, JASP-Common
+### Engine, Common
 
-.c, .cpp, and .h files in JASP-Engine and JASP-Common should have the following GPL2+ header (year and copyright holders may vary).
+.c, .cpp, and .h files in Engine and Common should have the following GPL2+ header (year and copyright holders may vary).
 
     //
     // Copyright (C) 2015 University of Amsterdam
@@ -86,9 +86,9 @@ Following the copyright statement, a statement of the license should follow.
     // along with this program.  If not, see <http://www.gnu.org/licenses/>.
     //
 
-### JASP-Engine/JASP/R
+### Engine/JASP/R
 
-.R files in JASP-Engine/JASP/R/* should have the following GPL2+ header (note that this is the same as above, but the lines begin with #'es) (year and copyright holders may vary).
+.R files in Engine/JASP/R/* should have the following GPL2+ header (note that this is the same as above, but the lines begin with #'es) (year and copyright holders may vary).
 
     #
     # Copyright (C) 2013-2015 University of Amsterdam

@@ -39,7 +39,7 @@ initialize <- function()
   base_pkgs      <<- unname(utils::installed.packages()[utils::installed.packages()[, "Priority"] %in% c("base", "recommended"), "Package"])
 
   cat('get the packages that JASP expects and put them in an env that includes a specific version\n')
-  source("../../JASP-Engine/JASP/R/packagecheck.R", local=TRUE)
+  source("../../Engine/jaspBase/R/packagecheck.R", local=TRUE)
   expected   <- .expectedPackages()
   pkgs       <<- expected[,1]
 
@@ -61,12 +61,12 @@ defineSpecials <- function()
 {
   specials <<- new.env(hash = TRUE, parent = parent.frame())
   specials[['bstats']]       <- list(type='github', commit='1b0b925d0404537b908a6380b70d80382df2d374', repo='AlexanderLyNL/bstats'  )
-  specials[['flexplot']]     <- list(type='github', commit='ec54fef0433d1fb670a01d386023c47993b29a02', repo='dustinfife/flexplot'   )
-  specials[['Bayesrel']]     <- list(type='github', commit='32aebfd270231faded9d62ca419839d06c229456', repo='juliuspf/Bayesrel'     )
+  specials[['flexplot']]     <- list(type='github', commit='163137fe30d9541234eb0053d6d86e1f96cd3dc5', repo='dustinfife/flexplot'   )
+  specials[['Bayesrel']]     <- list(type='github', commit='06bfd2fe3e7dba988adbf2e328131067b8d50361', repo='juliuspf/Bayesrel'     )
   specials[['stanova']]      <- list(type='github', commit='3e5635816fb2e4cda06704778e5bcd382f14717d', repo='bayesstuff/stanova'    )
   #specials[['afex']]         <- list(type='github', commit='71e22f0020399de1b35189d7c0dd4e5a2729b843', repo='singmann/afex'         )
   specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
-  specials[['RoBMA']]        <- list(type='github', commit='984df69ee1878b12005b9e245a3961d44d3f73ae', repo='FBartos/RoBMA'         )
+  #specials[['RoBMA']]        <- list(type='github', commit='7685d4d203a46f259b4cda2c492c8235397c80eb', repo='FBartos/RoBMA'         )
   
 }
 
@@ -401,12 +401,12 @@ installRequiredPackages <- function(stopOnError = TRUE)
     {
       specialDef <- specials[[pkgName]]
       if(specialDef$type == 'github')
-        error <- try(devtools::install_github(paste0(specialDef$repo, '@', specialDef$commit)))
+        error <- try(remotes::install_github(paste0(specialDef$repo, '@', specialDef$commit)))
       else
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
     else
-      error <- try(devtools::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE))
+      error <- try(remotes::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE))
 
     if (inherits(error, "try-error"))
     {

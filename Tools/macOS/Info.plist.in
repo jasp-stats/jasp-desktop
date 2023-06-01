@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+
+		<key>CFBundleName</key>
+		<string>JASP</string>
+
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+
+		<key>CFBundleVersion</key>
+		<string>@JASP_VERSION@</string>
+
+		<key>CFBundleShortVersionString</key>
+		<string>@JASP_SHORT_VERSION@</string>
+		
+		<key>NSPrincipalClass</key>
+		<string>NSApplication</string>
+
+		<key>CFBundleIconFile</key>
+		<string>JASP</string>
+
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+
+		<key>CFBundleGetInfoString</key>
+		<string>Created by Qt/CMake</string>
+
+		<key>CFBundleExecutable</key>
+		<string>JASP</string>
+
+		<key>CFBundleIdentifier</key>
+		<string>org.jasp-stats.jasp</string>
+
+		<key>LSMinimumSystemVersion</key>
+		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
+
+		<key>LSApplicationCategoryType</key>
+		<string>public.app-category.education</string>
+
+		<key>UTExportedTypeDeclarations</key>
+		<array>
+			<dict>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+					<string>public.archive</string>
+				</array>
+				<key>UTTypeDescription</key>
+				<string>JASP Data Set</string>
+				<key>UTTypeIconFile</key>
+				<string>Document</string>
+				<key>UTTypeIdentifier</key>
+				<string>org.jasp-stats.jasp.jasp</string>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>jasp</string>
+					</array>
+				</dict>
+			</dict>
+		</array>
+
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>Document</string>
+				<key>CFBundleTypeName</key>
+				<string>Text Document</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeOSTypes</key>
+				<array>
+					<string>****</string>
+				</array>
+				<key>LSHandlerRank</key>
+				<string>Alternate</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>csv</string>
+					<string>tsv</string>
+					<string>sav</string>
+					<string>ods</string>
+					<string>txt</string>
+				</array>
+			</dict>
+		</array>
+
+	</dict>
+</plist>

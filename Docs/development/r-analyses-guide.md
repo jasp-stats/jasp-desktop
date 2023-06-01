@@ -38,6 +38,12 @@ Table of Contents:
     + [Step 5.2.5 - Filling the Plot](#step-525---filling-the-plot)
     + [Step 5.2.6 - Reporting Errors](#step-526---reporting-errors)
     + [Step 5.2.7 - Multiple Plots](#step-527---multiple-plots)
+  * [Step 5.3 - Text](#step-53---text)
+    + [Step 5.3.1 - Displaying text in JASP](#step-531---displaying-text-in-jasp)
+    + [Step 5.3.2 - Dependencies](#step-532---dependencies)
+    + [Step 5.3.3 - Adding the Text to the Output](#step-533---adding-the-text-to-the-output)
+    + [Step 5.3.4 - Formatting the Text](#step-534---formatting-the-text)
+    + [Step 5.3.5 - Multiple Texts](#step-535---multiple-texts)
 - [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together)
   * [Creating a JASP Container](#creating-a-jasp-container)
   * [Using a Container](#using-a-container)
@@ -50,6 +56,7 @@ Table of Contents:
   * [Computing Results](#computing-results)
   * [Storing Results in the State](#storing-results-in-the-state)
   * [Retrieving the State Object](#retrieving-the-state-object)
+- [ADDENDUM III - Images](#addendum-iii---images)
 
 ## Step 1 - Creating the Main Analysis Function
 Each analysis in JASP needs a main analysis function. This function will provide an overview of all output elements and steps that are needed to conduct the full analysis. The name of your analysis must match the (case sensitive) name you specified in your description.json file under `"function":`.
@@ -888,6 +895,62 @@ It's entirely possible that an analysis still crashes even after our error check
 #### Step 5.2.7 - Multiple Plots
 You might wish to add more plots to your analysis in which case you can simply repeat the steps above. Of course, it is possible that you have multiple plots that all need the same computed results and you do not wish to compute these again, this situation is described in [ADDENDUM II - Reusing Results for Multiple Output Elements](#addendum-ii---reusing-results-for-multiple-output-elements). Similarly, you might wish to visually group multiple output elements together, the steps needed to accomplish this are described in [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together).
 
+### Step 5.3 - Text
+You might want to display some output in the form of a text block, without attaching it to a table or a plot. All you need to do is create a JASP HTML object with the text you want to display, and define its dependencies similar to the way we defined them for tables and plots.
+
+#### Step 5.3.1 - Displaying Text in JASP
+A JASP HTML element is fairly simple. You just need to provide it the formatted text that you want to display.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %s has more than %d unique values and is omitted.", variable, 2))
+  ```
+
+</details>
+
+#### Step 5.3.2 - Dependencies
+The dependencies for text can be defined the same way as we did for tables and plots. You specify the options on which the text output depends. If the value of any of these options changes, the text is generated again, and if none of the options changes, the same text can be reused.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable %1$s has more than %2$d unique values and is omitted.", variable, 2))
+  binomTextDescriptives$dependOn(c("variable", "distribution"))
+  ```
+
+</details>
+
+#### Step 5.3.3 - Adding the Text to the Output
+We can now give the text to `jaspResults` to display.
+
+<details>
+	<summary>Code</summary>
+
+  ```r
+  jaspResults[["binomTextDescriptives"]] <- binomTextDescriptives
+  ```
+
+</details>
+
+#### Step 5.3.4 - Formatting the Text
+Text in JASP can be formatted using [HTML tags](https://www.w3schools.com/html/html_formatting.asp) to highlight certain parts. The following code shows an example. Here, the text enclosed between \<b\> and \<\/b\> will be **bold**, and the text between \<i\> and \<\/i\> will be <i>italicized</i>.
+
+<p><details>
+	<summary>Code</summary>
+
+  ```r
+  binomTextDescriptives <- createJaspHtml(text = gettextf("The variable <b>%1$s</b> has more than <i>%2$d</i> unique values and is omitted.", variable, 2))
+  }
+  ```
+
+</details></p>
+
+#### Step 5.3.5 - Multiple Texts
+To add more text blocks to your analysis, you can simply repeat the steps above. If you need to reuse certain results to avoid regeneration of some text output, you can look at [ADDENDUM II - Reusing Results for Multiple Output Elements](#addendum-ii---reusing-results-for-multiple-output-elements). Similarly, the steps needed to visually group multiple output elements together are described in [ADDENDUM I - Grouping Multiple Output Elements Together](#addendum-i---grouping-multiple-output-elements-together).
+	
 
 ADDENDUM I - Grouping Multiple Output Elements Together
 ------------------------------------------------------
@@ -1269,3 +1332,18 @@ And now we can call `.binomFillTableMain()` with the added `binomResults` argume
   ```
 
 </details>
+
+ADDENDUM III - Images
+---------------------------------------------------------
+It is possible to ship images in your R-package (in inst/), these can be either png or svg.
+They can then be used as desired in `<img>`'s in  `jaspHtml` to clarify things like introductory texts.
+An example would be:
+
+```
+createJaspHtml(title="an image", text="<img src = "img:jaspLearnBayes/icons/bayes.png", width="500">")
+```
+
+As you might or might not have noticed, it doesnt say "file://" but "img:", this is important because JASP has to understand the path.
+The first element of the path must always be the name of the module that shipped the image, in this case `jaspLearnBayes`.
+JASP then replaces that part with the actual directory on the users computer. 
+The end result is an image in the results, enjoy! 
