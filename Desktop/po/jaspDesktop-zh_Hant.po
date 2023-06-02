@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-05-28 00:24+0000\n"
+"PO-Revision-Date: 2023-06-03 01:52+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
@@ -3795,13 +3795,12 @@ msgstr "SQLite 版本 3 或更高版本"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "未連接到資料庫！"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "未知錯誤"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Database"
 msgstr "資料庫"
@@ -3809,38 +3808,38 @@ msgstr "資料庫"
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "在公式中找不到規則%1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "找不到公式中的源 %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "公式中的源 %1 不是變數清單"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "公式描述中未給出名稱"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "找不到公式描述中給出的項目 %1"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "在公式 randomEffects 中找不到源"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr ""
+msgstr "公式中的 randomEffects 只能與元件清單項一起使用"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "在公式中找不到來源"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3854,7 +3853,7 @@ msgstr "控制元件沒有名稱"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "選項名稱“%1”是保留字"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3864,25 +3863,25 @@ msgstr "2 個控制元件有相同的名稱：%1"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "控件和公式具有相同的名稱“%1”"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "名稱為“%1”的公式定義兩次"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "控件和公式具有相同的名稱“%1”"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "未找到分析"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "不是分析函數：<模块名称>：：<分析名称>（...）"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
@@ -3899,7 +3898,7 @@ msgstr "R 已停止"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R 等待命令"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
@@ -3911,7 +3910,7 @@ msgstr "變數清單"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "DropDown"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
@@ -3948,115 +3947,112 @@ msgstr "按下下面的檔案進行同步或使用 "
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "此變數已被刪除，因為不允許：%1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "這些變數已被刪除，因為它們是不允許的：%1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "當未指定 BOM 時假定 CSV 是選定的代碼頁。"
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "在此處選擇代碼頁"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "%1 的副本"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "隱藏 R 語法"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "生成包裝器"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization of module: %1"
-msgstr ""
+msgstr "等待模組初始化：%1"
 
 msgctxt "Computer|"
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 msgctxt "Computer|"
 msgid "JASP Files (*.jasp)"
-msgstr ""
+msgstr "JASP 檔 （*.jasp）"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "將結果匯出為 HTML 或 PDF 格式"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTML文檔"
 
 msgctxt "Computer|"
 msgid "Portable Document Format (*.pdf)"
-msgstr ""
+msgstr "可攜式文件格式 （*.pdf）"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "將數據匯出為 CSV 格式"
 
 msgctxt "Computer|"
 msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr ""
+msgstr "CSV 檔 （*.csv *.txt *.tsv）"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "同步資料"
 
 msgctxt "Computer|"
 msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr ""
+msgstr "資料檔案 （*.csv *.txt *.tsv *.sav *.ods）"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
 "<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
 "PARTICULAR PURPOSE."
-msgstr ""
+msgstr "本計劃按原樣提供，不提供任何形式的保證，包括<br>設計、適銷性和特定用途適用性"
+"的保證<br>。"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<無選擇>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr "新值"
+msgstr "新建值"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "行 %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr "其他設定選項"
+msgstr "其他選項"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
 msgstr "顯示 R 語法"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "為每個分析添加 R 語法"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "顯示 R 語法"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "隱藏 R 語法"
