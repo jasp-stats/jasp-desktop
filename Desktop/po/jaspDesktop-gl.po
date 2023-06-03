@@ -370,10 +370,6 @@ msgstr ""
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 
 msgctxt "MainWindow|"
-msgid "Save File?"
-msgstr "Gardar o Ficheiro?"
-
-msgctxt "MainWindow|"
 msgid ""
 "JASP cannot continue and will close.\n"
 "\n"
@@ -457,17 +453,6 @@ msgstr ""
 "\n"
 "Pregámosche que cubras toda a información que falta aí."
 
-#, qt-format
-msgctxt "MainWindow|"
-msgid ""
-"Save changes to the file %1 before closing?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
-"Gardar os cambios no ficheiro %1 antes de pechar?\n"
-"\n"
-"Os teus cambios perderanse, se non os gardas."
-
 msgctxt "FileMenu|"
 msgid "Find Data File"
 msgstr "Atopar Ficheiro de Datos"
@@ -516,10 +501,6 @@ msgstr "Gardar imaxe de JASP"
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
 msgstr "Queres realmente eliminar todas as análises?"
-
-msgctxt "MainWindow|"
-msgid "File has changed"
-msgstr "O ficheiro cambiou"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -923,10 +904,6 @@ msgid ""
 msgstr ""
 "xera datos dunha distribución Xeométrica coa probabilidade (Prob) indicada"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column Changed"
-msgstr "A columna calculada trocou"
-
 msgctxt "FilterWindow|"
 msgid "standard deviation"
 msgstr "desvío padrón"
@@ -954,12 +931,6 @@ msgstr "separa os teus datos en niveles de numBreaks"
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
 msgstr "exponencial"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"There are unapplied changes to your computed column; what would you like to "
-"do?"
-msgstr "Hai cambios sen aplicar á túa columna calculada. Que queres facer?"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -4263,3 +4234,28 @@ msgstr "Amosar a Sintaxe de R"
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
 msgstr "Agochar a Sintaxe de R"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Would you like to save your changes to the Computed Column?"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Would you like to save your changes to the Filter?"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes to %1 file?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""

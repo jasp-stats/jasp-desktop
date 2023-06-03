@@ -450,18 +450,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
 msgstr "Fenster zum Spaltenberechnen schließen"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column Changed"
-msgstr "Berechnete Spalte verändert"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"There are unapplied changes to your computed column; what would you like to "
-"do?"
-msgstr ""
-"Es gibt ungespeicherte Änderungen an Ihrer berechneten Spalte; was wollen "
-"Sie damit tun?"
-
 msgctxt "ContrastsList|"
 msgid "none"
 msgstr "kein"
@@ -2048,25 +2036,6 @@ msgstr ""
 "Größe der Abbildung zu ändern, muss diese erst aktualisiert werden.\n"
 "\n"
 "Die Analyse aktualisieren?"
-
-msgctxt "MainWindow|"
-msgid "Save File?"
-msgstr "Datei speichern?"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid ""
-"Save changes to the file %1 before closing?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
-"Änderungen an der Datei %1 vor dem Beenden speichern?\n"
-"\n"
-"Ihre Änderungen gehen verloren, wenn Sie sie nicht speichern."
-
-msgctxt "MainWindow|"
-msgid "File has changed"
-msgstr "Datei wurde geändert"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4279,3 +4248,28 @@ msgstr "R-Syntax anzeigen"
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
 msgstr "R-Syntax ausblenden"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Would you like to save your changes to the Computed Column?"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Would you like to save your changes to the Filter?"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes to %1 file?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""

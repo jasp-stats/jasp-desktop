@@ -1255,17 +1255,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
 msgstr "Fechar janela de colunas computadas"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column Changed"
-msgstr "Coluna Computada Alterada"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"There are unapplied changes to your computed column; what would you like to "
-"do?"
-msgstr ""
-"Existem mudanças não aplicadas à sua coluna computada; o que você quer fazer?"
-
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
 msgstr "Criar coluna computada"
@@ -1802,25 +1791,6 @@ msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
 "%1 Nome pode ter apenas os seguintes caracteres: letras maiúsculas e "
 "minúsculas, números e _ %2"
-
-msgctxt "MainWindow|"
-msgid "Save File?"
-msgstr "Salvar ficheiro?"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid ""
-"Save changes to the file %1 before closing?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
-"Salvar mudanças no ficheiro %1 antes de fechar?\n"
-"\n"
-"Suas mudanças serão perdidas se você não salvá-las."
-
-msgctxt "MainWindow|"
-msgid "File has changed"
-msgstr "O ficheiro mudou"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
@@ -4197,4 +4167,29 @@ msgstr ""
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Would you like to save your changes to the Computed Column?"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Would you like to save your changes to the Filter?"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes to %1 file?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Your changes will be lost if you don't save them."
 msgstr ""

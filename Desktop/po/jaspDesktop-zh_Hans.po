@@ -418,16 +418,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
 msgstr "关闭计算列窗口"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column Changed"
-msgstr "计算列已更改"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"There are unapplied changes to your computed column; what would you like to "
-"do?"
-msgstr "您的计算列有未应用的更改；请确认您的操作？"
-
 msgctxt "ContrastsList|"
 msgid "none"
 msgstr "无"
@@ -1962,25 +1952,6 @@ msgstr ""
 "此分析是在JASP的旧版本中创建的，要调整图像的大小，必须先刷新它。\n"
 "\n"
 "是否刷新分析？"
-
-msgctxt "MainWindow|"
-msgid "Save File?"
-msgstr "是否保存文件？"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid ""
-"Save changes to the file %1 before closing?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
-"在关闭之前是否保存对 %1 的更改？\n"
-"\n"
-"如果不保存它们，您的更改将丢失。"
-
-msgctxt "MainWindow|"
-msgid "File has changed"
-msgstr "文件已更改"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4070,3 +4041,28 @@ msgstr "显示 R 语法"
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
 msgstr "隐藏 R 语法"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Would you like to save your changes to the Computed Column?"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Would you like to save your changes to the Filter?"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes to %1 file?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""

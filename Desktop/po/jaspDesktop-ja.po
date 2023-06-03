@@ -429,16 +429,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
 msgstr "計算列ウィンドウを閉じる"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column Changed"
-msgstr "計算列が変更されました"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"There are unapplied changes to your computed column; what would you like to "
-"do?"
-msgstr "計算列に適用されていない変更があります。どうしますか?"
-
 msgctxt "ContrastsList|"
 msgid "none"
 msgstr "なし"
@@ -2021,25 +2011,6 @@ msgstr ""
 "は、まずリフレッシュする必要があります。\n"
 "\n"
 "分析結果を更新しますか？"
-
-msgctxt "MainWindow|"
-msgid "Save File?"
-msgstr "ファイルを保存しますか？"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid ""
-"Save changes to the file %1 before closing?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
-"閉じる前にファイル%1への変更を保存しますか？\n"
-"\n"
-"保存しないと、変更内容は失われます。"
-
-msgctxt "MainWindow|"
-msgid "File has changed"
-msgstr "ファイルが変更されました"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4162,4 +4133,29 @@ msgstr ""
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Would you like to save your changes to the Computed Column?"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Would you like to save your changes to the Filter?"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes to %1 file?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Your changes will be lost if you don't save them."
 msgstr ""
