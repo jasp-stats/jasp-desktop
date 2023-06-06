@@ -50,12 +50,13 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 	 },
 
 	 copyMenuClicked: function () {
-		 var exportParams = new JASPWidgets.Exporter.params();
-		 exportParams.format = JASPWidgets.ExportProperties.format.raw;
-		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		 exportParams.includeNotes = false;
+		 var exportParams				= new JASPWidgets.Exporter.params();
+		 exportParams.format				= JASPWidgets.ExportProperties.format.html;
+		 exportParams.process			= JASPWidgets.ExportProperties.process.copy;
+		 exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		 exportParams.includeNotes		= false;
 
-		 pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
+		 this.exportBegin(exportParams);
 		 return true;
 	 },
 
@@ -184,13 +185,13 @@ JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 					var value = $(node).text()
 					if (value) {
 
-						value = value
+						/*value = value
 							.replace(/&/g, '&amp;')
 							.replace(/"/g, '&quot;')
 							.replace(/'/g, '&#39;')
 							.replace(/</g, '&lt;')
 							.replace(/>/g, '&gt;')
-							.replace(/\u2212/g, '-')
+							.replace(/\u2212/g, '-')*/
 
 						text += "\n" + tabs + value + "\n"
 					}
