@@ -110,6 +110,12 @@ signals:
 				void stopExternalEdit();
 				void resizeData();
 				void finishCurrentEdit();
+				void dataInsertColumnBefore(int);
+				void dataInsertColumnAfter(int);
+				void dataInsertRowBefore(int);
+				void dataInsertRowAfter(int);
+				void dataRemoveColumn(int);
+				void dataRemoveRow(int);
 
 
 public slots:

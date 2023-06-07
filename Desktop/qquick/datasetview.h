@@ -183,14 +183,14 @@ public slots:
 	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
 	void		paste(	bool includeHeader = false);
 
-	void		columnSelect(		int col);
-	void		columnInsertBefore(	int col);
-	void		columnInsertAfter(	int col);
-	void		columnDelete(		int col);
-	void		rowSelect(			int row);
-	void		rowInsertBefore(	int row);
-	void		rowInsertAfter(		int row);
-	void		rowDelete(			int row);
+	void		columnSelect(		int col = -1);
+	void		columnInsertBefore(	int col = -1);
+	void		columnInsertAfter(	int col = -1);
+	void		columnDelete(		int col = -1);
+	void		rowSelect(			int row = -1);
+	void		rowInsertBefore(	int row = -1);
+	void		rowInsertAfter(		int row = -1);
+	void		rowDelete(			int row = -1);
 
 	void		selectAll();
 

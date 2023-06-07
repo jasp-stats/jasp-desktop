@@ -1227,17 +1227,26 @@ void DataSetView::columnSelect(int col)
 
 void DataSetView::columnInsertBefore(int col)
 {
+	if(col == -1)
+		col = _selectionStart.isValid() ? _selectionStart.column() : 0;
+	
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->columnInsert(col);
 }
 
 void DataSetView::columnInsertAfter(int col)
 {
+	if(col == -1)
+		col = _selectionEnd.isValid() ? _selectionEnd.column() : _model->columnCount();
+	
 	columnInsertBefore(col + 1);
 }
 
 void DataSetView::columnDelete(int col)
 {
+	if(col == -1)
+		col = _selectionEnd.isValid() ? _selectionEnd.column() : _model->columnCount();
+
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->columnDelete(col);
 }
@@ -1250,17 +1259,26 @@ void DataSetView::rowSelect(int row)
 
 void DataSetView::rowInsertBefore(int row)
 {
+	if(row == -1)
+		row = _selectionStart.isValid() ? _selectionStart.row() : _model->rowCount();
+	
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->rowInsert(row);
 }
 
 void DataSetView::rowInsertAfter(int row)
 {
+	if(row == -1)
+		row = _selectionEnd.isValid() ? _selectionEnd.row() : _model->rowCount();
+	
 	rowInsertBefore(row + 1);
 }
 
 void DataSetView::rowDelete(int row)
 {
+	if(row == -1)
+		row = _selectionEnd.isValid() ? _selectionEnd.row() : _model->rowCount();
+	
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->rowDelete(row);
 }
