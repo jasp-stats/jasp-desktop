@@ -58,9 +58,9 @@ FocusScope
 
 					{ text: "---" },
 
-					{ text: qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) } },
-					{ text: qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) } },
-					{ text: qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } },
+					{ text: qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,       icon: "menu-data-paste" },
+					{ text: qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,       icon: "menu-data-copy"	},
+					{ text: qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,       icon: "menu-data-cut"	},
 
 					{ text: "---" },
 
