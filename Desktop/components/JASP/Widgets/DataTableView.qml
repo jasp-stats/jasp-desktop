@@ -32,7 +32,7 @@ FocusScope
 			itemVerticalPadding:	8 * jaspTheme.uiScale
 
 			model:					dataSetModel
-			cacheItems:				!ribbonModel.dataMode
+			cacheItems:				!ribbonModel.dataModeb
 
 			doubleClickWorkaround:	!ribbonModel.dataMode
 			//flickableInteractive:	!ribbonModel.dataMode

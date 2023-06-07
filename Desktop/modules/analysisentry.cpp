@@ -61,7 +61,7 @@ std::string AnalysisEntry::icon() const
 	if(_icon == "")
 		return _isGroupTitle ? fq(JaspTheme::currentIconPath()) + "large-arrow-right.png" : "";
 
-	return _dynamicModule  ? "file:" + _dynamicModule->iconFilePath(_icon) : "qrc:/icons/" + _icon;
+	return _dynamicModule  ? "file:" + _dynamicModule->iconFilePath(_icon) : fq(JaspTheme::currentIconPath()) + _icon;
 }
 
 std::string AnalysisEntry::getFullRCall() const

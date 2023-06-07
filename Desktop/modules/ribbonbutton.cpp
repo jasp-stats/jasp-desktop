@@ -64,8 +64,8 @@ void RibbonButton::reloadDynamicModule(DynamicModule * dynMod)
 	if(dynamicModuleChanged)
 		setDynamicModule(dynMod);
 
-	setTitle(			_module->title()		);
-	setToolTip(		tq(	_module->description())	);
+	setTitle(			_module->title()			);
+	setToolTip(	tq(	_module->description())	);
 	setRequiresData(	_module->requiresData()	);
 	setIconSource(tq(	_module->iconFilePath()));
 	setModuleName(		_module->name()			);
@@ -85,7 +85,7 @@ void RibbonButton::setRemember(bool remember)
 void RibbonButton::runSpecial(QString func)
 {
 	if(_specialButtonFunc)	_specialButtonFunc();
-	else					_menuModel->getAnalysisEntry(fq(func))->runSpecialFunc();
+	else							_menuModel->getAnalysisEntry(fq(func))->runSpecialFunc();
 }
 
 void RibbonButton::setError(bool error)
@@ -126,7 +126,7 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	bindYourself();
 }
 
-RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, bool enabled, bool remember)
+RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember)
 	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr)
 {
 	_menuModel = new MenuModel(this, funcEntries);
@@ -135,6 +135,7 @@ RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title,
 	setModuleName(name);
 	setTitle(title);
 	setIconSource(tq(icon));
+	setToolTip(tq(toolTip));
 
 	bindYourself();
 }
@@ -143,17 +144,17 @@ RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title,
 
 void RibbonButton::bindYourself()
 {
-	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::toolTipChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::activeChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::titleChanged,			this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::toolTipChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
 
-	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged		);
-	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::activeChanged		);
-	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::dataLoadedChanged,	this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }
