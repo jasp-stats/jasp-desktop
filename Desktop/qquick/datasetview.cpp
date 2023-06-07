@@ -196,12 +196,12 @@ void DataSetView::resetItems()
 
 void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 {
-	JASPTIMER_RESUME(calculateCellSizes);
+	JASPTIMER_RESUME(DataSetView::calculateCellSizes);
 
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
 	_storedLineFlags.clear();
-	_storedDisplayText.clear();
+    _storedDisplayText.clear();
 
 	for(auto & col : _cellTextItems)
 	{
@@ -275,7 +275,7 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 
 	viewportChanged();
 	
-	JASPTIMER_STOP(calculateCellSizes);
+	JASPTIMER_STOP(DataSetView::calculateCellSizes);
 }
 
 void DataSetView::viewportChanged()
@@ -286,7 +286,7 @@ void DataSetView::viewportChanged()
 	if(_dataColsMaxWidth.size() != _model->columnCount())
 		return;
 
-	JASPTIMER_RESUME(viewportChanged);
+	JASPTIMER_RESUME(DataSetView::viewportChanged);
 
 #ifdef DATASETVIEW_DEBUG_VIEWPORT
 	Log::log() << "viewportChanged!\n" <<std::flush;
@@ -296,22 +296,22 @@ void DataSetView::viewportChanged()
 	storeOutOfViewItems();
 	buildNewLinesAndCreateNewItems();
 
-	JASPTIMER_RESUME(updateCalledForRender);
+	JASPTIMER_RESUME(DataSetView::updateCalledForRender);
 	update();
-	JASPTIMER_STOP(updateCalledForRender);
+	JASPTIMER_STOP(DataSetView::updateCalledForRender);
 
 	_previousViewportColMin = _currentViewportColMin;
 	_previousViewportColMax = _currentViewportColMax;
 	_previousViewportRowMin = _currentViewportRowMin;
 	_previousViewportRowMax = _currentViewportRowMax;
 
-	JASPTIMER_STOP(viewportChanged);
+	JASPTIMER_STOP(DataSetView::viewportChanged);
 }
 
 
 void DataSetView::determineCurrentViewPortIndices()
 {
-	JASPTIMER_RESUME(determineCurrentViewPortIndices);
+	JASPTIMER_RESUME(DataSetView::determineCurrentViewPortIndices);
 	QVector2D leftTop(_viewportX, _viewportY);
 	QVector2D viewSize(_viewportW, _viewportH);
 	QVector2D rightBottom(leftTop + viewSize);
@@ -344,12 +344,12 @@ void DataSetView::determineCurrentViewPortIndices()
 	Log::log() << "_previousViewport\tColMin: " << _previousViewportColMin << "\tColMax: " << _previousViewportColMax << "\tRowMin: " << _previousViewportRowMin << "\tRowMax: " << _previousViewportRowMax << "\n";
 	Log::log() << "_currentViewport\tColMin: "  << _currentViewportColMin  << "\tColMax: " << _currentViewportColMax  << "\tRowMin: " << _currentViewportRowMin  << "\tRowMax: " << _currentViewportRowMax  << "\n" << std::flush;
 #endif
-	JASPTIMER_STOP(determineCurrentViewPortIndices);
+	JASPTIMER_STOP(DataSetView::determineCurrentViewPortIndices);
 }
 
 void DataSetView::storeOutOfViewItems()
 {
-	JASPTIMER_RESUME(storeOutOfViewItems);
+	JASPTIMER_RESUME(DataSetView::storeOutOfViewItems);
 
 	int maxRows = _model->rowCount(), maxCols = _model->columnCount();
 	if(
@@ -382,7 +382,7 @@ void DataSetView::storeOutOfViewItems()
 			storeRowNumber(row);
 	}
 
-	JASPTIMER_STOP(storeOutOfViewItems);
+	JASPTIMER_STOP(DataSetView::storeOutOfViewItems);
 }
 
 void DataSetView::addLine(float x0, float y0, float x1, float y1)
@@ -404,7 +404,7 @@ QSizeF DataSetView::getTextSize(const QString & text) const
 
 void DataSetView::buildNewLinesAndCreateNewItems()
 {
-	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems);
+	JASPTIMER_RESUME(DataSetView::buildNewLinesAndCreateNewItems);
 
 	if(_currentViewportColMax == -1 ||  _currentViewportColMin == -1 || _currentViewportRowMax == -1 || _currentViewportRowMin == -1)
 		return;
@@ -421,7 +421,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	float	maxXForVerticalLine	= _viewportX + _viewportW - extraColumnWidth(), //To avoid seeing lines through add computed column button
 			maxYForVerticalLine = _viewportY + _dataRowsMaxHeight;
 
-	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems_GRID);
+	JASPTIMER_RESUME(DataSetView::buildNewLinesAndCreateNewItems_GRID);
 
 	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
 		for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
@@ -431,11 +431,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 					pos1x(pos0x +		_dataColsMaxWidth[col]	),
 					pos1y((2 + row) *	_dataRowsMaxHeight		);
 
-			JASPTIMER_RESUME(buildNewLinesAndCreateNewItems_GRID_DATA);
+			JASPTIMER_RESUME(DataSetView::buildNewLinesAndCreateNewItems_GRID_DATA);
 			if(_storedLineFlags.count(row) == 0 || _storedLineFlags[row].count(col) == 0)
 				_storedLineFlags[row][col] = static_cast<unsigned char>(_model->data(_model->index(row, col), _roleNameToRole["lines"]).toInt());
 			unsigned char lineFlags = _storedLineFlags[row][col];
-			JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID_DATA);
+			JASPTIMER_STOP(DataSetView::buildNewLinesAndCreateNewItems_GRID_DATA);
 
 			/*
 			 *			---------- up ----------
@@ -472,7 +472,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 #endif
 		}
 
-	JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID);
+	JASPTIMER_STOP(DataSetView::buildNewLinesAndCreateNewItems_GRID);
 
 #ifdef ADD_LINES_PLEASE
 	addLine(_viewportX + 0.5f,					_viewportY,							_viewportX + 0.5f,					_viewportY + _viewportH);
@@ -539,12 +539,12 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	if(editing())
 		positionEditItem(_prevEditRow, _prevEditCol);
 
-	JASPTIMER_STOP(buildNewLinesAndCreateNewItems);
+	JASPTIMER_STOP(DataSetView::buildNewLinesAndCreateNewItems);
 }
 
 QQuickItem * DataSetView::createTextItem(int row, int col)
 {
-	JASPTIMER_RESUME(createTextItem);
+	JASPTIMER_RESUME(DataSetView::createTextItem);
 
 #ifdef DATASETVIEW_DEBUG_CREATION
 	Log::log() << "createTextItem(\t"<<row<<",\t"<<col<<") called!\titemStore contains #"<< _textItemStorage.size() << "\n" << std::flush;
@@ -569,7 +569,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 
 		if(_textItemStorage.size() > 0)
 		{
-			JASPTIMER_RESUME(createTextItem textItemStorage has something);
+			JASPTIMER_RESUME(DataSetView::createTextItem textItemStorage has something);
 #ifdef DATASETVIEW_DEBUG_CREATION
 			Log::log() << "createTextItem("<<row<<", "<<col<<") from storage!\n" << std::flush;
 #endif
@@ -577,11 +577,11 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			textItem = itemCon->item;
 			_textItemStorage.pop();
 			setStyleDataItem(itemCon->context, active, col, row);
-			JASPTIMER_STOP(createTextItem textItemStorage has something);
+			JASPTIMER_STOP(DataSetView::createTextItem textItemStorage has something);
 		}
 		else
 		{
-			JASPTIMER_RESUME(createTextItem textItemStorage has NOTHING);
+			JASPTIMER_RESUME(DataSetView::createTextItem textItemStorage has NOTHING);
 #ifdef DATASETVIEW_DEBUG_CREATION
 			Log::log() << "createTextItem("<<row<<", "<<col<<") ex nihilo!\n" << std::flush;
 #endif
@@ -598,25 +598,27 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			textItem->setParent(this);
 			textItem->setParentItem(this);
 
-			JASPTIMER_STOP(createTextItem textItemStorage has NOTHING);
+			JASPTIMER_STOP(DataSetView::createTextItem textItemStorage has NOTHING);
 		}
 
-		JASPTIMER_RESUME(createTextItem setValues);
+		JASPTIMER_RESUME(DataSetView::createTextItem setValues);
 
 		setTextItemInfo(row, col, textItem);
 
 		_cellTextItems[col][row] = itemCon;
 
-		JASPTIMER_STOP(createTextItem setValues);
+		JASPTIMER_STOP(DataSetView::createTextItem setValues);
 	}
 
-	JASPTIMER_STOP(createTextItem);
+	JASPTIMER_STOP(DataSetView::createTextItem);
 
 	return _cellTextItems[col][row]->item;
 }
 
 void DataSetView::setTextItemInfo(int row, int col, QQuickItem * textItem)
 {
+    JASPTIMER_SCOPE(DataSetView::setTextItemInfo);
+    
 	textItem->setHeight(_dataRowsMaxHeight		- (2 * _itemVerticalPadding));
 	textItem->setWidth(_dataColsMaxWidth[col]	- (2 * _itemHorizontalPadding));
 
@@ -635,7 +637,7 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 	Log::log() << "storeTextItem("<<row<<", "<<col<<") in storage!\n" << std::flush;
 #endif
 
-	JASPTIMER_RESUME(storeTextItem);
+	JASPTIMER_RESUME(DataSetView::storeTextItem);
 
 	ItemContextualized * textItem = _cellTextItems[col][row];
 	_cellTextItems[col][row] = nullptr;
@@ -653,7 +655,7 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 	if (_cacheItems)		_textItemStorage.push(textItem);
 	else					delete textItem;
 
-	JASPTIMER_STOP(storeTextItem);
+	JASPTIMER_STOP(DataSetView::storeTextItem);
 }
 
 
@@ -1365,6 +1367,8 @@ void DataSetView::contextMenuClickedAtIndex(QModelIndex index)
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel)
 {
+    JASPTIMER_SCOPE(DataSetView::setStyleDataItem);
+    
 	QModelIndex idx = _model->index(row, col);
 	
 	bool isEditable(_model->flags(idx) & Qt::ItemIsEditable);
@@ -1579,7 +1583,7 @@ void DataSetView::myParentChanged(QQuickItem * newParentItem)
 #ifdef ADD_LINES_PLEASE
 QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
-	//JASPTIMER_RESUME(updatePaintNode);
+	//JASPTIMER_RESUME(DataSetView::updatePaintNode);
 	if (width() <= 0 || height() <= 0) {
 		delete oldNode;
 		return 0;
@@ -1670,7 +1674,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	_linesWasChanged = false;
 
-	//JASPTIMER_STOP(updatePaintNode);
+	//JASPTIMER_STOP(DataSetView::updatePaintNode);
 
 	return oldNode;
 }

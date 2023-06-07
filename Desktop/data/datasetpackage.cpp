@@ -172,7 +172,7 @@ DataSetBaseNode * DataSetPackage::indexPointerToNode(const QModelIndex & index) 
 /// QModelIndex()/root -> DataSet_N* Where each DataSet is located at row 0 and column N (0-based)
 /// DataSet_N -> Data (0r,0c) and Filters(1r,0c)
 /// Filters -> Filter_N* where column is filterIndex and row value-index in the filtered-bools
-/// Data -> Directly to the data but each column (with any row) can also be used as a parent for getting the Labels
+/// Data -> Directly to the data but each column (dfwith any row) can also be used as a parent for getting the Labels
 /// Data[*r, Nc] -> Labels
 QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
@@ -184,7 +184,7 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 		{
 			//Currently we only have a single dataSet but in the future there will be more.
 			//Then they will be differentiated here by row
-			pointer = static_cast<const void*>(_dataSet);
+			pointer = dynamic_cast<const void*>(_dataSet);
 		}
 		else
 		{
@@ -194,31 +194,31 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 			{
 			case dataSetBaseNodeType::dataSet:
 			{
-				DataSet * data = static_cast<DataSet*>(parentNode);
+				DataSet * data = dynamic_cast<DataSet*>(parentNode);
 				// if row 0 it is "data" else "filters"
-				pointer = row == 0 ? static_cast<const void*>(data->dataNode()) : static_cast<const void*>(data->filtersNode());
+				pointer = row == 0 ? dynamic_cast<const void*>(data->dataNode()) : dynamic_cast<const void*>(data->filtersNode());
 				break;
 			}
 				
 			case dataSetBaseNodeType::data:
 			{
-				DataSet * data = static_cast<DataSet*>(parentNode->parent());
-				pointer = static_cast<const void*>(data->column(column));
+				DataSet * data = dynamic_cast<DataSet*>(parentNode->parent());
+				pointer = dynamic_cast<const void*>(data->column(column));
 				break;
 			}
 				
 			case dataSetBaseNodeType::filters:
 			{
 				//Later on we should support multiple filters here by selecting a filter per column
-				DataSet * data = static_cast<DataSet*>(parentNode->parent());
-				pointer = static_cast<const void*>(data->filter());
+				DataSet * data = dynamic_cast<DataSet*>(parentNode->parent());
+				pointer = dynamic_cast<const void*>(data->filter());
 				break;
 			}
 				
 			case dataSetBaseNodeType::column:
 			{
-				Column * col = static_cast<Column*>(parentNode);
-				pointer = static_cast<const void*>(col->labels()[row]);
+				Column * col = dynamic_cast<Column*>(parentNode);
+				pointer = dynamic_cast<const void*>(col->labels()[row]);
 				break;
 			}
 				
@@ -241,31 +241,31 @@ QModelIndex DataSetPackage::indexForSubNode(DataSetBaseNode * node) const
 		switch(node->nodeType())
 		{
 		case dataSetBaseNodeType::dataSet:
-			return createIndex(0, 0, static_cast<void *>(_dataSet));
+			return createIndex(0, 0, dynamic_cast<void *>(_dataSet));
 
 		case dataSetBaseNodeType::data:
-			return createIndex(0, 0, static_cast<void *>(_dataSet->dataNode()));
+			return createIndex(0, 0, dynamic_cast<void *>(_dataSet->dataNode()));
 
 		case dataSetBaseNodeType::filters:
-			return createIndex(1, 0, static_cast<void *>(_dataSet->filtersNode()));
+			return createIndex(1, 0, dynamic_cast<void *>(_dataSet->filtersNode()));
 
 		case dataSetBaseNodeType::column:
 		{
-			Column * col = static_cast<Column*>(node);
-			return createIndex(0, col->data()->columnIndex(col), static_cast<void *>(col));
+			Column * col = dynamic_cast<Column*>(node);
+			return createIndex(0, col->data()->columnIndex(col), dynamic_cast<void *>(col));
 		}
 
 		case dataSetBaseNodeType::label: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
 		{
-			Label	* lab = static_cast<Label*>( node);
-			Column	* col = static_cast<Column*>(node->parent());
+			Label	* lab = dynamic_cast<Label*>( node);
+			Column	* col = dynamic_cast<Column*>(node->parent());
 
-			return createIndex(col->labelIndex(lab), 0, static_cast<void*>(lab));
+			return createIndex(col->labelIndex(lab), 0, dynamic_cast<void*>(lab));
 		}
 
 		case dataSetBaseNodeType::filter: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
 		{
-			return createIndex(0, 0, static_cast<void*>(_dataSet->filter()));
+			return createIndex(0, 0, dynamic_cast<void*>(_dataSet->filter()));
 		}
 
 		default:
@@ -300,8 +300,8 @@ QModelIndex DataSetPackage::parent(const QModelIndex & index) const
 		
 	case dataSetBaseNodeType::label:
 	{
-	//	Label	* label	= static_cast<Label*>(node);
-		Column	* col	= static_cast<Column*>(node->parent());
+	//	Label	* label	= dynamic_cast<Label*>(node);
+		Column	* col	= dynamic_cast<Column*>(node->parent());
 		
 		return indexForSubNode(col);
 	}
@@ -336,14 +336,14 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 	case dataSetBaseNodeType::data:
 	case dataSetBaseNodeType::filters:
 	{
-		DataSet * data = static_cast<DataSet*>(node->parent());
+		DataSet * data = dynamic_cast<DataSet*>(node->parent());
 		
 		return data->rowCount();
 	}
 		
 	case dataSetBaseNodeType::column:
 	{
-		Column * col = static_cast<Column*>(node);
+		Column * col = dynamic_cast<Column*>(node);
 		
 		if(col->type() == columnType::scale)
 			return 0;
@@ -380,21 +380,21 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 		
 	case dataSetBaseNodeType::data:
 	{
-		DataSet * data = static_cast<DataSet*>(node->parent());
+		DataSet * data = dynamic_cast<DataSet*>(node->parent());
 		
 		return data->columnCount();
 	}
 		
 	case dataSetBaseNodeType::filters:
 	{
-		//DataSet * data = static_cast<DataSet*>(node->parent());
+		//DataSet * data = dynamic_cast<DataSet*>(node->parent());
 		//return data->rowCount();
 		return 1; //change when implementing multiple filters
 	}
 		
 	case dataSetBaseNodeType::column:
 	{
-		Column * col = static_cast<Column*>(node);
+		Column * col = dynamic_cast<Column*>(node);
 		
 		if(col->type() == columnType::scale)
 			return 0;
@@ -439,6 +439,8 @@ int DataSetPackage::dataColumnCount() const
 
 QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 {
+    JASPTIMER_SCOPE(DataSetPackage::data);
+    
 	if(!index.isValid())
 		return QVariant();
 
@@ -449,7 +451,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 //					*	parentNode	= !index.parent().isValid() ? nullptr : indexPointerToNode(index.parent());
 
 	if(!node)
-		return QVariant();// : QVariant(tq("DataSet_" + std::to_string(static_cast<DataSet*>(node)->id())));
+		return QVariant();// : QVariant(tq("DataSet_" + std::to_string(dynamic_cast<DataSet*>(node)->id())));
 	
 	switch(node->nodeType())
 	{
@@ -458,7 +460,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 
 	case dataSetBaseNodeType::filter:
 	{
-		Filter * filter = static_cast<Filter*>(node);
+		Filter * filter = dynamic_cast<Filter*>(node);
 		if(index.row() < 0 || index.row() >= int(filter->filtered().size()))
 			return true;
 		
@@ -467,7 +469,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 
 	case dataSetBaseNodeType::column:
 	{
-		Column	* column	= static_cast<Column*>(node);
+		Column	* column	= dynamic_cast<Column*>(node);
 		DataSet * dataSet	= column ? column->data() : nullptr;
 
 		if(!dataSet || index.row() >= int(dataSet->rowCount()))
@@ -498,8 +500,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 	case dataSetBaseNodeType::label:
 	{
 		int			parRowCount = rowCount(index.parent());
-	//	Label	*	label		= static_cast<Label*>(node);
-		Column	*	column		= static_cast<Column*>(node->parent());
+	//	Label	*	label		= dynamic_cast<Label*>(node);
+		Column	*	column		= dynamic_cast<Column*>(node->parent());
 		
 
 		if(!_dataSet || index.row() >= parRowCount)
@@ -531,6 +533,8 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 {
 	if (!_dataSet || section < 0 || section >= (orientation == Qt::Horizontal ? dataColumnCount() : dataRowCount()))
 		return QVariant();
+    
+    JASPTIMER_SCOPE(DataSetPackage::headerData);
 
 	switch(role)
 	{
@@ -561,6 +565,8 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 
 bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    JASPTIMER_SCOPE(DataSetPackage::setData);
+    
 	if(!index.isValid() || !_dataSet) return false;
 
 	DataSetBaseNode * node = indexPointerToNode(index);
@@ -594,33 +600,38 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 	case dataSetBaseNodeType::column:
 		if(node)
 		{
-			Column	* column	= static_cast<Column*>(node);
+			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
 			
 			if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString())))
 			{
+                JASPTIMER_SCOPE(DataSetPackage::setData reset model);
+                
 				setSynchingExternally(false); //Don't synch with external file after editing
 
 				//beginResetModel();
-				beginSynchingData(false);
+				//beginSynchingData(false);
 
 				stringvec	changedCols = {column->name()},
 							missing;
 				strstrmap	changeName;
 
-				endSynchingData(changedCols, missing, changeName, false, false, false);
+				//endSynchingData(changedCols, missing, changeName, false, false, false);
+                
+                emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
+                emit datasetChanged(tq(changedCols), tq(missing), tq(changeName), false, false);
+                
+				emit labelsReordered(tq(column->name()));
 
-				//emit labelsReordered(tq(column->name()));
-
-				//emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
 
 				//emit label dataChanged just in case
-				//QModelIndex parent = parentModelForType(parIdxType::label, index.column());
-				//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(), columnCount(parent), parent), { Qt::DisplayRole });
+                QModelIndex parent = indexForSubNode(column);
+				emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
 
 			}
 			else
 			{
+                JASPTIMER_SCOPE(DataSetPackage::setData pasteSpreadsheet);
 				column->rememberOriginalColumnType();
 				pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
 			}
@@ -632,7 +643,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 	
 	case dataSetBaseNodeType::label:
 	{
-		Column * column = static_cast<Column*>(node->parent());
+		Column * column = dynamic_cast<Column*>(node->parent());
 		
 		int parColCount = columnCount(index.parent()),
 			parRowCount = rowCount(index.parent());
@@ -710,8 +721,8 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 
 bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue)
 {
-	Label  * label  = static_cast<Label*>(indexPointerToNode(index));
-	Column * column = static_cast<Column*>(label->parent());
+	Label  * label  = dynamic_cast<Label*>(indexPointerToNode(index));
+	Column * column = dynamic_cast<Column*>(label->parent());
 	
 	if(!column)
 		return false;

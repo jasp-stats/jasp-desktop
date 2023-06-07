@@ -1514,6 +1514,8 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue) const
 
 bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 {
+    JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
+    
 	bool convertedSuccesfully = value == "";
 
 	if(convertedSuccesfully)
@@ -1568,9 +1570,12 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 					if(_type != _preEditType && _preEditType == columnType::scale)
 					{
 						double dbl;
-						if(		!	ColumnUtils::convertValueToDoubleForImport(oldLabel->label(),	dbl)
-								&&	ColumnUtils::convertValueToDoubleForImport(value,				dbl))
-
+                        if(     (
+                                    !oldLabel ||
+                                    !ColumnUtils::convertValueToDoubleForImport(oldLabel->label(),	dbl)
+                                )
+								&&
+                                ColumnUtils::convertValueToDoubleForImport(value,				dbl))
 							changeType(_preEditType); //Just try it
 
 					}
