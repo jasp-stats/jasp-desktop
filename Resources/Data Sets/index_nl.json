@@ -970,6 +970,13 @@
           "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
         },
         {
+          "name": "Range Method Study (Long Format)",
+          "path": "RangeMethodDataLongFormat.jasp",
+          "description": "A dataset containing two repeated measurements for five different parts in the long format.  <br><br> The example JASP file demonstrates the use of the Range Method Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "RangeMethodDataLongFormat.csv"
+        },
+        {
           "name": "Range Method Study (Wide Format)",
           "path": "RangeMethodDataWideFormat.jasp",
           "description": "A dataset containing two repeated measurements for five different parts in the wide format.  <br><br> The example JASP file demonstrates the use of the Range Method Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
