@@ -67,14 +67,14 @@ FocusScope
 					{ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			indexClicked.column) }, icon: "menu-column-select"			},
 					{ text: qsTr("Insert column before"),						func: function() { dataTableView.view.columnInsertBefore(	indexClicked.column) }, icon: "menu-column-insert-before"	},
 					{ text: qsTr("Insert column after"),						func: function() { dataTableView.view.columnInsertAfter(	indexClicked.column) }, icon: "menu-column-insert-after"	},
-					{ text: qsTr("Delete column"),								func: function() { dataTableView.view.columnDelete(			indexClicked.column) }, icon: "menu-column-remove"			},
+					{ text: qsTr("Delete column"),								func: function() { dataTableView.view.columnsDelete() },							icon: "menu-column-remove"			},
 
 					{ text: "---" },
 
-					{ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			indexClicked.row) }, icon: "menu-row-select"				},
-					{ text: qsTr("Insert row before"),							func: function() { dataTableView.view.rowInsertBefore(		indexClicked.row) }, icon: "menu-row-insert-before"			},
-					{ text: qsTr("Insert row after"),							func: function() { dataTableView.view.rowInsertAfter(		indexClicked.row) }, icon: "menu-row-insert-after"			},
-					{ text: qsTr("Delete row"),									func: function() { dataTableView.view.rowDelete(			indexClicked.row) }, icon: "menu-row-remove"				}
+					{ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			indexClicked.row) },	icon: "menu-row-select"				},
+					{ text: qsTr("Insert row before"),							func: function() { dataTableView.view.rowInsertBefore(		indexClicked.row) },	icon: "menu-row-insert-before"			},
+					{ text: qsTr("Insert row after"),							func: function() { dataTableView.view.rowInsertAfter(		indexClicked.row) },	icon: "menu-row-insert-after"			},
+					{ text: qsTr("Delete row"),									func: function() { dataTableView.view.rowsDelete(); },								icon: "menu-row-remove"				}
 
 				]
 
@@ -125,14 +125,14 @@ FocusScope
 				TextInput
 				{
 					id:						editItem
-					text:					itemText
+					text:					"" //Set in oncompleted to avoid a binding!
 					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:					jaspTheme.font
 					verticalAlignment:		Text.AlignVCenter
 					onTextChanged:			dataTableView.view.editFinishedKeepEditing(index, text);
 					z:						10
 
-					Component.onCompleted:	focusTimer.start();
+					Component.onCompleted:	{ text = itemText; focusTimer.start(); }
 					Timer
 					{
 						id:					focusTimer
@@ -143,21 +143,6 @@ FocusScope
 							editItem.forceActiveFocus()
 							dataTableView.moveItemIntoView(editItem);
 						}
-					}
-
-					property bool alreadyFinished:	false
-
-					/*Connections
-					{
-						target:							ribbonModel
-						function onFinishCurrentEdit() {	finishEdit(); }
-					}*/
-
-					function finishEdit()
-					{
-						if(!alreadyFinished)
-							dataTableView.view.editFinished(index, text);
-						alreadyFinished = true;
 					}
 
 					Keys.onPressed: (event) =>
@@ -211,8 +196,6 @@ FocusScope
 
 						if(arrowPressed)
 						{
-							finishEdit();
-
 							if(!shiftPressed)
 								dataTableView.view.selectionStart	= arrowIndex;
 							else
@@ -335,7 +318,7 @@ FocusScope
 					border.width:	0
 				}
 
-			extraColumnItem:
+			/*extraColumnItem:
 				JaspControls.RectangularButton
 				{
 					id:				addColumnButton
@@ -344,7 +327,7 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
 					border.width:	0
-				}
+				}*/
 
 			rowNumberDelegate:
 				Rectangle

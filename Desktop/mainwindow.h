@@ -206,7 +206,8 @@ signals:
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 	void closeWindows();
 	void hideDataPanel();
-	void exitSignal(int returnCode = 0) const;
+	void exitSignal(				int			returnCode = 0) const;
+	void showComputedColumn(		QString		columnName);
 
 private slots:
 	void resultsPageLoaded();

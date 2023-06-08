@@ -58,9 +58,18 @@ FocusScope
 		opened = false
     }
 
+	Connections
+	{
+		target:		mainWindow
+		function	onShowComputedColumn(columnName) { open(columnName); }
+	}
+
 	function open(columnName)
     {
 		messages.log("ComputeColumnWindow::open("+columnName+")")
+
+		if(computedColumnsInterface.computeColumnNameSelected != columnName && computedColumnsInterface.computeColumnNameSelected != "" && computedColumnContainer.changed)
+			saveDialog.open()
 
 		if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
 			close();

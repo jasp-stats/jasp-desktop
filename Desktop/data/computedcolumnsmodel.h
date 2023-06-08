@@ -74,9 +74,9 @@ signals:
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
 				void	sendComputeCode(QString columnName, QString code, columnType columnType);
 				void	computeColumnUsesRCodeChanged();
-				void	refreshData();
 				void	showAnalysisForm(Analysis *analysis);
 				void	dataColumnAdded(QString columnName);
+				void	refreshData();
 
 public slots:
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);

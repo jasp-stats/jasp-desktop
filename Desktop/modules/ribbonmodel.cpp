@@ -112,16 +112,23 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	//_entriesInsert and _entriesDelete are destroyed by the menumodel destructor when the button gets destroyed.
 	_entriesInsert = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(-1);		},	fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(-1);		},	fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
-		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(-1);		},	fq(tr("Insert row before")),	true,		"menu-row-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(-1);			},	fq(tr("Insert row after")),		true,		"menu-row-insert-after")
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(-1,false,false);		},	"insert-column-before",			fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(-1,false,false);		},	"insert-column-after",			fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(-1);					},	"insert-row-before",			fq(tr("Insert row before")),	true,		"menu-row-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(-1);						},	"insert-row-after",				fq(tr("Insert row after")),		true,		"menu-row-insert-after"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "NotR.png"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	false);	},	"insert-column-NotR-before",	fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	false);	},	"insert-column-NotR-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "R.png"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	true);	},	"insert-column-R-before",		fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	true);	},	"insert-column-R-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
+
 	});
 	
 	_entriesDelete = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},	fq(tr("Delete column")),		true,		"menu-column-remove"),
-		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},	fq(tr("Delete row")),			true,		"menu-row-remove")
+		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},				"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
+		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove")
 	});
 		
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),				"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true);
@@ -273,8 +280,8 @@ void RibbonModel::analysisClicked(QString analysisFunction, QString analysisQML,
 {
 	RibbonButton * button = ribbonButtonModel(fq(module));
 	
-	if(button->isSpecial())		button->runSpecial(analysisFunction);
-	else								emit analysisClickedSignal(analysisFunction, analysisQML, analysisTitle, module);
+	if(button->isSpecial())		button->runSpecial(analysisTitle);
+	else						emit analysisClickedSignal(analysisFunction, analysisQML, analysisTitle, module);
 }
 
 void RibbonModel::setCurrentRow(int currentRow)

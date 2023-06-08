@@ -85,7 +85,7 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
     //Store sqlite into tempfiles:
     ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
 
-    DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
+	DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
 
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())

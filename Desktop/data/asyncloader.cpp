@@ -264,6 +264,8 @@ void AsyncLoader::loadPackage(QString id)
 		{
 			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
 
+			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
+
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());

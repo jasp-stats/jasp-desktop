@@ -1276,14 +1276,21 @@ void EngineSync::processLogCfgRequests()
 
 void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
 {
-	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
-	try {	pauseEngines(true); }
+	Log::log() << "EngineSync::cleanUpAfterClose(" << (forgetAnalyses ? "forgetting analyses":"remembering analyses") << ")" << std::endl;
+	try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
+	//try {	pauseEngines(true); }
 	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
 
 	while(_waitingScripts.size() > 0)
 	{
 		delete _waitingScripts.front();
 		_waitingScripts.pop();
+	}
+
+	while(_waitingCompCols.size() > 0)
+	{
+		delete _waitingCompCols.front();
+		_waitingCompCols.pop();
 	}
 
 	if(_waitingFilter)

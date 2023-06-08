@@ -441,8 +441,6 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-	computeColumnName = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
 
@@ -456,14 +454,27 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 		{columnType::nominal,		".setColumnDataAsNominal"		},
 		{columnType::nominalText,	".setColumnDataAsNominalText"	}};
 
-	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals)));})";
-	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
-
 	Json::Value computeColumnResponse		= Json::objectValue;
 	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
-	computeColumnResponse["result"]			= computeColumnResultStr;
-	computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
 	computeColumnResponse["columnName"]		= computeColumnName;
+
+
+	if(provideDataSet())
+	{
+		std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
+		computeColumnResponse["columnName"]		= computeColumnNameEnc;
+
+		std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
+		std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
+
+		computeColumnResponse["result"]			= computeColumnResultStr;
+		computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+	}
+	else
+	{
+		computeColumnResponse["result"]			= "fail";
+		computeColumnResponse["error"]			= "No DataSet loaded in engine!";
+	}
 
 	sendString(computeColumnResponse.toStyledString());
 
@@ -789,7 +800,17 @@ DataSet * Engine::provideDataSet()
 {
 	JASPTIMER_RESUME(Engine::provideDataSet());
 
-	if(_dataSet)						_dataSet->checkForUpdates();
+	if(_dataSet)
+	{
+		Log::log() << "There is a dataset, checking for updates.\n";
+		if(_dataSet->checkForUpdates())
+		{
+			Log::log() << "updates found, loading\n";
+			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
+		}
+
+		Log::log() << std::flush;
+	}
 	else if(_db->dataSetGetId() != -1)	_dataSet = new DataSet(_db->dataSetGetId());
 
 	JASPTIMER_STOP(Engine::provideDataSet());

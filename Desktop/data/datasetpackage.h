@@ -121,15 +121,22 @@ public:
 		
 		
 
-		QHash<int, QByteArray>		roleNames()																					const	override;
-				int					rowCount(	const QModelIndex &parent = QModelIndex())										const	override;
-				int					columnCount(const QModelIndex &parent = QModelIndex())										const	override;
-				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
-				QVariant			headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const	override;
-				bool				setData(	const QModelIndex &index, const QVariant &value, int role)								override;
-				Qt::ItemFlags		flags(		const QModelIndex &index)														const	override;
-				QModelIndex			parent(		const QModelIndex & index)														const	override;
-				QModelIndex			index(int row, int column, const QModelIndex &parent = QModelIndex())						const	override;
+		QHash<int, QByteArray>		roleNames()																						const	override;
+				int					rowCount(		const QModelIndex &parent = QModelIndex())										const	override;
+				int					columnCount(	const QModelIndex &parent = QModelIndex())										const	override;
+				QVariant			data(			const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
+				QVariant			headerData(		int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const	override;
+				bool				setData(		const QModelIndex &index, const QVariant &value, int role)								override;
+				Qt::ItemFlags		flags(			const QModelIndex &index)														const	override;
+				QModelIndex			parent(			const QModelIndex & index)														const	override;
+				QModelIndex			index(			int row,		int column, const QModelIndex & parent = QModelIndex())			const	override;
+				bool				insertRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
+				bool				insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
+				bool				removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
+				bool				removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
+				QString				insertColumnSpecial(int column, bool computed, bool R);
+				QString				appendColumnSpecial(			bool computed, bool R);
+
 				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
 				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }
 				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
@@ -200,16 +207,13 @@ public:
 				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap())	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels); }
 				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap());
 				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values);
+				void						initializeComputedColumns();
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
-				void						columnInsert(	size_t column	); //Maybe these  functions should be made to derive from "columnInsert" etc from AbstractItemModel
-				void						columnDelete(	size_t column	);
-				void						rowInsert(		size_t row		);
-				void						rowDelete(		size_t row		);
 
 				void						storeInEmptyValues(		const std::string	& columnName, const intstrmap & emptyValues);
 
-				void						columnSetDefaultValues(	const std::string	& columnName, columnType colType = columnType::unknown);
+				void						columnSetDefaultValues(	const std::string	& columnName, columnType colType = columnType::unknown, bool emitSignals = true);
 				Column *					createColumn(			const std::string	& name,		columnType colType);
 				Column *					createComputedColumn(	const std::string	& name,		columnType type, computedColumnType desiredType, Analysis * analysis = nullptr);
 				void						renameColumn(			const std::string	& oldColumnName, const std::string & newColumnName);
@@ -234,7 +238,7 @@ public:
 				bool						isColumnInvalidated(		size_t					colIndex)	const;
 
 				int							setColumnTypeFromQML(	int columnIndex, int		newColumnType);
-				bool						setColumnType(			int columnIndex, columnType newColumnType);
+				bool						setColumnType(			int columnIndex, columnType newColumnType, bool emitHeaderChanged = true);
 
 				int							columnsFilteredCount();
 
@@ -251,7 +255,7 @@ public:
 				intvec						getColumnDataInts(	size_t columnIndex);
 				doublevec					getColumnDataDbls(	size_t columnIndex);
 				stringvec					getColumnDataStrs(	size_t columnIndex);
-				void						setColumnName(		size_t columnIndex, const std::string	& newName);
+				void						setColumnName(		size_t columnIndex, const std::string	& newName, bool resetModel = true);
 				void						setColumnDataInts(	size_t columnIndex, const intvec		& ints);
 				void						setColumnDataDbls(	size_t columnIndex, const doublevec		& dbls);
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex)			const;
@@ -277,6 +281,8 @@ public:
 				void						databaseStopSynching();
 				bool						synchingExternally() const;
 				void						checkComputedColumnDependenciesForAnalysis(Analysis * analysis);
+				std::string					freeNewColumnName(size_t startHere);
+
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
@@ -284,7 +290,6 @@ signals:
 													QMap<QString, QString>	changeNameColumns,
 													bool					rowCountChanged,
 													bool					hasNewColumns);
-
 				void				columnsFilteredCountChanged();
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
@@ -312,6 +317,7 @@ signals:
 				void				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(QString columnName);
 
+
 public slots:
 				void				refresh()																		{ beginResetModel(); endResetModel(); }
 				void				refreshColumn(						QString columnName);
@@ -331,8 +337,8 @@ public slots:
 private:
 				bool				isThisTheSameThreadAsEngineSync();
 				bool				setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue);
-				std::string			freeNewColumnName(size_t startHere);
 				QModelIndex			lastCurrentCell();
+				void				resetModelOneCell();
 
 
 private:
@@ -371,6 +377,7 @@ private:
 							*	_labelsSubModel;
 	
 	QTimer						_databaseIntervalSyncher;
+
 };
 
 #endif // FILEPACKAGE_H

@@ -14,7 +14,6 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 	JASPTIMER_STOP(Importer::loadDataSet loadFile);
 	
-	
 	JASPTIMER_RESUME(Importer::loadDataSet createDataSetAndLoad);
 	int columnCount = importDataSet->columnCount();
 

@@ -50,7 +50,7 @@ public:
 	bool				dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if an error is set
 	void				dbDelete();
 	void				incRevision() override;
-	void				checkForUpdates();
+	bool				checkForUpdates();
 
 	void				reset();
 

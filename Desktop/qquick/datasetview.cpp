@@ -27,29 +27,29 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _selectionMo
 
 	_material.setColor(Qt::gray);
 
-	connect(this,						&DataSetView::parentChanged,				this, &DataSetView::myParentChanged);
+	connect(this,						&DataSetView::parentChanged,					this, &DataSetView::myParentChanged);
 
-	connect(this,						&DataSetView::viewportXChanged,				this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportYChanged,				this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportWChanged,				this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportHChanged,				this, &DataSetView::viewportChanged);
+	connect(this,						&DataSetView::viewportXChanged,					this, &DataSetView::viewportChanged);
+	connect(this,						&DataSetView::viewportYChanged,					this, &DataSetView::viewportChanged);
+	connect(this,						&DataSetView::viewportWChanged,					this, &DataSetView::viewportChanged);
+	connect(this,						&DataSetView::viewportHChanged,					this, &DataSetView::viewportChanged);
 
-	connect(this,						&DataSetView::itemDelegateChanged,			this, &DataSetView::reloadTextItems);
-	connect(this,						&DataSetView::rowNumberDelegateChanged,		this, &DataSetView::reloadRowNumbers);
-	connect(this,						&DataSetView::columnHeaderDelegateChanged,	this, &DataSetView::reloadColumnHeaders);
+	connect(this,						&DataSetView::itemDelegateChanged,				this, &DataSetView::reloadTextItems);
+	connect(this,						&DataSetView::rowNumberDelegateChanged,			this, &DataSetView::reloadRowNumbers);
+	connect(this,						&DataSetView::columnHeaderDelegateChanged,		this, &DataSetView::reloadColumnHeaders);
 
-	connect(this,						&DataSetView::itemHorizontalPaddingChanged,	this, &DataSetView::calculateCellSizes);
-	connect(this,						&DataSetView::itemVerticalPaddingChanged,	this, &DataSetView::calculateCellSizes);
-	connect(this,						&DataSetView::extraColumnItemChanged,		this, &DataSetView::calculateCellSizes);
+	connect(this,						&DataSetView::itemHorizontalPaddingChanged,		this, &DataSetView::calculateCellSizes);
+	connect(this,						&DataSetView::itemVerticalPaddingChanged,		this, &DataSetView::calculateCellSizes);
+	connect(this,						&DataSetView::extraColumnItemChanged,			this, &DataSetView::calculateCellSizes);
 
-	connect(this,						&DataSetView::itemSizeChanged,				this, &DataSetView::reloadTextItems);
-	connect(this,						&DataSetView::itemSizeChanged,				this, &DataSetView::reloadRowNumbers);
-	connect(this,						&DataSetView::itemSizeChanged,				this, &DataSetView::reloadColumnHeaders);
+	connect(this,						&DataSetView::itemSizeChanged,					this, &DataSetView::reloadTextItems);
+	connect(this,						&DataSetView::itemSizeChanged,					this, &DataSetView::reloadRowNumbers);
+	connect(this,						&DataSetView::itemSizeChanged,					this, &DataSetView::reloadColumnHeaders);
 	
-	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this, &DataSetView::resetItems,			Qt::QueuedConnection);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,	this, &DataSetView::resetItems,			Qt::QueuedConnection);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,				this, &DataSetView::resetItems,			Qt::QueuedConnection);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,		this, &DataSetView::resetItems,			Qt::QueuedConnection);
 
-	connect(DataSetPackage::pkg(),		&DataSetPackage::dataModeChanged,			this, &DataSetView::onDataModeChanged);
+	connect(DataSetPackage::pkg(),		&DataSetPackage::dataModeChanged,				this, &DataSetView::onDataModeChanged);
 
 
 	setZ(10);
@@ -67,6 +67,16 @@ void DataSetView::setModel(QAbstractItemModel * model)
 		connect(_model, &QAbstractItemModel::headerDataChanged,		this, &DataSetView::modelHeaderDataChanged	);
 		connect(_model, &QAbstractItemModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset		);
 		connect(_model, &QAbstractItemModel::modelReset,			this, &DataSetView::modelWasReset			);
+
+
+		connect(_model, &QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
+		connect(_model, &QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
+		connect(_model, &QAbstractItemModel::rowsAboutToBeInserted,		this, &DataSetView::rowsAboutToBeInserted		);
+		connect(_model, &QAbstractItemModel::rowsAboutToBeRemoved,		this, &DataSetView::rowsAboutToBeRemoved		);
+		connect(_model, &QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted				);
+		connect(_model, &QAbstractItemModel::columnsRemoved,			this, &DataSetView::columnsRemoved				);
+		connect(_model, &QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted				);
+		connect(_model, &QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved					);
 
 		_selectionModel->setModel(_model);
 		emit selectionModelChanged(); //Or maybe it hasn't?
@@ -148,6 +158,7 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 					QQmlContext* context = itemCon->context;
 					if (roles.contains(int(DataSetPackage::specialRoles::selected)))
 						context->setContextProperty("itemSelected",	_model->data(_model->index(row, col), _roleNameToRole["selected"]));
+
 					if (roles.contains(Qt::DisplayRole))
 						context->setContextProperty("itemText", _model->data(_model->index(row, col)));
 				}
@@ -173,7 +184,7 @@ void DataSetView::modelHeaderDataChanged(Qt::Orientation, int, int)
 
 void DataSetView::modelAboutToBeReset()
 {
-	Log::log() << "void DataSetView::modelAboutToBeReset()" << std::endl;
+	//Log::log() << "void DataSetView::modelAboutToBeReset()" << std::endl;
 	//Ok, this weird hack is because if I do not recreate the selectionmodel after resetting everything crashes real hard. Maybe there is a bug in Qt?
 	delete _selectionModel;
 	_selectionModel = nullptr;
@@ -183,7 +194,7 @@ void DataSetView::modelAboutToBeReset()
 
 void DataSetView::modelWasReset()
 {
-	Log::log() << "void DataSetView::modelWasReset()" << std::endl;
+	//Log::log() << "void DataSetView::modelWasReset()" << std::endl;
 	_selectionModel = new QItemSelectionModel(_model, this);
 	setRolenames();
 	calculateCellSizes();
@@ -1011,8 +1022,16 @@ void DataSetView::setSelectionStart(QModelIndex selectionStart)
 	}
 
 	_selectionModel->select(_selectionStart, QItemSelectionModel::SelectCurrent);
-	
-	edit(_selectionStart);
+
+	if(_model->headerData(_selectionStart.column(), Qt::Horizontal, _roleNameToRole["columnIsComputed"]).toBool())
+	{
+		if(_editing)
+			destroyEditItem();
+
+		//emit showComputedColumn(_model->headerData(_selectionStart.column(), Qt::Horizontal).toString());
+	}
+	else
+		edit(_selectionStart);
 }
 
 void DataSetView::setSelectionEnd(QModelIndex selectionEnd) 
@@ -1225,35 +1244,50 @@ void DataSetView::columnSelect(int col)
 	setSelectionEnd(_model->index(_model->rowCount() - 1, col));
 }
 
-void DataSetView::columnInsertBefore(int col)
+QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 {
 	if(col == -1)
 		col = _selectionStart.isValid() ? _selectionStart.column() : 0;
 	
-	_model->insertColumn(col);
+	DataSetTableModel * dataSetTM = dynamic_cast<DataSetTableModel *>(_model);
+
+	if(!dataSetTM)
+		throw  std::runtime_error("columnInsertBefore doesnt have DataSetTableModel as model, add some code to handle the new model!");
+
+	return dataSetTM->insertColumnSpecial(col, computed, R);
 }
 
-void DataSetView::columnInsertAfter(int col)
+QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
 {
 	if(col == -1)
-		col = _selectionEnd.isValid() ? _selectionEnd.column()
-									  : _selectionStart.isValid() ? _selectionStart.column()
+		col = _selectionEnd.isValid() ? _selectionEnd.column() + 1
+									  : _selectionStart.isValid() ? _selectionStart.column() + 1
 																  : _model->columnCount();
 	
-	columnInsertBefore(col + 1);
+	return columnInsertBefore(col, computed, R);
+}
+void DataSetView::columnComputedInsertAfter(int col, bool R)
+{
+	emit showComputedColumn(columnInsertAfter(col, true, R));
 }
 
-void DataSetView::columnDelete(int col)
+void DataSetView::columnComputedInsertBefore(int col, bool R)
 {
-	if(_model->columnCount() <= 1)
+	emit showComputedColumn(columnInsertBefore(col, true, R));
+}
+
+void DataSetView::columnsDelete()
+{
+	if(_model->columnCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
 		return;
 
-	if(col == -1)
-		col = _selectionEnd.isValid() ? _selectionEnd.column()
-									  : _selectionStart.isValid() ? _selectionStart.column()
-																  : _model->columnCount();
+	int columnA	= _selectionStart.isValid() ? _selectionStart.column()	: _selectionEnd.column(),
+		columnB	= _selectionEnd.isValid()	? _selectionEnd.column()	: _selectionStart.column();
 
-	_model->removeColumn(col);
+	if(columnA > columnB)
+		std::swap(columnA, columnB);
+
+	_model->removeColumns(columnA, 1 + (columnB - columnA));
 }
 
 void DataSetView::rowSelect(int row)
@@ -1273,24 +1307,73 @@ void DataSetView::rowInsertBefore(int row)
 void DataSetView::rowInsertAfter(int row)
 {
 	if(row == -1)
-		row = _selectionEnd.isValid() ? _selectionEnd.row()
-									  : _selectionStart.isValid() ? _selectionStart.row()
+		row = _selectionEnd.isValid() ? _selectionEnd.row() + 1
+									  : _selectionStart.isValid() ? _selectionStart.row() + 1
 																  : _model->rowCount();
 	
-	rowInsertBefore(row + 1);
+	rowInsertBefore(row);
 }
 
-void DataSetView::rowDelete(int row)
+void DataSetView::rowsDelete()
 {
-	if(_model->rowCount() <= 1)
+	if(_model->rowCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
 		return;
 
-	if(row == -1)
-		row = _selectionEnd.isValid() ? _selectionEnd.row()
-									  : _selectionStart.isValid() ? _selectionStart.row()
-																  : _model->rowCount() - 1;
-	
-	_model->removeRow(row);
+	int rowA	= _selectionStart.isValid() ? _selectionStart.row()	: _selectionEnd.row(),
+		rowB	= _selectionEnd.isValid()	? _selectionEnd.row()	: _selectionStart.row();
+
+	if(rowA > rowB)
+		std::swap(rowA, rowB);
+
+	_model->removeRows(rowA, 1 + (rowB - rowA));
+}
+
+void DataSetView::columnsAboutToBeInserted(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelAboutToBeReset();
+}
+
+void DataSetView::columnsAboutToBeRemoved(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelAboutToBeReset();
+}
+
+void DataSetView::rowsAboutToBeInserted(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelAboutToBeReset();
+}
+
+void DataSetView::rowsAboutToBeRemoved(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelAboutToBeReset();
+}
+
+void DataSetView::columnsInserted(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelWasReset();
+}
+
+void DataSetView::columnsRemoved(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelWasReset();
+}
+
+void DataSetView::rowsInserted(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelWasReset();
+}
+
+void DataSetView::rowsRemoved(const QModelIndex & parent, int first, int last)
+{
+	//temp:
+	modelWasReset();
 }
 
 void DataSetView::setEditDelegate(QQmlComponent *editDelegate)

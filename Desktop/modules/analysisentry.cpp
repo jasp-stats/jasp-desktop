@@ -23,8 +23,12 @@
 namespace Modules
 {
 
-AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string menuTitle, bool requiresData, std::string icon)
-	: _title(menuTitle), _function(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
+AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData, std::string icon)
+	: _title(internalTitle), _function(internalTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
+{}
+
+AnalysisEntry::AnalysisEntry(std::string menuTitle, std::string icon)
+	: _title(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(true), _icon(icon)
 {}
 
 AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
@@ -44,7 +48,9 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 	_isAnalysis		= !_isGroupTitle && !_isSeparator;
 }
 
-AnalysisEntry::AnalysisEntry(){}
+AnalysisEntry::AnalysisEntry()
+	: _isSeparator(true)
+{}
 
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {

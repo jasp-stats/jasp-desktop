@@ -165,7 +165,7 @@ size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 	switch(col->type())
 	{
 	case columnType::scale:
-		return 9 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
+		return 11 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
 
 	case columnType::unknown:
 		return 0;
@@ -329,21 +329,26 @@ void DataSet::incRevision()
 	}
 }
 
-void DataSet::checkForUpdates()
+bool DataSet::checkForUpdates()
 {
 	JASPTIMER_SCOPE(DataSet::checkForUpdates);
 
 	if(_dataSetID == -1)
-		return;
+		return false;
 
 	if(_revision != db().dataSetGetRevision(_dataSetID))
+	{
 		dbLoad();
+		return true;
+	}
 	else
 	{
-		_filter->checkForUpdates();
+		bool somethingChanged = _filter->checkForUpdates();
 
 		for(Column * col : _columns)
-			col->checkForUpdates();
+			somethingChanged = col->checkForUpdates() || somethingChanged;
+
+		return somethingChanged;
 	}
 }
 

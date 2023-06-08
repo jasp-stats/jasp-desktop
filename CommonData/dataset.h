@@ -61,7 +61,7 @@ public:
 			void			setRowCount(	size_t rowCount);
 
 			void			incRevision() override;
-			void			checkForUpdates();
+			bool			checkForUpdates();
 
 			const Columns &	computedColumns() const;
 			

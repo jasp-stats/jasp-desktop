@@ -32,6 +32,9 @@
 #include "utilities/settings.h"
 #include "modules/ribbonmodel.h"
 
+//Im having problems getting the proxy models to play nicely with beginRemoveRows etc
+//So just reset the whole thing as that is what happens in datasetview
+//#define ROUGH_RESET
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
 
@@ -51,9 +54,9 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
 	connect(this, &DataSetPackage::dataModeChanged,		this, &DataSetPackage::logDataModeChanged);
 
-	_dataSubModel	= new SubNodeModel(_dataSet->dataNode());
-	_filterSubModel = new SubNodeModel(_dataSet->filtersNode());
-	_labelsSubModel = new SubNodeModel();
+	_dataSubModel	= new SubNodeModel("data",		_dataSet->dataNode());
+	_filterSubModel = new SubNodeModel("filters",	_dataSet->filtersNode());
+	_labelsSubModel = new SubNodeModel("labels");
 	
 	connect(&_databaseIntervalSyncher, &QTimer::timeout, this, &DataSetPackage::synchingIntervalPassed);
 }
@@ -141,6 +144,8 @@ void DataSetPackage::generateEmptyData()
 	}
 
 	beginLoadingData();
+	if(!_dataSet)
+		createDataSet();
 	setDataSetSize(1, 1);
 	initColumnAsScale(0, freeNewColumnName(0), { NAN });
 	endLoadingData();
@@ -980,10 +985,10 @@ void DataSetPackage::resetAllFilters()
 
 	emit allFiltersReset();
 	emit columnsFilteredCountChanged();
-	emit headerDataChanged(Qt::Horizontal, 0, columnCount());
+	//this is only used in conjunction with a reset so dont do: emit headerDataChanged(Qt::Horizontal, 0, columnCount());
 }
 
-bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
+bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bool emitHeaderChanged)
 {
 	if (_dataSet == nullptr)
 		return true;
@@ -994,7 +999,8 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
 	{
-		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+		if(emitHeaderChanged)
+			emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex)->name()));
 	}
 	else
@@ -1025,6 +1031,11 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 void DataSetPackage::refreshColumn(QString columnName)
 {
+	beginResetModel();
+	endResetModel();
+
+	return;
+/*
 	if(!_dataSet) return;
 
 	int colIndex = getColumnIndex(columnName);
@@ -1034,7 +1045,7 @@ void DataSetPackage::refreshColumn(QString columnName)
 		QModelIndex p = indexForSubNode(_dataSet->dataNode());
 		emit dataChanged(index(0, colIndex, p), index(rowCount(p), colIndex, p));
 		emit headerDataChanged(Qt::Horizontal, colIndex, colIndex);
-	}
+	}*/
 }
 
 void DataSetPackage::columnWasOverwritten(const std::string & columnName, const std::string &)
@@ -1127,12 +1138,14 @@ void DataSetPackage::createDataSet()
 void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 {
 	if(_dataSet)
-		delete _dataSet;
+		deleteDataSet();
 
 	_dataSet = new DataSet(0);
 	_dataSet->dbLoad(1, progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
+
+	DataSetPackage::pkg()->initializeComputedColumns();
 }
 
 void DataSetPackage::deleteDataSet()
@@ -1255,6 +1268,12 @@ void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 	JASPTIMER_STOP(DataSetPackage::initColumnWithStrings followup - initing columns);
 
 	storeInEmptyValues(newName, emptyValuesMap);
+}
+
+void DataSetPackage::initializeComputedColumns()
+{
+	for(const Column * col : dataSet()->columns())
+		emit checkForDependentColumnsToBeSent(tq(col->name()));
 }
 
 
@@ -1521,16 +1540,18 @@ stringvec DataSetPackage::getColumnDataStrs(size_t columnIndex)
 	return out;
 }
 
-void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newName)
+void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newName, bool resetModel)
 {
 	if(!_dataSet)
 		return;
 
 	std::string oldName = getColumnName(columnIndex);
 
-	beginResetModel();
+	if(resetModel)
+		beginResetModel();
 	_dataSet->column(columnIndex)->setName(newName);
-	endResetModel();
+	if(resetModel)
+		endResetModel();
 
 	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
 }
@@ -1689,7 +1710,7 @@ void DataSetPackage::labelReverse(size_t colIdx)
 	emit labelsReordered(tq(column->name()));
 }
 
-void DataSetPackage::columnSetDefaultValues(const std::string & columnName, columnType columnType)
+void DataSetPackage::columnSetDefaultValues(const std::string & columnName, columnType columnType, bool emitSignals)
 {
 	if(!_dataSet)
 		return;
@@ -1703,8 +1724,12 @@ void DataSetPackage::columnSetDefaultValues(const std::string & columnName, colu
 
 		QModelIndex p = indexForSubNode(_dataSet->dataNode());
 
-		emit dataChanged(index(0, colIndex, p), index(rowCount(p), colIndex, p));
-		emit headerDataChanged(Qt::Horizontal, colIndex, colIndex);
+
+		if(emitSignals)
+		{
+			emit dataChanged(index(0, colIndex, p), index(rowCount(p), colIndex, p));
+			emit headerDataChanged(Qt::Horizontal, colIndex, colIndex);
+		}
 	}
 }
 
@@ -1841,46 +1866,148 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	if(isLoaded()) setModified(true);
 }
 
-void DataSetPackage::columnInsert(size_t column)
+QString DataSetPackage::insertColumnSpecial(int column, bool computed, bool R)
 {
-	Log::log() << "DataSetPackage::columnInsert(" << column << ")" << std::endl;
-	setSynchingExternally(false); //Don't synch with external file after editing
-	beginSynchingData(false);
-	
+	if(column < 0)
+		column = 0;
+
 	if(column > dataColumnCount())
 		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
+	setSynchingExternally(false); //Don't synch with external file after editing
+#ifdef ROUGH_RESET
+	beginResetModel();
+#else
+	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), column, column);
+#endif
+
+	stringvec changed;
+
 	_dataSet->insertColumn(column);
-	setColumnName(column, freeNewColumnName(column));
+	const std::string & name = freeNewColumnName(column);
+	setColumnName(column, name, false);
 	_dataSet->column(column)->setDefaultValues(columnType::scale);
 
-	stringvec changed({getColumnName(column)});
-	endSynchingDataChangedColumns(changed, true, false);
+	if(computed)
+		_dataSet->column(column)->setCodeType(R ? computedColumnType::rCode : computedColumnType::constructorCode);
+
+	_dataSet->incRevision();
+
+	changed.push_back(name);
+
+#ifdef ROUGH_RESET
+	endResetModel();
+#else
+	endInsertColumns();
+#endif
+
+	strstrmap		changeNameColumns;
+	stringvec		missingColumns;
+
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
+
+	if(isLoaded()) setModified(true);
+
+	return QString::fromStdString(name);
 }
 
-void DataSetPackage::columnDelete(size_t column)
+QString DataSetPackage::appendColumnSpecial(bool computed, bool R)
 {
+	return insertColumnSpecial(dataColumnCount(), computed, R);
+}
+
+
+bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & aparent)
+{
+	if(isLoaded()) setModified(true);
+
+	if(column > dataColumnCount())
+		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
+
 	setSynchingExternally(false); //Don't synch with external file after editing
-	beginSynchingData(false);
+#ifdef ROUGH_RESET
+	beginResetModel();
+#else
+	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), column, column + count - 1);
+#endif
+
+	stringvec changed;
+
+	for(int c = column; c<column+count; c++)
+	{
+		_dataSet->insertColumn(c);
+		const std::string & name = freeNewColumnName(c);
+		setColumnName(c, name, false);
+		_dataSet->column(c)->setDefaultValues(columnType::scale);
+
+		changed.push_back(name);
+	}
+#ifdef ROUGH_RESET
+	endResetModel();
+#else
+	endInsertColumns();
+#endif
+
+	strstrmap		changeNameColumns;
+	stringvec		missingColumns;
+
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
+
+	return true;
+}
+
+bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & aparent)
+{
+	if(count >= dataColumnCount())
+	{
+		resetModelOneCell();
+		return true;
+	}
+
+	if(isLoaded()) setModified(true);
+
+	setSynchingExternally(false); //Don't synch with external file after editing
+#ifdef ROUGH_RESET
+	beginResetModel();
+#else
+	beginRemoveColumns(indexForSubNode(_dataSet->dataNode()), column, column + count - 1);
+#endif
 
 	stringvec	changed;
 	strstrmap	changeNameColumns;
-	stringvec	missingColumns({getColumnName(column)});
+	stringvec	missingColumns;
 
-	_dataSet->removeColumn(column);
+	for(int c = column + count; c>column; c--)
+	{
+		missingColumns.push_back(getColumnName(c - 1));
+		_dataSet->removeColumn(c - 1);
+	}
+#ifdef ROUGH_RESET
+	endResetModel();
+#else
+	endRemoveColumns();
+#endif
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	endSynchingData(changed, missingColumns, changeNameColumns, false, true, false);
+	return true;
 }
 
-void DataSetPackage::rowInsert(size_t row)
+bool DataSetPackage::insertRows(int row, int count, const QModelIndex & aparent)
 {
-	setSynchingExternally(false); //Don't synch with external file after editing
-	beginSynchingData(false);
-	stringvec changed;
+	if(isLoaded()) setModified(true);
 
 	if(row > dataRowCount())
 		row = dataRowCount();
 
+	setSynchingExternally(false); //Don't synch with external file after editing
+#ifdef ROUGH_RESET
+	beginResetModel();
+#else
+	beginInsertRows(indexForSubNode(_dataSet->dataNode()), row, row + count - 1);
+#endif
+	stringvec changed;
+
+
 	dataSet()->beginBatchedToDB();
 
 	for(int c=0; c<dataColumnCount(); c++)
@@ -1888,25 +2015,42 @@ void DataSetPackage::rowInsert(size_t row)
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
 
-		dataSet()->column(c)->rowInsertEmptyVal(row);
+		for(int r=row; r<row+count; r++)
+			dataSet()->column(c)->rowInsertEmptyVal(r);
 	}
 
-	dataSet()->setRowCount(dataSet()->rowCount() + 1);
+	dataSet()->setRowCount(dataSet()->rowCount() + count);
 	dataSet()->incRevision();
 	dataSet()->endBatchedToDB();
-
+#ifdef ROUGH_RESET
+	endResetModel();
+#else
+	endInsertRows();
+#endif
 	strstrmap		changeNameColumns;
 	stringvec		missingColumns;
 
-	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
+
+	return true;
 }
 
-
-
-void DataSetPackage::rowDelete(size_t row)
+bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 {
+	if(count >= dataRowCount())
+	{
+		resetModelOneCell();
+		return true;
+	}
+
+	if(isLoaded()) setModified(true);
+
 	setSynchingExternally(false); //Don't synch with external file after editing
-	beginSynchingData(false);
+#ifdef ROUGH_RESET
+	beginResetModel();
+#else
+	beginRemoveRows(indexForSubNode(_dataSet->dataNode()), row, row + count - 1);
+#endif
 	stringvec changed;
 
 	dataSet()->beginBatchedToDB();
@@ -1916,17 +2060,24 @@ void DataSetPackage::rowDelete(size_t row)
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
 	
-		dataSet()->column(c)->rowDelete(row);
+		for(int r=row+count; r>row; r++)
+			dataSet()->column(c)->rowDelete(r-1);
 	}
 
-	setDataSetSize(dataColumnCount(), dataRowCount()-1);
+	setDataSetSize(dataColumnCount(), dataRowCount()-count);
 	dataSet()->incRevision();
 	dataSet()->endBatchedToDB();
 
 	strstrmap		changeNameColumns;
 	stringvec		missingColumns;
+#ifdef ROUGH_RESET
+	endResetModel();
+#else
+	endRemoveRows();
+#endif
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
 
-	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
+	return true;
 }
 
 void DataSetPackage::storeInEmptyValues(const std::string & columnName, const intstrmap & emptyValues)
@@ -1970,6 +2121,19 @@ void DataSetPackage::removeColumn(const std::string & name)
 
 	if (!_synchingData) // If we are synchronising, the datasetChanged is already called
 		emit datasetChanged({}, {tq(name)}, {}, false, false);
+}
+
+void DataSetPackage::resetModelOneCell()
+{
+	if(isLoaded()) setModified(true);
+
+	setData(index(0,0), "", Qt::DisplayRole);
+
+	beginResetModel();
+	DataSetPackage::pkg()->setDataSetSize(1, 1);
+	DataSetPackage::pkg()->setColumnName(0, DataSetPackage::pkg()->freeNewColumnName(0), false);
+	DataSetPackage::pkg()->setColumnType(0, columnType::scale,	false);
+	endResetModel();
 }
 
 bool DataSetPackage::columnExists(Column *column)

@@ -2,8 +2,8 @@
 #include "datasetpackage.h"
 #include "log.h"
 
-DataSetPackageSubNodeModel::DataSetPackageSubNodeModel(DataSetBaseNode * node)
-	: QIdentityProxyModel(DataSetPackage::pkg()), _node(node)
+DataSetPackageSubNodeModel::DataSetPackageSubNodeModel(const QString & whatAmI, DataSetBaseNode * node)
+	: QIdentityProxyModel(DataSetPackage::pkg()), _node(node), _whatAmI(whatAmI)
 {
 	beginResetModel();
 	setSourceModel(DataSetPackage::pkg());
@@ -40,6 +40,31 @@ QModelIndex	DataSetPackageSubNodeModel::mapFromSource(const QModelIndex &sourceI
 	return createIndex(sourceIndex.row(), sourceIndex.column(), nullptr);
 }
 
+int DataSetPackageSubNodeModel::rowCount(const QModelIndex & parent) const
+{
+	int row = !_node ? 0 :DataSetPackage::pkg()->rowCount(mapToSource(parent));
+	//Log::log() << "DataSetPackageSubNodeModel("<< _whatAmI.toStdString() << ")::rowCount(" << ( _node ? dataSetBaseNodeTypeToString(_node->nodeType()) : "no node") << ") = " << row << std::endl;
+	return row;
+}
+
+int DataSetPackageSubNodeModel::columnCount(const QModelIndex & parent) const
+{
+	int col = !_node ? 0 : DataSetPackage::pkg()->columnCount(mapToSource(parent));
+	//Log::log() << "DataSetPackageSubNodeModel("<< _whatAmI.toStdString() << ")::columnCount(" << ( _node ? dataSetBaseNodeTypeToString(_node->nodeType()) : "no node")  << ") = " << col << std::endl;
+	return col;
+}
+
+QString DataSetPackageSubNodeModel::insertColumnSpecial(int column, bool computed, bool R)
+{
+	int sourceColumn = column > columnCount() ? columnCount() : column;
+	sourceColumn = mapToSource(index(0, sourceColumn)).column();
+	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
+}
+
+QString DataSetPackageSubNodeModel::appendColumnSpecial(bool computed, bool R)
+{
+	return DataSetPackage::pkg()->appendColumnSpecial(computed, R);
+}
 
 void DataSetPackageSubNodeModel::modelWasReset()
 {

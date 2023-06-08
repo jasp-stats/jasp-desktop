@@ -74,7 +74,7 @@ public:
 			bool					hasFilter()				const;
 			void					resetFilter();
 			void					incRevision();
-			void					checkForUpdates();
+			bool					checkForUpdates();
 
 			bool					isColumnDifferentFromStringValues(const stringvec & strVals) const;
 

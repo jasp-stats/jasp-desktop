@@ -134,20 +134,25 @@ void Filter::incRevision()
 	}
 }
 
-void Filter::checkForUpdates()
+bool Filter::checkForUpdates()
 {
 	if(_id == -1)
 	{
 		_id = db().dataSetGetFilter(_data->id());
 		
 		if(_id == -1)
-			return;
+			return false;
 	}
 	else if(_revision == db().filterGetRevision(_id))
-		return;
+		return false;
 
 	if(_data->id() != -1 && _id != -1)
+	{
 		dbLoad();
+		return true;
+	}
+	else
+		return false;
 }
 
 void Filter::reset()

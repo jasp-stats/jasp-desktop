@@ -1801,14 +1801,15 @@ void Column::incRevision()
 	}
 }
 
-void Column::checkForUpdates()
+bool Column::checkForUpdates()
 {
 	assert(_id != -1);
 
 	if(_revision == db().columnGetRevision(_id))
-		return;
+		return false;
 
 	dbLoad();
+	return true;
 }
 
 bool Column::isColumnDifferentFromStringValues(const stringvec & strVals) const 

@@ -20,8 +20,8 @@ ComputedColumnsModel::ComputedColumnsModel()
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnUsesRCodeChanged		);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnNameSelectedChanged		);
 	connect(this,					&ComputedColumnsModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
-	connect(this,					&ComputedColumnsModel::headerDataChanged,		DataSetPackage::pkg(),	&DataSetPackage::headerDataChanged,							Qt::QueuedConnection);
 	connect(this,					&ComputedColumnsModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
+	//connect(this,					&ComputedColumnsModel::headerDataChanged,		DataSetPackage::pkg(),	&DataSetPackage::headerDataChanged,							Qt::QueuedConnection);
 
 	connect(Analyses::analyses(),	&Analyses::requestComputedColumnCreation,		DataSetPackage::pkg(),	&DataSetPackage::requestComputedColumnCreation,				Qt::UniqueConnection);
 	connect(Analyses::analyses(),	&Analyses::requestColumnCreation,				DataSetPackage::pkg(),	&DataSetPackage::requestColumnCreation,						Qt::UniqueConnection);
@@ -126,6 +126,9 @@ bool ComputedColumnsModel::areLoopDependenciesOk(const std::string & columnName,
 
 void ComputedColumnsModel::emitSendComputeCode(const QString & columnName, const QString & code, columnType colType)
 {
+	if(code.isEmpty())
+		return;
+
 	if(areLoopDependenciesOk(columnName.toStdString(), code.toStdString()))
 		emit sendComputeCode(columnName, code, colType);
 }
@@ -191,9 +194,16 @@ void ComputedColumnsModel::computeColumnSucceeded(QString columnNameQ, QString w
 	std::string columnName	= columnNameQ.toStdString(),
 				warning		= warningQ.toStdString();
 
+	if(!dataSet())
+		return;
+
 	bool shouldNotifyQML = _selectedColumn && _selectedColumn->name() == columnName;
 
 	Column * column = dataSet()->column(columnName);
+
+	if(!column)
+		return;
+
 	//First check for any updates from engine-side as setError might call incRevision()	
 	column->checkForUpdates();
 	
@@ -212,16 +222,22 @@ void ComputedColumnsModel::computeColumnFailed(QString columnNameQ, QString erro
 {
 	std::string columnName	= columnNameQ.toStdString(),
 				error		= errorQ.toStdString();
+
+	if(!dataSet())
+		return;
 	
 	
 	bool shouldNotifyQML = _selectedColumn && _selectedColumn->name() == columnName;
 	
 	Column * column = dataSet()->column(columnName);
 
+	if(!column)
+		return;
+
 	if(areLoopDependenciesOk(columnName) && column->setError(error) && shouldNotifyQML)
 		emit computeColumnErrorChanged();
 
-	DataSetPackage::pkg()->columnSetDefaultValues(columnName);
+	DataSetPackage::pkg()->columnSetDefaultValues(columnName, columnType::unknown, false);
 	emit refreshColumn(columnNameQ);
 
 	validate(tq(columnName));
@@ -289,7 +305,6 @@ void ComputedColumnsModel::removeColumn()
 
 	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
 	setComputeColumnNameSelected("");
-
 	emit refreshData();
 }
 
@@ -368,6 +383,8 @@ void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
 		if(col->iShouldBeSentAgain())
 			emitSendComputeCode(tq(col->name()), tq(col->rCodeStripped()), col->type());
 	}
+
+	emit refreshData();
 }
 
 void ComputedColumnsModel::onDataSetChanged()
@@ -392,8 +409,6 @@ Column * ComputedColumnsModel::createComputedColumn(const std::string & name, in
 
 	if(analysis)
 		createdColumn->setAnalysisId(analysis->id());
-
-	emit refreshData();
 
 	if(!createActualComputedColumn)
 		emit dataColumnAdded(tq(name));

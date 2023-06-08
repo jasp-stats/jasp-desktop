@@ -70,11 +70,11 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 	return roles;
 }
 
-void ColumnsModel::refresh()
+int ColumnsModel::rowCount(const QModelIndex & p) const
 {
-	beginResetModel();
-	endResetModel();
+	return QTransposeProxyModel::rowCount(p);
 }
+
 
 void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 									QStringList				missingColumns,
@@ -82,9 +82,7 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 									bool					rowCountChanged,
 									bool					hasNewColumns)
 {
-	if (missingColumns.size() > 0 || hasNewColumns)
-		refresh();
-	else
+	if(! (missingColumns.size() > 0 || hasNewColumns))
 	{
 		if (changeNameColumns.size() > 0)
 			emit namesChanged(changeNameColumns);

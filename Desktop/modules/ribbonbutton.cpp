@@ -85,7 +85,7 @@ void RibbonButton::setRemember(bool remember)
 void RibbonButton::runSpecial(QString func)
 {
 	if(_specialButtonFunc)	_specialButtonFunc();
-	else							_menuModel->getAnalysisEntry(fq(func))->runSpecialFunc();
+	else					_menuModel->getAnalysisEntry(fq(func))->runSpecialFunc();
 }
 
 void RibbonButton::setError(bool error)
