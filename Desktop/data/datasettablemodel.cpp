@@ -111,3 +111,41 @@ void DataSetTableModel::rowDelete(size_t row)
 	QModelIndex idx = mapToSource(index(row, 0));
 	DataSetPackage::pkg()->rowDelete(idx.row());
 }
+
+bool DataSetTableModel::insertRows(int row, int count, const QModelIndex &)
+{
+	for(int r=row; r<row+count; r++)
+		rowInsert(r);
+
+	return true;
+}
+
+bool DataSetTableModel::insertColumns(int column, int count, const QModelIndex &)
+{
+	for(int c=column; c<column+count; c++)
+		columnInsert(c);
+
+	return true;
+}
+
+bool DataSetTableModel::removeRows(int row, int count, const QModelIndex &)
+{
+	if(rowCount() - count < 1)
+		return false;
+
+	for(int r=row; r<row+count; r++)
+		rowDelete(r);
+
+	return true;
+}
+
+bool DataSetTableModel::removeColumns(int column, int count, const QModelIndex &)
+{
+	if(columnCount() - count < 1)
+		return false;
+
+	for(int c=column; c<column+count; c++)
+		columnDelete(c);
+
+	return true;
+}

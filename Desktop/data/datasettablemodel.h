@@ -62,6 +62,12 @@ public:
 	void					rowInsert(		size_t row		);
 	void					rowDelete(		size_t row		);
 
+	bool					insertRows(		int row,		int count, const QModelIndex & aparent = QModelIndex()) override;
+	bool					insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex()) override;
+	bool					removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex()) override;
+	bool					removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex()) override;
+
+
 				bool		showInactive()							const				{ return _showInactive;	}
 
 signals:

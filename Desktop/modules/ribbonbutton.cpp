@@ -140,21 +140,26 @@ RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title,
 	bindYourself();
 }
 
+RibbonButton::~RibbonButton()
+{
+
+}
+
 
 
 void RibbonButton::bindYourself()
 {
-	connect(this,								&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::enabledChanged,			this, &RibbonButton::somePropertyChanged);
 	connect(this,								&RibbonButton::titleChanged,			this, &RibbonButton::somePropertyChanged);
-	connect(this,								&RibbonButton::toolTipChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,								&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this,								&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this,								&RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::toolTipChanged,			this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::moduleNameChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::dataLoadedChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,								&RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
 
-	connect(this,								&RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged		);
-	connect(this,								&RibbonButton::dataLoadedChanged,	this, &RibbonButton::activeChanged		);
-	connect(this,								&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::enabledChanged,			this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::dataLoadedChanged,		this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::activeChanged		);
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }

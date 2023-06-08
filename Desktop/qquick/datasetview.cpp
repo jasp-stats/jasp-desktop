@@ -1230,8 +1230,7 @@ void DataSetView::columnInsertBefore(int col)
 	if(col == -1)
 		col = _selectionStart.isValid() ? _selectionStart.column() : 0;
 	
-	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
-		qobject_cast<DataSetTableModel*>(_model)->columnInsert(col);
+	_model->insertColumn(col);
 }
 
 void DataSetView::columnInsertAfter(int col)
@@ -1246,13 +1245,15 @@ void DataSetView::columnInsertAfter(int col)
 
 void DataSetView::columnDelete(int col)
 {
+	if(_model->columnCount() <= 1)
+		return;
+
 	if(col == -1)
 		col = _selectionEnd.isValid() ? _selectionEnd.column()
 									  : _selectionStart.isValid() ? _selectionStart.column()
 																  : _model->columnCount();
 
-	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
-		qobject_cast<DataSetTableModel*>(_model)->columnDelete(col);
+	_model->removeColumn(col);
 }
 
 void DataSetView::rowSelect(int row)
@@ -1266,8 +1267,7 @@ void DataSetView::rowInsertBefore(int row)
 	if(row == -1)
 		row = _selectionStart.isValid() ? _selectionStart.row() : 0;
 	
-	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
-		qobject_cast<DataSetTableModel*>(_model)->rowInsert(row);
+	_model->insertRow(row);
 }
 
 void DataSetView::rowInsertAfter(int row)
@@ -1282,13 +1282,15 @@ void DataSetView::rowInsertAfter(int row)
 
 void DataSetView::rowDelete(int row)
 {
+	if(_model->rowCount() <= 1)
+		return;
+
 	if(row == -1)
 		row = _selectionEnd.isValid() ? _selectionEnd.row()
 									  : _selectionStart.isValid() ? _selectionStart.row()
 																  : _model->rowCount() - 1;
 	
-	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
-		qobject_cast<DataSetTableModel*>(_model)->rowDelete(row);
+	_model->removeRow(row);
 }
 
 void DataSetView::setEditDelegate(QQmlComponent *editDelegate)

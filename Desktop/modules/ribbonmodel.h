@@ -140,8 +140,8 @@ private: // fields
 	int										_highlightedModuleIndex = -1;
 	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
-	Modules::AnalysisEntries				_entriesInsert,
-											_entriesDelete;
+	Modules::AnalysisEntries			*	_entriesInsert		= nullptr,
+										*	_entriesDelete		= nullptr;
 	RibbonButton						*	_analysesButton		= nullptr,
 										*	_dataSwitchButton	= nullptr,
 										*	_dataNewButton		= nullptr,
