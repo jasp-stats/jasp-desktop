@@ -1237,7 +1237,9 @@ void DataSetView::columnInsertBefore(int col)
 void DataSetView::columnInsertAfter(int col)
 {
 	if(col == -1)
-		col = _selectionEnd.isValid() ? _selectionEnd.column() : _model->columnCount();
+		col = _selectionEnd.isValid() ? _selectionEnd.column()
+									  : _selectionStart.isValid() ? _selectionStart.column()
+																  : _model->columnCount();
 	
 	columnInsertBefore(col + 1);
 }
@@ -1245,7 +1247,9 @@ void DataSetView::columnInsertAfter(int col)
 void DataSetView::columnDelete(int col)
 {
 	if(col == -1)
-		col = _selectionEnd.isValid() ? _selectionEnd.column() : _model->columnCount();
+		col = _selectionEnd.isValid() ? _selectionEnd.column()
+									  : _selectionStart.isValid() ? _selectionStart.column()
+																  : _model->columnCount();
 
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->columnDelete(col);
@@ -1260,7 +1264,7 @@ void DataSetView::rowSelect(int row)
 void DataSetView::rowInsertBefore(int row)
 {
 	if(row == -1)
-		row = _selectionStart.isValid() ? _selectionStart.row() : _model->rowCount();
+		row = _selectionStart.isValid() ? _selectionStart.row() : 0;
 	
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->rowInsert(row);
@@ -1269,7 +1273,9 @@ void DataSetView::rowInsertBefore(int row)
 void DataSetView::rowInsertAfter(int row)
 {
 	if(row == -1)
-		row = _selectionEnd.isValid() ? _selectionEnd.row() : _model->rowCount();
+		row = _selectionEnd.isValid() ? _selectionEnd.row()
+									  : _selectionStart.isValid() ? _selectionStart.row()
+																  : _model->rowCount();
 	
 	rowInsertBefore(row + 1);
 }
@@ -1277,7 +1283,9 @@ void DataSetView::rowInsertAfter(int row)
 void DataSetView::rowDelete(int row)
 {
 	if(row == -1)
-		row = _selectionEnd.isValid() ? _selectionEnd.row() : _model->rowCount();
+		row = _selectionEnd.isValid() ? _selectionEnd.row()
+									  : _selectionStart.isValid() ? _selectionStart.row()
+																  : _model->rowCount() - 1;
 	
 	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
 		qobject_cast<DataSetTableModel*>(_model)->rowDelete(row);
@@ -1341,6 +1349,7 @@ void DataSetView::editFinishedKeepEditing(QModelIndex here, QVariant editedValue
 	}
 	else
 	{
+		here = _model->index(here.row(), here.column());
 		QVariant oldValue = _model->data(here);
 
 		Log::log() << "editing finished! old value: '" << oldValue.toString() << "'  and new value: '" << editedValue.toString() << "' (row=" << here.row() << ", col=" << here.column() << ")" << std::endl;

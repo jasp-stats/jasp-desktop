@@ -625,8 +625,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 
 
 				//emit label dataChanged just in case
-                QModelIndex parent = indexForSubNode(column);
-				emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
+				//QModelIndex parent = indexForSubNode(column);
+				//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
 
 			}
 			else
@@ -1877,6 +1877,9 @@ void DataSetPackage::rowInsert(size_t row)
 	setSynchingExternally(false); //Don't synch with external file after editing
 	beginSynchingData(false);
 	stringvec changed;
+
+	if(row > dataRowCount())
+		row = dataRowCount();
 
 	dataSet()->beginBatchedToDB();
 
