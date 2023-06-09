@@ -614,7 +614,7 @@
               "associated_datafile": "auditSample.csv"
           },
           {
-              "naam": "Evalueren van een Gestratificeerde Steekproef",
+              "name": "Evalueren van een Gestratificeerde Steekproef",
               "path": "stratifiedEvaluation.jasp",
               "description": "Een fictieve auditpopulatie bestaande uit 1414 items verdeeld in 3 deelpopulaties. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een gestratificeerde Bayesiaanse evaluatie.<br><br> <i>Gegevensset gebruikt in R-pakket jfa<\/i>",
               "kind": "file",
