@@ -497,6 +497,10 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 
+		// using mathJax after result page ready
+		var MathJax =  window.MathJax
+		MathJax.typesetPromise()
+
 		analyses.setBottomSpacerHeight();
 	}
 
