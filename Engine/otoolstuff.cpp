@@ -70,20 +70,23 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	try
 	{
 		// Follow symlinks so that we may fix pkgs installed by renv 
-		// (where the actual files are in cacche and only symlinked in library)
+		// (where the actual files are in cache and only symlinked in library)
 		for(recIt dir(modLibpath, std::filesystem::directory_options::follow_directory_symlink); dir != recIt(); dir++)
 		{
 			path = dir->path();
+
+			/*if(printStuff)
+				std::cout << "- Now checking whether the path at '" << path.string() << "' is one we should fix.\n" << std::flush;*/
 	
 			// We only want files that have dylib or so as extension and don't have dSYM 
 			// anywhere in the path (because those are some kind of debugsymbols)
-			if(	! (	std::filesystem::is_regular_file(path)							&&
+			if(	! (	std::filesystem::is_regular_file(path)						&&
 					(path.extension() == ".dylib" || path.extension() == ".so")	&&
 					path.string().find("dSYM") == std::string::npos				))
 				continue;
 	
 			if(printStuff)
-				std::cout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
+				std::cout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n" << std::flush;
 	
 			std::string libPath		= stringUtils::replaceBy(path.string(), " ", "\\ "),
 						otoolCmd	= "otool -L " + libPath,

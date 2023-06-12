@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <locale>
 #include <cctype>
+#include <iostream>
 
 typedef std::set<std::string>		stringset;
 typedef std::vector<std::string>	stringvec;
@@ -94,11 +95,14 @@ public:
 
 	inline static std::string replaceBy(std::string input, const std::string & replaceThis, const std::string & withThis)
 	{
-		size_t	oldLen = replaceThis.size();
+		//std::cout << "replaceBy('" << input << "', '" << replaceThis << "', '" << withThis << "');" << std::endl;
+
+		size_t	oldLen = replaceThis.size(),
+				newLen = withThis.size();
 
 		for	(	std::string::size_type curPos = input.find(replaceThis)
 			;	curPos + oldLen <= input.size() && curPos != std::string::npos
-			;	curPos = input.find(replaceThis)	
+			;	curPos = input.find(replaceThis, curPos+newLen)
 		)
 			input.replace(curPos, oldLen, withThis);
 
@@ -107,13 +111,17 @@ public:
 
 	inline static std::string escapeHtmlStuff(std::string input)
 	{
-		input = replaceBy(input, "&", 				"&amp;"	);
-		input = replaceBy(input, "<", 				"&lt;"	);
-		input = replaceBy(input, ">", 				"&gt;"	);
-		input = replaceBy(input,  "&lt;sub&gt;",	"<sub>"	);
-		input = replaceBy(input, "&lt;/sub&gt;",	"</sub>");
-		input = replaceBy(input,  "&lt;sup&gt;",	"<sup>"	);
-		input = replaceBy(input, "&lt;/sup&gt;",	"</sup>");
+		input = replaceBy(input,	"&", 				"&amp;"	);
+		input = replaceBy(input,	"<", 				"&lt;"	);
+		input = replaceBy(input,	">", 				"&gt;"	);
+		input = replaceBy(input,	"&lt;sub&gt;",		"<sub>"	);
+		input = replaceBy(input,	"&lt;/sub&gt;",		"</sub>");
+		input = replaceBy(input,	"&lt;sup&gt;",		"<sup>"	);
+		input = replaceBy(input,	"&lt;/sup&gt;",		"</sup>");
+		input = replaceBy(input,	"&lt;b&gt;",		"<b>"	);
+		input = replaceBy(input,	"&lt;/b&gt;",		"</b>"	);
+		input = replaceBy(input,	"&lt;i&gt;",		"<i>"	);
+		input = replaceBy(input,	"&lt;/i&gt;",		"</i>"	);
 
 		return input;
 	}
