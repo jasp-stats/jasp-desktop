@@ -189,7 +189,7 @@ $(document).ready(function () {
 		analyses.exportBegin(exportParams, function (exportParams, exportContent) {
 
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
-				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
+				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams, true));
 		})
 	}
 
@@ -519,8 +519,10 @@ $(document).ready(function () {
 	$("body").click(window.unselectByClickingBody)
 })
 
-var wrapHTML = function (html, exportParams) {
-	var completehtml = "<!DOCTYPE HTML>\n"
+var wrapHTML = function (html, exportParams, doctype = false) {
+	var completehtml = ""
+	if(doctype)
+		completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
