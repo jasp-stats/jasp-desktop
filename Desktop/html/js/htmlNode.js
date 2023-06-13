@@ -50,12 +50,13 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 	 },
 
 	 copyMenuClicked: function () {
-		 var exportParams = new JASPWidgets.Exporter.params();
-		 exportParams.format = JASPWidgets.ExportProperties.format.raw;
-		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		 exportParams.includeNotes = false;
+		 var exportParams 				= new JASPWidgets.Exporter.params();
+		 exportParams.format 			= JASPWidgets.ExportProperties.format.html;
+		 exportParams.process 			= JASPWidgets.ExportProperties.process.copy;
+		 exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		 exportParams.includeNotes		 = false;
 
-		 pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
+		 this.exportBegin(exportParams);
 		 return true;
 	 },
 
@@ -141,9 +142,14 @@ JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-message');
 		}
 
+		// Add more attributes element has, such as class name and mathml things...
+		let attrObj = $elObj.prop("attributes");
+		$.each(attrObj, function() {
+			attrs += this.name + '="' + this.value + '" ';
+			});
 
 		if (style)
-			attrs = style + ' ' + attrs
+			attrs = attrs + style
 
 		return attrs;
 	},
