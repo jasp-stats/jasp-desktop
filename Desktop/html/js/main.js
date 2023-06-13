@@ -520,8 +520,7 @@ $(document).ready(function () {
 })
 
 var wrapHTML = function (html, exportParams) {
-	var completehtml = "<!DOCTYPE HTML>\n"
-	completehtml += "<html>\n"
+	var completehtml = "<html>\n"
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
 	completehtml += "		<title>JASP</title>"
