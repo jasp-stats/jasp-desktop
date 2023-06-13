@@ -474,7 +474,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'],
+			['bold', 'italic', 'underline', 'link'],['code-block'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -487,11 +487,17 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		let placeholderText = this.ghostTextDefault
 		if (typeof this.ghostText !== 'undefined')
-			placeholderText = this.ghostText
+			placeholderText = this.ghostText;
+
+		// here configure code highlight global
+		hljs.configure({
+			languages: ['r'] // optionally highlight language(s)
+		});
 
 		var options = {
 			theme: 'snow',
 			modules: {
+				syntax: true,
 				toolbar: toolbarOptions,
 				keyboard: {
 					bindings: {
@@ -555,6 +561,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', 'Underline');
 		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Link');
 
+		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', 'Code Block');
+
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', 'Header');
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
 		lists[0].setAttribute('title', 'Ordered List')
@@ -574,6 +582,17 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', 'Font Size');
 		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', 'Clear Formatting');
+
+		// Customized quill editor syntax to fix code-block
+  		// FIXME: Fix css styles on export html when refactoring
+		let codeBlockCss = {
+			'background-color': '#ebebeb',
+			'display': 'block',
+			'color': '#555555'
+		};
+		this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
+			$('pre.ql-syntax').css(codeBlockCss);
+		});
 
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
@@ -1076,8 +1095,14 @@ JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
 			this.$el.addClass('jasp-hide');
 	},
 	render: function() {
-		this.$el.find(".jasp-rsyntax").html(this.model.get("script"));
-		return this;
+		let rScript = this.model.get("script").replace(/<br>/g, "\n");
+		this.$el.find(".jasp-rsyntax")
+					.html("<pre><code class='language-r'>" + rScript + "</code></pre>");
+		setTimeout(() => {
+			this.$el.find(".jasp-rsyntax")[0].querySelectorAll('pre code').forEach((el) => {
+				hljs.highlightElement(el);
+			});
+		}, 200);
 	},
 	_insertRSyntax: function() {
 		$script = $("<span/>");

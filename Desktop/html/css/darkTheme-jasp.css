@@ -206,6 +206,15 @@ div.jasp-image-image.no-data.error {
     background-color: #555
 }
 
+/* to fix code highlight in dark theme*/
+.jasp-rsyntax-container .hljs {
+  background: #555;
+  color:  	#FFFFFF;
+}
+.jasp-rsyntax-container .hljs-string {
+  color:  	#bd93f9;
+}
+
 
 /* Track */
 ::-webkit-scrollbar-track {
