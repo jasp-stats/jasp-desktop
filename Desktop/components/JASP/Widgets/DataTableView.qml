@@ -232,10 +232,7 @@ FocusScope
 
 							onPressed:
 								if(mouse.buttons & Qt.RightButton)
-								{
-									finishEdit()
 									dataTableView.showCopyPasteMenu(editItem, mapToGlobal(mouse.x, mouse.y), dataSetModel.index(rowIndex, columnIndex));
-								}
 						}
 					}
 				}
