@@ -500,6 +500,28 @@ $(document).ready(function () {
 		// using mathJax after result page ready
 		var MathJax =  window.MathJax
 		MathJax.typesetPromise()
+		const svgs = document.querySelectorAll('mjx-container svg, .ql-editor svg');
+		if (svgs.length > 0) {
+			// The general idea is to render on canvas and convert to png, replace the original svg node with png
+			// Cf: https://gist.github.com/caseywatts/512c7cff7c4125a15c01.js
+			svgs.forEach(svg => {
+				const canvas = document.createElement('canvas');
+				canvas.width = svg.width.baseVal.value * 2; // resize to increase png resolution
+				canvas.height = svg.height.baseVal.value * 2;
+				const img = new Image();
+				img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg.outerHTML)));
+				img.onload = () => {
+				canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+				const pngDataUrl = canvas.toDataURL('image/png', 1); // 1 for quality ratio
+				const newImg = new Image();
+				newImg.src = pngDataUrl;
+				// resize to original svg size
+				newImg.width = svg.width.baseVal.value;
+				newImg.height = svg.height.baseVal.value;
+				svg.parentNode.replaceChild(newImg, svg);
+				};
+			});
+		}
 
 		analyses.setBottomSpacerHeight();
 	}
