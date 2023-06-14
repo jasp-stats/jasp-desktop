@@ -595,7 +595,7 @@ int ListModel::sourceColumnTypeChanged(QString name)
 			emit selectedItemsTypesChanged();
 		}
 
-		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole});
+		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
 		emit columnTypeChanged(name);
 	}
 

@@ -47,8 +47,8 @@ public slots:
 							bool					rowCountChanged,
 							bool					hasNewColumns);
 
-private:
 	void refresh();
+private:
 
 	DataSetTableModel	* _tableModel	= nullptr;
 
