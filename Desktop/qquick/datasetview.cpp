@@ -910,9 +910,9 @@ void DataSetView::updateExtraColumnItem()
 	connect(_extraColumnItem, &QQuickItem::widthChanged, this, &DataSetView::setExtraColumnX, Qt::UniqueConnection);
 }
 
-void DataSetView::destroyEditItem()
+void DataSetView::destroyEditItem(bool createItem)
 {
-	if(!_editItemContextual || _prevEditRow == -1 || _prevEditCol == -1)
+	if(!_editItemContextual)
 	{
 		_prevEditRow = -1;
 		_prevEditCol = -1;
@@ -931,15 +931,21 @@ void DataSetView::destroyEditItem()
 	delete _editItemContextual;
 	_editItemContextual				= nullptr;
 	
-	Log::log() << "Restoring text item for old edit item at " << _prevEditRow << ", " << _prevEditCol << std::endl;
-	QQuickItem * item = createTextItem(_prevEditRow, _prevEditCol);
-    
-    size_t col=_prevEditCol, row=_prevEditRow;
-    
-	//A delay might help the focus problem? No it doesnt...
-	QTimer::singleShot(10, [col, row, this](){ _cellTextItems[col][row]->item->forceActiveFocus(); });
+	if(createItem && !(_prevEditRow == -1 || _prevEditCol == -1))
+	{
+		Log::log() << "Restoring text item for old edit item at " << _prevEditRow << ", " << _prevEditCol << std::endl;
+		QQuickItem * item = createTextItem(_prevEditRow, _prevEditCol);
 
-	//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
+		size_t col=_prevEditCol, row=_prevEditRow;
+
+		//A delay might help the focus problem? No it doesnt...
+		QTimer::singleShot(10, _cellTextItems[col][row]->item, [col, row, this](){ _cellTextItems[col][row]->item->forceActiveFocus(); });
+
+		//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
+	}
+	else
+		Log::log() << "Not creating text item" << std::endl;
+
 
 	_prevEditRow = -1;
 	_prevEditCol = -1;
@@ -947,6 +953,9 @@ void DataSetView::destroyEditItem()
 
 void DataSetView::positionEditItem(int row, int col)
 {
+	if(row == -1 || col == -1)
+		return;
+
 	if(!_editDelegate)
 	{
 		_editDelegate = new QQmlComponent(qmlEngine(this));
@@ -1246,6 +1255,8 @@ void DataSetView::columnSelect(int col)
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 {
+	destroyEditItem(false);
+
 	if(col == -1)
 		col = _selectionStart.isValid() ? _selectionStart.column() : 0;
 	
@@ -1281,6 +1292,8 @@ void DataSetView::columnsDelete()
 	if(_model->columnCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
 		return;
 
+	destroyEditItem(false);
+
 	int columnA	= _selectionStart.isValid() ? _selectionStart.column()	: _selectionEnd.column(),
 		columnB	= _selectionEnd.isValid()	? _selectionEnd.column()	: _selectionStart.column();
 
@@ -1298,6 +1311,8 @@ void DataSetView::rowSelect(int row)
 
 void DataSetView::rowInsertBefore(int row)
 {
+	destroyEditItem(false);
+
 	if(row == -1)
 		row = _selectionStart.isValid() ? _selectionStart.row() : 0;
 	
@@ -1318,6 +1333,8 @@ void DataSetView::rowsDelete()
 {
 	if(_model->rowCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
 		return;
+
+	destroyEditItem();
 
 	int rowA	= _selectionStart.isValid() ? _selectionStart.row()	: _selectionEnd.row(),
 		rowB	= _selectionEnd.isValid()	? _selectionEnd.row()	: _selectionStart.row();
@@ -1410,7 +1427,7 @@ void DataSetView::edit(QModelIndex here)
 		destroyEditItem();
 
 	//checking the model sounds like a really good idea, but will crash jasp if you use the mouse to edit cells and 'bool isEditable (_model->flags(here) & Qt::ItemIsEditable);'
-	DataSetTableProxy * modelAsProxy = qobject_cast<DataSetTableProxy*>(_model); 
+	//DataSetTableProxy * modelAsProxy = qobject_cast<DataSetTableProxy*>(_model);
 	
 	bool isEditable = Qt::ItemIsEditable & _model->flags(_model->index(here.row(), here.column()));
 		

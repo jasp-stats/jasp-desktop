@@ -214,7 +214,7 @@ public slots:
 	void		selectAll();
 
 	void		edit(QModelIndex here);
-	void		destroyEditItem();
+	void		destroyEditItem(bool restoreItem=true);
 	void		editFinished(			QModelIndex here, QVariant editedValue);
 	void		editFinishedKeepEditing(QModelIndex here, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);

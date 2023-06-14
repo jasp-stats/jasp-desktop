@@ -125,14 +125,14 @@ FocusScope
 				TextInput
 				{
 					id:						editItem
-					text:					"" //Set in oncompleted to avoid a binding!
+					text:					itemText
 					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:					jaspTheme.font
 					verticalAlignment:		Text.AlignVCenter
-					onTextChanged:			dataTableView.view.editFinishedKeepEditing(index, text);
+					onTextEdited:			dataTableView.view.editFinishedKeepEditing(index, text);
 					z:						10
 
-					Component.onCompleted:	{ text = itemText; focusTimer.start(); }
+					Component.onCompleted:	{ focusTimer.start(); }
 					Timer
 					{
 						id:					focusTimer
