@@ -628,6 +628,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
                 
 				emit labelsReordered(tq(column->name()));
 
+				setModified(true);
 
 				//emit label dataChanged just in case
 				//QModelIndex parent = indexForSubNode(column);
@@ -1120,13 +1121,18 @@ void DataSetPackage::setDataSetSize(size_t columnCount, size_t rowCount)
 	_dataSet->setRowCount(rowCount);
 }
 
+void DataSetPackage::dbDelete()
+{
+	JASPTIMER_SCOPE(DataSetPackage::dbDelete);
+	if(_dataSet && _dataSet->id() != -1)
+		_dataSet->dbDelete();
+}
+
 void DataSetPackage::createDataSet()
 {
 	JASPTIMER_SCOPE(DataSetPackage::createDataSet);
 					
-	if(_dataSet && _dataSet->id() != -1)
-		_dataSet->dbDelete();
-
+	dbDelete();
 	deleteDataSet();
 	_dataSet = new DataSet();
 	_dataSubModel->selectNode(_dataSet->dataNode());
@@ -1138,7 +1144,7 @@ void DataSetPackage::createDataSet()
 void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 {
 	if(_dataSet)
-		deleteDataSet();
+		deleteDataSet(); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 
 	_dataSet = new DataSet(0);
 	_dataSet->dbLoad(1, progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple

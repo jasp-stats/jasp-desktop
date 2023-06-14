@@ -282,7 +282,7 @@ public:
 				bool						synchingExternally() const;
 				void						checkComputedColumnDependenciesForAnalysis(Analysis * analysis);
 				std::string					freeNewColumnName(size_t startHere);
-
+				void						dbDelete();
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,

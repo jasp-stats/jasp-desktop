@@ -1217,6 +1217,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_resultsJsInterface->resetResults();
 			_analyses->setVisible(false);
 			_analyses->clear();
+			_package->dbDelete();
 			_package->reset(false);
 			_ribbonModel->showStatistics();
 
