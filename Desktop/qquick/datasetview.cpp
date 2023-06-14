@@ -1032,14 +1032,20 @@ void DataSetView::setSelectionStart(QModelIndex selectionStart)
 
 	_selectionModel->select(_selectionStart, QItemSelectionModel::SelectCurrent);
 
-	if(_model->headerData(_selectionStart.column(), Qt::Horizontal, _roleNameToRole["columnIsComputed"]).toBool())
+	/*if(_model->headerData(_selectionStart.column(), Qt::Horizontal, _roleNameToRole["columnIsComputed"]).toBool())
 	{
 		if(_editing)
+		{
 			destroyEditItem();
+			setEditing(false);
+		}
+
+		storeTextItem(selectionStart.row(), selectionStart.column());
+		createTextItem(selectionStart.row(), selectionStart.column());
 
 		//emit showComputedColumn(_model->headerData(_selectionStart.column(), Qt::Horizontal).toString());
 	}
-	else
+	else*/
 		edit(_selectionStart);
 }
 
@@ -1289,7 +1295,7 @@ void DataSetView::columnComputedInsertBefore(int col, bool R)
 
 void DataSetView::columnsDelete()
 {
-	if(_model->columnCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
+	if(_model->columnCount() <= 1 || !_selectionStart.isValid())
 		return;
 
 	destroyEditItem(false);
@@ -1301,6 +1307,9 @@ void DataSetView::columnsDelete()
 		std::swap(columnA, columnB);
 
 	_model->removeColumns(columnA, 1 + (columnB - columnA));
+
+	setSelectionStart(QModelIndex());
+	setSelectionEnd(QModelIndex());
 }
 
 void DataSetView::rowSelect(int row)
@@ -1426,21 +1435,10 @@ void DataSetView::edit(QModelIndex here)
 	if(editing())
 		destroyEditItem();
 
-	//checking the model sounds like a really good idea, but will crash jasp if you use the mouse to edit cells and 'bool isEditable (_model->flags(here) & Qt::ItemIsEditable);'
-	//DataSetTableProxy * modelAsProxy = qobject_cast<DataSetTableProxy*>(_model);
-	
-	bool isEditable = Qt::ItemIsEditable & _model->flags(_model->index(here.row(), here.column()));
-		
-	if(isEditable)
-	{
-		//Turn editing on
-		setEditing(true);
+	setEditing(true);
 
-		positionEditItem(here.row(), here.column());
+	positionEditItem(here.row(), here.column());
 
-		//when editItem is done or loses focus and the contents changed, this calls back to editFinished which will use setData etc
-		//this will also turn editing off again and replace editItem by normal item
-	}
 }
 
 void DataSetView::editFinishedKeepEditing(QModelIndex here, QVariant editedValue)
@@ -1507,7 +1505,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 
 	QString text = _storedDisplayText[row][col];
 
-	if(text == tq(ColumnUtils::emptyValue) && !emptyValLabel)
+	if(isEditable && text == tq(ColumnUtils::emptyValue) && !emptyValLabel)
 		text = "";
 
 	if(previousContext == nullptr)

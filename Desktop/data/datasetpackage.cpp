@@ -801,8 +801,11 @@ int DataSetPackage::filteredOut(size_t col) const
 
 Qt::ItemFlags DataSetPackage::flags(const QModelIndex &index) const
 {
-	bool isDataNode = indexPointerToNode(index) && indexPointerToNode(index)->nodeType() == dataSetBaseNodeType::data;
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | (!isDataNode || _dataMode ? Qt::ItemIsEditable : Qt::NoItemFlags);
+	const auto *	node		= indexPointerToNode(index);
+	bool			isDataNode	= node && (node->nodeType() == dataSetBaseNodeType::data || node->nodeType() == dataSetBaseNodeType::column),
+					isEditable	= !isDataNode || (_dataMode && !isColumnComputed(index.column()));
+
+	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | (isEditable ? Qt::ItemIsEditable : Qt::NoItemFlags);
 }
 
 QHash<int, QByteArray> DataSetPackage::roleNames() const
@@ -1964,6 +1967,9 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 
 bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & aparent)
 {
+	if(column == -1)
+		return false;
+
 	if(count >= dataColumnCount())
 	{
 		resetModelOneCell();
@@ -2043,6 +2049,9 @@ bool DataSetPackage::insertRows(int row, int count, const QModelIndex & aparent)
 
 bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 {
+	if(row == -1)
+		return false;
+
 	if(count >= dataRowCount())
 	{
 		resetModelOneCell();

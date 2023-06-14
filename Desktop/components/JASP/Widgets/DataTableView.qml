@@ -121,6 +121,7 @@ FocusScope
 				//customMenu.menuMaxPos.x	= __JASPDataViewRoot.width + __JASPDataViewRoot.x
 			}
 
+
 			editDelegate:
 				TextInput
 				{
@@ -131,6 +132,7 @@ FocusScope
 					verticalAlignment:		Text.AlignVCenter
 					onTextEdited:			dataTableView.view.editFinishedKeepEditing(index, text);
 					z:						10
+					readOnly:				!itemEditable
 
 					Component.onCompleted:	{ focusTimer.start(); }
 					Timer
@@ -147,6 +149,8 @@ FocusScope
 
 					Keys.onPressed: (event) =>
 					{
+						var rowI			= rowIndex
+						var colI			= columnIndex
 						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
 						var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
 						var arrowPressed	= false;
@@ -188,10 +192,10 @@ FocusScope
 
 						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 
-						case Qt.Key_Up:		if(rowIndex		> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex - 1,	columnIndex);		} break;
-						case Qt.Key_Down:	if(rowIndex		< dataTableView.model.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex + 1,	columnIndex);		} break;
-						case Qt.Key_Left:	if(columnIndex	> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex,		columnIndex - 1);	} break;
-						case Qt.Key_Right:	if(columnIndex	< dataTableView.model.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowIndex,		columnIndex + 1);	} break;
+						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI - 1,	colI);		} break;
+						case Qt.Key_Down:	if(rowI	< dataTableView.model.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI + 1,	colI);		} break;
+						case Qt.Key_Left:	if(colI	> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI,		colI - 1);	} break;
+						case Qt.Key_Right:	if(colI	< dataTableView.model.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI,		colI + 1);	} break;
 						}
 
 						if(arrowPressed)
@@ -207,7 +211,11 @@ FocusScope
 							event.accepted = true;
 						}
 
+						if(!itemEditable)
+							event.accepted = true; //textinput steals the focus otherwise and we cant move with arrows after pressing anything
+
 					}
+
 
 					Rectangle
 					{
