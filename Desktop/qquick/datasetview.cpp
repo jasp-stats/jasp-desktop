@@ -1054,14 +1054,14 @@ void DataSetView::setSelectionEnd(QModelIndex selectionEnd)
 	if (_selectionEnd == selectionEnd || !_selectionModel)
 		return;
 
-	if(_selectionStart.column() == -1 || _selectionStart.row() == -1)
-		return;
-	
 	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.row() << ", col=" << selectionEnd.column() << " )" << std::endl;
 
 	_selectionEnd = _model->index(selectionEnd.row(), selectionEnd.column());;
 	emit selectionEndChanged(_selectionEnd);
 	
+	if(_selectionStart.column() == -1 || _selectionStart.row() == -1)
+		return;
+
 	_selectionModel->select(QItemSelection(_model->index(_selectionStart.row(), _selectionStart.column()), _selectionEnd), QItemSelectionModel::ClearAndSelect);
 	
 	_selectScrollMs = Utils::currentMillis();
@@ -1340,7 +1340,7 @@ void DataSetView::rowInsertAfter(int row)
 
 void DataSetView::rowsDelete()
 {
-	if(_model->rowCount() <= 1 || (!_selectionStart.isValid() && !_selectionEnd.isValid()))
+	if(_model->rowCount() <= 1 || (!_selectionStart.isValid()))
 		return;
 
 	destroyEditItem();
@@ -1352,6 +1352,9 @@ void DataSetView::rowsDelete()
 		std::swap(rowA, rowB);
 
 	_model->removeRows(rowA, 1 + (rowB - rowA));
+
+	setSelectionStart(QModelIndex());
+	setSelectionEnd(QModelIndex());
 }
 
 void DataSetView::columnsAboutToBeInserted(const QModelIndex & parent, int first, int last)

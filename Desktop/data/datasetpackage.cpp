@@ -2075,7 +2075,7 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 		const std::string & name = getColumnName(c);
 		changed.push_back(name);
 	
-		for(int r=row+count; r>row; r++)
+		for(int r=row+count; r>row; r--)
 			dataSet()->column(c)->rowDelete(r-1);
 	}
 
