@@ -1,152 +1,171 @@
-//
-// Copyright (C) 2013-2018 University of Amsterdam
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 #include "dataset.h"
 #include "log.h"
+#include <regex>
+#include "databaseinterface.h"
 
-using namespace std;
-/* DataSet is implemented as a set of columns */
-
-
-void DataSet::setRowCount(size_t newRowCount)
+DataSet::DataSet(int index)
+	: DataSetBaseNode(dataSetBaseNodeType::dataSet, nullptr)
 {
-	if(newRowCount != minRowCount() || newRowCount != maxRowCount())
-	{
-		_columns.setRowCount(newRowCount);
-
-		_filteredRowCount = newRowCount;
-		_filterVector.clear();
-		for(size_t i=0; i<newRowCount; i++)
-			_filterVector.push_back(true);
-	}
+	_dataNode		= new DataSetBaseNode(dataSetBaseNodeType::data,	this);
+	_filtersNode	= new DataSetBaseNode(dataSetBaseNodeType::filters, this);
+	
+	if(index == -1)         dbCreate();
+	else if(index > 0)		dbLoad(index);
 }
 
-void DataSet::setColumnCount(size_t newColumnCount)
+DataSet::~DataSet()
 {
-	if (newColumnCount != columnCount())
-	{
-		_columns.setColumnCount(newColumnCount);
-		_columns.setRowCount(maxRowCount());
-	}
+	JASPTIMER_SCOPE(DataSet::~DataSet);
+	//delete columns before dataNode as they depend on it via DataSetBaseNode inheritance
+	for(Column * col : _columns)
+		delete col;
+
+	_columns.clear();
+
+	delete _dataNode;
+	_dataNode = nullptr;
+	
+	delete _filter;
+	_filter = nullptr;
 }
 
-void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
+void DataSet::dbDelete()
 {
-	_mem = mem;
-	_columns.setSharedMemory(mem);
+	JASPTIMER_SCOPE(DataSet::dbDelete);
 
-	_filterVector = BoolVector(mem->get_segment_manager());
-	for(size_t i=0; i<maxRowCount(); i++)
-		_filterVector.push_back(true);
+	assert(_dataSetID != -1);
+
+	db().transactionWriteBegin();
+
+	if(_filter && _filter->id() != -1)
+		_filter->dbDelete();
+	_filter = nullptr;
+
+	for(Column * col : _columns)
+		col->dbDelete(false);
+
+	db().dataSetDelete(_dataSetID);
+
+	_dataSetID = -1;
+
+	db().transactionWriteEnd();
 }
 
-
-string DataSet::toString()
+void DataSet::beginBatchedToDB()
 {
-	stringstream ss;
-	ss << "Column count: " << columnCount() << "\nRow count:    " << minRowCount() << " -> " << maxRowCount() << std::endl;
-
-	for (auto & col : _columns)
-	{
-		ss << "Column name: " << col.name() << "  " << col.labels().size() << "Labels" << std::endl;
-
-		for (auto & label : col.labels())
-			ss << "    "  << ", Label Text: " << label.text() << " Label Value : " << label.value() << std::endl;
-
-		ss << "  Ints" << std::endl;
-		for (int key : col.AsInts)
-			ss << "    " << key << ": " << col._getLabelFromKey(key) << std::endl;
-
-	}
-
-	return ss.str();
+	assert(!_writeBatchedToDB);
+	_writeBatchedToDB = true;
 }
 
-std::map<string, std::map<int, string> > DataSet::resetEmptyValues(const std::map<std::string, std::map<int, std::string> >& emptyValuesPerColumnMap)
+void DataSet::endBatchedToDB(std::function<void(float)> progressCallback)
 {
-	std::map<string, std::map<int, string> > colChanged;
+	assert(_writeBatchedToDB);
+	_writeBatchedToDB = false;
 
-	for (Column& col : _columns)
-	{
-		std::map<int, string> emptyValuesMap;
-
-		if (emptyValuesPerColumnMap.count(col.name()))
-			emptyValuesMap = emptyValuesPerColumnMap.at(col.name());
-
-		if (col.resetEmptyValues(emptyValuesMap))
-			colChanged[col.name()] = emptyValuesMap;
-	}
-
-	return colChanged;
+	db().dataSetBatchedValuesUpdate(this, progressCallback);
+	incRevision(); //Should trigger reload at engine end
 }
 
-bool DataSet::setFilterVector(std::vector<bool> filterResult)
+int DataSet::getColumnIndex(const std::string & name) const 
 {
-	bool changed = false;
-
-
-	for(size_t i=0; i<filterResult.size(); i++)
-	{
-		if(_filterVector[i] != filterResult[i])
-			changed = true;
-
-		_filterVector[i] = filterResult[i];
-	}
-
-	_filteredRowCount = 0;
-
-	for(bool row : _filterVector)
-		if(row)
-			_filteredRowCount++;
-
-	return changed;
+	for(size_t i=0; i<_columns.size(); i++)
+		if(_columns[i]->name() == name)
+			return i;
+	return -1;
 }
 
-bool DataSet::allColumnsPassFilter() const
+int DataSet::columnIndex(const Column * col) const
 {
-	for(const Column & col : _columns)
-		if(!col.allLabelsPassFilter())
-			return false;
-	return true;
+	for(size_t i=0; i<_columns.size(); i++)
+		if(_columns[i] == col)
+			return i;
+	return -1;
 }
 
-size_t DataSet::rowCount()	const
+Column *DataSet::column(const std::string &name)
 {
-	size_t	min = minRowCount(),
-			max = maxRowCount();
+	for(Column * column : _columns)
+		if(column->name() == name)
+			return column;
 
-	if(min != max)
-		Log::log() << "DataSet::rowCount() found inconsistent rowCounts min=" << min << " max=" << max << std::endl;
+	return nullptr;
+}
 
-	return min;
+Column *DataSet::column(size_t index)
+{
+	if(index >= _columns.size())
+		return nullptr;
+
+	return _columns[index];
+}
+
+void DataSet::removeColumn(size_t index)
+{
+	assert(_dataSetID > 0);
+
+	Column * removeMe = _columns[index];
+	_columns.erase(_columns.begin() + index);
+
+	removeMe->dbDelete();
+	delete removeMe;
+
+	incRevision();
+}
+
+void DataSet::removeColumn(const std::string & name)
+{
+	assert(_dataSetID > 0);
+
+	for(auto col = _columns.begin() ; col != _columns.end(); col++)
+		if((*col)->name() == name)
+		{
+			(*col)->dbDelete();
+			_columns.erase(col);
+
+			incRevision();
+
+			return;
+		}
+}
+
+void DataSet::insertColumn(size_t index)
+{
+
+	assert(_dataSetID > 0);
+
+	Column * newColumn = new Column(this, db().columnInsert(_dataSetID, index));
+
+	_columns.insert(_columns.begin()+index, newColumn);
+
+	newColumn->setRowCount(_rowCount);
+
+	incRevision();
+}
+
+Column * DataSet::newColumn(const std::string &name)
+{
+	assert(_dataSetID > 0);
+	Column * col = new Column(this, db().columnInsert(_dataSetID, -1, name));
+	_columns.push_back(col);
+
+	incRevision();
+
+	return col;
 }
 
 size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
-	if(columnIndex >= columnCount()) return 0;
+	if(columnIndex >= columnCount())
+		return 0;
 
-	const Column & col = column(columnIndex);
+	const Column * col = _columns[columnIndex];
 
-	int extraPad = 2;
+	int extraPad = 4;
 
-	switch(col.getColumnType())
+	switch(col->type())
 	{
 	case columnType::scale:
-		return 9 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
+		return 11 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
 
 	case columnType::unknown:
 		return 0;
@@ -155,11 +174,274 @@ size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 	{
 		int tempVal = 0;
 
-		for(int labelIndex=0; labelIndex < static_cast<int>(col.labels().size()); labelIndex++)
-			tempVal = std::max(tempVal, static_cast<int>(col.labels().getLabelFromRow(labelIndex).length()));
+		for(Label * label : col->labels())
+			tempVal = std::max(tempVal, static_cast<int>(label->label(true).length()));
 
 		return tempVal + extraPad;
 	}
 	}
 
+}
+
+stringvec DataSet::getColumnNames()
+{
+	stringvec names;
+
+	for(Column * col : _columns)
+		names.push_back(col->name());
+
+	return names;
+}
+
+void DataSet::dbCreate()
+{
+	JASPTIMER_SCOPE(DataSet::dbCreate);
+
+	assert(!_filter && _dataSetID == -1);
+
+	db().transactionWriteBegin();
+
+	//The variables are probably empty though:
+	_dataSetID	= db().dataSetInsert(_dataFilePath, _databaseJson, _emptyValues.toJson().toStyledString());	
+	_filter = new Filter(this);
+	_filter->dbCreate();
+	_columns.clear();
+
+	db().transactionWriteEnd();
+
+	_rowCount		= 0;
+}
+
+void DataSet::dbUpdate()
+{
+	assert(_dataSetID > 0);
+	db().dataSetUpdate(_dataSetID, _dataFilePath, _databaseJson, _emptyValues.toJson().toStyledString());
+	incRevision();
+}
+
+void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
+{
+	//Log::log() << "loadDataSet(index=" << index << "), _dataSetID="<< _dataSetID <<";" << std::endl;
+
+	JASPTIMER_SCOPE(DataSet::dbLoad);
+
+	assert(_dataSetID == -1 || _dataSetID == index || (_dataSetID != -1 && index == -1));
+
+	if(index != -1 && !db().dataSetExists(index))
+	{
+		Log::log() << "No DataSet with id " << index << "!" << std::endl;
+		return;
+	}
+	
+	if(index != -1)
+		_dataSetID	= index;
+
+	assert(_dataSetID > 0);
+
+	std::string emptyVals;
+
+	db().dataSetLoad(_dataSetID, _dataFilePath, _databaseJson, emptyVals, _revision);
+	progressCallback(0.1);
+
+	if(!_filter)
+		_filter = new Filter(this);
+	_filter->dbLoad();
+	progressCallback(0.2);
+
+	int colCount = db().dataSetColCount(_dataSetID);
+	_rowCount		= db().dataSetRowCount(_dataSetID);
+	//Log::log() << "colCount: " << colCount << ", " << "rowCount: " << rowCount() << std::endl;
+
+	float colProgressMult = 1.0 / colCount;
+			
+	for(size_t i=0; i<colCount; i++)
+	{
+		if(_columns.size() == i)
+			_columns.push_back(new Column(this));
+
+		_columns[i]->dbLoadIndex(i, false);
+
+		progressCallback(0.2 + (i * colProgressMult * 0.3)); //should end at 0.5
+	}
+
+	for(size_t i=colCount; i<_columns.size(); i++)
+		delete _columns[i];
+
+	_columns.resize(colCount);
+
+	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.5 + p * 0.5); });
+
+	Json::Value emptyValsJson;
+	std::stringstream(emptyVals) >> emptyValsJson;
+	_emptyValues.fromJson(emptyValsJson);
+}
+
+int DataSet::columnCount() const
+{
+	return _columns.size();
+}
+
+int DataSet::rowCount() const
+{
+	return _rowCount;
+}
+
+void DataSet::setColumnCount(size_t colCount)
+{
+	db().transactionWriteBegin();
+
+	int curCount = columns().size();
+
+	if(colCount > curCount)
+		for(size_t i=curCount; i<colCount; i++)
+			insertColumn(i);
+
+	else if(colCount < curCount)
+		for(size_t i=curCount-1; i>=colCount; i--)
+			removeColumn(i);
+	
+	incRevision();
+
+	db().transactionWriteEnd();
+}
+
+void DataSet::setRowCount(size_t rowCount)
+{
+	_rowCount = rowCount; //Make sure we do set the rowCount variable here so the batch can easily see how big it ought to be in DatabaseInterface::dataSetBatchedValuesUpdate
+
+	if(!writeBatchedToDB())
+	{
+		db().dataSetSetRowCount(_dataSetID, rowCount);
+		dbLoad(); //Make sure columns have the right data in them
+	}
+
+	_filter->reset();
+}
+
+void DataSet::incRevision()
+{
+	assert(_dataSetID != -1);
+
+	if(!writeBatchedToDB())
+	{
+		_revision = db().dataSetIncRevision(_dataSetID);
+		checkForChanges();
+	}
+}
+
+bool DataSet::checkForUpdates()
+{
+	JASPTIMER_SCOPE(DataSet::checkForUpdates);
+
+	if(_dataSetID == -1)
+		return false;
+
+	if(_revision != db().dataSetGetRevision(_dataSetID))
+	{
+		dbLoad();
+		return true;
+	}
+	else
+	{
+		bool somethingChanged = _filter->checkForUpdates();
+
+		for(Column * col : _columns)
+			somethingChanged = col->checkForUpdates() || somethingChanged;
+
+		return somethingChanged;
+	}
+}
+
+const Columns & DataSet::computedColumns() const
+{
+	static Columns computedColumns;
+
+	computedColumns.clear();
+
+	for(Column * column : _columns)
+		if(column->isComputed())
+			computedColumns.push_back(column);
+
+	return computedColumns;
+}
+
+void DataSet::loadOldComputedColumnsJson(const Json::Value &json)
+{
+	for(const Json::Value & colJson : json)
+	{
+		const std::string name = colJson["name"].asString();
+
+		Column * col = column(name);
+
+		if(!col && !name.empty())
+			col = newColumn(name);
+
+		if(!col)
+			continue;
+
+		col->loadComputedColumnJsonBackwardsCompatibly(colJson);
+	}
+
+	for(Column * col : computedColumns())
+		col->findDependencies();
+}
+
+std::map<std::string, intstrmap> DataSet::resetEmptyValues()
+{
+	std::map<std::string, intstrmap> colChanged;
+
+	for (Column * col : _columns)
+	{
+		intstrmap emptyValuesMap;
+
+		if (_emptyValues._map.count(col->name()))
+			emptyValuesMap = _emptyValues._map.at(col->name());
+
+		if (col->resetEmptyValues(emptyValuesMap))
+			colChanged[col->name()] = emptyValuesMap;
+	}
+
+	incRevision();
+
+	return colChanged;
+}
+
+DatabaseInterface &DataSet::db()	
+{ 
+	return *DatabaseInterface::singleton(); 
+}
+
+const DatabaseInterface &DataSet::db() const
+{ 
+	return *DatabaseInterface::singleton(); 
+}
+
+stringset DataSet::findUsedColumnNames(std::string searchThis)
+{
+	//sort of based on rbridge_encodeColumnNamesToBase64
+	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
+	std::set<std::string> columnsFound;
+	size_t foundPos = -1;
+
+	for(Column * column : _columns)
+	{
+		const std::string & col = column->name();
+		
+		while((foundPos = searchThis.find(col, foundPos + 1)) != std::string::npos)
+		{
+			size_t foundPosEnd = foundPos + col.length();
+			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
+			bool startIsFree	= foundPos == 0							|| std::regex_match(searchThis.substr(foundPos - 1, 1),	nonNameChar);
+			bool endIsFree		= foundPosEnd == searchThis.length()	|| (std::regex_match(searchThis.substr(foundPosEnd, 1),	nonNameChar) && searchThis[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
+
+			if(startIsFree && endIsFree)
+			{
+				columnsFound.insert(col);
+				searchThis.replace(foundPos, col.length(), ""); // remove the found entry
+			}
+
+		}
+	}
+
+	return columnsFound;
 }

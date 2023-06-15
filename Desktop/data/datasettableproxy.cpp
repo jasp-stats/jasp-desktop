@@ -4,5 +4,5 @@ DataSetTableProxy::DataSetTableProxy(DataSetPackageSubNodeModel * subNodeModel) 
 {
 	setSourceModel(subNodeModel);
 
-	connect(subNodeModel,			&DataSetPackageSubNodeModel::proxyParentColumnChanged,	this,			&DataSetTableProxy::proxyParentColumnChanged		);
+	connect(subNodeModel,			&DataSetPackageSubNodeModel::nodeChanged,	this,			&DataSetTableProxy::nodeChanged		);
 }

@@ -191,7 +191,7 @@ void ComboBoxBase::setCurrentValue(QString value)
 	if (initialized())
 		_setCurrentProperties(_model->getIndexOfValue(value));
 	else
-		_currentValue = value;
+		_currentValue = value;	
 }
 void ComboBoxBase::setCurrentIndex(int index)
 {
@@ -205,30 +205,32 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 {
 	QString currentColumnType, currentValue, currentText, currentColumnTypeIcon;
 
-	if (index >= _model->rowCount())	index = 0;
+	if (index >= _model->rowCount())	
+		index = 0;
 
 	if (index >= 0)
 	{
 		QModelIndex modelIndex(_model->index(index, 0));
-		currentColumnType = _model->data(modelIndex, ListModel::ColumnTypeRole).toString();
-		currentColumnTypeIcon = _model->data(modelIndex, ListModel::ColumnTypeIconRole).toString();
-		currentText = _model->data(modelIndex, ListModel::NameRole).toString();
-		currentValue = _model->data(modelIndex, ListModel::ValueRole).toString();
+		
+		currentColumnType		= _model->data(modelIndex, ListModel::ColumnTypeRole	).toString();
+		currentColumnTypeIcon	= _model->data(modelIndex, ListModel::ColumnTypeIconRole).toString();
+		currentText				= _model->data(modelIndex, ListModel::NameRole			).toString();
+		currentValue			= _model->data(modelIndex, ListModel::ValueRole			).toString();
 	}
 
 	// emit signals when all values are set, so that when 1 of the signals is caught,
 	// all values are coherent
-	bool emitCurrentTextSignal				= (_currentText != currentText);
-	bool emitCurrentValueSignal				= (_currentValue != currentValue);
-	bool emitCurrentColumnTypeSignal		= (_currentColumnType != currentColumnType);
-	bool emitCurrentColumnTypeIconSignal	= (_currentColumnTypeIcon != currentColumnTypeIcon);
-	bool emitCurrentIndexSignal				= (_currentIndex != index);
+	bool	emitCurrentTextSignal				= _currentText				!= currentText,
+			emitCurrentValueSignal				= _currentValue				!= currentValue,
+			emitCurrentIndexSignal				= _currentIndex				!= index,
+			emitCurrentColumnTypeSignal			= _currentColumnType		!= currentColumnType,
+			emitCurrentColumnTypeIconSignal		= _currentColumnTypeIcon	!= currentColumnTypeIcon;
 
-	_currentText							= currentText;
-	_currentValue							= currentValue;
-	_currentColumnType						= currentColumnType;
-	_currentColumnTypeIcon					= currentColumnTypeIcon;
-	_currentIndex							= index;
+			_currentText						= currentText;
+			_currentValue						= currentValue;
+			_currentColumnType					= currentColumnType;
+			_currentColumnTypeIcon				= currentColumnTypeIcon;
+			_currentIndex						= index;
 
 	if (emitCurrentTextSignal)				emit currentTextChanged();
 	if (emitCurrentValueSignal)				emit currentValueChanged();
@@ -236,7 +238,11 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
 	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
-	if (bindValue && initialized())	setBoundValue(fq(_currentValue));
+	if (bindValue && initialized())	
+		setBoundValue(fq(_currentValue));
+	
+	if(emitCurrentValueSignal && containsVariables())
+		emit usedVariablesChanged();
 }
 
 
