@@ -130,7 +130,7 @@ FocusScope
 					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:					jaspTheme.font
 					verticalAlignment:		Text.AlignVCenter
-					onTextEdited:			dataTableView.view.editFinishedKeepEditing(index, text);
+					onEditingFinished:		dataTableView.view.commitEdit(index, text);
 					z:						10
 					readOnly:				!itemEditable
 
@@ -194,8 +194,13 @@ FocusScope
 
 						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI - 1,	colI);		} break;
 						case Qt.Key_Down:	if(rowI	< dataTableView.model.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI + 1,	colI);		} break;
-						case Qt.Key_Left:	if(colI	> 0)										{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI,		colI - 1);	} break;
-						case Qt.Key_Right:	if(colI	< dataTableView.model.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI,		colI + 1);	} break;
+						case Qt.Key_Left:	if(colI	> 0 && editItem.cursorPosition <= 0)		{ arrowPressed = true; arrowIndex   = dataTableView.model.index(rowI,		colI - 1);	} break;
+						case Qt.Key_Right:	if(colI	< dataTableView.model.columnCount() - 1 && editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = dataTableView.model.index(rowI, colI + 1);} break;
+
+						case Qt.Key_Backtab: if(colI > 0)									{ arrowPressed = true; arrowIndex = dataTableView.model.index(rowI, colI - 1);	shiftPressed = false; } break;
+						case Qt.Key_Tab:	 if(colI < dataTableView.model.columnCount())	{ arrowPressed = true; arrowIndex = dataTableView.model.index(rowI, colI + 1);	} break;
+
+
 						}
 
 						if(arrowPressed)
