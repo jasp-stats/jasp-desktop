@@ -561,9 +561,13 @@ var wrapHTML = function (html, exportParams, doctype = false) {
 	completehtml += "	</head>\n"
 
 	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
-
 	completehtml += "	<body " + styles + ">\n";
-	completehtml += html;
+	
+	const htmlObj = $.parseHTML(html);
+		$(htmlObj).find('mjx-assistive-mml math').remove();
+	const result = $(htmlObj).prop('outerHTML');
+	completehtml += result
+
 	completehtml += "	</body>\n"
 	completehtml += "</html>";
 	return completehtml;
