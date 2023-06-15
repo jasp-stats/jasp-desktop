@@ -1499,6 +1499,14 @@ void DataSetView::contextMenuClickedAtIndex(QModelIndex index)
 		_selectionModel->select(index, QItemSelectionModel::SelectCurrent);
 }
 
+void DataSetView::finishCurrentEdit()
+{
+	if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item)
+		commitEdit(_model->index(_prevEditRow, _prevEditCol), _editItemContextual->item->property("text"));
+
+
+}
+
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel)
 {
     JASPTIMER_SCOPE(DataSetView::setStyleDataItem);
