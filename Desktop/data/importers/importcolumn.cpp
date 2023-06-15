@@ -11,6 +11,7 @@ ImportColumn::ImportColumn(ImportDataSet* importDataSet, std::string name)
 
 ImportColumn::~ImportColumn()
 {
+	JASPTIMER_SCOPE(ImportColumn::~ImportColumn());
 }
 
 

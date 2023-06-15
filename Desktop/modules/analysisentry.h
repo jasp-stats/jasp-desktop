@@ -39,9 +39,10 @@ class AnalysisEntry
 {
 	friend EntryBase;
 public:
-	AnalysisEntry(std::function<void()> specialFunc, std::string menuTitle, bool requiresData=true, std::string icon = "");
-	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
-	AnalysisEntry();
+	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
+	AnalysisEntry(std::string menuTitle, std::string icon = "");															///< AnalysisEntry grouptitle
+	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
+	AnalysisEntry();																										///< AnalysisEntry separator
 
 	std::string		menu()					const { return _menu;									}
 	std::string		title()					const { return _title;									}

@@ -110,6 +110,14 @@ signals:
 				void stopExternalEdit();
 				void resizeData();
 				void finishCurrentEdit();
+				void dataInsertComputedColumnBefore(int, bool);
+				void dataInsertComputedColumnAfter(int,  bool);
+				void dataInsertColumnBefore(int,bool,bool);
+				void dataInsertColumnAfter(int,bool,bool);
+				void dataInsertRowBefore(int);
+				void dataInsertRowAfter(int);
+				void dataRemoveColumn(int);
+				void dataRemoveRow(int);
 
 
 public slots:
@@ -132,8 +140,16 @@ private: // fields
 	std::map<std::string, RibbonButton*>	_buttonModelsByName;
 	std::vector<stringvec>					_buttonNames; //Can be multiple rows, originally [ { Analyses }, { Data Mode } ]
 	int										_highlightedModuleIndex = -1;
-	std::vector<std::string>				_commonModulesToLoad;
+	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
+	Modules::AnalysisEntries			*	_entriesInsert		= nullptr,
+										*	_entriesDelete		= nullptr;
+	RibbonButton						*	_analysesButton		= nullptr,
+										*	_dataSwitchButton	= nullptr,
+										*	_dataNewButton		= nullptr,
+										*	_dataResizeButton	= nullptr,
+										*	_insertButton		= nullptr,
+										*	_removeButton		= nullptr;
 	
 	static RibbonModel * _singleton;
 };

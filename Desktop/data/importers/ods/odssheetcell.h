@@ -24,8 +24,6 @@
 
 #include "odstypes.h"
 
-#include <column.h>
-
 #include <QString>
 
 namespace ods
