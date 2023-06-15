@@ -29,7 +29,7 @@ Item
 			hints.filterText = ""
 	}
 
-	onVisibleChanged: if(visible && JSON.stringify(filterConstructor.returnFilterJSON()) != filterModel.constructedJSON)	initializeFromJSON(filterModel.constructedJSON)
+	onVisibleChanged: if(visible && JSON.stringify(filterConstructor.returnFilterJSON()) != filterModel.constructorJson)	initializeFromJSON(filterModel.constructorJson)
 
 	function checkAndApplyFilter()
 	{
@@ -59,7 +59,7 @@ Item
 			else
 				hints.filterText += qsTr("Filter applied<br>")
 
-			filterModel.constructedJSON = JSON.stringify(filterConstructor.returnFilterJSON())
+			filterModel.constructorJson = JSON.stringify(filterConstructor.returnFilterJSON())
 		}
 
 		if(!allCorrect)
@@ -334,18 +334,18 @@ Item
 	function jsonChanged()
 	{
 		//.replace(/\s/g,'')
-		//console.log("last: ",jsonConverter.lastProperlyConstructedJSON.replace(/\s/g,''))
+		//console.log("last: ",jsonConverter.lastProperlyconstructorJson.replace(/\s/g,''))
 		//console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
 
-		return jsonConverter.lastProperlyConstructedJSON !== JSON.stringify(returnFilterJSON())
+		return jsonConverter.lastProperlyconstructorJson !== JSON.stringify(returnFilterJSON())
 	}
 
 	JSONtoFormulas
 	{
 		id: jsonConverter
 		objectName: "jsonConverter"
-		property string jaspsFilterConstructorJSON:  filterModel.constructedJSON
-		property string lastProperlyConstructedJSON: "{\"formulas\":[]}"
+		property string jaspsFilterConstructorJSON:  filterModel.constructorJson
+		property string lastProperlyconstructorJson: "{\"formulas\":[]}"
 
 		onJaspsFilterConstructorJSONChanged:
 		{
@@ -355,8 +355,8 @@ Item
 				filterConstructor.checkAndApplyFilter()
 			}
 
-			parent.rememberCurrentConstructedJSON()
-			filterModel.constructedR = scriptColumn.convertToR()
+			parent.rememberCurrentconstructorJson()
+			filterModel.constructorR = scriptColumn.convertToR()
 
 		}
 
@@ -367,17 +367,17 @@ Item
 
 	function initializeFromJSON()
 	{
-		if(filterModel.constructedJSON !== JSON.stringify(returnFilterJSON()))
+		if(filterModel.constructorJson !== JSON.stringify(returnFilterJSON()))
 		{
 			trashCan.destroyAll(false);
 
-			if(filterModel.constructedJSON !== "")
-				jsonConverter.convertJSONtoFormulas(JSON.parse(filterModel.constructedJSON))
+			if(filterModel.constructorJson !== "")
+				jsonConverter.convertJSONtoFormulas(filterModel.constructorJson)
 		}
 	}
 
-	function rememberCurrentConstructedJSON()
+	function rememberCurrentconstructorJson()
 	{
-		jsonConverter.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
+		jsonConverter.lastProperlyconstructorJson = JSON.stringify(returnFilterJSON())
 	}
 }

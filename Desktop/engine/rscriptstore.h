@@ -2,7 +2,6 @@
 #define RSCRIPTSTORE_H
 
 #include "enginedefinitions.h"
-#include "column.h"
 #include <QString>
 
 

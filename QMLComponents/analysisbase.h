@@ -45,7 +45,8 @@ public:
 
 	const Json::Value&	boundValues()										const	{ return _boundValues;		}
 	const Json::Value&	orgBoundValues()									const	{ return _orgBoundValues;	}
-	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	const Json::Value&	boundValue(const std::string& name, 
+								   const QVector<JASPControl::ParentKey>& parentKeys = {});
 
 	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 	void				setBoundValues(const Json::Value& boundValues);
@@ -63,10 +64,12 @@ public:
 
 
 public slots:
-	virtual void	boundValueChangedHandler()														{}
-	virtual void	requestColumnCreationHandler(const std::string&columnName, columnType colType)	{}
-	virtual void	requestComputedColumnCreationHandler(const std::string& columnName)				{}
-	virtual void	requestComputedColumnDestructionHandler(const std::string& columnName)			{}
+	virtual void	boundValueChangedHandler()																	{}
+	virtual void	requestColumnCreationHandler(			const std::string & columnName, columnType colType)	{}
+	virtual void	requestComputedColumnCreationHandler(	const std::string & columnName)						{}
+	virtual void	requestComputedColumnDestructionHandler(const std::string & columnName)						{}
+	virtual void	onUsedVariablesChanged()																	{}
+	
 
 signals:
 	void			sendRScriptSignal(QString script, QString controlName, bool whiteListedVersion, QString module);
