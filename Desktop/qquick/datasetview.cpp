@@ -939,7 +939,7 @@ void DataSetView::destroyEditItem(bool createItem)
 		size_t col=_prevEditCol, row=_prevEditRow;
 
 		//A delay might help the focus problem? No it doesnt...
-		QTimer::singleShot(10, _cellTextItems[col][row]->item, [col, row, this](){ _cellTextItems[col][row]->item->forceActiveFocus(); });
+		QTimer::singleShot(10, _cellTextItems[col][row]->item, [col, row, this](){ if (_cellTextItems.contains(col) && _cellTextItems[col].contains(row) && _cellTextItems[col][row]->item) _cellTextItems[col][row]->item->forceActiveFocus(); });
 
 		//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
 	}
