@@ -219,6 +219,7 @@ public slots:
 	void		commitEdit(QModelIndex here, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);
 	void		contextMenuClickedAtIndex(QModelIndex index);
+	void		finishCurrentEdit();
 
 	
 protected:
