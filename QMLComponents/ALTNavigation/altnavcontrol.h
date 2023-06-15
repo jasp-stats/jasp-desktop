@@ -77,7 +77,7 @@ public:
 	/*!
 	 * \brief returns the ALTNavControl singleton
 	 */
-	static ALTNavControl* getInstance();
+	static ALTNavControl* ctrl();
 	ALTNavControl(ALTNavControl& other) = delete;
 	void operator=(const ALTNavControl&) = delete;
 

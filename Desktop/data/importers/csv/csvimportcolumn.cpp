@@ -1,11 +1,19 @@
 #include "csvimportcolumn.h"
+#include "timers.h"
 
 CSVImportColumn::CSVImportColumn(ImportDataSet* importDataSet, std::string name) : ImportColumn(importDataSet, name)
 {
 }
 
+CSVImportColumn::CSVImportColumn(ImportDataSet *importDataSet, std::string name, long reserve) : ImportColumn(importDataSet, name)
+{
+	_data.reserve(reserve);
+}
+
 CSVImportColumn::~CSVImportColumn()
 {
+	JASPTIMER_SCOPE(CSVImportColumn::~CSVImportColumn());
+	_data.clear();
 }
 
 size_t CSVImportColumn::size() const

@@ -30,6 +30,7 @@ public:
 	ImportColumns::reverse_iterator	rbegin();
 	ImportColumns::reverse_iterator	rend();
 
+	void clearColumns() { _columns.clear(); }
 	void clear();
 	void erase(ImportColumns::iterator it);
 	void buildDictionary();

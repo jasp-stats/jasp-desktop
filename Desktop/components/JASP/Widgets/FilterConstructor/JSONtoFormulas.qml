@@ -1,17 +1,21 @@
 import QtQuick 2.0
 
 Item {
-	function convertJSONtoFormulas(jsonObj)
+	function convertJSONtoFormulas(jsonString)
 	{
-		if(jsonObj === null || jsonObj === undefined) return
+		var jsonObj = JSON.parse(jsonString);
 
+		if(jsonObj === null || jsonObj === undefined || jsonObj.formulas === undefined || jsonObj.formulas === null)
+			return
+		
 		for(var i=0; i<jsonObj.formulas.length; i++)
 			convertJSONtoItem(jsonObj.formulas[i], scriptColumn)
 	}
 
 	function convertJSONtoItem(jsonObj, dropItHere)
 	{
-		if(jsonObj === null || jsonObj === undefined) return
+		if(jsonObj === null || jsonObj === undefined)
+			return
 
 		var toolTip = jsonObj.toolTipText
 
