@@ -1437,7 +1437,8 @@ void DataSetView::edit(QModelIndex here)
 
 	if(editing())
 	{
-		commitEdit(_model->index(_prevEditRow, _prevEditCol), _editItemContextual->item->property("text"));
+		if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item)
+			commitEdit(_model->index(_prevEditRow, _prevEditCol), _editItemContextual->item->property("text"));
 		destroyEditItem();
 	}
 
