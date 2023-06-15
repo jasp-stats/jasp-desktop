@@ -11,10 +11,16 @@ FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
 }
 
+QString FilterModel::rFilter()			const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->rFilter());					}
+QString FilterModel::constructorR()		const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorR());				}
+QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->errorMsg());					}
+QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->generatedFilter());			}
+QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson());			}
+
 void FilterModel::reset()
 {
 	_setGeneratedFilter(DEFAULT_FILTER_GEN	);
-	setConstructedJSON(	DEFAULT_FILTER_JSON	);
+	setConstructorJson(	DEFAULT_FILTER_JSON	);
 	_setRFilter(		DEFAULT_FILTER		);
 
 	if(DataSetPackage::pkg()->rowCount() > 0)
@@ -23,9 +29,9 @@ void FilterModel::reset()
 
 void FilterModel::dataSetPackageResetDone()
 {
-	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())			);
-	setConstructedJSON(	tq(DataSetPackage::pkg()->filterConstructorJson())	);
-	_setRFilter(		tq(DataSetPackage::pkg()->dataFilter())				);
+	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())		);
+	setConstructorJson(	!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson())	);
+	_setRFilter(		!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->rFilter())			);
 }
 
 void FilterModel::modelInit()
@@ -44,11 +50,12 @@ void FilterModel::setRFilter(QString newRFilter)
 
 bool FilterModel::_setRFilter(const QString& newRFilter)
 {
-	if(newRFilter != _rFilter)
+	if(newRFilter != rFilter())
 	{
 		bool oldHasFilter = hasFilter();
 
-		_rFilter = newRFilter;
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->setRFilter(fq(newRFilter));
 
 		if(oldHasFilter != hasFilter())
 			emit hasFilterChanged();
@@ -61,39 +68,49 @@ bool FilterModel::_setRFilter(const QString& newRFilter)
 	return false;
 }
 
-void FilterModel::setConstructedJSON(QString newConstructedJSON)
+void FilterModel::setFilterErrorMsg(	QString newFilterErrorMsg)
 {
-	if(newConstructedJSON != _constructedJSON)
+	if(newFilterErrorMsg != filterErrorMsg())
+	{
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->setErrorMsg(fq(newFilterErrorMsg));
+		
+		emit filterErrorMsgChanged();
+	}
+}
+
+void FilterModel::setConstructorJson(QString newconstructorJson)
+{
+	if(newconstructorJson != constructorJson())
 	{
 		bool oldHasFilter = hasFilter();
 
-		_constructedJSON = newConstructedJSON;
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->setConstructorJson(fq(newconstructorJson));
 
 		if(oldHasFilter != hasFilter())
 			emit hasFilterChanged();
 
-		std::set<std::string> columnsUsedInConstructedFilter = JsonUtilities::convertDragNDropFilterJSONToSet(_constructedJSON.toStdString());
+		std::set<std::string> columnsUsedInConstructedFilter = JsonUtilities::convertDragNDropFilterJSONToSet(constructorJson().toStdString());
 
 		if(columnsUsedInConstructedFilter != _columnsUsedInConstructedFilter)
 			emit updateColumnsUsedInConstructedFilter(columnsUsedInConstructedFilter);
 
 		_columnsUsedInConstructedFilter = columnsUsedInConstructedFilter;
 
-		emit constructedJSONChanged();
+		emit constructorJsonChanged();
 	}
-
-	if(DataSetPackage::pkg() != nullptr)
-		DataSetPackage::pkg()->setFilterConstructorJson(newConstructedJSON.toStdString());
 }
 
-void FilterModel::setConstructedR(QString newConstructedR)
+void FilterModel::setConstructorR(QString newConstructorR)
 {
-	if(newConstructedR != _constructedR)
+	if(newConstructorR != constructorR())
 	{
-		_constructedR = newConstructedR;
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->setConstructorR(fq(newConstructorR));
 
-		emit constructedRChanged();
-		emit updateGeneratedFilterWithR(_constructedR);
+		emit constructorRChanged();
+		emit updateGeneratedFilterWithR(newConstructorR);
 	}
 }
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
@@ -104,9 +121,11 @@ void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 
 bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
 {
-	if (newGeneratedFilter != _generatedFilter)
+	if (newGeneratedFilter != generatedFilter())
 	{
-		_generatedFilter = newGeneratedFilter;
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->setGeneratedFilter(fq(newGeneratedFilter));
+
 		emit generatedFilterChanged();
 		return true;
 	}
@@ -115,20 +134,23 @@ bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
 }
 
 
-void FilterModel::processFilterResult(std::vector<bool> filterResult, int requestId)
+void FilterModel::processFilterResult(int requestId)
 {
-	if((requestId > -1 && requestId < _lastSentRequestId))
+	if((requestId < _lastSentRequestId))
 		return;
 
-	//store the filter that was last used and actually gave results and those results:
-	if(DataSetPackage::pkg()->setFilterData(_rFilter.toStdString(), filterResult))
+	if(!DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter())
+		return;
+
+	//Load new filter values from database
+	if(DataSetPackage::pkg()->dataSet()->filter()->dbLoadResultAndError())
 	{
+		emit filterErrorMsgChanged();
 		refreshAllAnalyses();
 		emit filterUpdated();
 		updateStatusBar();
 	}
 }
-
 
 void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 {
@@ -139,7 +161,7 @@ void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 void FilterModel::sendGeneratedAndRFilter()
 {
 	setFilterErrorMsg("");
-	_lastSentRequestId = emit sendFilter(_generatedFilter, _rFilter);
+	_lastSentRequestId = emit sendFilter(generatedFilter(), rFilter());
 }
 
 void FilterModel::updateStatusBar()
@@ -155,14 +177,15 @@ void FilterModel::updateStatusBar()
 	double	PercentageThrough	= 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
 
 	std::stringstream ss;
-	if(hasFilter())	ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
+	if(hasFilter())
+		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
 
-	setStatusBarText(QString::fromStdString(ss.str()));
+	setStatusBarText(tq(ss.str()));
 }
 
 void FilterModel::rescanRFilterForColumns()
 {
-	_columnsUsedInRFilter = ComputedColumn::findUsedColumnNamesStatic(_rFilter.toStdString());
+	_columnsUsedInRFilter = DataSetPackage::pkg()->dataSet()->findUsedColumnNames(fq(rFilter()));
 }
 
 void FilterModel::computeColumnSucceeded(QString columnName, QString, bool dataChanged)
@@ -203,7 +226,7 @@ void FilterModel::datasetChanged(	QStringList             changedColumns,
 		invalidateMe = true;
 
 		setRFilter(        tq(ColumnEncoder::replaceColumnNamesInRScript(fq(rFilter()),                     stdChangeNameCols)));
-		setConstructedJSON( tq(JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(fq(constructedJSON()), stdChangeNameCols)));
+		setConstructorJson( tq(JsonUtilities::replaceColumnNamesInDragNDropFilterJSONStr(fq(constructorJson()), stdChangeNameCols)));
 	}
 
 	auto missingStd = fq(missingColumns);
@@ -211,13 +234,19 @@ void FilterModel::datasetChanged(	QStringList             changedColumns,
 	{
 		setRFilter(tq(ColumnEncoder::removeColumnNamesFromRScript(fq(rFilter()), missingStd)));
 
-		setConstructedJSON( tq(JsonUtilities::removeColumnsFromDragNDropFilterJSON( fq(constructedJSON()), missingStd)));
+		setConstructorJson( tq(JsonUtilities::removeColumnsFromDragNDropFilterJSONStr( fq(constructorJson()), missingStd)));
 
 		invalidateMe = false; //Actually, if stuff is removed from the filter it won't work will it now?
 
-		processFilterResult(std::vector<bool>(DataSetPackage::pkg()->rowCount(), true), -1); //Just reset the filter result to everything true while the user gets the change to fix there now broken filter
+		//Just reset the filter result to everything true while the user gets the change to fix their now broken filter
+		if(DataSetPackage::filter())
+			DataSetPackage::filter()->reset();
 
-		//The following errormsg is overwritten immediately but that is because constructedJson changed triggers qml which triggers (some vents later) a send event. So yeah...
+		emit refreshAllAnalyses();
+		emit filterUpdated();
+		updateStatusBar();
+
+		//The following errormsg is overwritten immediately but that is because constructorJson changed triggers qml which triggers (some vents later) a send event. So yeah...
 		//Ill leave it here though because it would be nice to show this friendlier msg then "null not found"
 		setFilterErrorMsg("Some columns were removed from the data and your filter(s)!");
 	}

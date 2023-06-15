@@ -28,12 +28,12 @@ CSVImporter::CSVImporter() : Importer()
 	DataSetPackage::pkg()->setIsArchive(false);
 }
 
-ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(int)> progressCallback)
+ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(CSVImporter::loadFile);
 
 	ImportDataSet* result = new ImportDataSet(this);
-	vector<string> colNames;
+	stringvec colNames;
 	CSV csv(locator);
 	csv.open();
 
@@ -42,44 +42,29 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 	importColumns.reserve(colNames.size());
 
 	int colNo = 0;
-	for (vector<string>::iterator it = colNames.begin(); it != colNames.end(); ++it, ++colNo)
+	for (stringvec::iterator it = colNames.begin(); it != colNames.end(); ++it, ++colNo)
 	{
 		string colName = *it;
+        
 		if (colName == "")
-		{
-			stringstream ss;
-			ss << "V";
-			ss << (colNo + 1);
-			colName = ss.str();
-		}
+            colName = "V" + std::to_string(colNo+1);
 		else
 		{
-			// Colname should not be integer
+			// Colname should not be just an integer
 			try
 			{
-				int number = std::stoi(colName);
-				
-				if(std::to_string(number) == colName) //Check if it is a number or has more afterwards (stoi won't fail if it starts with numbers. So it would convert "1hahaha" into "V1hahaha")
+				if(std::to_string(std::stoi(colName)) == colName) //Check if it is a number or has more afterwards (stoi won't fail if it starts with numbers. To avoid it converting "1hahaha" into "V1hahaha")
 					colName = "V" + colName;
-			} catch (...) {
 			}
+            catch (...) {}
 		}
 
-		if (it != colNames.begin())
-		{
-			// col name must be unique
-			if (std::find(colNames.begin(), it, colName) != it)
-			{
-				stringstream ss;
-				ss << colName;
-				ss << "_";
-				ss << (colNo + 1);
-				colName = ss.str();
-			}
-		}
+		if (it != colNames.begin() && std::find(colNames.begin(), it, colName) != it)
+				colName = colName + "_" + std::to_string(colNo + 1);
+
 		*it = colName;
 
-		importColumns.push_back(new CSVImportColumn(result, colName));
+		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows()));
 	}
 
 	unsigned long long progress;
@@ -87,10 +72,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 	size_t columnCount = colNames.size();
 
-//	for (size_t i = 0; i < columnCount; i++)  // columns
-//		cells.push_back(vector<string>());
-
-	vector<string> line;
+	stringvec line;
 	bool success = csv.readLine(line);
 
 	while (success)
@@ -102,13 +84,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 			lastProgress = progress;
 		}
 
-		if (line.size() != 0) {
-			size_t i = 0;
-			for (; i < line.size() && i < columnCount; i++)
-				importColumns.at(i)->addValue(line[i]);
-			for (; i < columnCount; i++)
-				importColumns.at(i)->addValue(string());
-		}
+		if (line.size() != 0) //ignore empty lines
+            for(size_t i = 0; i<columnCount; i++)
+                importColumns.at(i)->addValue(i < line.size() ? line[i] : ""); //add components and add empty vals for missing columns
 
 		line.clear();
 		success = csv.readLine(line);

@@ -6,13 +6,13 @@
 LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
-	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::filteredOutChanged		);
-	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::columnNameChanged		);
-	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::onChosenColumnChanged	);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::filteredOutChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnNameChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::chosenColumnChanged		);
+	connect(this,					&LabelModel::chosenColumnChanged,				this, &LabelModel::onChosenColumnChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAboutToBeRemoved,		this, &LabelModel::columnAboutToBeRemoved	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &LabelModel::columnDataTypeChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &LabelModel::refresh					);
 }
@@ -21,13 +21,13 @@ bool LabelModel::labelNeedsFilter(size_t col)
 {
 	QVariant result = DataSetPackage::pkg()->headerData(col, Qt::Orientation::Horizontal, int(DataSetPackage::specialRoles::labelsHasFilter));
 
-	if(result.type() == QVariant::Bool)	return result.toBool();
-	return false;
+	return result.type() == QVariant::Bool && result.toBool();
 }
 
 std::string LabelModel::columnName(size_t col)
 {
-	if(DataSetPackage::pkg()->columnCount() <= int(col))
+	if(	!	node() 
+		||	DataSetPackage::pkg()->columnCount(DataSetPackage::pkg()->indexForSubNode(node()->parent())) <= int(col))
 		return "";
 
 	return DataSetPackage::pkg()->getColumnName(col);
@@ -35,23 +35,21 @@ std::string LabelModel::columnName(size_t col)
 
 QString LabelModel::columnNameQ()
 {
-	return QString::fromStdString(columnName(proxyParentColumn()));
+	return QString::fromStdString(column() ? column()->name() : "");
 }
 
 
 void LabelModel::setColumnNameQ(QString newColumnName)
 {
-	if(DataSetPackage::pkg()->columnCount() <= int(proxyParentColumn()))
-		return;
-
-	return DataSetPackage::pkg()->setColumnName(proxyParentColumn(), fq(newColumnName));
+	if(column())
+		return DataSetPackage::pkg()->setColumnName(chosenColumn(), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
 }
 
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {
 	DataSetPackage *	pkg = DataSetPackage::pkg();
-	QModelIndex			p	= pkg->parentModelForType(parIdxType::label, col);
-	std::vector<bool>	allows(pkg->rowCount(p));
+	QModelIndex			p	= pkg->indexForSubNode(node());
+	boolvec				allows(pkg->rowCount(p));
 
 	for(int row=0; row<pkg->rowCount(p); row++)
 		allows[row] = pkg->data(pkg->index(row, 0, p), int(DataSetPackage::specialRoles::filter)).toBool();
@@ -62,7 +60,7 @@ std::vector<bool> LabelModel::filterAllows(size_t col)
 std::vector<std::string> LabelModel::labels(size_t col)
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
-	QModelIndex					p	= pkg->parentModelForType(parIdxType::label, col);
+	QModelIndex					p	= pkg->indexForSubNode(node());
 	std::vector<std::string>	labels(pkg->rowCount(p));
 
 	for(int row=0; row<pkg->rowCount(p); row++)
@@ -91,7 +89,7 @@ std::vector<size_t> LabelModel::getSortedSelection() const
 void LabelModel::setValueMaxWidth()
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
-	QModelIndex					p	= pkg->parentModelForType(parIdxType::label, proxyParentColumn());
+	QModelIndex					p	= pkg->indexForSubNode(node());
 
 	double max = JaspTheme::fontMetrics().size(Qt::TextSingleLine, tr("Value")).width();
 
@@ -109,7 +107,7 @@ void LabelModel::setValueMaxWidth()
 void LabelModel::setLabelMaxWidth()
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
-	QModelIndex					p	= pkg->parentModelForType(parIdxType::label, proxyParentColumn());
+	QModelIndex					p	= pkg->indexForSubNode(node());
 
 	double max = JaspTheme::fontMetrics().size(Qt::TextSingleLine, tr("Label")).width();
 
@@ -127,19 +125,19 @@ void LabelModel::setLabelMaxWidth()
 void LabelModel::moveSelectionUp()
 {
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelMoveRows(proxyParentColumn(), getSortedSelection(), true);
+	DataSetPackage::pkg()->labelMoveRows(chosenColumn(), getSortedSelection(), true); //through DataSetPackage to make sure signals get sent
 }
 
 void LabelModel::moveSelectionDown()
 {
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelMoveRows(proxyParentColumn(), getSortedSelection(), false);
+	DataSetPackage::pkg()->labelMoveRows(chosenColumn(), getSortedSelection(), false); //through DataSetPackage to make sure signals get sent
 }
 
 void LabelModel::reverse()
 {
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelReverse(proxyParentColumn());
+	DataSetPackage::pkg()->labelReverse(chosenColumn()); //through DataSetPackage to make sure signals get sent
 }
 
 bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -163,17 +161,18 @@ QVariant LabelModel::data(	const QModelIndex & index, int role) const
 
 void LabelModel::filteredOutChangedHandler(int c)
 {
-	if(c == proxyParentColumn()) emit filteredOutChanged();
+	if(c == chosenColumn())
+		emit filteredOutChanged();
 }
 
 int LabelModel::filteredOut() const
 {
-	return DataSetPackage::pkg()->filteredOut(proxyParentColumn());
+	return DataSetPackage::pkg()->filteredOut(chosenColumn());
 }
 
 void LabelModel::resetFilterAllows()
 {
-	DataSetPackage::pkg()->resetFilterAllows(proxyParentColumn());
+	DataSetPackage::pkg()->resetFilterAllows(chosenColumn());
 }
 
 void LabelModel::setVisible(bool visible)
@@ -192,18 +191,41 @@ int LabelModel::dataColumnCount() const
 	return DataSetPackage::pkg()->dataColumnCount();
 }
 
-void LabelModel::columnAboutToBeRemoved(int column)
+Column * LabelModel::column() const 
 {
-	if(proxyParentColumn() == column)
-		setVisible(false);
+	return static_cast<Column *>(node());
 }
+
+int LabelModel::chosenColumn() const
+{
+	Column * c = column();
+	
+	if(!c)
+		return -1;
+	
+	return c->data()->columnIndex(c);
+}
+
+void LabelModel::setChosenColumn(int chosenColumn)
+{
+	//This only works as long as we have a single dataSet but lets not go overboard with rewriting stuff atm
+	DataSet * data = DataSetPackage::pkg()->dataSet();
+	
+	subNodeModel()->selectNode(data ? data->column(chosenColumn) : nullptr);
+}
+
 
 void LabelModel::columnDataTypeChanged(const QString & colName)
 {
 	int colIndex = DataSetPackage::pkg()->getColumnIndex(colName);
 
-	if(colIndex == proxyParentColumn())
+	if(colIndex == chosenColumn())
+	{
+		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
+			setChosenColumn(-1);
+		
 		invalidate();
+	}
 }
 
 void LabelModel::setRowWidth(double len)
@@ -244,8 +266,14 @@ void LabelModel::onChosenColumnChanged()
 
 void LabelModel::refresh()
 {
+	if(column() && column()->type() == columnType::scale)
+		setChosenColumn(-1);
+	
 	beginResetModel();
 	endResetModel();
+
+	setValueMaxWidth();
+	setLabelMaxWidth();
 }
 
 void LabelModel::removeAllSelected()

@@ -43,23 +43,23 @@ Item
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 
-	focus: true
-	implicitWidth:	showIconAndText ?
-						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
-						buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + ( 2 * buttonPadding)
-	implicitHeight: _scaledDim
-	width:			implicitWidth
-	height:			implicitHeight
+	focus:								true
+	implicitWidth:						showIconAndText ?
+											buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
+											buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + ( 2 * buttonPadding)
+	implicitHeight:						_scaledDim
+	width:								implicitWidth
+	height:								implicitHeight
 
 
-	ToolTip.text:				toolTip
-	ToolTip.timeout:			jaspTheme.toolTipTimeout
-	ToolTip.delay:				jaspTheme.toolTipDelay
-	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
+	ToolTip.text:						toolTip
+	ToolTip.timeout:					jaspTheme.toolTipTimeout
+	ToolTip.delay:						jaspTheme.toolTipDelay
+	ToolTip.visible:					toolTip !== "" && buttonMouseArea.containsMouse
 
-	Keys.onSpacePressed:	clicked();
-	Keys.onEnterPressed:	clicked();
-	Keys.onReturnPressed: (event)=>	clicked();
+	Keys.onSpacePressed:				clicked();
+	Keys.onEnterPressed:				clicked();
+	Keys.onReturnPressed:				(event)=>	clicked();
 
 	signal clicked()
 
@@ -67,8 +67,12 @@ Item
 	{
 		id: rect
 
-		color:			!enabled ? jaspTheme.buttonColorDisabled : _pressed ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
-		border.color:	(filterButtonRoot.hovered || selected) ?	jaspTheme.buttonBorderColorHovered	: jaspTheme.buttonBorderColor
+		color:			!enabled ? jaspTheme.buttonColorDisabled 
+								 : _pressed ? jaspTheme.buttonColorPressed 
+											: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered		
+																											: jaspTheme.buttonColor
+		border.color:	(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered	
+															   : jaspTheme.buttonBorderColor
 		border.width:	1
 		width:			parent.width
 		height:			parent.height

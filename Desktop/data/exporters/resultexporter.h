@@ -29,7 +29,7 @@ class ResultExporter: public Exporter
 {
 public:
 	ResultExporter();
-	void saveDataSet(const std::string &path, boost::function<void (int)> progressCallback) OVERRIDE;
+	void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) OVERRIDE;
 
 private:
 	bool prepareForExport();
