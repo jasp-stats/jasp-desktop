@@ -80,7 +80,6 @@ public:
 		DataSet			*	dataSet() { return _dataSet; }
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset(bool newDataSet = true);
-		void				resizeData(size_t rowCount, size_t columnCount); //Should do reset and such things unlike setDataSetSize
 		void				setDataSetSize(size_t columnCount, size_t rowCount);
 		void				setDataSetColumnCount(size_t columnCount)			{ setDataSetSize(columnCount,			dataRowCount()); }
 		void				setDataSetRowCount(size_t rowCount)					{ setDataSetSize(dataColumnCount(),		rowCount); }

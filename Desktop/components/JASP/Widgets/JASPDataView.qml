@@ -23,6 +23,7 @@ FocusScope
 				property alias extraColumnItem:			theView.extraColumnItem
 				property alias editDelegate:			theView.editDelegate
 				property alias cacheItems:				theView.cacheItems
+				property alias extendDataSet:			theView.extendDataSet
 
 				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 				property alias itemVerticalPadding:		theView.itemVerticalPadding
@@ -123,7 +124,7 @@ FocusScope
 			z:			-10
 			id:			theView
 			model:		null
-			
+
 			/* voor Item
 			x:			-myFlickable.contentX
 			y:			-myFlickable.contentY
@@ -132,12 +133,12 @@ FocusScope
 			viewportW:	 myFlickable.width	//myFlickable.visibleArea.widthRatio  * width
 			viewportH:	 myFlickable.height	//myFlickable.visibleArea.heightRatio * height
 			*/
-			
+
 			viewportX:	myFlickable.contentX
 			viewportY:	myFlickable.contentY
 			viewportW:	Math.min(myFlickable.width,		myFlickable.visibleArea.widthRatio  * width	)
 			viewportH:	Math.min(myFlickable.height,	myFlickable.visibleArea.heightRatio * height)
-			
+
 			onSelectionBudgesUp:	__JASPDataViewRoot.budgeUp()
 			onSelectionBudgesDown:	__JASPDataViewRoot.budgeDown()
 			onSelectionBudgesLeft:	__JASPDataViewRoot.budgeLeft()

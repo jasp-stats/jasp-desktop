@@ -108,7 +108,6 @@ signals:
 				void dataModeChanged(bool dataMode);
 				void startExternalEdit();
 				void stopExternalEdit();
-				void resizeData();
 				void finishCurrentEdit();
 				void dataInsertComputedColumnBefore(int, bool);
 				void dataInsertComputedColumnAfter(int,  bool);
@@ -147,7 +146,6 @@ private: // fields
 	RibbonButton						*	_analysesButton		= nullptr,
 										*	_dataSwitchButton	= nullptr,
 										*	_dataNewButton		= nullptr,
-										*	_dataResizeButton	= nullptr,
 										*	_insertButton		= nullptr,
 										*	_removeButton		= nullptr;
 	

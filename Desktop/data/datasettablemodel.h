@@ -44,7 +44,6 @@ public:
 	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const				{ return DataSetPackage::pkg()->isColumnUsedInEasyFilter(column);					}
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
 	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType)	{ return DataSetPackage::pkg()->setColumnTypeFromQML(columnIndex, newColumnType);	}
-	Q_INVOKABLE void		resizeData(int row, int col)								{		 DataSetPackage::pkg()->resizeData(row, col);								}
 
 	//the following column-int passthroughs will fail once columnfiltering is added...
 	columnType				getColumnType(size_t column)			const				{ return DataSetPackage::pkg()->getColumnType(column);								}
