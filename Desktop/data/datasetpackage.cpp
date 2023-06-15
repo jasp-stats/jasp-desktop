@@ -1353,7 +1353,7 @@ void DataSetPackage::writeDataSetToOStream(std::ostream & out, bool includeCompu
 
 	}
 
-	size_t rows = rowCount();
+	size_t rows = _dataSet->rowCount();
 
 	for (size_t r = 0; r < rows; r++)
 		for (size_t i = 0; i < cols.size(); i++)
