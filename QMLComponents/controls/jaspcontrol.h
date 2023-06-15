@@ -10,7 +10,6 @@
 class AnalysisForm;
 class JASPListControl;
 class BoundControl;
-class ComputedColumn;
 
 ///
 /// Basic class for all our qml controls
@@ -172,7 +171,7 @@ public:
 	virtual QString					friendlyName() const;
 
 protected:
-	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
+	Set								_depends;
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -221,33 +220,34 @@ private slots:
 	void	_checkControlName();
 
 signals:
-	void setOptionBlockSignal(	bool blockSignal);
-	void nameChanged();
-	void isBoundChanged();
-	void indentChanged();
-	void isDependencyChanged();
-	void initializedChanged();
-	void shouldShowFocusChanged();
-	void shouldStealHoverChanged();
-	void debugChanged();
-	void parentDebugChanged();
-	void hasErrorChanged();
-	void hasWarningChanged();
-	void focusOnTabChanged();
-	void parentListViewChanged();
-	void innerControlChanged();
-	void backgroundChanged();
-	void focusIndicatorChanged();
-	void infoChanged();
-	void toolTipChanged();
-	void titleChanged();
-	void helpMDChanged();
-	void dependencyMustContainChanged();
-	void preferredHeightChanged();
-	void preferredWidthChanged();
-	void hoveredChanged();
-	void controlTypeChanged();			// Not used, defined only to suppress warning in QML
-	void boundValueChanged(JASPControl* control);
+	void	setOptionBlockSignal(	bool blockSignal);
+	void	nameChanged();
+	void	isBoundChanged();
+	void	indentChanged();
+	void	isDependencyChanged();
+	void	initializedChanged();
+	void	shouldShowFocusChanged();
+	void	shouldStealHoverChanged();
+	void	debugChanged();
+	void	parentDebugChanged();
+	void	hasErrorChanged();
+	void	hasWarningChanged();
+	void	focusOnTabChanged();
+	void	parentListViewChanged();
+	void	innerControlChanged();
+	void	backgroundChanged();
+	void	focusIndicatorChanged();
+	void	infoChanged();
+	void	toolTipChanged();
+	void	titleChanged();
+	void	helpMDChanged();
+	void	dependencyMustContainChanged();
+	void	preferredHeightChanged();
+	void	preferredWidthChanged();
+	void	hoveredChanged();
+	void	controlTypeChanged();			// Not used, defined only to suppress warning in QML
+	void	boundValueChanged(JASPControl* control);
+	void	usedVariablesChanged();
 
 	void				requestColumnCreation(std::string columnName, columnType columnType);
 	void				requestComputedColumnCreation(std::string columnName);

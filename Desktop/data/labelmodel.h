@@ -13,7 +13,7 @@ class LabelModel : public DataSetTableProxy
 	Q_OBJECT
 
 	Q_PROPERTY(int		filteredOut		READ filteredOut									NOTIFY filteredOutChanged		)
-	Q_PROPERTY(int		chosenColumn	READ proxyParentColumn	WRITE setProxyParentColumn	NOTIFY proxyParentColumnChanged	)
+	Q_PROPERTY(int		chosenColumn	READ chosenColumn		WRITE setChosenColumn		NOTIFY chosenColumnChanged		)
 	Q_PROPERTY(bool		visible			READ visible			WRITE setVisible			NOTIFY visibleChanged			)
 	Q_PROPERTY(QString	columnName		READ columnNameQ		WRITE setColumnNameQ		NOTIFY columnNameChanged		)
 	Q_PROPERTY(double	rowWidth		READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
@@ -33,7 +33,9 @@ public:
 	bool		visible()			const {	return _visible; }
 	int			filteredOut()		const;
 	int			dataColumnCount()	const;
-
+	int			chosenColumn()		const;
+	Column *	column()			const;
+	
 	Q_INVOKABLE void reverse();
 	Q_INVOKABLE void moveSelectionUp();
 	Q_INVOKABLE void moveSelectionDown();
@@ -42,8 +44,8 @@ public:
 	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
 
-	std::vector<bool>			filterAllows(size_t col);
-	std::vector<std::string>	labels(size_t col);
+	boolvec			filterAllows(size_t col);
+	stringvec		labels(size_t col);
 
 	double rowWidth()			const	{ return _rowWidth;			}
 	double valueMaxWidth()		const	{ return _valueMaxWidth;	}
@@ -52,10 +54,10 @@ public:
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
+	void setChosenColumn(int chosenColumn);
 	void setSelected(int row, int modifier);
 	void setColumnNameQ(QString newColumnName);
 	void removeAllSelected();
-	void columnAboutToBeRemoved(int column);
 	void columnDataTypeChanged(const QString & colName);
 	void setRowWidth(double len);
 	void onChosenColumnChanged();
@@ -70,6 +72,7 @@ signals:
 	void rowWidthChanged();
 	void valueMaxWidthChanged();
 	void labelMaxWidthChanged();
+	void chosenColumnChanged();
 
 private:
 	std::vector<size_t> getSortedSelection()					const;

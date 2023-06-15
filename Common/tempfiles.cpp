@@ -94,7 +94,7 @@ void TempFiles::clearSessionDir()
 			deleteUs.push_back(it.path());
 	}
 
-	for(auto dir : deleteUs)
+	for(auto & dir : deleteUs)
 		std::filesystem::remove_all(dir);
 }
 
@@ -140,7 +140,7 @@ void TempFiles::deleteOrphans()
 		{
 			std::filesystem::path p = itr->path();
 
-			Log::log() << "looking at file " << p.string() << std::endl;
+			//Log::log() << "looking at file " << p.string() << std::endl;
 
 			if (p.compare(sessionPath) == 0)
 				continue;

@@ -16,6 +16,7 @@ jsoncpp/1.9.5
 openssl/1.1.1m
 bison/3.7.6
 brotli/1.0.9
+sqlite3/3.38.5
 
 [generators]
 cmake_paths

@@ -7,6 +7,7 @@
 #include "stringutils.h"
 #include <cmath>
 #include "qutils.h"
+#include "utils.h"
 
 /// There are recurring needs when working with Json::Value etc and these are collected here.
 /// For instance converting from and to a std::vector<std::string> is useful and might as well be written here.
@@ -16,15 +17,18 @@ class JsonUtilities
 public:
 	static std::set<std::string>	convertDragNDropFilterJSONToSet(std::string jsonStr);
 
-	static std::string				removeColumnsFromDragNDropFilterJSON(const std::string & jsonStr,		const std::set<std::string> & columnNames);
-	static void						removeColumnsFromDragNDropFilterJSON(Json::Value & json,				const std::set<std::string> & columnNames);
-	static std::string				removeColumnsFromDragNDropFilterJSON(const std::string & jsonStr,		const std::vector<std::string> & columnNames);
-	static void						removeColumnsFromDragNDropFilterJSON(Json::Value & json,				const std::vector<std::string> & columnNames);
+	static std::string				removeColumnsFromDragNDropFilterJSONStr(	const	std::string & jsonStr,	const stringset & columnNames);
+	static void						removeColumnsFromDragNDropFilterJSONRef(			Json::Value & json,		const stringset & columnNames);
+	static Json::Value				removeColumnsFromDragNDropFilterJSON(		const	Json::Value & json,		const stringset & columnNames);
+	static std::string				removeColumnsFromDragNDropFilterJSONStr(	const	std::string & jsonStr,	const stringvec & columnNames);
+	static void						removeColumnsFromDragNDropFilterJSONRef(			Json::Value & json,		const stringvec & columnNames);
+	static Json::Value				removeColumnsFromDragNDropFilterJSON(		const	Json::Value & json,		const stringvec & columnNames);
 
-	static std::string				replaceColumnNamesInDragNDropFilterJSON(const std::string & jsonStr,	const std::map<std::string, std::string> & changeNameColumns);
-	static void						replaceColumnNamesInDragNDropFilterJSON(Json::Value & json,				const std::map<std::string, std::string> & changeNameColumns);
+	static std::string				replaceColumnNamesInDragNDropFilterJSONStr(	const	std::string & jsonStr,	const strstrmap & changeNameColumns);
+	static void						replaceColumnNamesInDragNDropFilterJSONRef(			Json::Value & json,		const strstrmap & changeNameColumns);
+	static Json::Value				replaceColumnNamesInDragNDropFilterJSON(	const	Json::Value & json,		const strstrmap & changeNameColumns);
 
-	static stringvec				jsonStringArrayToVec(Json::Value & jsonStrings);
+	static stringvec				jsonStringArrayToVec(const Json::Value & jsonStrings);
 
 	template<typename T>
 	static Json::Value				vecToJsonArray(const std::vector<T> & vec)

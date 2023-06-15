@@ -3,7 +3,7 @@
 
 ALTNavControl* ALTNavControl::_instance = nullptr;
 
-ALTNavControl* ALTNavControl::getInstance()
+ALTNavControl* ALTNavControl::ctrl()
 {
 	if(!_instance)
 		_instance = new ALTNavControl();

@@ -19,6 +19,7 @@ Popup
 		color:			jaspTheme.uiBackground
 		border.color:	jaspTheme.uiBorder
 		border.width:	1
+		radius:			jaspTheme.borderRadius
 	}
 	padding:	0
 
@@ -27,7 +28,6 @@ Popup
 		target:					dataSetModel
 		function onRenameColumnDialog(columnIndex)
 		{
-			console.log("renaming column dialog opened for " + String(columnIndex))
 			colIndex = columnIndex;
 			popupRenameColumnDialog.open()
 		}
@@ -79,7 +79,7 @@ Popup
 					top:				title.bottom
 					left:				parent.left
 					right:				parent.right
-					margins:			jaspTheme.generalAnchorMargin
+					margins:			jaspTheme.generalAnchorMargin + jaspTheme.jaspControlPadding
 				}
 
 				onEditingFinished:		renameButton.clicked();
@@ -107,7 +107,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:						renameButton
 				activeFocusOnTab:		true
@@ -127,22 +127,23 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:						closeButtonCross
 				activeFocusOnTab:		true
 				iconSource:				jaspTheme.iconPath + "cross.png"
 				width:					height
 				height:					renameButton.height
-				onClicked:				popupResizeData.close()
+				onClicked:				popupRenameColumnDialog.close()
 				toolTip:				qsTr("Close without renaming column")
 				KeyNavigation.up:		columnName
 
 				anchors
 				{
 					right:				parent.right
-					top:				columnName.bottom
-					margins:			jaspTheme.generalAnchorMargin
+					top:				renameButton.top
+					rightMargin:		jaspTheme.generalAnchorMargin
+					bottom:				renameButton.bottom
 				}
 			}
 		}

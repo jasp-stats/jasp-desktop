@@ -18,6 +18,7 @@
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
+
 #define SHOW_ITEMS_PLEASE
 #define ADD_LINES_PLEASE
 
@@ -80,6 +81,8 @@ public:
 	double					viewportW()							const	{ return _viewportW;				}
 	double					viewportH()							const	{ return _viewportH;				}
 
+	QModelIndex				selectionTopLeft()					const;
+
 	QQmlComponent		*	itemDelegate()						const	{ return _itemDelegate;				}
 	QQmlComponent		*	rowNumberDelegate()					const	{ return _rowNumberDelegate;		}
 	QQmlComponent		*	columnHeaderDelegate()				const	{ return _columnHeaderDelegate;		}
@@ -120,8 +123,7 @@ public:
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)
-	
-	
+	 
 	
 signals:
 	void		modelChanged();
@@ -156,7 +158,8 @@ signals:
 	void		selectionBudgesDown();
 	void		selectionBudgesLeft();
 	void		selectionBudgesRight();
-	
+
+	void		showComputedColumn(QString name);
 	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
@@ -179,28 +182,44 @@ public slots:
 	void		pollSelectScroll(	QModelIndex mouseIndex		);
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
-	QModelIndex selectionTopLeft() const;
+
 
 	void		cut(	bool includeHeader = false) { _copy(includeHeader, true);  }
 	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
 	void		paste(	bool includeHeader = false);
 
-	void		columnSelect(		int col);
-	void		columnInsertBefore(	int col);
-	void		columnInsertAfter(	int col);
-	void		columnDelete(		int col);
-	void		rowSelect(			int row);
-	void		rowInsertBefore(	int row);
-	void		rowInsertAfter(		int row);
-	void		rowDelete(			int row);
+	void		columnSelect(				int col = -1);
+	QString		columnInsertBefore(			int col = -1, bool computed = false, bool R = false);
+	QString		columnInsertAfter(			int col = -1, bool computed = false, bool R = false);
+	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
+	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
+
+	void		columnsDelete();
+	void		rowSelect(					int row = -1);
+	void		rowInsertBefore(			int row = -1);
+	void		rowInsertAfter(				int row = -1);
+	void		rowsDelete();
+
+	void		columnsAboutToBeInserted(	const QModelIndex &parent, int first, int last);
+	void		columnsAboutToBeRemoved(	const QModelIndex &parent, int first, int last);
+	void		rowsAboutToBeInserted(		const QModelIndex &parent, int first, int last);
+	void		rowsAboutToBeRemoved(		const QModelIndex &parent, int first, int last);
+	void		columnsInserted(			const QModelIndex &parent, int first, int last);
+	void		columnsRemoved(				const QModelIndex &parent, int first, int last);
+	void		rowsInserted(				const QModelIndex &parent, int first, int last);
+	void		rowsRemoved(				const QModelIndex &parent, int first, int last);
+
+
 
 	void		selectAll();
 
 	void		edit(QModelIndex here);
-	void		destroyEditItem();
-	void		editFinished(QModelIndex here, QVariant  editedValue);
+	void		destroyEditItem(bool restoreItem=true);
+	void		editFinished(			QModelIndex here, QVariant editedValue);
+	void		editFinishedKeepEditing(QModelIndex here, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);
 	void		contextMenuClickedAtIndex(QModelIndex index);
+
 	
 protected:
 	void		_copy(bool includeHeader, bool clear);
