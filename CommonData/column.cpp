@@ -27,7 +27,7 @@ void Column::dbLoad(int id, bool getValues)
 
 	db().transactionReadBegin();
 	
-					db().columnGetBasicInfo(	_id, _name, _type, _revision);
+					db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision);
 	_isComputed =   db().columnGetComputedInfo(	_id, _invalidated, _codeType, _rCode, _error, _constructorJson);
 
 	db().labelsLoad(this);
@@ -88,9 +88,36 @@ void Column::setName(const std::string &name)
 
 	if(_name == name)
 		return;
-	
+
+	if(_title.empty() || _title == _name)
+		setTitle(name);
+
 	_name = name;
 	db().columnSetName(_id, _name);
+	incRevision();
+}
+
+void Column::setTitle(const std::string &title)
+{
+	JASPTIMER_SCOPE(Column::setTitle);
+
+	if(_title == title)
+		return;
+
+	_title = title;
+	db().columnSetTitle(_id, _title);
+	incRevision();
+}
+
+void Column::setDescription(const std::string &description)
+{
+	JASPTIMER_SCOPE(Column::setDescription);
+
+	if(_description == description)
+		return;
+
+	_description = description;
+	db().columnSetTitle(_id, _description);
 	incRevision();
 }
 
@@ -1511,6 +1538,15 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue) const
 
 	return fancyEmptyValue ? ColumnUtils::emptyValue : "";
 }
+
+Label * Column::labelByRow(int row) const
+{
+	if (row < rowCount() && _type != columnType::scale && _ints[row] != std::numeric_limits<int>::lowest())
+			return labelByValue(_ints[row]);
+
+	return nullptr;
+}
+
 
 bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 {

@@ -8,6 +8,8 @@ LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubMod
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::filteredOutChanged		);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnNameChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnTitleChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnDescriptionChanged	);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::chosenColumnChanged		);
 	connect(this,					&LabelModel::chosenColumnChanged,				this, &LabelModel::onChosenColumnChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
@@ -42,8 +44,32 @@ QString LabelModel::columnNameQ()
 void LabelModel::setColumnNameQ(QString newColumnName)
 {
 	if(column())
-		return DataSetPackage::pkg()->setColumnName(chosenColumn(), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
+		return DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
 }
+
+
+QString LabelModel::columnTitle() const
+{
+	return QString::fromStdString(column() ? column()->title() : "");
+}
+
+void LabelModel::setColumnTitle(const QString & newColumnTitle)
+{
+	if(column())
+		return DataSetPackage::pkg()->setColumnTitle(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnTitle)); //use DataSetPackage to make sure signals are sent!
+}
+
+QString LabelModel::columnDescription() const
+{
+	return QString::fromStdString(column() ? column()->description() : "");
+}
+
+void LabelModel::setColumnDescription(const QString & newColumnDescription)
+{
+	if(column())
+		return DataSetPackage::pkg()->setColumnDescription(chosenColumn(), fq(newColumnDescription)); //use DataSetPackage to make sure signals are sent!
+}
+
 
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {

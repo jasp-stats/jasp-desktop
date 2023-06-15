@@ -1,3 +1,4 @@
+
 #ifndef LABELMODEL_H
 #define LABELMODEL_H
 
@@ -12,20 +13,24 @@ class LabelModel : public DataSetTableProxy
 {
 	Q_OBJECT
 
-	Q_PROPERTY(int		filteredOut		READ filteredOut									NOTIFY filteredOutChanged		)
-	Q_PROPERTY(int		chosenColumn	READ chosenColumn		WRITE setChosenColumn		NOTIFY chosenColumnChanged		)
-	Q_PROPERTY(bool		visible			READ visible			WRITE setVisible			NOTIFY visibleChanged			)
-	Q_PROPERTY(QString	columnName		READ columnNameQ		WRITE setColumnNameQ		NOTIFY columnNameChanged		)
-	Q_PROPERTY(double	rowWidth		READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
-	Q_PROPERTY(double	valueMaxWidth	READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
-	Q_PROPERTY(double	labelMaxWidth	READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
+	Q_PROPERTY(int		filteredOut			READ filteredOut									NOTIFY filteredOutChanged		)
+	Q_PROPERTY(int		chosenColumn		READ chosenColumn		WRITE setChosenColumn		NOTIFY chosenColumnChanged		)
+	Q_PROPERTY(bool		visible				READ visible			WRITE setVisible			NOTIFY visibleChanged			)
+	Q_PROPERTY(QString	columnName			READ columnNameQ		WRITE setColumnNameQ		NOTIFY columnNameChanged		)
+	Q_PROPERTY(QString	columnTitle			READ columnTitle		WRITE setColumnTitle		NOTIFY columnTitleChanged		)
+	Q_PROPERTY(QString	columnDescription	READ columnDescription	WRITE setColumnDescription	NOTIFY columnDescriptionChanged	)
+	Q_PROPERTY(double	rowWidth			READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
+	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
+	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
 
 public:
 				LabelModel();
 
 	bool		labelNeedsFilter(size_t col);
-	std::string columnName(size_t col);
+	std::string columnName(size_t col); ///< Not a proxy columnIndex!
 	QString		columnNameQ();
+	QString		columnTitle() const;
+	QString		columnDescription() const;
 	bool		setData(const QModelIndex & index, const QVariant & value,	int role = -1)						override;
 	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
@@ -51,6 +56,10 @@ public:
 	double valueMaxWidth()		const	{ return _valueMaxWidth;	}
 	double labelMaxWidth()		const	{ return _labelMaxWidth;	}
 
+	void setColumnTitle(const QString & newColumnTitle);
+
+	void setColumnDescription(const QString & newColumnDescription);
+
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -73,6 +82,10 @@ signals:
 	void valueMaxWidthChanged();
 	void labelMaxWidthChanged();
 	void chosenColumnChanged();
+
+	void columnTitleChanged();
+
+	void columnDescriptionChanged();
 
 private:
 	std::vector<size_t> getSortedSelection()					const;

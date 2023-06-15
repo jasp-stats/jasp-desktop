@@ -350,7 +350,7 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 	{
 		Column * col = dynamic_cast<Column*>(node);
 		
-		if(col->type() == columnType::scale)
+		if(!col || col->type() == columnType::scale)
 			return 0;
 
 		int labelSize = col->labels().size();
@@ -484,9 +484,17 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		{
 		case Qt::DisplayRole:						[[fallthrough]];
 		case int(specialRoles::label):				return tq((*column)[index.row()]);
+		case int(specialRoles::description):		return tq(column->description());
+		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name(), true);
+		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
+		case int(specialRoles::valuesStrList):		return getColumnValuesAsStringList(getColumnIndex(column->name()));
+		case int(specialRoles::inEasyFilter):		return isColumnUsedInEasyFilter(column->name());
 		case int(specialRoles::value):				return tq(column->getValue(index.row()));
+		case int(specialRoles::name):				return tq(column->name());
+		case int(specialRoles::title):				return tq(column->title());
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(column->type());
+		case int(specialRoles::columnPkgIndex):		return index.column();
 		case int(specialRoles::lines):
 		{
 			bool	iAmActive		= getRowFilter(index.row()),
@@ -517,7 +525,11 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case int(specialRoles::filter):				return labels[index.row()]->filterAllows();
-		case int(specialRoles::value):				return tq(labels[index.row()]->originalValueAsString(true)); //value());
+		case int(specialRoles::value):				return tq(labels[index.row()]->originalValueAsString(true));
+		case int(specialRoles::description):		return tq(labels[index.row()]->description());
+		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name(), true);
+		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
+		case int(specialRoles::valuesStrList):		return getColumnValuesAsStringList(getColumnIndex(column->name()));
 		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
 		case Qt::DisplayRole:
 		case int(specialRoles::label):				return tq(labels[index.row()]->label());
@@ -541,29 +553,44 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
     
     JASPTIMER_SCOPE(DataSetPackage::headerData);
 
-	switch(role)
-	{
-	case int(specialRoles::maxColString):
-	{
-		//calculate some kind of maximum string to give views an expectation of the width needed for a column
-		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX" + (isColumnComputed(section) ? "XXXXX" : ""); //Bit of padding for filtersymbol and columnIcon
-		int colWidth = getMaximumColumnWidthInCharacters(section);
+	if(orientation == Qt::Vertical)
+		switch(role)
+		{
+		default:
+			return QVariant();
 
-		while(colWidth > dummyText.length())
-			dummyText += "X";
+		case int(specialRoles::maxRowHeaderString):
+			return QString::number(_dataSet->rowCount()) + "XXX";
 
-		return dummyText;
-	}
-	case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet->rowCount()) + "XXX";
-	case int(specialRoles::filter):							return getColumnHasFilter(section) || isColumnUsedInEasyFilter(section);
-	case Qt::DisplayRole:									return orientation == Qt::Horizontal ? tq(_dataSet->column(section)->name()) : QVariant(section + 1);
-	case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
-	case int(specialRoles::labelsHasFilter):				return getColumnHasFilter(section);
-	case int(specialRoles::columnIsComputed):				return isColumnComputed(section);
-	case int(specialRoles::computedColumnError):			return tq(getComputedColumnError(section));
-	case int(specialRoles::computedColumnIsInvalidated):	return isColumnInvalidated(section);
-	case int(specialRoles::columnType):						return int(getColumnType(section));
-	}
+		case Qt::DisplayRole:
+			return QVariant(section + 1);
+		}
+	else
+		switch(role)
+		{
+		case int(specialRoles::maxColString):
+		{
+			//calculate some kind of maximum string to give views an expectation of the width needed for a column
+			QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX" + (isColumnComputed(section) ? "XXXXX" : ""); //Bit of padding for filtersymbol and columnIcon
+			int colWidth = getMaximumColumnWidthInCharacters(section);
+
+			while(colWidth > dummyText.length())
+				dummyText += "X";
+
+			return dummyText;
+		}
+		case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet->rowCount()) + "XXX";
+		case int(specialRoles::filter):							return		!_dataSet || !_dataSet->column(section) ? false					: _dataSet->column(section)->hasFilter() || isColumnUsedInEasyFilter(_dataSet->column(section)->name());
+		case Qt::DisplayRole:									return tq(	!_dataSet || !_dataSet->column(section) ? "?"					: _dataSet->column(section)->name());
+		case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
+		case int(specialRoles::labelsHasFilter):				return		!_dataSet || !_dataSet->column(section) ? false					: _dataSet->column(section)->hasFilter();
+		case int(specialRoles::columnIsComputed):				return		!_dataSet || !_dataSet->column(section) ? false					: _dataSet->column(section)->isComputed();
+		case int(specialRoles::computedColumnError):			return tq(	!_dataSet || !_dataSet->column(section) ? "?"					: _dataSet->column(section)->error());
+		case int(specialRoles::computedColumnIsInvalidated):	return		!_dataSet || !_dataSet->column(section) ? false					: _dataSet->column(section)->invalidated();
+		case int(specialRoles::columnType):						return int(	!_dataSet || !_dataSet->column(section) ? columnType::unknown	: _dataSet->column(section)->type());
+		case int(specialRoles::description):					return tq(	!_dataSet || !_dataSet->column(section) ? "?"					: _dataSet->column(section)->description());
+		case int(specialRoles::title):							return tq(	!_dataSet || !_dataSet->column(section) ? "?"					: _dataSet->column(section)->title());
+		}
 
 	return QVariant();
 }
@@ -607,39 +634,81 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 		{
 			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
-			
-			if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString())))
+
+			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value))
 			{
-                JASPTIMER_SCOPE(DataSetPackage::setData reset model);
-                
-				setSynchingExternally(false); //Don't synch with external file after editing
+				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString())))
+				{
+					JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
-				//beginResetModel();
-				//beginSynchingData(false);
+					setSynchingExternally(false); //Don't synch with external file after editing
 
-				stringvec	changedCols = {column->name()},
-							missing;
-				strstrmap	changeName;
+					//beginResetModel();
+					//beginSynchingData(false);
 
-				//endSynchingData(changedCols, missing, changeName, false, false, false);
-                
-                emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
-                emit datasetChanged(tq(changedCols), tq(missing), tq(changeName), false, false);
-                
-				emit labelsReordered(tq(column->name()));
+					stringvec	changedCols = {column->name()},
+								missing;
+					strstrmap	changeName;
 
-				setModified(true);
+					//endSynchingData(changedCols, missing, changeName, false, false, false);
 
-				//emit label dataChanged just in case
-				//QModelIndex parent = indexForSubNode(column);
-				//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
+					emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
+					emit datasetChanged(tq(changedCols), tq(missing), tq(changeName), false, false);
 
+					emit labelsReordered(tq(column->name()));
+
+					setModified(true);
+
+					//emit label dataChanged just in case
+					//QModelIndex parent = indexForSubNode(column);
+					//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
+
+				}
+				else
+				{
+					JASPTIMER_SCOPE(DataSetPackage::setData pasteSpreadsheet);
+					column->rememberOriginalColumnType();
+					pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
+				}
 			}
 			else
 			{
-                JASPTIMER_SCOPE(DataSetPackage::setData pasteSpreadsheet);
-				column->rememberOriginalColumnType();
-				pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
+				bool aChange = false;
+
+				switch(role)
+				{
+				case int(specialRoles::description):
+					column->setDescription(value.toString().toStdString());
+					aChange = true;
+					break;
+
+				case int(specialRoles::title):
+					column->setTitle(value.toString().toStdString());
+					aChange = true;
+					break;
+
+				case int(specialRoles::columnType):
+					{
+						if(value.toInt() >= int(columnType::unknown) && value.toInt() <= int(columnType::scale))
+						{
+							columnType converted = static_cast<columnType>(value.toInt());
+							if(setColumnType(index.column(), converted, false))
+							{
+								aChange = true;
+								emit columnDataTypeChanged(tq(column->name()));
+							}
+							break;
+						}
+					}
+
+
+				}
+
+				if(aChange)
+				{
+					beginResetModel();
+					endResetModel();
+				}
 			}
 
 			return true;
@@ -666,6 +735,9 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				return false;
 			
 			return setAllowFilterOnLabel(index, value.toBool());
+
+		case int(specialRoles::description):
+			return setDescriptionOnLabel(index, value.toString());
 
 		case int(specialRoles::value):
 			return false;
@@ -723,6 +795,34 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 
 
 	emit filteredOutChanged(columnIndex);
+}
+
+bool DataSetPackage::setDescriptionOnLabel(const QModelIndex & index, const QString & newDescription)
+{
+	Label  * label  = dynamic_cast<Label*>(indexPointerToNode(index));
+	Column * column = dynamic_cast<Column*>(label->parent());
+
+	if(!column)
+		return false;
+
+	QModelIndex parent	= index.parent();
+	size_t		row		= index.row();
+
+
+	if(int(row) > rowCount(parent))
+		return false;
+
+	const Labels	& labels = column->labels();
+
+	int col = column->data()->columnIndex(column);
+
+	labels[row]->setDescription(newDescription.toStdString());
+
+	emit dataChanged(DataSetPackage::index(row, 0, parent),	DataSetPackage::index(row, columnCount(parent), parent), {int(specialRoles::description)});	//Emit dataChanged for filter
+
+	return true;
+
+
 }
 
 bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue)
@@ -815,19 +915,8 @@ QHash<int, QByteArray> DataSetPackage::roleNames() const
 
 	if(!set)
 	{
-		roles[int(specialRoles::value)]							= QString("value").toUtf8();
-		roles[int(specialRoles::lines)]							= QString("lines").toUtf8();
-		roles[int(specialRoles::label)]							= QString("label").toUtf8();
-		roles[int(specialRoles::filter)]						= QString("filter").toUtf8();
-		roles[int(specialRoles::selected)]						= QString("selected").toUtf8();
-		roles[int(specialRoles::columnType)]					= QString("columnType").toUtf8();
-		roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
-		roles[int(specialRoles::labelsHasFilter)]				= QString("labelsHasFilter").toUtf8();
-		roles[int(specialRoles::columnIsComputed)]				= QString("columnIsComputed").toUtf8();
-		roles[int(specialRoles::maxRowHeaderString)]			= QString("maxRowHeaderString").toUtf8();
-		roles[int(specialRoles::columnWidthFallback)]			= QString("columnWidthFallback").toUtf8();
-		roles[int(specialRoles::computedColumnError)]			= QString("computedColumnError").toUtf8();
-		roles[int(specialRoles::computedColumnIsInvalidated)]	= QString("computedColumnIsInvalidated").toUtf8();
+		for(const auto & enumString : dataPkgRolesToStringMap())
+			roles[int(enumString.first)] = QString::fromStdString(enumString.second).toUtf8();
 
 		set = true;
 	}
@@ -911,14 +1000,9 @@ void DataSetPackage::setColumnsUsedInEasyFilter(std::set<std::string> usedColumn
 }
 
 
-bool DataSetPackage::isColumnUsedInEasyFilter(int column) const
+bool DataSetPackage::isColumnUsedInEasyFilter(const std::string & colName) const
 {
-	if(_dataSet != nullptr && size_t(column) < _dataSet->columnCount())
-	{
-		std::string colName = _dataSet->column(column)->name();
-		return _columnNameUsedInEasyFilter.count(colName) > 0 && _columnNameUsedInEasyFilter.at(colName);
-	}
-	return false;
+	return _columnNameUsedInEasyFilter.count(colName) > 0 && _columnNameUsedInEasyFilter.at(colName);
 }
 
 void DataSetPackage::notifyColumnFilterStatusChanged(int columnIndex)
@@ -942,31 +1026,6 @@ QVariant DataSetPackage::getColumnTypesWithIcons() const
 	}
 
 	return QVariant(ColumnTypeAndIcons);
-}
-
-
-QVariant DataSetPackage::getColumnTitle(int column) const
-{
-	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
-		return tq(_dataSet->column(column)->name());
-
-	return QVariant();
-}
-
-QVariant DataSetPackage::getColumnIcon(int column) const
-{
-	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
-		return QVariant(int(_dataSet->column(column)->type()));
-
-	return QVariant(-1);
-}
-
-bool DataSetPackage::getColumnHasFilter(int column) const
-{
-	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
-		return _dataSet->column(column)->hasFilter();
-	
-	return false;
 }
 
 int DataSetPackage::columnsFilteredCount()
@@ -1030,7 +1089,7 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bo
 			break;
 		}
 
-		MessageForwarder::showWarning("Changing column type failed", informUser);
+		emit showWarning("Changing column type failed", informUser);
 	}
 
 	return feedback == columnTypeChangeResult::changed;
@@ -1568,6 +1627,36 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
 }
 
+void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newTitle, bool resetModel)
+{
+	if(!_dataSet)
+		return;
+
+	if(resetModel)
+		beginResetModel();
+
+	_dataSet->column(columnIndex)->setTitle(newTitle);
+
+	if(resetModel)
+		endResetModel();
+
+}
+
+void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription, bool resetModel)
+{
+	if(!_dataSet)
+		return;
+
+	if(resetModel)
+		beginResetModel();
+
+	_dataSet->column(columnIndex)->setDescription(newDescription);
+
+	if(resetModel)
+		endResetModel();
+
+}
+
 
 
 void DataSetPackage::setColumnDataInts(size_t columnIndex, const intvec & ints)
@@ -1649,21 +1738,38 @@ std::string DataSetPackage::getColumnName(size_t columnIndex) const
 	return _dataSet && _dataSet->column(columnIndex) ? _dataSet->column(columnIndex)->name() : "";
 }
 
-QStringList DataSetPackage::getColumnLabelsAsStringList(const std::string & columnName)	const
+QStringList DataSetPackage::getColumnLabelsAsStringList(const std::string & columnName, bool dropUnused)	const
 {
 	int colIndex = getColumnIndex(columnName);
 
-	if(colIndex > -1)	return getColumnLabelsAsStringList(colIndex);
+	if(colIndex > -1)	return getColumnLabelsAsStringList(colIndex, dropUnused);
 	else				return QStringList();;
 }
 
-QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	const
+QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex, bool dropUnused)	const
 {
 	QStringList list;
 	if(columnIndex < 0 || columnIndex >= dataColumnCount()) return list;
 
 	for (const Label * label : _dataSet->columns()[columnIndex]->labels())
 		list.append(tq(label->label()));
+
+	if(dropUnused)
+	{
+		QStringList notUsedLabels = list;
+		int max = rowCount();
+
+		for (int i = 0; i < max; i++)
+		{
+			QString value = data(index(i, columnIndex)).toString();
+			notUsedLabels.removeAll(value);
+			if (notUsedLabels.count() == 0) break;
+		}
+
+		// The order of the labels must be kept.
+		for (const QString& notUsedLabel : notUsedLabels)
+			list.removeAll(notUsedLabel);
+	}
 
 	return list;
 }

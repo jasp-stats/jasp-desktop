@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.15
-import JASP				1.0
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
-import QtQuick.Controls 2.12 as QTC
-import QtQuick.Layouts	1.15
+import QtQuick
+import JASP
+import JASP.Widgets
+import JASP.Controls
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
 import "."
 
 FocusScope
@@ -29,7 +29,7 @@ FocusScope
 	id:			variablesContainer
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
-	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 10 + (jaspTheme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height +  (jaspTheme.uiScale * 40) + (jaspTheme.generalAnchorMargin * 2)
 
 	Connections
 	{
@@ -82,9 +82,47 @@ FocusScope
 
 				anchors
 				{
-					horizontalCenter:	parent.horizontalCenter
+					right:				parent.horizontalCenter
 					top:				parent.top
-					topMargin:			jaspTheme.generalAnchorMargin
+					margins:			jaspTheme.generalAnchorMargin
+				}
+
+				Rectangle
+				{
+					color:				jaspTheme.controlBackgroundColor
+					border.color:		jaspTheme.uiBorder
+					border.width:		1
+					visible:			enabled
+
+					anchors.fill:		parent
+					anchors.margins:	-1 * jaspTheme.jaspControlPadding
+					z:					-1
+				}
+
+				MouseArea
+				{
+					acceptedButtons:	Qt.NoButton
+					anchors.fill:		parent
+					cursorShape:		Qt.IBeamCursor
+				}
+
+			}
+
+			TextInput
+			{
+				id:					columnTitleVariablesWindow
+				text:				labelModel.columnTitle
+				onTextChanged:		if(labelModel.columnTitle != text) labelModel.columnTitle = text
+				color:				jaspTheme.textEnabled
+				font:				jaspTheme.fontGroupTitle
+				enabled:			ribbonModel.dataMode
+				selectByMouse:		true
+
+				anchors
+				{
+					left:				parent.horizontalCenter
+					top:				parent.top
+					margins:			jaspTheme.generalAnchorMargin
 				}
 
 				Rectangle
@@ -120,7 +158,7 @@ FocusScope
 					top:			columnNameVariablesWindow.bottom
 					left:			parent.left
 					right:			buttonColumnVariablesWindow.left
-					bottom:			parent.bottom
+					bottom:			columnDescriptionRect.top
 					margins:		jaspTheme.generalAnchorMargin
 				}
 
@@ -352,7 +390,58 @@ FocusScope
 						}
 					}
 				}
+
 			}
+
+			Rectangle
+			{
+				id:					columnDescriptionRect
+				color:				jaspTheme.controlBackgroundColor
+				border.color:		jaspTheme.uiBorder
+				border.width:		1
+				visible:			enabled
+				height:				Math.min(400, columnDescriptionVariablesWindow.contentHeight + jaspTheme.generalAnchorMargin * 2)
+
+				anchors
+				{
+					left:				parent.left
+					bottom:				parent.bottom
+					right:				buttonColumnVariablesWindow.left
+					margins:			jaspTheme.generalAnchorMargin
+				}
+
+				z:					-1
+
+				QTC.ScrollView
+				{
+					anchors.fill:		parent
+					anchors.margins:	parent.border.width
+
+					QTC.TextArea
+					{
+						id:					columnDescriptionVariablesWindow
+						text:				labelModel.columnTitle
+						onTextChanged:		if(labelModel.columnTitle !== text) labelModel.columnTitle = text
+						color:				jaspTheme.textEnabled
+						font:				jaspTheme.font
+						enabled:			ribbonModel.dataMode
+						selectByMouse:		true
+						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
+						placeholderText:	"Column description"
+
+
+						MouseArea
+						{
+							acceptedButtons:	Qt.NoButton
+							anchors.fill:		parent
+							cursorShape:		Qt.IBeamCursor
+						}
+
+					}
+				}
+			}
+
+
 
 			ColumnLayout
 			{
@@ -360,7 +449,7 @@ FocusScope
 
 				anchors.top:		tableBackground.top
 				anchors.right:		parent.right
-				anchors.bottom:		tableBackground.bottom
+				anchors.bottom:		columnDescriptionRect.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
 				property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
@@ -450,7 +539,6 @@ FocusScope
 					toolTip: qsTr("Close this view")
 				}
 			}
-
 
 		}
 
