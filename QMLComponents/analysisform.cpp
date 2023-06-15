@@ -158,6 +158,8 @@ void AnalysisForm::addControl(JASPControl *control)
 	if (_analysis && control->isBound())
 	{
 		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
+		
+		connect(control, &JASPControl::usedVariablesChanged, _analysis, &AnalysisBase::onUsedVariablesChanged);
 	}
 
 	if (control->controlType() == JASPControl::ControlType::Expander)
@@ -181,7 +183,6 @@ void AnalysisForm::addControl(JASPControl *control)
 		control->setUp();
 		control->setInitialized();
 	}
-
 }
 
 void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)

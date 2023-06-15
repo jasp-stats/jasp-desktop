@@ -61,7 +61,7 @@ JaspTheme
 	fontRCode.weight:									Font.Normal
 
 	fontCode.family:									preferencesModel.codeFont
-	fontCode.pixelSize:									Math.round(10 * uiScale)
+	fontCode.pixelSize:									Math.round(11 * uiScale)
 	fontCode.weight:									Font.Normal
 
 	//Scales:

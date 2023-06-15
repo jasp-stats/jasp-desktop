@@ -21,6 +21,19 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "log.h"
 #include "utils.h"
+#include "dirs.h"
+
+#ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
+namespace boost {
+namespace interprocess {
+namespace ipcdetail {
+void get_shared_dir(std::string &shared_dir)
+{
+	shared_dir = Dirs::tempDir();
+}
+}}}
+#endif
+
 
 using namespace std;
 using namespace boost;

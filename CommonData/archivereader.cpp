@@ -21,8 +21,11 @@
 
 #include <sstream>
 #include <filesystem>
-
+#include "tempfiles.h"
+#include <fstream>
+#include <fcntl.h>
 #include <archive_entry.h>
+#include "log.h"
 
 using namespace std;
 
@@ -40,15 +43,11 @@ ArchiveReader::~ArchiveReader()
 	close();
 }
 
-#ifdef _WIN32
-#define ARCHIVE_OPEN_FILENAME_FUNC archive_read_open_filename_w
-#else
-#define ARCHIVE_OPEN_FILENAME_FUNC archive_read_open_filename
-#endif
-
 void ArchiveReader::openEntry(const string &archivePath, const string &entryPath)
 {
 	std::filesystem::path pathArchive = archivePath;
+
+    Log::log() << "ArchiveReader::openEntry('" << archivePath << "', '" << entryPath << "');" << std::endl;
 	
 	_archiveExists = std::filesystem::exists(pathArchive);
 
@@ -58,17 +57,17 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
-		int r = ARCHIVE_OPEN_FILENAME_FUNC(_archive, pathArchive.native().c_str(), 10240);
+        int r = archive_read_open_filename(_archive, pathArchive.native().c_str(), 10240);
 
 		if (r == ARCHIVE_OK)
 		{
 					_isOpen = true;
 			bool	success = false;
 
-			struct archive_entry *entry;
+            archive_entry * entry;
 			while (archive_read_next_header(_archive, &entry) == ARCHIVE_OK)
 			{
-				if (string(archive_entry_pathname(entry)) == entryPath)//pathEntry.native())
+                if (string(archive_entry_pathname(entry)) == entryPath)
 				{
 					
 					_size	= archive_entry_size(entry);
@@ -86,6 +85,48 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 
 }
 
+void ArchiveReader::writeEntryToTempFiles(std::function<void(float)> progressCallback)
+{
+    if(!_isOpen)
+        throw runtime_error("No archive loaded for writeEntryToTempFiles!");
+
+    if(!_exists)
+        throw runtime_error("No entry '"+_entryPath+"' loaded for writeEntryToTempFiles!");
+
+    float totalBytes = bytesAvailable();
+
+    totalBytes = 1.0 / totalBytes;
+
+    if (bytesAvailable() == 0)
+        throw runtime_error("Entry '"+_entryPath+"' has zero bytes data...");
+
+
+    std::ofstream file(TempFiles::createSpecific("", _entryPath).c_str(),  std::ios::out | std::ios::binary);
+
+    static char streamBuff[8192 * 32];
+    file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
+
+    static char copyBuff[8192 * 4];
+    int			bytes		= 0,
+                errorCode	= 0;
+    float       tallyBytes  = 0;
+    do
+    {
+        bytes = readData(copyBuff, sizeof(copyBuff), errorCode);
+
+        tallyBytes += bytes;
+
+        if(progressCallback)
+            progressCallback(tallyBytes * totalBytes);
+
+        if(bytes > 0 && errorCode == 0)		file.write(copyBuff, bytes);
+        else                                break;
+    }
+    while (true);
+
+    file.flush();
+    file.close();
+}
 
 string ArchiveReader::fileName() const
 {
@@ -162,7 +203,6 @@ std::string ArchiveReader::readAllData(int blockSize, int &errorCode)
 }
 
 
-
 void ArchiveReader::close()
 {
 	if (_isOpen)
@@ -198,7 +238,7 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 		archive_read_support_filter_all(a);
 		archive_read_support_format_all(a);
 
-		int r = ARCHIVE_OPEN_FILENAME_FUNC(a, pathArchive.native().c_str(), 10240);
+        int r = archive_read_open_filename(a, pathArchive.native().c_str(), 10240);
 
 		if (r == ARCHIVE_OK)
 		{

@@ -31,12 +31,12 @@ std::set<std::string> JsonUtilities::convertDragNDropFilterJSONToSet(std::string
 	return returnThis;
 }
 
-std::string JsonUtilities::removeColumnsFromDragNDropFilterJSON(const std::string & jsonStr, const std::vector<std::string> & columnNames)
+std::string JsonUtilities::removeColumnsFromDragNDropFilterJSONStr(const std::string & jsonStr, const std::vector<std::string> & columnNames)
 {
-	return removeColumnsFromDragNDropFilterJSON(jsonStr, std::set<std::string>(columnNames.begin(), columnNames.end()));
+	return removeColumnsFromDragNDropFilterJSONStr(jsonStr, std::set<std::string>(columnNames.begin(), columnNames.end()));
 }
 
-std::string JsonUtilities::removeColumnsFromDragNDropFilterJSON(const std::string & jsonStr, const std::set<std::string> & columnNames)
+std::string JsonUtilities::removeColumnsFromDragNDropFilterJSONStr(const std::string & jsonStr, const std::set<std::string> & columnNames)
 {
 	Json::Value json;
 	Json::Reader().parse(jsonStr, json);
@@ -46,16 +46,16 @@ std::string JsonUtilities::removeColumnsFromDragNDropFilterJSON(const std::strin
 	return json.toStyledString();
 }
 
-void JsonUtilities::removeColumnsFromDragNDropFilterJSON(Json::Value & json,  const std::vector<std::string> & columnNames)
+void JsonUtilities::removeColumnsFromDragNDropFilterJSONRef(Json::Value & json,  const std::vector<std::string> & columnNames)
 {
-	removeColumnsFromDragNDropFilterJSON(json, std::set<std::string>(columnNames.begin(), columnNames.end()));
+	removeColumnsFromDragNDropFilterJSONRef(json, std::set<std::string>(columnNames.begin(), columnNames.end()));
 }
 
-void JsonUtilities::removeColumnsFromDragNDropFilterJSON(Json::Value & json, const std::set<std::string> & columnNames)
+void JsonUtilities::removeColumnsFromDragNDropFilterJSONRef(Json::Value & json, const std::set<std::string> & columnNames)
 {
 	if(json.isArray())
 		for(int i=0; i<json.size(); i++)
-			removeColumnsFromDragNDropFilterJSON(json[i], columnNames);
+			removeColumnsFromDragNDropFilterJSONRef(json[i], columnNames);
 
 	else if(json.isObject())
 	{
@@ -63,11 +63,25 @@ void JsonUtilities::removeColumnsFromDragNDropFilterJSON(Json::Value & json, con
 			json = Json::nullValue;
 		else
 			for(auto & key : json.getMemberNames())
-				removeColumnsFromDragNDropFilterJSON(json[key], columnNames);
+				removeColumnsFromDragNDropFilterJSONRef(json[key], columnNames);
 	}
 }
 
-std::string JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(const std::string & jsonStr, const std::map<std::string, std::string> & changeNameColumns)
+Json::Value JsonUtilities::removeColumnsFromDragNDropFilterJSON(const Json::Value &json, const stringset &columnNames)
+{
+	Json::Value changeThisThen = json;
+	removeColumnsFromDragNDropFilterJSONRef(changeThisThen, columnNames);
+	return changeThisThen;
+}
+
+Json::Value JsonUtilities::removeColumnsFromDragNDropFilterJSON(const Json::Value &json, const stringvec &columnNames)
+{
+	Json::Value changeThisThen = json;
+	removeColumnsFromDragNDropFilterJSONRef(changeThisThen, columnNames);
+	return changeThisThen;
+}
+
+std::string JsonUtilities::replaceColumnNamesInDragNDropFilterJSONStr(const std::string & jsonStr, const std::map<std::string, std::string> & changeNameColumns)
 {
 	Json::Value json;
 	Json::Reader().parse(jsonStr, json);
@@ -77,22 +91,30 @@ std::string JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(const std::st
 	return json.toStyledString();
 }
 
-void JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(Json::Value & json, const std::map<std::string, std::string> & changeNameColumns)
+void JsonUtilities::replaceColumnNamesInDragNDropFilterJSONRef(Json::Value & json, const std::map<std::string, std::string> & changeNameColumns)
 {
 	if(json.isArray())
 		for(int i=0; i<json.size(); i++)
-			replaceColumnNamesInDragNDropFilterJSON(json[i], changeNameColumns);
+			replaceColumnNamesInDragNDropFilterJSONRef(json[i], changeNameColumns);
+
 	else if(json.isObject())
 	{
 		if(json.get("nodeType", "").asString() == "Column" && changeNameColumns.count(json["columnName"].asString()) > 0)
 			json["columnName"] = changeNameColumns.at(json["columnName"].asString());
 		else
 			for(auto & key : json.getMemberNames())
-				replaceColumnNamesInDragNDropFilterJSON(json[key], changeNameColumns);
+				replaceColumnNamesInDragNDropFilterJSONRef(json[key], changeNameColumns);
 	}
 }
 
-stringvec JsonUtilities::jsonStringArrayToVec(Json::Value & jsonStrings)
+Json::Value JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(const Json::Value &json, const strstrmap &changeNameColumns)
+{
+	Json::Value changeThisThen = json;
+	replaceColumnNamesInDragNDropFilterJSONRef(changeThisThen, changeNameColumns);
+	return changeThisThen;
+}
+
+stringvec JsonUtilities::jsonStringArrayToVec(const Json::Value & jsonStrings)
 {
 	if(!jsonStrings.isArray())	throw std::runtime_error("jsonStringArrayToVec expected array!");
 

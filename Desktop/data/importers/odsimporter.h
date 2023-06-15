@@ -37,7 +37,7 @@ public:
 
 protected:
 	// Implmemtation of Inporter base class.
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(int)> progressCallback);
+	virtual ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback);
 
 private:
 	static const std::string _contentFile;
