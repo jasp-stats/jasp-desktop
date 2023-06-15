@@ -1277,9 +1277,9 @@ void EngineSync::processLogCfgRequests()
 	}
 }
 
-void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
+void EngineSync::cleanRestart()
 {
-	Log::log() << "EngineSync::cleanUpAfterClose(" << (forgetAnalyses ? "forgetting analyses":"remembering analyses") << ")" << std::endl;
+	Log::log() << "EngineSync::cleanUpAfterClose() )" << std::endl;
 	try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
 	//try {	pauseEngines(true); }
 	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
@@ -1303,7 +1303,7 @@ void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
 	TempFiles::clearSessionDir();
 
 	for(EngineRepresentation * e : _engines)
-		e->cleanUpAfterClose(forgetAnalyses);
+		e->cleanUpAfterClose(true);
 
 	try { resumeEngines(); }
 	//try { restartEngines(); }
