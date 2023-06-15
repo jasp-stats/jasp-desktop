@@ -9,7 +9,7 @@
 ALTNavTagBase::ALTNavTagBase(QQuickItem* parent) : QQuickItem{parent}
 {
 	//connect to control to get input updates so we may update tag accordingly
-	connect(ALTNavControl::getInstance(), &ALTNavControl::altNavInputChanged, this, &ALTNavTagBase::updateTagText);
+	connect(ALTNavControl::ctrl(), &ALTNavControl::altNavInputChanged, this, &ALTNavTagBase::updateTagText);
 	setActiveFocusOnTab(false);
 }
 
@@ -27,7 +27,7 @@ void ALTNavTagBase::setFullTag(QString fullTag)
 
 void ALTNavTagBase::updateTagText()
 {
-	int len = _fullTag.length() - ALTNavControl::getInstance()->getCurrentALTNavInput().length();
+	int len = _fullTag.length() - ALTNavControl::ctrl()->getCurrentALTNavInput().length();
 	if (len >= 0)
 	{
 		_tagText = _fullTag.last(len);

@@ -15,13 +15,13 @@ size_t DatabaseImportColumn::size() const
 	return _data.size();
 }
 
-std::vector<std::string> DatabaseImportColumn::allValuesAsStrings() const 
+const stringvec & DatabaseImportColumn::allValuesAsStrings() const 
 { 
-	stringvec strs;
-	strs.reserve(_data.size());
+	static stringvec strs;
+	strs.resize(_data.size());
 	
-	for(const QVariant & v : _data)
-		strs.push_back(fq(v.toString()));
+	for(size_t i=0; i<_data.size(); i++)
+		strs[i] = fq(_data[i].toString());
 	
 	return  strs;
 }

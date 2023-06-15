@@ -40,12 +40,13 @@ public:
 	Q_INVOKABLE QVariant	columnIcon(int column)					const				{ return DataSetPackage::pkg()->getColumnIcon(column);								}
 	Q_INVOKABLE QString		columnName(int column)					const;
 	Q_INVOKABLE void		setColumnName(int col, QString name)	const;
-	Q_INVOKABLE QVariant	getColumnTypesWithCorrespondingIcon()	const				{ return DataSetPackage::pkg()->getColumnTypesWithCorrespondingIcon();				}
+	Q_INVOKABLE QVariant	getColumnTypesWithIcons()				const				{ return DataSetPackage::pkg()->getColumnTypesWithIcons();							}
 	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const				{ return DataSetPackage::pkg()->isColumnUsedInEasyFilter(column);					}
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
 	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType)	{ return DataSetPackage::pkg()->setColumnTypeFromQML(columnIndex, newColumnType);	}
 	Q_INVOKABLE void		resizeData(int row, int col)								{		 DataSetPackage::pkg()->resizeData(row, col);								}
 
+	//the following column-int passthroughs will fail once columnfiltering is added...
 	columnType				getColumnType(size_t column)			const				{ return DataSetPackage::pkg()->getColumnType(column);								}
 	std::string				getColumnName(size_t col)				const				{ return DataSetPackage::pkg()->getColumnName(col);									}
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
@@ -53,28 +54,25 @@ public:
 	QStringList				getColumnValuesAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsStringList(col);					}
 	QList<QVariant>			getColumnValuesAsDoubleList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsDoubleList(col);					}
 	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
-	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
-	void					columnInsert(	size_t column	);
-	void					columnDelete(	size_t column	);
-	void					rowInsert(		size_t row		);
-	void					rowDelete(		size_t row		);
 
-				bool		showInactive()							const				{ return _showInactive;	}
+	bool					showInactive()							const				{ return _showInactive;	}
+
+	QString					insertColumnSpecial(int column, bool computed, bool R);
 
 signals:
-				void		columnsFilteredCountChanged();
-				void		showInactiveChanged(bool showInactive);
-				void		columnTypeChanged(QString colName);
-				void		labelChanged(QString columnName, QString originalLabel, QString newLabel);
-				void		labelsReordered(QString columnName);
+	void					columnsFilteredCountChanged();
+	void					showInactiveChanged(bool showInactive);
+	void					columnTypeChanged(QString colName);
+	void					labelChanged(QString columnName, QString originalLabel, QString newLabel);
+	void					labelsReordered(QString columnName);
 
-				void		renameColumnDialog(int columnIndex);
+	void					renameColumnDialog(int columnIndex);
 
 public slots:
-				void		setShowInactive(bool showInactive);
+	void					setShowInactive(bool showInactive);
 				//void		onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles) { if( roles.count(int(DataSetPackage::specialRoles::filter)) > 0) invalidateFilter(); }
 
 

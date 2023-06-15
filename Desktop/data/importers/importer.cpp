@@ -6,51 +6,62 @@
 
 Importer::~Importer() {}
 
-void Importer::loadDataSet(const std::string &locator, boost::function<void(int)> progressCallback)
+void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	DataSetPackage::pkg()->beginLoadingData();
 
+	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
-
+	JASPTIMER_STOP(Importer::loadDataSet loadFile);
+	
+	JASPTIMER_RESUME(Importer::loadDataSet createDataSetAndLoad);
 	int columnCount = importDataSet->columnCount();
-	DataSetPackage::pkg()->createDataSet(); // this is required in case the loading of the data fails so that the created dataset can later be freed
 
 	if (columnCount > 0)
 	{
 		int rowCount = importDataSet->rowCount();
 
+		DataSetPackage::pkg()->createDataSet();
+		DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
 		DataSetPackage::pkg()->setDataSetSize(columnCount, rowCount);
 
+
 		int colNo = 0;
-		for (ImportColumn *importColumn : *importDataSet)
+		for (ImportColumn *& importColumn : *importDataSet)
 		{
-			progressCallback(50 + 50 * colNo / columnCount);
+			progressCallback(50 + 25 * colNo / columnCount);
 			initColumn(colNo, importColumn);
+			delete importColumn;
+			importColumn = nullptr;
 			colNo++;
 		}
-	}
 
+		DataSetPackage::pkg()->dataSet()->endBatchedToDB([&](float f){ progressCallback(75 + f * 25); });
+	}
+	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
+	
+	importDataSet->clearColumns();
 	delete importDataSet;
 	DataSetPackage::pkg()->endLoadingData();
 }
 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 {
+	JASPTIMER_SCOPE(Importer::initColumn);
 	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings());
 }
 
-void Importer::syncDataSet(const std::string &locator, boost::function<void(int)> progress)
+void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
-	ImportDataSet *importDataSet	= loadFile(locator, progress);
-	bool rowCountChanged			= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
+	ImportDataSet *	importDataSet	= loadFile(locator, progress);
+	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
+	int				syncColNo		= 0;
 
 	std::vector<std::pair<std::string, int> >	newColumns;
 	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
-	std::map<std::string, std::string>			changeNameColumns; //origname -> newname
-	std::vector<std::string>					orgColumnNames(DataSetPackage::pkg()->getColumnNames(false)); //Non-computed
-	std::set<std::string>						missingColumns(orgColumnNames.begin(), orgColumnNames.end());
-
-	int syncColNo		= 0;
+	strstrmap									changeNameColumns; //origname -> newname
+	stringvec									orgColumnNames(DataSetPackage::pkg()->getColumnNames());
+	stringset									missingColumns(orgColumnNames.begin(), orgColumnNames.end());
 
 	//If the following gives errors trhen it probably should be somewhere else:
 	for (const std::string & colName : orgColumnNames)
@@ -92,7 +103,7 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(int)
 				}
 			}
 
-	for (auto changeNameColumnIt : changeNameColumns)
+	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)

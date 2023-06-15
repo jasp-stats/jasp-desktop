@@ -287,7 +287,7 @@ FocusScope
 									height					: menuItem.height - (2 * menu._iconPad)
 									width					: menuItem.height - menu._iconPad
 
-									source					: model.modelData !== undefined ? "" : menuImageSource
+									source					: menu.props.hasOwnProperty("icons") ? menu.props["icons"][index] : (model.modelData !== undefined ? "" : menuImageSource)
 									smooth					: true
 									mipmap					: true
 									fillMode				: Image.PreserveAspectFit

@@ -4,7 +4,7 @@
 ALTNavScope* ALTNavigation::qmlAttachedProperties(QObject *object)
 {
 	ALTNavScope* scope = new ALTNavScope(object);
-	ALTNavControl::getInstance()->registrate(scope, object);
+	ALTNavControl::ctrl()->registrate(scope, object);
 	return scope;
 }
 
