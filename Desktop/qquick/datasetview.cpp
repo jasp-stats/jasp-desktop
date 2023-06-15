@@ -1436,7 +1436,10 @@ void DataSetView::edit(QModelIndex here)
 	Log::log() << "DataSetView::edit(row=" << here.row() << ", col=" << here.column() << ")" << std::endl;
 
 	if(editing())
+	{
+		commitEdit(_model->index(_prevEditRow, _prevEditCol), _editItemContextual->item->property("text"));
 		destroyEditItem();
+	}
 
 	setEditing(true);
 
@@ -1444,11 +1447,11 @@ void DataSetView::edit(QModelIndex here)
 
 }
 
-void DataSetView::editFinishedKeepEditing(QModelIndex here, QVariant editedValue)
+void DataSetView::commitEdit(QModelIndex here, QVariant editedValue)
 {
 	if(!editing())
 	{
-		Log::log() << "editFinishedKeepEditing called while not editing..." << std::endl;
+		Log::log() << "commitEdit called while not editing..." << std::endl;
 	}
 	else
 	{
@@ -1470,7 +1473,7 @@ void DataSetView::editFinished(QModelIndex here, QVariant editedValue)
 	}
 	else
 	{
-		editFinishedKeepEditing(here, editedValue);
+		commitEdit(here, editedValue);
 
 		setEditing(false);
 
