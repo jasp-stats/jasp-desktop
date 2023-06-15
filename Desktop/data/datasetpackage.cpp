@@ -1005,7 +1005,7 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bo
 	{
 //		if(emitHeaderChanged)
 //			emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-		//feels bad
+		//headerDataChanged results in segmentation fault, so we reset instead. feels bad might be temporary
 		beginResetModel();
 		endResetModel();
 		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex)->name()));
