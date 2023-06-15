@@ -41,19 +41,18 @@ public:
 	int	 slaveNo() const { return _slaveNo; }
 	void sendString(std::string message);
 
-
 	typedef engineAnalysisStatus Status;
 
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();
 
-	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideDataSet()->column(columnName).getColumnType()); }
+	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideDataSet()->column(columnName)->type()); }
 
 	//return true if changed:
-	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
-	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
-	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->column(columnName)->overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);				}
+	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);				}
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);			}
 
 	bool isColumnNameOk(std::string columnName);
 
@@ -84,12 +83,12 @@ private: // Methods:
 	void runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void runRCodeCommander(		  std::string   rCode																						);
 
-
 	void stopEngine();
 	void pauseEngine(	const Json::Value & jsonRequest);
 	void resumeEngine(	const Json::Value & jsonRequest); 
 	void sendEnginePaused();
-	void sendEngineResumed();
+	void sendEngineResumed(bool justReloadedData = false);
+	void sendEngineLoadingData();
 	void sendEngineStopped();
 
 	void saveImage();
@@ -98,12 +97,12 @@ private: // Methods:
 	void removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void sendAnalysisResults();
-	void sendFilterResult(		int filterRequestId,				const std::vector<bool> & filterResult, const std::string & warning = "");
+	void sendFilterResult(		int filterRequestId);
 	void sendFilterError(		int filterRequestId,				const std::string & errorMessage);
 	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
 	void sendRCodeError(		int rCodeRequestId);
 
-	DataSet *provideDataSet();
+	DataSet * provideDataSet();
 
 	void provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
 	void provideStateFileName(											std::string & root,	std::string & relativePath);
@@ -112,44 +111,46 @@ private: // Methods:
 	void reloadColumnNames();
 
 private: // Data:
-	static Engine	*	_EngineInstance;
-	const int			_slaveNo;
-	const unsigned long	_parentPID = 0;
-	engineState			_engineState	= engineState::initializing,
-						_lastRequest	= engineState::initializing;
+	static Engine		*	_EngineInstance;
+	const int				_slaveNo;
+	const unsigned long		_parentPID			= 0;
+	DataSet				*	_dataSet			= nullptr;
+	DatabaseInterface	*	_db					= nullptr;
+	engineState				_engineState		= engineState::initializing,
+							_lastRequest		= engineState::initializing;
 
-	Status				_analysisStatus = Status::empty;
+	Status					_analysisStatus		= Status::empty;
 
-	int					_analysisId,
-						_analysisRevision,
-						_progress,
-						_ppi		= 96,
-						_numDecimals = 3;
+	int						_analysisId,
+							_analysisRevision,
+							_progress,
+							_ppi				= 96,
+							_numDecimals		= 3;
 
-	bool				_developerMode		= false,
-						_fixedDecimals		= false,
-						_exactPValues		= false,
-						_normalizedNotation	= true;
+	bool					_developerMode		= false,
+							_fixedDecimals		= false,
+							_exactPValues		= false,
+							_normalizedNotation	= true;
 
-	std::string			_analysisName,
-						_analysisTitle,
-						_analysisDataKey,
-						_analysisOptions,
-						_analysisResultsMeta,
-						_analysisStateKey,
-						_analysisResultsString,
-						_resultFont,
-						_imageBackground	= "white",
-						_analysisRFile		= "",
-						_dynamicModuleCall	= "",
-						_langR				= "en";
+	std::string				_analysisName,
+							_analysisTitle,
+							_analysisDataKey,
+							_analysisOptions,
+							_analysisResultsMeta,
+							_analysisStateKey,
+							_analysisResultsString,
+							_resultFont,
+							_imageBackground	= "white",
+							_analysisRFile		= "",
+							_dynamicModuleCall	= "",
+							_langR				= "en";
 
-	Json::Value			_imageOptions,
-						_analysisResults;
+	Json::Value				_imageOptions,
+							_analysisResults;
 
-	IPCChannel *		_channel = nullptr;
+	IPCChannel			*	_channel = nullptr;
 	
-	ColumnEncoder	*	_extraEncodings = nullptr;
+	ColumnEncoder		*	_extraEncodings = nullptr;
 };
 
 #endif // ENGINE_H

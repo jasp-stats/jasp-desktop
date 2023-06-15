@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick 2.9
 
 
-Item
+FocusScope
 {
 								id:						filterConstructor
 								objectName:				"computedColumnsConstructor"
@@ -51,10 +51,7 @@ Item
 
 		if(allCorrect )
 		{
-			if(noFormulas)
-				hints.filterText += qsTr("Computed columns code clear(ed)")
-			else
-				hints.filterText += qsTr("Computed columns code applied")
+			hints.filterText += noFormulas ? qsTr("Computed columns code clear(ed)") : qsTr("Computed columns code applied")
 
 			filterConstructor.rCode = scriptColumn.convertToR()
 
@@ -225,7 +222,7 @@ Item
 			MouseArea
 			{
 				anchors.fill: parent
-				onPressed: { scriptColumn.focus = true; mouse.accepted = false; }
+				onPressed: (mouse)=>{ scriptColumn.focus = true; mouse.accepted = false; }
 			}
 
 			DropTrash
@@ -280,13 +277,14 @@ Item
 
 			Text
 			{
-				id:							rLetter
-				text:						"R:"
-				color:						jaspTheme.textEnabled
-				anchors.left:				parent.left
-				anchors.verticalCenter:		parent.verticalCenter
-				anchors.leftMargin:			4
-				font.pixelSize:				filterConstructor.fontPixelSize
+				id:						rLetter
+				text:					"<i>R:</i>"
+				color:					jaspTheme.textEnabled
+				anchors.left:			parent.left
+				anchors.verticalCenter:	parent.verticalCenter
+				anchors.leftMargin:		4
+				font:					jaspTheme.fontRCode
+				
 			}
 
 			TextEdit
@@ -301,8 +299,7 @@ Item
                 verticalAlignment:		Text.AlignVCenter
 
 				textFormat:				Text.PlainText
-				font.family:			jaspTheme.fontCode
-				font.pixelSize:			filterConstructor.fontPixelSize
+				font:					jaspTheme.fontRCode
 				selectByMouse:			true
 				selectByKeyboard:		true
 				readOnly:				true
@@ -366,33 +363,16 @@ Item
 	function jsonChanged()
 	{
 		//.replace(/\s/g,'')
-		//console.log("last: ",jsonConverterComputedColumns.lastProperlyConstructedJSON.replace(/\s/g,''))
+		//console.log("last: ",jsonConverterComputedColumns.lastProperlyconstructorJson.replace(/\s/g,''))
 		//console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
 
-		return jsonConverterComputedColumns.lastProperlyConstructedJSON !== JSON.stringify(returnFilterJSON())
+		return jsonConverterComputedColumns.lastProperlyconstructorJson !== JSON.stringify(returnFilterJSON())
 	}
 
 	JSONtoFormulas
 	{
 		id: jsonConverterComputedColumns
 		objectName: "jsonConverterComputedColumns"
-		property string jaspsfilterConstructorJSON:  "{\"formulas\":[]}"
-		property string lastProperlyConstructedJSON: "{\"formulas\":[]}"
-
-		onJaspsfilterConstructorJSONChanged:
-		{
-			//console.log("onJaspsfilterConstructorJSONChanged ",jaspsfilterConstructorJSON)
-
-			if(jsonConverterComputedColumns.jaspsfilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
-			{
-				parent.initializeFromJSON(jsonConverterComputedColumns.jaspsfilterConstructorJSON)
-				filterConstructor.checkAndApplyFilter()
-			}
-
-			jsonConverterComputedColumns.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
-		}
-
-
 
 		visible: false
 	}
@@ -400,10 +380,13 @@ Item
 	function returnFilterJSON()				{ return scriptColumn.convertToJSON() }
 	function initializeFromJSON(jsonString)
 	{
+
+		messages.log("ComputeColumnsConstructor.qml initializeFromJSON got: '" + jsonString + "'");
+
 		trashCan.destroyAll();
 		if(jsonString !== "")
 		{
-			jsonConverterComputedColumns.convertJSONtoFormulas(JSON.parse(jsonString))
+			jsonConverterComputedColumns.convertJSONtoFormulas(jsonString)
 			checkAndApplyFilter()
 		}
 

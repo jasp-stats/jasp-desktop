@@ -49,7 +49,7 @@ public:
 
 	~MenuModel()
 	{
-		if(_entries) delete _entries;
+		delete _entries;
 		_entries = nullptr;
 	}
 

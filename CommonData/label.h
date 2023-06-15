@@ -1,64 +1,74 @@
-//
-// Copyright (C) 2013-2018 University of Amsterdam
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 #ifndef LABEL_H
 #define LABEL_H
 
 #include <string>
+#include <json/json.h>
+#include "datasetbasenode.h"
 
-///
+class Column;
+class DatabaseInterface;
+
+/// A label
+/// 
 /// Label is a class that stores the value of a column if it is not a Scale (a Nominal Int, Nominal Text, or Ordinal).
-/// The value is either an integer or a string.
+/// The original value can be an integer, float or string, this is stored in a json
 ///
-/// If it is an integer, the _intValue is this value, and _stringValue is at first the corresponding string.
-/// _stringValue can be then changed in the Variable tab in JASP.
+/// Internally for all non-scalar columns they are stored as ints in Column::_ints, the value of a Label corresponds to that
+/// Beyond that there are some extra attributes like a description or whether it is currently allowed by the generated filter.
 ///
-/// If the value is a string, _intValue is the key that maps the label with the AsInts property of the column object.
-/// _stringValue is then the value, that can be changed in the Variable tab in JASP. If changed the original value
-/// is saved in the _orgStringValues static property of the Labels class.
-///
-class Label
+/// The order of the labels in R is determined by their order in Column::_labels,
+/// and Column makes sure (_dbUpdateLabelOrder) the order is stored in the database when it is changed.
+class Label : public DataSetBaseNode
 {
-public:
-	static const int MAX_LABEL_LENGTH = 128;
-	Label(const std::string &label, int value, bool filterAllows, bool isText = true);
-	Label(int value);
-	Label();
+public:	
+	static const int MAX_LABEL_DISPLAY_LENGTH = 64; //we can store the rest in description if necessary
 
-	std::string text() const;
-	bool hasIntValue() const;
-	int value() const;
-    void setLabel(const std::string &label);
-	void setValue(int value, bool labelIsInt = true);
-	Label& operator=(const Label &label);
+								Label(Column * column);
+								Label(Column * column, int value);
+								Label(Column * column, const std::string & label, int value, bool filterAllows = true, const std::string & description = "", const Json::Value & originalValue = Json::nullValue, int order = -1, int id = -1);
 
-	bool filterAllows() const { return _filterAllow; }
-	void setFilterAllows(bool allowFilter) { _filterAllow = allowFilter; }
+			void				dbDelete();
+			void				dbCreate();
+			void				dbLoad(int labelId = -1);
+			void				dbUpdate();
+
+			Label			&	operator=(const Label &label);
+
+			int					id()						const	{ return _id;				}
+	const	std::string		&	description()				const	{ return _description;		}
+			std::string			label(bool shorten = false)	const	{ return !shorten || _label.size() <= MAX_LABEL_DISPLAY_LENGTH ? _label : _label.substr(0, MAX_LABEL_DISPLAY_LENGTH);	}
+			int					value()						const	{ return _value;			}
+			int					order()						const	{ return _order;			}
+			bool				filterAllows()				const	{ return _filterAllows;		}
+	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
+
+			std::string			originalValueAsString(bool fancyEmptyValue = false)		const;
+			std::string			str() const;
+
+			void				setValue(			int value);
+			void				setOrder(			int order);
+			void				setId(				int id) { _id = id; }
+			bool				setLabel(			const std::string & label);
+			void				setOriginalValue(	const Json::Value & originalValue);
+			void				setDescription(		const std::string & description);
+			void				setFilterAllows(	bool allowFilter);
+			void				setInformationFromDB(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
+
+			DatabaseInterface	& db();
+	const	DatabaseInterface	& db() const;
 
 private:
 
-	bool _hasIntValue;
-	int _intValue;
-	char _stringValue[MAX_LABEL_LENGTH];
-	int  _stringLength;
+	Column		*	_column;
 
-    void _setLabel(const std::string &label);
+	Json::Value		_originalValue	= Json::nullValue;	///< Could contain integers, floats or strings. Arrays and objects are undefined.
 
-	bool _filterAllow = true;
+	int				_id				= -1,	///< Database id
+					_order			= -1,	///< Should correspond to its position in Column::_labels
+					_value			= -1;	///< value of label, should always map to Column::_ints
+	std::string		_label,					///< What to display in the dataview
+					_description;			///< Extended information for tooltip in dataview and of course in the variableswindow
+	bool			_filterAllows	= true;	///< Used in generating filters for when users disable and enable certain labels/levels
 };
 
 #endif // LABEL_H

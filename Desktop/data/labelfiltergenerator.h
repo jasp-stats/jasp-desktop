@@ -23,9 +23,6 @@ public slots:
 	void easyFilterConstructorRCodeChanged(QString newRScript);
 
 private:
-	///Is at least one label no longer allowed?
-	bool		labelNeedsFilter(Column & column) { return !column.allLabelsPassFilter(); }
-
 	///Generates sub-filter for specified column
 	std::string	generateLabelFilter(size_t col);
 

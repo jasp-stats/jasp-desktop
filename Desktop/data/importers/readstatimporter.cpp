@@ -67,7 +67,7 @@ bool ReadStatImporter::extSupported(const std::string & ext)
 }
 
 
-ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::function<void(int)> progressCallback)
+ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	Log::log() << "ReadStatImporter loads " << locator << std::endl;
 	
@@ -123,6 +123,8 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 
 void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 {
+	JASPTIMER_SCOPE(ReadStatImporter::initColumn);
+	
 	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
 
 	col->tryNominalMinusText(); //If we converted some doubles to strings as value because spss has weird datatypes then maybe they are ints anyway. so try to convert it back to nominal in that case.

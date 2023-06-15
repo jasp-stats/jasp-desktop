@@ -1,80 +1,86 @@
 #include "datasetpackagesubnodemodel.h"
 #include "datasetpackage.h"
+#include "log.h"
 
-DataSetPackageSubNodeModel::DataSetPackageSubNodeModel(parIdxType proxyType, int proxyParentColumn)
-	: QIdentityProxyModel(DataSetPackage::pkg()), _proxyType(proxyType), _proxyParentColumn(proxyParentColumn)
+DataSetPackageSubNodeModel::DataSetPackageSubNodeModel(const QString & whatAmI, DataSetBaseNode * node)
+	: QIdentityProxyModel(DataSetPackage::pkg()), _node(node), _whatAmI(whatAmI)
 {
 	beginResetModel();
 	setSourceModel(DataSetPackage::pkg());
 	endResetModel();
 
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,	this,	&DataSetPackageSubNodeModel::modelWasReset);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,			this,	&DataSetPackageSubNodeModel::modelWasReset);
 }
 
 
 QModelIndex	DataSetPackageSubNodeModel::mapToSource(const QModelIndex & proxyIndex)	const
 {
-	QModelIndex possibleParent = DataSetPackage::pkg()->rootModelIndexForType(_proxyType, _proxyParentColumn);
+	if(!_node)
+		return QModelIndex();
+	
+	QModelIndex sourceParent = DataSetPackage::pkg()->indexForSubNode(_node);
 
 	if(!proxyIndex.isValid())
-		return possibleParent;
+		return sourceParent;
 
-	return DataSetPackage::pkg()->index(proxyIndex.row(), proxyIndex.column(), possibleParent);
+	return DataSetPackage::pkg()->index(proxyIndex.row(), proxyIndex.column(), sourceParent);
 }
 
 QModelIndex	DataSetPackageSubNodeModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-	QModelIndex sourceParent = sourceIndex.parent();
+	if(!_node)
+		return QModelIndex();
+	
+	QModelIndex sourceParentGiven = sourceIndex.parent(),
+				sourceParentKnown = DataSetPackage::pkg()->indexForSubNode(_node);
 
-	if(	DataSetPackage::pkg()->parIdxTypeIs(sourceIndex)	!= DataSetPackage::parIdxTypeChildForParent(_proxyType)	||
-		DataSetPackage::pkg()->parIdxTypeIs(sourceParent)	!= _proxyType											||
-		sourceParent.column()								!= _proxyParentColumn
-	)
+	if(	sourceParentGiven != sourceParentKnown)
 		return QModelIndex();
 
 	return createIndex(sourceIndex.row(), sourceIndex.column(), nullptr);
 }
 
-/*
 int DataSetPackageSubNodeModel::rowCount(const QModelIndex & parent) const
 {
-	return sourceModel()->rowCount(mapToSource(parent));
+	int row = !_node ? 0 :DataSetPackage::pkg()->rowCount(mapToSource(parent));
+	//Log::log() << "DataSetPackageSubNodeModel("<< _whatAmI.toStdString() << ")::rowCount(" << ( _node ? dataSetBaseNodeTypeToString(_node->nodeType()) : "no node") << ") = " << row << std::endl;
+	return row;
 }
 
-int DataSetPackageSubNodeModel::columnCount(const QModelIndex &parent) const
+int DataSetPackageSubNodeModel::columnCount(const QModelIndex & parent) const
 {
-	return sourceModel()->columnCount(mapToSource(parent));
+	int col = !_node ? 0 : DataSetPackage::pkg()->columnCount(mapToSource(parent));
+	//Log::log() << "DataSetPackageSubNodeModel("<< _whatAmI.toStdString() << ")::columnCount(" << ( _node ? dataSetBaseNodeTypeToString(_node->nodeType()) : "no node")  << ") = " << col << std::endl;
+	return col;
 }
 
-QModelIndex DataSetPackageSubNodeModel::parent(const QModelIndex &index) const
+QString DataSetPackageSubNodeModel::insertColumnSpecial(int column, bool computed, bool R)
 {
-	return mapFromSource(sourceModel()->parent(mapToSource(index)));
+	int sourceColumn = column > columnCount() ? columnCount() : column;
+	sourceColumn = mapToSource(index(0, sourceColumn)).column();
+	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
 }
 
-QModelIndex DataSetPackageSubNodeModel::index(int row, int column, const QModelIndex & ) const
+QString DataSetPackageSubNodeModel::appendColumnSpecial(bool computed, bool R)
 {
-	//We do not care about parent here because it shouldnt matter
-	return createIndex(row, column, nullptr);
-}*/
-
-int DataSetPackageSubNodeModel::proxyParentColumn() const
-{
-	return _proxyParentColumn;
-}
-
-void DataSetPackageSubNodeModel::setProxyParentColumn(int newProxyParentColumn)
-{
-	if (_proxyParentColumn == newProxyParentColumn)
-		return;
-
-	beginResetModel();
-	_proxyParentColumn = newProxyParentColumn;
-	emit proxyParentColumnChanged();
-	endResetModel();
+	return DataSetPackage::pkg()->appendColumnSpecial(computed, R);
 }
 
 void DataSetPackageSubNodeModel::modelWasReset()
 {
-	if(_proxyParentColumn >= DataSetPackage::pkg()->columnCount())
-		setProxyParentColumn(std::max(0, DataSetPackage::pkg()->columnCount() - 1));
+	//The model was reset, which means _node might no longer exist!
+	if(!DataSetPackage::pkg()->dataSetBaseNodeStillExists(_node))
+		selectNode(nullptr);
+	
+}
+
+void DataSetPackageSubNodeModel::selectNode(DataSetBaseNode * node)
+{
+	if (_node == node)
+		return;
+
+	beginResetModel();
+	_node = node;
+	emit nodeChanged();
+	endResetModel();
 }
