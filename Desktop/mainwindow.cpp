@@ -563,6 +563,7 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnAfter,	DataSetView::lastInstancedDataSetView(),	&DataSetView::columnComputedInsertAfter);
 	connect(_ribbonModel, &RibbonModel::dataInsertColumnBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::columnInsertBefore);
 	connect(_ribbonModel, &RibbonModel::dataInsertColumnAfter,			DataSetView::lastInstancedDataSetView(),	&DataSetView::columnInsertAfter);
+	connect(_ribbonModel, &RibbonModel::finishCurrentEdit,				DataSetView::lastInstancedDataSetView(),	&DataSetView::finishCurrentEdit);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertBefore);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
 	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDelete);
@@ -1213,15 +1214,15 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setWelcomePageVisible(true);
 			closeVariablesPage();
 
-			if(!_applicationExiting)
-				_engineSync->cleanUpAfterClose(true);
-
 			_resultsJsInterface->resetResults();
 			_analyses->setVisible(false);
 			_analyses->clear();
 			_package->dbDelete();
 			_package->reset(false);
 			_ribbonModel->showStatistics();
+
+			if(!_applicationExiting)
+				_engineSync->cleanRestart();
 
 			if (_applicationExiting)	
 				emit exitSignal();
