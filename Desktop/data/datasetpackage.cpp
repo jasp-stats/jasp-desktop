@@ -1003,8 +1003,11 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bo
 
 	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
 	{
-		if(emitHeaderChanged)
-			emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+//		if(emitHeaderChanged)
+//			emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+		//feels bad
+		beginResetModel();
+		endResetModel();
 		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex)->name()));
 	}
 	else
