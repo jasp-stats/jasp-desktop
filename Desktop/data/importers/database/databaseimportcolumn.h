@@ -12,7 +12,7 @@ public:
 									~DatabaseImportColumn()	override;
 
 	size_t							size()									const	override;
-	std::vector<std::string>		allValuesAsStrings()					const	override;
+	const stringvec				&	allValuesAsStrings()					const	override;
 	void							addValue(const QVariant & value);
 	const std::vector<QVariant> &	getValues()								const;
 	QMetaType						type()									const { return _type; }

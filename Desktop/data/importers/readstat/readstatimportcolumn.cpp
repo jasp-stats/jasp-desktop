@@ -36,16 +36,15 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 	case columnType::nominal:		return std::to_string(_ints[row]);
 	case columnType::nominalText:	return _strings[row];
 	}
-
 }
 
-std::vector<std::string> ReadStatImportColumn::allValuesAsStrings() const
+const stringvec & ReadStatImportColumn::allValuesAsStrings() const
 {
-	std::vector<std::string> strs;
-	strs.reserve(size());
+	static stringvec strs;
+	strs.resize(size());
 
 	for(size_t row = 0; row<size(); row++)
-		strs.push_back(valueAsString(row));
+		strs[row] = valueAsString(row);
 
 	return strs;
 }

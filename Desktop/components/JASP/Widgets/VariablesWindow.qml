@@ -27,7 +27,7 @@ import "."
 FocusScope
 {
 	id:			variablesContainer
-	visible:	labelModel.visible
+	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
 	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 10 + (jaspTheme.generalAnchorMargin * 2)
 
@@ -236,7 +236,7 @@ FocusScope
 								z:					0
 								hoverEnabled: 		true
 
-								onClicked:
+								onClicked:			(mouse)=>
 								{
 									labelModel.setSelected(rowIndex, mouse.modifiers);
 									selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput

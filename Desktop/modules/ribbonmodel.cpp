@@ -22,6 +22,7 @@
 #include "utilities/messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
+#include "jasptheme.h"
 
 using namespace Modules;
 
@@ -108,36 +109,47 @@ void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule *
 
 void RibbonModel::addSpecialRibbonButtonsEarly()
 {
-	auto * switchData	=	new RibbonButton(this, "Data",			fq(tr("Edit Data")),		"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),		false);
-	addRibbonButtonModel(	new RibbonButton(this, "Analyses",		fq(tr("Analyses")),			"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true),			size_t(RowType::Data)		);
+	//_entriesInsert and _entriesDelete are destroyed by the menumodel destructor when the button gets destroyed.
+	_entriesInsert = new AnalysisEntries(
+	{
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(-1,false,false);		},	"insert-column-before",			fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(-1,false,false);		},	"insert-column-after",			fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(-1);					},	"insert-row-before",			fq(tr("Insert row before")),	true,		"menu-row-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(-1);						},	"insert-row-after",				fq(tr("Insert row after")),		true,		"menu-row-insert-after"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "NotR.png"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	false);	},	"insert-column-NotR-before",	fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	false);	},	"insert-column-NotR-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "R.png"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	true);	},	"insert-column-R-before",		fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	true);	},	"insert-column-R-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
 
+	});
+	
+	_entriesDelete = new AnalysisEntries(
+	{
+		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},				"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
+		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove")
+	});
+		
+	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),				"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true);
+	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),			"data-button.svg",			false, [&](){ emit showData(); },											fq(tr("Switch JASP to data editing mode")),		false);
+	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),				"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },		fq(tr("Open a workspace without data")),			true);
+	_dataResizeButton		= new RibbonButton(this, "Data-Resize",				fq(tr("Resize Data")),			"data-button-resize.svg",	false, [&](){ emit resizeData(); },											fq(tr("Resize your dataset")),						false);
+	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),				"data-button-insert.svg",	_entriesInsert,																	fq(tr("Insert empty columns or rows")));
+	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),				"data-button-erase.svg",	_entriesDelete,																	fq(tr("Remove columns or rows")));
 
-	auto * newData		=	new RibbonButton(this, "Data-New",		fq(tr("New Data")),			"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },			fq(tr("Open a workspace without data")),			true);
-	//auto * insertData	=	new RibbonButton(this, "Data-Insert",	fq(tr("Insert")),			"data-button-insert.svg",	insertDataEntries,														fq(tr("")),											false);
-	//auto * eraseData	=	new RibbonButton(this, "Data-Erase",	fq(tr("Erase")),			"data-button-erase.svg",	eraseDataEntries,														fq(tr("")),											false);
-	auto * resizeDataB	=	new RibbonButton(this, "Data-Resize",	fq(tr("Resize Data")),		"data-button-resize.svg",	false, [&](){ emit resizeData(); },										fq(tr("Resize your dataset")),						false);
-	//auto * externalEdit	=	new RibbonButton(this, "Data-External",	fq(tr("External Editor")),	"data-button-external.svg",	false, [&](){ DataSetPackage::pkg()->setSynchingExternally(true);  },	fq(tr("Open data in external editor")),				false);
-	//auto * internalEdit	=	new RibbonButton(this, "Data-Internal", fq(tr("Editing in JASP")),	"data-button-internal.svg",	false, [&](){ DataSetPackage::pkg()->setSynchingExternally(false); },	fq(tr("Stop synchronizing with external data")),	false);
+	connect(this, &RibbonModel::dataLoadedChanged, _dataSwitchButton,		&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged, _dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
+	connect(this, &RibbonModel::dataLoadedChanged, _insertButton,			&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged, _removeButton,			&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged, _dataResizeButton,		&RibbonButton::setEnabled);
 
-	connect(this, &RibbonModel::dataLoadedChanged, switchData,		&RibbonButton::setEnabled);
-	connect(this, &RibbonModel::dataLoadedChanged, newData,			[=](bool loaded){ newData->setEnabled(	 !loaded); });
-	//connect(this, &RibbonModel::dataLoadedChanged, insertData,		&RibbonButton::setEnabled);
-	//connect(this, &RibbonModel::dataLoadedChanged, eraseData,		&RibbonButton::setEnabled);
-	connect(this, &RibbonModel::dataLoadedChanged, resizeDataB,		&RibbonButton::setEnabled);
-
-	//connect(this, &RibbonModel::dataLoadedChanged,	externalEdit,	[=](bool loaded) { externalEdit->setEnabled(!DataSetPackage::pkg()->synchingExternally()); });
-	//connect(this, &RibbonModel::dataLoadedChanged,	internalEdit,	[=](bool loaded) { internalEdit->setEnabled(DataSetPackage::pkg()->synchingExternally()); });
-
-	//connect(DataSetPackage::pkg(),		&DataSetPackage::synchingExternallyChanged,			externalEdit,	[=]() { externalEdit->setEnabled(!DataSetPackage::pkg()->synchingExternally()); });
-	//connect(DataSetPackage::pkg(),		&DataSetPackage::synchingExternallyChanged,			internalEdit,	[=]() { internalEdit->setEnabled( DataSetPackage::pkg()->synchingExternally()); });
-
-	addRibbonButtonModel(switchData,	size_t(RowType::Analyses));
-	addRibbonButtonModel(newData,		size_t(RowType::Analyses));
-	//addRibbonButtonModel(insertData,	size_t(RowType::Data));
-	//addRibbonButtonModel(eraseData,		size_t(RowType::Data));
-	addRibbonButtonModel(resizeDataB,	size_t(RowType::Data));
-	//addRibbonButtonModel(externalEdit,	size_t(RowType::Data));
-	//addRibbonButtonModel(internalEdit,	size_t(RowType::Data));
+	addRibbonButtonModel(_analysesButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_dataSwitchButton,		size_t(RowType::Analyses));
+	addRibbonButtonModel(_dataNewButton,		size_t(RowType::Analyses));
+	addRibbonButtonModel(_dataResizeButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_insertButton,			size_t(RowType::Data));
+	addRibbonButtonModel(_removeButton,			size_t(RowType::Data));
 }
 
 void RibbonModel::addSpecialRibbonButtonsLate()
@@ -267,8 +279,8 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 void RibbonModel::analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	RibbonButton * button = ribbonButtonModel(fq(module));
-
-	if(button->isSpecial())		button->runSpecial(analysisFunction);
+	
+	if(button->isSpecial())		button->runSpecial(analysisTitle);
 	else						emit analysisClickedSignal(analysisFunction, analysisQML, analysisTitle, module);
 }
 

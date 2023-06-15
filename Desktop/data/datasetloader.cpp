@@ -19,12 +19,10 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "sharedmemory.h"
-#include "dataset.h"
-
 #include "importers/databaseimporter.h"
 #include "importers/csvimporter.h"
 #include "importers/jaspimporter.h"
+#include "importers/jaspimporterold.h"
 #include "importers/odsimporter.h"
 #include "importers/readstatimporter.h"
 
@@ -32,11 +30,10 @@
 
 #include "timers.h"
 #include "utils.h"
+#include "log.h"
 
 using namespace std;
 using namespace ods;
-using namespace boost::interprocess;
-using namespace boost;
 
 string DataSetLoader::getExtension(const string &locator, const string &extension)
 {
@@ -59,7 +56,7 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
-void DataSetLoader::loadPackage(const string &locator, const string &extension, boost::function<void(int)> progress)
+void DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
 
@@ -71,14 +68,19 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
-		JASPImporter::loadDataSet(locator, progress);
+    {
+        bool useOldImporter = JASPImporterOld::isCompatible(locator) != JASPImporterOld::Compatibility::NotCompatible;
+
+        if(useOldImporter)  JASPImporterOld::loadDataSet(locator, progress);
+        else                JASPImporter::loadDataSet(locator, progress);
+	}
 	else
 		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
 
 	JASPTIMER_STOP(DataSetLoader::loadPackage);
 }
 
-void DataSetLoader::syncPackage(const string &locator, const string &extension, boost::function<void(int)> progress)
+void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
 	Utils::sleep(100);
 
@@ -90,9 +92,3 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 		delete importer;
 	}
 }
-
-void DataSetLoader::freeDataSet(DataSet *dataSet)
-{
-	SharedMemory::deleteDataSet(dataSet);
-}
-

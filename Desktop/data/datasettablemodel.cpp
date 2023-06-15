@@ -18,7 +18,7 @@
 
 #include "datasettablemodel.h"
 #include "utilities/qutils.h"
-
+#include "log.h"
 
 DataSetTableModel::DataSetTableModel(bool showInactive) 
 : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel()), _showInactive(showInactive)
@@ -88,26 +88,16 @@ void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vect
 	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, newColNames);
 }
 
-void DataSetTableModel::columnInsert(size_t column)
+QString DataSetTableModel::insertColumnSpecial(int column, bool computed, bool R)
 {
-	QModelIndex idx = mapToSource(index(0, column));
-	DataSetPackage::pkg()->columnInsert(idx.column());
+	if(column >= columnCount())
+		return subNodeModel()->appendColumnSpecial(computed, R);
+
+	int sourceColumn = column > columnCount() ? columnCount() : column;
+	sourceColumn = mapToSource(index(0, sourceColumn)).column();
+
+	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
 }
 
-void DataSetTableModel::columnDelete(size_t column)
-{
-	QModelIndex idx = mapToSource(index(0, column));
-	DataSetPackage::pkg()->columnDelete(idx.column());
-}
 
-void DataSetTableModel::rowInsert(size_t row)
-{
-	QModelIndex idx = mapToSource(index(row, 0));
-	DataSetPackage::pkg()->rowInsert(idx.row());
-}
 
-void DataSetTableModel::rowDelete(size_t row)
-{
-	QModelIndex idx = mapToSource(index(row, 0));
-	DataSetPackage::pkg()->rowDelete(idx.row());
-}

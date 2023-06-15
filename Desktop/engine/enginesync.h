@@ -20,7 +20,7 @@
 #define ENGINESYNC_H
 
 #include <QAbstractListModel>
-
+/*
 #ifdef __APPLE__
 #include <semaphore.h>
 #else
@@ -28,6 +28,8 @@
 #endif
 
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
+*/
+
 
 #include "enginerepresentation.h"
 
@@ -88,7 +90,7 @@ public slots:
 	
 
 signals:
-	void		processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
+	void		processNewFilterResult(int requestId);
 	void		processFilterErrorMsg(const QString & error, int requestID);
 	void		engineTerminated();
 	void		filterUpdated(int requestID);
@@ -170,12 +172,14 @@ private:
 	static EngineSync				*	_singleton;
 	RFilterStore					*	_waitingFilter					= nullptr;
 	bool								_filterRunning					= false,
-										_stopProcessing					= false;
+										_stopProcessing					= false,
+										_dataMode						= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
 
 	std::queue<RScriptStore*>			_waitingScripts;
+	std::queue<RComputeColumnStore*>	_waitingCompCols;
 	std::map<std::string,
 		EngineRepresentation * >		_moduleEngines;					///< An engine per module active. Engines will be started and closed as needed.
 	std::set<EngineRepresentation*>		_engines,						///< All analysis/utility/module engines, excepting _rCmder

@@ -56,30 +56,31 @@ public:
 
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction, std::string toolTip = "", bool enabled = true, bool remember = false);
-	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, bool enabled = true, bool remember = false);
-	~RibbonButton() {}
+	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip = "", bool enabled = true, bool remember = false);
+	~RibbonButton();
 
 
-	bool							requiresData()												const			{ return _requiresData;										}
-	bool							isCommon()													const			{ return _isCommonModule;									}
-	std::string						title()														const			{ return _title;											}
-	QString							titleQ()													const			{ return QString::fromStdString(_title);					}
-	QString							iconSource()												const			{ return _iconSource;										}
-	bool							enabled()													const			{ return _enabled;											}
-	std::string						name()														const			{ return _name;												}
-	QString							nameQ()														const			{ return QString::fromStdString(_name);						}
-	Modules::DynamicModule*			dynamicModule();
-	Modules::AnalysisEntry*			getEntry(const std::string& name);
-	QVariant						menu()														const			{ return QVariant::fromValue(_menuModel);					}
-	std::vector<std::string>		getAllEntries()												const;
-	bool							dataLoaded()												const			{ return Modules::DynamicModules::dynMods() &&  Modules::DynamicModules::dynMods()->dataLoaded();	}
-	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());		}
-	QString							toolTip()													const			{ return _toolTip;											}
-	bool							isBundled()													const			{ return _module && _module->isBundled();					}
-	QString							version()													const			{ return !_module ? "?" : _module->versionQ();				}
-	bool							ready()														const			{ return _ready;											}
-	bool							error()														const			{ return _error;											}
-	bool							remember()													const			{ return _remember;											}
+	bool						requiresData()												const			{ return _requiresData;										}
+	bool						isCommon()													const			{ return _isCommonModule;									}
+	std::string					title()														const			{ return _title;											}
+	QString						titleQ()													const			{ return QString::fromStdString(_title);					}
+	QString						iconSource()												const			{ return _iconSource;										}
+	bool						enabled()													const			{ return _enabled;											}
+	std::string					name()														const			{ return _name;												}
+	QString						nameQ()														const			{ return QString::fromStdString(_name);						}
+	Modules::DynamicModule	*	dynamicModule();
+	Modules::AnalysisEntry	*	getEntry(const std::string& name);
+	QVariant					menu()														const			{ return QVariant::fromValue(_menuModel);					}
+	stringvec					getAllEntries()												const;
+	bool						dataLoaded()												const			{ return Modules::DynamicModules::dynMods() &&  Modules::DynamicModules::dynMods()->dataLoaded();	}
+	bool						active()													const			{ return _enabled && (!requiresData() || dataLoaded());		}
+	QString						toolTip()													const			{ return _toolTip;											}
+	bool						isBundled()													const			{ return _module && _module->isBundled();					}
+	QString						version()													const			{ return !_module ? "?" : _module->versionQ();				}
+	bool						ready()														const			{ return _ready;											}
+	bool						error()														const			{ return _error;											}
+	bool						remember()													const			{ return _remember;											}
+	bool						isSpecial()													const			{ return _special; }
 
 	static QString					getJsonDescriptionFilename();	
 
@@ -99,7 +100,7 @@ public slots:
 	void setError(bool error);
 	void setRemember(bool remember);
 
-	bool isSpecial()			const	{ return _special; }
+
 	void runSpecial(QString func);;
 	void reloadDynamicModule(Modules::DynamicModule * dynMod);
 
@@ -138,7 +139,7 @@ private:
 									_special			= false;
 	std::string						_title				= "",
 									_name				= "";
-	Modules::DynamicModule		*	_module				= nullptr;
+	Modules::DynamicModule	*		_module				= nullptr;
 	QString							_iconSource,
 									_toolTip;
 	std::function<void()>			_specialButtonFunc	= nullptr;

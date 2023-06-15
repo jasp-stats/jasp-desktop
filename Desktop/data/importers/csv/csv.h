@@ -39,6 +39,7 @@ public:
 	bool readLine(std::vector<std::string> &items);
 	long pos();
 	long size();
+	long numRows();
 	void close();
 
 	enum Status { OK = 0, NotRead, Empty };
@@ -52,14 +53,16 @@ private:
 
 	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4, Native };
 
-    Encoding _encoding;
-    char _delim;
+	Encoding _encoding;
+	char _delim;
+	long _numRows;
 
 	bool readRaw();
 	bool readUtf8();
 
 	void determineEncoding();
 	void determineDelimiters(size_t fromHere = 0);
+	void determineNumRows();
 
 private:
 

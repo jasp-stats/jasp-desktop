@@ -35,8 +35,7 @@
 #include <QFileSystemWatcher>
 #include <QQuickItem>
 
-class ComputedColumn;
-class DataSet;
+class Column;
 class AnalysisForm;
 
 ///
@@ -174,9 +173,9 @@ signals:
 	void					rSourceChanged(QString optionName);
 	void					optionsChanged();
 
-	ComputedColumn		*	requestComputedColumnCreation(		const std::string& columnName, Analysis * analysis);
-	void					requestColumnCreation(				const std::string& columnName, Analysis *source, columnType type);
-	void					requestComputedColumnDestruction(	const std::string& columnName);
+	Column				*	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
+	void					requestColumnCreation(				const std::string & columnName, Analysis * source, columnType type);
+	void					requestComputedColumnDestruction(	const std::string & columnName);
 
 	void					refreshTableViewModels();
 	Q_INVOKABLE void		expandAnalysis();
@@ -195,6 +194,7 @@ public slots:
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
 	void					setRSyntaxTextInResult();
+	void					onUsedVariablesChanged()																	override;
 
 protected:
 	void					abort();

@@ -17,6 +17,7 @@ Popup
 		color:			jaspTheme.uiBackground
 		border.color:	jaspTheme.uiBorder
 		border.width:	1
+		radius:			jaspTheme.borderRadius
 	}
 	padding:	0
 
@@ -39,7 +40,7 @@ Popup
 
 		Item
 		{
-			height:	inputs.height + jaspTheme.generalAnchorMargin + (40 * jaspTheme.uiScale)
+			height:	inputs.height + jaspTheme.generalAnchorMargin + (30 * jaspTheme.uiScale)
 			width:	250 * jaspTheme.uiScale
 
 			Component.onCompleted:	cols.forceActiveFocus();
@@ -62,7 +63,7 @@ Popup
 			Item
 			{
 				id:				inputs
-				height:			100 * jaspTheme.uiScale + 2 * jaspTheme.generalAnchorMargin
+				height:			95 * jaspTheme.uiScale + 2 * jaspTheme.generalAnchorMargin
 
 				anchors
 				{
@@ -76,6 +77,7 @@ Popup
 				{
 					id:				colsLabel
 					text:			qsTr("Columns")
+					focus:			true
 					anchors
 					{
 						top:				inputs.top
@@ -104,22 +106,25 @@ Popup
 					{
 						top:				colsLabel.bottom
 						horizontalCenter:	parent.horizontalCenter
-						topMargin:			jaspTheme.generalAnchorMargin
+						topMargin:			jaspTheme.generalAnchorMargin * 0.5
 					}
 				}
 
 				IntegerField
 				{
 					id:						cols
-					value:					dataSetModel.columnCount()
+					defaultValue:			dataSetModel.columnCount()
 					fieldWidth:				width
+					selectValueOnFocus:		true
 					anchors
 					{
 						top:				x.bottom
 						left:				parent.left
 						right:				x.left
 						margins:			jaspTheme.generalAnchorMargin
+						topMargin:			jaspTheme.generalAnchorMargin * 0.5
 					}
+					onEditingFinished:		rows.forceActiveFocus();
 
 					KeyNavigation.tab:		rows
 					KeyNavigation.right:	rows
@@ -129,15 +134,19 @@ Popup
 				IntegerField
 				{
 					id:						rows
-					value:					dataSetModel.rowCount()
+					defaultValue:			dataSetModel.rowCount()
 					fieldWidth:				width
+					selectValueOnFocus:		true
 					anchors
 					{
 						top:				x.bottom
 						left:				x.right
 						right:				parent.right
 						margins:			jaspTheme.generalAnchorMargin
+						topMargin:			jaspTheme.generalAnchorMargin * 0.5
 					}
+					
+					onEditingFinished:		resizeButton.forceActiveFocus();
 					KeyNavigation.down:		closeButtonCross
 					KeyNavigation.tab:		resizeButton
 				}
@@ -148,7 +157,12 @@ Popup
 				id:						resizeButton
 				activeFocusOnTab:		true
 				text:					qsTr("Resize")
-				onClicked:				{ forceActiveFocus(); dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
+				onClicked:				
+				{
+					dataSetModel.resizeData(rows.displayValue, cols.displayValue); 
+					popupResizeData.close(); 
+				}
+				
 				toolTip:				qsTr("Resize data to set values")
 
 				KeyNavigation.tab:		closeButtonCross
