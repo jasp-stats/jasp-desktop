@@ -88,6 +88,7 @@ Rectangle
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
 			customMenu.hide()
+            messages.log("startOrShowMenu() for " + ribbonButton.moduleName)
 			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
 
 		}
@@ -111,6 +112,8 @@ Rectangle
 			var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
+            
+            messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
 
 			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
 			customMenu.hide();

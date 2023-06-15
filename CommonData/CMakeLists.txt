@@ -28,6 +28,7 @@ target_include_directories(
          ${R_INCLUDE_PATH}
          ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
+		 
          #
 		# $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
 	)
@@ -41,11 +42,7 @@ target_link_libraries(
          #
          Common
          LibArchive::LibArchive
-         # Boost
-         Boost::system
-         Boost::date_time
-         Boost::timer
-         Boost::chrono
+		 SQLite::SQLite3
          #
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 

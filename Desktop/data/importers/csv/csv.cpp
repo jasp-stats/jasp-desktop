@@ -39,6 +39,7 @@ CSV::CSV(const string &path)
     _path = path;
 	_fileSize = 0;
 	_filePosition = 0;
+	_numRows = -1;
 }
 
 
@@ -71,6 +72,7 @@ void CSV::open()
 	if (readRaw())
 	{
 		determineEncoding();
+		determineNumRows();
 		readUtf8();
 		determineDelimiters();
 	}
@@ -369,6 +371,68 @@ void CSV::determineDelimiters(size_t fromHere)
 	}
 }
 
+void CSV::determineNumRows()
+{
+	_numRows = 0;
+	bool eof = true;
+
+	if (_utf8BufferEndPos == _utf8BufferStartPos)
+	{
+		eof = !readUtf8();
+	}
+
+	int i = _utf8BufferStartPos;
+	while (!eof)
+	{
+		char ch = _utf8Buffer[i];
+
+		if (ch == '\r')
+		{
+			_numRows++;
+			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
+				_utf8BufferStartPos = i + 2;
+			else
+				_utf8BufferStartPos = i + 1;
+		}
+		else if (ch == '\n')
+		{
+			_utf8BufferStartPos = i + 1;
+			_numRows++;
+		}
+
+		if (i >= _utf8BufferEndPos - 1)
+		{
+			bool success = readUtf8();
+			if (success)
+				i = -1;
+			else // eof
+				eof = true;
+		}
+		i++;
+	}
+
+	//disregard header
+	_numRows--;
+
+	//reset state before starting this whole thing
+	_filePosition = 0;
+	_stream.clear();
+	_stream.seekg(0, std::ios::beg);
+
+	_rawBufferStartPos = 0;
+	_rawBufferEndPos = 0;
+	_utf8BufferStartPos = 0;
+	_utf8BufferEndPos = 0;
+
+	if (readRaw())
+	{
+		determineEncoding();
+		readUtf8();
+		determineDelimiters();
+	}
+
+}
+
 bool CSV::readLine(vector<string> &items)
 {
 	if (_eof)
@@ -487,6 +551,11 @@ long CSV::pos()
 long CSV::size()
 {
 	return _fileSize;
+}
+
+long CSV::numRows()
+{
+	return _numRows > 0 ? _numRows : 0;
 }
 
 void CSV::close()

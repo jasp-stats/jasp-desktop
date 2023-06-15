@@ -33,7 +33,7 @@ ALTNavScope::~ALTNavScope()
 	setParentScope(nullptr);
 	for (ALTNavScope* child : _childScopes)
 		child->setParentScope(nullptr);
-	ALTNavControl::getInstance()->unregister(_attachee);
+	ALTNavControl::ctrl()->unregister(_attachee);
 	delete _postfixBroker;
 }
 
@@ -42,7 +42,7 @@ void ALTNavScope::registerWithParent()
 	if (_root)
 		return;
 
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	ALTNavControl* ctrl = ALTNavControl::ctrl();
 	ALTNavScope* newParentScope = nullptr;
 
 	if(_parentOverride)
@@ -77,7 +77,7 @@ void ALTNavScope::registerWithParent()
 void ALTNavScope::addChild(ALTNavScope *child)
 {
 	_childScopes.push_back(child);
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	ALTNavControl* ctrl = ALTNavControl::ctrl();
 	if(ctrl->dynamicTreeUpdate())
 	{
 		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavActive());
@@ -88,7 +88,7 @@ void ALTNavScope::addChild(ALTNavScope *child)
 void ALTNavScope::removeChild(ALTNavScope *child)
 {
 	_childScopes.removeOne(child);
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	ALTNavControl* ctrl = ALTNavControl::ctrl();
 	if(ctrl->dynamicTreeUpdate())
 	{
 		ctrl->getCurrentNode()->setChildrenActive(ctrl->AltNavActive());
@@ -119,7 +119,7 @@ void ALTNavScope::init()
 
 void ALTNavScope::traverse(QString input)
 {
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	ALTNavControl* ctrl = ALTNavControl::ctrl();
 
 	bool matchPossible = false;
 	for(ALTNavScope* scope : qAsConst(_childScopes))
@@ -190,7 +190,7 @@ void ALTNavScope::setForeground(bool onForeground)
 	if(onForeground == _foreground)
 		return;
 
-	ALTNavControl* ctrl = ALTNavControl::getInstance();
+	ALTNavControl* ctrl = ALTNavControl::ctrl();
 	_foreground = onForeground;
 	if (onForeground) // set ourselfs as the currentNode
 	{

@@ -119,7 +119,8 @@ public slots:
 			void				setContainsInteractions();
 
 protected slots:
-	virtual void				termsChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
+	virtual void				termsChangedHandler(){}; // This slot must be overriden in order to update the options when the model has changed
+			void				_termsChangedHandler();
 			void				sourceChangedHandler();
 
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }

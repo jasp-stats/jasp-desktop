@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QFont>
-#include "column.h"
 #include "utilities/qutils.h"
 #include "preferencesmodelbase.h"
 

@@ -23,7 +23,6 @@
 #include <QMutex>
 #include <QTimer>
 
-#include "dataset.h"
 #include "datasetloader.h"
 #include "datasetpackage.h"
 #include "data/fileevent.h"
@@ -42,7 +41,6 @@ public:
 	explicit AsyncLoader(QObject *parent = 0);
 
 	void io(FileEvent *event);
-	void free(DataSet *dataSet);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
 signals:
