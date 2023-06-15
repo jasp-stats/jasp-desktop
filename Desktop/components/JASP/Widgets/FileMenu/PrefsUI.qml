@@ -134,7 +134,7 @@ ScrollView
 			CheckBox
 			{
 				id:					qtTextRendering
-				label:				qsTr("Use Qt's textrendering")
+				label:				qsTr("Use Qt's text rendering")
 				checked:			preferencesModel.guiQtTextRender
 				onCheckedChanged:	preferencesModel.guiQtTextRender = checked
 				toolTip:			qsTr("If disabled will switch the textrendering to native.")
@@ -193,7 +193,7 @@ ScrollView
 
 				source:					languageModel
 
-				KeyNavigation.tab:			uiScaleSpinBox
+				KeyNavigation.tab:			altnavcheckbox
 			}
 
 			Text
@@ -215,6 +215,23 @@ ScrollView
 				}
 			}
 
+		}
+
+		PrefsGroupRect
+		{
+			title: qsTr("Accessibility options")
+
+
+			CheckBox
+			{
+				id:					altnavcheckbox
+				label:				qsTr("ALT-Navigation mode")
+				checked:			preferencesModel.ALTNavModeActive
+				onCheckedChanged:	preferencesModel.ALTNavModeActive = checked
+				toolTip:			qsTr("Whether ALT-Navigation mode is active or not.")
+
+				KeyNavigation.tab:	uiScaleSpinBox
+			}
 		}
 
 		PrefsGroupRect

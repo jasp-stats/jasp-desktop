@@ -1,5 +1,6 @@
 #include "altnavcontrol.h"
 
+
 ALTNavControl* ALTNavControl::_instance = nullptr;
 
 ALTNavControl* ALTNavControl::getInstance()
@@ -16,6 +17,13 @@ ALTNavControl::ALTNavControl(QObject *parent) : QObject{parent}
 	_defaultRoot->setScopeOnly(true);
 	_defaultRoot->setRoot(true);
 	_attachedScopeMap.insert(nullptr, _defaultRoot);
+}
+
+void ALTNavControl::enableAlTNavigation(bool state)
+{
+	if(!state)
+		setAltNavActive(false);
+	_altNavEnabled = state;
 }
 
 ALTNavControl::~ALTNavControl()
@@ -58,30 +66,42 @@ void ALTNavControl::unregister(QObject *obj)
 
 bool ALTNavControl::eventFilter(QObject *object, QEvent *event)
 {
+	static bool specialCharInput = false;
+
 	if (event->type() == QEvent::KeyRelease)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if (key == Qt::Key_Alt && keyEvent->modifiers() == Qt::NoModifier)
+		if (key == Qt::Key_Alt)
 		{
-			resetAltNavInput();
-			setAltNavEnabled(!_altNavEnabled);
+			if(!specialCharInput && keyEvent->modifiers() == Qt::NoModifier)
+			{
+				resetAltNavInput();
+				setAltNavActive(!_altNavActive);
+			}
+			else
+				specialCharInput = false;
 			return true;
+
 		}
 	}
-	else if (_altNavEnabled && event->type() == QEvent::KeyPress)
+	else if (event->type() == QEvent::KeyPress)
 	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent *>(event);
 		int key = keyEvent->key();
-		if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
-			updateAltNavInput(keyEvent->text().toUpper());
-		else if (key != Qt::Key_Alt)
+		if(_altNavActive)
 		{
-			resetAltNavInput();
-			setAltNavEnabled(false);
+			if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9))
+				updateAltNavInput(keyEvent->text().toUpper());
+			else if (key != Qt::Key_Alt)
+			{
+				resetAltNavInput();
+				setAltNavActive(false);
+			}
+			return true;
 		}
-		return true;
-
+		else if ((key >= Qt::Key_A && key <= Qt::Key_Z) || (key >= Qt::Key_0 && key <= Qt::Key_9) & keyEvent->modifiers() == Qt::AltModifier)
+			specialCharInput = true;
 	}
 	return false;
 }
@@ -106,14 +126,14 @@ void ALTNavControl::updateAltNavInput(QString entry)
 	emit altNavInputChanged();
 }
 
-void ALTNavControl::setAltNavEnabled(bool value)
+void ALTNavControl::setAltNavActive(bool value)
 {
-	if(value == _altNavEnabled) return;
+	if(!_altNavEnabled || value == _altNavActive) return;
 
-	_altNavEnabled = value;
-	emit altNavEnabledChanged();
+	_altNavActive = value;
+	emit altNavActiveChanged();
 
-	if(_altNavEnabled)
+	if(_altNavActive)
 	{
 		_dynamicTreeUpdate = true;
 		_currentRoot->setChildrenPrefix();
@@ -135,15 +155,15 @@ void ALTNavControl::setAltNavEnabled(bool value)
 	}
 }
 
-bool ALTNavControl::AltNavEnabled()
+bool ALTNavControl::AltNavActive()
 {
-	return _altNavEnabled;
+	return _altNavActive;
 }
 
 void ALTNavControl::setCurrentNode(ALTNavScope *scope)
 {
 	_currentNode->setChildrenActive(false);
-	scope->setChildrenActive(_altNavEnabled);
+	scope->setChildrenActive(_altNavActive);
 	scope->setChildrenPrefix();
 	_currentNode = scope;
 }

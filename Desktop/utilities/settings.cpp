@@ -87,7 +87,8 @@ const Settings::Setting Settings::Values[] = {
 	{"showReports",					false	},
 	{"showRSyntax",					false	},
 	{"showAllROptions",				false	},
-	{"showRSyntaxInResults",		false	}
+	{"showRSyntaxInResults",		false	},
+	{"ALTNavModeActive",			true	}
 };
 
 QVariant Settings::value(Settings::Type key)

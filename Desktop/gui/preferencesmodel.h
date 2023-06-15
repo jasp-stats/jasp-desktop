@@ -69,6 +69,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
 	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
+	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
 
 
 public:
@@ -135,6 +136,7 @@ public:
 	void		zoomReset();
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
+	bool		ALTNavModeActive()						const;
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -193,6 +195,7 @@ public slots:
 	void setShowAllROptions(			bool		showAllROptions)				override;
 	void setShowRSyntaxInResults(		bool		showRSyntax);
 	void currentThemeNameHandler();
+	void setALTNavModeActive(			bool		ALTNavModeActive);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -242,6 +245,7 @@ signals:
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
+	void ALTNavModeActiveChanged(		bool		ALTNavModeActive);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);
