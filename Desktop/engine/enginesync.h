@@ -60,6 +60,7 @@ public:
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
 
+	std::string	currentStateForDebug() const;
 
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
@@ -77,7 +78,7 @@ public slots:
 	void		refreshAllPlots();
 	void		logCfgRequest();
 	void		logToFileChanged(bool) { logCfgRequest(); }
-	void		cleanUpAfterClose(bool forgetAnalyses = false);
+	void		cleanRestart();
 	void		filterDone(int requestID);
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); resumeEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	void		killModuleEngine(Modules::DynamicModule * mod);
@@ -85,7 +86,6 @@ public slots:
 	void		enginesPrepareForData();
 	void		enginesReceiveNewData();
 	bool		isModuleInstallRequestActive(const QString & moduleName);
-	std::string	currentStateForDebug() const;
 	void		dataModeChanged(bool dataMode);
 	
 
