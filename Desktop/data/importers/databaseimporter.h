@@ -13,7 +13,7 @@ class DatabaseImporter : public Importer
 public:
 	DatabaseImporter(){}
 	
-	ImportDataSet* loadFile(const std::string &locator, boost::function<void(int)> progressCallback) override;
+	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
 	void initColumn(QVariant colId, ImportColumn * importColumn) override;
 	
 	DatabaseConnectionInfo _info;

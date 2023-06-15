@@ -55,7 +55,7 @@ bool ResultExporter::prepareForExport()
 	return true;
 }
 
-void ResultExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
+void ResultExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	//set the needed settings and wait for their application to be finished
 	prepareForExport();

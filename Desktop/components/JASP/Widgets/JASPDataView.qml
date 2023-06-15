@@ -120,7 +120,7 @@ FocusScope
 
 		DataSetView
 		{
-			z:			1
+			z:			-10
 			id:			theView
 			model:		null
 			
@@ -135,8 +135,8 @@ FocusScope
 			
 			viewportX:	myFlickable.contentX
 			viewportY:	myFlickable.contentY
-			viewportW:	myFlickable.visibleArea.widthRatio  * width
-			viewportH:	myFlickable.visibleArea.heightRatio * height
+			viewportW:	Math.min(myFlickable.width,		myFlickable.visibleArea.widthRatio  * width	)
+			viewportH:	Math.min(myFlickable.height,	myFlickable.visibleArea.heightRatio * height)
 			
 			onSelectionBudgesUp:	__JASPDataViewRoot.budgeUp()
 			onSelectionBudgesDown:	__JASPDataViewRoot.budgeDown()

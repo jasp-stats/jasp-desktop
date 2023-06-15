@@ -78,11 +78,6 @@ void AsyncLoader::io(FileEvent *event)
 	}
 }
 
-void AsyncLoader::free(DataSet *dataSet)
-{
-	_loader.freeDataSet(dataSet);
-}
-
 void AsyncLoader::loadTask(FileEvent *event)
 {
 	_currentEvent = event;
@@ -268,6 +263,8 @@ void AsyncLoader::loadPackage(QString id)
 		catch (runtime_error & e)
 		{
 			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
+
+			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
