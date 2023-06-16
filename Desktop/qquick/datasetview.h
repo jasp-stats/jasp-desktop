@@ -54,7 +54,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( double					headerHeight			READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double					rowNumberWidth			READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 	Q_PROPERTY( bool					cacheItems				READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
-	Q_PROPERTY( bool					extendDataSet			READ extendDataSet			WRITE setExtendDataSet			NOTIFY extendDataSetChanged			)
+	Q_PROPERTY( bool					expandDataSet			READ expandDataSet			WRITE setExpandDataSet			NOTIFY expandDataSetChanged			)
 	Q_PROPERTY( QQuickItem			*	tableViewItem			READ tableViewItem			WRITE setTableViewItem												)
 	Q_PROPERTY( QItemSelectionModel *	selection				READ selectionModel											NOTIFY selectionModelChanged		)
 	Q_PROPERTY(	QPoint					selectionStart			READ selectionStart			WRITE setSelectionStart			NOTIFY selectionStartChanged		)
@@ -94,7 +94,7 @@ public:
 	QQmlComponent		*	editDelegate()						const	{ return _editDelegate;				}
 
 	bool					cacheItems()						const	{ return _cacheItems;				}
-	bool					extendDataSet()						const	{ return _extendDataSet;			}
+	bool					expandDataSet()						const	{ return _model ? _model->expandDataSet() : false;			}
 	QPoint					selectionStart()					const	{ return _selectionStart;			}
 	QPoint					selectionEnd()						const	{ return _selectionEnd;				}
 	bool					editing()							const	{ return _editing;		}
@@ -119,7 +119,7 @@ public:
 	void setEditDelegate(			QQmlComponent	* editDelegate);
 	void setTableViewItem(			QQuickItem		* tableViewItem) { _tableViewItem = tableViewItem; }
 	void setCacheItems(				bool			  cacheItems);
-	void setExtendDataSet(			bool			  extendDataSet);
+	void setExpandDataSet(			bool			  expandDataSet);
 
 	void resetItems();
 
@@ -151,7 +151,7 @@ signals:
 	void		rowNumberWidthChanged();
 
 	void		cacheItemsChanged();
-	void		extendDataSetChanged();
+	void		expandDataSetChanged();
 	
 	void		selectionStartChanged(	QPoint selectionStart);
 	void		selectionEndChanged(	QPoint selectionEnd);
@@ -235,7 +235,7 @@ protected:
 #ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
-	float extraColumnWidth() { return !_extraColumnItem || _extendDataSet ? 0 : 2 + _extraColumnItem->width(); }
+	float extraColumnWidth() { return !_extraColumnItem || expandDataSet() ? 0 : 2 + _extraColumnItem->width(); }
 
 	QQuickItem *	createTextItem(int row, int col);
 	void			storeTextItem(int row, int col, bool cleanUp = true);
@@ -294,8 +294,7 @@ protected:
 				_recalculateCellSizes	= false,
 				_ignoreViewpoint		= true,
 				_linesWasChanged		= false,
-				_editing				= false,
-				_extendDataSet			= false;
+				_editing				= false;
 	double		_dataRowsMaxHeight,
 				_dataWidth				= -1,
 				_rowNumberMaxWidth		= 0,
@@ -321,7 +320,7 @@ protected:
 	QPoint		_selectionStart			= QPoint(-1, -1),
 				_selectionEnd			= QPoint(-1, -1);
 
-	ExpandDataProxyModel* _model	= nullptr;
+	ExpandDataProxyModel* _model		= nullptr;
 };
 
 

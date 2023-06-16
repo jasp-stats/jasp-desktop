@@ -33,7 +33,7 @@ FocusScope
 
 			model:					dataSetModel
 			cacheItems:				!ribbonModel.dataMode
-			extendDataSet:			ribbonModel.dataMode
+			expandDataSet:			ribbonModel.dataMode
 
 			doubleClickWorkaround:	!ribbonModel.dataMode
 			//flickableInteractive:	!ribbonModel.dataMode
@@ -337,7 +337,7 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
 					border.width:	0
-					visible:		!dataTableView.extendDataSet
+					visible:		!dataTableView.expandDataSet
 				}*/
 
 			rowNumberDelegate:

@@ -23,7 +23,7 @@ FocusScope
 				property alias extraColumnItem:			theView.extraColumnItem
 				property alias editDelegate:			theView.editDelegate
 				property alias cacheItems:				theView.cacheItems
-				property alias extendDataSet:			theView.extendDataSet
+				property alias expandDataSet:			theView.expandDataSet
 
 				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 				property alias itemVerticalPadding:		theView.itemVerticalPadding

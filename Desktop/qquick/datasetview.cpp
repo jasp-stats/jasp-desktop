@@ -23,7 +23,6 @@ DataSetView::DataSetView(QQuickItem *parent)
 	: QQuickItem (parent)
 	, _selectionModel(new QItemSelectionModel(nullptr, this))
 	, _model(new ExpandDataProxyModel(this))
-
 {
 	setFlag(QQuickItem::ItemHasContents);
 	//setFlag(QQuickItem::ItemIsFocusScope);
@@ -66,6 +65,21 @@ void DataSetView::setModel(QAbstractItemModel * model)
 
 	if (model)
 	{
+		connect(model, &QAbstractItemModel::dataChanged,				this, &DataSetView::modelDataChanged			);
+		connect(model, &QAbstractItemModel::headerDataChanged,			this, &DataSetView::modelHeaderDataChanged		);
+		connect(model, &QAbstractItemModel::modelAboutToBeReset,		this, &DataSetView::modelAboutToBeReset			);
+		connect(model, &QAbstractItemModel::modelReset,					this, &DataSetView::modelWasReset				);
+
+
+		connect(model, &QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
+		connect(model, &QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
+		connect(model, &QAbstractItemModel::rowsAboutToBeInserted,		this, &DataSetView::rowsAboutToBeInserted		);
+		connect(model, &QAbstractItemModel::rowsAboutToBeRemoved,		this, &DataSetView::rowsAboutToBeRemoved		);
+		connect(model, &QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted				);
+		connect(model, &QAbstractItemModel::columnsRemoved,				this, &DataSetView::columnsRemoved				);
+		connect(model, &QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted				);
+		connect(model, &QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved					);
+
 		_selectionModel->setModel(model);
 		emit selectionModelChanged(); //Or maybe it hasn't?
 
@@ -245,7 +259,7 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 
 	_dataWidth = w;
 
-	qreal	newWidth	= (_extraColumnItem != nullptr && !_extendDataSet ? _dataRowsMaxHeight + 1 : 0 ) + _dataWidth,
+	qreal	newWidth	= (_extraColumnItem != nullptr && !expandDataSet() ? _dataRowsMaxHeight + 1 : 0 ) + _dataWidth,
 			newHeight	= _dataRowsMaxHeight * (_model->rowCount() + 1);
 
 	//Log::log() << "Settings WxH: " << newWidth << "X" << newHeight << std::endl;
@@ -464,7 +478,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	addLine(_viewportX,							_viewportY + 0.5f,					_viewportX + _viewportW,			_viewportY+ 0.5f);
 	addLine(_viewportX,							_viewportY + _dataRowsMaxHeight,	_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight);
 
-	if(_extraColumnItem != nullptr && !_extendDataSet)
+	if(_extraColumnItem != nullptr && !expandDataSet())
 	{
 		addLine(_viewportX + _viewportW - extraColumnWidth(),	_viewportY,		_viewportX + _viewportW - extraColumnWidth(),	_viewportY + _dataRowsMaxHeight);
 		addLine(_viewportX + _viewportW,						_viewportY,		_viewportX + _viewportW,						_viewportY + _dataRowsMaxHeight);
@@ -871,7 +885,7 @@ QQuickItem * DataSetView::createleftTopCorner()
 void DataSetView::updateExtraColumnItem()
 {
 	//Log::log() << "createleftTopCorner() called!\n" << std::flush;
-	if(!_extraColumnItem || _extendDataSet)
+	if(!_extraColumnItem || expandDataSet())
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight - 1);
@@ -1021,7 +1035,7 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 
 void DataSetView::setSelectionEnd(QPoint selectionEnd)
 {
-	if (_selectionEnd == selectionEnd || !_selectionModel)
+	if (!_selectionModel)
 		return;
 
 	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.y() << ", col=" << selectionEnd.x() << " )" << std::endl;
@@ -1597,7 +1611,7 @@ void DataSetView::setLeftTopCornerItem(QQuickItem * newItem)
 
 void DataSetView::setExtraColumnItem(QQuickItem * newItem)
 {
-	if (_extendDataSet)
+	if (expandDataSet())
 		newItem = nullptr;
 
 	if(newItem != _extraColumnItem)
@@ -1638,13 +1652,13 @@ void DataSetView::setCacheItems(bool cacheItems)
 	calculateCellSizesAndClear(true);
 }
 
-void DataSetView::setExtendDataSet(bool extendDataSet)
+void DataSetView::setExpandDataSet(bool expand)
 {
-	if(extendDataSet == _extendDataSet)
+	if (!_model || expand == expandDataSet())
 		return;
 
-	_extendDataSet = extendDataSet;
-	emit extendDataSetChanged();
+	_model->setExpandDataSet(expand);
+	emit expandDataSetChanged();
 }
 
 void DataSetView::reloadTextItems()

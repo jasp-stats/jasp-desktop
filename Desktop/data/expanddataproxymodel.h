@@ -8,7 +8,7 @@ class DataSetView;
 class ExpandDataProxyModel : public QObject
 {
 public:
-	explicit ExpandDataProxyModel(DataSetView *view);
+	explicit ExpandDataProxyModel(QObject *parent);
 
 	int					rowCount(bool includeVirtuals = true)														const;
 	int					columnCount(bool includeVirtuals = true)													const;
@@ -20,6 +20,8 @@ public:
 	bool				filtered(int row, int column)																const;
 	bool				isRowVirtual(int row)																		const;
 	bool				isColumnVirtual(int col)																	const;
+	bool				expandDataSet()																				const { return _expandDataSet; }
+	void				setExpandDataSet(bool expand)																{ _expandDataSet = expand; }
 
 	void				setSourceModel(QAbstractItemModel* model);
 	QAbstractItemModel*	sourceModel()																				const { return _sourceModel; }
@@ -40,8 +42,8 @@ protected:
 	void				_expandIfNecessary(int row, int col);
 
 
-	DataSetView*				_view					= nullptr;
 	QAbstractItemModel*			_sourceModel			= nullptr;
+	bool						_expandDataSet			= false;
 
 	std::map<std::string, int>	_roleNameToRole;
 

@@ -1,9 +1,8 @@
 #include "expanddataproxymodel.h"
-#include "qquick/datasetview.h"
 #include "datasettablemodel.h"
 
-ExpandDataProxyModel::ExpandDataProxyModel(DataSetView *view)
-	: QObject{view}, _view(view)
+ExpandDataProxyModel::ExpandDataProxyModel(QObject *parent)
+	: QObject{parent}
 {
 }
 
@@ -11,14 +10,14 @@ int ExpandDataProxyModel::rowCount(bool includeVirtuals) const
 {
 	if (!_sourceModel)
 		return 0;
-	return _sourceModel->rowCount() + (includeVirtuals && _view->extendDataSet() ? EXTRA_ROWS : 0);
+	return _sourceModel->rowCount() + (includeVirtuals && _expandDataSet ? EXTRA_ROWS : 0);
 }
 
 int ExpandDataProxyModel::columnCount(bool includeVirtuals) const
 {
 	if (!_sourceModel)
 		return 0;
-	return _sourceModel->columnCount() + (includeVirtuals && _view->extendDataSet() ? EXTRA_COLS : 0);
+	return _sourceModel->columnCount() + (includeVirtuals && _expandDataSet ? EXTRA_COLS : 0);
 }
 
 QVariant ExpandDataProxyModel::data(int row, int col, int role) const
@@ -147,24 +146,6 @@ void ExpandDataProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 		_sourceModel = sourceModel;
 
 	_setRolenames();
-
-	if (_sourceModel)
-	{
-		connect(_sourceModel, &QAbstractItemModel::dataChanged,					_view, &DataSetView::modelDataChanged			);
-		connect(_sourceModel, &QAbstractItemModel::headerDataChanged,			_view, &DataSetView::modelHeaderDataChanged		);
-		connect(_sourceModel, &QAbstractItemModel::modelAboutToBeReset,			_view, &DataSetView::modelAboutToBeReset		);
-		connect(_sourceModel, &QAbstractItemModel::modelReset,					_view, &DataSetView::modelWasReset				);
-
-
-		connect(_sourceModel, &QAbstractItemModel::columnsAboutToBeInserted,	_view, &DataSetView::columnsAboutToBeInserted	);
-		connect(_sourceModel, &QAbstractItemModel::columnsAboutToBeRemoved,		_view, &DataSetView::columnsAboutToBeRemoved	);
-		connect(_sourceModel, &QAbstractItemModel::rowsAboutToBeInserted,		_view, &DataSetView::rowsAboutToBeInserted		);
-		connect(_sourceModel, &QAbstractItemModel::rowsAboutToBeRemoved,		_view, &DataSetView::rowsAboutToBeRemoved		);
-		connect(_sourceModel, &QAbstractItemModel::columnsInserted,				_view, &DataSetView::columnsInserted			);
-		connect(_sourceModel, &QAbstractItemModel::columnsRemoved,				_view, &DataSetView::columnsRemoved				);
-		connect(_sourceModel, &QAbstractItemModel::rowsInserted,				_view, &DataSetView::rowsInserted				);
-		connect(_sourceModel, &QAbstractItemModel::rowsRemoved,					_view, &DataSetView::rowsRemoved				);
-	}
 }
 
 void ExpandDataProxyModel::_setRolenames()
@@ -253,10 +234,10 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 	if (!_sourceModel || row < 0 || col < 0 || row >= rowCount() || col >= columnCount())
 		return;
 
-	for (int colNr = _sourceModel->columnCount() - 1; colNr < col; colNr++)
-		_view->columnInsertAfter(colNr);
-	for (int rowNr = _sourceModel->rowCount() - 1; rowNr < row; rowNr++)
-		_view->rowInsertAfter(rowNr);
+	for (int colNr = _sourceModel->columnCount(); colNr <= col; colNr++)
+		insertColumnSpecial(colNr, false, false);
+	for (int rowNr = _sourceModel->rowCount(); rowNr <= row; rowNr++)
+		insertRow(rowNr);
 }
 
 bool ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int role)
