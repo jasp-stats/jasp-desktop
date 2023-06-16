@@ -269,8 +269,8 @@ void LabelModel::refresh()
 	if(column() && column()->type() == columnType::scale)
 		setChosenColumn(-1);
 	
-//	beginResetModel();
-//	endResetModel();
+	beginResetModel();
+	endResetModel();
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
