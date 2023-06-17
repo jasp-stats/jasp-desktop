@@ -3542,10 +3542,6 @@ msgid "Show missing values as: "
 msgstr "Eksik değerleri şu şekilde göster: "
 
 msgctxt "PrefsUI|"
-msgid "Use Qt's textrendering"
-msgstr "Qt'nin metin oluşturmasını kullanın"
-
-msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "Devre dışı bırakılırsa, metin oluşturmayı yerel hale getirir."
 
@@ -3922,4 +3918,20 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's text rendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Accessibility options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "ALT-Navigation mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether ALT-Navigation mode is active or not."
 msgstr ""

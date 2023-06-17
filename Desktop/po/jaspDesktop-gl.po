@@ -3858,10 +3858,6 @@ msgid "Show missing values as: "
 msgstr "Amosar o valores ausentes como: "
 
 msgctxt "PrefsUI|"
-msgid "Use Qt's textrendering"
-msgstr "Utilizar o procesamento de texto de Qt"
-
-msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "Se está desactivado vai mudarse ao procesamento propio de texto."
 
@@ -4259,3 +4255,19 @@ msgstr "Queres gardar os teus cambios no ficheiro %1?"
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "Os teus cambios vanse perder, se non os gardas."
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's text rendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Accessibility options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "ALT-Navigation mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether ALT-Navigation mode is active or not."
+msgstr ""

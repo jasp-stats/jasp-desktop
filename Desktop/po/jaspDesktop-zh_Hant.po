@@ -3567,10 +3567,6 @@ msgid "Use exponent notation"
 msgstr "使用指數符號"
 
 msgctxt "PrefsUI|"
-msgid "Use Qt's textrendering"
-msgstr "使用 Qt 的文本渲染"
-
-msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "如果禁用會將文本渲染切換為本機。"
 
@@ -4052,3 +4048,19 @@ msgstr "是否要將更改保存到 %1 檔案？"
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "如果不保存更改，更改將丟失。"
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's text rendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Accessibility options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "ALT-Navigation mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether ALT-Navigation mode is active or not."
+msgstr ""

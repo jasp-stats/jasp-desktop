@@ -3675,10 +3675,6 @@ msgid "Show missing values as: "
 msgstr "将缺失值显示为： "
 
 msgctxt "PrefsUI|"
-msgid "Use Qt's textrendering"
-msgstr "使用 Qt 的文本渲染"
-
-msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "如果禁用，则将文本呈现切换为本机渲染。"
 
@@ -4066,3 +4062,19 @@ msgstr "您想将更改保存到文件 %1 吗？"
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "如果不保存，您的更改将会丢失。"
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's text rendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Accessibility options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "ALT-Navigation mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether ALT-Navigation mode is active or not."
+msgstr ""

@@ -3841,10 +3841,6 @@ msgid "Show missing values as: "
 msgstr "Wyświetl braki danych jako: "
 
 msgctxt "PrefsUI|"
-msgid "Use Qt's textrendering"
-msgstr "Użyj renderowania tekstu Qt"
-
-msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr ""
 "Wyłączenie tej opcji spowoduje przełączenie renderowania tekstu na natywne."
@@ -4238,4 +4234,20 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use Qt's text rendering"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Accessibility options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "ALT-Navigation mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Whether ALT-Navigation mode is active or not."
 msgstr ""
