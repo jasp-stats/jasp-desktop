@@ -789,7 +789,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	initialize: function () {
-		$(document).mousedown(this, this._mouseDownGeneral);
+		$(document).on("mousedown", this, this._mouseDownGeneral);
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
@@ -1308,8 +1308,6 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 JASPWidgets.ActionView = JASPWidgets.View.extend({
 	initialize: function () {
 		this.$el.addClass('jasp-hide');
-
-		//$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
 	},
 
 	actionDisabled: function () {
@@ -1368,7 +1366,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 
 		this.$el.addClass('jasp-hide');
 
-		$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
+		$(document).on("mousemove", this, this._mousemove).on("mouseup", this, this._mouseup);
 		this.listenTo(this.model, 'change:width', this.onModelChange);
 		this.listenTo(this.model, 'change:height', this.onModelChange);
 	},
