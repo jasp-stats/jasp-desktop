@@ -916,7 +916,7 @@
         {
           "name": "Type 1 Instrument Capability",
           "path": "Type1InstrumentCapability.jasp",
-          "description": "A dataset containing 50 measurements of a similar part.  <br><br> The example JASP file demonstrates the use of the Type 1 Instrument Capability.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing 50 consecutive measurements of the same master part.  <br><br> The example JASP file demonstrates the use of the Type 1 Instrument Capability.<br><br> <i>Real data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "Type1InstrumentCapability.csv"
         },
@@ -968,6 +968,13 @@
           "description": "A dataset containing binary ratings (yes/no) of 15 different parts in the wide format. Three raters rated each part three times.  <br><br>  The example JASP file demonstrates the use of the Attribute Agreement Analyisis with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
+        },
+        {
+          "name": "Range Method Study (Long Format)",
+          "path": "RangeMethodDataLongFormat.jasp",
+          "description": "A dataset containing two repeated measurements for five different parts in the long format.  <br><br> The example JASP file demonstrates the use of the Range Method Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "kind": "file",
+          "associated_datafile": "RangeMethodDataLongFormat.csv"
         },
         {
           "name": "Range Method Study (Wide Format)",
