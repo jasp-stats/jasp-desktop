@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="qrc:/html/css/highlight-default.min.css"  type="text/css" id="style"/>
 
   <script src="marked.js" type="text/javascript"></script>
+  <script src="qrc:/html/js/mathjax-tex-svg-full.js" type="text/javascript"></script>
   <script src="qrc:/html/js/highlight.min.js" type="text/javascript"></script>
   <script src="qrc:/html/js/highlight-r.min.js" type="text/javascript"></script>
   <script src="marked-hljs-ext.js" type="text/javascript"></script>
@@ -23,10 +24,21 @@
   </script>
 
 	<script type="text/javascript">
-    window.render     = function(content)   { document.body.innerHTML = marked.parse(content);  window.scrollTo(0, 0); }
-    window.renderHtml = function(content)   { document.body.innerHTML = content;                window.scrollTo(0, 0); }
-    window.setTheme   = function(themeName) { document.getElementById("style").setAttribute("href", themeName + ".css");  }
-    window.setFont    = function(fontName)  { document.getElementsByTagName("body")[0].style["font-family"] = fontName; }
+    window.render = function(content) { 
+      document.body.innerHTML = marked.parse(content); 
+      MathJax.typesetPromise();
+      window.scrollTo(0, 0); 
+    }
+    window.renderHtml = function(content)   { 
+      document.body.innerHTML = content;  
+      window.scrollTo(0, 0); 
+    }
+    window.setTheme   = function(themeName) { 
+      document.getElementById("style").setAttribute("href", themeName + ".css");  
+    }
+    window.setFont    = function(fontName)  {
+      document.getElementsByTagName("body")[0].style["font-family"] = fontName;
+    }
 	</script>
 </head>
 <body>

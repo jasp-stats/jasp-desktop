@@ -1,4 +1,4 @@
-/*!
+/*! Customized for formula rendering part
  * Quill Editor v1.3.7
  * https://quilljs.com/
  * Copyright (c) 2014, Jason Chen
@@ -11005,10 +11005,12 @@ var FormulaBlot = function (_Embed) {
     value: function create(value) {
       var node = _get(FormulaBlot.__proto__ || Object.getPrototypeOf(FormulaBlot), 'create', this).call(this, value);
       if (typeof value === 'string') {
-        window.katex.render(value, node, {
-          throwOnError: false,
-          errorColor: '#f00'
-        });
+        // Hack to replaces Katex with MathJax
+        node = MathJax.tex2svg(value, {display: false})
+        // window.katex.render(value, node, {
+        //   throwOnError: false,
+        //   errorColor: '#f00'
+        // });
         node.setAttribute('data-value', value);
       }
       return node;
