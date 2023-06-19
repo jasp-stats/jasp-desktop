@@ -41,7 +41,7 @@ $(document).ready(function () {
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
 	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 
-	$( window ).resize(function()
+	$( window ).on("resize", function()
 	{
 		//console.log("window resized")
 		analyses.setBottomSpacerHeight();
@@ -465,7 +465,7 @@ $(document).ready(function () {
 
 			var newItem = jaspWidget.$el;
 
-			newItem.click(selectedHandler)
+			newItem.on("click", selectedHandler)
 
 			if (selectedAnalysisId === analysis.id) {
 				if (selectedAnalysis != null)
@@ -545,7 +545,7 @@ $(document).ready(function () {
 		}.bind(this))
 	});
 
-	$("body").click(window.unselectByClickingBody)
+	$("body").on("click", window.unselectByClickingBody)
 })
 
 var wrapHTML = function (html, exportParams, doctype = false) {
