@@ -1101,6 +1101,7 @@ JASPWidgets.RSyntaxView = JASPWidgets.View.extend({
 					.html("<pre><code class='language-r'>" + rScript + "</code></pre>");
 		setTimeout(() => {
 			this.$el.find(".jasp-rsyntax")[0].querySelectorAll('pre code').forEach((el) => {
+				el.innerHTML = el.textContent; //Suppress warnings of html code tags
 				hljs.highlightElement(el);
 			});
 		}, 200);
