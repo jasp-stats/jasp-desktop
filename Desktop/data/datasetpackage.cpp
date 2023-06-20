@@ -90,14 +90,20 @@ bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 
 void DataSetPackage::enginesPrepareForData()
 {
+	if(_dataMode)
+		return;
+
 	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesPrepareForData();
 	else									emit enginesPrepareForDataSignal();
 }
 
 void DataSetPackage::enginesReceiveNewData()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesReceiveNewData();
-	else									emit enginesReceiveNewDataSignal();
+	if(!_dataMode)
+	{
+		if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesReceiveNewData();
+		else									emit enginesReceiveNewDataSignal();
+	}
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
 }
@@ -2229,7 +2235,6 @@ Column * DataSetPackage::createColumn(const std::string & name, columnType colum
 
 	enginesPrepareForData();
 	beginResetModel();
-
 	_dataSet->insertColumn(newColumnIndex);
 	_dataSet->column(newColumnIndex)->setName(name);
 	_dataSet->column(newColumnIndex)->setDefaultValues(columnType);
@@ -2494,12 +2499,21 @@ void DataSetPackage::checkComputedColumnDependenciesForAnalysis(Analysis * analy
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
 {
-	Column	* newComputedColumn = DataSetPackage::pkg()->createColumn(name, type);
+	QString nameTemp = insertColumnSpecial(dataColumnCount(), true, desiredType == computedColumnType::rCode);
 
-	newComputedColumn->setCodeType(desiredType);
+	Column	* newComputedColumn = DataSetPackage::pkg()->dataSet()->column(nameTemp.toStdString());
+
+	beginResetModel();
+
+	newComputedColumn->setName(name);
+	newComputedColumn->setType(type);
 
 	if(analysis)
 		newComputedColumn->setAnalysisId(analysis->id());
+
+	endResetModel();
+
+	emit showComputedColumn(tq(name));
 
 	return newComputedColumn;
 }

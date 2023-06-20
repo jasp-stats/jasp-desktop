@@ -315,8 +315,9 @@ signals:
 				void				dataModeChanged(bool dataMode);
 				void				synchingExternallyChanged();
 				void				askUserForExternalDataFile();
-				void				checkForDependentColumnsToBeSent(QString columnName);
-				void				showWarning(QString title, QString msg);
+				void				checkForDependentColumnsToBeSent(	QString columnName);
+				void				showWarning(						QString title, QString msg);
+				void				showComputedColumn(					QString	   columnName);
 
 
 public slots:
@@ -334,6 +335,7 @@ public slots:
 				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
 				void				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
 				void				requestComputedColumnDestruction(	const std::string & columnName);
+
 
 private:
 				bool				isThisTheSameThreadAsEngineSync();
