@@ -569,7 +569,7 @@ FocusScope
 										((columnType === columnTypeScale ? qsTr("Click here to change variable") : qsTr("Click here to change the variable/labels")) + (columnIsFiltered ? qsTr(" or inspect filter") : "" ))
 					ToolTip.timeout:	3000
 					ToolTip.delay:		500
-					cursorShape:		(columnType !== columnTypeScale) || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+					cursorShape:		Qt.PointingHandCursor
 				}
 			}
 		}

@@ -206,7 +206,7 @@ void LabelModel::resetFilterAllows()
 
 void LabelModel::setVisible(bool visible)
 {
-	visible = visible && rowCount() > 0; //cannot show labels when there are no labels
+	//visible = visible && rowCount() > 0; //cannot show labels when there are no labels
 
 	if (_visible == visible)
 		return;
@@ -251,8 +251,9 @@ void LabelModel::columnDataTypeChanged(const QString & colName)
 
 	if(colIndex == chosenColumn())
 	{
-		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
-			setChosenColumn(-1);
+//		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
+//			setChosenColumn(-1);
+		emit showLabelsEditingChanged();
 		
 		invalidate();
 	}
@@ -296,11 +297,12 @@ void LabelModel::onChosenColumnChanged()
 
 void LabelModel::refresh()
 {
-	if(column() && column()->type() == columnType::scale)
-		setChosenColumn(-1);
+	//if(column() && column()->type() == columnType::scale)
+	//	setChosenColumn(-1);
 	
 	beginResetModel();
 	endResetModel();
+	emit showLabelsEditingChanged();
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
@@ -382,6 +384,6 @@ void LabelModel::setLabel(int rowIndex, QString label)
 bool LabelModel::showLabelsEditing() const
 {
 	if(column())
-			return column()->type() != columnType::scale;
+			return column()->type() != columnType::scale && rowCount() > 0;
 	return false;
 }
