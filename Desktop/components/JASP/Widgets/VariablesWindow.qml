@@ -29,7 +29,11 @@ FocusScope
 	id:			variablesContainer
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
-	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height +  (jaspTheme.uiScale * 40) + (jaspTheme.generalAnchorMargin * 2)
+	property real calculatedBaseHeight:			columnNameVariablesWindow.height + (20 * jaspTheme.uiScale) + (jaspTheme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:		Math.max(columnDescriptionRect.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 80 * jaspTheme.uiScale : 0)
+	property real calculatedPreferredHeight:	Math.max(columnDescriptionRect.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight
+	property real calculatedMaximumHeight:		Math.max(columnDescriptionRect.maxHeight,		buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 200 * jaspTheme.uiScale : 0)
+
 
 	Connections
 	{
@@ -423,12 +427,13 @@ FocusScope
 
 			Rectangle
 			{
-				id:					columnDescriptionRect
-				color:				jaspTheme.controlBackgroundColor
-				border.color:		jaspTheme.uiBorder
-				border.width:		1
-				visible:			enabled
-				height:				Math.min(400, columnDescriptionVariablesWindow.contentHeight + jaspTheme.generalAnchorMargin * 2)
+				id:						columnDescriptionRect
+				color:					jaspTheme.controlBackgroundColor
+				border.color:			jaspTheme.uiBorder
+				border.width:			1
+				visible:				enabled
+				property int maxHeight:	100 * jaspTheme.uiScale
+				height:					Math.min(maxHeight, columnDescriptionVariablesWindow.contentHeight + jaspTheme.generalAnchorMargin * 2)
 
 				anchors
 				{

@@ -1532,8 +1532,8 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 
 	previousContext->setContextProperty("headerText",			text);
 	previousContext->setContextProperty("columnIndex",			column);
-	previousContext->setContextProperty("columnTitle",			_model->headerData(column, Qt::Horizontal, _roleNameToRole["title"]));
-	previousContext->setContextProperty("columnDescription",	_model->headerData(column, Qt::Horizontal, _roleNameToRole["description"]));
+	previousContext->setContextProperty("columnTitle",			_model->headerData(column, Qt::Horizontal, _model->getRole("title")));
+	previousContext->setContextProperty("columnDescription",	_model->headerData(column, Qt::Horizontal, _model->getRole("description")));
 	previousContext->setContextProperty("columnIsComputed",		isComputed);
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
