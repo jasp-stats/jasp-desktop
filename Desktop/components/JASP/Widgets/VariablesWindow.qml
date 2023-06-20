@@ -70,6 +70,18 @@ FocusScope
 			anchors.fill:		parent
 			anchors.margins:	jaspTheme.generalAnchorMargin
 
+			Label
+			{
+				id:			nameLabel
+				text:		qsTr("Name: ")
+				anchors
+				{
+					right:				columnNameVariablesWindow.left
+					top:				parent.top
+					margins:			jaspTheme.generalAnchorMargin
+				}
+			}
+
 			TextInput
 			{
 				id:					columnNameVariablesWindow
@@ -79,6 +91,8 @@ FocusScope
 				font:				jaspTheme.fontGroupTitle
 				enabled:			ribbonModel.dataMode
 				selectByMouse:		true
+
+
 
 				anchors
 				{
@@ -108,6 +122,18 @@ FocusScope
 
 			}
 
+			Label
+			{
+				id:			titleLabel
+				text:		qsTr("Title: ")
+				anchors
+				{
+					left:				parent.horizontalCenter
+					top:				parent.top
+					margins:			jaspTheme.generalAnchorMargin
+				}
+			}
+
 			TextInput
 			{
 				id:					columnTitleVariablesWindow
@@ -120,7 +146,7 @@ FocusScope
 
 				anchors
 				{
-					left:				parent.horizontalCenter
+					left:				titleLabel.right
 					top:				parent.top
 					margins:			jaspTheme.generalAnchorMargin
 				}
@@ -152,6 +178,7 @@ FocusScope
 				color:				jaspTheme.controlBackgroundColor
 				border.color:		jaspTheme.uiBorder
 				border.width:		1
+				visible:			labelModel.showLabelsEditing
 
 				anchors
 				{
@@ -420,14 +447,13 @@ FocusScope
 					QTC.TextArea
 					{
 						id:					columnDescriptionVariablesWindow
-						text:				labelModel.columnTitle
-						onTextChanged:		if(labelModel.columnTitle !== text) labelModel.columnTitle = text
+						text:				if(labelModel.columnDescription !== text) labelModel.columnDescription = text
 						color:				jaspTheme.textEnabled
 						font:				jaspTheme.font
 						enabled:			ribbonModel.dataMode
 						selectByMouse:		true
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-						placeholderText:	"Column description"
+						placeholderText:	qsTr("Column description")
 
 
 						MouseArea
@@ -467,6 +493,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		labelModel.showLabelsEditing
 				}
 
 				RoundedButton
@@ -480,6 +507,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		labelModel.showLabelsEditing
 				}
 
 				RoundedButton
@@ -493,6 +521,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		labelModel.showLabelsEditing
 				}
 
 				RoundedButton

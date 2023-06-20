@@ -117,7 +117,7 @@ void Column::setDescription(const std::string &description)
 		return;
 
 	_description = description;
-	db().columnSetTitle(_id, _description);
+	db().columnSetDescription(_id, _description);
 	incRevision();
 }
 
@@ -1344,7 +1344,9 @@ bool Column::labelsSyncInts(const std::set<int> &uniqueValues)
 {
 	JASPTIMER_SCOPE(Column::labelsSyncInts);
 	
-	beginBatchedLabelsDB();
+	bool wasBatched = _batchedLabel; //we can be called from labelsSyncIntsMap
+	if(!wasBatched)
+		beginBatchedLabelsDB();
 
 	intintmap	modifiedValues;
 	intset		valuesToAdd		= uniqueValues,
@@ -1374,7 +1376,8 @@ bool Column::labelsSyncInts(const std::set<int> &uniqueValues)
 		labelsAdd(value);
 
 
-	endBatchedLabelsDB();
+	if(!wasBatched)
+		endBatchedLabelsDB();
 
 	return isChanged || (valuesToAdd.size() + valuesToRemove.size() > 0);
 }

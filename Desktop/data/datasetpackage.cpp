@@ -1231,80 +1231,122 @@ void DataSetPackage::deleteDataSet()
 	_dataSet = nullptr;
 }
 
-bool DataSetPackage::initColumnAsScale(size_t colNo, const std::string & newName, const doublevec & values)
+bool DataSetPackage::initColumnAsScale(size_t colNo, const std::string & newName, const doublevec & values, const std::string & title)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsScale);
 	
-	return _dataSet->columns()[colNo]->initAsScale(colNo, newName, values);
+	bool result = _dataSet->columns()[colNo]->initAsScale(colNo, newName, values);
+
+	if(result && !title.empty())
+		_dataSet->columns()[colNo]->setTitle(title);
+
+	return result;
 }
 
-intstrmap DataSetPackage::initColumnAsNominalText(size_t colNo, const std::string & newName, const stringvec & values, const strstrmap & labels)
+intstrmap DataSetPackage::initColumnAsNominalText(size_t colNo, const std::string & newName, const stringvec & values, const strstrmap & labels, const std::string & title)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalText);
 	
-	return _dataSet->columns()[colNo]->initAsNominalText(colNo, newName, values, labels);
+	intstrmap result =  _dataSet->columns()[colNo]->initAsNominalText(colNo, newName, values, labels);
+
+	if(!title.empty())
+		_dataSet->columns()[colNo]->setTitle(title);
+
+	return result;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, bool is_ordinal, const std::string & title)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalOrOrdinal);
 	
-	return _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
+	bool result =  _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
+
+	if(result && !title.empty())
+		_dataSet->columns()[colNo]->setTitle(title);
+
+	return result;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal, const std::string & title)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalOrOrdinal with uniqueValues);
 	
-	return _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
+	bool result =  _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
+
+	if(result && !title.empty())
+		_dataSet->columns()[colNo]->setTitle(title);
+
+	return result;
 }
 
-bool DataSetPackage::initColumnAsScale(QVariant colID, const std::string & newName, const doublevec & values)
+bool DataSetPackage::initColumnAsScale(QVariant colID, const std::string & newName, const doublevec & values, const std::string & title)
 {
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
 		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		return initColumnAsScale(colNo, newName, values);
+		bool result =  initColumnAsScale(colNo, newName, values);
+
+		if(result && !title.empty())
+			_dataSet->columns()[colNo]->setTitle(title);
+
+		return result;
 	}
 	else
 		return initColumnAsScale(colID.toString().toStdString(), newName, values);
+
+
 }
 
-intstrmap DataSetPackage::initColumnAsNominalText(QVariant colID, const std::string & newName, const stringvec & values, const strstrmap & labels)
+intstrmap DataSetPackage::initColumnAsNominalText(QVariant colID, const std::string & newName, const stringvec & values, const strstrmap & labels, const std::string & title)
 {
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
 		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		return initColumnAsNominalText(colNo, newName, values, labels);
+		intstrmap result =  initColumnAsNominalText(colNo, newName, values, labels);
+
+		if(!title.empty())
+			_dataSet->columns()[colNo]->setTitle(title);
+
+		return result;
 	}
 	else
 		return initColumnAsNominalText(colID.toString().toStdString(), newName, values, labels);
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, bool is_ordinal, const std::string & title)
 {
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
 		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		return initColumnAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
+		bool result =  initColumnAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
+
+		if(result && !title.empty())
+			_dataSet->columns()[colNo]->setTitle(title);
+
+		return result;
 	}
 	else
 		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, is_ordinal);
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal, const std::string & title)
 {
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
 		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		return initColumnAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
+		bool result =  initColumnAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
+
+		if(result && !title.empty())
+			_dataSet->columns()[colNo]->setTitle(title);
+
+		return result;
 	}
 	else
 		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, uniqueValues, is_ordinal);
 }
 
 
-void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values)
+void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values, const std::string & title)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnWithStrings);
 	
@@ -1620,7 +1662,9 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 
 	if(resetModel)
 		beginResetModel();
+
 	_dataSet->column(columnIndex)->setName(newName);
+
 	if(resetModel)
 		endResetModel();
 

@@ -21,6 +21,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	ReadStatImportDataSet * data			= static_cast<ReadStatImportDataSet*>(ctx);
 	int 					var_index		= readstat_variable_get_index(variable);
 	std::string				name			= readstat_variable_get_name(variable),
+							title			= readstat_variable_get_label(variable) ? readstat_variable_get_label(variable) : "",
 							labelsID		= val_labels != NULL ? val_labels : "";
 	readstat_measure_t		colMeasure		= readstat_variable_get_measure(variable);
 	columnType				colType;
@@ -33,7 +34,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;	break;
 	}
 
-	data->addColumn(var_index, new ReadStatImportColumn(variable, data, name, labelsID, colType));
+	data->addColumn(var_index, new ReadStatImportColumn(variable, data, name, title, labelsID, colType));
 
 	return READSTAT_HANDLER_OK;
 }

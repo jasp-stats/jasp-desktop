@@ -22,6 +22,7 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(double	rowWidth			READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
 	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
 	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
+	Q_PROPERTY(bool		showLabelsEditing	READ showLabelsEditing								NOTIFY showLabelsEditingChanged	)
 
 public:
 				LabelModel();
@@ -60,6 +61,9 @@ public:
 
 	void setColumnDescription(const QString & newColumnDescription);
 
+	bool showLabelsEditing() const;
+
+
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -82,10 +86,12 @@ signals:
 	void valueMaxWidthChanged();
 	void labelMaxWidthChanged();
 	void chosenColumnChanged();
-
 	void columnTitleChanged();
-
 	void columnDescriptionChanged();
+	void showLabelsEditingChanged();
+
+
+
 
 private:
 	std::vector<size_t> getSortedSelection()					const;

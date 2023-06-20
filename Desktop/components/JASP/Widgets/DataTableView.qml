@@ -546,14 +546,14 @@ FocusScope
 						if(columnIndex >= 0)
 						{
 
-							if(columnType  !== columnTypeScale)
-							{
+							/*if(columnType  !== columnTypeScale)
+							{*/
 								var changedIndex		= labelModel.chosenColumn	!== columnIndex
 								labelModel.chosenColumn	= columnIndex;
 								labelModel.visible		= changedIndex ? true : !labelModel.visible;
-							}
+							/*}
 							else
-								dataSetModel.renameColumnDialog(columnIndex);
+								dataSetModel.renameColumnDialog(columnIndex);*/
 
 							if(dataSetModel.columnUsedInEasyFilter(columnIndex))
 							{
@@ -563,8 +563,10 @@ FocusScope
 						}
 
 					hoverEnabled:		true
-					ToolTip.visible:	containsMouse && (columnType !== columnTypeScale)
-					ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
+					ToolTip.visible:	containsMouse
+					ToolTip.text:		("<b>" + columnTitle + "</b><br>") +
+										( columnDescription !== "" ? "<i>" + columnDescription + "</i><br><br>" : "") +
+										((columnType === columnTypeScale ? qsTr("Click here to change variable") : qsTr("Click here to change the variable/labels")) + (columnIsFiltered ? qsTr(" or inspect filter") : "" ))
 					ToolTip.timeout:	3000
 					ToolTip.delay:		500
 					cursorShape:		(columnType !== columnTypeScale) || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
@@ -584,11 +586,11 @@ FocusScope
 			border.color:	jaspTheme.grayLighter
 			border.width:	1
 
-			height:			datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight + (16 * preferencesModel.uiScale) : 0
+			height:			dataFilterStatusText.text.length > 0 ? dataFilterStatusText.contentHeight + (16 * preferencesModel.uiScale) : 0
 
 			Text
 			{
-				id:						datafiltertatusText
+				id:						dataFilterStatusText
 				text:					filterModel.statusBarText
 				font:					jaspTheme.font
 				color:					jaspTheme.textEnabled

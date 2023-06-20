@@ -44,7 +44,10 @@ QString LabelModel::columnNameQ()
 void LabelModel::setColumnNameQ(QString newColumnName)
 {
 	if(column())
-		return DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
+	{
+		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
+		emit columnTitleChanged(); //Mightve happened!
+	}
 }
 
 
@@ -238,6 +241,7 @@ void LabelModel::setChosenColumn(int chosenColumn)
 	DataSet * data = DataSetPackage::pkg()->dataSet();
 	
 	subNodeModel()->selectNode(data ? data->column(chosenColumn) : nullptr);
+	emit showLabelsEditingChanged();
 }
 
 
@@ -373,4 +377,11 @@ void LabelModel::setLabel(int rowIndex, QString label)
 {
 	setData(LabelModel::index(rowIndex, 0), label);
 	setLabelMaxWidth();
+}
+
+bool LabelModel::showLabelsEditing() const
+{
+	if(column())
+			return column()->type() != columnType::scale;
+	return false;
 }

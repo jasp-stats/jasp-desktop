@@ -194,19 +194,19 @@ public:
 				void				setWaitingForReady()								{ _analysesHTMLReady			= false;			}
 				void				setLoaded(bool loaded = true);
 
-				bool						initColumnAsScale(				size_t				colNo,		const std::string & newName, const doublevec	& values);
-				bool						initColumnAsScale(				const std::string & colName,	const std::string & newName, const doublevec	& values)	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values); }
-				bool						initColumnAsScale(				QVariant			colID,		const std::string & newName, const doublevec	& values);
-				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false) { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, uniqueValues, is_ordinal); }
-				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,									bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,									bool is_ordinal = false) { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, is_ordinal); }
-				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,									bool is_ordinal = false);
-				intstrmap					initColumnAsNominalText(		size_t				colNo,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap());
-				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap())	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels); }
-				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap());
-				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values);
+				bool						initColumnAsScale(				size_t				colNo,		const std::string & newName, const doublevec	& values, const std::string & title = "");
+				bool						initColumnAsScale(				const std::string & colName,	const std::string & newName, const doublevec	& values, const std::string & title = "")	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values, title); }
+				bool						initColumnAsScale(				QVariant			colID,		const std::string & newName, const doublevec	& values, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "") { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, uniqueValues, is_ordinal, title); }
+				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "") { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, is_ordinal, title); }
+				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "");
+				intstrmap					initColumnAsNominalText(		size_t				colNo,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
+				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "")	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels, title); }
+				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
+				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values, const std::string & title = "");
 				void						initializeComputedColumns();
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
