@@ -143,7 +143,7 @@ padding:			jaspTheme.jaspControlPadding
 				font:				jaspTheme.fontGroupTitle
 				enabled:			ribbonModel.dataMode
 				selectByMouse:		true
-
+padding:			jaspTheme.jaspControlPadding
 				anchors
 				{
 					left:				titleLabel.right
