@@ -20,10 +20,8 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	auto * info = new VariableInfo(_singleton);
 	
 	connect(this, &ColumnsModel::namesChanged,		info, &VariableInfo::namesChanged		);
-	connect(this, &ColumnsModel::namesChanged,		this, &ColumnsModel::refresh			);
 	connect(this, &ColumnsModel::columnsChanged,	info, &VariableInfo::columnsChanged	);
 	connect(this, &ColumnsModel::columnTypeChanged, info, &VariableInfo::columnTypeChanged	);
-	connect(this, &ColumnsModel::columnTypeChanged, this, &ColumnsModel::refresh			);
 	connect(this, &ColumnsModel::labelsChanged,		info, &VariableInfo::labelsChanged		);
 	connect(this, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
 
