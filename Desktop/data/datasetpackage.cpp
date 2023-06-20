@@ -367,8 +367,7 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 		if(!col || col->type() == columnType::scale)
 			return 0;
 
-		int labelSize = col->labels().size();
-		return labelSize;
+		return col->labels().size();
 	}
 		
 	case dataSetBaseNodeType::filter:
@@ -416,7 +415,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 		if(col->type() == columnType::scale)
 			return 0;
 
-		return col->labels().size();
+		return 1;
 	}
 		
 	case dataSetBaseNodeType::filter:
@@ -880,16 +879,14 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 			notifyColumnFilterStatusChanged(col);
 
 		emit labelFilterChanged();
-		emit dataChanged(DataSetPackage::index(row, 0, parent),	DataSetPackage::index(row, columnCount(parent), parent));	//Emit dataChanged for filter
+		QModelIndex columnParentNode = indexForSubNode(column);
+		emit dataChanged(DataSetPackage::index(row, 0, columnParentNode),	DataSetPackage::index(row, columnCount(columnParentNode), columnParentNode), { int(specialRoles::filter) });
 		emit filteredOutChanged(col);
 
 		return true;
 	}
 	else
 		return false;
-
-	return atLeastOneRemains;
-
 }
 
 int DataSetPackage::filteredOut(size_t col) const

@@ -208,6 +208,7 @@ FocusScope
 
 					model:						labelModel
 					cacheItems:					false
+					expandDataSet:				false
 					toolTip:					qsTr("Edit the labels here or choose which values should be filtered out.")
 					mouseArea.enabled:			false
 					mouseArea.visible:			false

@@ -40,20 +40,7 @@ class DataSetPackageSubNodeModel;
 ///
 /// In order to have all that data available through this class a tree-model has been chosen here.
 ///
-/// The top layer of this tree are a parIdxType::dataRoot, ::filterRoot and several ::labelRoot "nodes" (one per column) stored in _internalPointers (together with column, just for label*)
-/// Each of these is used a the rootnode for a DataSetPackageSubNodeModel, which basically drops everything not belonging to that rootnode.
-/// And then makes sure it looks like a table to whatever model connects to that (like DataSetTableProxy which can then be used for filtering and sorting)
-/// The _internalPointers structure also contains a node for parIdxType::data and parIdxType::filter and several for parIdxType::label (again one per column)
-/// _internalPointers is formed by pairs of the nodetype and a column, the column is only used for the label and labelRoot nodes though.
-/// by storing a reference to one of these elements in QModelIndices for DataSetPackage the correct parent can be found and proper filtering can be achieved.
-///
-/// For the filter it can, now because we only support a single filter, return a list of booleans. But this might be expanded later on.
-/// The label is a special case and some support has been hacked in to also specify which particular column is referenced. 
-/// Those labels are returned as columns: [filter-value, value-value, label-text]
-///
-/// These subnodes (at dataSubModel, filterSubModel and labelSubModel) are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
-///
-/// It can use cleaning up though.
+/// The structure of this tree should be described here...
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT

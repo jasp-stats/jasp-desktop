@@ -265,6 +265,7 @@ protected:
 
 protected:
 	QItemSelectionModel									*	_selectionModel			= nullptr;
+	ExpandDataProxyModel								*	_model					= nullptr;
 	std::vector<QSizeF>										_cellSizes;							//[col]
 	std::vector<double>										_colXPositions,						//[col][row]
 															_dataColsMaxWidth;
@@ -320,7 +321,7 @@ protected:
 	QPoint		_selectionStart			= QPoint(-1, -1),
 				_selectionEnd			= QPoint(-1, -1);
 
-	ExpandDataProxyModel* _model		= nullptr;
+
 };
 
 
