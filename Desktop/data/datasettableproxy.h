@@ -18,6 +18,10 @@ public:
 	DataSetPackageSubNodeModel	*	subNodeModel()	const { return qobject_cast<DataSetPackageSubNodeModel*>(sourceModel()); }
 	DataSetBaseNode				*	node()			const { return subNodeModel()->node(); }
 
+
+	QModelIndex			mapToSource(	const QModelIndex & proxyIndex)				const	override;
+	QModelIndex			mapFromSource(	const QModelIndex & sourceIndex)			const	override;
+
 signals:
 	void		nodeChanged();
 };

@@ -36,24 +36,18 @@ public:
 
 				int			columnsFilteredCount()					const				{ return DataSetPackage::pkg()->columnsFilteredCount();								}
 	Q_INVOKABLE bool		isColumnNameFree(QString name)								{ return DataSetPackage::pkg()->isColumnNameFree(name);								}
-	Q_INVOKABLE	QVariant	columnTitle(int column)					const				{ return DataSetPackage::pkg()->getColumnTitle(column);								}
-	Q_INVOKABLE QVariant	columnIcon(int column)					const				{ return DataSetPackage::pkg()->getColumnIcon(column);								}
 	Q_INVOKABLE QString		columnName(int column)					const;
-	Q_INVOKABLE void		setColumnName(int col, QString name)	const;
+	Q_INVOKABLE void		setColumnName(int col, QString name);
 	Q_INVOKABLE QVariant	getColumnTypesWithIcons()				const				{ return DataSetPackage::pkg()->getColumnTypesWithIcons();							}
-	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const				{ return DataSetPackage::pkg()->isColumnUsedInEasyFilter(column);					}
+	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const;
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
-	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType)	{ return DataSetPackage::pkg()->setColumnTypeFromQML(columnIndex, newColumnType);	}
+	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType);
 	Q_INVOKABLE void		resizeData(int row, int col)								{		 DataSetPackage::pkg()->resizeData(row, col);								}
 
 	//the following column-int passthroughs will fail once columnfiltering is added...
-	columnType				getColumnType(size_t column)			const				{ return DataSetPackage::pkg()->getColumnType(column);								}
-	std::string				getColumnName(size_t col)				const				{ return DataSetPackage::pkg()->getColumnName(col);									}
+
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
-	QStringList				getColumnLabelsAsStringList(int col)	const;
-	QStringList				getColumnValuesAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsStringList(col);					}
-	QList<QVariant>			getColumnValuesAsDoubleList(int col)	const				{ return DataSetPackage::pkg()->getColumnValuesAsDoubleList(col);					}
-	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
+
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
