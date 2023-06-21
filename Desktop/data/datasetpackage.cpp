@@ -133,9 +133,11 @@ void DataSetPackage::reset(bool newDataSet)
 	_isJaspFile					= false;
 	_filterShouldRunInit		= false;
 	_dataMode					= false;
+	_manualEdits				= false;
 
 	setLoaded(false);
 	setModified(false);
+	setSynchingExternally(false); //Default is off, AsyncLoader::loadPackage(...) will turn it on for non-jasp
 	setCurrentFile("");
 
 	endLoadingData();
@@ -652,7 +654,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				{
 					JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
-					setSynchingExternally(false); //Don't synch with external file after editing
+					setManualEdits(true); //Don't synch with external file after editing
 
 					//beginResetModel();
 					//beginSynchingData(false);
@@ -719,6 +721,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				{
 					beginResetModel();
 					endResetModel();
+					setManualEdits(true);
 				}
 			}
 
@@ -737,6 +740,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 		if(!_dataSet || index.column() >= parColCount || index.row() >= parRowCount || index.column() < 0 || index.row() < 0)
 			return false;
 
+
 		const Labels	&	labels		= column->labels();
 		
 		switch(role)
@@ -744,10 +748,13 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 		case int(specialRoles::filter):
 			if(value.typeId() != QMetaType::Bool) 
 				return false;
+
+			setManualEdits(true);
 			
 			return setAllowFilterOnLabel(index, value.toBool());
 
 		case int(specialRoles::description):
+			setManualEdits(true);
 			return setDescriptionOnLabel(index, value.toString());
 
 		case int(specialRoles::value):
@@ -778,6 +785,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				
 				stringvec changedCols = {column->name()};
 				endSynchingDataChangedColumns(changedCols, false, false);
+				setManualEdits(true);
 				return true;
 			}
 			break;
@@ -1162,6 +1170,8 @@ void DataSetPackage::endSynchingData(	stringvec		&	changedColumns,
 	_synchingData = false;
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
 	emit datasetChanged(tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
+
+	setManualEdits(false);
 }
 
 
@@ -1941,8 +1951,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colMax			= cells.size();
 	bool	rowCountChanged = int(row + rowMax) > dataRowCount()	,
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
-	
-	setSynchingExternally(false); //Don't synch with external file after editing
 
 	//beginResetModel();
 	beginSynchingData(false);
@@ -1991,6 +1999,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	stringvec				missingColumns;
 
 	endSynchingData(changed, missingColumns, changeNameColumns, rowCountChanged, colCountChanged, false);
+	setManualEdits(true); //set manual edits here so external synching is turned off, endSynchingData also just reset it, so thats why it is way down here
 
 	if(isLoaded()) setModified(true);
 }
@@ -2003,7 +2012,7 @@ QString DataSetPackage::insertColumnSpecial(int column, bool computed, bool R)
 	if(column > dataColumnCount())
 		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
-	setSynchingExternally(false); //Don't synch with external file after editing
+	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
@@ -2053,7 +2062,7 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 	if(column > dataColumnCount())
 		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
-	setSynchingExternally(false); //Don't synch with external file after editing
+	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
@@ -2098,7 +2107,7 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 
 	if(isLoaded()) setModified(true);
 
-	setSynchingExternally(false); //Don't synch with external file after editing
+	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
@@ -2131,7 +2140,7 @@ bool DataSetPackage::insertRows(int row, int count, const QModelIndex & aparent)
 	if(row > dataRowCount())
 		row = dataRowCount();
 
-	setSynchingExternally(false); //Don't synch with external file after editing
+	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
@@ -2180,7 +2189,7 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 
 	if(isLoaded()) setModified(true);
 
-	setSynchingExternally(false); //Don't synch with external file after editing
+	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
@@ -2331,33 +2340,31 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 		if(syncImmediately)
 			emit synchingIntervalPassed();
 
-		emit synchingExternallyChanged();
+		emit synchingExternallyChanged(synchingExternally());
 	}
 }
 
 bool DataSetPackage::synchingExternally() const
 {
-	return PreferencesModel::prefs()->dataAutoSynchronization() && (!_dataSet->dataFilePath().empty() || (_database != Json::nullValue && _databaseIntervalSyncher.isActive()));
+	return _dataSet && _synchingExternally && (!_dataSet->dataFilePath().empty() || (_database != Json::nullValue && _databaseIntervalSyncher.isActive()));
 }
 
-void DataSetPackage::setSynchingExternally(bool synchingExternally_)
+void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
 {
-	if(synchingExternally() == synchingExternally_)
-		return;
+	if (synchingExternally && (_dataSet->dataFilePath().empty() || _manualEdits))
+		emit askUserForExternalDataFile();
 
-	if (!synchingExternally_)
-	{
-		PreferencesModel::prefs()->setDataAutoSynchronization(false);
-	}
-	else
-	{
-		if(_dataSet->dataFilePath().empty())
-			emit askUserForExternalDataFile();
-		else
-			PreferencesModel::prefs()->setDataAutoSynchronization(true);
-	}
+	setSynchingExternally(synchingExternally);
+}
 
-	emit synchingExternallyChanged();
+void DataSetPackage::setSynchingExternally(bool synchingExternally)
+{
+	bool wasSynching = DataSetPackage::synchingExternally();
+
+	_synchingExternally = synchingExternally;
+
+	if(wasSynching != DataSetPackage::synchingExternally())
+		emit synchingExternallyChanged(DataSetPackage::synchingExternally());
 }
 
 void DataSetPackage::setCurrentFile(QString currentFile)
@@ -2442,14 +2449,15 @@ QString DataSetPackage::windowTitle() const
 void DataSetPackage::setEmptyValues(Json::Value &emptyValues)
 { 
 	_dataSet->setEmptyValuesJson(emptyValues);
-	_dataSet->setEmptyValuesJson(emptyValues);
 }
 
 void DataSetPackage::setDataFilePath(std::string filePath)				
 { 
+	if(_dataSet->dataFilePath() == filePath)
+		return;
+
 	_dataSet->setDataFilePath(filePath);
-	_dataSet->setDataFilePath(filePath);
-	emit synchingExternallyChanged();	
+	emit synchingExternallyChanged(synchingExternally());
 }
 
 void DataSetPackage::setDatabaseJson(const Json::Value &dbInfo)		
@@ -2457,7 +2465,6 @@ void DataSetPackage::setDatabaseJson(const Json::Value &dbInfo)
 	_database						= dbInfo;			
 	Log::log() << "DataSetPackage::setDatabaseJson got:" << dbInfo << std::endl;
 
-	_dataSet->setDatabaseJson(_database.toStyledString());
 	_dataSet->setDatabaseJson(_database.toStyledString());
 }
 
@@ -2543,4 +2550,22 @@ void DataSetPackage::requestComputedColumnDestruction(const std::string& columnN
 	removeColumn(columnName);
 
 	emit checkForDependentColumnsToBeSent(tq(columnName));
+}
+
+bool DataSetPackage::manualEdits() const
+{
+	return _manualEdits;
+}
+
+void DataSetPackage::setManualEdits(bool newManualEdits)
+{
+	if (_manualEdits == newManualEdits)
+		return;
+
+	_manualEdits = newManualEdits;
+
+	if(_manualEdits)
+		setSynchingExternally(false);
+
+	emit manualEditsChanged();
 }

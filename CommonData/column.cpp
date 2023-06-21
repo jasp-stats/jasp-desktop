@@ -1516,7 +1516,7 @@ bool Column::isValueEqual(size_t row, const std::string &value) const
 		default:
 			return	_ints[row] == std::numeric_limits<int>::lowest()
 					? ColumnUtils::isEmptyValue(value)
-					: value == getValue(_ints[row]);
+					: value == getValue(row);
 	}
 
 	return false;

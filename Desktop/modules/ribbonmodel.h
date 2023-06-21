@@ -117,6 +117,8 @@ signals:
 				void dataInsertRowAfter(int);
 				void dataRemoveColumn(int);
 				void dataRemoveRow(int);
+				void setDataSynchronisation(bool);
+				void synchronisationChanged(bool);
 
 
 public slots:
@@ -126,6 +128,7 @@ public slots:
 	//void moduleLoadingSucceeded(const QString & moduleName);
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentRow(int currentRow);
+
 
 private slots:
 	void dynamicModuleChanged(	Modules::DynamicModule * module);
@@ -141,13 +144,15 @@ private: // fields
 	int										_highlightedModuleIndex = -1;
 	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
-	Modules::AnalysisEntries			*	_entriesInsert		= nullptr,
-										*	_entriesDelete		= nullptr;
-	RibbonButton						*	_analysesButton		= nullptr,
-										*	_dataSwitchButton	= nullptr,
-										*	_dataNewButton		= nullptr,
-										*	_insertButton		= nullptr,
-										*	_removeButton		= nullptr;
+	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
+										*	_entriesDelete			= nullptr;
+	RibbonButton						*	_analysesButton			= nullptr,
+										*	_dataSwitchButton		= nullptr,
+										*	_dataNewButton			= nullptr,
+										*	_insertButton			= nullptr,
+										*	_removeButton			= nullptr,
+										*	_synchroniseOnButton	= nullptr,
+										*	_synchroniseOffButton	= nullptr;
 	
 	static RibbonModel * _singleton;
 };

@@ -52,7 +52,8 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded				NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile		NOTIFY currentFileChanged			)
 	Q_PROPERTY(bool			dataMode				READ dataMode											NOTIFY dataModeChanged				)
-	Q_PROPERTY(bool			synchingExternally		READ synchingExternally		WRITE setSynchingExternally NOTIFY synchingExternallyChanged	)
+	Q_PROPERTY(bool			synchingExternally		READ synchingExternally		WRITE setSynchingExternally NOTIFY synchingExternallyChanged	) //might have to be moved to dataset when we have multiple datasets, alse CurrentDataFile in FileMenu will need to be looked at...
+	Q_PROPERTY(bool			manualEdits				READ manualEdits			WRITE setManualEdits		NOTIFY manualEditsChanged			)
 
 	typedef DataSetPackageSubNodeModel							SubNodeModel;
 
@@ -270,6 +271,9 @@ public:
 				void						dbDelete();
 
 
+				bool manualEdits() const;
+				void setManualEdits(bool newManualEdits);
+
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
 													QStringList				missingColumns,
@@ -299,12 +303,12 @@ signals:
 				void				synchingIntervalPassed();
 				void				newDataLoaded();
 				void				dataModeChanged(bool dataMode);
-				void				synchingExternallyChanged();
+				void				synchingExternallyChanged(bool);
 				void				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(	QString columnName);
 				void				showWarning(						QString title, QString msg);
 				void				showComputedColumn(					QString	   columnName);
-
+				void				manualEditsChanged();
 
 public slots:
 				void				refresh()																		{ beginResetModel(); endResetModel(); }
@@ -317,6 +321,7 @@ public slots:
 				void				setFolder(							QString folder);
 				void				generateEmptyData();
 				void				logDataModeChanged(					bool dataMode);
+				void				setSynchingExternallyFriendly(		bool synchingExternally);
 				void				setSynchingExternally(				bool synchingExternally);
 				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
 				void				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
@@ -351,7 +356,9 @@ private:
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
 								_filterShouldRunInit		= false,
-								_dataMode					= false;
+								_dataMode					= false,
+								_synchingExternally			= false,
+								_manualEdits				= false;
 
 	Json::Value					_analysesData,
 								_database					= Json::nullValue;
@@ -367,7 +374,6 @@ private:
 							*	_labelsSubModel;
 	
 	QTimer						_databaseIntervalSyncher;
-
 };
 
 #endif // FILEPACKAGE_H

@@ -260,7 +260,7 @@ bool MainWindow::checkDoSync()
 	//Only do this if we are *not* running in reporting mode. 
 	if (!_reporter && checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
 	{
-		_preferences->setDataAutoSynchronization(false);
+		DataSetPackage::pkg()->setSynchingExternally(false);
 		return false;
 	}
 
@@ -287,6 +287,7 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 	connect(this,					&MainWindow::dataAvailableChanged,					_ribbonModel,			&RibbonModel::dataLoadedChanged								);
 
+	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
 	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::checkForDependentColumnsToBeSent,	_computedColumnsModel,	&ComputedColumnsModel::checkForDependentColumnsToBeSentSlot	);
@@ -302,8 +303,10 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::dataModeChanged,					_engineSync,			&EngineSync::dataModeChanged								);
 	connect(_package,				&DataSetPackage::dataModeChanged,					this,					&MainWindow::onDataModeChanged								);
 	connect(_package,				&DataSetPackage::askUserForExternalDataFile,		this,					&MainWindow::startDataEditorHandler							);
+
 	connect(_package,				&DataSetPackage::showWarning,						_msgForwarder,			&MessageForwarder::showWarningQML,							Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::showComputedColumn,				this,					&MainWindow::showComputedColumn								);
+	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged);
 	
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -376,10 +379,8 @@ void MainWindow::makeConnections()
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
-	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_package,				&DataSetPackage::synchingExternallyChanged					);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
-	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::uiScaleChangedHandler					);
@@ -414,6 +415,7 @@ void MainWindow::makeConnections()
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 	connect(_ribbonModel,			&RibbonModel::generateEmptyData,					_package,				&DataSetPackage::generateEmptyData							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
+	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule						);
@@ -1466,15 +1468,34 @@ void MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
 	QString path = QString::fromStdString(_package->dataFilePath());
-	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly())
+	if (
+			(path.isEmpty() || _package->manualEdits())
+			|| path.startsWith("http")
+			|| !QFileInfo::exists(path)
+			|| Utils::getFileSize(path.toStdString()) == 0
+			|| _package->dataFileReadOnly()
+	)
 	{
 		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
 		if (path.startsWith("http"))			message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
 		else if (_package->dataFileReadOnly())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
 
-		MessageForwarder::DialogResponse choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Find Data File"));
+		MessageForwarder::DialogResponse choice;
+
+		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty();
+
+		if (manualEditsMode)
+		{
+			message = tr("JASP has an associated data file, but you edited it. Would you like to reload from the associated data or generate a new file?");
+			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Reload Data File"));
+		}
+		else
+			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Find Data File"));
+
 
 		FileEvent *event = nullptr;
+
+		bool justOpenItAlready = false;
 
 		switch(choice)
 		{
@@ -1516,23 +1537,38 @@ void MainWindow::startDataEditorHandler()
 
 		case MessageForwarder::DialogResponse::No:
 		{
-			QString caption = "Find Data File";
-			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods)";
+			if(manualEditsMode)
+				justOpenItAlready = true;
+			else
+			{
+				QString caption = "Find Data File";
+				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods)";
 
-			path = MessageForwarder::browseOpenFile(caption, "", filter);
-			if (path == "")
-				return;
+				path = MessageForwarder::browseOpenFile(caption, "", filter);
+				if (path == "")
+					return;
 
-			event = new FileEvent(this, FileEvent::FileSyncData);
+				event = new FileEvent(this, FileEvent::FileSyncData);
+			}
+
 			break;
 		}
 
 		}
-		connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
-		connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
-		event->setPath(path);
-		_loader->io(event);
-		showProgress();
+
+		if(!justOpenItAlready)
+		{
+			connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
+			connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
+			event->setPath(path);
+			_loader->io(event);
+			showProgress();
+		}
+		else
+		{
+			startDataEditor(path);
+			_package->setSynchingExternally(true);
+		}
 	}
 	else
 		startDataEditor(path);
@@ -1865,9 +1901,9 @@ void MainWindow::makeAppleMenu()
 	macAbout->setMenuRole(			QAction::AboutRole);
 	macPreferences->setMenuRole(	QAction::PreferencesRole);
 
-	connect(macQuit,		&QAction::triggered, [&](){ if(checkPackageModifiedBeforeClosing()) _application->quit(); });
-	connect(macAbout,		&QAction::triggered, [&](){ showAbout(); });
-	connect(macPreferences, &QAction::triggered, [&](){ _fileMenu->showPreferences(); });
+	connect(macQuit,		&QAction::triggered, macQuit,			[&](){ if(checkPackageModifiedBeforeClosing()) _application->quit(); });
+	connect(macAbout,		&QAction::triggered, macAbout,			[&](){ showAbout(); });
+	connect(macPreferences, &QAction::triggered, macPreferences,	[&](){ _fileMenu->showPreferences(); });
 
 	quitMenu->addAction(macQuit);
 	aboutMenu->addAction(macAbout);
