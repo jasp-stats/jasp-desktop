@@ -136,8 +136,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },		fq(tr("Open a workspace without data")),			true);
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
-	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button.svg",			true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
-	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button.svg",			true, [&](){ emit setDataSynchronisation(false); },					fq(tr("Turn external data synchronisation off")),	true);
+	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
+	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	true, [&](){ emit setDataSynchronisation(false); },					fq(tr("Turn external data synchronisation off")),	true);
 
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });

@@ -1551,16 +1551,18 @@ Label * Column::labelByRow(int row) const
 }
 
 
-bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
+bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed)
 {
     JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
     
+	changed = false;
+
 	bool convertedSuccesfully = value == "";
 
 	if(convertedSuccesfully)
 	{
-		if(_type == columnType::scale)	setValue(row, NAN);
-		else							setValue(row, std::numeric_limits<int>::lowest());
+		if(_type == columnType::scale ? setValue(row, NAN) : setValue(row, std::numeric_limits<int>::lowest()))
+			changed = true;
 	}
 	else
 		switch(_type)
@@ -1571,7 +1573,9 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 
 			if(ColumnUtils::convertValueToDoubleForImport(value, newDoubleToSet))
 			{
-				setValue(row, newDoubleToSet);
+				if(setValue(row, newDoubleToSet))
+					changed = true;
+
 				convertedSuccesfully = true;
 			}
 			break;
@@ -1594,7 +1598,8 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 					if(_ints[row] == i)
 						refs++;
 
-				setValue(row, newIntegerToSet);
+				if(setValue(row, newIntegerToSet))
+					changed = true;
 
 				if(refs == 1) //only this row has this label, so we'll remove it
 				{
@@ -1639,13 +1644,15 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string &value)
 	return convertedSuccesfully;
 }
 
-void Column::setValue(size_t row, int value, bool writeToDB)
+bool Column::setValue(size_t row, int value, bool writeToDB)
 {
 	JASPTIMER_SCOPE(Column::setValue int);
 
 	if(row >= _ints.size())
-		return;
+		return false;
 	
+	bool changed = _ints[row] != value;
+
 	_ints[row] = value;
 	
 	if(writeToDB)
@@ -1653,15 +1660,19 @@ void Column::setValue(size_t row, int value, bool writeToDB)
 		db().columnSetValue(_id, row, value);
 		incRevision();
 	}
+
+	return changed;
 }
 
-void Column::setValue(size_t row, double value, bool writeToDB)
+bool Column::setValue(size_t row, double value, bool writeToDB)
 {
 	JASPTIMER_SCOPE(Column::setValue double);
 
 	if(row >= _dbls.size())
-		return;
+		return false;
 	
+	bool changed = !Utils::isEqual(_dbls[row], value);
+
 	_dbls[row] = value;
 
 	if(writeToDB)
@@ -1669,6 +1680,8 @@ void Column::setValue(size_t row, double value, bool writeToDB)
 		db().columnSetValue(_id, row, value);
 		incRevision();
 	}
+
+	return changed;
 }
 
 void Column::setValues(const intvec & values)

@@ -167,6 +167,7 @@ void DataSetPackage::generateEmptyData()
 	endLoadingData();
 	emit newDataLoaded();
 	resetAllFilters();
+	setSynchingExternally(false);
 }
 
 //Some debugprinting
@@ -650,32 +651,36 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 
 			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value))
 			{
-				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString())))
+				bool changed = false;
+
+				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString()), changed))
 				{
-					JASPTIMER_SCOPE(DataSetPackage::setData reset model);
+					if(changed)
+					{
+						JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
-					setManualEdits(true); //Don't synch with external file after editing
+						setManualEdits(true); //Don't synch with external file after editing
 
-					//beginResetModel();
-					//beginSynchingData(false);
+						//beginResetModel();
+						//beginSynchingData(false);
 
-					stringvec	changedCols = {column->name()},
-								missing;
-					strstrmap	changeName;
+						stringvec	changedCols = {column->name()},
+									missing;
+						strstrmap	changeName;
 
-					//endSynchingData(changedCols, missing, changeName, false, false, false);
+						//endSynchingData(changedCols, missing, changeName, false, false, false);
 
-					emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
-					emit datasetChanged(tq(changedCols), tq(missing), tq(changeName), false, false);
+						emit dataChanged(DataSetPackage::index(index.row(), index.column(), index.parent()), DataSetPackage::index(index.row(), index.column(), index.parent()));
+						emit datasetChanged(tq(changedCols), tq(missing), tq(changeName), false, false);
 
-					emit labelsReordered(tq(column->name()));
+						emit labelsReordered(tq(column->name()));
 
-					setModified(true);
+						setModified(true);
 
-					//emit label dataChanged just in case
-					//QModelIndex parent = indexForSubNode(column);
-					//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
-
+						//emit label dataChanged just in case
+						//QModelIndex parent = indexForSubNode(column);
+						//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
+					}
 				}
 				else
 				{
@@ -2359,12 +2364,9 @@ void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
 
 void DataSetPackage::setSynchingExternally(bool synchingExternally)
 {
-	bool wasSynching = DataSetPackage::synchingExternally();
-
 	_synchingExternally = synchingExternally;
 
-	if(wasSynching != DataSetPackage::synchingExternally())
-		emit synchingExternallyChanged(DataSetPackage::synchingExternally());
+	emit synchingExternallyChanged(DataSetPackage::synchingExternally());
 }
 
 void DataSetPackage::setCurrentFile(QString currentFile)
