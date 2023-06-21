@@ -29,6 +29,7 @@
 #include <QTimer>
 #include "databaseinterface.h"
 #include "dataset.h"
+#include "datasetpackageenums.h"
 
 class EngineSync;
 class DataSetPackageSubNodeModel;
@@ -69,8 +70,7 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	typedef DataSetPackageSubNodeModel							SubNodeModel;
 
 public:
-	///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in LabelModel, but defined here for convenience.
-	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, maxRowHeaderString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType, columnWidthFallback, label, selected };
+	typedef dataPkgRoles specialRoles;
 
 	static DataSetPackage *	pkg() { return _singleton; }
 
@@ -194,19 +194,19 @@ public:
 				void				setWaitingForReady()								{ _analysesHTMLReady			= false;			}
 				void				setLoaded(bool loaded = true);
 
-				bool						initColumnAsScale(				size_t				colNo,		const std::string & newName, const doublevec	& values);
-				bool						initColumnAsScale(				const std::string & colName,	const std::string & newName, const doublevec	& values)	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values); }
-				bool						initColumnAsScale(				QVariant			colID,		const std::string & newName, const doublevec	& values);
-				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false) { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, uniqueValues, is_ordinal); }
-				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,									bool is_ordinal = false);
-				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,									bool is_ordinal = false) { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, is_ordinal); }
-				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,									bool is_ordinal = false);
-				intstrmap					initColumnAsNominalText(		size_t				colNo,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap());
-				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap())	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels); }
-				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap());
-				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values);
+				bool						initColumnAsScale(				size_t				colNo,		const std::string & newName, const doublevec	& values, const std::string & title = "");
+				bool						initColumnAsScale(				const std::string & colName,	const std::string & newName, const doublevec	& values, const std::string & title = "")	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values, title); }
+				bool						initColumnAsScale(				QVariant			colID,		const std::string & newName, const doublevec	& values, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "") { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, uniqueValues, is_ordinal, title); }
+				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,	const intstrmap &uniqueValues,	bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	size_t				colNo,		const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "");
+				bool						initColumnAsNominalOrOrdinal(	const std::string & colName,	const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "") { return initColumnAsNominalOrOrdinal(_dataSet->getColumnIndex(colName), newName, values, is_ordinal, title); }
+				bool						initColumnAsNominalOrOrdinal(	QVariant			colID,		const std::string & newName, const intvec		& values,									bool is_ordinal = false, const std::string & title = "");
+				intstrmap					initColumnAsNominalText(		size_t				colNo,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
+				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "")	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels, title); }
+				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
+				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values, const std::string & title = "");
 				void						initializeComputedColumns();
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
@@ -225,12 +225,10 @@ public:
 				int							findIndexByName(const std::string & name)	const;
 
 				bool						getRowFilter(				int						row)		const;
-				QVariant					getColumnTitle(				int						column)		const;
-				QVariant					getColumnIcon(				int						column)		const;
 				QVariant					getColumnTypesWithIcons()										const;
 				std::string					getComputedColumnError(		size_t					colIndex)	const;
-				bool						getColumnHasFilter(			int						column)		const;
-				bool						isColumnUsedInEasyFilter(	int						column)		const;
+
+				bool						isColumnUsedInEasyFilter(	const std::string	&	name)		const;
 				bool						isColumnNameFree(			const std::string	&	name)		const;
 				bool						isColumnNameFree(			const QString		&	name)		const	{ return isColumnNameFree(name.toStdString()); }
 				bool						isColumnComputed(			size_t					colIndex)	const;
@@ -248,19 +246,21 @@ public:
 				Json::Value					columnToJsonForJASPFile(size_t columnIndex, Json::Value & labelsData, size_t & dataSize);
 				void						columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Value columnDesc, size_t columnIndex, std::map<std::string, intintmap > & mapNominalTextValues);
 
-				int							getColumnIndex(		const std::string	& name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
-				int							getColumnIndex(		const QString		& name)			const	{ return getColumnIndex(name.toStdString()); }
-				enum columnType				getColumnType(		size_t columnIndex)					const;
-				std::string					getColumnName(		size_t columnIndex)					const;
-				intvec						getColumnDataInts(	size_t columnIndex);
-				doublevec					getColumnDataDbls(	size_t columnIndex);
-				stringvec					getColumnDataStrs(	size_t columnIndex);
-				void						setColumnName(		size_t columnIndex, const std::string	& newName, bool resetModel = true);
-				void						setColumnDataInts(	size_t columnIndex, const intvec		& ints);
-				void						setColumnDataDbls(	size_t columnIndex, const doublevec		& dbls);
+				int							getColumnIndex(			const std::string	& name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
+				int							getColumnIndex(			const QString		& name)			const	{ return getColumnIndex(name.toStdString()); }
+				enum columnType				getColumnType(			size_t columnIndex)					const;
+				std::string					getColumnName(			size_t columnIndex)					const;
+				intvec						getColumnDataInts(		size_t columnIndex);
+				doublevec					getColumnDataDbls(		size_t columnIndex);
+				stringvec					getColumnDataStrs(		size_t columnIndex);
+				void						setColumnName(			size_t columnIndex, const std::string	& newName,			bool resetModel = true);
+				void						setColumnTitle(			size_t columnIndex, const std::string	& newTitle,			bool resetModel = true);
+				void						setColumnDescription(	size_t columnIndex, const std::string	& newDescription,	bool resetModel = true);
+				void						setColumnDataInts(		size_t columnIndex, const intvec		& ints);
+				void						setColumnDataDbls(		size_t columnIndex, const doublevec		& dbls);
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex)			const;
-				QStringList					getColumnLabelsAsStringList(const std::string & columnName)	const;
-				QStringList					getColumnLabelsAsStringList(size_t columnIndex)				const;
+				QStringList					getColumnLabelsAsStringList(const std::string & columnName,	bool dropUnused = false)	const;
+				QStringList					getColumnLabelsAsStringList(size_t columnIndex,				bool dropUnused = false)	const;
 				QStringList					getColumnValuesAsStringList(size_t columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
 				void						unicifyColumnNames();
@@ -283,6 +283,7 @@ public:
 				void						checkComputedColumnDependenciesForAnalysis(Analysis * analysis);
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
+
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
@@ -316,6 +317,7 @@ signals:
 				void				synchingExternallyChanged();
 				void				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(QString columnName);
+				void				showWarning(QString title, QString msg);
 
 
 public slots:
@@ -337,6 +339,7 @@ public slots:
 private:
 				bool				isThisTheSameThreadAsEngineSync();
 				bool				setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue);
+				bool				setDescriptionOnLabel(const QModelIndex & index, const QString & newDescription);
 				QModelIndex			lastCurrentCell();
 				void				resetModelOneCell();
 

@@ -15,7 +15,7 @@ class ReadStatImportColumn : public ImportColumn
 {
 public:
 
-				ReadStatImportColumn(readstat_variable_t * readstat_var, ImportDataSet* importDataSet, std::string name, std::string labelsID, columnType columnType = columnType::unknown);
+				ReadStatImportColumn(readstat_variable_t * readstat_var, ImportDataSet* importDataSet, std::string name, std::string title, std::string labelsID, columnType columnType = columnType::unknown);
 				~ReadStatImportColumn()							override;
 
 	size_t						size()									const	override;
@@ -60,7 +60,8 @@ public:
 
 private:
 	readstat_variable_t		*	_readstatVariable = nullptr;
-	std::string					_labelsID;
+	std::string					_labelsID,
+								_title;
 	columnType					_type;
 	std::vector<int>			_ints;
 	std::vector<double>			_doubles;

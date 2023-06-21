@@ -14,7 +14,7 @@ const std::string DatabaseInterface::_dbConstructionSql =
 "CREATE TABLE DataSets		( id INTEGER PRIMARY KEY, dataFilePath TEXT, databaseJson TEXT, emptyValuesJson TEXT, revision INT DEFAULT 0);\n"
 "CREATE TABLE Filters		( id INTEGER PRIMARY KEY, dataSet INT, rFilter TEXT, generatedFilter TEXT, constructorJson TEXT, constructorR TEXT, errorMsg TEXT"
 							", revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
-"CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, columnType TEXT, colIdx INT, isComputed INT, invalidated INT NULL, "
+"CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, title TEXT, description TEXT, columnType TEXT, colIdx INT, isComputed INT, invalidated INT NULL, "
 							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL, "
 							"analysisId INT NULL, revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Labels		( id INTEGER PRIMARY KEY, columnId INT, value INT, ordering INT, filterAllows INT, label TEXT, originalValueJson TEXT, description TEXT, FOREIGN KEY(columnId) REFERENCES Columns(id));\n";
@@ -974,6 +974,26 @@ void DatabaseInterface::columnSetName(int columnId, const std::string &name)
 	});
 }
 
+void DatabaseInterface::columnSetTitle(int columnId, const std::string & title)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::columnSetTitle);
+	runStatements("UPDATE Columns SET title=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	{
+		sqlite3_bind_text(stmt, 1, title.c_str(), title.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	2, columnId);
+	});
+}
+
+void DatabaseInterface::columnSetDescription(int columnId, const std::string & description)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::columnSetDescription);
+	runStatements("UPDATE Columns SET description=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	{
+		sqlite3_bind_text(stmt, 1, description.c_str(), description.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	2, columnId);
+	});
+}
+
 void DatabaseInterface::columnSetComputedInfo(int columnId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
@@ -991,7 +1011,7 @@ void DatabaseInterface::columnSetComputedInfo(int columnId, bool invalidated, co
 	});
 }
 
-void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, columnType &colType, int & revision)
+void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std::string &title, std::string &description, columnType &colType, int & revision)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetBasicInfo);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -1003,15 +1023,17 @@ void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, colu
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 3);
+		assert(colCount == 5);
 					name		= _wrap_sqlite3_column_text(stmt, 0);
-		std::string colTypeStr	= _wrap_sqlite3_column_text(stmt, 1);
-		revision				= sqlite3_column_int(		stmt, 2);
+					title		= _wrap_sqlite3_column_text(stmt, 1);
+					description	= _wrap_sqlite3_column_text(stmt, 2);
+		std::string colTypeStr	= _wrap_sqlite3_column_text(stmt, 3);
+		revision				= sqlite3_column_int(		stmt, 4);
 
 		colType = colTypeStr.empty() ? columnType::unknown : columnTypeFromString(colTypeStr);
 	};
 
-	runStatements("SELECT name, columnType, revision FROM Columns WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT name, title, description, columnType, revision FROM Columns WHERE id = ?;", prepare, processRow);
 }
 
 
