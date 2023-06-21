@@ -282,6 +282,10 @@ FocusScope
 									labelModel.setSelected(rowIndex, mouse.modifiers);
 									selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
 								}
+								onDoubleClicked:	(mouse)=>
+								{
+									labelInput.forceActiveFocus()
+								}
 							}
 
 							Row
@@ -347,6 +351,7 @@ FocusScope
 
 								TextInput
 								{
+									id:					labelInput
 									color:				jaspTheme.textEnabled
 
 									text:				itemText
