@@ -42,7 +42,7 @@ void JASPImporterOld::loadDataSet(const std::string &path, std::function<void(in
 
 	DataSetPackage * packageData = DataSetPackage::pkg();
 
-	packageData->setIsArchive(true);
+        packageData->setIsJaspFile(true);
 
 	readManifest(path);
 

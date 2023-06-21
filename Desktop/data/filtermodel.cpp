@@ -36,7 +36,7 @@ void FilterModel::dataSetPackageResetDone()
 
 void FilterModel::modelInit()
 {
-	if(!DataSetPackage::pkg()->isArchive() || DataSetPackage::pkg()->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
+	if(!DataSetPackage::pkg()->isJaspFile() || DataSetPackage::pkg()->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
 		sendGeneratedAndRFilter();
 
 	DataSetPackage::pkg()->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter

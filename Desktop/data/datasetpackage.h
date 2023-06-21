@@ -138,8 +138,7 @@ public:
 				
 				bool				isReady()							const	{ return _analysesHTMLReady;			}
 				bool				isLoaded()							const	{ return _isLoaded;						 }
-				bool				isArchive()							const	{ return _isArchive;					  }
-				bool				isJaspFile()						const	{ return _isArchive;					  } ///< for readability
+				bool				isJaspFile()						const	{ return _isJaspFile;					  } ///< for readability
 				bool				isModified()						const	{ return _isModified;					   }
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
 				QString				windowTitle()						const;
@@ -172,7 +171,7 @@ public:
 				void				setDataFileTimestamp(uint timestamp)				{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
 				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
-				void				setIsArchive(bool isArchive)						{ _isArchive					= isArchive;		}
+				void				setIsJaspFile(bool isJaspFile)						{ _isJaspFile					= isJaspFile;		}
 				void				setHasAnalysesWithoutData()							{ _hasAnalysesWithoutData		= true;				}
 				void				setModified(bool value);
 				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
@@ -345,7 +344,7 @@ private:
 								_warningMessage,
 								_initialMD5;
 
-	bool						_isArchive					= false,
+	bool						_isJaspFile					= false,
 								_dataFileReadOnly,
 								_isModified					= false,
 								_isLoaded					= false,

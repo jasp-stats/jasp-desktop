@@ -130,7 +130,7 @@ void DataSetPackage::reset(bool newDataSet)
 	_hasAnalysesWithoutData		= false;
 	_analysesHTMLReady			= false;
 	_database					= Json::nullValue;
-	_isArchive					= false;
+	_isJaspFile					= false;
 	_filterShouldRunInit		= false;
 	_dataMode					= false;
 

@@ -32,7 +32,7 @@ class ODSImportDataSet;
 class ODSImporter : public Importer
 {
 public:
-	ODSImporter()  : Importer() {	DataSetPackage::pkg()->setIsArchive(false); }
+    ODSImporter()  : Importer() {	DataSetPackage::pkg()->setIsJaspFile(false); }
 	virtual ~ODSImporter() {}
 
 protected:
