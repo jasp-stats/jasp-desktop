@@ -372,7 +372,7 @@ void LabelModel::unselectAll()
 
 bool LabelModel::setChecked(int rowIndex, bool checked)
 {
-	Log::log() << "setChecked(" << rowIndex << ", " << (checked ? "checked" : "unchecked") << ")" << std::endl;
+	//Log::log() << "setChecked(" << rowIndex << ", " << (checked ? "checked" : "unchecked") << ")" << std::endl;
 
 	return setData(LabelModel::index(rowIndex, 0), checked, int(DataSetPackage::specialRoles::filter));
 }
