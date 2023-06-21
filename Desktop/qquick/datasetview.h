@@ -11,7 +11,7 @@
 #include <map>
 #include <QtQml>
 #include "utilities/qutils.h"
-#include "gui/preferencesmodel.h"
+#include "data/expanddataproxymodel.h"
 
 #include <QItemSelectionModel>
 #include <QItemSelection>
@@ -29,7 +29,6 @@ struct ItemContextualized
 	QQuickItem * item;
 	QQmlContext * context;
 };
-
 
 /// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
 /// Supports scaling the data into millions of columns and rows without any noticable slowdowns (the model could slow it down though)
@@ -55,20 +54,23 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( double					headerHeight			READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double					rowNumberWidth			READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 	Q_PROPERTY( bool					cacheItems				READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
+	Q_PROPERTY( bool					expandDataSet			READ expandDataSet			WRITE setExpandDataSet			NOTIFY expandDataSetChanged			)
 	Q_PROPERTY( QQuickItem			*	tableViewItem			READ tableViewItem			WRITE setTableViewItem												)
 	Q_PROPERTY( QItemSelectionModel *	selection				READ selectionModel											NOTIFY selectionModelChanged		)
-	Q_PROPERTY(	QModelIndex				selectionStart			READ selectionStart			WRITE setSelectionStart			NOTIFY selectionStartChanged		)
-	Q_PROPERTY(	QModelIndex				selectionEnd			READ selectionEnd			WRITE setSelectionEnd			NOTIFY selectionEndChanged			)
+	Q_PROPERTY(	QPoint					selectionStart			READ selectionStart			WRITE setSelectionStart			NOTIFY selectionStartChanged		)
+	Q_PROPERTY(	QPoint					selectionEnd			READ selectionEnd			WRITE setSelectionEnd			NOTIFY selectionEndChanged			)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
 	
 public:
+	friend ExpandDataProxyModel;
+
 							DataSetView(QQuickItem *parent = nullptr);
 
 	static DataSetView *	lastInstancedDataSetView()					{ return _lastInstancedDataSetView; }
 
 	void					setModel(QAbstractItemModel * model);
 	
-	QAbstractItemModel	*	model()								const	{ return _model;					}
+	QAbstractItemModel	*	model()								const	{ return _model->sourceModel();		}
 	QItemSelectionModel	*	selectionModel()					const	{ return _selectionModel;			}
 
 	int						itemHorizontalPadding()				const	{ return _itemHorizontalPadding;	}
@@ -81,7 +83,7 @@ public:
 	double					viewportW()							const	{ return _viewportW;				}
 	double					viewportH()							const	{ return _viewportH;				}
 
-	QModelIndex				selectionTopLeft()					const;
+	QPoint					selectionTopLeft()					const;
 
 	QQmlComponent		*	itemDelegate()						const	{ return _itemDelegate;				}
 	QQmlComponent		*	rowNumberDelegate()					const	{ return _rowNumberDelegate;		}
@@ -92,15 +94,14 @@ public:
 	QQmlComponent		*	editDelegate()						const	{ return _editDelegate;				}
 
 	bool					cacheItems()						const	{ return _cacheItems;				}
-	QModelIndex				selectionStart()					const	{ return _selectionStart;			}
-	QModelIndex				selectionEnd()						const	{ return _selectionEnd;				}
+	bool					expandDataSet()						const	{ return _model ? _model->expandDataSet() : false;			}
+	QPoint					selectionStart()					const	{ return _selectionStart;			}
+	QPoint					selectionEnd()						const	{ return _selectionEnd;				}
 	bool					editing()							const	{ return _editing;		}
 
 	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)					{ return _columnHeaderItems.count(col) 	> 0	? _columnHeaderItems[col]->item : nullptr;	}
 	Q_INVOKABLE QQuickItem*	getRowHeader(	int row)					{ return _rowNumberItems.count(row) 	> 0 ? _rowNumberItems[row]->item	: nullptr;	}
 
-
-	
 	
 	GENERIC_SET_FUNCTION(ViewportX,		_viewportX,		viewportXChanged,	double	)
 	GENERIC_SET_FUNCTION(ViewportY,		_viewportY,		viewportYChanged,	double	)
@@ -118,6 +119,7 @@ public:
 	void setEditDelegate(			QQmlComponent	* editDelegate);
 	void setTableViewItem(			QQuickItem		* tableViewItem) { _tableViewItem = tableViewItem; }
 	void setCacheItems(				bool			  cacheItems);
+	void setExpandDataSet(			bool			  expandDataSet);
 
 	void resetItems();
 
@@ -149,9 +151,10 @@ signals:
 	void		rowNumberWidthChanged();
 
 	void		cacheItemsChanged();
+	void		expandDataSetChanged();
 	
-	void		selectionStartChanged(	QModelIndex selectionStart);
-	void		selectionEndChanged(	QModelIndex selectionEnd);
+	void		selectionStartChanged(	QPoint selectionStart);
+	void		selectionEndChanged(	QPoint selectionEnd);
 	void		editingChanged(bool shiftSelectActive);
 
 	void		selectionBudgesUp();
@@ -177,9 +180,10 @@ public slots:
 	void		modelWasReset();
 	void		setExtraColumnX();
 	
-	void		setSelectionStart(	QModelIndex selectionStart	);
-	void		setSelectionEnd(	QModelIndex selectionEnd	);	
-	void		pollSelectScroll(	QModelIndex mouseIndex		);
+	void		setSelectionStart(	QPoint selectionStart	);
+	void		setSelectionEnd(	QPoint selectionEnd	);
+	bool		isSelected(int row, int col);
+	void		pollSelectScroll(	int row, int column);
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
 
@@ -193,7 +197,6 @@ public slots:
 	QString		columnInsertAfter(			int col = -1, bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
-
 	void		columnsDelete();
 	void		rowSelect(					int row = -1);
 	void		rowInsertBefore(			int row = -1);
@@ -209,23 +212,22 @@ public slots:
 	void		rowsInserted(				const QModelIndex &parent, int first, int last);
 	void		rowsRemoved(				const QModelIndex &parent, int first, int last);
 
-
+	int			rowCount()		{ return _model->rowCount();	}
+	int			columnCount()	{ return _model->columnCount(); }
 
 	void		selectAll();
 
-	void		edit(QModelIndex here);
+	void		edit(int row, int column);
 	void		destroyEditItem(bool restoreItem=true);
-	void		editFinished(			QModelIndex here, QVariant editedValue);
-	void		commitEdit(QModelIndex here, QVariant editedValue);
+	void		commitEdit(				int row, int column, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);
-	void		contextMenuClickedAtIndex(QModelIndex index);
+	void		contextMenuClickedAtIndex(int row, int column);
 	void		finishCurrentEdit();
 
 	
 protected:
 	void		_copy(bool includeHeader, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
-	void		setRolenames();
 	void		determineCurrentViewPortIndices();
 	void		storeOutOfViewItems();
 	void		buildNewLinesAndCreateNewItems();
@@ -233,7 +235,7 @@ protected:
 #ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
-	float extraColumnWidth() { return !_extraColumnItem ? 0 : 2 + _extraColumnItem->width(); }
+	float extraColumnWidth() { return !_extraColumnItem || expandDataSet() ? 0 : 2 + _extraColumnItem->width(); }
 
 	QQuickItem *	createTextItem(int row, int col);
 	void			storeTextItem(int row, int col, bool cleanUp = true);
@@ -262,8 +264,8 @@ protected:
 	QSizeF			getRowHeaderSize();
 
 protected:
-	QAbstractItemModel									*	_model					= nullptr;
 	QItemSelectionModel									*	_selectionModel			= nullptr;
+	ExpandDataProxyModel								*	_model					= nullptr;
 	std::vector<QSizeF>										_cellSizes;							//[col]
 	std::vector<double>										_colXPositions,						//[col][row]
 															_dataColsMaxWidth;
@@ -285,7 +287,6 @@ protected:
 														*	_editDelegate			= nullptr;
 	ItemContextualized									*	_editItemContextual		= nullptr;
 	QSGFlatColorMaterial									_material;
-	std::map<std::string, int>								_roleNameToRole;
 	std::map<size_t, std::map<size_t, unsigned char>>		_storedLineFlags;
 	std::map<size_t, std::map<size_t, QString>>				_storedDisplayText;
 	static DataSetView									*	_lastInstancedDataSetView;
@@ -317,8 +318,10 @@ protected:
 				_prevEditCol			= -1;
 	size_t		_linesActualSize		= 0;
 	long		_selectScrollMs			= 0;
-	QModelIndex _selectionStart,
-				_selectionEnd;
+	QPoint		_selectionStart			= QPoint(-1, -1),
+				_selectionEnd			= QPoint(-1, -1);
+
+
 };
 
 

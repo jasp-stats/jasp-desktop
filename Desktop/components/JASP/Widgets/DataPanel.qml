@@ -40,8 +40,8 @@ Rectangle
         {
 			id:							variablesWindow
 			SplitView.minimumHeight:	calculatedMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
-			SplitView.maximumHeight:	rootDataset.height * 0.8
+			SplitView.preferredHeight:	calculatedPreferredHeight
+			SplitView.maximumHeight:	calculatedMaximumHeight
         }
 
 		DataTableView
