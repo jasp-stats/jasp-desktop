@@ -63,20 +63,20 @@ void DataSetView::setModel(QAbstractItemModel * model)
 	{
 		_model = model;
 
-		connect(_model, &QAbstractItemModel::dataChanged,			this, &DataSetView::modelDataChanged		);
-		connect(_model, &QAbstractItemModel::headerDataChanged,		this, &DataSetView::modelHeaderDataChanged	);
-		connect(_model, &QAbstractItemModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset		);
-		connect(_model, &QAbstractItemModel::modelReset,			this, &DataSetView::modelWasReset			);
+		connect(_model, &QAbstractItemModel::dataChanged,				this, &DataSetView::modelDataChanged			);
+		connect(_model, &QAbstractItemModel::headerDataChanged,			this, &DataSetView::modelHeaderDataChanged		);
+		connect(_model, &QAbstractItemModel::modelAboutToBeReset,		this, &DataSetView::modelAboutToBeReset			);
+		connect(_model, &QAbstractItemModel::modelReset,				this, &DataSetView::modelWasReset				);
 
 
 		connect(_model, &QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
 		connect(_model, &QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
 		connect(_model, &QAbstractItemModel::rowsAboutToBeInserted,		this, &DataSetView::rowsAboutToBeInserted		);
 		connect(_model, &QAbstractItemModel::rowsAboutToBeRemoved,		this, &DataSetView::rowsAboutToBeRemoved		);
-		connect(_model, &QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted				);
-		connect(_model, &QAbstractItemModel::columnsRemoved,			this, &DataSetView::columnsRemoved				);
-		connect(_model, &QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted				);
-		connect(_model, &QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved					);
+		connect(_model, &QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted,			Qt::QueuedConnection);
+		connect(_model, &QAbstractItemModel::columnsRemoved,			this, &DataSetView::columnsRemoved,				Qt::QueuedConnection);
+		connect(_model, &QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted,				Qt::QueuedConnection);
+		connect(_model, &QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved,				Qt::QueuedConnection);
 
 		_selectionModel->setModel(_model);
 		emit selectionModelChanged(); //Or maybe it hasn't?
@@ -1562,6 +1562,8 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 
 	previousContext->setContextProperty("headerText",			text);
 	previousContext->setContextProperty("columnIndex",			column);
+	previousContext->setContextProperty("columnTitle",			_model->headerData(column, Qt::Horizontal, _roleNameToRole["title"]));
+	previousContext->setContextProperty("columnDescription",	_model->headerData(column, Qt::Horizontal, _roleNameToRole["description"]));
 	previousContext->setContextProperty("columnIsComputed",		isComputed);
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);

@@ -81,6 +81,8 @@ void DataSetPackageSubNodeModel::selectNode(DataSetBaseNode * node)
 
 	beginResetModel();
 	_node = node;
+	if(!_node)	setSourceModel(nullptr);
+	else		setSourceModel(DataSetPackage::pkg());
 	emit nodeChanged();
 	endResetModel();
 }
