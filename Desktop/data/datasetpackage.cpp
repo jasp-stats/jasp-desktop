@@ -90,14 +90,20 @@ bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 
 void DataSetPackage::enginesPrepareForData()
 {
+	if(_dataMode)
+		return;
+
 	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesPrepareForData();
 	else									emit enginesPrepareForDataSignal();
 }
 
 void DataSetPackage::enginesReceiveNewData()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesReceiveNewData();
-	else									emit enginesReceiveNewDataSignal();
+	if(!_dataMode)
+	{
+		if(isThisTheSameThreadAsEngineSync())	_engineSync->enginesReceiveNewData();
+		else									emit enginesReceiveNewDataSignal();
+	}
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
 }
@@ -143,11 +149,19 @@ void DataSetPackage::generateEmptyData()
 		return;
 	}
 
+	const int INIT_COL = 3;
+	const int INIT_ROW = 10;
+
 	beginLoadingData();
+
 	if(!_dataSet)
 		createDataSet();
-	setDataSetSize(1, 1);
-	initColumnAsScale(0, freeNewColumnName(0), { NAN });
+	setDataSetSize(INIT_COL, INIT_ROW);
+	doublevec emptyValues(INIT_ROW, NAN);
+	initColumnAsScale(0, freeNewColumnName(0), emptyValues);
+	initColumnAsScale(1, freeNewColumnName(1), emptyValues);
+	initColumnAsScale(2, freeNewColumnName(2), emptyValues);
+
 	endLoadingData();
 	emit newDataLoaded();
 	resetAllFilters();
@@ -353,8 +367,7 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 		if(!col || col->type() == columnType::scale)
 			return 0;
 
-		int labelSize = col->labels().size();
-		return labelSize;
+		return col->labels().size();
 	}
 		
 	case dataSetBaseNodeType::filter:
@@ -381,19 +394,17 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 	switch(node->nodeType())
 	{
 	case dataSetBaseNodeType::dataSet:
+	{
 		return 1; //data + filters are on rows
-		
+	}
 	case dataSetBaseNodeType::data:
 	{
 		DataSet * data = dynamic_cast<DataSet*>(node->parent());
-		
 		return data->columnCount();
 	}
 		
 	case dataSetBaseNodeType::filters:
 	{
-		//DataSet * data = dynamic_cast<DataSet*>(node->parent());
-		//return data->rowCount();
 		return 1; //change when implementing multiple filters
 	}
 		
@@ -404,12 +415,12 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 		if(col->type() == columnType::scale)
 			return 0;
 
-		int labelSize = col->labels().size();
-		return labelSize;
+		return 1;
 	}
 		
 	case dataSetBaseNodeType::filter:
 	case dataSetBaseNodeType::label:
+
 		return 1;
 	
 	case dataSetBaseNodeType::unknown:
@@ -868,16 +879,14 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 			notifyColumnFilterStatusChanged(col);
 
 		emit labelFilterChanged();
-		emit dataChanged(DataSetPackage::index(row, 0, parent),	DataSetPackage::index(row, columnCount(parent), parent));	//Emit dataChanged for filter
+		QModelIndex columnParentNode = indexForSubNode(column);
+		emit dataChanged(DataSetPackage::index(row, 0, columnParentNode),	DataSetPackage::index(row, columnCount(columnParentNode), columnParentNode), { int(specialRoles::filter) });
 		emit filteredOutChanged(col);
 
 		return true;
 	}
 	else
 		return false;
-
-	return atLeastOneRemains;
-
 }
 
 int DataSetPackage::filteredOut(size_t col) const
@@ -1924,48 +1933,6 @@ void DataSetPackage::unicifyColumnNames()
 	}
 }
 
-void DataSetPackage::resizeData(size_t rows, size_t cols)
-{
-	auto	namesBefore = tq(getColumnNames());
-	bool	rowsChanged = int(rows) != dataRowCount(),
-			newCols		= int(cols) >  dataColumnCount(),
-			newRows		= int(rows) >  dataRowCount();
-	size_t	oriRows		= dataRowCount(),
-			oriCols		= dataColumnCount();
-	
-	//Log::log() << "DataSetPackage::resizeData(r=" << rows << ", c=" << cols << ") called and current size (r=" << oriRows << ", c=" << oriCols << ")" << std::endl;
-	
-	if(oriCols == cols && oriRows == rows)
-		return;
-
-	beginSynchingData(false); //I assume this is all being called in dataMode, so the engines will be informed once we are done
-	setDataSetSize(cols, rows);
-
-	for(size_t c=newRows ? 0 : oriCols; c<cols; c++)
-	{
-		stringvec	colVals = getColumnDataStrs(c);
-		std::string	colName = getColumnName(c);
-
-		for(size_t r=oriRows; r<rows; r++)
-			colVals[r] = "";
-
-		initColumnWithStrings(int(c), colName == "" ? freeNewColumnName(c) : colName, colVals);
-	}
-
-	auto namesAfter = getColumnNames();
-
-	for(const std::string & n : namesAfter)
-		namesBefore.removeAll(tq(n));
-
-	stringvec	changed = rowsChanged ? namesAfter : stringvec(),
-				missing = fq(namesBefore);
-
-	strstrmap	changeNameColumns;
-
-	endSynchingData(changed, missing, changeNameColumns, rowsChanged, newCols, false);
-
-}
-
 void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
@@ -2265,7 +2232,6 @@ Column * DataSetPackage::createColumn(const std::string & name, columnType colum
 
 	enginesPrepareForData();
 	beginResetModel();
-
 	_dataSet->insertColumn(newColumnIndex);
 	_dataSet->column(newColumnIndex)->setName(name);
 	_dataSet->column(newColumnIndex)->setDefaultValues(columnType);
@@ -2530,12 +2496,21 @@ void DataSetPackage::checkComputedColumnDependenciesForAnalysis(Analysis * analy
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
 {
-	Column	* newComputedColumn = DataSetPackage::pkg()->createColumn(name, type);
+	QString nameTemp = insertColumnSpecial(dataColumnCount(), true, desiredType == computedColumnType::rCode);
 
-	newComputedColumn->setCodeType(desiredType);
+	Column	* newComputedColumn = DataSetPackage::pkg()->dataSet()->column(nameTemp.toStdString());
+
+	beginResetModel();
+
+	newComputedColumn->setName(name);
+	newComputedColumn->setType(type);
 
 	if(analysis)
 		newComputedColumn->setAnalysisId(analysis->id());
+
+	endResetModel();
+
+	emit showComputedColumn(tq(name));
 
 	return newComputedColumn;
 }
