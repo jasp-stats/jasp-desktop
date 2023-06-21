@@ -5,7 +5,7 @@ import JASP
 //Tag shown when alt navigation mode is enabled.
 ALTNavTagBase
 {
-	//It is initialised before the theme so we have to work around it with !jaspTheme ? undefined :
+	//It is initialised before(/besides?) the theme so we have to work around it with !jaspTheme ? undefined :
 	//That way there are less warnings...
 
 	id:					tagRoot
@@ -16,7 +16,7 @@ ALTNavTagBase
 
 	Rectangle
 	{
-		color:				!jaspTheme ? undefined	: jaspTheme.altNavTagColor
+		color:				!jaspTheme ? "black"	: jaspTheme.altNavTagColor
 		radius:				!jaspTheme ? 4			: 4 * jaspTheme.uiScale
 		anchors.fill:		parent
 		anchors.centerIn:	parent
@@ -25,8 +25,8 @@ ALTNavTagBase
 		{
 			id:							textElem
 			text:						tagText
-			color:						"white"
-			font:						!jaspTheme ? undefined : jaspTheme.fontALTNavTag
+			color:						!jaspTheme ? "" : jaspTheme.white
+			font:						!jaspTheme ? "sansserif" : jaspTheme.fontALTNavTag
 			anchors.centerIn:			parent
 			horizontalAlignment:		Text.AlignHCenter
 			verticalAlignment:			Text.AlignVCenter

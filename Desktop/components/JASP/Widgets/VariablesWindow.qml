@@ -447,7 +447,8 @@ padding:			jaspTheme.jaspControlPadding
 					QTC.TextArea
 					{
 						id:					columnDescriptionVariablesWindow
-						text:				if(labelModel.columnDescription !== text) labelModel.columnDescription = text
+						text:				labelModel.columnDescription
+						onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
 						color:				jaspTheme.textEnabled
 						font:				jaspTheme.font
 						enabled:			ribbonModel.dataMode
