@@ -121,7 +121,7 @@ JaspTheme
 	itemSelectedColor:					blueDarker
 	itemSelectedNoFocusColor:			grayLighter
 
-	altNavTagColor:						"#565756"
+	altNavTagColor:						black
 
 	//JASPControl colors mostly:
 	borderColor:						gray

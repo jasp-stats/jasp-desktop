@@ -505,6 +505,9 @@ void EngineSync::process()
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
+	if(_waitingFilter)
+		delete _waitingFilter;
+
 	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
 	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
