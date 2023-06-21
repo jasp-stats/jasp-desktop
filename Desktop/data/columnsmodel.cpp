@@ -73,9 +73,10 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		if (colIndex < 0)
 			return QVariant();
 
-		QModelIndex qIndex = index(row, colIndex);
+		//remember, the model is transposed:
+		QModelIndex qIndex = index(colIndex, 0);
 
-		int			colTypeInt	= QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::columnType)).toInt();
+		int			colTypeInt	= data(qIndex, ColumnsModel::ColumnTypeRole).toInt();
 		columnType	colTypeHere	= static_cast<columnType>(colTypeInt);
 
 		switch(info)
@@ -88,7 +89,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::Labels:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::labelsStrList));
 		case VariableInfo::StringValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesStrList));
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesDblList));
-		case VariableInfo::NameRole:					return	ColumnsModel::NameRole;
+		case VariableInfo::NameRole:					return	data(qIndex, ColumnsModel::NameRole);
 		case VariableInfo::RowCount:					return	rowCount();
 		case VariableInfo::Value:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::value));
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
