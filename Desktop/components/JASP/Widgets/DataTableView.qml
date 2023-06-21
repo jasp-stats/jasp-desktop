@@ -369,7 +369,7 @@ FocusScope
 					anchors.left:			parent.left
 					anchors.margins:		4
 
-					source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[columnType]
+					source: dataSetModel.getColumnTypesWithIcons()[columnType] != "" ? jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[columnType] : undefined
 					width:	headerRoot.__iconDim
 					height: headerRoot.__iconDim
 
