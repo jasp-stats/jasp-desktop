@@ -3,7 +3,6 @@
 
 #include <QTransposeProxyModel>
 #include "datasettablemodel.h"
-#include "common.h"
 #include "variableinfo.h"
 
 /// 
@@ -34,19 +33,15 @@ public:
 	QAbstractItemModel		*	providerModel()																				override	{ return this;	}
 	static ColumnsModel		*	singleton()	{ return _singleton; }
 
+public slots:
+	void datasetChanged(QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
+
 signals:
 	void namesChanged(		QMap<QString, QString>	changedNames);
 	void columnsChanged(	QStringList				changedColumns);
 	void columnTypeChanged(	QString					colName);
 	void labelsChanged(		QString					columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(	QString					columnName);
-
-public slots:
-	void datasetChanged(	QStringList				changedColumns,
-							QStringList				missingColumns,
-							QMap<QString, QString>	changeNameColumns,
-							bool					rowCountChanged,
-							bool					hasNewColumns);
 
 private:
 	DataSetTableModel		* _tableModel	= nullptr;

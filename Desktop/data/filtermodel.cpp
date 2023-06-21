@@ -139,14 +139,14 @@ void FilterModel::processFilterResult(int requestId)
 	if((requestId < _lastSentRequestId))
 		return;
 
-	if(!DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter())
+	if(!(DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter()))
 		return;
 
 	//Load new filter values from database
 	if(DataSetPackage::pkg()->dataSet()->filter()->dbLoadResultAndError())
 	{
 		emit filterErrorMsgChanged();
-		refreshAllAnalyses();
+		emit refreshAllAnalyses();
 		emit filterUpdated();
 		updateStatusBar();
 	}

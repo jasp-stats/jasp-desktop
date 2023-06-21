@@ -37,11 +37,13 @@ public:
 																														
 			
 			void					setName(			const std::string & name			);
+			void					setTitle(			const std::string & title			);
 			bool					setRCode(			const std::string & rCode			);
 			bool					setError(			const std::string & error			);
 			void					setType(			columnType			colType			);
 			columnTypeChangeResult	changeType(			columnType			colType			);
 			void					setCodeType(		computedColumnType	codeType		);
+			void					setDescription(		const std::string & description		);
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
@@ -85,6 +87,8 @@ public:
 			bool					invalidated()			const	{ return _invalidated;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
+			const std::string	&	title()					const	{ return _title;			}
+			const std::string	&	description()			const	{ return _description;		}
 			const std::string	&	error()					const	{ return _error;			}
 			const std::string	&	rCode()					const	{ return _rCode;			}
 				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
@@ -125,6 +129,7 @@ public:
 			const Labels		&	labels()										const	{ return _labels; }
 			Label				*	labelByValue(	int					value)		const; ///< Might be nullptr for missing value
 			Label				*	labelByDisplay(	const std::string & display)	const; ///< Might be nullptr for missing display
+			Label				*	labelByRow(		int					row)		const; ///< Might be nullptr for missing
 			int						labelIndex(		const Label * label)			const;
 
 
@@ -185,6 +190,8 @@ private:
 									_batchedLabel		= false;
 			computedColumnType		_codeType			= computedColumnType::unknown;
 			std::string				_name,
+									_title,
+									_description,
 									_error,
 									_rCode				= "#Enter your R code here :)";
 			Json::Value				_constructorJson	= Json::objectValue;

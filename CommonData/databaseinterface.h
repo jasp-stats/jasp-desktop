@@ -122,7 +122,9 @@ public:
 	void		columnSetType(				int columnId, columnType colType);
 	void		columnSetInvalidated(		int columnId, bool invalidated);
 	void		columnSetName(				int columnId, const std::string & name);
-	void		columnGetBasicInfo(			int columnId,		std::string & name, columnType & colType, int & revision);
+	void		columnSetTitle(				int columnId, const std::string & title);
+	void		columnSetDescription(		int columnId, const std::string & description);
+	void		columnGetBasicInfo(			int columnId,		std::string & name, std::string & title, std::string & description, columnType & colType, int & revision);
 	void		columnSetComputedInfo(		int columnId, bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	std::string & constructorJson);
 	bool		columnGetComputedInfo(		int columnId, bool & invalidated, computedColumnType & codeType,		std::string & rCode,		std::string & error,		Json::Value & constructorJson);
 	void		columnSetValues(			int columnId, const intvec	  & ints);
