@@ -49,33 +49,33 @@ FocusScope
 
 				var copyPasteMenuModel =
 				[
-					{ text: qsTr("Select All"),									func: function() { dataTableView.view.selectAll() },		icon: "menu-select-all" },
+					{ text: qsTr("Select All"),									func: function() { dataTableView.view.selectAll() },						icon: "menu-select-all"				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut             (%1+X)").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },			icon: "menu-data-cut"	},
-					{ text: qsTr("Copy            (%1+C)").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },		icon: "menu-data-copy"	},
-					{ text: qsTr("Paste           (%1+V)").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },		icon: "menu-data-paste" },
+					{ text: qsTr("Cut             (%1+X)").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
+					{ text: qsTr("Copy            (%1+C)").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
+					{ text: qsTr("Paste           (%1+V)").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,       icon: "menu-data-paste" },
-					{ text: qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,       icon: "menu-data-copy"	},
-					{ text: qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,       icon: "menu-data-cut"	},
+					{ text: qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-paste"				},
+					{ text: qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"				},
+					{ text: qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-cut"				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			indexClicked.column) }, icon: "menu-column-select"			},
-					{ text: qsTr("Insert column before"),						func: function() { dataTableView.view.columnInsertBefore(	indexClicked.column) }, icon: "menu-column-insert-before"	},
-					{ text: qsTr("Insert column after"),						func: function() { dataTableView.view.columnInsertAfter(	indexClicked.column) }, icon: "menu-column-insert-after"	},
-					{ text: qsTr("Delete column"),								func: function() { dataTableView.view.columnsDelete() },							icon: "menu-column-remove"			},
+					{ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			},
+					{ text: qsTr("Insert column before"),						func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
+					{ text: qsTr("Insert column after"),						func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
+					{ text: qsTr("Delete column"),								func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			},
 
 					{ text: "---" },
 
-					{ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			indexClicked.row) },	icon: "menu-row-select"				},
-					{ text: qsTr("Insert row before"),							func: function() { dataTableView.view.rowInsertBefore(		indexClicked.row) },	icon: "menu-row-insert-before"			},
-					{ text: qsTr("Insert row after"),							func: function() { dataTableView.view.rowInsertAfter(		indexClicked.row) },	icon: "menu-row-insert-after"			},
-					{ text: qsTr("Delete row"),									func: function() { dataTableView.view.rowsDelete(); },								icon: "menu-row-remove"				}
+					{ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
+					{ text: qsTr("Insert row before"),							func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
+					{ text: qsTr("Insert row after"),							func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
+					{ text: qsTr("Delete row"),									func: function() { dataTableView.view.rowsDelete(); },						icon: "menu-row-remove"				}
 
 				]
 
