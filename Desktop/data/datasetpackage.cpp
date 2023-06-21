@@ -2455,7 +2455,7 @@ void DataSetPackage::setEmptyValues(Json::Value &emptyValues)
 
 void DataSetPackage::setDataFilePath(std::string filePath)				
 { 
-	if(_dataSet->dataFilePath() == filePath)
+	if(!_dataSet || _dataSet->dataFilePath() == filePath)
 		return;
 
 	_dataSet->setDataFilePath(filePath);

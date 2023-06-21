@@ -202,11 +202,10 @@ void FileMenu::setDataFileWatcher(bool watch)
 
 	if (!(watch && !_currentDataFile->isOnlineFile(path)))
 		_watcher.removePath(path);
-	else
-	{
-		_watcher.addPath(path);
+
+	else if(_watcher.addPath(path))
 		dataFileModifiedHandler(path);
-	}
+
 }
 
 
@@ -262,6 +261,9 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				if (datafile.isEmpty())
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
+
+				if(event->operation() == FileEvent::FileOpen && !event->isReadOnly() && event->type() == FileTypeBase::jasp && !DataSetPackage::pkg()->dataFileReadOnly())
+					DataSetPackage::pkg()->setSynchingExternally(true);
 			}
 			
 			// all this stuff is a hack
