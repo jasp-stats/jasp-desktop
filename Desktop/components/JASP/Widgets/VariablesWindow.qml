@@ -86,12 +86,12 @@ FocusScope
 			{
 				id:					columnNameVariablesWindow
 				text:				labelModel.columnName
-				onTextChanged:		if(labelModel.columnName != text) labelModel.columnName = text
+				onTextChanged:		if(labelModel.columnName !== text) labelModel.columnName = text
 				color:				jaspTheme.textEnabled
 				font:				jaspTheme.fontGroupTitle
-				enabled:			ribbonModel.dataMode
+				//enabled:			ribbonModel.dataMode
 				selectByMouse:		true
-padding:			jaspTheme.jaspControlPadding
+				padding:			jaspTheme.jaspControlPadding
 
 
 				anchors
@@ -138,12 +138,13 @@ padding:			jaspTheme.jaspControlPadding
 			{
 				id:					columnTitleVariablesWindow
 				text:				labelModel.columnTitle
-				onTextChanged:		if(labelModel.columnTitle != text) labelModel.columnTitle = text
+				onTextChanged:		if(labelModel.columnTitle !== text) labelModel.columnTitle = text
 				color:				jaspTheme.textEnabled
 				font:				jaspTheme.fontGroupTitle
-				enabled:			ribbonModel.dataMode
+				//enabled:			ribbonModel.dataMode
 				selectByMouse:		true
-padding:			jaspTheme.jaspControlPadding
+				padding:			jaspTheme.jaspControlPadding
+
 				anchors
 				{
 					left:				titleLabel.right
@@ -451,7 +452,7 @@ padding:			jaspTheme.jaspControlPadding
 						onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
 						color:				jaspTheme.textEnabled
 						font:				jaspTheme.font
-						enabled:			ribbonModel.dataMode
+						//enabled:			ribbonModel.dataMode
 						selectByMouse:		true
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
 						placeholderText:	qsTr("Column description")
