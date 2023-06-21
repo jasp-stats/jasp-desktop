@@ -142,8 +142,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),				"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true);
 	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),			"data-button.svg",			false, [&](){ emit showData(); },											fq(tr("Switch JASP to data editing mode")),		false);
-	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),				"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },		fq(tr("Open a workspace without data")),			true);
-	_dataResizeButton		= new RibbonButton(this, "Data-Resize",				fq(tr("Resize Data")),			"data-button-resize.svg",	false, [&](){ emit resizeData(); },											fq(tr("Resize your dataset")),						false);
+	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),				"data-button-new.svg",		false, [&](){ emit genShowEmptyData(); },		fq(tr("Open a workspace without data")),			true);
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),				"data-button-insert.svg",	_entriesInsert,																	fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),				"data-button-erase.svg",	_entriesDelete,																	fq(tr("Remove columns or rows")));
 
@@ -151,12 +150,10 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	connect(this, &RibbonModel::dataLoadedChanged, _dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
 	connect(this, &RibbonModel::dataLoadedChanged, _insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged, _removeButton,			&RibbonButton::setEnabled);
-	connect(this, &RibbonModel::dataLoadedChanged, _dataResizeButton,		&RibbonButton::setEnabled);
 
 	addRibbonButtonModel(_analysesButton,		size_t(RowType::Data));
 	addRibbonButtonModel(_dataSwitchButton,		size_t(RowType::Analyses));
 	addRibbonButtonModel(_dataNewButton,		size_t(RowType::Analyses));
-	addRibbonButtonModel(_dataResizeButton,		size_t(RowType::Data));
 	addRibbonButtonModel(_insertButton,			size_t(RowType::Data));
 	addRibbonButtonModel(_removeButton,			size_t(RowType::Data));
 }
