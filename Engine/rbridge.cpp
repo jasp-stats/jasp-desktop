@@ -753,7 +753,7 @@ char** rbridge_getLabels(const Labels & levels, size_t &nbLevels)
 		{
 			results[i++] = strdup(level->label(false).c_str());
 
-			Log::log() << "For label " << level->str() << " wrote to label-vec[" << i-1 << "]: " << results[i-1] << "\n";
+			//Log::log() << "For label " << level->str() << " wrote to label-vec[" << i-1 << "]: " << results[i-1] << "\n";
 		}
 		nbLevels = i;
 	}

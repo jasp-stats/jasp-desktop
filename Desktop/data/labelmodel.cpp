@@ -8,6 +8,8 @@ LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubMod
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::filteredOutChanged		);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnNameChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnTitleChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnDescriptionChanged	);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::chosenColumnChanged		);
 	connect(this,					&LabelModel::chosenColumnChanged,				this, &LabelModel::onChosenColumnChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
@@ -42,8 +44,35 @@ QString LabelModel::columnNameQ()
 void LabelModel::setColumnNameQ(QString newColumnName)
 {
 	if(column())
-		return DataSetPackage::pkg()->setColumnName(chosenColumn(), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
+	{
+		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
+		emit columnTitleChanged(); //Mightve happened!
+	}
 }
+
+
+QString LabelModel::columnTitle() const
+{
+	return QString::fromStdString(column() ? column()->title() : "");
+}
+
+void LabelModel::setColumnTitle(const QString & newColumnTitle)
+{
+	if(column())
+		return DataSetPackage::pkg()->setColumnTitle(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnTitle)); //use DataSetPackage to make sure signals are sent!
+}
+
+QString LabelModel::columnDescription() const
+{
+	return QString::fromStdString(column() ? column()->description() : "");
+}
+
+void LabelModel::setColumnDescription(const QString & newColumnDescription)
+{
+	if(column())
+		return DataSetPackage::pkg()->setColumnDescription(chosenColumn(), fq(newColumnDescription)); //use DataSetPackage to make sure signals are sent!
+}
+
 
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {
@@ -177,7 +206,7 @@ void LabelModel::resetFilterAllows()
 
 void LabelModel::setVisible(bool visible)
 {
-	visible = visible && rowCount() > 0; //cannot show labels when there are no labels
+	//visible = visible && rowCount() > 0; //cannot show labels when there are no labels
 
 	if (_visible == visible)
 		return;
@@ -212,6 +241,7 @@ void LabelModel::setChosenColumn(int chosenColumn)
 	DataSet * data = DataSetPackage::pkg()->dataSet();
 	
 	subNodeModel()->selectNode(data ? data->column(chosenColumn) : nullptr);
+	emit showLabelsEditingChanged();
 }
 
 
@@ -221,8 +251,9 @@ void LabelModel::columnDataTypeChanged(const QString & colName)
 
 	if(colIndex == chosenColumn())
 	{
-		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
-			setChosenColumn(-1);
+//		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
+//			setChosenColumn(-1);
+		emit showLabelsEditingChanged();
 		
 		invalidate();
 	}
@@ -266,11 +297,12 @@ void LabelModel::onChosenColumnChanged()
 
 void LabelModel::refresh()
 {
-	if(column() && column()->type() == columnType::scale)
-		setChosenColumn(-1);
+	//if(column() && column()->type() == columnType::scale)
+	//	setChosenColumn(-1);
 	
 	beginResetModel();
 	endResetModel();
+	emit showLabelsEditingChanged();
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
@@ -347,4 +379,11 @@ void LabelModel::setLabel(int rowIndex, QString label)
 {
 	setData(LabelModel::index(rowIndex, 0), label);
 	setLabelMaxWidth();
+}
+
+bool LabelModel::showLabelsEditing() const
+{
+	if(column())
+			return column()->type() != columnType::scale && rowCount() > 0;
+	return false;
 }

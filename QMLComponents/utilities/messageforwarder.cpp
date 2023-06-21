@@ -38,6 +38,8 @@ void MessageForwarder::showWarning(QString title, QString message)
 	box.setText(title);
 	box.setInformativeText(message);
 	box.setIcon(QMessageBox::Warning);
+
+	box.exec();
 }
 
 bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
@@ -100,9 +102,9 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 	// In order to have the noSaveButton as first in the row of buttons, it has to get the role RejectRole.
 	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::AcceptRole);
 	QPushButton* noSaveButton =	box.addButton(discardText,	QMessageBox::ButtonRole::DestructiveRole);
-	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
-	box.setDefaultButton(saveButton);
+								box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
 
+	box.setDefaultButton(saveButton);
 	box.exec();
 
 	QAbstractButton* clicked = box.clickedButton();
