@@ -37,21 +37,70 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
 	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
 
+	QString		colName = QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::name)).toString();
+	columnType	colType = static_cast<columnType>(QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::columnType)).toInt());
+
 	switch(role)
 	{
-	case NameRole:					return _tableModel->columnTitle(index.row());
+	case NameRole:					return colName;
 	case TypeRole:					return "column";
-	case ColumnTypeRole:			return int(_tableModel->getColumnType(size_t(index.row())));
-	case IconSourceRole:			return VariableInfo::getIconFile(_tableModel->getColumnType(size_t(index.row())), VariableInfo::DefaultIconType);
+	case ColumnTypeRole:			return int(colType);
+	case IconSourceRole:			return VariableInfo::getIconFile(colType, VariableInfo::DefaultIconType);
 	case ToolTipRole:
 	{
-		columnType	colType = _tableModel->getColumnType(size_t(index.row()));
 		QString		usedIn	= colType == columnType::scale		? tr("which can be used in numerical comparisons and mathematical operations.")
 							: colType == columnType::ordinal	? tr("which can only be used in (in)equivalence, greater and lesser than comparisons. Not in mathematical operations as subtraction etc, to do so: try converting to scalar first.")
 																: tr("which can only be used in (in)equivalence comparisons. Not in greater/lesser-than comparisons or mathematical operations, to do so: try converting to ordinal or scalar first.");
 
-		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
+		return tr("The '") + colName + tr("'-column ") + usedIn;
 	}
+	}
+
+	return QVariant();
+}
+
+QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
+{
+	ColumnsModel* colModel = ColumnsModel::singleton();
+
+	if (!colModel)
+		return QVariant();
+
+	try
+	{
+		int colIndex = colName.isEmpty() ? 0 : colModel->getColumnIndex(fq(colName));
+
+		if (colIndex < 0)
+			return QVariant();
+
+		//remember, the model is transposed:
+		QModelIndex qIndex = index(colIndex, 0);
+
+		int			colTypeInt	= data(qIndex, ColumnsModel::ColumnTypeRole).toInt();
+		columnType	colTypeHere	= static_cast<columnType>(colTypeInt);
+
+		switch(info)
+		{
+		case VariableInfo::VariableType:				return	colTypeInt;
+		case VariableInfo::VariableTypeName:			return	columnTypeToQString(colTypeHere);
+		case VariableInfo::VariableTypeIcon:			return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DefaultIconType);
+		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DisabledIconType);
+		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::InactiveIconType);
+		case VariableInfo::Labels:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::labelsStrList));
+		case VariableInfo::StringValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesStrList));
+		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesDblList));
+		case VariableInfo::NameRole:					return	data(qIndex, ColumnsModel::NameRole);
+		case VariableInfo::RowCount:					return	rowCount();
+		case VariableInfo::Value:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::value));
+		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
+		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
+		case VariableInfo::VariableNames:				return	getColumnNames();
+		}
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
+		throw e;
 	}
 
 	return QVariant();
@@ -77,29 +126,6 @@ int ColumnsModel::rowCount(const QModelIndex & p) const
 }
 
 
-void ColumnsModel::datasetChanged(	QStringList				changedColumns,
-									QStringList				missingColumns,
-									QMap<QString, QString>	changeNameColumns,
-									bool					rowCountChanged,
-									bool					hasNewColumns)
-{
-	if(! (missingColumns.size() > 0 || hasNewColumns))
-	{
-		if (changeNameColumns.size() > 0)
-			emit namesChanged(changeNameColumns);
-		else if (changedColumns.size() > 0 || rowCountChanged)
-		{
-			if (rowCountChanged)
-			{
-				changedColumns.clear();
-				for (int i = 0; i < rowCount(); i++)
-					changedColumns.push_back(_tableModel->columnTitle(i).toString());
-			}
-			emit columnsChanged(changedColumns);
-		}
-	}
-}
-
 QStringList ColumnsModel::getColumnNames() const
 {
 	QStringList result;
@@ -111,43 +137,25 @@ QStringList ColumnsModel::getColumnNames() const
 	return result;
 }
 
-QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
+void ColumnsModel::datasetChanged(  QStringList                             changedColumns,
+									QStringList                             missingColumns,
+									QMap<QString, QString>					changeNameColumns,
+									bool                                    rowCountChanged,
+									bool                                    hasNewColumns)
 {
-	ColumnsModel* colModel = ColumnsModel::singleton();
-
-	if (!colModel) 
-		return QVariant();
-
-	try
-	{
-		int colIndex = colName.isEmpty() ? 0 : colModel->getColumnIndex(fq(colName));
-
-		if (colIndex < 0)
-			return QVariant();
-
-		switch(info)
-		{
-		case VariableInfo::VariableType:				return	int(_tableModel->getColumnType(colIndex));
-		case VariableInfo::VariableTypeName:			return	columnTypeToQString(_tableModel->getColumnType(colIndex));
-		case VariableInfo::VariableTypeIcon:			return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::DefaultIconType);
-		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::DisabledIconType);
-		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(_tableModel->getColumnType(colIndex), VariableInfo::InactiveIconType);
-		case VariableInfo::Labels:						return	_tableModel->getColumnLabelsAsStringList(colIndex);
-		case VariableInfo::StringValues:				return	_tableModel->getColumnValuesAsStringList(colIndex);
-		case VariableInfo::DoubleValues:				return	_tableModel->getColumnValuesAsDoubleList(colIndex);
-		case VariableInfo::NameRole:					return	ColumnsModel::NameRole;
-		case VariableInfo::RowCount:					return	_tableModel->rowCount();
-		case VariableInfo::Value:						return	_tableModel->data(_tableModel->index(row, colIndex));
-		case VariableInfo::MaxWidth:					return	int(_tableModel->getMaximumColumnWidthInCharacters(colIndex));
-		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
-		case VariableInfo::VariableNames:				return	getColumnNames();
-		}
-	}
-	catch(std::exception & e)
-	{
-		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
-		throw e;
-	}
-
-	return QVariant();
+	   if(! (missingColumns.size() > 0 || hasNewColumns))
+	   {
+			   if (changeNameColumns.size() > 0)
+					   emit namesChanged(changeNameColumns);
+			   else if (changedColumns.size() > 0 || rowCountChanged)
+			   {
+					   if (rowCountChanged)
+					   {
+							   changedColumns.clear();
+							   for (int i = 0; i < rowCount(); i++)
+									   changedColumns.push_back(data(index(i, 0), int(dataPkgRoles::name)).toString());
+					   }
+					   emit columnsChanged(changedColumns);
+			   }
+	   }
 }
