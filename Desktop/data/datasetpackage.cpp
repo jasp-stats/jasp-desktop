@@ -1039,7 +1039,9 @@ bool DataSetPackage::isColumnUsedInEasyFilter(const std::string & colName) const
 void DataSetPackage::notifyColumnFilterStatusChanged(int columnIndex)
 {
 	emit columnsFilteredCountChanged();
-	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
+	//emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
+	beginResetModel();
+	endResetModel();
 }
 
 

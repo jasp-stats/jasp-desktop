@@ -63,29 +63,23 @@ QVariant ExpandDataProxyModel::headerData(int section, Qt::Orientation orientati
 		if (section < _sourceModel->columnCount())
 			return _sourceModel->headerData(section, orientation, role);
 		else
-		{
-			if (role == getRole("columnIsComputed"))
-				return false;
-			else if (role == getRole("computedColumnIsInvalidated"))
-				return false;
-			else if (role == getRole("filter"))
-				return false;
-			else if (role == getRole("computedColumnError"))
-				return "";
-			else if (role == getRole("columnType"))
-				return int(columnType::unknown);
-			else if (role == getRole("maxColString"))
-				return "XXXXXXXXXXX";
-			else if (role == Qt::DisplayRole)
-				return "";
-		}
+			switch(role)
+			{
+			case int(dataPkgRoles::columnIsComputed):				return false;
+			case int(dataPkgRoles::computedColumnIsInvalidated):	return false;
+			case int(dataPkgRoles::filter):							return false;
+			case int(dataPkgRoles::computedColumnError):			return "";
+			case int(dataPkgRoles::columnType):						return int(columnType::unknown);
+			case int(dataPkgRoles::maxColString):					return "XXXXXXXXXXX";
+			default:												return "";
+			}
 	}
 	else if (orientation == Qt::Orientation::Vertical)
 	{
 		if (section < _sourceModel->rowCount())
 			return _sourceModel->headerData(section, orientation, role);
 		else
-			return section + 1;
+			return  DataSetPackage::pkg()->dataRowCount() + (section - _sourceModel->rowCount()) + 1;
 	}
 
 	return QVariant();

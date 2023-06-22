@@ -1483,7 +1483,7 @@ void MainWindow::startDataEditorHandler()
 
 		MessageForwarder::DialogResponse choice;
 
-		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty();
+		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty() && !_package->dataFileReadOnly();
 
 		if (manualEditsMode)
 		{
