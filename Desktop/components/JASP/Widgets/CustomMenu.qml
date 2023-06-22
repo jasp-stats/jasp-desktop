@@ -279,7 +279,8 @@ FocusScope
 														? jaspTheme.buttonColorHovered
 														: "transparent"
 
-								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
+								property int padding: 4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
+								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
 
 								Image
 								{
@@ -307,11 +308,23 @@ FocusScope
 									{
 										left			: menu.hasIcons ? menuItemImage.right : parent.left
 										leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
-										rightMargin		: menu._iconPad * 2
 										verticalCenter	: parent.verticalCenter
 									}
 								}
 
+								Text
+								{
+									id					: menuItemShortcut
+									text				: menu.props.hasOwnProperty("shortcut") ? menu.props["shortcut"][index] : ""
+									font				: jaspTheme.font
+									color				: model.modelData !== undefined || isEnabled ? jaspTheme.black : jaspTheme.gray
+									anchors
+									{
+										right			: parent.right
+										rightMargin		: menu._iconPad * 2
+										verticalCenter	: parent.verticalCenter
+									}
+								}
 								MouseArea
 								{
 									id				: mouseArea
