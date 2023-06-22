@@ -23,6 +23,8 @@ TextAreaBase
 	property var    modelParameterView	: null
 	property string separator			: "\n"
 	property var	separators			: []
+	property alias	radius				: flickableRectangle.radius
+	property alias	placeholderText		: control.placeholderText
     
     
     signal applyRequest()
@@ -45,14 +47,15 @@ TextAreaBase
 
 	Rectangle
 	{
-		id:				flickableRectangle
-		anchors.top:	title !== "" ? textAreaTitle.bottom : parent.top
-		anchors.topMargin: title !== "" ? jaspTheme.titleBottomMargin : 0
-		width:			parent.implicitWidth
-		height:			parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
-		color:			textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
-		border.width:	1
-		border.color:	jaspTheme.borderColor
+		id:					flickableRectangle
+		anchors.top:		title !== "" ? textAreaTitle.bottom : parent.top
+		anchors.topMargin:	title !== "" ? jaspTheme.titleBottomMargin : 0
+		width:				parent.implicitWidth
+		height:				parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
+		color:				textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
+		border.width:		1
+		border.color:		jaspTheme.borderColor
+		radius:				jaspTheme.borderRadius
 
 		Flickable
 		{
