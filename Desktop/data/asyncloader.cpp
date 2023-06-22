@@ -226,6 +226,14 @@ void AsyncLoader::loadPackage(QString id)
 				path = _currentEvent->databaseStr();
 			}
 
+			DataSetPackage * pkg = DataSetPackage::pkg();
+
+			if(!pkg->dataSet())
+				pkg->createDataSet();
+
+			if(_currentEvent->operation() != FileEvent::FileSyncData && _currentEvent->type() != Utils::FileType::jasp)
+				pkg->setSynchingExternally(true);
+
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
 			else	_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
@@ -235,7 +243,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (dataNode != nullptr && calcMD5 != dataNode->md5().toLower())
 				throw runtime_error("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 
-			DataSetPackage * pkg = DataSetPackage::pkg();
+
 
 			pkg->setInitialMD5(fq(calcMD5));
 
@@ -253,6 +261,7 @@ void AsyncLoader::loadPackage(QString id)
                 pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toSecsSinceEpoch());
 				pkg->setDatabaseJson(_currentEvent->database());
 			}
+
 			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
 			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));
 			_currentEvent->setComplete();
