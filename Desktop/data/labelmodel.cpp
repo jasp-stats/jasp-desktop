@@ -241,7 +241,7 @@ void LabelModel::setChosenColumn(int chosenColumn)
 	DataSet * data = DataSetPackage::pkg()->dataSet();
 	
 	subNodeModel()->selectNode(data ? data->column(chosenColumn) : nullptr);
-	emit showLabelsEditingChanged();
+	emit showLabelEditorChanged();
 }
 
 
@@ -253,7 +253,7 @@ void LabelModel::columnDataTypeChanged(const QString & colName)
 	{
 //		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
 //			setChosenColumn(-1);
-		emit showLabelsEditingChanged();
+		emit showLabelEditorChanged();
 		
 		invalidate();
 	}
@@ -302,7 +302,7 @@ void LabelModel::refresh()
 	
 	beginResetModel();
 	endResetModel();
-	emit showLabelsEditingChanged();
+	emit showLabelEditorChanged();
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
@@ -383,7 +383,7 @@ void LabelModel::setLabel(int rowIndex, QString label)
 	setLabelMaxWidth();
 }
 
-bool LabelModel::showLabelsEditing() const
+bool LabelModel::showLabelEditor() const
 {
 	if(column())
 			return column()->type() != columnType::scale && rowCount() > 0;
