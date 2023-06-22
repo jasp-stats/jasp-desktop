@@ -148,7 +148,7 @@ private:
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
-	DatabaseFileMenu					*	_database					= nullptr;
+	DatabaseFileMenu			*	_database					= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;

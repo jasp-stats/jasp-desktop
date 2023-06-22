@@ -42,7 +42,7 @@ void JASPImporterOld::loadDataSet(const std::string &path, std::function<void(in
 
 	DataSetPackage * packageData = DataSetPackage::pkg();
 
-	packageData->setIsArchive(true);
+	packageData->setIsJaspFile(true);
 
 	readManifest(path);
 
@@ -97,10 +97,14 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 
 	Json::Value &dataSetDesc			= metaData["dataSet"];
 
+	packageData->createDataSet();
+
 	packageData->setDataFilePath(		metaData.get("dataFilePath",		"")				.asString());
 	packageData->setDataFileReadOnly(	metaData.get("dataFileReadOnly",	false)			.asBool());
 	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp",	0)				.asUInt());
 	packageData->setDatabaseJson(		metaData.get("database",			Json::nullValue));
+
+	packageData->dataSet()->setDataFileSynch(true);
 
 	DataSetPackage::filter()->setRFilter(	metaData.get("filterData",			DEFAULT_FILTER)	.asString());
 
