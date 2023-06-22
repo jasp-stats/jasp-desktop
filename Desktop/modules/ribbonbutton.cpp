@@ -65,7 +65,7 @@ void RibbonButton::reloadDynamicModule(DynamicModule * dynMod)
 		setDynamicModule(dynMod);
 
 	setTitle(			_module->title()			);
-	setToolTip(	tq(	_module->description())	);
+	setToolTip(		tq(	_module->description())	);
 	setRequiresData(	_module->requiresData()	);
 	setIconSource(tq(	_module->iconFilePath()));
 	setModuleName(		_module->name()			);
@@ -144,8 +144,6 @@ RibbonButton::~RibbonButton()
 {
 
 }
-
-
 
 void RibbonButton::bindYourself()
 {

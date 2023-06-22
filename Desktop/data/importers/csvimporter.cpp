@@ -25,7 +25,7 @@ using namespace std;
 
 CSVImporter::CSVImporter() : Importer()
 {
-	DataSetPackage::pkg()->setIsArchive(false);
+    DataSetPackage::pkg()->setIsJaspFile(false);
 }
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(int)> progressCallback)

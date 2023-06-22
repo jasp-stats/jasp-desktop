@@ -60,7 +60,7 @@ bool Reporter::isJaspFileNotDabaseOrSynching() const
 		}	
 		
 		//Lets make sure it actually checks whether the datafile is  being synched or not.
-		PreferencesModel::prefs()->setDataAutoSynchronization(true);
+		DataSetPackage::pkg()->setSynchingExternally(true);
 	}
 			
 	return true;
