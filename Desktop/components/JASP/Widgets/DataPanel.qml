@@ -48,7 +48,7 @@ Rectangle
 		{
 			objectName:				"dataSetTableView"
 			SplitView.fillHeight:	true
-			onDoubleClicked:		mainWindow.startDataEditorHandler()
+			onDoubleClicked:		ribbonModel.showData()
         }
 
 		handle: Rectangle

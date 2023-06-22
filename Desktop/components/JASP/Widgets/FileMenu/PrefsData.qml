@@ -9,7 +9,7 @@ ScrollView
 {
 	id:                     scrollPrefs
 	focus:                  true
-	onActiveFocusChanged:	if(activeFocus) synchronizeDataSave.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) useDefaultEditor.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
 	Column {
@@ -31,16 +31,6 @@ ScrollView
 		{
 			spacing:		jaspTheme.rowSpacing
 			implicitWidth:	scrollPrefs.width - (jaspTheme.generalAnchorMargin * 2)
-
-			CheckBox  //Synchronize automatically
-			{
-				id:					synchronizeDataSave
-				label:				qsTr("Synchronize automatically on data file save")
-				checked:			preferencesModel.dataAutoSynchronization
-				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-
-				KeyNavigation.tab:      useDefaultEditor
-			}
 
 			Item //Use default spreadsheet editor
 			{
@@ -260,7 +250,7 @@ ScrollView
 					startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
 					onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
 
-					KeyNavigation.tab:		synchronizeDataSave
+					KeyNavigation.tab:		useDefaultEditor
 				}
 			}
 		}
