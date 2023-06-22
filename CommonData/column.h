@@ -116,9 +116,9 @@ public:
 			std::string				operator[](size_t row); ///< Display value/label for row
 			std::string				getValue(size_t row,	bool fancyEmptyValue = false) const;
 			
-			bool					setStringValueToRowIfItFits(size_t row, const std::string & value);
-			void					setValue(					size_t row, int					value, bool writeToDB = true);
-			void					setValue(					size_t row, double				value, bool writeToDB = true);
+			bool					setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed);
+			bool					setValue(					size_t row, int					value, bool writeToDB = true);
+			bool					setValue(					size_t row, double				value, bool writeToDB = true);
 			void					setValues(								const intvec	&	values);
 			void					setValues(								const doublevec	&	values);
 			void					rowInsertEmptyVal(size_t row);
