@@ -21,7 +21,6 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	{
 		int rowCount = importDataSet->rowCount();
 
-		DataSetPackage::pkg()->createDataSet();
 		DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
 		DataSetPackage::pkg()->setDataSetSize(columnCount, rowCount);
 
@@ -121,7 +120,7 @@ void Importer::_syncPackage(
 		bool											rowCountChanged)
 
 {
-	if(!DataSetPackage::pkg()->checkDoSync())
+	if( ! emit DataSetPackage::pkg()->checkDoSync())
 		return;
 
 	DataSetPackage::pkg()->beginSynchingData();
@@ -130,7 +129,7 @@ void Importer::_syncPackage(
 	std::vector<std::string>			_missingColumns;
 	std::map<std::string, std::string>	_changeNameColumns;
 
-	for (auto changeNameColumnIt : changeNameColumns)
+	for (const auto & changeNameColumnIt : changeNameColumns)
 	{
 		std::string oldColName = changeNameColumnIt.first,
 					newColName = changeNameColumnIt.second;
@@ -145,7 +144,7 @@ void Importer::_syncPackage(
 	int colNo = DataSetPackage::pkg()->columnCount();
 	DataSetPackage::pkg()->setDataSetRowCount(syncDataSet->rowCount());
 
-	for (auto indexColChanged : changedColumns)
+	for (const auto & indexColChanged : changedColumns)
 	{
 		Log::log() << "Column changed " << indexColChanged.first << std::endl;
 

@@ -12,7 +12,7 @@ class ReadStatImporter : public Importer
 public:
 	ReadStatImporter(std::string ext) : Importer(), _ext(ext)
 	{
-		DataSetPackage::pkg()->setIsArchive(false);
+            DataSetPackage::pkg()->setIsJaspFile(false);
 
 		if(_ext.size() == 0)	throw std::runtime_error("ReadStatImporter NEEDS to know the extension!");
 		if(_ext[0] == '.')		_ext = _ext.substr(1);
