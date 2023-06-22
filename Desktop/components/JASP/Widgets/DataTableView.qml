@@ -345,7 +345,7 @@ FocusScope
 				{
 					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					color:	jaspTheme.uiBackground
+					color:	dataTableView.view.selectionStart.y == rowIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 					Text {
 						text:				rowNumber
 						font:				jaspTheme.font
@@ -358,7 +358,7 @@ FocusScope
 			columnHeaderDelegate: Rectangle
 			{
 				id:		headerRoot
-				color:	jaspTheme.uiBackground
+				color:	dataTableView.view.selectionStart.x == columnIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
