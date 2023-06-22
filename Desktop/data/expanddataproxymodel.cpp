@@ -31,7 +31,14 @@ QVariant ExpandDataProxyModel::data(int row, int col, int role) const
 	switch(role)
 	{
 	case int(dataPkgRoles::selected):				return false;
-	case int(dataPkgRoles::lines):					return DataSetPackage::getDataSetViewLines(col>0, row>0, true, true);
+	case int(dataPkgRoles::lines):
+	{
+		DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(_sourceModel);
+
+		if (row < _sourceModel->rowCount() && dataSetTable && dataSetTable->showInactive() && !DataSetPackage::pkg()->getRowFilter(row))
+			return DataSetPackage::getDataSetViewLines(false, false, false, false);
+		return DataSetPackage::getDataSetViewLines(col>0, row>0, true, true);
+	}
 	case int(dataPkgRoles::value):					return "";
 //	case int(dataPkgRoles::itemInputValue):			return "string"; ???
 	default:										return QVariant();
