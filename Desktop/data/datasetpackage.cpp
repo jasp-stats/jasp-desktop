@@ -52,7 +52,7 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
-	connect(this, &DataSetPackage::dataModeChanged,		this, &DataSetPackage::logDataModeChanged);
+	connect(this, &DataSetPackage::dataModeChanged,		this, &DataSetPackage::onDataModeChanged);
 
 	_dataSubModel	= new SubNodeModel("data",		_dataSet->dataNode());
 	_filterSubModel = new SubNodeModel("filters",	_dataSet->filtersNode());
@@ -171,7 +171,7 @@ void DataSetPackage::generateEmptyData()
 }
 
 //Some debugprinting
-void DataSetPackage::logDataModeChanged(bool dataMode)
+void DataSetPackage::onDataModeChanged(bool dataMode)
 {
 	Log::log() << "Data Mode " << (dataMode ? "on" : "off") << "!" << std::endl;
 	_dataMode = dataMode;
@@ -483,7 +483,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		if(index.row() < 0 || index.row() >= int(filter->filtered().size()))
 			return true;
 		
-		return  QVariant(_dataMode || filter->filtered()[index.row()]);
+		return  QVariant(filter->filtered()[index.row()]);
 	}
 
 	case dataSetBaseNodeType::column:
@@ -687,7 +687,16 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 					JASPTIMER_SCOPE(DataSetPackage::setData pasteSpreadsheet);
 					column->rememberOriginalColumnType();
 					pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
+					changed = true;
 				}
+
+				if(changed && column->hasFilter())
+				{
+					emit labelFilterChanged();
+					emit runFilter();
+				}
+
+
 			}
 			else
 			{

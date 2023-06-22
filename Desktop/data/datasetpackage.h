@@ -281,6 +281,7 @@ signals:
 													bool					rowCountChanged,
 													bool					hasNewColumns);
 				void				columnsFilteredCountChanged();
+				void				runFilter();
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
 				void				labelFilterChanged();
@@ -320,7 +321,7 @@ public slots:
 				void				setCurrentFile(						QString currentFile);
 				void				setFolder(							QString folder);
 				void				generateEmptyData();
-				void				logDataModeChanged(					bool dataMode);
+				void				onDataModeChanged(					bool dataMode);
 				void				setSynchingExternallyFriendly(		bool synchingExternally);
 				void				setSynchingExternally(				bool synchingExternally);
 				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
