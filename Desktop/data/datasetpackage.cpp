@@ -438,7 +438,7 @@ bool DataSetPackage::getRowFilter(int row) const
 	return !_dataSet ? false : data(this->index(row, 0, indexForSubNode(_dataSet->filtersNode()))).toBool();
 }
 
-QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right) const
+QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right)
 {
 	return			(left ?		1 : 0) +
 					(right ?	2 : 0) +
@@ -1039,9 +1039,7 @@ bool DataSetPackage::isColumnUsedInEasyFilter(const std::string & colName) const
 void DataSetPackage::notifyColumnFilterStatusChanged(int columnIndex)
 {
 	emit columnsFilteredCountChanged();
-	//emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
-	beginResetModel();
-	endResetModel();
+	QTimer::singleShot(0, [&](){	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex); });
 }
 
 

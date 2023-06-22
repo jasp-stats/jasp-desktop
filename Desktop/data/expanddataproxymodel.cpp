@@ -28,29 +28,16 @@ QVariant ExpandDataProxyModel::data(int row, int col, int role) const
 	if (col < _sourceModel->columnCount() && row < _sourceModel->rowCount())
 		return _sourceModel->data(_sourceModel->index(row, col), role);
 
-	if (role == getRole("selected"))
-		return false;
-	else if (role == getRole("lines"))
+	switch(role)
 	{
-		if (col == columnCount() - 1)
-			col = _sourceModel->columnCount() - 1;
-		else if (col >= _sourceModel->columnCount())
-			col = _sourceModel->columnCount() - 2;
-		if (col < 0) col = 0;
-		if (row == rowCount() - 1)
-			row = _sourceModel->rowCount() - 1;
-		else if (row >= _sourceModel->rowCount())
-			row = _sourceModel->rowCount() - 2;
-		if (row < 0) row = 0;
-
-		return _sourceModel->data(_sourceModel->index(row, col), role);
+	case int(dataPkgRoles::selected):				return false;
+	case int(dataPkgRoles::lines):					return DataSetPackage::getDataSetViewLines(col>0, row>0, true, true);
+	case int(dataPkgRoles::value):					return "";
+//	case int(dataPkgRoles::itemInputValue):			return "string"; ???
+	default:										return QVariant();
 	}
-	else if (role == getRole("value"))
-		return "";
-	else if (role == getRole("itemInputValue"))
-		return "string";
 
-	return QVariant();
+	return QVariant(); //gcc might complain some more I guess?
 }
 
 QVariant ExpandDataProxyModel::headerData(int section, Qt::Orientation orientation, int role) const

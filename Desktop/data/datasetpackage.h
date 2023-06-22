@@ -126,7 +126,7 @@ public:
 
 				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
 				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }
-				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
+	static		QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true);
 
 				int					dataRowCount()		const;
 				int					dataColumnCount()	const;
