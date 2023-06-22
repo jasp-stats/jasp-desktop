@@ -29,10 +29,10 @@ FocusScope
 	id:			variablesContainer
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
-	property real calculatedBaseHeight:			columnNameVariablesWindow.height + (20 * jaspTheme.uiScale) + (jaspTheme.generalAnchorMargin * 2)
-	property real calculatedMinimumHeight:		Math.max(columnDescriptionVariablesWindow.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 80 * jaspTheme.uiScale : 0)
-	property real calculatedPreferredHeight:	Math.max(columnDescriptionVariablesWindow.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight
-	property real calculatedMaximumHeight:		Math.max(columnDescriptionVariablesWindow.maxHeight,		buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 200 * jaspTheme.uiScale : 0)
+	property real calculatedBaseHeight:			columnNameVariablesWindow.height + (jaspTheme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:		columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + buttonColumnVariablesWindow.minimumHeight
+	property real calculatedPreferredHeight:	columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + buttonColumnVariablesWindow.minimumHeight
+	property real calculatedMaximumHeight:		columnDescriptionVariablesWindow.maxHeight	+ calculatedBaseHeight + Math.max(buttonColumnVariablesWindow.minimumHeight, labelModel.showLabelsEditing ? parent.height * 0.6666667 : 0)
 
 
 	Connections
@@ -138,13 +138,16 @@ FocusScope
 					left:			parent.left
 					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
 				}
-				height:				Math.max(columnNameVariablesWindow.height, control.contentHeight + 5)
+				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 5 * jaspTheme.uiScale))
 				width:				parent.width - x
-				control.padding:	3
+				control.padding:	3 * jaspTheme.uiScale
 
 				text:				labelModel.columnDescription
 				onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
 				applyScriptInfo:	""
+				placeholderText:	"..."
+
+				property int maxHeight:	100 * jaspTheme.uiScale
 			}
 
 			Rectangle
@@ -162,6 +165,7 @@ FocusScope
 					right:			buttonColumnVariablesWindow.left
 					bottom:			parent.bottom
 					topMargin:		jaspTheme.generalAnchorMargin
+					rightMargin:	jaspTheme.generalAnchorMargin
 				}
 
 
@@ -411,7 +415,7 @@ FocusScope
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
 				property int	shownButtons:		(labelModel.showLabelsEditing ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-				property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
+				property real	minimumHeight:		(buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
 				RoundedButton
