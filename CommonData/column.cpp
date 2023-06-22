@@ -914,8 +914,6 @@ bool Column::setAsScale(const doublevec & values)
 	return changedSomething;
 }
 
-
-
 bool Column::setAsNominalOrOrdinal(const intvec & values, bool is_ordinal)
 {
 	JASPTIMER_SCOPE(Column::setAsNominalOrOrdinal);
@@ -1461,7 +1459,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	return result;
 }
 
-
 bool Column::isValueEqual(size_t row, double value) const
 {
 	JASPTIMER_SCOPE(Column::isValueEqual);
@@ -1970,6 +1967,97 @@ const stringset & Column::dependsOnColumns(bool refresh)
 		findDependencies();
 	
 	return _dependsOnColumns;
+}
+
+Json::Value Column::serialize() const
+{
+	Json::Value json(Json::objectValue);
+
+	json["name"]			= _name;
+	json["title"]			= _title;
+	json["description"]		= _description;
+	json["rCode"]			= _rCode;
+	json["type"]			= int(_type);
+	json["analysisId"]		= _analysisId;
+	json["isComputed"]		= _isComputed;
+	json["invalidated"]		= _invalidated;
+	json["codeType"]		= int(_codeType);
+	json["error"]			= _error;
+	json["rCode"]			= _rCode;
+	json["constructorJson"] = _constructorJson;
+
+	Json::Value jsonLabels(Json::arrayValue);
+	for (const Label* label : _labels)
+		jsonLabels.append(label->serialize());
+
+	Json::Value jsonDbls(Json::arrayValue);
+	for (double dbl : _dbls)
+		jsonDbls.append(dbl);
+
+	Json::Value jsonInts(Json::arrayValue);
+	for (int i : _ints)
+		jsonInts.append(i);
+
+	json["labels"]			= jsonLabels;
+	json["dbls"]			= jsonDbls;
+	json["ints"]			= jsonInts;
+
+	return json;
+}
+
+void Column::deserialize(const Json::Value &json)
+{
+	_name				= json["name"].asString();
+	db().columnSetName(_id, _name);
+
+	_title				= json["title"].asString();
+	db().columnSetTitle(_id, _title);
+
+	_description		= json["description"].asString();
+	db().columnSetDescription(_id, _description);
+
+	_type				= columnType(json["type"].asInt());
+	db().columnSetType(_id, _type);
+
+	_invalidated		= json["invalidated"].asBool();
+	_codeType			= computedColumnType(json["codeType"].asInt());
+	_rCode				= json["rCode"].asString();
+	_error				= json["error"].asString();
+	_constructorJson	= json["constructorJson"];
+	_isComputed			= json["isComputed"].asBool();
+
+	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+
+
+	_dbls.clear();
+	for (const Json::Value& dblJson : json["dbls"])
+		_dbls.push_back(dblJson.asDouble());
+
+	db().columnSetValues(_id, _dbls);
+
+	_ints.clear();
+	for (const Json::Value& dblJson : json["ints"])
+		_ints.push_back(dblJson.asInt());
+
+	db().columnSetValues(_id, _ints);
+
+	for (Label* label : _labels)
+	{
+		_labelByValueMap.erase(label->value());
+		label->dbDelete();
+		delete label;
+	}
+	_labelByValueMap.clear();
+	_labels.clear();
+
+	const Json::Value& labels = json["labels"];
+	if (labels.isArray())
+	{
+		for (const Json::Value& labelJson : labels)
+			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), labelJson["id"].asInt());
+	}
+
+	incRevision();
 }
 
 bool Column::dependsOn(const std::string & columnName, bool refresh)

@@ -274,7 +274,10 @@ QModelIndex DataSetPackage::indexForSubNode(DataSetBaseNode * node) const
 		case dataSetBaseNodeType::column:
 		{
 			Column * col = dynamic_cast<Column*>(node);
-			return createIndex(0, col->data()->columnIndex(col), dynamic_cast<void *>(col));
+			if (col)
+				return createIndex(0, col->data()->columnIndex(col), dynamic_cast<void *>(col));
+			else
+				return QModelIndex();
 		}
 
 		case dataSetBaseNodeType::label: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
@@ -282,7 +285,10 @@ QModelIndex DataSetPackage::indexForSubNode(DataSetBaseNode * node) const
 			Label	* lab = dynamic_cast<Label*>( node);
 			Column	* col = dynamic_cast<Column*>(node->parent());
 
-			return createIndex(col->labelIndex(lab), 0, dynamic_cast<void*>(lab));
+			if (col)
+				return createIndex(col->labelIndex(lab), 0, dynamic_cast<void*>(lab));
+			else
+				return QModelIndex();
 		}
 
 		case dataSetBaseNodeType::filter: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
@@ -1961,6 +1967,21 @@ void DataSetPackage::unicifyColumnNames()
 	}
 }
 
+Json::Value DataSetPackage::getColumn(const std::string& columnName) const
+{
+	Column		*	column	= _dataSet->column(columnName);
+	if (column)
+		return column->serialize();
+	else
+		return Json::nullValue;
+}
+
+void DataSetPackage::setColumn(const std::string& columnName, const Json::Value& col)
+{
+	Column		*	column	= _dataSet->column(columnName);
+	column->deserialize(col);
+}
+
 void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
@@ -2291,9 +2312,9 @@ void DataSetPackage::resetModelOneCell()
 	setData(index(0,0), "", Qt::DisplayRole);
 
 	beginResetModel();
-	DataSetPackage::pkg()->setDataSetSize(1, 1);
-	DataSetPackage::pkg()->setColumnName(0, DataSetPackage::pkg()->freeNewColumnName(0), false);
-	DataSetPackage::pkg()->setColumnType(0, columnType::scale,	false);
+	setDataSetSize(1, 1);
+	setColumnName(0, freeNewColumnName(0), false);
+	setColumnType(0, columnType::scale,	false);
 	endResetModel();
 }
 

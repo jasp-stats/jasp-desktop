@@ -250,6 +250,8 @@ public:
 				QStringList					getColumnValuesAsStringList(size_t columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
 				void						unicifyColumnNames();
+				Json::Value					getColumn(const std::string& columnName)					const;
+				void						setColumn(const std::string& columnName, const Json::Value& col);
 
 				bool						setFilterData(const std::string & filter, const boolvec & filterResult);
 				void						resetFilterAllows(size_t columnIndex);
