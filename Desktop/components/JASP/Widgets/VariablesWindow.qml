@@ -29,10 +29,10 @@ FocusScope
 	id:			variablesContainer
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
-	property real calculatedBaseHeight:			columnNameVariablesWindow.height + (20 * jaspTheme.uiScale) + (jaspTheme.generalAnchorMargin * 2)
-	property real calculatedMinimumHeight:		Math.max(columnDescriptionRect.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 80 * jaspTheme.uiScale : 0)
-	property real calculatedPreferredHeight:	Math.max(columnDescriptionRect.height,			buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight
-	property real calculatedMaximumHeight:		Math.max(columnDescriptionRect.maxHeight,		buttonColumnVariablesWindow.minimumHeight)	+ calculatedBaseHeight + (labelModel.showLabelsEditing ? 200 * jaspTheme.uiScale : 0)
+	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
+	property real calculatedMinimumHeight:										columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
+	property real calculatedPreferredHeight:									columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
+	property real calculatedMaximumHeight:		!labelModel.showLabelEditor ? columnDescriptionVariablesWindow.height		+ calculatedBaseHeight :  parent.height * 0.7
 
 
 	Connections
@@ -74,107 +74,81 @@ FocusScope
 			anchors.fill:		parent
 			anchors.margins:	jaspTheme.generalAnchorMargin
 
+			property int labelMaxWidth: Math.max(nameLabel.width, descriptionLabel.width)
+
 			Label
 			{
-				id:			nameLabel
-				text:		qsTr("Name: ")
+				id: nameLabel
+				text: qsTr("Name: ")
 				anchors
 				{
-					right:				columnNameVariablesWindow.left
-					top:				parent.top
-					margins:			jaspTheme.generalAnchorMargin
+					top:			parent.top
+					left:			parent.left
 				}
 			}
 
-			TextInput
+			Label
+			{
+				id: descriptionLabel
+				text: qsTr("Description: ")
+				anchors
+				{
+					top:			nameLabel.bottom
+					topMargin:		jaspTheme.generalAnchorMargin
+					left:			parent.left
+				}
+			}
+
+			TextField
 			{
 				id:					columnNameVariablesWindow
-				text:				labelModel.columnName
-				onTextChanged:		if(labelModel.columnName !== text) labelModel.columnName = text
-				color:				jaspTheme.textEnabled
-				font:				jaspTheme.fontGroupTitle
-				//enabled:			ribbonModel.dataMode
-				selectByMouse:		true
-				padding:			jaspTheme.jaspControlPadding
-
+				value:				labelModel.columnName
+				onValueChanged:		if(labelModel.columnName !== value) labelModel.columnName = value
 
 				anchors
 				{
-					right:				parent.horizontalCenter
-					top:				parent.top
-					margins:			jaspTheme.generalAnchorMargin
-				}
-
-				Rectangle
-				{
-					color:				jaspTheme.controlBackgroundColor
-					border.color:		jaspTheme.uiBorder
-					border.width:		1
-					visible:			enabled
-
-					anchors.fill:		parent
-					anchors.margins:	-1 * jaspTheme.jaspControlPadding
-					z:					-1
-				}
-
-				MouseArea
-				{
-					acceptedButtons:	Qt.NoButton
-					anchors.fill:		parent
-					cursorShape:		Qt.IBeamCursor
-				}
-
-			}
-
-			Label
-			{
-				id:			titleLabel
-				text:		qsTr("Title: ")
-				anchors
-				{
-					left:				parent.horizontalCenter
-					top:				parent.top
-					margins:			jaspTheme.generalAnchorMargin
+					left:			parent.left
+					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
+					top:			parent.top
 				}
 			}
 
-			TextInput
+
+			TextField
 			{
 				id:					columnTitleVariablesWindow
-				text:				labelModel.columnTitle
-				onTextChanged:		if(labelModel.columnTitle !== text) labelModel.columnTitle = text
-				color:				jaspTheme.textEnabled
-				font:				jaspTheme.fontGroupTitle
-				//enabled:			ribbonModel.dataMode
-				selectByMouse:		true
-				padding:			jaspTheme.jaspControlPadding
+				label:				qsTr("Title: ");
+				value:				labelModel.columnTitle
+				onValueChanged:		if(labelModel.columnTitle !== value) labelModel.columnTitle = value
 
 				anchors
 				{
-					left:				titleLabel.right
-					top:				parent.top
-					margins:			jaspTheme.generalAnchorMargin
+					left:			columnNameVariablesWindow.right
+					leftMargin:		jaspTheme.generalAnchorMargin
+					top:			parent.top
 				}
+			}
 
-				Rectangle
+			TextArea
+			{
+				id:					columnDescriptionVariablesWindow
+				anchors
 				{
-					color:				jaspTheme.controlBackgroundColor
-					border.color:		jaspTheme.uiBorder
-					border.width:		1
-					visible:			enabled
-
-					anchors.fill:		parent
-					anchors.margins:	-1 * jaspTheme.jaspControlPadding
-					z:					-1
+					top:			descriptionLabel.top
+					left:			parent.left
+					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
+					right:			buttonColumnVariablesWindow.left
+					rightMargin:	jaspTheme.generalAnchorMargin
 				}
+				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 5 * jaspTheme.uiScale))
+				control.padding:	3 * jaspTheme.uiScale
 
-				MouseArea
-				{
-					acceptedButtons:	Qt.NoButton
-					anchors.fill:		parent
-					cursorShape:		Qt.IBeamCursor
-				}
+				text:				labelModel.columnDescription
+				onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
+				applyScriptInfo:	""
+				placeholderText:	"..."
 
+				property int maxHeight:	100 * jaspTheme.uiScale
 			}
 
 			Rectangle
@@ -183,15 +157,16 @@ FocusScope
 				color:				jaspTheme.controlBackgroundColor
 				border.color:		jaspTheme.uiBorder
 				border.width:		1
-				visible:			labelModel.showLabelsEditing
+				visible:			labelModel.showLabelEditor
 
 				anchors
 				{
-					top:			columnNameVariablesWindow.bottom
+					top:			columnDescriptionVariablesWindow.bottom
 					left:			parent.left
 					right:			buttonColumnVariablesWindow.left
-					bottom:			columnDescriptionRect.top
-					margins:		jaspTheme.generalAnchorMargin
+					bottom:			parent.bottom
+					topMargin:		jaspTheme.generalAnchorMargin
+					rightMargin:	jaspTheme.generalAnchorMargin
 				}
 
 
@@ -312,6 +287,10 @@ FocusScope
 									labelModel.setSelected(rowIndex, mouse.modifiers);
 									selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
 								}
+								onDoubleClicked:	(mouse)=>
+								{
+									labelInput.forceActiveFocus()
+								}
 							}
 
 							Row
@@ -377,6 +356,7 @@ FocusScope
 
 								TextInput
 								{
+									id:					labelInput
 									color:				jaspTheme.textEnabled
 
 									text:				itemText
@@ -426,68 +406,17 @@ FocusScope
 
 			}
 
-			Rectangle
-			{
-				id:						columnDescriptionRect
-				color:					jaspTheme.controlBackgroundColor
-				border.color:			jaspTheme.uiBorder
-				border.width:			1
-				visible:				enabled
-				property int maxHeight:	100 * jaspTheme.uiScale
-				height:					Math.min(maxHeight, columnDescriptionVariablesWindow.contentHeight + jaspTheme.generalAnchorMargin * 2)
-
-				anchors
-				{
-					left:				parent.left
-					bottom:				parent.bottom
-					right:				buttonColumnVariablesWindow.left
-					margins:			jaspTheme.generalAnchorMargin
-				}
-
-				z:					-1
-
-				QTC.ScrollView
-				{
-					anchors.fill:		parent
-					anchors.margins:	parent.border.width
-
-					QTC.TextArea
-					{
-						id:					columnDescriptionVariablesWindow
-						text:				labelModel.columnDescription
-						onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
-						color:				jaspTheme.textEnabled
-						font:				jaspTheme.font
-						//enabled:			ribbonModel.dataMode
-						selectByMouse:		true
-						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-						placeholderText:	qsTr("Column description")
-
-
-						MouseArea
-						{
-							acceptedButtons:	Qt.NoButton
-							anchors.fill:		parent
-							cursorShape:		Qt.IBeamCursor
-						}
-
-					}
-				}
-			}
-
-
-
 			ColumnLayout
 			{
 				id:					buttonColumnVariablesWindow
 
-				anchors.top:		tableBackground.top
+				anchors.top:		columnDescriptionVariablesWindow.top
 				anchors.right:		parent.right
-				anchors.bottom:		columnDescriptionRect.bottom
+				anchors.bottom:		parent.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
-				property int	shownButtons:		(labelModel.showLabelsEditing ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-				property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
+				property int	shownButtons:		(labelModel.showLabelEditor ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+				property real	minimumHeight:		!labelModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
 				RoundedButton
@@ -501,7 +430,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -515,7 +444,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -529,7 +458,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -561,7 +490,7 @@ FocusScope
 
 				Item //Spacer
 				{
-					Layout.fillHeight: true
+					Layout.fillHeight:	true
 				}
 
 				RoundedButton
