@@ -1,6 +1,4 @@
 #include "settings.h"
-#include "utilities/qutils.h"
-#include "enginedefinitions.h"
 
 QSettings* Settings::_settings = nullptr;
 
@@ -10,7 +8,6 @@ const Settings::Setting Settings::Values[] = {
 	{"numDecimals",					3},
 	{"exactPVals",					0},
 	{"normalizedNotation",			true},
-	{"dataAutoSynchronization",		1},
 	{"useDefaultSpreadsheetEditor",	1},
 	{"spreadsheetEditorName",		""},
 	{"MissingValueList",			Settings::defaultMissingValues},

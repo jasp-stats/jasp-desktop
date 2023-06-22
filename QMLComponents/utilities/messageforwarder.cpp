@@ -70,7 +70,6 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 
 	box.setText(title);
 	box.setInformativeText(message);
-	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 	box.setIcon(QMessageBox::Question);
 
 	QPushButton* yesButton =	box.addButton(YesButtonText,		QMessageBox::ButtonRole::YesRole);
