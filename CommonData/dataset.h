@@ -27,6 +27,7 @@ public:
 			int				id()					const { return _dataSetID;				}
 			int				columnCount()			const ;
 			int				rowCount()				const ;
+			bool			dataFileSynch()			const { return _dataFileSynch;			}
 	const	std::string &	dataFilePath()			const { return _dataFilePath;			}
 			Json::Value		emptyValuesJson()		const { return _emptyValues.toJson();	}
 	const	std::string &	databaseJson()			const { return _databaseJson;			}
@@ -53,9 +54,10 @@ public:
 			size_t			getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
 
-			void			setDataFilePath(	const std::string & dataFilePath)	{ _dataFilePath	= dataFilePath;			dbUpdate(); }
-			void			setEmptyValuesJson(	const Json::Value & emptyValues)	{ _emptyValues.fromJson(emptyValues);	dbUpdate(); }
-			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson	= databaseJson;			dbUpdate(); }
+			void			setEmptyValuesJson(	const Json::Value & emptyValues)	{ _emptyValues.fromJson(emptyValues);		dbUpdate(); }
+			void			setDataFilePath(	const std::string & dataFilePath)	{ _dataFilePath		= dataFilePath;			dbUpdate(); }
+			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }
+			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount);
@@ -88,7 +90,8 @@ private:
 	std::string					_dataFilePath,
 								_databaseJson;
 	EmptyValues					_emptyValues;
-	bool						_writeBatchedToDB	= false;
+	bool						_writeBatchedToDB		= false,
+								_dataFileSynch			= false;
 
 };
 

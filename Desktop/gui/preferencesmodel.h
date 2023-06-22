@@ -18,7 +18,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			numDecimals				READ numDecimals				WRITE setNumDecimals				NOTIFY numDecimalsChanged				)
 	Q_PROPERTY(bool			exactPValues			READ exactPValues				WRITE setExactPValues				NOTIFY exactPValuesChanged				)
 	Q_PROPERTY(bool			normalizedNotation		READ normalizedNotation			WRITE setNormalizedNotation			NOTIFY normalizedNotationChanged		)
-	Q_PROPERTY(bool			dataAutoSynchronization	READ dataAutoSynchronization	WRITE setDataAutoSynchronization	NOTIFY dataAutoSynchronizationChanged	)
 	Q_PROPERTY(bool			useDefaultEditor		READ useDefaultEditor			WRITE setUseDefaultEditor			NOTIFY useDefaultEditorChanged			)
 	Q_PROPERTY(QString		customEditor			READ customEditor				WRITE setCustomEditor				NOTIFY customEditorChanged				)
 	Q_PROPERTY(bool			useDefaultPPI			READ useDefaultPPI				WRITE setUseDefaultPPI				NOTIFY useDefaultPPIChanged				)
@@ -83,7 +82,6 @@ public:
 	bool		fixedDecimals()							const;
 	bool		exactPValues()							const;
 	bool		normalizedNotation()					const;
-	bool		dataAutoSynchronization()				const;
 	bool		useDefaultEditor()						const;
 	bool		useDefaultPPI()							const;
 	bool		whiteBackground()						const;
@@ -110,7 +108,6 @@ public:
 	QString		resultFont(bool forWebEngine = false)	const;
 	QString		currentThemeName()						const;
 	QString		languageCode()							const;
-	bool		useNativeFileDialog()					const;
 	bool		disableAnimations()						const;
 	bool		animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
 	bool		generateMarkdown()						const;
@@ -138,6 +135,7 @@ public:
 	bool		ALTNavModeActive()						const;
 
 public slots:
+	bool useNativeFileDialog()					const;
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
 	void setDefaultPPI(					int			defaultPPI);
@@ -152,7 +150,6 @@ public slots:
 	void setPlotBackground(				QString		plotBackground);
 	void setDeveloperFolder(			QString		developerFolder);
 	void setUseDefaultEditor(			bool		useDefaultEditor);
-	void setDataAutoSynchronization(	bool		dataAutoSynchronization);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
 	void updateUtilsMissingValues();
@@ -202,7 +199,6 @@ signals:
 	void numDecimalsChanged(			int			numDecimals);
 	void exactPValuesChanged(			bool		exactPValues);
 	void normalizedNotationChanged(		bool		normalizedNotation);
-	void dataAutoSynchronizationChanged(bool		dataAutoSynchronization);
 	void useDefaultEditorChanged(		bool		useDefaultEditor);
 	void customEditorChanged(			QString		customEditor);
 	void useDefaultPPIChanged(			bool		useDefaultPPI);

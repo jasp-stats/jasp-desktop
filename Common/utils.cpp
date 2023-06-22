@@ -223,13 +223,13 @@ void Utils::sleep(int ms)
 
 bool Utils::isEqual(const double a, const double b)
 {
-	if (isnan(a) || isnan(b)) return false;
+	if (isnan(a) || isnan(b)) return (isnan(a) && isnan(b));
 
 	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<double>::epsilon()));
 }
 bool Utils::isEqual(const float a, const float b)
 {
-	if (isnan(a) || isnan(b)) return false;
+	if (isnan(a) || isnan(b)) return (isnan(a) && isnan(b));
 
 	return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }

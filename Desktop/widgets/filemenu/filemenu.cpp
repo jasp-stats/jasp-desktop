@@ -182,7 +182,7 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	{
 		if (checkSyncFileExists(path))
 		{
-			bool sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+			bool sync = DataSetPackage::pkg()->synchingExternally();
 			if (sync)
 				_watcher.addPath(path);
 		}
@@ -200,8 +200,12 @@ void FileMenu::setDataFileWatcher(bool watch)
 	if (path.isEmpty())
 		return;
 
-	if (watch && !_currentDataFile->isOnlineFile(path))	_watcher.addPath(path);
-	else												_watcher.removePath(path);
+	if (!(watch && !_currentDataFile->isOnlineFile(path)))
+		_watcher.removePath(path);
+
+	else if(_watcher.addPath(path))
+		dataFileModifiedHandler(path);
+
 }
 
 
@@ -257,6 +261,14 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				if (datafile.isEmpty())
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
+
+				if	(	event->operation() == FileEvent::FileOpen
+					&& !event->isReadOnly()
+					&& event->type() == FileTypeBase::jasp
+					&& !DataSetPackage::pkg()->dataFileReadOnly()
+					&& DataSetPackage::pkg()->dataSet()->dataFileSynch()
+				)
+					DataSetPackage::pkg()->setSynchingExternally(true);
 			}
 			
 			// all this stuff is a hack
@@ -314,7 +326,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 void FileMenu::syncDataFile(const QString& path, bool waitForExistence)
 {
-	bool autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+	bool autoSync = DataSetPackage::pkg()->synchingExternally();
 	if (autoSync)
 		setSyncRequest(path, waitForExistence);
 }
