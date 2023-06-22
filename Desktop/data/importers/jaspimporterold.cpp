@@ -104,6 +104,8 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp",	0)				.asUInt());
 	packageData->setDatabaseJson(		metaData.get("database",			Json::nullValue));
 
+	packageData->dataSet()->setDataFileSynch(true);
+
 	DataSetPackage::filter()->setRFilter(	metaData.get("filterData",			DEFAULT_FILTER)	.asString());
 
 	Json::Value jsonFilterConstructor = metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);

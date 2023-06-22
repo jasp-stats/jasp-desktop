@@ -262,7 +262,12 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
 
-				if(event->operation() == FileEvent::FileOpen && !event->isReadOnly() && event->type() == FileTypeBase::jasp && !DataSetPackage::pkg()->dataFileReadOnly())
+				if	(	event->operation() == FileEvent::FileOpen
+					&& !event->isReadOnly()
+					&& event->type() == FileTypeBase::jasp
+					&& !DataSetPackage::pkg()->dataFileReadOnly()
+					&& DataSetPackage::pkg()->dataSet()->dataFileSynch()
+				)
 					DataSetPackage::pkg()->setSynchingExternally(true);
 			}
 			

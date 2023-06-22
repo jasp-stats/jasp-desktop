@@ -228,6 +228,9 @@ void AsyncLoader::loadPackage(QString id)
 
 			DataSetPackage * pkg = DataSetPackage::pkg();
 
+			if(!pkg->dataSet())
+				pkg->createDataSet();
+
 			if(_currentEvent->operation() != FileEvent::FileSyncData && _currentEvent->type() != Utils::FileType::jasp)
 				pkg->setSynchingExternally(true);
 

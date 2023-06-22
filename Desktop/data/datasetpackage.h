@@ -357,7 +357,6 @@ private:
 								_analysesHTMLReady			= false,
 								_filterShouldRunInit		= false,
 								_dataMode					= false,
-								_synchingExternally			= false,
 								_manualEdits				= false;
 
 	Json::Value					_analysesData,

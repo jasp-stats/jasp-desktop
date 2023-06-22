@@ -1241,6 +1241,8 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 
 	DataSetPackage::pkg()->initializeComputedColumns();
+
+	emit synchingExternallyChanged(synchingExternally());
 }
 
 void DataSetPackage::deleteDataSet()
@@ -2351,20 +2353,23 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 
 bool DataSetPackage::synchingExternally() const
 {
-	return _dataSet && _synchingExternally && (!_dataSet->dataFilePath().empty() || (_database != Json::nullValue && _databaseIntervalSyncher.isActive()));
+	return _dataSet && _dataSet->dataFileSynch() && (!_dataSet->dataFilePath().empty() || (_database != Json::nullValue && _databaseIntervalSyncher.isActive()));
 }
 
 void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
 {
-	if (synchingExternally && (_dataSet->dataFilePath().empty() || _manualEdits))
+	if (synchingExternally)// && (_dataSet->dataFilePath().empty() || _manualEdits))
 		emit askUserForExternalDataFile();
 
 	setSynchingExternally(synchingExternally);
+
+	setModified(true); //Perhaps someone would like to save the fact that it shouldnt be synchronized
 }
 
 void DataSetPackage::setSynchingExternally(bool synchingExternally)
-{
-	_synchingExternally = synchingExternally;
+{	
+	if(_dataSet)
+		_dataSet->setDataFileSynch(synchingExternally);
 
 	emit synchingExternallyChanged(DataSetPackage::synchingExternally());
 }
