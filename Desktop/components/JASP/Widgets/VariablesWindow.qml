@@ -29,10 +29,10 @@ FocusScope
 	id:			variablesContainer
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
-	property real calculatedBaseHeight:			columnNameVariablesWindow.height + (jaspTheme.generalAnchorMargin * 2)
-	property real calculatedMinimumHeight:		columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + buttonColumnVariablesWindow.minimumHeight
-	property real calculatedPreferredHeight:	columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + buttonColumnVariablesWindow.minimumHeight
-	property real calculatedMaximumHeight:		columnDescriptionVariablesWindow.maxHeight	+ calculatedBaseHeight + Math.max(buttonColumnVariablesWindow.minimumHeight, labelModel.showLabelsEditing ? parent.height * 0.6666667 : 0)
+	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
+	property real calculatedMinimumHeight:										columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
+	property real calculatedPreferredHeight:									columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
+	property real calculatedMaximumHeight:		!labelModel.showLabelEditor ? columnDescriptionVariablesWindow.height		+ calculatedBaseHeight :  parent.height * 0.7
 
 
 	Connections
@@ -137,9 +137,10 @@ FocusScope
 					top:			descriptionLabel.top
 					left:			parent.left
 					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
+					right:			buttonColumnVariablesWindow.left
+					rightMargin:	jaspTheme.generalAnchorMargin
 				}
 				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 5 * jaspTheme.uiScale))
-				width:				parent.width - x
 				control.padding:	3 * jaspTheme.uiScale
 
 				text:				labelModel.columnDescription
@@ -156,7 +157,7 @@ FocusScope
 				color:				jaspTheme.controlBackgroundColor
 				border.color:		jaspTheme.uiBorder
 				border.width:		1
-				visible:			labelModel.showLabelsEditing
+				visible:			labelModel.showLabelEditor
 
 				anchors
 				{
@@ -409,13 +410,13 @@ FocusScope
 			{
 				id:					buttonColumnVariablesWindow
 
-				anchors.top:		tableBackground.top
+				anchors.top:		columnDescriptionVariablesWindow.top
 				anchors.right:		parent.right
 				anchors.bottom:		parent.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
-				property int	shownButtons:		(labelModel.showLabelsEditing ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-				property real	minimumHeight:		(buttonHeight + 2 * spacing) * shownButtons - spacing
+				property int	shownButtons:		(labelModel.showLabelEditor ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+				property real	minimumHeight:		!labelModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
 				RoundedButton
@@ -429,7 +430,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -443,7 +444,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -457,7 +458,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelsEditing
+					visible:		labelModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -489,7 +490,7 @@ FocusScope
 
 				Item //Spacer
 				{
-					Layout.fillHeight: true
+					Layout.fillHeight:	true
 				}
 
 				RoundedButton

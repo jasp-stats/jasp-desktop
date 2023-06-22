@@ -47,15 +47,15 @@ TextAreaBase
 
 	Rectangle
 	{
-		id:				flickableRectangle
-		anchors.top:	title !== "" ? textAreaTitle.bottom : parent.top
-		anchors.topMargin: title !== "" ? jaspTheme.titleBottomMargin : 0
-		width:			parent.implicitWidth
-		height:			parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
-		color:			textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
-		border.width:	1
-		border.color:	jaspTheme.borderColor
-		radius:			jaspTheme.borderRadius
+		id:					flickableRectangle
+		anchors.top:		title !== "" ? textAreaTitle.bottom : parent.top
+		anchors.topMargin:	title !== "" ? jaspTheme.titleBottomMargin : 0
+		width:				parent.implicitWidth
+		height:				parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
+		color:				textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
+		border.width:		1
+		border.color:		jaspTheme.borderColor
+		radius:				jaspTheme.borderRadius
 
 		Flickable
 		{
