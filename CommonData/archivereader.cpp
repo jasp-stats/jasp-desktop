@@ -57,7 +57,7 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
-        int r = archive_read_open_filename(_archive, pathArchive.native().c_str(), 10240);
+        int r = archive_read_open_filename(_archive, pathArchive.string().c_str(), 10240);
 
 		if (r == ARCHIVE_OK)
 		{
@@ -238,7 +238,7 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 		archive_read_support_filter_all(a);
 		archive_read_support_format_all(a);
 
-        int r = archive_read_open_filename(a, pathArchive.native().c_str(), 10240);
+        int r = archive_read_open_filename(a, pathArchive.string().c_str(), 10240);
 
 		if (r == ARCHIVE_OK)
 		{
