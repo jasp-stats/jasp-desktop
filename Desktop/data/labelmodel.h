@@ -22,7 +22,7 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(double	rowWidth			READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
 	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
 	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
-	Q_PROPERTY(bool		showLabelsEditing	READ showLabelsEditing								NOTIFY showLabelsEditingChanged	)
+	Q_PROPERTY(bool		showLabelEditor	READ showLabelEditor								NOTIFY showLabelEditorChanged	)
 
 public:
 				LabelModel();
@@ -61,7 +61,7 @@ public:
 
 	void setColumnDescription(const QString & newColumnDescription);
 
-	bool showLabelsEditing() const;
+	bool showLabelEditor() const;
 
 
 public slots:
@@ -88,7 +88,7 @@ signals:
 	void chosenColumnChanged();
 	void columnTitleChanged();
 	void columnDescriptionChanged();
-	void showLabelsEditingChanged();
+	void showLabelEditorChanged();
 
 
 
