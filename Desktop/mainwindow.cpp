@@ -260,6 +260,7 @@ bool MainWindow::checkDoSync()
 	//Only do this if we are *not* running in reporting mode. 
 	if (!_reporter && checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
 	{
+		setCheckAutomaticSync(false);
 		DataSetPackage::pkg()->setSynchingExternally(false);
 		return false;
 	}
