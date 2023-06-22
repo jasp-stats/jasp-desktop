@@ -74,9 +74,9 @@ public:
 	int			dataSetGetId();
 	bool		dataSetExists(			int dataSetId);
 	void		dataSetDelete(			int dataSetId);
-	int			dataSetInsert(							const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "");	///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
-	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "");	///< Updates an existing DataSet row in DataSets
-	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,			 std::string & databaseJson,			std::string & emptyValuesJson, int & revision);			///< Loads an existing DataSet row into arguments
+	int			dataSetInsert(							const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
+	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Updates an existing DataSet row in DataSets
+	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,			 std::string & databaseJson,			std::string & emptyValuesJson, int & revision, bool & dataSynch);	///< Loads an existing DataSet row into arguments
 	static int	dataSetColCount(		int dataSetId);
 	static int	dataSetRowCount(		int dataSetId);
 	void		dataSetSetRowCount(		int dataSetId, size_t rowCount);
