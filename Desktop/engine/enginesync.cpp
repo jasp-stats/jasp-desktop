@@ -420,12 +420,6 @@ void EngineSync::process()
 
 	processSettingsChanged();
 	
-	if(_stopProcessing || _dataMode)
-	{
-		processComputedColumnQueue();
-		return;
-	}	
-	
 	if(!anEngineIsLoadingData)
 	{
 		processFilterScript();
@@ -435,6 +429,12 @@ void EngineSync::process()
 	}
 
 	processLogCfgRequests();
+
+	if(_stopProcessing || _dataMode)
+	{
+		processComputedColumnQueue();
+		return;
+	}
 
 	if(_engines.size() == 0)
 		startExtraEngines();
@@ -542,7 +542,7 @@ void EngineSync::processFilterScript()
 		return;
 
 	//First we make sure nothing else is running before we ask the engine to run the filter
-	if(!_filterRunning)
+	if(!_filterRunning && !_dataMode)
 	{
 		Log::log() << "Pausing and resuming engines to make sure nothing else is running when we start the filter." << std::endl;
 
