@@ -304,10 +304,10 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::dataModeChanged,					_engineSync,			&EngineSync::dataModeChanged								);
 	connect(_package,				&DataSetPackage::dataModeChanged,					this,					&MainWindow::onDataModeChanged								);
 	connect(_package,				&DataSetPackage::askUserForExternalDataFile,		this,					&MainWindow::startDataEditorHandler							);
-
+	connect(_package,				&DataSetPackage::runFilter,							_filterModel,			&FilterModel::sendGeneratedAndRFilter						);
 	connect(_package,				&DataSetPackage::showWarning,						_msgForwarder,			&MessageForwarder::showWarningQML,							Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::showComputedColumn,				this,					&MainWindow::showComputedColumn								);
-	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged);
+	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -1483,7 +1483,7 @@ void MainWindow::startDataEditorHandler()
 
 		MessageForwarder::DialogResponse choice;
 
-		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty();
+		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty() && !_package->dataFileReadOnly();
 
 		if (manualEditsMode)
 		{
