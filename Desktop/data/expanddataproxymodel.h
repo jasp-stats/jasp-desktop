@@ -2,6 +2,7 @@
 #define EXPANDDATAPROXYMODEL_H
 
 #include <QAbstractItemModel>
+#include "utils.h"
 
 class DataSetView;
 
@@ -45,7 +46,7 @@ protected:
 	QAbstractItemModel*			_sourceModel			= nullptr;
 	bool						_expandDataSet			= false;
 
-	std::map<std::string, int>	_roleNameToRole;
+	strintmap					_roleNameToRole;
 
 	const int	EXTRA_COLS				= 5;
 	const int	EXTRA_ROWS				= 10;
