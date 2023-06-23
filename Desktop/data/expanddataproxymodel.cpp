@@ -28,29 +28,23 @@ QVariant ExpandDataProxyModel::data(int row, int col, int role) const
 	if (col < _sourceModel->columnCount() && row < _sourceModel->rowCount())
 		return _sourceModel->data(_sourceModel->index(row, col), role);
 
-	if (role == getRole("selected"))
-		return false;
-	else if (role == getRole("lines"))
+	switch(role)
 	{
-		if (col == columnCount() - 1)
-			col = _sourceModel->columnCount() - 1;
-		else if (col >= _sourceModel->columnCount())
-			col = _sourceModel->columnCount() - 2;
-		if (col < 0) col = 0;
-		if (row == rowCount() - 1)
-			row = _sourceModel->rowCount() - 1;
-		else if (row >= _sourceModel->rowCount())
-			row = _sourceModel->rowCount() - 2;
-		if (row < 0) row = 0;
+	case int(dataPkgRoles::selected):				return false;
+	case int(dataPkgRoles::lines):
+	{
+		DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(_sourceModel);
 
-		return _sourceModel->data(_sourceModel->index(row, col), role);
+		if (row < _sourceModel->rowCount() && dataSetTable && dataSetTable->showInactive() && !DataSetPackage::pkg()->getRowFilter(row))
+			return DataSetPackage::getDataSetViewLines(false, false, false, false);
+		return DataSetPackage::getDataSetViewLines(col>0, row>0, true, true);
 	}
-	else if (role == getRole("value"))
-		return "";
-	else if (role == getRole("itemInputValue"))
-		return "string";
+	case int(dataPkgRoles::value):					return "";
+//	case int(dataPkgRoles::itemInputValue):			return "string"; ???
+	default:										return QVariant();
+	}
 
-	return QVariant();
+	return QVariant(); //gcc might complain some more I guess?
 }
 
 QVariant ExpandDataProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -63,29 +57,23 @@ QVariant ExpandDataProxyModel::headerData(int section, Qt::Orientation orientati
 		if (section < _sourceModel->columnCount())
 			return _sourceModel->headerData(section, orientation, role);
 		else
-		{
-			if (role == getRole("columnIsComputed"))
-				return false;
-			else if (role == getRole("computedColumnIsInvalidated"))
-				return false;
-			else if (role == getRole("filter"))
-				return false;
-			else if (role == getRole("computedColumnError"))
-				return "";
-			else if (role == getRole("columnType"))
-				return int(columnType::unknown);
-			else if (role == getRole("maxColString"))
-				return "XXXXXXXXXXX";
-			else if (role == Qt::DisplayRole)
-				return "";
-		}
+			switch(role)
+			{
+			case int(dataPkgRoles::columnIsComputed):				return false;
+			case int(dataPkgRoles::computedColumnIsInvalidated):	return false;
+			case int(dataPkgRoles::filter):							return false;
+			case int(dataPkgRoles::computedColumnError):			return "";
+			case int(dataPkgRoles::columnType):						return int(columnType::unknown);
+			case int(dataPkgRoles::maxColString):					return "XXXXXXXXXXX";
+			default:												return "";
+			}
 	}
 	else if (orientation == Qt::Orientation::Vertical)
 	{
 		if (section < _sourceModel->rowCount())
 			return _sourceModel->headerData(section, orientation, role);
 		else
-			return section + 1;
+			return  DataSetPackage::pkg()->dataRowCount() + (section - _sourceModel->rowCount()) + 1;
 	}
 
 	return QVariant();
