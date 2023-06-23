@@ -37,7 +37,7 @@ Based on your system, you can install the mentioned libraries using your package
 On Ubuntu, you can use `apt`.
 
 ```
-sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev libxcb-xkb-dev libxcb-xkb1 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential r-base
+sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev r-base
 ```
 
 > ⚠️ Some of these libraries might not be up-to-date and as a result JASP will complain. If this happens, you need to download, make and install those libraries individually. Alternatively, you can use the [Linux version of Homebrew](https://docs.brew.sh/Homebrew-on-Linux) and install the up-to-dated libraries locally.
