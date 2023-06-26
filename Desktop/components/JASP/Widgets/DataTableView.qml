@@ -217,7 +217,7 @@ FocusScope
 							else
 							{
 								dataTableView.view.selectionEnd  = arrowIndex;
-								dataTableView.view.edit(arrowIndex);
+								dataTableView.view.edit(arrowIndex.y, arrowIndex.x);
 							}
 
 							event.accepted = true;
