@@ -205,7 +205,7 @@ FocusScope
 						case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 && editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);} break;
 
 						case Qt.Key_Backtab: if(colI > 0)										{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false; } break;
-						case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount())		{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);	} break;
+						case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)		{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);	} break;
 
 
 						}
