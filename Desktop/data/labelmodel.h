@@ -22,7 +22,7 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(double	rowWidth			READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
 	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
 	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
-	Q_PROPERTY(bool		showLabelEditor	READ showLabelEditor								NOTIFY showLabelEditorChanged	)
+	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
 
 public:
 				LabelModel();
@@ -75,6 +75,7 @@ public slots:
 	void setRowWidth(double len);
 	void onChosenColumnChanged();
 	void refresh();
+	void changeSelectedColumn(QPoint selectionStart);
 
 signals:
 	void visibleChanged(bool visible);
