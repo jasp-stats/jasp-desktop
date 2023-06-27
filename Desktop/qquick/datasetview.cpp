@@ -1383,8 +1383,8 @@ void DataSetView::cellsClear()
 	if(_selectionStart.x() == -1 || _selectionStart.y() == -1)
 		return;
 
-	int cols = std::abs(1 + (_selectionEnd.x() == -1 ? 0 : _selectionEnd.x() - _selectionStart.x())),
-		rows = std::abs(1 + (_selectionEnd.y() == -1 ? 0 : _selectionEnd.y() - _selectionStart.y())),
+	int cols = 1 + std::abs((_selectionEnd.x() == -1 ? 0 : _selectionEnd.x() - _selectionStart.x())),
+		rows = 1 + std::abs((_selectionEnd.y() == -1 ? 0 : _selectionEnd.y() - _selectionStart.y())),
 		col0 = _selectionEnd.x() == -1 ? _selectionStart.x() : std::min(_selectionStart.x(), _selectionEnd.x()),
 		row0 = _selectionEnd.y() == -1 ? _selectionStart.y() : std::min(_selectionStart.y(), _selectionEnd.y());
 

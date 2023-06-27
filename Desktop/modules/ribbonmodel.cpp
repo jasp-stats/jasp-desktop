@@ -122,13 +122,13 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		new AnalysisEntry(fq(tr("Computed Columns")), "R.png"),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	true);	},	"insert-column-R-before",		fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	true);	},	"insert-column-R-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
-
 	});
 	
 	_entriesDelete = new AnalysisEntries(
 	{
 		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},				"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
-		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove")
+		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove"),
+		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
 	});
 		
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);

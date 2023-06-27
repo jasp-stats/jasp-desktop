@@ -573,6 +573,7 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
 	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDelete);
 	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDelete);
+	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::lastInstancedDataSetView(),	&DataSetView::cellsClear);
 
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::showComputedColumn,		this,			&MainWindow::showComputedColumn);
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_labelModel,	&LabelModel::changeSelectedColumn);
