@@ -1248,10 +1248,26 @@ QPoint DataSetView::selectionTopLeft() const
 }
 
 
-void DataSetView::columnSelect(int col)
+void DataSetView::columnSelect(int col,	bool shiftPressed)
 {
-	setSelectionStart(QPoint(col, 0));
-	setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
+	if(!shiftPressed)
+	{
+		setSelectionStart(QPoint(col, 0));
+		setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
+	}
+	else
+	{
+		int startCol = col, endCol = col;
+
+		if(_selectionStart.x() != -1)
+		{
+			if(col < _selectionStart.x())	endCol		= _selectionStart.x();
+			else							startCol	= _selectionStart.x();
+		}
+
+		setSelectionStart(QPoint(startCol, 0));
+		setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
+	}
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -1302,10 +1318,25 @@ void DataSetView::columnsDelete()
 	setSelectionEnd(QPoint(-1, -1));
 }
 
-void DataSetView::rowSelect(int row)
+void DataSetView::rowSelect(int row,	bool shiftPressed)
 {
-	setSelectionStart(QPoint(0, row));
-	setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
+	if(!shiftPressed)
+	{
+		setSelectionStart(QPoint(0, row));
+		setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
+	}
+	else
+	{
+		int startRow = row, endRow = row;
+		if(_selectionStart.y() != -1)
+		{
+			if(row < _selectionStart.y())	endRow		= _selectionStart.y();
+			else							startRow	= _selectionStart.y();
+		}
+
+		setSelectionStart(QPoint(0, startRow));
+		setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
+	}
 }
 
 void DataSetView::rowInsertBefore(int row)

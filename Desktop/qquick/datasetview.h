@@ -192,13 +192,13 @@ public slots:
 	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
 	void		paste(	bool includeHeader = false);
 
-	void		columnSelect(				int col = -1);
+	void		columnSelect(				int col = -1,	bool shiftPressed = false);
 	QString		columnInsertBefore(			int col = -1, bool computed = false, bool R = false);
 	QString		columnInsertAfter(			int col = -1, bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
 	void		columnsDelete();
-	void		rowSelect(					int row = -1);
+	void		rowSelect(					int row = -1,	bool shiftPressed = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
 	void		rowsDelete();

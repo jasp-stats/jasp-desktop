@@ -202,10 +202,10 @@ FocusScope
 						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
 						case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
 						case Qt.Key_Left:	if(colI	> 0 && editItem.cursorPosition <= 0)		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
-						case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 && editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);} break;
-
+						case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 &&
+											   editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
 						case Qt.Key_Backtab: if(colI > 0)										{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false; } break;
-						case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)		{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);	} break;
+						case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
 
 
 						}
@@ -351,7 +351,7 @@ FocusScope
 				{
 					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					color:	dataTableView.view.selectionStart.y == rowIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
+					color:	dataTableView.view.selectionStart.y === rowIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 					Text {
 						text:				rowNumber
 						font:				jaspTheme.font
@@ -359,12 +359,25 @@ FocusScope
 						color:				virtual ? jaspTheme.textDisabled : jaspTheme.textEnabled
 					}
 
+					MouseArea
+					{
+						anchors.fill:		parent
+						enabled:			ribbonModel.dataMode
+						hoverEnabled:		true
+						ToolTip.visible:	containsMouse
+						ToolTip.text:		qsTr("Click here to change column type")
+						ToolTip.timeout:	3000
+						ToolTip.delay:		500
+						cursorShape:		Qt.PointingHandCursor
+						onClicked: 			(mouseEvent)=>{ dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );}
+					}
+
 				}
 
 			columnHeaderDelegate: Rectangle
 			{
 				id:		headerRoot
-				color:	dataTableView.view.selectionStart.x == columnIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
+				color:	dataTableView.view.selectionStart.x === columnIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
@@ -552,7 +565,8 @@ FocusScope
 					anchors.bottom: parent.bottom
 					anchors.right:	colHasError.left
 
-					onClicked:
+					onClicked: (mouseEvent)=>
+					{
 						if(columnIndex >= 0)
 						{
 							if (virtual)
@@ -573,8 +587,12 @@ FocusScope
 									filterWindow.showEasyFilter = true
 									filterWindow.open()
 								}
+
+								if(ribbonModel.dataMode)
+									dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
 							}
 						}
+					}
 
 					hoverEnabled:		true
 					ToolTip.visible:	containsMouse
