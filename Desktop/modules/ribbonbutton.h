@@ -50,9 +50,11 @@ class RibbonButton : public QObject
 	Q_PROPERTY(bool		ready			READ ready				WRITE setReady				NOTIFY readyChanged			)
 	Q_PROPERTY(bool		error			READ error				WRITE setError				NOTIFY errorChanged			)
 	Q_PROPERTY(bool		remember		READ remember			WRITE setRemember			NOTIFY rememberChanged		)
+	Q_PROPERTY(bool separator READ separator WRITE setSeparator NOTIFY separatorChanged)
 
 public:
 
+	RibbonButton(QObject *parent);
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction, std::string toolTip = "", bool enabled = true, bool remember = false);
 	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip = "", bool enabled = true, bool remember = false);
@@ -82,6 +84,9 @@ public:
 	bool						isSpecial()													const			{ return _special; }
 
 	static QString					getJsonDescriptionFilename();	
+
+	bool separator() const;
+	void setSeparator(bool newSeparator);
 
 public slots:
 	void setDynamicModule(Modules::DynamicModule * module);
@@ -119,8 +124,8 @@ signals:
 	void isSpecialChanged(); //This wont be called it is just here to keep qml from complaining
 	void readyChanged(bool ready);
 	void errorChanged(bool error);
-
 	void rememberChanged(bool remember);
+	void separatorChanged();
 
 private:
 	void bindYourself();
@@ -135,7 +140,8 @@ private:
 									_ready				= false,
 									_error				= false,
 									_remember			= true,
-									_special			= false;
+									_special			= false,
+									_separator			= false;
 	std::string						_title				= "",
 									_name				= "";
 	Modules::DynamicModule	*		_module				= nullptr;

@@ -24,9 +24,9 @@ import JASP.Widgets			1.0
 Rectangle
 {
 	id				: ribbonButton
-	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
+	width			: separator ? 2 * jaspTheme.ribbonButtonPadding : (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
 	height			: jaspTheme.ribbonButtonHeight
-	color			: showPressed ? jaspTheme.grayLighter : "transparent"
+	color			: separator || !showPressed ? "transparent" : jaspTheme.grayLighter
 	z				: 1
 	objectName		: "ribbonButton"
 
@@ -34,6 +34,7 @@ Rectangle
 	property int	listIndex   : -1
 	property string	source		: ""
 	property bool	enabled		: true
+	property bool	separator	: false
 	property bool	ready		: false
 	property string moduleName	: "???"
 	property string toolTip		: ""
@@ -169,13 +170,16 @@ Rectangle
 	Rectangle
 	{
 		id		: borderLeft
-		width   : showPressed ? 1 : 0
+		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
 		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		radius	: separator ? width : 0
 		anchors
 		{
-			left	: parent.left
-			top		: parent.top
-			bottom	: parent.bottom
+			left		: parent.left
+			top			: parent.top
+			bottom		: parent.bottom
+			topMargin	: separator ? height/6 : 0
+			bottomMargin: separator ? height/5 : 0
 		}
 	}
 
@@ -198,6 +202,7 @@ Rectangle
 		width				: parent.width
 		height				: parent.height
 		scale				: mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1
+		visible				: !separator
 
 		Image
 		{

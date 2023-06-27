@@ -1378,6 +1378,21 @@ void DataSetView::rowsDelete()
 	setSelectionEnd(QPoint(-1, -1));
 }
 
+void DataSetView::cellsClear()
+{
+	if(_selectionStart.x() == -1 || _selectionStart.y() == -1)
+		return;
+
+	int cols = std::abs(1 + (_selectionEnd.x() == -1 ? 0 : _selectionEnd.x() - _selectionStart.x())),
+		rows = std::abs(1 + (_selectionEnd.y() == -1 ? 0 : _selectionEnd.y() - _selectionStart.y())),
+		col0 = _selectionEnd.x() == -1 ? _selectionStart.x() : std::min(_selectionStart.x(), _selectionEnd.x()),
+		row0 = _selectionEnd.y() == -1 ? _selectionStart.y() : std::min(_selectionStart.y(), _selectionEnd.y());
+
+	std::vector<std::vector<QString>> cells(cols, std::vector<QString>(rows, QString("")));
+
+	_model->pasteSpreadsheet(row0, col0, cells, {});
+}
+;
 void DataSetView::columnsAboutToBeInserted(const QModelIndex & parent, int first, int last)
 {
 	//temp:

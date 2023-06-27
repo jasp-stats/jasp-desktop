@@ -202,6 +202,7 @@ public slots:
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
 	void		rowsDelete();
+	void		cellsClear();
 
 	void		columnsAboutToBeInserted(	const QModelIndex &parent, int first, int last);
 	void		columnsAboutToBeRemoved(	const QModelIndex &parent, int first, int last);

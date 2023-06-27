@@ -53,29 +53,32 @@ FocusScope
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut"),		shortcut: qsTr("%1+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
-					{ text: qsTr("Copy"),		shortcut: qsTr("%1+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
-					{ text: qsTr("Paste"),		shortcut: qsTr("%1+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
+					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
+					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
+					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Header cut"),	shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut" },
-					{ text: qsTr("Header copy"),shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"	},
-					{ text: qsTr("Header paste"),shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"	},
+					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut" },
+					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"	},
+					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"	},
 
 					{ text: "---" },
 
-					{ text: qsTr("Select column"),											func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			},
-					{ text: qsTr("Insert column before"),									func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
-					{ text: qsTr("Insert column after"),									func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
-					{ text: qsTr("Delete column"),											func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			},
+					{ text: qsTr("Select column"),													func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			},
+					{ text: qsTr("Insert column before"),											func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
+					{ text: qsTr("Insert column after"),											func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
+					{ text: qsTr("Delete column"),													func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			},
 
 					{ text: "---" },
 
-					{ text: qsTr("Select row"),												func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
-					{ text: qsTr("Insert row before"),										func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
-					{ text: qsTr("Insert row after"),										func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-					{ text: qsTr("Delete row"),												func: function() { dataTableView.view.rowsDelete(); },						icon: "menu-row-remove"				}
+					{ text: qsTr("Select row"),														func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
+					{ text: qsTr("Insert row before"),												func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
+					{ text: qsTr("Insert row after"),												func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
+					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(); },						icon: "menu-row-remove"				},
+
+					{ text: "---" },
+					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
 
 				]
 
@@ -165,6 +168,11 @@ FocusScope
 
 						switch(event.key)
 						{
+						case Qt.Key_Delete:
+							event.accepted = true;
+							dataTableView.view.cellsClear();
+							break;
+
 						case Qt.Key_C:
 							if(controlPressed)
 							{

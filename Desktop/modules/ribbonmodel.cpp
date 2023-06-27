@@ -62,7 +62,7 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 						std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
 						
 						//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
-						if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
+						if(!QFileInfo::exists(tq(moduleLibrary + "/" + moduleName)))
 							MessageForwarder::showWarning(
 								tr("Module missing"), 
 								tr(	"It seems the bundled module %1 wasn't correctly installed, and thus cannot be loaded.\n"
@@ -147,13 +147,16 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOnButton,	[=](bool synching){ _synchroniseOnButton->setEnabled(!synching); });
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOffButton,	[=](bool synching){ _synchroniseOffButton->setEnabled(synching); });
 
-	addRibbonButtonModel(_analysesButton,		size_t(RowType::Data));
-	addRibbonButtonModel(_synchroniseOnButton,	size_t(RowType::Data));
-	addRibbonButtonModel(_synchroniseOffButton,	size_t(RowType::Data));
-	addRibbonButtonModel(_dataSwitchButton,		size_t(RowType::Analyses));
-	addRibbonButtonModel(_dataNewButton,		size_t(RowType::Analyses));
-	addRibbonButtonModel(_insertButton,			size_t(RowType::Data));
-	addRibbonButtonModel(_removeButton,			size_t(RowType::Data));
+	addRibbonButtonModel(_dataSwitchButton,			size_t(RowType::Analyses));
+	addRibbonButtonModel(_dataNewButton,			size_t(RowType::Analyses));
+	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Analyses));
+
+	addRibbonButtonModel(_analysesButton,			size_t(RowType::Data));
+	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Data));
+	addRibbonButtonModel(_synchroniseOnButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_synchroniseOffButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_insertButton,				size_t(RowType::Data));
+	addRibbonButtonModel(_removeButton,				size_t(RowType::Data));
 }
 
 void RibbonModel::addSpecialRibbonButtonsLate()
