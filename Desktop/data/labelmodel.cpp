@@ -308,6 +308,12 @@ void LabelModel::refresh()
 	setLabelMaxWidth();
 }
 
+void LabelModel::changeSelectedColumn(QPoint selectionStart)
+{
+	if (selectionStart.x() != chosenColumn())
+		setChosenColumn(selectionStart.x());
+}
+
 void LabelModel::removeAllSelected()
 {
 	QMap<QString, size_t> mapValueToRow;
