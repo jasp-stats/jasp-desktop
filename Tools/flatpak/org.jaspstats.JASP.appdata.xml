@@ -35,7 +35,12 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.17.3" date="2023-07-04">
+        <release version="0.18.0" date="2023-06-27">
+                <description>
+beta
+                </description>
+        </release>
+        <release version="0.17.3" date="2023-07-04">
 		<description>
 JASP Release Notes 0.17.3:
 
@@ -53,8 +58,8 @@ Bug fixes:
 * Fix Bayesian descriptives Credible Interval (https://github.com/jasp-stats/jasp-issues/issues/2153, https://github.com/jasp-stats/jasp-issues/issues/2190)
 * Allow Ordinal data and fix citations (https://github.com/jasp-stats/jasp-issues/issues/1723)
 * Bug Report in PROPHET Module (https://github.com/jasp-stats/jasp-issues/issues/2201)
-		</description>
-	</release>
+                </description>
+        </release>
 	<release version="0.17.2.1" date="2023-05-22">
 		<description>
 JASP Release Notes 0.17.2.1
