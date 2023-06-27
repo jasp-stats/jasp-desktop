@@ -1467,7 +1467,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	analysis->setBoundValues(root);
 }
 
-void MainWindow::startDataEditorHandler()
+bool MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
 	QString path = QString::fromStdString(_package->dataFilePath());
@@ -1505,7 +1505,7 @@ void MainWindow::startDataEditorHandler()
 		case MessageForwarder::DialogResponse::Save:
 		case MessageForwarder::DialogResponse::Discard:
 		case MessageForwarder::DialogResponse::Cancel:
-			return;
+			return false;
 
 
 		case MessageForwarder::DialogResponse::Yes:
@@ -1529,7 +1529,7 @@ void MainWindow::startDataEditorHandler()
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
 
 			if (path == "")
-				return;
+				return false;
 
 			if (!path.endsWith(".csv", Qt::CaseInsensitive))
 				path.append(".csv");
@@ -1549,7 +1549,7 @@ void MainWindow::startDataEditorHandler()
 
 				path = MessageForwarder::browseOpenFile(caption, "", filter);
 				if (path == "")
-					return;
+					return false;
 
 				event = new FileEvent(this, FileEvent::FileSyncData);
 			}
@@ -1575,6 +1575,8 @@ void MainWindow::startDataEditorHandler()
 	}
 	else
 		startDataEditor(path);
+
+	return true;
 }
 
 void MainWindow::clearModulesFoldersUser()
