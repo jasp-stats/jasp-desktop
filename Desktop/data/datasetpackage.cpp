@@ -1039,7 +1039,9 @@ bool DataSetPackage::isColumnUsedInEasyFilter(const std::string & colName) const
 void DataSetPackage::notifyColumnFilterStatusChanged(int columnIndex)
 {
 	emit columnsFilteredCountChanged();
-	QTimer::singleShot(0, [&](){	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex); });
+	//emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex); //this keeps crashing jasp and i dont know why
+	beginResetModel();
+	endResetModel();
 }
 
 
