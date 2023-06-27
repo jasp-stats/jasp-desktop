@@ -304,10 +304,27 @@ Item
 			property string resultsString:	qsTr("Results")
 			onResultsStringChanged:			setTranslatedResultsString();
 
+			// Defined the elements that need to be translated in the html/js interface
+			// where use i18n(...) to return  translations
+			property var i18nObject: 
+			{
+				"Bold"			   : qsTr("Bold"), 			       "Italic" : qsTr("Italic"),   	"Underline"    : qsTr("Underline"),    "Link"           : qsTr("Link"),           "Formula"      : qsTr("Formula"),
+				"Code Block"	   : qsTr("Code Block"),  		   "Header" : qsTr("Header"),   	"Ordered List" : qsTr("Ordered List"), "Unordered List" : qsTr("Unordered List"), "Color Picker" : qsTr("Color Picker"), 
+				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
+				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
+				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard")
+			}
+
 			function setTranslatedResultsString()
 			{
 				if(resultsJsInterface.resultsLoaded)
+				{
 					runJavaScript("window.setAnalysesTitle(\"" + resultsString + "\");");
+
+					// To parse the QML i18n object to js object
+					// will also make the js i18n follow changes of JASP GUI language
+					runJavaScript(`window.setI18nStrings(${JSON.stringify(i18nObject)})`) 
+				}
 			}
 
 			QtObject

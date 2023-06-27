@@ -1,5 +1,26 @@
 var JASPWidgets = {};
 
+var i18nStrs = null;
+// The global translation function needs to be loaded before all other .js files.
+window.setI18nStrings = function (i18nObject) {
+        i18nStrs = i18nObject
+        return i18nStrs
+}
+
+// Use i18n(...) to call strings to be translated then update them in MainPage.qml
+function i18n(str) {
+	if (typeof str === "string" && str instanceof String) {
+		console.log("i18n can only be used for literal strings")
+	} else {
+		let findI18nStr = i18nStrs[str] !== null && i18nStrs[str] !== undefined;
+		if (findI18nStr) {
+			return i18nStrs[str];
+		} else {
+			return str;
+		}
+	}
+}
+
 if(insideJASP)
 {
 	var Parchment = Quill.import('parchment');
@@ -385,7 +406,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 
-		this.ghostTextDefault = 'Click here to add text';
+		this.ghostTextDefault = i18n('Click here to add text');
 
 		this.editing = false;
 
@@ -556,33 +577,33 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		//     Instead, we will use the browser standard "title" attribute as
 		//     mentioned here: https://github.com/quilljs/quill/issues/1271#issuecomment-597928093
 
-		this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', 'Bold');
-		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', 'Italic');
-		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', 'Underline');
-		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Link');
+		this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', i18n('Bold'));
+		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', i18n('Italic'));
+		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', i18n('Underline'));
+		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', i18n('Link'));
 
-		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', 'Formula');
-		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', 'Code Block');
+		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
+		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
 
-		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', 'Header');
+		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
-		lists[0].setAttribute('title', 'Ordered List')
-		lists[1].setAttribute('title', 'Unordered List')
+		lists[0].setAttribute('title', i18n('Ordered List'))
+		lists[1].setAttribute('title', i18n('Unordered List'))
 
-		this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', 'Color Picker');
-		this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', 'Background Color');
+		this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', i18n('Color Picker'));
+		this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', i18n('Background Color'));
 
 		let scripts = this.$quillToolbar.querySelectorAll('button.ql-script')
-		scripts[0].setAttribute('title', 'Subscript')
-		scripts[1].setAttribute('title', 'Superscript')
+		scripts[0].setAttribute('title', i18n('Subscript'))
+		scripts[1].setAttribute('title', i18n('Superscript'))
 
-		this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', 'Blockquote');
+		this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', i18n('Blockquote'));
 		let indents = this.$quillToolbar.querySelectorAll('button.ql-indent')
-		indents[0].setAttribute('title', 'Add Indent')
-		indents[1].setAttribute('title', 'Remove Indent')
+		indents[0].setAttribute('title', i18n('Add Indent'))
+		indents[1].setAttribute('title', i18n('Remove Indent'))
 
-		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', 'Font Size');
-		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', 'Clear Formatting');
+		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
+		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
 
 		// Customized quill editor syntax to fix code-block
   		// FIXME: Fix css styles on export html when refactoring
