@@ -1409,7 +1409,7 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 
 		maxLabelKey = std::max(labelValue, maxLabelKey); //to be used in labelsResetValues
 
-		if(mapValuesToAdd.count(labelText))	//Found it!
+		if(mapValuesToAdd.contains(labelText))
 		{
 			result[labelText] = mapValuesToAdd[labelText];
 			mapValuesToAdd.erase(labelText);
