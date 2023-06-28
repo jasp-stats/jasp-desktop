@@ -62,7 +62,7 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 						std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
 						
 						//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
-						if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
+						if(!QFileInfo::exists(tq(moduleLibrary + "/" + moduleName)))
 						{
 							Log::log() << "Module " << moduleName << " is missing!\nLooked at: '" << tq(moduleLibrary + "/" + moduleName) << " and it cant be loaded because it isnt there" << std::endl;
 							
@@ -125,19 +125,19 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(-1,false,false);		},	"insert-column-after",			fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
 		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(-1);					},	"insert-row-before",			fq(tr("Insert row before")),	true,		"menu-row-insert-before"),
 		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(-1);						},	"insert-row-after",				fq(tr("Insert row after")),		true,		"menu-row-insert-after"),
-		new AnalysisEntry(fq(tr("Computed Columns")), "NotR.png"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "NotR.png", true),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	false);	},	"insert-column-NotR-before",	fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	false);	},	"insert-column-NotR-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
-		new AnalysisEntry(fq(tr("Computed Columns")), "R.png"),
+		new AnalysisEntry(fq(tr("Computed Columns")), "R.png", true),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnBefore(-1,	true);	},	"insert-column-R-before",		fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
 		new AnalysisEntry([&](){ emit this->dataInsertComputedColumnAfter( -1,	true);	},	"insert-column-R-after",		fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
-
 	});
 	
 	_entriesDelete = new AnalysisEntries(
 	{
 		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},				"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
-		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove")
+		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove"),
+		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
 	});
 		
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);
@@ -156,13 +156,16 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOnButton,	[=](bool synching){ _synchroniseOnButton->setEnabled(!synching); });
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOffButton,	[=](bool synching){ _synchroniseOffButton->setEnabled(synching); });
 
-	addRibbonButtonModel(_analysesButton,		size_t(RowType::Data));
-	addRibbonButtonModel(_synchroniseOnButton,	size_t(RowType::Data));
-	addRibbonButtonModel(_synchroniseOffButton,	size_t(RowType::Data));
-	addRibbonButtonModel(_dataSwitchButton,		size_t(RowType::Analyses));
-	addRibbonButtonModel(_dataNewButton,		size_t(RowType::Analyses));
-	addRibbonButtonModel(_insertButton,			size_t(RowType::Data));
-	addRibbonButtonModel(_removeButton,			size_t(RowType::Data));
+	addRibbonButtonModel(_dataSwitchButton,			size_t(RowType::Analyses));
+	addRibbonButtonModel(_dataNewButton,			size_t(RowType::Analyses));
+	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Analyses));
+
+	addRibbonButtonModel(_analysesButton,			size_t(RowType::Data));
+	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Data));
+	addRibbonButtonModel(_synchroniseOnButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_synchroniseOffButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_insertButton,				size_t(RowType::Data));
+	addRibbonButtonModel(_removeButton,				size_t(RowType::Data));
 }
 
 void RibbonModel::addSpecialRibbonButtonsLate()
