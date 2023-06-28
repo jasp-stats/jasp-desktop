@@ -27,22 +27,22 @@ Rectangle
 
 		}
 
-		ComputeColumnWindow
-		{
-			id:							computeColumnWindow
-			objectName:					"computeColumnWindow"
-			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
-			SplitView.maximumHeight:	rootDataset.height * 0.8
-		}
+//		ComputeColumnWindow
+//		{
+//			id:							computeColumnWindow
+//			objectName:					"computeColumnWindow"
+//			SplitView.minimumHeight:	desiredMinimumHeight
+//			SplitView.preferredHeight:	rootDataset.height * 0.25
+//			SplitView.maximumHeight:	rootDataset.height * 0.8
+//		}
 
-        VariablesWindow
-        {
+		VariablesWindow
+		{
 			id:							variablesWindow
 			SplitView.minimumHeight:	calculatedMinimumHeight
 			SplitView.preferredHeight:	calculatedPreferredHeight
 			SplitView.maximumHeight:	calculatedMaximumHeight
-        }
+		}
 
 		DataTableView
 		{
