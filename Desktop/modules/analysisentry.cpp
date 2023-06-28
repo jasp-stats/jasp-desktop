@@ -27,8 +27,8 @@ AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string int
 	: _title(internalTitle), _function(internalTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
 {}
 
-AnalysisEntry::AnalysisEntry(std::string menuTitle, std::string icon)
-	: _title(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(true), _icon(icon)
+AnalysisEntry::AnalysisEntry(std::string menuTitle, std::string icon, bool smallIcon)
+	: _title(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(true), _icon(icon), _smallIcon(smallIcon)
 {}
 
 AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :

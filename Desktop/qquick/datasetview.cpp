@@ -1030,6 +1030,9 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 	}
 	else*/
 
+	_selectionEnd = QPoint(-1, -1);
+	emit selectionEndChanged(_selectionEnd);
+
 	edit(_selectionStart.y(), _selectionStart.x());
 }
 
@@ -1037,6 +1040,12 @@ void DataSetView::setSelectionEnd(QPoint selectionEnd)
 {
 	if (!_selectionModel)
 		return;
+
+	if(editing())
+	{
+		finishCurrentEdit();
+		destroyEditItem();
+	}
 
 	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.y() << ", col=" << selectionEnd.x() << " )" << std::endl;
 
@@ -1248,10 +1257,26 @@ QPoint DataSetView::selectionTopLeft() const
 }
 
 
-void DataSetView::columnSelect(int col)
+void DataSetView::columnSelect(int col,	bool shiftPressed)
 {
-	setSelectionStart(QPoint(col, 0));
-	setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
+	if(!shiftPressed)
+	{
+		setSelectionStart(QPoint(col, 0));
+		setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
+	}
+	else
+	{
+		int startCol = col, endCol = col;
+
+		if(_selectionStart.x() != -1)
+		{
+			if(col < _selectionStart.x())	endCol		= _selectionStart.x();
+			else							startCol	= _selectionStart.x();
+		}
+
+		setSelectionStart(QPoint(startCol, 0));
+		setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
+	}
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -1283,15 +1308,15 @@ void DataSetView::columnComputedInsertBefore(int col, bool R)
 	emit showComputedColumn(columnInsertBefore(col, true, R));
 }
 
-void DataSetView::columnsDelete()
+void DataSetView::columnsDelete(int col)
 {
-	if(_model->columnCount(false) <= 1 || _selectionStart.x() == -1)
+	if(_model->columnCount(false) <= 1 || (_selectionStart.x() == -1 && col == -1))
 		return;
 
 	destroyEditItem(false);
 
-	int columnA	= _selectionStart.x() != -1 ? _selectionStart.x()	: _selectionEnd.x(),
-		columnB	= _selectionEnd.x() != -1	? _selectionEnd.x()		: _selectionStart.x();
+	int columnA	= col != -1 ? col : _selectionStart.x() != -1	? _selectionStart.x()	: _selectionEnd.x(),
+		columnB	= col != -1 ? col : _selectionEnd.x()	!= -1	? _selectionEnd.x()		: _selectionStart.x();
 
 	if(columnA > columnB)
 		std::swap(columnA, columnB);
@@ -1302,10 +1327,25 @@ void DataSetView::columnsDelete()
 	setSelectionEnd(QPoint(-1, -1));
 }
 
-void DataSetView::rowSelect(int row)
+void DataSetView::rowSelect(int row,	bool shiftPressed)
 {
-	setSelectionStart(QPoint(0, row));
-	setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
+	if(!shiftPressed)
+	{
+		setSelectionStart(QPoint(0, row));
+		setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
+	}
+	else
+	{
+		int startRow = row, endRow = row;
+		if(_selectionStart.y() != -1)
+		{
+			if(row < _selectionStart.y())	endRow		= _selectionStart.y();
+			else							startRow	= _selectionStart.y();
+		}
+
+		setSelectionStart(QPoint(0, startRow));
+		setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
+	}
 }
 
 void DataSetView::rowInsertBefore(int row)
@@ -1328,15 +1368,15 @@ void DataSetView::rowInsertAfter(int row)
 	rowInsertBefore(row + 1);
 }
 
-void DataSetView::rowsDelete()
+void DataSetView::rowsDelete(int row)
 {
-	if(_model->rowCount(false) <= 1 || (_selectionStart.y() == -1))
+	if(_model->rowCount(false) <= 1 || (_selectionStart.y() == -1 && row == -1))
 		return;
 
 	destroyEditItem();
 
-	int rowA	= _selectionStart.y() != -1 ? _selectionStart.y()	: _selectionEnd.y(),
-		rowB	= _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
+	int rowA	= row != -1 ? row : _selectionStart.y() != -1 ? _selectionStart.y()	: _selectionEnd.y(),
+		rowB	= row != -1 ? row : _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
 
 	if(rowA > rowB)
 		std::swap(rowA, rowB);
@@ -1347,6 +1387,21 @@ void DataSetView::rowsDelete()
 	setSelectionEnd(QPoint(-1, -1));
 }
 
+void DataSetView::cellsClear()
+{
+	if(_selectionStart.x() == -1 || _selectionStart.y() == -1)
+		return;
+
+	int cols = 1 + std::abs((_selectionEnd.x() == -1 ? 0 : _selectionEnd.x() - _selectionStart.x())),
+		rows = 1 + std::abs((_selectionEnd.y() == -1 ? 0 : _selectionEnd.y() - _selectionStart.y())),
+		col0 = _selectionEnd.x() == -1 ? _selectionStart.x() : std::min(_selectionStart.x(), _selectionEnd.x()),
+		row0 = _selectionEnd.y() == -1 ? _selectionStart.y() : std::min(_selectionStart.y(), _selectionEnd.y());
+
+	std::vector<std::vector<QString>> cells(cols, std::vector<QString>(rows, QString("")));
+
+	_model->pasteSpreadsheet(row0, col0, cells, {});
+}
+;
 void DataSetView::columnsAboutToBeInserted(const QModelIndex & parent, int first, int last)
 {
 	//temp:

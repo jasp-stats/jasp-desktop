@@ -119,6 +119,7 @@ signals:
 				void dataRemoveRow(int);
 				void setDataSynchronisation(bool);
 				void synchronisationChanged(bool);
+				void cellsClear();
 
 
 public slots:
