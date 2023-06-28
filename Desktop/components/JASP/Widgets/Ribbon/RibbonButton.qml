@@ -173,13 +173,14 @@ Rectangle
 		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
 		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
 		radius	: separator ? width : 0
+		height	: separator ? height * 0.6 : parent.height
 		anchors
 		{
 			left		: parent.left
 			top			: parent.top
-			bottom		: parent.bottom
+			//bottom		: parent.bottom
 			topMargin	: separator ? height/6 : 0
-			bottomMargin: separator ? height/5 : 0
+			//bottomMargin: separator ? height/5 : 0
 		}
 	}
 

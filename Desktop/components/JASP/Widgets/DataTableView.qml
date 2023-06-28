@@ -56,6 +56,7 @@ FocusScope
 					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
 					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
 					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
+					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
 
 					{ text: "---" },
 
@@ -75,11 +76,7 @@ FocusScope
 					{ text: qsTr("Select row"),														func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
 					{ text: qsTr("Insert row before"),												func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 					{ text: qsTr("Insert row after"),												func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(); },						icon: "menu-row-remove"				},
-
-					{ text: "---" },
-					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
-
+					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(			rowIndex); },						icon: "menu-row-remove"				},
 				]
 
 				var copyPasteMenuText = []
@@ -373,11 +370,18 @@ FocusScope
 						enabled:			ribbonModel.dataMode
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to change column type")
+						ToolTip.text:		qsTr("Click here to select the row, hold shift for selecting multiple.")
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 						cursorShape:		Qt.PointingHandCursor
-						onClicked: 			(mouseEvent)=>{ dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );}
+						acceptedButtons:	Qt.LeftButton | Qt.RightButton
+						onClicked: 			(mouseEvent)=>
+											{
+												if(mouseEvent.button === Qt.LeftButton)
+													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );
+												else if(mouseEvent.button === Qt.RightButton)
+													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
+											}
 					}
 
 				}
@@ -568,12 +572,12 @@ FocusScope
 
 				MouseArea
 				{
-					anchors.left:	colIsComputed.right
-					anchors.top:	parent.top
-					anchors.bottom: parent.bottom
-					anchors.right:	colHasError.left
-
-					onClicked: (mouseEvent)=>
+					anchors.left:		colIsComputed.right
+					anchors.top:		parent.top
+					anchors.bottom:		parent.bottom
+					anchors.right:		colHasError.left
+					acceptedButtons:	Qt.LeftButton | Qt.RightButton
+					onClicked:			(mouseEvent)=>
 					{
 						if(columnIndex >= 0)
 						{
@@ -597,7 +601,12 @@ FocusScope
 								}
 
 								if(ribbonModel.dataMode)
-									dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
+								{
+									if(mouseEvent.button === Qt.LeftButton)
+									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
+									else if(mouseEvent.button === Qt.RightButton)
+									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex);
+								}
 							}
 						}
 					}

@@ -197,11 +197,11 @@ public slots:
 	QString		columnInsertAfter(			int col = -1, bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
-	void		columnsDelete();
+	void		columnsDelete(				int col = -1);
 	void		rowSelect(					int row = -1,	bool shiftPressed = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
-	void		rowsDelete();
+	void		rowsDelete(					int row = -1);
 	void		cellsClear();
 
 	void		columnsAboutToBeInserted(	const QModelIndex &parent, int first, int last);

@@ -1299,15 +1299,15 @@ void DataSetView::columnComputedInsertBefore(int col, bool R)
 	emit showComputedColumn(columnInsertBefore(col, true, R));
 }
 
-void DataSetView::columnsDelete()
+void DataSetView::columnsDelete(int col)
 {
-	if(_model->columnCount(false) <= 1 || _selectionStart.x() == -1)
+	if(_model->columnCount(false) <= 1 || (_selectionStart.x() == -1 && col == -1))
 		return;
 
 	destroyEditItem(false);
 
-	int columnA	= _selectionStart.x() != -1 ? _selectionStart.x()	: _selectionEnd.x(),
-		columnB	= _selectionEnd.x() != -1	? _selectionEnd.x()		: _selectionStart.x();
+	int columnA	= col != -1 ? col : _selectionStart.x() != -1	? _selectionStart.x()	: _selectionEnd.x(),
+		columnB	= col != -1 ? col : _selectionEnd.x()	!= -1	? _selectionEnd.x()		: _selectionStart.x();
 
 	if(columnA > columnB)
 		std::swap(columnA, columnB);
@@ -1359,15 +1359,15 @@ void DataSetView::rowInsertAfter(int row)
 	rowInsertBefore(row + 1);
 }
 
-void DataSetView::rowsDelete()
+void DataSetView::rowsDelete(int row)
 {
-	if(_model->rowCount(false) <= 1 || (_selectionStart.y() == -1))
+	if(_model->rowCount(false) <= 1 || (_selectionStart.y() == -1 && row == -1))
 		return;
 
 	destroyEditItem();
 
-	int rowA	= _selectionStart.y() != -1 ? _selectionStart.y()	: _selectionEnd.y(),
-		rowB	= _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
+	int rowA	= row != -1 ? row : _selectionStart.y() != -1 ? _selectionStart.y()	: _selectionEnd.y(),
+		rowB	= row != -1 ? row : _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
 
 	if(rowA > rowB)
 		std::swap(rowA, rowB);
