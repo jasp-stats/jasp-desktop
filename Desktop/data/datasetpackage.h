@@ -305,7 +305,7 @@ signals:
 				void				newDataLoaded();
 				void				dataModeChanged(bool dataMode);
 				void				synchingExternallyChanged(bool);
-				void				askUserForExternalDataFile();
+				bool				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(	QString columnName);
 				void				showWarning(						QString title, QString msg);
 				void				showComputedColumn(					QString	   columnName);

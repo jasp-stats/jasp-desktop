@@ -573,6 +573,7 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
 	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDelete);
 	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDelete);
+	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::lastInstancedDataSetView(),	&DataSetView::cellsClear);
 
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::showComputedColumn,		this,			&MainWindow::showComputedColumn);
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_labelModel,	&LabelModel::changeSelectedColumn);
@@ -1466,7 +1467,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	analysis->setBoundValues(root);
 }
 
-void MainWindow::startDataEditorHandler()
+bool MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
 	QString path = QString::fromStdString(_package->dataFilePath());
@@ -1504,7 +1505,7 @@ void MainWindow::startDataEditorHandler()
 		case MessageForwarder::DialogResponse::Save:
 		case MessageForwarder::DialogResponse::Discard:
 		case MessageForwarder::DialogResponse::Cancel:
-			return;
+			return false;
 
 
 		case MessageForwarder::DialogResponse::Yes:
@@ -1528,7 +1529,7 @@ void MainWindow::startDataEditorHandler()
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
 
 			if (path == "")
-				return;
+				return false;
 
 			if (!path.endsWith(".csv", Qt::CaseInsensitive))
 				path.append(".csv");
@@ -1548,7 +1549,7 @@ void MainWindow::startDataEditorHandler()
 
 				path = MessageForwarder::browseOpenFile(caption, "", filter);
 				if (path == "")
-					return;
+					return false;
 
 				event = new FileEvent(this, FileEvent::FileSyncData);
 			}
@@ -1574,6 +1575,8 @@ void MainWindow::startDataEditorHandler()
 	}
 	else
 		startDataEditor(path);
+
+	return true;
 }
 
 void MainWindow::clearModulesFoldersUser()

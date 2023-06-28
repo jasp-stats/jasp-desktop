@@ -344,7 +344,7 @@ FocusScope
 							{
 								id		: menuItem
 								width	: initWidth
-								height	: jaspTheme.menuGroupTitleHeight
+								height	: (isSmall ? 0.5 : 1) * jaspTheme.menuGroupTitleHeight
 
 								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
