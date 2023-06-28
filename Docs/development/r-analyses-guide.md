@@ -57,6 +57,7 @@ Table of Contents:
   * [Storing Results in the State](#storing-results-in-the-state)
   * [Retrieving the State Object](#retrieving-the-state-object)
 - [ADDENDUM III - Images](#addendum-iii---images)
+- [ADDENDUM Ⅳ - Math](#addendum-Ⅳ---math)
 
 ## Step 1 - Creating the Main Analysis Function
 Each analysis in JASP needs a main analysis function. This function will provide an overview of all output elements and steps that are needed to conduct the full analysis. The name of your analysis must match the (case sensitive) name you specified in your description.json file under `"function":`.
@@ -1347,3 +1348,25 @@ As you might or might not have noticed, it doesnt say "file://" but "img:", this
 The first element of the path must always be the name of the module that shipped the image, in this case `jaspLearnBayes`.
 JASP then replaces that part with the actual directory on the users computer. 
 The end result is an image in the results, enjoy! 
+
+ADDENDUM Ⅳ - Math
+---------------------------------------------------------
+Math expressions will clearly show the analysis method or pretty displaying in the output. If you want them showing in output just add your [TeX](https://en.wikipedia.org/wiki/TeX)/[LaTex](https://www.latex-project.org/help/) code with the built-in `jaspBase::mathExpression()` function.
+- Escape the backslash character for TeX/LaTeX code
+```r
+jaspBase::mathExpression("\\alpha ^ \\beta")
+```
+- Use the raw character constant without too many escape
+```r
+jaspBase::mathExpression(r"{\alpha ^ \beta}")
+```
+So we will get math expressions showing like this $\alpha^\beta$ inline.
+- If you need to render a block math expression, just set `inline=FALSE`:
+```r
+jaspBase::mathExpression(r"{ \bar{x} = \frac{\sum_i^n x_i}{n} }", inline = FALSE)
+```
+then we will get math expression as
+$$\bar{x} = \frac{\sum_i^n x_i}{n}$$
+showing for display mode.
+
+
