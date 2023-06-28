@@ -40,7 +40,7 @@ class AnalysisEntry
 	friend EntryBase;
 public:
 	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
-	AnalysisEntry(std::string menuTitle, std::string icon = "");															///< AnalysisEntry grouptitle
+	AnalysisEntry(std::string menuTitle, std::string icon = "", bool small=false);											///< AnalysisEntry grouptitle
 	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
 	AnalysisEntry();																										///< AnalysisEntry separator
 
@@ -54,6 +54,7 @@ public:
 	bool			isAnalysis()			const { return _isAnalysis;			}
 	bool			isEnabled()				const { return _isEnabled;			}
 	bool			hasWrapper()			const { return _hasWrapper;			}
+	bool			smallIcon()				const { return _smallIcon;			}
 	bool			requiresData()			const { return _requiresData;		}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
@@ -82,7 +83,8 @@ private:
 							_isAnalysis		= false		,
 							_isEnabled		= true		,
 							_requiresData	= true		,
-							_hasWrapper		= false		;
+							_hasWrapper		= false		,
+							_smallIcon		= false		;
 	std::function<void()>	_specialFunc	= nullptr	;
 };
 
