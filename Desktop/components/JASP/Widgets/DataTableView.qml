@@ -130,12 +130,28 @@ FocusScope
 
 			Keys.onPressed: (event) =>
 			{
+				var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+				var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
+
 				switch(event.key)
 				{
 				case Qt.Key_Delete:
 					event.accepted = true;
 					dataTableView.view.cellsClear();
 					break;
+
+				case Qt.Key_A:
+					if(controlPressed)
+					{
+						event.accepted = true;
+						dataTableView.view.selectAll();
+					}
+					break;
+
+				case Qt.Key_Home:
+						event.accepted = true;
+						mainWindowRoot.changeFocusToFileMenu();
+						break;
 
 				default:
 					event.accepted = false;
@@ -203,16 +219,6 @@ FocusScope
 								event.accepted = true;
 							}
 							break;
-
-						case Qt.Key_A:
-							if(controlPressed)
-							{
-								theView.selectAll();
-								event.accepted = true;
-							}
-							break;
-
-						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 
 						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
 						case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
@@ -321,7 +327,7 @@ FocusScope
 					Rectangle
 					{
 						id:				itemHighlight
-						visible:		ribbonModel.dataMode && (dataTableView.selection.hasSelection && dataTableView.view.isSelected(rowIndex, columnIndex))
+						visible:		ribbonModel.dataMode && (dataTableView.selection && dataTableView.selection.hasSelection && dataTableView.view.isSelected(rowIndex, columnIndex))
 						
 						color:			jaspTheme.itemHighlight
 						opacity:		1.0
