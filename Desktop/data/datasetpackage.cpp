@@ -2369,12 +2369,17 @@ bool DataSetPackage::synchingExternally() const
 
 void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
 {
-	if (synchingExternally)// && (_dataSet->dataFilePath().empty() || _manualEdits))
-		emit askUserForExternalDataFile();
-
-	setSynchingExternally(synchingExternally);
-
-	setModified(true); //Perhaps someone would like to save the fact that it shouldnt be synchronized
+	if (synchingExternally && emit askUserForExternalDataFile())
+	{
+		setSynchingExternally(synchingExternally);
+		setModified(true); //Perhaps someone would like to save the fact that it shouldnt be synchronized
+	}
+	else if(!synchingExternally)
+	{
+		if(_dataSet && _dataSet->dataFileSynch())
+			setSynchingExternally(false);
+		setModified(true);
+	}
 }
 
 void DataSetPackage::setSynchingExternally(bool synchingExternally)

@@ -746,7 +746,16 @@ columnTypeChangeResult Column::_changeColumnToScale()
 		{
 			double doubleValue = NAN;
 
-			if (intValue != std::numeric_limits<int>::lowest() && !ColumnUtils::isEmptyValue(intValue))
+			bool	converted	= false;
+
+			if (intValue != std::numeric_limits<int>::lowest() && labelByValue(intValue))
+			{
+				std::string value = labelByValue(intValue)->originalValueAsString();
+				if (!ColumnUtils::isEmptyValue(value))
+					converted = ColumnUtils::getDoubleValue(value, doubleValue);
+			}
+
+			if (!converted && intValue != std::numeric_limits<int>::lowest() && !ColumnUtils::isEmptyValue(intValue))
 				doubleValue = double(intValue);
 
 			values.push_back(doubleValue);
