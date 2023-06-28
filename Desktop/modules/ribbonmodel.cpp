@@ -57,16 +57,25 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 						
 						//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
 						if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
+						{
+							Log::log() << "Module " << moduleName << " is missing!\nLooked at: '" << tq(moduleLibrary + "/" + moduleName) << " and it cant be loaded because it isnt there" << std::endl;
+							
 							MessageForwarder::showWarning(
 								tr("Module missing"), 
 								tr(	"It seems the bundled module %1 wasn't correctly installed, and thus cannot be loaded.\n"
 									"If you installed this version of JASP via an official installer let the JASP team know.").arg(tq(moduleName)));
+						}
 						else
 							DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
 					} 
 					catch (std::runtime_error & e) 
 					{
-						MessageForwarder::showWarning(tr("Loading bundled module %1 failed").arg(tq(moduleName)), tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what())));
+						QString titleWarn = tr("Loading bundled module %1 failed").arg(tq(moduleName)),
+								bodyWarn  = tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what()));
+						
+						Log::log() << titleWarn << "\n" << bodyWarn << std::endl;
+						
+						MessageForwarder::showWarning(titleWarn, bodyWarn);
 					}
 				}
 			}
