@@ -49,20 +49,20 @@ FocusScope
 
 				var copyPasteMenuModel =
 				[
-					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),	func: function() { dataTableView.view.selectAll() },						icon: "menu-select-all"				},
+					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),				func: function() { dataTableView.view.selectAll() },						icon: "menu-select-all"				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
-					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
-					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
+					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),			func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
+					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),			func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
+					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),			func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
 					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
 
 					{ text: "---" },
 
-					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),	func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut" },
-					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),	func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"	},
-					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),	func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"	},
+					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut" },
+					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"	},
+					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"	},
 
 					{ text: "---" },
 
@@ -128,6 +128,21 @@ FocusScope
 				//customMenu.menuMaxPos.x	= __JASPDataViewRoot.width + __JASPDataViewRoot.x
 			}
 
+			Keys.onPressed: (event) =>
+			{
+				switch(event.key)
+				{
+				case Qt.Key_Delete:
+					event.accepted = true;
+					dataTableView.view.cellsClear();
+					break;
+
+				default:
+					event.accepted = false;
+					break;
+				}
+			}
+
 
 			editDelegate:
 				TextInput
@@ -165,11 +180,6 @@ FocusScope
 
 						switch(event.key)
 						{
-						case Qt.Key_Delete:
-							event.accepted = true;
-							dataTableView.view.cellsClear();
-							break;
-
 						case Qt.Key_C:
 							if(controlPressed)
 							{

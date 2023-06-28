@@ -1030,6 +1030,9 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 	}
 	else*/
 
+	_selectionEnd = QPoint(-1, -1);
+	emit selectionEndChanged(_selectionEnd);
+
 	edit(_selectionStart.y(), _selectionStart.x());
 }
 
@@ -1037,6 +1040,12 @@ void DataSetView::setSelectionEnd(QPoint selectionEnd)
 {
 	if (!_selectionModel)
 		return;
+
+	if(editing())
+	{
+		finishCurrentEdit();
+		destroyEditItem();
+	}
 
 	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.y() << ", col=" << selectionEnd.x() << " )" << std::endl;
 
