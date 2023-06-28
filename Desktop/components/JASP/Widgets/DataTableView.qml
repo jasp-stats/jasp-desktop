@@ -39,7 +39,7 @@ FocusScope
 			//flickableInteractive:	!ribbonModel.dataMode
 			onDoubleClicked:		__myRoot.doubleClicked()
 
-			function showCopyPasteMenu(fromItem, globalPos, rowIndex, columnIndex)
+			function showCopyPasteMenu(fromItem, globalPos, rowIndex, columnIndex, header, rowheader)
 			{
 				console.log("showCopyPasteMenu!")
 
@@ -60,24 +60,31 @@ FocusScope
 
 					{ text: "---" },
 
-					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut" },
-					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"	},
-					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"	},
+					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut"               },
+					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"              },
+					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"             }
+				]
 
-					{ text: "---" },
+				if(!header || !rowheader)
+				{
+					copyPasteMenuModel.push({ text: "---" },
 
 					{ text: qsTr("Select column"),													func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			},
 					{ text: qsTr("Insert column before"),											func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
 					{ text: qsTr("Insert column after"),											func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
-					{ text: qsTr("Delete column"),													func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			},
-
-					{ text: "---" },
+					{ text: qsTr("Delete column"),													func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
+					
+				 }
+				
+				if(!header || rowheader)
+				{
+					copyPasteMenuModel.push({ text: "---" },
 
 					{ text: qsTr("Select row"),														func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
 					{ text: qsTr("Insert row before"),												func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 					{ text: qsTr("Insert row after"),												func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(			rowIndex); },						icon: "menu-row-remove"				},
-				]
+					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(			rowIndex); },	icon: "menu-row-remove"				})
+				}
 
 				var copyPasteMenuText = []
 				var copyPasteMenuShortcuts = []
@@ -396,7 +403,7 @@ FocusScope
 												if(mouseEvent.button === Qt.LeftButton)
 													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );
 												else if(mouseEvent.button === Qt.RightButton)
-													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
+													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
 											}
 					}
 
@@ -601,19 +608,22 @@ FocusScope
 								createComputeDialog.open()
 							else
 							{
-								/*if(columnType  !== columnTypeScale)
-								{*/
-									var changedIndex		= labelModel.chosenColumn	!== columnIndex
-									labelModel.chosenColumn	= columnIndex;
-									labelModel.visible		= changedIndex ? true : !labelModel.visible;
-								/*}
-								else
-									dataSetModel.renameColumnDialog(columnIndex);*/
-
-								if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+								if(mouseEvent.button === Qt.LeftButton)
 								{
-									filterWindow.showEasyFilter = true
-									filterWindow.open()
+									/*if(columnType  !== columnTypeScale)
+									{*/
+										var changedIndex		= labelModel.chosenColumn	!== columnIndex
+										labelModel.chosenColumn	= columnIndex;
+										labelModel.visible		= changedIndex ? true : !labelModel.visible;
+									/*}
+									else
+										dataSetModel.renameColumnDialog(columnIndex);*/
+	
+									if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+									{
+										filterWindow.showEasyFilter = true
+										filterWindow.open()
+									}
 								}
 
 								if(ribbonModel.dataMode)
@@ -621,7 +631,7 @@ FocusScope
 									if(mouseEvent.button === Qt.LeftButton)
 									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
 									else if(mouseEvent.button === Qt.RightButton)
-									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex);
+									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}
 							}
 						}
