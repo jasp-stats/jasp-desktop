@@ -119,7 +119,7 @@ public slots:
 	void showRCommander();
 
 	bool checkPackageModifiedBeforeClosing();
-	void startDataEditorHandler();
+	bool startDataEditorHandler();
 	void clearModulesFoldersUser();
 
 	void showAbout();

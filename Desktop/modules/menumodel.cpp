@@ -50,6 +50,7 @@ QVariant MenuModel::data(const QModelIndex &index, int role) const
 	case IsSeparatorRole:			return entry->isSeparator();
 	case isGroupTitleRole:			return entry->isGroupTitle();
 	case IsEnabledRole:				return entry->isEnabled() && (!entry->requiresData() || _ribbonButton->dataLoaded());
+	case isSmallRole:				return entry->smallIcon();
 	default:						return QVariant();
 	}
 }
@@ -63,7 +64,8 @@ QHash<int, QByteArray> MenuModel::roleNames() const
 		{	MenuImageSourceRole,    "menuImageSource"	},
 		{	IsSeparatorRole,		"isSeparator"		},
 		{	isGroupTitleRole,		"isGroupTitle"		},
-		{	IsEnabledRole,			"isEnabled"			}
+		{	IsEnabledRole,			"isEnabled"			},
+		{	isSmallRole,			"isSmall"			}
 	};
 
 	return roles;
