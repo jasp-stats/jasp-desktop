@@ -25,6 +25,16 @@
 
 using namespace Modules;
 
+RibbonButton::RibbonButton(QObject * parent)
+	: _enabled(true), _special(true), _separator(true)
+{
+	static int separatorCount = 0;
+
+	_name = "Separator-" + std::to_string(++separatorCount);
+
+	bindYourself();
+}
+
 RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(parent)
 {
 	setDynamicModule(module);
@@ -35,6 +45,35 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	setIsCommon(		_module->isCommon()					);
 	setModuleName(		_module->name()						);
 	setIconSource(tq(	_module->iconFilePath())			);
+
+	bindYourself();
+}
+
+RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip, bool enabled, bool remember)
+	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr), _specialButtonFunc(justThisFunction)
+{
+	_menuModel = new MenuModel(this);
+
+	setModuleName(name);
+	setTitle(title);
+	setToolTip(tq(toolTip));
+	setIconSource(tq(icon));
+
+	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
+
+	bindYourself();
+}
+
+RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember)
+	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr)
+{
+	_menuModel = new MenuModel(this, funcEntries);
+
+	setRequiresData(AnalysisEntry::requiresDataEntries(*funcEntries));
+	setModuleName(name);
+	setTitle(title);
+	setIconSource(tq(icon));
+	setToolTip(tq(toolTip));
 
 	bindYourself();
 }
@@ -111,34 +150,7 @@ void RibbonButton::setReady(bool ready)
 		setEnabled(true); 
 }
 
-RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip, bool enabled, bool remember)
-	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr), _specialButtonFunc(justThisFunction)
-{
-	_menuModel = new MenuModel(this);
 
-	setModuleName(name);
-	setTitle(title);
-	setToolTip(tq(toolTip));
-	setIconSource(tq(icon));
-
-	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
-
-	bindYourself();
-}
-
-RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember)
-	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr)
-{
-	_menuModel = new MenuModel(this, funcEntries);
-
-	setRequiresData(AnalysisEntry::requiresDataEntries(*funcEntries));
-	setModuleName(name);
-	setTitle(title);
-	setIconSource(tq(icon));
-	setToolTip(tq(toolTip));
-
-	bindYourself();
-}
 
 RibbonButton::~RibbonButton()
 {
@@ -259,4 +271,17 @@ void RibbonButton::setToolTip(QString toolTip)
 
 	_toolTip = toolTip;
 	emit toolTipChanged(_toolTip);
+}
+
+bool RibbonButton::separator() const
+{
+	return _separator;
+}
+
+void RibbonButton::setSeparator(bool newSeparator)
+{
+	if (_separator == newSeparator)
+		return;
+	_separator = newSeparator;
+	emit separatorChanged();
 }

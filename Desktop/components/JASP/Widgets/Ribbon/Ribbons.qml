@@ -88,7 +88,7 @@ Item
 				return;
 			}
 
-			if (buttonList.itemAtIndex(nextIndex).enabled)
+			if (buttonList.itemAtIndex(nextIndex).enabled && !buttonList.itemAtIndex(nextIndex).separator)
 				break;
 
 			nextIndex = nextIndex + direction;
@@ -185,8 +185,9 @@ Item
 			enabled:		 model.ribbonButton && model.active
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
+			separator:		 model.ribbonButton && model.ribbonButton.separator
 
-			ALTNavigation.enabled:		true
+			ALTNavigation.enabled:		!separator
 //			ALTNavigation.y: 10
 			ALTNavigation.index:		index
 			ALTNavigation.onTagMatch:
