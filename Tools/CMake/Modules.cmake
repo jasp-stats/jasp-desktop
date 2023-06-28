@@ -20,12 +20,12 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
-	"jaspTTests"
-	"jaspAnova"
-	"jaspMixedModels"
-	"jaspRegression"
-	"jaspFrequencies"
-	"jaspFactor"
+    "jaspTTests"
+    "jaspAnova"
+    "jaspMixedModels"
+    "jaspRegression"
+    "jaspFrequencies"
+    "jaspFactor"
     )
 
 set(JASP_EXTRA_MODULES
@@ -47,6 +47,7 @@ set(JASP_EXTRA_MODULES
     "jaspProphet"
     "jaspQualityControl"
     "jaspReliability"
+    "jaspRobustTTest"
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspTimeSeries"
