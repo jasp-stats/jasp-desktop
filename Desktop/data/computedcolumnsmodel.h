@@ -17,6 +17,7 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	computeColumnJson			READ computeColumnJson														NOTIFY computeColumnJsonChanged			)
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(QString	computeColumnNameSelected	READ computeColumnNameSelected		WRITE setComputeColumnNameSelected		NOTIFY computeColumnNameSelectedChanged )
+	Q_PROPERTY(int		computeColumnIndexSelected	READ computeColumnIndexSelected		WRITE setComputeColumnIndexSelected		NOTIFY computeColumnIndexSelectedChanged )
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY refreshProperties				)
 
 public:
@@ -29,6 +30,7 @@ public:
 				QString				computeColumnRCodeCommentStripped();
 				QString				computeColumnError();
 				QString				computeColumnNameSelected();
+				int					computeColumnIndexSelected();
 				QString				computeColumnJson();
 				Column			*	column() const;
 				bool				computeColumnUsesRCode();
@@ -36,6 +38,7 @@ public:
 				void				selectColumn(					Column		  * column);
 				void				setComputeColumnRCode(			const QString & newCode);
 				void				setComputeColumnNameSelected(	const QString & newName);
+				void				setComputeColumnIndexSelected(	const int	  & newIndex);
 				void				setComputeColumnJson(			const QString & newJson);
 
 	Q_INVOKABLE void				sendCode(const QString & code);
@@ -71,6 +74,7 @@ signals:
 				void	computeColumnJsonChanged();
 				void	refreshColumn(QString columnName);
 				void	computeColumnNameSelectedChanged();
+				void	computeColumnIndexSelectedChanged();
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
 				void	sendComputeCode(QString columnName, QString code, columnType columnType);
 				void	computeColumnUsesRCodeChanged();

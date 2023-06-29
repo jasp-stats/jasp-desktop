@@ -19,6 +19,7 @@ ComputedColumnsModel::ComputedColumnsModel()
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnUsesRCodeChanged		);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnNameSelectedChanged		);
+	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnIndexSelectedChanged	);
 	connect(this,					&ComputedColumnsModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
 	connect(this,					&ComputedColumnsModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
 	//connect(this,					&ComputedColumnsModel::headerDataChanged,		DataSetPackage::pkg(),	&DataSetPackage::headerDataChanged,							Qt::QueuedConnection);
@@ -62,6 +63,11 @@ QString ComputedColumnsModel::computeColumnNameSelected()
 	return !_selectedColumn ? "" : tq(_selectedColumn->name());;
 }
 
+int ComputedColumnsModel::computeColumnIndexSelected()
+{
+	return !_selectedColumn ? -1 : dataSet()->columnIndex(_selectedColumn);
+}
+
 void ComputedColumnsModel::setComputeColumnRCode(const QString & newCode)
 {
 	if(!_selectedColumn)
@@ -95,6 +101,12 @@ void ComputedColumnsModel::setComputeColumnNameSelected(const QString & newName)
 {
 	if(!_selectedColumn || _selectedColumn->name() != fq(newName))
 		selectColumn(DataSetPackage::pkg()->dataSet()->column(fq(newName)));
+}
+
+void ComputedColumnsModel::setComputeColumnIndexSelected(const int &newIndex)
+{
+	if(!_selectedColumn || _selectedColumn->id() != newIndex)
+		selectColumn(DataSetPackage::pkg()->dataSet()->column(newIndex));
 }
 
 bool ComputedColumnsModel::areLoopDependenciesOk(const std::string & columnName)

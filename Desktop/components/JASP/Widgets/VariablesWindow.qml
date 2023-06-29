@@ -30,8 +30,8 @@ FocusScope
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
 	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
-	property real calculatedMinimumHeight:		calculatedBaseHeight + (computeColumnWindow.visible ? computeColumnWindow.desiredMinimumHeight : columnDescriptionVariablesWindow.height)
-	property real calculatedPreferredHeight:	calculatedBaseHeight + (computeColumnWindow.visible ? parent.height * 0.25 : columnDescriptionVariablesWindow.height)
+	property real calculatedMinimumHeight:		calculatedBaseHeight + columnDescriptionVariablesWindow.height + (computeColumnWindow.visible ? computeColumnWindow.desiredMinimumHeight : 0)
+	property real calculatedPreferredHeight:	calculatedBaseHeight + columnDescriptionVariablesWindow.height + (computeColumnWindow.visible ? parent.height * 0.25 : 0)
 	property real calculatedMaximumHeight:		!labelModel.showLabelEditor && ! labelModel.showComputedColumn ? columnDescriptionVariablesWindow.height + calculatedBaseHeight :  parent.height * 0.7
 
 	Connections

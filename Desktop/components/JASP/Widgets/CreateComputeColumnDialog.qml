@@ -41,7 +41,6 @@ Popup
 
 			Component.onCompleted:
 			{
-				labelModel.visible = false;
 				nameEdit.forceActiveFocus();
 			}
 
@@ -53,7 +52,8 @@ Popup
 				if(computedColumnsInterface.isColumnNameFree(nameEdit.text))
 				{
 					computedColumnsInterface.createComputedColumn(nameEdit.text, computeColumnIconFocusScope.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
-					focus = true
+					labelModel.chosenColumn = computedColumnsInterface.computeColumnIndexSelected
+					labelModel.visible = true
 					popupCreateComputedColumn.close()
 				}
 				else
