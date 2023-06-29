@@ -924,7 +924,7 @@ void DataSetView::destroyEditItem(bool createItem)
 		size_t col=_prevEditCol, row=_prevEditRow;
 
 		//A delay might help the focus problem? No it doesnt...
-		QTimer::singleShot(10, _cellTextItems[col][row]->item, [col, row, this](){ if (_cellTextItems.contains(col) && _cellTextItems[col].contains(row) && _cellTextItems[col][row]->item) _cellTextItems[col][row]->item->forceActiveFocus(); });
+		//QTimer::singleShot(10, _cellTextItems[col][row]->item, [col, row, this](){ if (_cellTextItems.contains(col) && _cellTextItems[col].contains(row) && _cellTextItems[col][row]->item) _cellTextItems[col][row]->item->forceActiveFocus(); });
 
 		//Log::log() << "Restored text item has _storedDisplayText[" << _prevEditRow << "][" << _prevEditCol << "]: '" << _storedDisplayText[_prevEditRow][_prevEditCol] << "'" << std::endl;
 	}
@@ -1008,7 +1008,7 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 	QModelIndex startIndex = _model->index(selectionStart.y(), selectionStart.x());
 
 	if(startIndex.isValid())
-		_selectionModel->select(startIndex, QItemSelectionModel::SelectCurrent);
+		_selectionModel->select(startIndex, QItemSelectionModel::ClearAndSelect);
 	else
 		_selectionModel->clear();
 
@@ -1032,8 +1032,6 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 
 	_selectionEnd = QPoint(-1, -1);
 	emit selectionEndChanged(_selectionEnd);
-
-	edit(_selectionStart.y(), _selectionStart.x());
 }
 
 void DataSetView::setSelectionEnd(QPoint selectionEnd)
@@ -1041,22 +1039,22 @@ void DataSetView::setSelectionEnd(QPoint selectionEnd)
 	if (!_selectionModel)
 		return;
 
-	if(editing())
-	{
-		finishCurrentEdit();
-		destroyEditItem();
-	}
+	if (_model->isRowVirtual(selectionEnd.y()) || _model->isColumnVirtual(selectionEnd.x()))
+		return;
 
-	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.y() << ", col=" << selectionEnd.x() << " )" << std::endl;
+	if (_selectionEnd == selectionEnd)
+		return;
+
+	clearEdit();
 
 	_selectionEnd = selectionEnd;
 
 	emit selectionEndChanged(_selectionEnd);
 
-	if(_selectionStart.y() == -1 || _selectionStart.x() == -1 || _selectionEnd.y() == -1 || _selectionEnd.x() == -1)
-		return;
-
-	_selectionModel->select(QItemSelection(_model->index(_selectionStart.y(), _selectionStart.x()), _model->index(_selectionEnd.y(), _selectionEnd.x())), QItemSelectionModel::ClearAndSelect);
+	if (_selectionStart.y() == -1 || _selectionStart.x() == -1 || selectionEnd.y() == -1 || selectionEnd.x() == -1)
+		_selectionModel->clear();
+	else
+		_selectionModel->select(QItemSelection(_model->index(_selectionStart.y(), _selectionStart.x()), _model->index(_selectionEnd.y(), _selectionEnd.x())), QItemSelectionModel::ClearAndSelect);
 
 	_selectScrollMs = Utils::currentMillis();
 }
@@ -1257,26 +1255,28 @@ QPoint DataSetView::selectionTopLeft() const
 }
 
 
-void DataSetView::columnSelect(int col,	bool shiftPressed)
+void DataSetView::columnSelect(int col,	bool shiftPressed, bool rightClicked)
 {
-	if(!shiftPressed)
-	{
-		setSelectionStart(QPoint(col, 0));
-		setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
-	}
-	else
-	{
-		int startCol = col, endCol = col;
+	if (col < 0) return;
 
+	int startCol = col, endCol = col;
+
+	if (shiftPressed)
+	{
 		if(_selectionStart.x() != -1)
 		{
 			if(col < _selectionStart.x())	endCol		= _selectionStart.x();
 			else							startCol	= _selectionStart.x();
 		}
-
-		setSelectionStart(QPoint(startCol, 0));
-		setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
 	}
+	else if (rightClicked)
+	{
+		if (_selectionModel->isColumnSelected(col))
+			return;
+	}
+
+	setSelectionStart(QPoint(startCol, 0));
+	setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -1308,15 +1308,15 @@ void DataSetView::columnComputedInsertBefore(int col, bool R)
 	emit showComputedColumn(columnInsertBefore(col, true, R));
 }
 
-void DataSetView::columnsDelete(int col)
+void DataSetView::columnsDelete()
 {
-	if(_model->columnCount(false) <= 1 || (_selectionStart.x() == -1 && col == -1))
+	if(_model->columnCount(false) <= 1 || (_selectionStart.x() == -1))
 		return;
 
 	destroyEditItem(false);
 
-	int columnA	= col != -1 ? col : _selectionStart.x() != -1	? _selectionStart.x()	: _selectionEnd.x(),
-		columnB	= col != -1 ? col : _selectionEnd.x()	!= -1	? _selectionEnd.x()		: _selectionStart.x();
+	int columnA	= _selectionStart.x(),
+		columnB	= _selectionEnd.x()	!= -1 ? _selectionEnd.x() : _selectionStart.x();
 
 	if(columnA > columnB)
 		std::swap(columnA, columnB);
@@ -1327,25 +1327,29 @@ void DataSetView::columnsDelete(int col)
 	setSelectionEnd(QPoint(-1, -1));
 }
 
-void DataSetView::rowSelect(int row,	bool shiftPressed)
+void DataSetView::rowSelect(int row, bool shiftPressed, bool rightClicked)
 {
-	if(!shiftPressed)
+	if (row < 0) return;
+
+	int startRow	= row,
+		endRow		= row;
+
+	if (shiftPressed)
 	{
-		setSelectionStart(QPoint(0, row));
-		setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
-	}
-	else
-	{
-		int startRow = row, endRow = row;
 		if(_selectionStart.y() != -1)
 		{
 			if(row < _selectionStart.y())	endRow		= _selectionStart.y();
 			else							startRow	= _selectionStart.y();
 		}
-
-		setSelectionStart(QPoint(0, startRow));
-		setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
 	}
+	else if (rightClicked)
+	{
+		if (_selectionModel->isRowSelected(row))
+			return;
+	}
+
+	setSelectionStart(QPoint(0, startRow));
+	setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
 }
 
 void DataSetView::rowInsertBefore(int row)
@@ -1368,15 +1372,15 @@ void DataSetView::rowInsertAfter(int row)
 	rowInsertBefore(row + 1);
 }
 
-void DataSetView::rowsDelete(int row)
+void DataSetView::rowsDelete()
 {
-	if(_model->rowCount(false) <= 1 || (_selectionStart.y() == -1 && row == -1))
+	if(_model->rowCount(false) <= 1 || _selectionStart.y() == -1)
 		return;
 
 	destroyEditItem();
 
-	int rowA	= row != -1 ? row : _selectionStart.y() != -1 ? _selectionStart.y()	: _selectionEnd.y(),
-		rowB	= row != -1 ? row : _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
+	int rowA	= _selectionStart.y(),
+		rowB	= _selectionEnd.y() != -1	? _selectionEnd.y()		: _selectionStart.y();
 
 	if(rowA > rowB)
 		std::swap(rowA, rowB);
@@ -1473,20 +1477,26 @@ void DataSetView::setEditing(bool editing)
 	emit editingChanged(_editing);
 }
 
+void DataSetView::clearEdit()
+{
+	if(editing())
+	{
+		commitLastEdit();
+		destroyEditItem();
+		setEditing(false);
+	}
+}
+
+
 void DataSetView::edit(int row, int col)
 {
 	if (row == -1 || col == -1)
 		return;
 
-	Log::log() << "DataSetView::edit(row=" << row << ", col=" << col << ")" << std::endl;
+	if (_selectionEnd.x() != col || _selectionEnd.y() != row)
+		setSelectionEnd(QPoint(-1, -1));
 
-	if(editing())
-	{
-		if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item)
-			commitEdit(_prevEditRow, _prevEditCol, _editItemContextual->item->property("text"));
-		destroyEditItem();
-	}
-
+	clearEdit();
 	setEditing(true);
 	positionEditItem(row, col);
 }
@@ -1517,19 +1527,11 @@ void DataSetView::onDataModeChanged(bool dataMode)
 	}
 }
 
-void DataSetView::contextMenuClickedAtIndex(int row, int column)
+void DataSetView::commitLastEdit()
 {
-	QModelIndex i = _model->index(row, column);
-	if(!_selectionModel->isSelected(i))
-		_selectionModel->select(i, QItemSelectionModel::SelectCurrent);
-}
-
-void DataSetView::finishCurrentEdit()
-{
+	Log::log() << "Commit last edit" << std::endl;
 	if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item)
 		commitEdit(_prevEditRow, _prevEditCol, _editItemContextual->item->property("text"));
-
-
 }
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel)
