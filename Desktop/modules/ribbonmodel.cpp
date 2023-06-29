@@ -135,8 +135,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	
 	_entriesDelete = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataRemoveColumn(-1);			},				"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
-		new AnalysisEntry([&](){ emit this->dataRemoveRow(-1);				},				"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove"),
+		new AnalysisEntry([&](){ emit this->dataRemoveColumn();			},					"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
+		new AnalysisEntry([&](){ emit this->dataRemoveRow();			},					"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove"),
 		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
 	});
 		
