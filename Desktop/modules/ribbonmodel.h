@@ -115,8 +115,8 @@ signals:
 				void dataInsertColumnAfter(int,bool,bool);
 				void dataInsertRowBefore(int);
 				void dataInsertRowAfter(int);
-				void dataRemoveColumn(int);
-				void dataRemoveRow(int);
+				void dataRemoveColumn();
+				void dataRemoveRow();
 				void setDataSynchronisation(bool);
 				void synchronisationChanged(bool);
 				void cellsClear();
