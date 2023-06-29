@@ -43,8 +43,6 @@ FocusScope
 			{
 				console.log("showCopyPasteMenu!")
 
-				view.contextMenuClickedAtIndex(rowIndex, columnIndex);
-
 				var ctrlCmd = MACOS ? qsTr("Cmd") : qsTr("Ctrl");
 
 				var copyPasteMenuModel =
@@ -67,23 +65,25 @@ FocusScope
 
 				if(!header || !rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" },
+					copyPasteMenuModel.push({ text: "---" });
+					if (!header)
+						copyPasteMenuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+					copyPasteMenuModel.push(
+						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
+						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
 
-					{ text: qsTr("Select column"),													func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			},
-					{ text: qsTr("Insert column before"),											func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
-					{ text: qsTr("Insert column after"),											func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
-					{ text: qsTr("Delete column"),													func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
-					
 				 }
-				
+
 				if(!header || rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" },
-
-					{ text: qsTr("Select row"),														func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				},
-					{ text: qsTr("Insert row before"),												func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
-					{ text: qsTr("Insert row after"),												func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-					{ text: qsTr("Delete row"),														func: function() { dataTableView.view.rowsDelete(			rowIndex); },	icon: "menu-row-remove"				})
+					copyPasteMenuModel.push({ text: "---" })
+					if (!header)
+						copyPasteMenuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
+					copyPasteMenuModel.push(
+						{ text: qsTr("Insert row before"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
+						{ text: qsTr("Insert row after"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
+						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
 				}
 
 				var copyPasteMenuText = []
@@ -243,10 +243,9 @@ FocusScope
 							if(!shiftPressed)
 								dataTableView.view.selectionStart	= arrowIndex;
 							else
-							{
 								dataTableView.view.selectionEnd  = arrowIndex;
-								dataTableView.view.edit(arrowIndex.y, arrowIndex.x);
-							}
+
+							dataTableView.view.edit(arrowIndex.y, arrowIndex.x);
 
 							event.accepted = true;
 						}
@@ -278,9 +277,11 @@ FocusScope
 							anchors.fill:		parent
 							acceptedButtons:	Qt.RightButton
 
-							onPressed:
+							onPressed: (mouse) =>
+							{
 								if(mouse.buttons & Qt.RightButton)
 									dataTableView.showCopyPasteMenu(editItem, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
+							}
 						}
 					}
 				}
@@ -293,37 +294,45 @@ FocusScope
 					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:				jaspTheme.font
 					verticalAlignment:	Text.AlignVCenter
-					
+
 					MouseArea
 					{
 						z:					1234
 						hoverEnabled:		true
 						anchors.fill:		itemHighlight
 						acceptedButtons:	Qt.LeftButton | Qt.RightButton
-						
-						onPressed:	(mouse) => 
-						{		
+
+						onPressed:	(mouse) =>
+						{
 							if(ribbonModel.dataMode)
 							{
-								var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier);
+								var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier)
+								var rightPressed = Boolean(mouse.buttons & Qt.RightButton)
+								var isSelected = dataTableView.view.isSelected(rowIndex, columnIndex)
 
-								if(Boolean(mouse.buttons & Qt.RightButton))
+								if(!shiftPressed)
 								{
-									forceActiveFocus();
+									if (!rightPressed || !isSelected)
+										dataTableView.view.selectionStart = Qt.point(columnIndex, rowIndex)
+								}
+								else
+									dataTableView.view.selectionEnd = Qt.point(columnIndex, rowIndex);
+
+								if(rightPressed)
+								{
+									dataTableView.view.clearEdit()
 									dataTableView.showCopyPasteMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 								}
 								else
-								{
-									if(!shiftPressed)	dataTableView.view.selectionStart   = Qt.point(columnIndex, rowIndex);
-									else				dataTableView.view.selectionEnd		= Qt.point(columnIndex, rowIndex);
-								}
+									dataTableView.view.edit(rowIndex, columnIndex)
+
 							}
 							else if (labelModel.visible)
 							{
 								labelModel.chosenColumn = columnIndex
 							}
 						}
-											
+
 						onPositionChanged:	(mouse) =>
 						{
 							if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
@@ -334,12 +343,12 @@ FocusScope
 						}
 
 					}
-					
+
 					Rectangle
 					{
 						id:				itemHighlight
 						visible:		ribbonModel.dataMode && (dataTableView.selection && dataTableView.selection.hasSelection && dataTableView.view.isSelected(rowIndex, columnIndex))
-						
+
 						color:			jaspTheme.itemHighlight
 						opacity:		1.0
 						z:				-1
@@ -404,9 +413,9 @@ FocusScope
 						acceptedButtons:	Qt.LeftButton | Qt.RightButton
 						onClicked: 			(mouseEvent)=>
 											{
-												if(mouseEvent.button === Qt.LeftButton)
-													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );
-												else if(mouseEvent.button === Qt.RightButton)
+												if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
+													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+												if(mouseEvent.button === Qt.RightButton)
 													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
 											}
 					}
@@ -623,9 +632,9 @@ FocusScope
 
 								if(ribbonModel.dataMode)
 								{
-									if(mouseEvent.button === Qt.LeftButton)
-									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
-									else if(mouseEvent.button === Qt.RightButton)
+									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
+									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+									if(mouseEvent.button === Qt.RightButton)
 									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}
 							}
