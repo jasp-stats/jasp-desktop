@@ -180,7 +180,7 @@ public slots:
 	void		modelWasReset();
 	void		setExtraColumnX();
 	
-	void		setSelectionStart(	QPoint selectionStart	);
+	void		setSelectionStart(	QPoint selectionStart);
 	void		setSelectionEnd(	QPoint selectionEnd	);
 	bool		isSelected(int row, int col);
 	void		pollSelectScroll(	int row, int column);
@@ -197,11 +197,11 @@ public slots:
 	QString		columnInsertAfter(			int col = -1, bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
-	void		columnsDelete(				int col = -1);
+	void		columnsDelete();
 	void		rowSelect(					int row = -1,	bool shiftPressed = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
-	void		rowsDelete(					int row = -1);
+	void		rowsDelete();
 	void		cellsClear();
 
 	void		columnsAboutToBeInserted(	const QModelIndex &parent, int first, int last);
@@ -218,12 +218,12 @@ public slots:
 
 	void		selectAll();
 
+	void		clearEdit();
 	void		edit(int row, int column);
 	void		destroyEditItem(bool restoreItem=true);
 	void		commitEdit(				int row, int column, QVariant editedValue);
 	void		onDataModeChanged(bool dataMode);
-	void		contextMenuClickedAtIndex(int row, int column);
-	void		finishCurrentEdit();
+	void		commitLastEdit();
 
 	
 protected:
