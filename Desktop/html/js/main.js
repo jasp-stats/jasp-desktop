@@ -129,7 +129,7 @@ $(document).ready(function () {
 
 	window.copyMenuClicked = function () {
 		if (window.menuObject.copyMenuClicked && window.menuObject.copyMenuClicked())
-			window.menuObject.toolbar.displayMessage("Copied to clipboard");
+			window.menuObject.toolbar.displayMessage(i18n("Copied to clipboard"));
 
 		setSelection(false);
 		window.menuObject = null;
@@ -151,8 +151,8 @@ $(document).ready(function () {
 	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
 	window.duplicateMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.duplicateMenuClicked		.bind(window.menuObject) ); }
 	window.removeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.removeMenuClicked		.bind(window.menuObject) ); }
-	window.citeMenuClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.citeMenuClicked			.bind(window.menuObject),	"Citations copied to clipboard"	); }
-	window.latexCodeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.latexCodeMenuClicked		.bind(window.menuObject),	"LaTeX code copied to clipboard"); }
+	window.citeMenuClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.citeMenuClicked			.bind(window.menuObject),	i18n("Citations copied to clipboard")	); }
+	window.latexCodeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.latexCodeMenuClicked		.bind(window.menuObject),	i18n("LaTeX code copied to clipboard")  ); }
 
 	window.notesMenuClicked = function (noteType, visibility) {
 		if (window.menuObject.notesMenuClicked && window.menuObject.notesMenuClicked(noteType, visibility))
