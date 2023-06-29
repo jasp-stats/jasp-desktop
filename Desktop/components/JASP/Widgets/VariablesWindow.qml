@@ -436,7 +436,7 @@ FocusScope
 				anchors.bottom:		parent.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
-				property int	shownButtons:		(labelModel.showLabelEditor && editorContainer.labelEditerMode ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0) + (labelModel.showComputedColumn && labelModel.showLabelEditor ? 1 : 0)
+				property int	shownButtons:		(labelModel.showLabelEditor && (editorContainer.labelEditerMode || !labelModel.showComputedColumn) ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0) + (labelModel.showComputedColumn && labelModel.showLabelEditor ? 1 : 0)
 				property real	minimumHeight:		!labelModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
