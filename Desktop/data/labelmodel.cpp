@@ -395,7 +395,7 @@ void LabelModel::setLabel(int rowIndex, QString label)
 bool LabelModel::showLabelEditor() const
 {
 	if(column())
-			return column()->type() != columnType::scale && rowCount() > 0 && !column()->isComputed();
+			return column()->type() != columnType::scale && rowCount() > 0;
 	return false;
 }
 

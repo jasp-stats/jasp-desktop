@@ -30,8 +30,8 @@ FocusScope
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
 	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
-	property real calculatedMinimumHeight:		columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + (labelModel.showComputedColumn ? computeColumnWindow.desiredMinimumHeight : 0)
-	property real calculatedPreferredHeight:	columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + (labelModel.showComputedColumn ? parent.height * 0.25 : 0)
+	property real calculatedMinimumHeight:		calculatedBaseHeight + (computeColumnWindow.visible ? computeColumnWindow.desiredMinimumHeight : columnDescriptionVariablesWindow.height)
+	property real calculatedPreferredHeight:	calculatedBaseHeight + (computeColumnWindow.visible ? parent.height * 0.25 : columnDescriptionVariablesWindow.height)
 	property real calculatedMaximumHeight:		!labelModel.showLabelEditor && ! labelModel.showComputedColumn ? columnDescriptionVariablesWindow.height + calculatedBaseHeight :  parent.height * 0.7
 
 	Connections
@@ -42,8 +42,9 @@ FocusScope
 		{
 			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 			{
+				editorContainer.labelEditerMode = false
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
-				levelsTableViewRectangle.focus = true //So we just put it somewhere
+				editorContainer.focus = true //So we just put it somewhere
 				computeColumnWindow.open(labelModel.columnName)
 			}
 		}
@@ -72,10 +73,11 @@ FocusScope
 
 		Item
 		{
-			id:					levelsTableViewRectangle
+			id:					editorContainer
 			anchors.fill:		parent
 			anchors.margins:	jaspTheme.generalAnchorMargin
 
+			property bool labelEditerMode: false
 			property int labelMaxWidth: Math.max(nameLabel.width, descriptionLabel.width)
 
 			Label
@@ -110,7 +112,7 @@ FocusScope
 				anchors
 				{
 					left:			parent.left
-					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
+					leftMargin:		editorContainer.labelMaxWidth + jaspTheme.generalAnchorMargin
 					top:			parent.top
 				}
 			}
@@ -138,7 +140,7 @@ FocusScope
 				{
 					top:			descriptionLabel.top
 					left:			parent.left
-					leftMargin:		levelsTableViewRectangle.labelMaxWidth + jaspTheme.generalAnchorMargin
+					leftMargin:		editorContainer.labelMaxWidth + jaspTheme.generalAnchorMargin
 					right:			buttonColumnVariablesWindow.left
 					rightMargin:	jaspTheme.generalAnchorMargin
 				}
@@ -159,7 +161,7 @@ FocusScope
 				color:				jaspTheme.controlBackgroundColor
 				border.color:		jaspTheme.uiBorder
 				border.width:		1
-				visible:			labelModel.showLabelEditor
+				visible:			labelModel.showLabelEditor && (editorContainer.labelEditerMode || !labelModel.showComputedColumn)
 
 				anchors
 				{
@@ -412,7 +414,7 @@ FocusScope
 			{
 				id:			computeColumnWindow
 				objectName:	"computeColumnWindow"
-				visible:	labelModel.showComputedColumn
+				visible:	labelModel.showComputedColumn && (!editorContainer.labelEditerMode || !labelModel.showLabelEditor)
 
 				anchors
 				{
@@ -434,7 +436,7 @@ FocusScope
 				anchors.bottom:		parent.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
-				property int	shownButtons:		(labelModel.showLabelEditor ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+				property int	shownButtons:		(labelModel.showLabelEditor && editorContainer.labelEditerMode ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0) + (labelModel.showComputedColumn && labelModel.showLabelEditor ? 1 : 0)
 				property real	minimumHeight:		!labelModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
@@ -449,7 +451,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		tableBackground.visible
 				}
 
 				RoundedButton
@@ -463,7 +465,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		tableBackground.visible
 				}
 
 				RoundedButton
@@ -477,7 +479,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		tableBackground.visible
 				}
 
 				RoundedButton
@@ -485,7 +487,7 @@ FocusScope
 					id:				eraseFiltersOnThisColumn
 					iconSource:		jaspTheme.iconPath + "eraser.png"
 					onClicked:		labelModel.resetFilterAllows()
-					visible:		labelModel.filteredOut > 0
+					visible:		tableBackground.visible && labelModel.filteredOut > 0
 
 					toolTip:		qsTr("Reset all filter checkmarks for this column")
 
@@ -499,7 +501,7 @@ FocusScope
 					id:				eraseFiltersOnAllColumns
 					iconSource:		jaspTheme.iconPath + "eraser_all.png"
 					onClicked:		dataSetModel.resetAllFilters()
-					visible:		dataSetModel.columnsFilteredCount > (labelModel.filteredOut > 0 ? 1 : 0)
+					visible:		tableBackground.visible && dataSetModel.columnsFilteredCount > (labelModel.filteredOut > 0 ? 1 : 0)
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
@@ -510,6 +512,23 @@ FocusScope
 				Item //Spacer
 				{
 					Layout.fillHeight:	true
+				}
+
+				RoundedButton
+				{
+					id:				switchEditor
+					iconSource:		jaspTheme.iconPath + (editorContainer.labelEditerMode ? "computed.png" : "filter.png" )
+					visible:		labelModel.showComputedColumn && labelModel.showLabelEditor
+					onClicked:
+					{
+						editorContainer.labelEditerMode = !editorContainer.labelEditerMode
+					}
+
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+
+					toolTip: editorContainer.labelEditerMode ? qsTr("Switch to Computed Colunm Editor") : qsTr("Switch to label filter")
 				}
 
 				RoundedButton
