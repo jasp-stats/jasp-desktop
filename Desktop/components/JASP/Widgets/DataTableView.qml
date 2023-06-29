@@ -318,6 +318,10 @@ FocusScope
 									else				dataTableView.view.selectionEnd		= Qt.point(columnIndex, rowIndex);
 								}
 							}
+							else if (labelModel.visible)
+							{
+								labelModel.chosenColumn = columnIndex
+							}
 						}
 											
 						onPositionChanged:	(mouse) =>
@@ -379,7 +383,7 @@ FocusScope
 				{
 					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					color:	dataTableView.view.selectionStart.y === rowIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
+					color:	ribbonModel.dataMode && (dataTableView.view.selectionStart.y === rowIndex) ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 					Text {
 						text:				rowNumber
 						font:				jaspTheme.font
@@ -412,7 +416,7 @@ FocusScope
 			columnHeaderDelegate: Rectangle
 			{
 				id:		headerRoot
-				color:	dataTableView.view.selectionStart.x === columnIndex ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
+				color:	(!ribbonModel.dataMode && labelModel.chosenColumn === columnIndex && labelModel.visible) || (ribbonModel.dataMode && (dataTableView.view.selectionStart.x === columnIndex)) ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
 
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
@@ -436,9 +440,6 @@ FocusScope
 					function setColumnType(newColumnType)
 					{
 						dataSetModel.setColumnTypeFromQML(columnIndex, newColumnType)
-
-						if(labelModel.chosenColumn === columnIndex && columnType === columnTypeScale)
-							labelModel.visible = false;
 					}
 
 
@@ -610,14 +611,8 @@ FocusScope
 							{
 								if(mouseEvent.button === Qt.LeftButton)
 								{
-									/*if(columnType  !== columnTypeScale)
-									{*/
-										var changedIndex		= labelModel.chosenColumn	!== columnIndex
-										labelModel.chosenColumn	= columnIndex;
-										labelModel.visible		= changedIndex ? true : !labelModel.visible;
-									/*}
-									else
-										dataSetModel.renameColumnDialog(columnIndex);*/
+									labelModel.chosenColumn	= columnIndex;
+									labelModel.visible		= true;
 	
 									if(dataSetModel.columnUsedInEasyFilter(columnIndex))
 									{
