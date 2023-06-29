@@ -384,6 +384,7 @@ void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
 			emitSendComputeCode(tq(col->name()), tq(col->rCodeStripped()), col->type());
 	}
 
+	emit refreshProperties();
 	emit refreshData();
 }
 

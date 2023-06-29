@@ -27,15 +27,6 @@ Rectangle
 
 		}
 
-//		ComputeColumnWindow
-//		{
-//			id:							computeColumnWindow
-//			objectName:					"computeColumnWindow"
-//			SplitView.minimumHeight:	desiredMinimumHeight
-//			SplitView.preferredHeight:	rootDataset.height * 0.25
-//			SplitView.maximumHeight:	rootDataset.height * 0.8
-//		}
-
 		VariablesWindow
 		{
 			id:							variablesWindow

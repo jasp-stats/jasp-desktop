@@ -30,9 +30,9 @@ FocusScope
 	visible:	labelModel.visible && labelModel.chosenColumn > -1
 
 	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
-	property real calculatedMinimumHeight:		columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + labelModel.showComputedColumn ? computeColumnWindow.desiredMinimumHeight : 0
-	property real calculatedPreferredHeight:	columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + labelModel.showComputedColumn ? parent.height * 0.25 : 0
-	property real calculatedMaximumHeight:		!labelModel.showLabelEditor && ! labelModel.showComputedColumn ? columnDescriptionVariablesWindow.height		+ calculatedBaseHeight :  parent.height * 0.7
+	property real calculatedMinimumHeight:		columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + (labelModel.showComputedColumn ? computeColumnWindow.desiredMinimumHeight : 0)
+	property real calculatedPreferredHeight:	columnDescriptionVariablesWindow.height		+ calculatedBaseHeight + (labelModel.showComputedColumn ? parent.height * 0.25 : 0)
+	property real calculatedMaximumHeight:		!labelModel.showLabelEditor && ! labelModel.showComputedColumn ? columnDescriptionVariablesWindow.height + calculatedBaseHeight :  parent.height * 0.7
 
 	Connections
 	{
@@ -41,8 +41,11 @@ FocusScope
 		function onChosenColumnChanged(chosenColumn)
 		{
 			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
+			{
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere
+				computeColumnWindow.open(labelModel.columnName)
+			}
 		}
 	}
 
@@ -163,7 +166,7 @@ FocusScope
 					top:			columnDescriptionVariablesWindow.bottom
 					left:			parent.left
 					right:			buttonColumnVariablesWindow.left
-					bottom:			computeColumnWindow.top
+					bottom:			parent.bottom
 					topMargin:		jaspTheme.generalAnchorMargin
 					rightMargin:	jaspTheme.generalAnchorMargin
 				}
@@ -415,6 +418,7 @@ FocusScope
 				{
 					left:			parent.left
 					right:			buttonColumnVariablesWindow.left
+					top:			columnDescriptionVariablesWindow.bottom
 					bottom:			parent.bottom
 					topMargin:		jaspTheme.generalAnchorMargin
 					rightMargin:	jaspTheme.generalAnchorMargin
@@ -512,7 +516,14 @@ FocusScope
 				{
 					id:				variablesWindowCloseButton
 					iconSource:		jaspTheme.iconPath + "cross.png"
-					onClicked:		labelModel.visible = false;
+					onClicked:
+					{
+						if(labelModel.showComputedColumn)
+							computeColumnWindow.askIfChangedOrClose();
+						else
+							labelModel.visible = false;
+					}
+
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height

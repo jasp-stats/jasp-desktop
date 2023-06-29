@@ -35,12 +35,6 @@ FocusScope
 			else
 				open(computedColumnsInterface.computeColumnNameSelected)
 		}
-
-		function onRefreshProperties()
-		{
-			if(!computedColumnsInterface.dataSetLoaded)
-				close();
-		}
 	}
 
 	Rectangle
@@ -55,7 +49,7 @@ FocusScope
 
 	function close()
     {
-		opened = false
+		labelModel.visible = false
     }
 
 	Connections
@@ -304,7 +298,7 @@ FocusScope
 		Item
 		{
 			id:				computeColumnButtons
-			height:			closeColumnEditorButton.height
+			height:			helpButton.height
 			anchors
 			{
 				left:		parent.left
@@ -324,7 +318,7 @@ FocusScope
 				{
 					left:	parent.left
 					bottom: parent.bottom
-					top:	closeColumnEditorButton.top
+					top:	helpButton.top
 				}
 			}
 
@@ -339,7 +333,7 @@ FocusScope
 
 				anchors.left:	removeColumnButton.right
 				anchors.bottom:	parent.bottom
-				anchors.top:	closeColumnEditorButton.top
+				anchors.top:	helpButton.top
 
 				onClicked:		computedColumnConstructor.showGeneratedRCode = !computedColumnConstructor.showGeneratedRCode
 
@@ -354,7 +348,7 @@ FocusScope
 				anchors.left:	showGeneratedRCode.right
 				anchors.right:	helpButton.left
 				anchors.bottom:	parent.bottom
-				anchors.top:	closeColumnEditorButton.top
+				anchors.top:	helpButton.top
 				onClicked:		computedColumnContainer.applyComputedColumn()
 				toolTip:		computeColumnEdit.changedSinceLastApply ? qsTr("Click to compute column") : qsTr("Column (in line to be) computed")
 				
@@ -364,22 +358,11 @@ FocusScope
 			{
 				id:				helpButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
-				anchors.right:	closeColumnEditorButton.left
-				anchors.bottom: parent.bottom
-				anchors.top:	closeColumnEditorButton.top
-				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
-				toolTip:		qsTr("Open Documentation")
-			}
-
-
-			JaspControls.RectangularButton
-			{
-				id:				closeColumnEditorButton
-				iconSource:		jaspTheme.iconPath + "cross.png"
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
-				onClicked:		computedColumnContainer.askIfChangedOrClose()
-				toolTip:		qsTr("Close computed column window")
+				anchors.top:	helpButton.top
+				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
+				toolTip:		qsTr("Open Documentation")
 			}
 		}
 

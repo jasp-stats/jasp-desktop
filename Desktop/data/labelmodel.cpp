@@ -402,6 +402,6 @@ bool LabelModel::showLabelEditor() const
 bool LabelModel::showComputedColumn() const
 {
 	if(column())
-			return column()->isComputed();
+		return column()->isComputed();
 	return false;
 }
