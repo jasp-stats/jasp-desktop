@@ -9,15 +9,15 @@ window.setI18nStrings = function (i18nObject) {
 
 // Use i18n(...) to call strings to be translated then update them in MainPage.qml
 function i18n(str) {
-	if (typeof str === "string" && str instanceof String) {
-		console.log("i18n can only be used for literal strings")
-	} else {
-		let findI18nStr = i18nStrs[str] !== null && i18nStrs[str] !== undefined;
-		if (findI18nStr) {
+	if (typeof str === "string") {
+		if (i18nStrs.hasOwnProperty(str)) {
 			return i18nStrs[str];
 		} else {
 			return str;
 		}
+    } else {
+		console.error("i18n can only be used for strings")
+		return str;
 	}
 }
 
