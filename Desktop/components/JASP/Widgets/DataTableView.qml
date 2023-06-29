@@ -414,7 +414,7 @@ FocusScope
 						onClicked: 			(mouseEvent)=>
 											{
 												if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier );
+													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 												if(mouseEvent.button === Qt.RightButton)
 													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
 											}
@@ -633,7 +633,7 @@ FocusScope
 								if(ribbonModel.dataMode)
 								{
 									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier);
+									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 									if(mouseEvent.button === Qt.RightButton)
 									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}

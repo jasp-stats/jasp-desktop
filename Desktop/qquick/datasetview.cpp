@@ -1039,18 +1039,22 @@ void DataSetView::setSelectionEnd(QPoint selectionEnd)
 	if (!_selectionModel)
 		return;
 
-	clearEdit();
+	if (_model->isRowVirtual(selectionEnd.y()) || _model->isColumnVirtual(selectionEnd.x()))
+		return;
 
-	Log::log() << "DataSetView::setSelectionEnd( row=" << selectionEnd.y() << ", col=" << selectionEnd.x() << " )" << std::endl;
+	if (_selectionEnd == selectionEnd)
+		return;
+
+	clearEdit();
 
 	_selectionEnd = selectionEnd;
 
 	emit selectionEndChanged(_selectionEnd);
 
-	if(_selectionStart.y() == -1 || _selectionStart.x() == -1 || _selectionEnd.y() == -1 || _selectionEnd.x() == -1)
-		return;
-
-	_selectionModel->select(QItemSelection(_model->index(_selectionStart.y(), _selectionStart.x()), _model->index(_selectionEnd.y(), _selectionEnd.x())), QItemSelectionModel::ClearAndSelect);
+	if (_selectionStart.y() == -1 || _selectionStart.x() == -1 || selectionEnd.y() == -1 || selectionEnd.x() == -1)
+		_selectionModel->clear();
+	else
+		_selectionModel->select(QItemSelection(_model->index(_selectionStart.y(), _selectionStart.x()), _model->index(_selectionEnd.y(), _selectionEnd.x())), QItemSelectionModel::ClearAndSelect);
 
 	_selectScrollMs = Utils::currentMillis();
 }
@@ -1251,29 +1255,28 @@ QPoint DataSetView::selectionTopLeft() const
 }
 
 
-void DataSetView::columnSelect(int col,	bool shiftPressed)
+void DataSetView::columnSelect(int col,	bool shiftPressed, bool rightClicked)
 {
-	if(!shiftPressed)
-	{
-		if (!_selectionModel->isColumnSelected(col))
-		{
-			setSelectionStart(QPoint(col, 0));
-			setSelectionEnd(QPoint(col, _model->rowCount(false) - 1));
-		}
-	}
-	else
-	{
-		int startCol = col, endCol = col;
+	if (col < 0) return;
 
+	int startCol = col, endCol = col;
+
+	if (shiftPressed)
+	{
 		if(_selectionStart.x() != -1)
 		{
 			if(col < _selectionStart.x())	endCol		= _selectionStart.x();
 			else							startCol	= _selectionStart.x();
 		}
-
-		setSelectionStart(QPoint(startCol, 0));
-		setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
 	}
+	else if (rightClicked)
+	{
+		if (_selectionModel->isColumnSelected(col))
+			return;
+	}
+
+	setSelectionStart(QPoint(startCol, 0));
+	setSelectionEnd(QPoint(endCol, _model->rowCount(false) - 1));
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -1324,28 +1327,29 @@ void DataSetView::columnsDelete()
 	setSelectionEnd(QPoint(-1, -1));
 }
 
-void DataSetView::rowSelect(int row,	bool shiftPressed)
+void DataSetView::rowSelect(int row, bool shiftPressed, bool rightClicked)
 {
-	if(!shiftPressed)
+	if (row < 0) return;
+
+	int startRow	= row,
+		endRow		= row;
+
+	if (shiftPressed)
 	{
-		if (!_selectionModel->isRowSelected(row))
-		{
-			setSelectionStart(QPoint(0, row));
-			setSelectionEnd(QPoint(_model->columnCount(false) - 1, row));
-		}
-	}
-	else
-	{
-		int startRow = row, endRow = row;
 		if(_selectionStart.y() != -1)
 		{
 			if(row < _selectionStart.y())	endRow		= _selectionStart.y();
 			else							startRow	= _selectionStart.y();
 		}
-
-		setSelectionStart(QPoint(0, startRow));
-		setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
 	}
+	else if (rightClicked)
+	{
+		if (_selectionModel->isRowSelected(row))
+			return;
+	}
+
+	setSelectionStart(QPoint(0, startRow));
+	setSelectionEnd(QPoint(_model->columnCount(false) - 1, endRow));
 }
 
 void DataSetView::rowInsertBefore(int row)
@@ -1489,10 +1493,10 @@ void DataSetView::edit(int row, int col)
 	if (row == -1 || col == -1)
 		return;
 
-	Log::log() << "DataSetView::edit(row=" << row << ", col=" << col << ")" << std::endl;
+	if (_selectionEnd.x() != col || _selectionEnd.y() != row)
+		setSelectionEnd(QPoint(-1, -1));
 
 	clearEdit();
-
 	setEditing(true);
 	positionEditItem(row, col);
 }
