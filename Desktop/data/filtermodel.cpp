@@ -115,8 +115,11 @@ void FilterModel::setConstructorR(QString newConstructorR)
 }
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 {
-	if (_setGeneratedFilter(newGeneratedFilter))
-		sendGeneratedAndRFilter();	
+	_setGeneratedFilter(newGeneratedFilter);
+	// After this commit https://github.com/jasp-stats/jasp-desktop/commit/65f007cba2ff8986fc3ad86ac4b1a00fa706769b  the filter was not executed.
+	// If a model reset is called just before, this will set the generatedFilter to the right value, and _setGeneratedFilter will returns false
+	// But the engine did not compute yet the filter. So send the filter to the engine always.
+	sendGeneratedAndRFilter();
 }
 
 bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
