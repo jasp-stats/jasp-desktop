@@ -1,22 +1,23 @@
 var JASPWidgets = {};
 
-var i18nStrs = null;
+var i18nStrsObj = {};
 // The global translation function needs to be loaded before all other .js files.
 window.setI18nStrings = function (i18nObject) {
-        i18nStrs = i18nObject
-        return i18nStrs
+		i18nStrsObj = i18nObject
+		return i18nStrsObj
 }
 
 // Use i18n(...) to call strings to be translated then update them in MainPage.qml
 function i18n(str) {
 	if (typeof str === "string") {
-		if (i18nStrs.hasOwnProperty(str)) {
-			return i18nStrs[str];
+		let findI18nStr = i18nStrsObj[str] !== null && i18nStrsObj[str] !== undefined;
+		if (findI18nStr) {
+			return i18nStrsObj[str];
 		} else {
 			return str;
 		}
-    } else {
-		console.error("i18n can only be used for strings")
+	} else {
+		console.error("i18n can only be used for literal strings")
 		return str;
 	}
 }
