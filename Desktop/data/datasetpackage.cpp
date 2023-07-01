@@ -274,15 +274,19 @@ QModelIndex DataSetPackage::indexForSubNode(DataSetBaseNode * node) const
 		case dataSetBaseNodeType::column:
 		{
 			Column * col = dynamic_cast<Column*>(node);
-			return createIndex(0, col->data()->columnIndex(col), dynamic_cast<void *>(col));
+			if (col)
+				return createIndex(0, col->data()->columnIndex(col), dynamic_cast<void *>(col));
+			else
+				return QModelIndex();
 		}
 
 		case dataSetBaseNodeType::label: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
 		{
 			Label	* lab = dynamic_cast<Label*>( node);
-			Column	* col = dynamic_cast<Column*>(node->parent());
+			Column	* col = lab ? dynamic_cast<Column*>(node->parent()) : nullptr;
+			int		i = col ? col->labelIndex(lab) : -1;
 
-			return createIndex(col->labelIndex(lab), 0, dynamic_cast<void*>(lab));
+			return createIndex(i, 0, dynamic_cast<void*>(lab));
 		}
 
 		case dataSetBaseNodeType::filter: //Doesnt really make sense to have this as the parent of a subnodemodel but whatever
