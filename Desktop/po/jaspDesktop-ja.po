@@ -4171,3 +4171,91 @@ msgstr ""
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
 msgstr ""
+
+msgctxt "MainPage|"
+msgid "Bold"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Italic"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Underline"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Link"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Formula"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Code Block"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Header"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Ordered List"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Unordered List"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Color Picker"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Background Color"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Subscript"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Superscript"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Blockquote"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Add Indent"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Remove Indent"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Font Size"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Clear Formatting"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Click here to add text"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Copied to clipboard"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Citations copied to clipboard"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "LaTeX code copied to clipboard"
+msgstr ""
