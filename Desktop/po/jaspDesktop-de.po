@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-07-02 16:52+0000\n"
+"PO-Revision-Date: 2023-07-03 04:38+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -4319,64 +4319,64 @@ msgstr "Code-Block"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "Überschrift"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "Sortierte Liste"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "Unsortierte Liste"
 
 msgctxt "MainPage|"
 msgid "Color Picker"
-msgstr ""
+msgstr "Farbauswahl"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "Hintergrundfarbe"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "Tiefgestellt"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "Hochgestellt"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "Blockzitat"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr ""
+msgstr "Einzug hinzufügen"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
-msgstr ""
+msgstr "Einzug entfernen"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "Schriftgröße"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "Formatierung löschen"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "Klicken Sie hier, um Text hinzuzufügen"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "In Zwischenablage kopiert"
 
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr ""
+msgstr "Zitate in Zwischenablage kopiert"
 
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "LaTeX-Code in Zwischenablage kopiert"
