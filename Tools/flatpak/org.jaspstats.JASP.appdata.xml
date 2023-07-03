@@ -41,6 +41,7 @@ JASP Release Notes 0.17.3:
 
 New Features and Improvements:
 * Added beta version of the TimeSeries Module
+* Added analytical risk to the Audit Risk Model en Benford's law provides confidence intervals
 * Latex formulas can now be used in results
 * Result screen is now translatable
 
