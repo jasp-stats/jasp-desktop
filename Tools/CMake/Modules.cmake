@@ -49,6 +49,7 @@ set(JASP_EXTRA_MODULES
     "jaspReliability"
     "jaspSem"
     "jaspSummaryStatistics"
+    "jaspTimeSeries"
     "jaspVisualModeling"
     )
 
