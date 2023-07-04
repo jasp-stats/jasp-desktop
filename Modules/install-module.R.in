@@ -45,11 +45,13 @@ if ("@MODULE@" == "jaspAudit") {
   options(install.opts = "--no-multiarch --no-docs --no-test-load");
   jaspBase::addRenvBeforeAfterDispatch()
   renv::install("koenderks/jfa", library = "@MODULES_BINARY_PATH@/@MODULE@")
+  if (identical(.Platform$OS.type, "windows")) {
+    # Ridiculous....
+    unlink(paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), recursive = TRUE)
+    file.symlink(to=paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), from=paste0(getwd(), '/../../../../../Modules/renv-cache/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa'))
+  }
 }
 
-# Ridiculous....
-unlink(paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), recursive = TRUE)
-file.symlink(to=paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), from=paste0(getwd(), '/../../../../../Modules/renv-cache/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa'))
 
 if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
