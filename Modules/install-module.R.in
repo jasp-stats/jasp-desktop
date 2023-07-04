@@ -48,7 +48,7 @@ if ("@MODULE@" == "jaspAudit") {
   if (identical(.Platform$OS.type, "windows")) {
     # Ridiculous....
     unlink(paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), recursive = TRUE)
-    file.symlink(to=paste0(getwd(), '/../../../../../Modules/jaspAudit/jfa'), from=paste0(getwd(), '/../../../../../Modules/renv-cache/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa'))
+    Sys.junction(to=paste0(getwd(), '/../Modules/jaspAudit/jfa'), from=paste0(getwd(), '/../Modules/renv-cache/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa'))
   }
 }
 
