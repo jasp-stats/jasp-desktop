@@ -144,7 +144,7 @@
 	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --removeJunctions" />
 
 	<InstallExecuteSequence>
-		<Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+		<Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) OR UPGRADINGPRODUCTCODE</Custom>
 		<Custom Action='FixModulesJunctions' Before='InstallFinalize'>NOT REMOVE</Custom>
 	</InstallExecuteSequence>
 
