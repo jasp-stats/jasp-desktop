@@ -33,7 +33,7 @@
 	<CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
 	<InstallExecuteSequence>
 		<Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
-		<RemoveExistingProducts After="InstallInitialize"/>
+		<RemoveExistingProducts After="InstallValidate"/>
 		<Custom Action="WixCloseApplications" Before="InstallInitialize" />
 	</InstallExecuteSequence>
 
