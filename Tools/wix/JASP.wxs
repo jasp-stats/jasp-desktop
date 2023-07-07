@@ -5,7 +5,7 @@
 	<?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.PatchVersion).$(var.TweakVersion)" ?>
 	<?define Program_Files="ProgramFiles64Folder"?>
 	<?define ExeProcessName="JASP.exe" ?>
-	<?define UpgradeCode="246DBB7E-A652-4A45-8BEC-06B5B0AED014" ?>
+	<?define UpgradeCode="32d502cb-4752-4861-bc86-b8b4252a7a68" ?>
 	<?define ApplicationName="JASP $(var.VersionNumber)" ?>
 
 	<Product Id="*" Name="$(var.ApplicationName)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
