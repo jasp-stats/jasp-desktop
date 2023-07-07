@@ -33,7 +33,7 @@
 	<CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
 	<InstallExecuteSequence>
 		<Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
-		<RemoveExistingProducts After="InstallValidate"/>
+		<RemoveExistingProducts After="InstallInitialize"/>
 		<Custom Action="WixCloseApplications" Before="InstallInitialize" />
 	</InstallExecuteSequence>
 
@@ -140,7 +140,7 @@
 	<CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
 	<CustomAction Id="FixModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --junctions" />
-	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --removeJunctions" />
+	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="rmdir /S /Q &quot;[APPLICATIONFOLDER]\\Modules&quot;" />
 
 	<InstallExecuteSequence>
 		<Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
