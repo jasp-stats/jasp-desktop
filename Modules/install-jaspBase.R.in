@@ -37,7 +37,7 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
 
   renv::hydrate(library = moduleLibrary, project = modulePkg, sources=moduleLibrary)
   options(renv.config.install.verbose = TRUE)
-  renv::install(project = modulePkg, library = moduleLibrary, prompt = prompt)
+  renv::install(package = modulePkg, project = modulePkg, library = moduleLibrary, prompt = prompt)
 
   correctlyInstalled <- installModulePkg(modulePkg, moduleLibrary, prompt, cacheAble=TRUE) 
 
