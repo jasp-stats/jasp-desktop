@@ -137,28 +137,31 @@ int main(int argc, char *argv[])
 		{
 			std::string junctionsCreationLog("junctions-recreated-successfully.log");
 			std::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
+
+			Log::log() << "Before removing junctions" << std::endl;
 			
 			if(exists(junctionsCreationLogPath))
 				remove(junctionsCreationLogPath);
 
 			std::string modulesFolder("Modules");
-			std::cout << "Engine started to remove the Modules folder" << std::endl;
+			Log::log() << "Engine started to remove the Modules folder" << std::endl;
 			std::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
 			
 			if(exists(modulesPath)) {
+				Log::log() << "Module Path exists" << std::endl;
 				for(const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator(modulesPath))
 					if(entry.path().string().find("\\jasp") != std::string::npos)
 						remove_all(entry);
-				
+				Log::log() << "Modules folder should be clean" << std::endl;
 			}
 			else if(arg1 == junctionRemoveArg)
-				std::cout << "Error: Could not find the Modules folder" << std::endl;
+				Log::log() << "Error: Could not find the Modules folder" << std::endl;
 			
 		}
 		
 		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
 		{
-			std::cout << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
+			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
 			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
 		}
 		
@@ -166,7 +169,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	std::cout << "Engine started in testing mode because it didn't receive any count of arguments otherwise, (1, 3 or 4), it got " << argc << " instead." << std::endl;
+	Log::log() << "Engine started in testing mode because it didn't receive any count of arguments otherwise, (1, 3 or 4), it got " << argc << " instead." << std::endl;
 
 	const char * testFileName = "testFile.txt";
 	std::ofstream writeTestFile(testFileName);
