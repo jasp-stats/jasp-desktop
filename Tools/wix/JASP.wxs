@@ -104,6 +104,7 @@
 	<Property Id="WixAppFolder" 						Value="WixPerMachineFolder" 							/> <!-- default to per machine-->
 	<Property Id="ApplicationFolderName" 				Value="JASP" 											/>
 	<Property Id="ExeLocation" 							Value="[#JASP.exe]"										/>
+	<Property Id="MsiLogging" Value="v" />
 
 	<CustomAction Id="WixSetDefaultPerMachineFix" Property="WixPerMachineFolder" Value="[$(var.Program_Files)][ApplicationFolderName]" Execute="immediate" />
 
@@ -140,7 +141,7 @@
 	<CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
 	<CustomAction Id="FixModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --junctions" />
-	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="rmdir /S /Q &quot;[APPLICATIONFOLDER]\\Modules&quot;" />
+	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --removeJunctions" />
 
 	<InstallExecuteSequence>
 		<Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
