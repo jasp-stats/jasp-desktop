@@ -297,6 +297,9 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/CollectJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/windowsPreInstallHacks.cmd.in
+  ${CMAKE_BINARY_DIR}/windowsPreInstallHacks.cmd @ONLY)
+
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
