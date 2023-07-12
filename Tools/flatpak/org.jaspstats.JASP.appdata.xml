@@ -40,8 +40,9 @@
 JASP Release Notes 0.17.3:
 
 New Features and Improvements:
-* Added beta version of the TimeSeries Module
-* Added analytical risk to the Audit Risk Model en Benford's law provides confidence intervals
+* Added a beta version of the Time Series Module
+* Added the analytical risk to the Audit Risk Model
+* Benford's law provides confidence intervals in the table and plot
 * Latex formulas can now be used in results
 * Result screen is now translatable
 
@@ -49,6 +50,9 @@ Bug fixes:
 * Results can now be copied into Google Docs, Word, etc using Google Chrome on Windows
 * Variable type is properly updated upon type switch
 * Fix for special character entry conflicting with ALT-Navigation mode (additionally can be turned off in settings)
+* Fix Bayesian descriptives Credible Interval (https://github.com/jasp-stats/jasp-issues/issues/2153, https://github.com/jasp-stats/jasp-issues/issues/2190)
+* Allow Ordinal data and fix citations (https://github.com/jasp-stats/jasp-issues/issues/1723)
+* Bug Report in PROPHET Module (https://github.com/jasp-stats/jasp-issues/issues/2201)
 		</description>
 	</release>
 	<release version="0.17.2.1" date="2023-05-22">
