@@ -147,7 +147,7 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
   relativeer <- getRelativityFunction(modulesRoot, renvCache)
   symlinks   <- data.frame(linkLocation=character(0), linkTarget=character(0), originalTarget=character(0))
 
-  collectSymlinks <- function(paths)
+  collectSymlinks <- function(paths, depth)
     for(path in paths)
     {
       #path <- normalizePath(path) This follows the junction immediately...
@@ -160,23 +160,23 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
               if(!startsWith(symPath, ".")) #if starts with dot it is already relative
                 symlinks[nrow(symlinks)+1, ] <<- list(linkLocation=path, linkTarget=relativeer(path, symPath), originalTarget=symPath)
             }
-            else
+            else if (depth < 2)
             {
               everything  <- list.files(path, recursive=FALSE, include.dirs=TRUE, all.files=FALSE, full.names=TRUE)
       
               if(length(everything) > 0)
               {
                 allDirs     <- everything[file.info(everything)$isdir]
-                collectSymlinks(allDirs)
+                collectSymlinks(allDirs, depth + 1)
               }
             }
         }
     }
 
-  collectSymlinks(modulesRoot)
+  collectSymlinks(modulesRoot, 0)
 
-  # print("Found symlinks:")
-  # print(symlinks)
+  print("Found symlinks:")
+  print(symlinks)
 
   return(symlinks)
 }
@@ -228,11 +228,23 @@ junctionFilename <- function(modulesRoot)
   return(pastePath(c(modulesRoot, "..", "junctions.rds")))   
 }
 
+require_fs <- function() {
+  if (!require(fs))
+    stop("We require the package fs to do this. Make sure jaspBase has it as a dependency", domain = NA)
+}
+
+isJunction2 <- function(path) {
+  # call require_fs in the parent function before calling this (it's incredibly inefficient to call it here)
+  fs::is_link(path)
+}
+
 collectAndStoreJunctions <- function(buildfolder)
 {
+  require_fs()
   modulesRoot <- pastePath(c(buildfolder, "Modules")) 
   renvCache   <- pastePath(c(buildfolder, "Modules/renv-cache"))
-  symlinks    <- collectLinks(modulesRoot, renvCache, is.junction, normalizePath)
+  #symlinks    <- collectLinks(modulesRoot, renvCache, is.junction, normalizePath)
+  symlinks    <- collectLinks(modulesRoot, renvCache, isJunction2, normalizePath)
   overlap     <- determineOverlap(modulesRoot, modulesRoot)
   relLink     <- lapply(symlinks$linkLocation, overlap$sourceToTarget)
   modules     <- lapply(relLink, function(p) splitPath(p)[[1]])
