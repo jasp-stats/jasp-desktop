@@ -4,6 +4,7 @@
 
 
 #include "datasettableproxy.h"
+#include "undostack.h"
 #include <QTimer>
 
 /// 
@@ -32,7 +33,7 @@ public:
 	QString		columnNameQ();
 	QString		columnTitle() const;
 	QString		columnDescription() const;
-	bool		setData(const QModelIndex & index, const QVariant & value,	int role = -1)						override;
+	bool		setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)						override;
 	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
 
@@ -49,6 +50,8 @@ public:
 	Q_INVOKABLE void unselectAll();
 	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
+	Q_INVOKABLE void undo()				{ _undoStack->undo(); }
+	Q_INVOKABLE void redo()				{ _undoStack->redo(); }
 
 	boolvec			filterAllows(size_t col);
 	stringvec		labels(size_t col);
@@ -62,6 +65,7 @@ public:
 	void setColumnDescription(const QString & newColumnDescription);
 
 	bool showLabelEditor() const;
+	void setLabelMaxWidth();
 
 
 public slots:
@@ -97,15 +101,16 @@ signals:
 private:
 	std::vector<size_t> getSortedSelection()					const;
 	void				setValueMaxWidth();
-	void				setLabelMaxWidth();
 
 private:
-	bool				_visible		= false;
+	bool				_visible		= false,
+						_editing		= false;
 	double				_valueMaxWidth	= 10,
 						_labelMaxWidth	= 10,
 						_rowWidth		= 60;
 	std::set<QString>	_selected;
 	int					_lastSelected	= -1;
+	UndoStack*			_undoStack		= nullptr;
 };
 
 #endif // LABELMODEL_H
