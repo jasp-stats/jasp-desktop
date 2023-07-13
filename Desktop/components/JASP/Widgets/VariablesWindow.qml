@@ -59,6 +59,24 @@ FocusScope
 			rightMargin:	Math.min(0, variablesContainer.width - minWidth)
 		}
 
+		Keys.onPressed: (event) =>
+		{
+			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
+
+			if (event.key === Qt.Key_Z)
+			{
+				if(controlPressed)
+				{
+					if (shiftPressed)
+						labelModel.redo();
+					else
+						labelModel.undo();
+					event.accepted = true;
+				}
+			}
+		}
+
 		Rectangle
 		{
 			color:				jaspTheme.uiBackground
@@ -104,6 +122,7 @@ FocusScope
 				id:					columnNameVariablesWindow
 				value:				labelModel.columnName
 				onValueChanged:		if(labelModel.columnName !== value) labelModel.columnName = value
+				undoModel:			labelModel
 
 				anchors
 				{
@@ -120,6 +139,7 @@ FocusScope
 				label:				qsTr("Title: ");
 				value:				labelModel.columnTitle
 				onValueChanged:		if(labelModel.columnTitle !== value) labelModel.columnTitle = value
+				undoModel:			labelModel
 
 				anchors
 				{
@@ -144,9 +164,11 @@ FocusScope
 				control.padding:	3 * jaspTheme.uiScale
 
 				text:				labelModel.columnDescription
-				onTextChanged:		if(labelModel.columnDescription !== text) labelModel.columnDescription = text
+				onEditingFinished: 	if(labelModel.columnDescription !== text) labelModel.columnDescription = text
 				applyScriptInfo:	""
 				placeholderText:	"..."
+				undoModel:			labelModel
+				useTabAsSpaces:		false
 
 				property int maxHeight:	100 * jaspTheme.uiScale
 			}

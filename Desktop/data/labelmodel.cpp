@@ -13,10 +13,14 @@ LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubMod
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::chosenColumnChanged		);
 	connect(this,					&LabelModel::chosenColumnChanged,				this, &LabelModel::onChosenColumnChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnTitleChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnDescriptionChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &LabelModel::columnDataTypeChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &LabelModel::refresh					);
+
+	_undoStack = DataSetPackage::pkg()->undoStack();
 }
 
 bool LabelModel::labelNeedsFilter(size_t col)
@@ -44,12 +48,8 @@ QString LabelModel::columnNameQ()
 void LabelModel::setColumnNameQ(QString newColumnName)
 {
 	if(column())
-	{
-		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnName)); //use DataSetPackage to make sure signals are sent!
-		emit columnTitleChanged(); //Mightve happened!
-	}
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnName, SetColumnPropertyCommand::ColumnProperty::Name));
 }
-
 
 QString LabelModel::columnTitle() const
 {
@@ -59,7 +59,7 @@ QString LabelModel::columnTitle() const
 void LabelModel::setColumnTitle(const QString & newColumnTitle)
 {
 	if(column())
-		return DataSetPackage::pkg()->setColumnTitle(DataSetPackage::pkg()->getColumnIndex(column()->name()), fq(newColumnTitle)); //use DataSetPackage to make sure signals are sent!
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnTitle, SetColumnPropertyCommand::ColumnProperty::Title));
 }
 
 QString LabelModel::columnDescription() const
@@ -70,7 +70,7 @@ QString LabelModel::columnDescription() const
 void LabelModel::setColumnDescription(const QString & newColumnDescription)
 {
 	if(column())
-		return DataSetPackage::pkg()->setColumnDescription(chosenColumn(), fq(newColumnDescription)); //use DataSetPackage to make sure signals are sent!
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnDescription, SetColumnPropertyCommand::ColumnProperty::Description));
 }
 
 
@@ -153,20 +153,28 @@ void LabelModel::setLabelMaxWidth()
 
 void LabelModel::moveSelectionUp()
 {
+	std::vector<size_t> indexes = getSortedSelection();
+	if (indexes.size() < 1)
+		return;
+
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelMoveRows(chosenColumn(), getSortedSelection(), true); //through DataSetPackage to make sure signals get sent
+	_undoStack->pushCommand(new MoveLabelCommand(this, indexes, true));
 }
 
 void LabelModel::moveSelectionDown()
 {
+	std::vector<size_t> indexes = getSortedSelection();
+	if (indexes.size() < 1)
+		return;
+
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelMoveRows(chosenColumn(), getSortedSelection(), false); //through DataSetPackage to make sure signals get sent
+	_undoStack->pushCommand(new MoveLabelCommand(this, indexes, false));
 }
 
 void LabelModel::reverse()
 {
 	_lastSelected = -1;
-	DataSetPackage::pkg()->labelReverse(chosenColumn()); //through DataSetPackage to make sure signals get sent
+	_undoStack->pushCommand(new ReverseLabelCommand(this));
 }
 
 bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -174,7 +182,12 @@ bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int 
 	if(role == int(DataSetPackage::specialRoles::selected))
 		return false;
 
-	return DataSetTableProxy::setData(index, value, role != -1 ? role : int(DataSetPackage::specialRoles::label));
+	bool result = DataSetTableProxy::setData(index, value, role);
+
+	if (!_editing && (role == Qt::EditRole || role == int(DataSetPackage::specialRoles::filter)))
+		setSelected(index.row(), 0);
+
+	return result;
 }
 
 QVariant LabelModel::data(	const QModelIndex & index, int role) const
@@ -378,15 +391,18 @@ void LabelModel::unselectAll()
 
 bool LabelModel::setChecked(int rowIndex, bool checked)
 {
-	//Log::log() << "setChecked(" << rowIndex << ", " << (checked ? "checked" : "unchecked") << ")" << std::endl;
+	_editing = true;
+	_undoStack->pushCommand(new FilterLabelCommand(this, rowIndex, checked));
+	_editing = false;
 
-	return setData(LabelModel::index(rowIndex, 0), checked, int(DataSetPackage::specialRoles::filter));
+	return data(index(rowIndex, 0), int(DataSetPackage::specialRoles::filter)).toBool();
 }
 
 void LabelModel::setLabel(int rowIndex, QString label)
 {
-	setData(LabelModel::index(rowIndex, 0), label);
-	setLabelMaxWidth();
+	_editing = true;
+	_undoStack->pushCommand(new SetLabelCommand(this, rowIndex, label));
+	_editing = false;
 }
 
 bool LabelModel::showLabelEditor() const

@@ -115,6 +115,22 @@ FocusScope
 			rightMargin:	Math.min(0, computedColumnContainer.width - minWidthCollector.minWidth)
 		}
 
+		Keys.onPressed: (event) =>
+		{
+			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
+			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
+
+			if (event.key === Qt.Key_Z && controlPressed)
+			{
+				if (shiftPressed)
+					computedColumnsInterface.redo()
+				else
+					computedColumnsInterface.undo()
+
+				event.accepted = true;
+			}
+		}
+
 		Text
 		{
 			id:							computeColumnTitle

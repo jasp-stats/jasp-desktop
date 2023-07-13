@@ -59,6 +59,8 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	_labelsSubModel = new SubNodeModel("labels");
 	
 	connect(&_databaseIntervalSyncher, &QTimer::timeout, this, &DataSetPackage::synchingIntervalPassed);
+
+	_undoStack = new UndoStack(this);
 }
 
 DataSetPackage::~DataSetPackage() 
@@ -1270,6 +1272,7 @@ void DataSetPackage::deleteDataSet()
 	
 	delete _dataSet;
 	_dataSet = nullptr;
+	_undoStack->clear();
 }
 
 bool DataSetPackage::initColumnAsScale(size_t colNo, const std::string & newName, const doublevec & values, const std::string & title)
@@ -1699,12 +1702,16 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 	if(!_dataSet)
 		return;
 
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
 	std::string oldName = getColumnName(columnIndex);
 
 	if(resetModel)
 		beginResetModel();
 
-	_dataSet->column(columnIndex)->setName(newName);
+	column->setName(newName);
 
 	if(resetModel)
 		endResetModel();
@@ -1717,10 +1724,14 @@ void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newT
 	if(!_dataSet)
 		return;
 
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
 	if(resetModel)
 		beginResetModel();
 
-	_dataSet->column(columnIndex)->setTitle(newTitle);
+	column->setTitle(newTitle);
 
 	if(resetModel)
 		endResetModel();
@@ -1732,23 +1743,26 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 	if(!_dataSet)
 		return;
 
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
 	if(resetModel)
 		beginResetModel();
 
-	_dataSet->column(columnIndex)->setDescription(newDescription);
+	column->setDescription(newDescription);
 
 	if(resetModel)
 		endResetModel();
-
 }
-
-
 
 void DataSetPackage::setColumnDataInts(size_t columnIndex, const intvec & ints)
 {
 	JASPTIMER_SCOPE(DataSetPackage::setColumnDataInts);
 
 	Column * col = _dataSet->column(columnIndex);
+	if (!col)
+		return;
 
 	for(int value : ints)
 	{
@@ -1769,6 +1783,9 @@ void DataSetPackage::setColumnDataDbls(size_t columnIndex, const doublevec & dbl
 {
 	JASPTIMER_SCOPE(DataSetPackage::setColumnDataDbls);
 	Column * col = _dataSet->column(columnIndex);
+
+	if (!col)
+		return;
 
 	col->setValues(dbls);
 	col->incRevision();
@@ -1895,7 +1912,7 @@ void DataSetPackage::labelMoveRows(size_t colIdx, std::vector<size_t> rows, bool
 		QModelIndex p = indexForSubNode(column);
 
 		for(size_t row : rowsChanged)
-			emit dataChanged(index(0, 0, p), index(rowCount(p), columnCount(p), p));
+			emit dataChanged(index(0, 0, p), index(rowCount(p) - 1 , columnCount(p) - 1, p));
 
 		emit labelsReordered(tq(column->name()));
 	}
@@ -1909,7 +1926,7 @@ void DataSetPackage::labelReverse(size_t colIdx)
 
 	QModelIndex p = indexForSubNode(column);
 
-	emit dataChanged(index(0, 0, p), index(rowCount(p), columnCount(p), p));
+	emit dataChanged(index(0, 0, p), index(rowCount(p) - 1, columnCount(p) - 1, p));
 	emit labelsReordered(tq(column->name()));
 }
 
@@ -1963,6 +1980,18 @@ void DataSetPackage::unicifyColumnNames()
 				setColumnName(c1, newName);
 			}
 	}
+}
+
+Json::Value DataSetPackage::serializeColumn(const std::string& columnName) const
+{
+	Column*	column	= _dataSet->column(columnName);
+	return column ? column->serialize() : Json::nullValue;
+}
+
+void DataSetPackage::deserializeColumn(const std::string& columnName, const Json::Value& col)
+{
+	Column		*	column	= _dataSet->column(columnName);
+	column->deserialize(col);
 }
 
 void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
@@ -2295,9 +2324,9 @@ void DataSetPackage::resetModelOneCell()
 	setData(index(0,0), "", Qt::DisplayRole);
 
 	beginResetModel();
-	DataSetPackage::pkg()->setDataSetSize(1, 1);
-	DataSetPackage::pkg()->setColumnName(0, DataSetPackage::pkg()->freeNewColumnName(0), false);
-	DataSetPackage::pkg()->setColumnType(0, columnType::scale,	false);
+	setDataSetSize(1, 1);
+	setColumnName(0, freeNewColumnName(0), false);
+	setColumnType(0, columnType::scale,	false);
 	endResetModel();
 }
 

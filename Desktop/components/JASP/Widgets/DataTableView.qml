@@ -39,13 +39,11 @@ FocusScope
 			//flickableInteractive:	!ribbonModel.dataMode
 			onDoubleClicked:		__myRoot.doubleClicked()
 
-			function showCopyPasteMenu(fromItem, globalPos, rowIndex, columnIndex, header, rowheader)
+			function showPopupMenu(fromItem, globalPos, rowIndex, columnIndex, header, rowheader)
 			{
-				console.log("showCopyPasteMenu!")
-
 				var ctrlCmd = MACOS ? qsTr("Cmd") : qsTr("Ctrl");
 
-				var copyPasteMenuModel =
+				var menuModel =
 				[
 					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),				func: function() { dataTableView.view.selectAll() },						icon: "menu-select-all"				},
 
@@ -55,20 +53,16 @@ FocusScope
 					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),			func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
 					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),			func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
 					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
-
-					{ text: "---" },
-
-					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut"               },
-					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"              },
-					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"             }
+					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },	icon: "menu-undo", enabled: dataTableView.view.undoText() !== ""	},
+					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },	icon: "menu-redo", enabled: dataTableView.view.redoText() !== ""	},
 				]
 
 				if(!header || !rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" });
+					menuModel.push({ text: "---" });
 					if (!header)
-						copyPasteMenuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
-					copyPasteMenuModel.push(
+						menuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+					menuModel.push(
 						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
 						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
 						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
@@ -77,49 +71,55 @@ FocusScope
 
 				if(!header || rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" })
+					menuModel.push({ text: "---" })
 					if (!header)
-						copyPasteMenuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
-					copyPasteMenuModel.push(
+						menuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
+					menuModel.push(
 						{ text: qsTr("Insert row before"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 						{ text: qsTr("Insert row after"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
 						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
 				}
 
-				var copyPasteMenuText = []
-				var copyPasteMenuShortcuts = []
-				var copyPasteMenuFunctions = []
-				var copyPasteMenuIcons = []
+				var menuText = []
+				var menuShortcuts = []
+				var menuFunctions = []
+				var menuIcons = []
+				var menuEnabled = []
 
-				for (var i = 0; i < copyPasteMenuModel.length; i++)
+				for (var i = 0; i < menuModel.length; i++)
 				{
-					var menu = copyPasteMenuModel[i]
-					copyPasteMenuText.push(menu["text"])
+					var menu = menuModel[i]
+					menuText.push(menu["text"])
 					if (menu.hasOwnProperty("func"))
-						copyPasteMenuFunctions.push(menu["func"])
+						menuFunctions.push(menu["func"])
 					else
-						copyPasteMenuFunctions.push(function() {})
+						menuFunctions.push(function() {})
 					if (menu.hasOwnProperty("icon"))
-						copyPasteMenuIcons.push(jaspTheme.iconPath + menu["icon"] + ".svg")
+						menuIcons.push(jaspTheme.iconPath + menu["icon"] + ".svg")
 					else
-						copyPasteMenuIcons.push("")
+						menuIcons.push("")
 					if (menu.hasOwnProperty("shortcut"))
-						copyPasteMenuShortcuts.push(menu["shortcut"])
+						menuShortcuts.push(menu["shortcut"])
 					else
-						copyPasteMenuShortcuts.push("")
+						menuShortcuts.push("")
+					if (menu.hasOwnProperty("enabled"))
+						menuEnabled.push(menu["enabled"])
+					else
+						menuEnabled.push(true)
 				}
 
 				var props = {
 					"hasIcons": true,
-					"model":		copyPasteMenuText,
+					"model":		menuText,
 					"functionCall": function (index)
 					{
-						copyPasteMenuFunctions[index]();
+						menuFunctions[index]();
 
 						customMenu.hide()
 					},
-					"icons": copyPasteMenuIcons,
-					"shortcut": copyPasteMenuShortcuts
+					"icons": menuIcons,
+					"shortcut": menuShortcuts,
+					"enabled": menuEnabled
 				};
 
 				//customMenu.scrollOri.x	= __JASPDataViewRoot.contentX;
@@ -179,6 +179,11 @@ FocusScope
 					z:						10
 					readOnly:				!itemEditable
 
+					onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
+					onVisibleChanged:		{ isEditing = false; keyPressed = false }
+					property bool isEditing: false
+					property bool keyPressed: false
+
 					Component.onCompleted:	{ focusTimer.start(); }
 					Timer
 					{
@@ -194,6 +199,8 @@ FocusScope
 
 					Keys.onPressed: (event) =>
 					{
+						keyPressed = true
+
 						var rowI			= rowIndex
 						var colI			= columnIndex
 						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
@@ -227,6 +234,29 @@ FocusScope
 							}
 							break;
 
+						case Qt.Key_A:
+							if(controlPressed)
+							{
+								theView.selectAll();
+								event.accepted = true;
+							}
+							break;
+
+						case Qt.Key_Z:
+							if(controlPressed)
+							{
+								if (shiftPressed)
+								{
+									if (!canRedo)
+										theView.redo();
+								}
+								else if (!canUndo)
+									theView.undo();
+							}
+							break;
+
+						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
+
 						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
 						case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
 						case Qt.Key_Left:	if(colI	> 0 && editItem.cursorPosition <= 0)		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
@@ -259,9 +289,11 @@ FocusScope
 					Rectangle
 					{
 						id:					highlighter
-						color:				jaspTheme.itemHighlight
+						color:				editItem.isEditing ? "transparent" : jaspTheme.itemHighlight
 						z:					-1
 						visible:			ribbonModel.dataMode
+						border.width:		2
+						border.color:		jaspTheme.itemHighlight
 						anchors
 						{
 							fill:			 parent
@@ -280,7 +312,7 @@ FocusScope
 							onPressed: (mouse) =>
 							{
 								if(mouse.buttons & Qt.RightButton)
-									dataTableView.showCopyPasteMenu(editItem, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
+									dataTableView.showPopupMenu(editItem, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 							}
 						}
 					}
@@ -321,7 +353,7 @@ FocusScope
 								if(rightPressed)
 								{
 									dataTableView.view.clearEdit()
-									dataTableView.showCopyPasteMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
+									dataTableView.showPopupMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 								}
 								else
 									dataTableView.view.edit(rowIndex, columnIndex)
@@ -416,7 +448,7 @@ FocusScope
 												if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 												if(mouseEvent.button === Qt.RightButton)
-													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
+													dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
 											}
 					}
 
@@ -448,7 +480,7 @@ FocusScope
 
 					function setColumnType(newColumnType)
 					{
-						dataSetModel.setColumnTypeFromQML(columnIndex, newColumnType)
+						dataTableView.view.setColumnType(columnIndex, newColumnType)
 					}
 
 
@@ -635,7 +667,7 @@ FocusScope
 									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 									if(mouseEvent.button === Qt.RightButton)
-									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
+									   dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}
 							}
 						}

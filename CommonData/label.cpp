@@ -86,7 +86,7 @@ void Label::dbUpdate()
 	}
 }
 
-void Label::setInformationFromDB(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
+void Label::setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
 {
 	_id				= id;
 	_order			= order;
@@ -95,6 +95,21 @@ void Label::setInformationFromDB(Column * column, int id, int order, const std::
 	_filterAllows	= filterAllows;
 	_description	= description;
 	_originalValue	= originalValue;
+}
+
+Json::Value Label::serialize() const
+{
+	Json::Value json(Json::objectValue);
+
+	json["id"]				= _id;
+	json["order"]			= _order;
+	json["label"]			= _label;
+	json["value"]			= _value;
+	json["filterAllows"]	= _filterAllows;
+	json["description"]		= _description;
+	json["originalValue"]	= _originalValue;
+
+	return json;
 }
 
 void Label::setValue(int value)
