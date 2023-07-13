@@ -12,6 +12,8 @@ ComputedColumnsModel::ComputedColumnsModel()
 	assert(_singleton == nullptr);
 	_singleton = this;
 
+	_undoStack = DataSetPackage::pkg()->undoStack();
+
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,					&ComputedColumnsModel::onDataSetChanged						);
 
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnJsonChanged				);
@@ -27,7 +29,6 @@ ComputedColumnsModel::ComputedColumnsModel()
 	connect(Analyses::analyses(),	&Analyses::requestColumnCreation,				DataSetPackage::pkg(),	&DataSetPackage::requestColumnCreation,						Qt::UniqueConnection);
 	connect(Analyses::analyses(),	&Analyses::requestComputedColumnDestruction,	DataSetPackage::pkg(),	&DataSetPackage::requestComputedColumnDestruction,			Qt::UniqueConnection);
 	connect(Analyses::analyses(),	&Analyses::analysisRemoved,						this,					&ComputedColumnsModel::analysisRemoved						);
-
 }
 
 QString ComputedColumnsModel::computeColumnRCode()
@@ -303,6 +304,9 @@ void ComputedColumnsModel::removeColumn()
 	if(!_selectedColumn)
 		return;
 
+	// TODO pass RemoveColumnCommand aab
+	_undoStack->pushCommand(new RemoveColumnCommand(DataSetPackage::pkg(), _selectedColumn->id()));
+
 	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
 	setComputeColumnNameSelected("");
 	emit refreshData();
@@ -403,9 +407,12 @@ Column * ComputedColumnsModel::createComputedColumn(const std::string & name, in
 	bool	createActualComputedColumn	= computeType != computedColumnType::analysisNotComputed,
 			showComputedColumn			= computeType != computedColumnType::analysis			&& createActualComputedColumn;
 
-	Column  * createdColumn = createActualComputedColumn
-							? DataSetPackage::pkg()->createComputedColumn(	name, columnType(colType), computeType)
-							: DataSetPackage::pkg()->createColumn(			name, columnType(colType));
+	if (createActualComputedColumn)
+		DataSetPackage::pkg()->undoStack()->pushCommand(new CreateComputedColumnCommand(DataSetPackage::pkg(), tq(name), colType, int(computeType)));
+	else
+		DataSetPackage::pkg()->createColumn(name, columnType(colType));
+
+	Column  * createdColumn = DataSetPackage::pkg()->getColumn(name);
 
 	if(analysis)
 		createdColumn->setAnalysisId(analysis->id());
@@ -441,6 +448,9 @@ bool ComputedColumnsModel::showAnalysisFormForColumn(const QString & columnName)
 
 void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 {
+	if (!dataSet())
+		return;
+
 	std::set<std::string> colsToRemove;
 
 	for(Column * col : computedColumns())

@@ -114,7 +114,7 @@ Rectangle
 			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
             
-            messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
 
 			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
 			customMenu.hide();
@@ -155,6 +155,7 @@ Rectangle
 		var props =
 		{
 			"model"					: ribbonButton.menu,
+
 			"functionCall"			: functionCall,
 			"hasIcons"				: ribbonButton.menu.hasIcons(),
 			"navigateFunc"			: navigateFunc,

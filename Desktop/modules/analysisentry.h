@@ -69,6 +69,9 @@ public:
 
 	void			runSpecialFunc()		const { _specialFunc(); }
 
+	void			setMenu(const std::string& menu)	{ _menu = menu;			}
+	void			setEnabled(bool enabled)			{ _isEnabled = enabled;	}
+
 	static bool		requiresDataEntries(const AnalysisEntries & entries);
 
 private:
