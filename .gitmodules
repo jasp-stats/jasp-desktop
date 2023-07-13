@@ -133,3 +133,4 @@
 [submodule "RPkgs/multibridge"]
 	path = RPkgs/multibridge
 	url = https://github.com/Asarafoglou/multibridge
+	branch = master
