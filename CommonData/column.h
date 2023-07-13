@@ -162,6 +162,8 @@ public:
 
 			void					checkForLoopInDependencies(std::string code);
 			const	stringset	 &	dependsOnColumns(bool refresh = true);
+			Json::Value				serialize()																const;
+			void					deserialize(const Json::Value& info);
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);

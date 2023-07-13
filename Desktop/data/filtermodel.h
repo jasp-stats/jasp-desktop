@@ -37,7 +37,7 @@ public:
 	bool	hasFilter()				const	{ return rFilter() != DEFAULT_FILTER || constructorJson() != DEFAULT_FILTER_JSON; }
 
 
-	Q_INVOKABLE void resetRFilter()				{ setRFilter(DEFAULT_FILTER); }
+	Q_INVOKABLE void resetRFilter()				{ applyRFilter(DEFAULT_FILTER); }
 	void		sendGeneratedAndRFilter();
 
 	void updateStatusBar();
@@ -52,6 +52,11 @@ public slots:
 	void setGeneratedFilter(QString newGeneratedFilter);
 	void setConstructorJson(QString newconstructorJson);
 	void setFilterErrorMsg(	QString newFilterErrorMsg);
+
+	void applyConstructorJson(	QString constructorJson);
+	void applyRFilter(			QString rFilter);
+	void undo() { _undoStack->undo(); }
+	void redo() { _undoStack->redo(); }
 
 	void processFilterResult(int requestId);
 	void processFilterErrorMsg(QString filterErrorMsg, int requestId);
@@ -97,6 +102,8 @@ private:
 								_columnsUsedInRFilter;
 
 	int							_lastSentRequestId		= 0;
+
+	UndoStack*					_undoStack				= nullptr;
 };
 
 #endif // FILTERMODEL_H
