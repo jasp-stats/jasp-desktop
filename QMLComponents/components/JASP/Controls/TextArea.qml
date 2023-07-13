@@ -1,5 +1,5 @@
 import QtQuick			2.11
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.4 as QTC
 import QtQuick.Layouts	1.3
 import JASP				1.0
 
@@ -25,15 +25,38 @@ TextAreaBase
 	property var	separators			: []
 	property alias	radius				: flickableRectangle.radius
 	property alias	placeholderText		: control.placeholderText
-    
+	property var	undoModel
+	property bool	useTabAsSpaces		: true
     
     signal applyRequest()
+	signal editingFinished()
+
+	Component.onCompleted: control.editingFinished.connect(editingFinished)
     
 	function userEnteredInput() {
 		if (textArea.trim)
 			textArea.text = textArea.text.trim();
 
 		applyRequest();
+	}
+
+	function undo() {
+		if (undoModel) {
+			undoModel.undo()
+			return true
+		}
+		else
+			return false
+	}
+
+	function redo()
+	{
+		if (undoModel) {
+			undoModel.redo()
+			return true
+		}
+		else
+			return false
 	}
 
 	Text
@@ -64,7 +87,7 @@ TextAreaBase
 			boundsBehavior: Flickable.StopAtBounds
 			anchors.fill:	parent
 
-			TextArea.flickable: TextArea
+			QTC.TextArea.flickable: QTC.TextArea
 			{
 				id:					control
 				selectByMouse:		true
@@ -73,33 +96,56 @@ TextAreaBase
 
 				font:				textArea.textType === JASP.TextTypeDefault || textArea.textType === JASP.TextTypeSource ? jaspTheme.font : jaspTheme.fontCode
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-				wrapMode:			TextArea.Wrap
+				//wrapMode:			TextArea.Wrap
 
 				Keys.onPressed: (event) =>
 				{
-					if (event.modifiers & Qt.ControlModifier)
+					var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
+					var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
+
+					switch (event.key)
 					{
-						if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)
+					case Qt.Key_Return:
+					case Qt.Key_Enter:
+						if (controlPressed)
 						{
 							userEnteredInput();
 							event.accepted = true;
 						}
-
-					}
-					else if ( event.key === Qt.Key_Tab)
-					{
-						control.insert(control.cursorPosition, "  ")
-						event.accepted = true;
-					}
-					else
-					{
+						break;
+					case Qt.Key_Tab:
+						if (useTabAsSpaces)
+						{
+							control.insert(control.cursorPosition, "  ")
+							event.accepted = true;
+						}
+						break;
+					case Qt.Key_Z:
+						if (controlPressed)
+						{
+							if (shiftPressed)
+							{
+								if (!canRedo)
+								{
+									if (textArea.redo())
+										event.accepted = true;
+								}
+							}
+							else if (!canUndo)
+							{
+								if (textArea.undo())
+									event.accepted = true;
+							}
+						}
+						break;
+					default:
 						infoText.text = textArea.applyScriptInfo;
 						textArea.hasScriptError = false;
 					}
 				}
 			}
 
-			ScrollBar.vertical: ScrollBar { }
+			QTC.ScrollBar.vertical: QTC.ScrollBar { }
 		}
 	}
 

@@ -102,6 +102,14 @@ FocusScope
 					theView.selectAll();
 					event.accepted = true;
 				break;
+
+			case Qt.Key_Z:
+					if (shiftPressed)
+						theView.redo()
+					else
+						theView.undo()
+					event.accepted = true;
+				break;
 			}
 	}
 

@@ -52,6 +52,9 @@ public:
 
 	Q_INVOKABLE bool				showAnalysisFormForColumn(const QString & columnName);
 
+	Q_INVOKABLE void				undo() { _undoStack->undo(); }
+	Q_INVOKABLE void				redo() { _undoStack->redo(); }
+
 	static		ComputedColumnsModel * singleton()		{ return _singleton; }
 
 
@@ -95,7 +98,10 @@ private slots:
 
 private:
 	static	ComputedColumnsModel	* _singleton;
-			Column					* _selectedColumn = nullptr;
+			Column					* _selectedColumn	= nullptr;
+
+			UndoStack				* _undoStack		= nullptr;
+
 
 };
 

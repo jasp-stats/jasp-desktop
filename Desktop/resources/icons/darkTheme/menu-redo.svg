@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   version="1.1"
+   id="svg3874"
+   sodipodi:docname="menu-redo.svg"
+   inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3878" />
+  <sodipodi:namedview
+     id="namedview3876"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="12.101695"
+     inkscape:cy="12"
+     inkscape:window-width="1309"
+     inkscape:window-height="456"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3874" />
+  <path
+     d="M 7.7224579,21.966102 H 12.152543 V 18.839635 H 7.7224579 c -2.4424537,0 -4.430085,-2.104112 -4.430085,-4.6897 0,-2.585588 1.9876313,-4.6897 4.430085,-4.6897 h 8.8601691 v 4.6897 L 23.966102,7.8970013 16.582627,1.6440678 V 6.3337679 H 7.7224579 c -4.0712481,0 -7.38347485,3.5063321 -7.38347485,7.8161671 0,4.309835 3.31222675,7.816167 7.38347485,7.816167 z"
+     id="path3872"
+     style="stroke-width:1.51935;fill:#ffffff" />
+</svg>
