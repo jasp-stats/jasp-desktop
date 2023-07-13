@@ -1241,7 +1241,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 		reader.parse(originalValueJsonStr, originalValueJson);
 		
 		if(column->labels().size() == row)	column->labelsAdd(value, label, filterAllows, description, originalValueJson, order, id);
-		else								column->labels()[row]->setInformationFromDB(column, id, order, label, value, filterAllows, description, originalValueJson);
+		else								column->labels()[row]->setInformation(column, id, order, label, value, filterAllows, description, originalValueJson);
 
 	};
 

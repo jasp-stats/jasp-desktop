@@ -52,7 +52,9 @@ public:
 			void				setOriginalValue(	const Json::Value & originalValue);
 			void				setDescription(		const std::string & description);
 			void				setFilterAllows(	bool allowFilter);
-			void				setInformationFromDB(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
+			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
+
+			Json::Value			serialize()	const;
 
 			DatabaseInterface	& db();
 	const	DatabaseInterface	& db() const;

@@ -163,6 +163,7 @@ signals:
 	void		selectionBudgesRight();
 
 	void		showComputedColumn(QString name);
+	void		undoChanged();
 	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
@@ -213,10 +214,16 @@ public slots:
 	void		rowsInserted(				const QModelIndex &parent, int first, int last);
 	void		rowsRemoved(				const QModelIndex &parent, int first, int last);
 
-	int			rowCount()		{ return _model->rowCount();	}
-	int			columnCount()	{ return _model->columnCount(); }
+	int			rowCount()								{ return _model->rowCount();	}
+	int			columnCount()							{ return _model->columnCount(); }
 
 	void		selectAll();
+	void		undo()									{ _model->undo(); }
+	void		redo()									{ _model->redo(); }
+	QString		undoText()								{ return _model->undoText(); }
+	QString		redoText()								{ return _model->redoText(); }
+
+	void		columnDataTypeChanged(QString colName)	{ _model->columnDataTypeChanged(colName); }
 
 	void		clearEdit();
 	void		edit(int row, int column);
@@ -225,7 +232,7 @@ public slots:
 	void		onDataModeChanged(bool dataMode);
 	void		commitLastEdit();
 
-	
+	int			setColumnType(int columnIndex, int newColumnType)	{ return _model->setColumnType(columnIndex, newColumnType); }
 protected:
 	void		_copy(bool includeHeader, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
