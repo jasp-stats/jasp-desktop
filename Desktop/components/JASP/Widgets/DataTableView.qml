@@ -55,20 +55,14 @@ FocusScope
 					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
 					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },	icon: "menu-undo", enabled: dataTableView.view.undoText() !== ""	},
 					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },	icon: "menu-redo", enabled: dataTableView.view.redoText() !== ""	},
-
-					{ text: "---" },
-
-					{ text: qsTr("Header cut"),		shortcut: qsTr("%1+Shift+X").arg(ctrlCmd),		func: function() { dataTableView.view.cut(true) }   ,						icon: "menu-data-cut"               },
-					{ text: qsTr("Header copy"),	shortcut: qsTr("%1+Shift+C").arg(ctrlCmd),		func: function() { dataTableView.view.copy(true) }  ,						icon: "menu-data-copy"              },
-					{ text: qsTr("Header paste"),	shortcut: qsTr("%1+Shift+V").arg(ctrlCmd),		func: function() { dataTableView.view.paste(true) } ,						icon: "menu-data-paste"             }
 				]
 
 				if(!header || !rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" });
+					menuModel.push({ text: "---" });
 					if (!header)
-						copyPasteMenuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
-					copyPasteMenuModel.push(
+						menuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+					menuModel.push(
 						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
 						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
 						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
@@ -77,10 +71,10 @@ FocusScope
 
 				if(!header || rowheader)
 				{
-					copyPasteMenuModel.push({ text: "---" })
+					menuModel.push({ text: "---" })
 					if (!header)
-						copyPasteMenuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
-					copyPasteMenuModel.push(
+						menuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
+					menuModel.push(
 						{ text: qsTr("Insert row before"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 						{ text: qsTr("Insert row after"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
 						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
@@ -185,6 +179,11 @@ FocusScope
 					z:						10
 					readOnly:				!itemEditable
 
+					onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
+					onVisibleChanged:		{ isEditing = false; keyPressed = false }
+					property bool isEditing: false
+					property bool keyPressed: false
+
 					Component.onCompleted:	{ focusTimer.start(); }
 					Timer
 					{
@@ -200,6 +199,8 @@ FocusScope
 
 					Keys.onPressed: (event) =>
 					{
+						keyPressed = true
+
 						var rowI			= rowIndex
 						var colI			= columnIndex
 						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
@@ -245,10 +246,12 @@ FocusScope
 							if(controlPressed)
 							{
 								if (shiftPressed)
-									theView.redo();
-								else
+								{
+									if (!canRedo)
+										theView.redo();
+								}
+								else if (!canUndo)
 									theView.undo();
-								event.accepted = true;
 							}
 							break;
 
@@ -286,9 +289,11 @@ FocusScope
 					Rectangle
 					{
 						id:					highlighter
-						color:				jaspTheme.itemHighlight
+						color:				editItem.isEditing ? "transparent" : jaspTheme.itemHighlight
 						z:					-1
 						visible:			ribbonModel.dataMode
+						border.width:		2
+						border.color:		jaspTheme.itemHighlight
 						anchors
 						{
 							fill:			 parent
@@ -443,7 +448,7 @@ FocusScope
 												if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 												if(mouseEvent.button === Qt.RightButton)
-													dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
+													dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1, true, true);
 											}
 					}
 
@@ -662,7 +667,7 @@ FocusScope
 									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 									if(mouseEvent.button === Qt.RightButton)
-									   dataTableView.showCopyPasteMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
+									   dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}
 							}
 						}

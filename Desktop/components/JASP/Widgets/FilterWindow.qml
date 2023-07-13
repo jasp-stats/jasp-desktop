@@ -47,7 +47,7 @@ FocusScope
 
 	function applyAndSendFilter(newFilter)
 	{
-		filterModel.rFilter = newFilter //Triggers send in FilterModel
+		filterModel.applyRFilter(newFilter) //Triggers send in FilterModel
 		absorbModelRFilter()
 	}
 
@@ -85,6 +85,22 @@ FocusScope
 			right:			parent.right
 			bottom:			parent.bottom
 			rightMargin:	Math.min(0, filterContainer.width - minWidthCollector.minWidth)
+		}
+
+		Keys.onPressed: (event) =>
+		{
+			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
+			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
+
+			if (event.key === Qt.Key_Z && controlPressed)
+			{
+				if (shiftPressed)
+					filterModel.redo()
+				else
+					filterModel.undo()
+
+				event.accepted = true;
+			}
 		}
 
 		Item
@@ -310,6 +326,34 @@ FocusScope
 							font.family:			"Courier"
 							font.pixelSize:			baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
+
+							Keys.onPressed: (event) =>
+							{
+								var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
+								var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
+
+								if (event.key === Qt.Key_Z && controlPressed)
+								{
+									if (shiftPressed)
+									{
+										if (!canRedo)
+										{
+											filterModel.redo()
+											event.accepted = true
+										}
+									}
+									else
+									{
+										if (!canUndo)
+										{
+											filterModel.undo()
+											event.accepted = true
+										}
+									}
+								}
+							}
+
+
 
 						}
 

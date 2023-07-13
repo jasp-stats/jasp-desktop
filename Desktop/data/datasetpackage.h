@@ -30,6 +30,7 @@
 #include "databaseinterface.h"
 #include "dataset.h"
 #include "datasetpackageenums.h"
+#include "undostack.h"
 
 class EngineSync;
 class DataSetPackageSubNodeModel;
@@ -234,6 +235,7 @@ public:
 
 				int							getColumnIndex(			const std::string	& name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
 				int							getColumnIndex(			const QString		& name)			const	{ return getColumnIndex(name.toStdString()); }
+				Column*						getColumn(				const std::string	& name)					{ return _dataSet->column(name); }
 				enum columnType				getColumnType(			size_t columnIndex)					const;
 				std::string					getColumnName(			size_t columnIndex)					const;
 				intvec						getColumnDataInts(		size_t columnIndex);
@@ -250,8 +252,8 @@ public:
 				QStringList					getColumnValuesAsStringList(size_t columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
 				void						unicifyColumnNames();
-				Json::Value					getColumn(const std::string& columnName)					const;
-				void						setColumn(const std::string& columnName, const Json::Value& col);
+				Json::Value					serializeColumn(const std::string& columnName)					const;
+				void						deserializeColumn(const std::string& columnName, const Json::Value& col);
 
 				bool						setFilterData(const std::string & filter, const boolvec & filterResult);
 				void						resetFilterAllows(size_t columnIndex);
@@ -275,6 +277,8 @@ public:
 
 				bool manualEdits() const;
 				void setManualEdits(bool newManualEdits);
+
+				UndoStack*					undoStack() { return _undoStack; }
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
@@ -376,6 +380,7 @@ private:
 							*	_labelsSubModel;
 	
 	QTimer						_databaseIntervalSyncher;
+	UndoStack				*	_undoStack					= nullptr;
 };
 
 #endif // FILEPACKAGE_H

@@ -676,7 +676,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 
 			if (intValue != std::numeric_limits<int>::lowest())
 			{
-				if (uniqueIntValues.find(intValue) != uniqueIntValues.end())
+				if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
 				{
 					std::string label = _getLabelDisplayStringByValue(key);
 					uniqueIntValues.insert(intValue);
@@ -1397,16 +1397,14 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	
 	beginBatchedLabelsDB();
 
-	std::map<std::string, size_t>	mapValuesToAdd;
-
 	//Prepare a list of values we might have to add, labeltext -> labelkey, if they aren't there yet.
-	//Keep in mind that new_values have been sorted and duplicates removed higher up in stack
-	for(size_t valuesToAddIndex = 0; valuesToAddIndex < new_values.size(); valuesToAddIndex++)
-		mapValuesToAdd[new_values[valuesToAddIndex]] = valuesToAddIndex + 1; //Add +1 to make sure _ints values dont start at 0!
-
+	stringset	valuesToAdd;
 	intset		valuesToRemove;
 	strintmap	result;
 	int			maxLabelKey = 0;
+
+	for (const std::string& v : new_values)
+		valuesToAdd.insert(v);
 
 	//Check whether the entries in mapValuesToAdd are already there, or using originalValue because the datafile doesnt know what the user did
 	for (const Label * label : _labels)
@@ -1416,16 +1414,17 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 
 		maxLabelKey = std::max(labelValue, maxLabelKey); //to be used in labelsResetValues
 
-		if(mapValuesToAdd.contains(labelText))
+		auto it = valuesToAdd.find(labelText);
+		if (it != valuesToAdd.end())
 		{
-			result[labelText] = mapValuesToAdd[labelText];
-			mapValuesToAdd.erase(labelText);
+			result[labelText] = labelValue;
+			valuesToAdd.erase(labelText);
 		}
 		else
 			valuesToRemove.insert(labelValue); //It it no longer present in the datafile
 	}
 
-	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || mapValuesToAdd.size() > 0))
+	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || valuesToAdd.size() > 0))
 		*changedSomething = true;
 
 	if (valuesToRemove.size() > 0)
@@ -1434,9 +1433,8 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 		result = labelsResetValues(maxLabelKey);
 	}
 
-	for (const std::string & newLabel : new_values)
-		if (mapValuesToAdd.count(newLabel))
-			result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
+	for (const std::string & newLabel : valuesToAdd)
+		result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
 
 	//Now all thats left is to use the new_labels mapping. As far as I can see during this refactor it is only used when importing from ReadStat
 	//And there we can have string-value and string-label in the same datafile that can be different.
@@ -1591,13 +1589,44 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 		case columnType::nominal:
 		case columnType::ordinal:
 		{
-			Label * newLabel		= labelByDisplay(value);
-			Label * oldLabel		= labelByValue(_ints[row]);
-			int		newIntegerToSet = !newLabel ?  labelsAdd(value) : newLabel->value();
-
 			convertedSuccesfully = true;
 
-			if(newIntegerToSet != _ints[row])
+			Label * newLabel		= labelByDisplay(value);
+			Label * oldLabel		= labelByValue(_ints[row]);
+
+			int	newIntegerToSet = -1;
+
+			if (newLabel)
+				newIntegerToSet = newLabel->value();
+			else
+			{
+				if (_type == columnType::nominalText)
+					// Be careful: labelsAdd works differently with a string or an integer
+					newIntegerToSet = labelsAdd(value);
+				else
+				{
+					int intValue = -1;
+					if (ColumnUtils::getIntValue(value, intValue))
+					{
+						// As the nominal/ordinal column has string labels, the user may enter either a label or direclty the integer value.
+						// So we need to check this also.
+						newLabel = labelByValue(intValue);
+						if (newLabel)
+							newIntegerToSet = newLabel->value();
+						else
+							newIntegerToSet = labelsAdd(intValue);
+					}
+					else
+					{
+						// A string has been set to a nominal/ordinal column, and this string is not a label of this column
+						// By setting convertedSuccesfully to false, this will convert this column to nominalText
+						convertedSuccesfully = false;
+					}
+				}
+			}
+
+
+			if(convertedSuccesfully && newIntegerToSet != _ints[row])
 			{
 				int refs = 0;
 				for(int i : _ints)

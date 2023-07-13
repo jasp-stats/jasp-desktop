@@ -5,7 +5,7 @@
 ExpandDataProxyModel::ExpandDataProxyModel(QObject *parent)
 	: QObject{parent}
 {
-	_undoStack = new QUndoStack(this);
+	_undoStack = DataSetPackage::pkg()->undoStack();
 	connect(_undoStack, &QUndoStack::indexChanged, this, &ExpandDataProxyModel::undoChanged) ;
 }
 
@@ -161,16 +161,6 @@ int ExpandDataProxyModel::getRole(const std::string &roleName) const
 		return it->second;
 }
 
-void ExpandDataProxyModel::undo()
-{
-	_undoStack->undo();
-}
-
-void ExpandDataProxyModel::redo()
-{
-	_undoStack->redo();
-}
-
 void ExpandDataProxyModel::columnDataTypeChanged(QString colName)
 {
 	// A column type has been changed: either it was explicitly set, and then it is already in the undoStack,
@@ -184,11 +174,11 @@ void ExpandDataProxyModel::removeRows(int start, int count)
 		return;
 
 	if (count > 1)
-		_startMacro(QObject::tr("Removes %1 rows from %2").arg(count).arg(start + 1));
+		_undoStack->startMacro(QObject::tr("Removes %1 rows from %2").arg(count).arg(start + 1));
 
 	for (int i = 0; i < count; i++)
 		removeRow(start + i);
-	_endMacro();
+	_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::removeColumns(int start, int count)
@@ -197,12 +187,12 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 		return;
 
 	if (count > 1)
-		_startMacro(QObject::tr("Removes %1 columns from %2").arg(count).arg(start + 1));
+		_undoStack->startMacro(QObject::tr("Removes %1 columns from %2").arg(count).arg(start + 1));
 
 	for (int i = 0; i < count; i++)
 		removeColumn(start + i);
 
-	_endMacro();
+	_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::removeRow(int row)
@@ -211,7 +201,7 @@ void ExpandDataProxyModel::removeRow(int row)
 		return;
 
 	if (row >= 0 && row < _sourceModel->rowCount())
-		_pushCommand(new RemoveRowCommand(this, row));
+		_undoStack->pushCommand(new RemoveRowCommand(_sourceModel, row));
 }
 
 void ExpandDataProxyModel::removeColumn(int col)
@@ -220,7 +210,7 @@ void ExpandDataProxyModel::removeColumn(int col)
 		return;
 
 	if (col >= 0 && col < _sourceModel->columnCount())
-		_pushCommand(new RemoveColumnCommand(this, col));
+		_undoStack->pushCommand(new RemoveColumnCommand(_sourceModel, col));
 }
 
 void ExpandDataProxyModel::insertRow(int row)
@@ -228,7 +218,7 @@ void ExpandDataProxyModel::insertRow(int row)
 	if (!_sourceModel)
 		return;
 
-	_pushCommand(new InsertRowCommand(this, row));
+	_undoStack->pushCommand(new InsertRowCommand(_sourceModel, row));
 }
 
 void ExpandDataProxyModel::insertColumn(int col, bool computed, bool R)
@@ -236,37 +226,7 @@ void ExpandDataProxyModel::insertColumn(int col, bool computed, bool R)
 	if (!_sourceModel)
 		return;
 
-	_pushCommand(new InsertColumnCommand(this, col, computed, R));
-}
-
-void ExpandDataProxyModel::_pushCommand(UndoModelCommand *command)
-{
-	if (!_parentCommand) // Push to the stack only when no macro is started: in this case the command is autmatically added to the _parentCommand
-		_undoStack->push(command);
-}
-
-void ExpandDataProxyModel::_startMacro(const QString& text)
-{
-	if (_parentCommand)
-		Log::log() << "Macro started though last one is not finished!" << std::endl;
-	_parentCommand = new UndoModelCommand(this);
-	if (!text.isEmpty())
-		_parentCommand->setText(text);
-}
-
-void ExpandDataProxyModel::_endMacro(UndoModelCommand* command)
-{
-	if (command)
-	{
-		if (_parentCommand)
-			_parentCommand->setText(command->text());
-		else
-			_undoStack->push(command); // Case when macro was not started
-	}
-	if (_parentCommand)
-		_undoStack->push(_parentCommand);
-
-	_parentCommand = nullptr;
+	_undoStack->pushCommand(new InsertColumnCommand(_sourceModel, col, computed, R));
 }
 
 void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
@@ -277,7 +237,7 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 		return;
 
 	if (col >= _sourceModel->columnCount() || row >= _sourceModel->rowCount())
-		_startMacro();
+		_undoStack->startMacro();
 
 	for (int colNr = _sourceModel->columnCount(); colNr <= col; colNr++)
 		insertColumn(colNr, false, false);
@@ -292,7 +252,7 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 		return;
 
 	_expandIfNecessary(row, col);
-	_endMacro(new SetDataCommand(this, row, col, value, role));
+	_undoStack->endMacro(new SetDataCommand(_sourceModel, row, col, value, role));
 }
 
 void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
@@ -301,185 +261,12 @@ void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<
 		return;
 
 	_expandIfNecessary(row + cells.size() > 0 ? cells[0].size() : 0, col + cells.size());
-	_endMacro(new PasteSpreadsheetCommand(this, row, col, cells, newColNames));
+	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, cells, newColNames));
 }
 
 int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
 {
-	_pushCommand(new SetColumnTypeCommand(this, columnIndex, columnType));
+	_undoStack->pushCommand(new SetColumnTypeCommand(_sourceModel, columnIndex, columnType));
 
 	return data(0, columnIndex, int(dataPkgRoles::columnType)).toInt();
-}
-
-SetDataCommand::SetDataCommand(ExpandDataProxyModel *proxyModel, int row, int col, const QVariant &value, int role)
-	: UndoModelCommand(proxyModel), _newValue(value), _row(row), _col(col), _role(role)
-{
-	setText(QObject::tr("Set value to %1 at row %2 column %3").arg(_newValue.toString()).arg(rowName(_row)).arg(columnName(_col)));
-}
-
-void SetDataCommand::undo()
-{
-	sourceModel()->setData(_proxyModel->index(_row, _col), _oldValue, _role);
-}
-
-void SetDataCommand::redo()
-{
-	_oldValue = _proxyModel->data(_row, _col);
-	sourceModel()->setData(_proxyModel->index(_row, _col), _newValue, _role);
-}
-
-InsertColumnCommand::InsertColumnCommand(ExpandDataProxyModel *proxyModel, int column, bool computed, bool R)
-	: UndoModelCommand(proxyModel), _col(column), _computed(computed), _R(R)
-{
-	setText(_computed ? QObject::tr("Insert computed column %1").arg(_col) : QObject::tr("Insert column %1").arg(columnName(_col)));
-}
-
-void InsertColumnCommand::undo()
-{
-	sourceModel()->removeColumn(_col);
-}
-
-void InsertColumnCommand::redo()
-{
-	DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(sourceModel());
-
-	if (dataSetTable)
-		dataSetTable->insertColumnSpecial(_col, _computed, _R);
-}
-
-InsertRowCommand::InsertRowCommand(ExpandDataProxyModel *proxyModel, int row)
-	: UndoModelCommand(proxyModel), _row(row)
-{
-	setText(QObject::tr("Insert row %1").arg(rowName(_row)));
-}
-
-void InsertRowCommand::undo()
-{
-	sourceModel()->removeRow(_row);
-}
-
-void InsertRowCommand::redo()
-{
-	sourceModel()->insertRow(_row);
-}
-
-RemoveColumnCommand::RemoveColumnCommand(ExpandDataProxyModel *proxyModel, int col)
-	: UndoModelCommand(proxyModel), _col(col)
-{
-	setText(QObject::tr("Remove column %1").arg(columnName(_col)));
-}
-
-void RemoveColumnCommand::undo()
-{
-	sourceModel()->insertColumn(_col);
-	DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(sourceModel());
-	if (dataSetTable)
-		DataSetPackage::pkg()->setColumn(dataSetTable->columnName(_col).toStdString(), _serializedColumn);
-}
-
-void RemoveColumnCommand::redo()
-{
-	DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(sourceModel());
-	if (dataSetTable) // Use its name to access a column instead of an index, since the name is sure to be the same but the the index
-		_serializedColumn = DataSetPackage::pkg()->getColumn(dataSetTable->columnName(_col).toStdString());
-	sourceModel()->removeColumn(_col);
-}
-
-RemoveRowCommand::RemoveRowCommand(ExpandDataProxyModel *proxyModel, int row)
-	: UndoModelCommand(proxyModel), _row(row)
-{
-	setText(QObject::tr("Remove row %1").arg(rowName(_row)));
-}
-
-void RemoveRowCommand::undo()
-{
-	sourceModel()->insertRow(_row);
-
-	for (int i = 0; i < sourceModel()->columnCount() && i < _values.count(); i++)
-		sourceModel()->setData(sourceModel()->index(_row, i), _values[i], 0);
-}
-
-void RemoveRowCommand::redo()
-{
-	_values.clear();
-	for (int i = 0; i < sourceModel()->columnCount(); i++)
-		_values.push_back(sourceModel()->data(sourceModel()->index(_row, i)));
-
-	sourceModel()->removeRow(_row);
-}
-
-PasteSpreadsheetCommand::PasteSpreadsheetCommand(ExpandDataProxyModel *proxyModel, int row, int col, const std::vector<std::vector<QString> > &cells, const QStringList &newColNames)
-	: UndoModelCommand(proxyModel), _row(row), _col(col), _newCells(cells), _newColNames(newColNames)
-{
-	setText(QObject::tr("Paste spreadsheet at row %1 column %2").arg(rowName(_row)).arg(columnName(_col)));
-}
-
-void PasteSpreadsheetCommand::undo()
-{
-	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_proxyModel->sourceModel());
-
-	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _oldCells, _newColNames);
-}
-
-void PasteSpreadsheetCommand::redo()
-{
-	_oldCells.clear();
-	for (int c = 0; c < _newCells.size(); c++)
-	{
-		_oldCells.push_back(std::vector<QString>());
-		for (int r = 0; r < _newCells[c].size(); r++)
-			_oldCells[c].push_back(sourceModel()->data(sourceModel()->index(_row + r, _col + c)).toString());
-	}
-
-	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_proxyModel->sourceModel());
-
-	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _newCells, _newColNames);
-}
-
-UndoModelCommand::UndoModelCommand(ExpandDataProxyModel *proxyModel)
-	: QUndoCommand{proxyModel->parentCommand()}, _proxyModel{proxyModel}
-{
-}
-
-QAbstractItemModel *UndoModelCommand::sourceModel() const
-{
-	return _proxyModel->sourceModel();
-}
-
-QString UndoModelCommand::columnName(int colIndex) const
-{
-	QString result = _proxyModel->headerData(colIndex, Qt::Orientation::Horizontal).toString();
-	if (result.isEmpty())
-		result = QString::number(colIndex + 1);
-
-	return result;
-}
-
-QString UndoModelCommand::rowName(int rowIndex) const
-{
-	QString result = _proxyModel->headerData(rowIndex, Qt::Orientation::Vertical).toString();
-	if (result.isEmpty())
-		result = QString::number(rowIndex + 1);
-
-	return result;
-}
-
-
-SetColumnTypeCommand::SetColumnTypeCommand(ExpandDataProxyModel *proxyModel, int col, int colType)
-	: UndoModelCommand(proxyModel),_col(col), _newColType(colType)
-{
-	setText(QObject::tr("Set type %1 to column %2").arg(columnTypeToQString(columnType(colType))).arg(columnName(col)));
-}
-
-void SetColumnTypeCommand::undo()
-{
-	sourceModel()->setData(_proxyModel->index(0, _col), _oldColType, int(dataPkgRoles::columnType));
-}
-
-void SetColumnTypeCommand::redo()
-{
-	_oldColType = _proxyModel->data(0, _col, int(dataPkgRoles::columnType)).toInt();
-	sourceModel()->setData(_proxyModel->index(0, _col), _newColType, int(dataPkgRoles::columnType));
 }

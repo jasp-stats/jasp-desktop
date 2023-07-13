@@ -153,6 +153,9 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 			}
 	}
 
+	if (editing() && (topLeft == bottomRight)) // In case of Undo/Redo set the focus on the correspondig cell
+		positionEditItem(topLeft.row(), topLeft.column());
+
 
 	//The following else would be good but it doesnt seem to work on mac for some reason. It does work on linux though
 	/*else
@@ -184,6 +187,7 @@ void DataSetView::modelWasReset()
 {
 	//Log::log() << "void DataSetView::modelWasReset()" << std::endl;
 	_selectionModel = new QItemSelectionModel(_model->sourceModel(), this);
+
 	calculateCellSizes();
 }
 
@@ -536,6 +540,8 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 	if(editing())
 		positionEditItem(_prevEditRow, _prevEditCol);
+	else
+		destroyEditItem();
 
 	JASPTIMER_STOP(DataSetView::buildNewLinesAndCreateNewItems);
 }
