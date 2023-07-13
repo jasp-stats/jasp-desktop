@@ -16,7 +16,6 @@
 			<UpgradeVersion OnlyDetect="yes"  Minimum="$(var.VersionNumber)"  IncludeMinimum="no"                                                         Property="NEWER_VERSION_FOUND" />
 			<UpgradeVersion                   Minimum="$(var.VersionNumber)"  IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes"    Property="SAME_VERSION_FOUND" />
 			<UpgradeVersion                   Minimum="0.0.0.0"               IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no"     Property="OLDER_VERSION_FOUND" />
-			<UpgradeVersion                   Minimum="0.17.2.1"              IncludeMinimum="yes" Maximum="0.17.2.1"			  IncludeMaximum="yes"     Property="UNINSTALL_FIRST_ERROR" />
 
 		</Upgrade>    
 
@@ -109,6 +108,7 @@
 	<Property Id="ApplicationFolderName" 				Value="JASP" 											/>
 	<Property Id="ExeLocation" 							Value="[#JASP.exe]"										/>
 	<Property Id="MsiLogging" Value="v" />
+	<Property Id="REINSTALLMODE" Value="amus"/>
 
 	<CustomAction Id="WixSetDefaultPerMachineFix" Property="WixPerMachineFolder" Value="[$(var.Program_Files)][ApplicationFolderName]" Execute="immediate" />
 
