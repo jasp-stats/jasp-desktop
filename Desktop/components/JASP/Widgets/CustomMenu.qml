@@ -271,7 +271,7 @@ FocusScope
 								id:		menuItem
 								width:	initWidth
 								height: jaspTheme.menuItemHeight
-								color:	(model.modelData === undefined) && !model.isEnabled
+								color:	(model.modelData === undefined) && !menuItem.itemEnabled
 												? "transparent"
 												: mouseArea.pressed || index == currentIndex
 													? jaspTheme.buttonColorPressed
@@ -279,6 +279,7 @@ FocusScope
 														? jaspTheme.buttonColorHovered
 														: "transparent"
 
+								property bool itemEnabled: menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
 								property int padding: 4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
 								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
 
@@ -303,7 +304,7 @@ FocusScope
 									id					: menuItemText
 									text				: model.modelData !== undefined ? model.modelData : displayText
 									font				: jaspTheme.font
-									color				: model.modelData !== undefined || isEnabled ? jaspTheme.black : jaspTheme.gray
+									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
 									anchors
 									{
 										left			: menu.hasIcons ? menuItemImage.right : parent.left
@@ -317,7 +318,7 @@ FocusScope
 									id					: menuItemShortcut
 									text				: menu.props.hasOwnProperty("shortcut") ? menu.props["shortcut"][index] : ""
 									font				: jaspTheme.font
-									color				: model.modelData !== undefined || isEnabled ? jaspTheme.black : jaspTheme.gray
+									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
 									anchors
 									{
 										right			: parent.right
@@ -331,7 +332,7 @@ FocusScope
 									hoverEnabled	: true
 									anchors.fill	: parent
 									onClicked		: menu.props['functionCall'](index)
-									enabled			: model.modelData !== undefined || isEnabled
+									enabled			: menuItem.itemEnabled
 								}
 							}
 						}

@@ -120,7 +120,8 @@ signals:
 				void setDataSynchronisation(bool);
 				void synchronisationChanged(bool);
 				void cellsClear();
-
+				void dataUndo();
+				void dataRedo();
 
 public slots:
 	void addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
@@ -135,6 +136,7 @@ private slots:
 	void dynamicModuleChanged(	Modules::DynamicModule * module);
 	void dynamicModuleReplaced(	Modules::DynamicModule * oldModule, Modules::DynamicModule * module);
 	void ribbonButtonModelChanged(RibbonButton* model);
+	void setUndoRedoMenu();
 
 private: // functions
 	void addRibbonButtonModel(RibbonButton* model, size_t row);
@@ -146,14 +148,20 @@ private: // fields
 	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
 	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
-										*	_entriesDelete			= nullptr;
+										*	_entriesDelete			= nullptr,
+										*	_entriesUndo			= nullptr;
 	RibbonButton						*	_analysesButton			= nullptr,
 										*	_dataSwitchButton		= nullptr,
 										*	_dataNewButton			= nullptr,
 										*	_insertButton			= nullptr,
 										*	_removeButton			= nullptr,
 										*	_synchroniseOnButton	= nullptr,
-										*	_synchroniseOffButton	= nullptr;
+										*	_synchroniseOffButton	= nullptr,
+										*	_undoButton				= nullptr;
+
+	Modules::AnalysisEntry				*	_undoEntry				= nullptr,
+										*	_redoEntry				= nullptr;
+
 	
 	static RibbonModel * _singleton;
 };
