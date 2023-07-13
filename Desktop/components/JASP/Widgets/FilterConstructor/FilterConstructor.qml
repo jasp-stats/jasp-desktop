@@ -59,7 +59,7 @@ Item
 			else
 				hints.filterText += qsTr("Filter applied<br>")
 
-			filterModel.constructorJson = JSON.stringify(filterConstructor.returnFilterJSON())
+			filterModel.applyConstructorJson(JSON.stringify(filterConstructor.returnFilterJSON()))
 		}
 
 		if(!allCorrect)

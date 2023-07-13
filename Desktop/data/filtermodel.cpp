@@ -5,6 +5,8 @@
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
 {
+	_undoStack = DataSetPackage::pkg()->undoStack();
+
 	reset();
 	connect(this,					&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
@@ -77,6 +79,18 @@ void FilterModel::setFilterErrorMsg(	QString newFilterErrorMsg)
 		
 		emit filterErrorMsgChanged();
 	}
+}
+
+void FilterModel::applyConstructorJson(QString newConstructorJson)
+{
+	if (newConstructorJson != constructorJson())
+		_undoStack->pushCommand(new SetJsonFilterCommand(DataSetPackage::pkg(), this, newConstructorJson));
+}
+
+void FilterModel::applyRFilter(QString newRFilter)
+{
+	if (newRFilter != rFilter())
+		_undoStack->pushCommand(new SetRFilterCommand(DataSetPackage::pkg(), this, newRFilter));
 }
 
 void FilterModel::setConstructorJson(QString newconstructorJson)

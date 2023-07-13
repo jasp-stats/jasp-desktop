@@ -676,7 +676,7 @@ columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType n
 
 			if (intValue != std::numeric_limits<int>::lowest())
 			{
-				if (uniqueIntValues.find(intValue) != uniqueIntValues.end())
+				if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
 				{
 					std::string label = _getLabelDisplayStringByValue(key);
 					uniqueIntValues.insert(intValue);
@@ -913,8 +913,6 @@ bool Column::setAsScale(const doublevec & values)
 
 	return changedSomething;
 }
-
-
 
 bool Column::setAsNominalOrOrdinal(const intvec & values, bool is_ordinal)
 {
@@ -1399,16 +1397,14 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	
 	beginBatchedLabelsDB();
 
-	std::map<std::string, size_t>	mapValuesToAdd;
-
 	//Prepare a list of values we might have to add, labeltext -> labelkey, if they aren't there yet.
-	//Keep in mind that new_values have been sorted and duplicates removed higher up in stack
-	for(size_t valuesToAddIndex = 0; valuesToAddIndex < new_values.size(); valuesToAddIndex++)
-		mapValuesToAdd[new_values[valuesToAddIndex]] = valuesToAddIndex + 1; //Add +1 to make sure _ints values dont start at 0!
-
+	stringset	valuesToAdd;
 	intset		valuesToRemove;
 	strintmap	result;
 	int			maxLabelKey = 0;
+
+	for (const std::string& v : new_values)
+		valuesToAdd.insert(v);
 
 	//Check whether the entries in mapValuesToAdd are already there, or using originalValue because the datafile doesnt know what the user did
 	for (const Label * label : _labels)
@@ -1418,16 +1414,17 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 
 		maxLabelKey = std::max(labelValue, maxLabelKey); //to be used in labelsResetValues
 
-		if(mapValuesToAdd.contains(labelText))
+		auto it = valuesToAdd.find(labelText);
+		if (it != valuesToAdd.end())
 		{
-			result[labelText] = mapValuesToAdd[labelText];
-			mapValuesToAdd.erase(labelText);
+			result[labelText] = labelValue;
+			valuesToAdd.erase(labelText);
 		}
 		else
 			valuesToRemove.insert(labelValue); //It it no longer present in the datafile
 	}
 
-	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || mapValuesToAdd.size() > 0))
+	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || valuesToAdd.size() > 0))
 		*changedSomething = true;
 
 	if (valuesToRemove.size() > 0)
@@ -1436,9 +1433,8 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 		result = labelsResetValues(maxLabelKey);
 	}
 
-	for (const std::string & newLabel : new_values)
-		if (mapValuesToAdd.count(newLabel))
-			result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
+	for (const std::string & newLabel : valuesToAdd)
+		result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
 
 	//Now all thats left is to use the new_labels mapping. As far as I can see during this refactor it is only used when importing from ReadStat
 	//And there we can have string-value and string-label in the same datafile that can be different.
@@ -1460,7 +1456,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 
 	return result;
 }
-
 
 bool Column::isValueEqual(size_t row, double value) const
 {
@@ -1594,13 +1589,44 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 		case columnType::nominal:
 		case columnType::ordinal:
 		{
-			Label * newLabel		= labelByDisplay(value);
-			Label * oldLabel		= labelByValue(_ints[row]);
-			int		newIntegerToSet = !newLabel ?  labelsAdd(value) : newLabel->value();
-
 			convertedSuccesfully = true;
 
-			if(newIntegerToSet != _ints[row])
+			Label * newLabel		= labelByDisplay(value);
+			Label * oldLabel		= labelByValue(_ints[row]);
+
+			int	newIntegerToSet = -1;
+
+			if (newLabel)
+				newIntegerToSet = newLabel->value();
+			else
+			{
+				if (_type == columnType::nominalText)
+					// Be careful: labelsAdd works differently with a string or an integer
+					newIntegerToSet = labelsAdd(value);
+				else
+				{
+					int intValue = -1;
+					if (ColumnUtils::getIntValue(value, intValue))
+					{
+						// As the nominal/ordinal column has string labels, the user may enter either a label or direclty the integer value.
+						// So we need to check this also.
+						newLabel = labelByValue(intValue);
+						if (newLabel)
+							newIntegerToSet = newLabel->value();
+						else
+							newIntegerToSet = labelsAdd(intValue);
+					}
+					else
+					{
+						// A string has been set to a nominal/ordinal column, and this string is not a label of this column
+						// By setting convertedSuccesfully to false, this will convert this column to nominalText
+						convertedSuccesfully = false;
+					}
+				}
+			}
+
+
+			if(convertedSuccesfully && newIntegerToSet != _ints[row])
 			{
 				int refs = 0;
 				for(int i : _ints)
@@ -1970,6 +1996,97 @@ const stringset & Column::dependsOnColumns(bool refresh)
 		findDependencies();
 	
 	return _dependsOnColumns;
+}
+
+Json::Value Column::serialize() const
+{
+	Json::Value json(Json::objectValue);
+
+	json["name"]			= _name;
+	json["title"]			= _title;
+	json["description"]		= _description;
+	json["rCode"]			= _rCode;
+	json["type"]			= int(_type);
+	json["analysisId"]		= _analysisId;
+	json["isComputed"]		= _isComputed;
+	json["invalidated"]		= _invalidated;
+	json["codeType"]		= int(_codeType);
+	json["error"]			= _error;
+	json["rCode"]			= _rCode;
+	json["constructorJson"] = _constructorJson;
+
+	Json::Value jsonLabels(Json::arrayValue);
+	for (const Label* label : _labels)
+		jsonLabels.append(label->serialize());
+
+	Json::Value jsonDbls(Json::arrayValue);
+	for (double dbl : _dbls)
+		jsonDbls.append(dbl);
+
+	Json::Value jsonInts(Json::arrayValue);
+	for (int i : _ints)
+		jsonInts.append(i);
+
+	json["labels"]			= jsonLabels;
+	json["dbls"]			= jsonDbls;
+	json["ints"]			= jsonInts;
+
+	return json;
+}
+
+void Column::deserialize(const Json::Value &json)
+{
+	_name				= json["name"].asString();
+	db().columnSetName(_id, _name);
+
+	_title				= json["title"].asString();
+	db().columnSetTitle(_id, _title);
+
+	_description		= json["description"].asString();
+	db().columnSetDescription(_id, _description);
+
+	_type				= columnType(json["type"].asInt());
+	db().columnSetType(_id, _type);
+
+	_invalidated		= json["invalidated"].asBool();
+	_codeType			= computedColumnType(json["codeType"].asInt());
+	_rCode				= json["rCode"].asString();
+	_error				= json["error"].asString();
+	_constructorJson	= json["constructorJson"];
+	_isComputed			= json["isComputed"].asBool();
+
+	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+
+
+	_dbls.clear();
+	for (const Json::Value& dblJson : json["dbls"])
+		_dbls.push_back(dblJson.asDouble());
+
+	db().columnSetValues(_id, _dbls);
+
+	_ints.clear();
+	for (const Json::Value& dblJson : json["ints"])
+		_ints.push_back(dblJson.asInt());
+
+	db().columnSetValues(_id, _ints);
+
+	for (Label* label : _labels)
+	{
+		_labelByValueMap.erase(label->value());
+		label->dbDelete();
+		delete label;
+	}
+	_labelByValueMap.clear();
+	_labels.clear();
+
+	const Json::Value& labels = json["labels"];
+	if (labels.isArray())
+	{
+		for (const Json::Value& labelJson : labels)
+			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), labelJson["id"].asInt());
+	}
+
+	incRevision();
 }
 
 bool Column::dependsOn(const std::string & columnName, bool refresh)
