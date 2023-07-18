@@ -186,7 +186,7 @@ DataSetBaseNode * DataSetPackage::indexPointerToNode(const QModelIndex & index) 
 {
 	DataSetBaseNode * node = static_cast<DataSetBaseNode*>(index.internalPointer());
 	
-	//Below was when I was trying to use dataChanged for labelModel setData updates. but it got messy, so instead we do reset but we do not need to loop over all nodes anymore everytime we convert something
+	//Below was when I was trying to use dataChanged for columnModel setData updates. but it got messy, so instead we do reset but we do not need to loop over all nodes anymore everytime we convert something
 	return node;
 	//Sometimes the proxymodels seem to return pointers to destroyed objects, so lets check even if it gives some overhead...
 	//return dataSetBaseNodeStillExists(node) ? node : nullptr;
@@ -470,7 +470,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if(role == int(specialRoles::selected))
-		return false; //DataSetPackage doesnt know anything about selected, only LabelModel does (now)
+		return false; //DataSetPackage doesnt know anything about selected, only ColumnModel does (now)
 
 	DataSetBaseNode *	node		= indexPointerToNode(index);
 //					*	parentNode	= !index.parent().isValid() ? nullptr : indexPointerToNode(index.parent());

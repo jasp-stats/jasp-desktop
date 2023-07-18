@@ -1,6 +1,6 @@
 
-#ifndef LABELMODEL_H
-#define LABELMODEL_H
+#ifndef COLUMN_MODEL_H
+#define COLUMN_MODEL_H
 
 
 #include "datasettableproxy.h"
@@ -10,7 +10,7 @@
 /// 
 /// This pipes through the label-information for a single column from DataSetPackage
 /// The column is selected by changing `proxyParentColumn` from DataSetTableProxy
-class LabelModel : public DataSetTableProxy
+class ColumnModel : public DataSetTableProxy
 {
 	Q_OBJECT
 
@@ -26,7 +26,7 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
 
 public:
-				LabelModel();
+	ColumnModel();
 
 	bool		labelNeedsFilter(size_t col);
 	std::string columnName(size_t col); ///< Not a proxy columnIndex!
@@ -113,4 +113,4 @@ private:
 	UndoStack*			_undoStack		= nullptr;
 };
 
-#endif // LABELMODEL_H
+#endif // COLUMN_MODEL_H

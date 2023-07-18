@@ -1,36 +1,36 @@
-#include "labelmodel.h"
+#include "columnModel.h"
 #include "log.h"
 #include "jasptheme.h"
 #include "utilities/qutils.h"
 
-LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
+ColumnModel::ColumnModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
-	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::filteredOutChanged		);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnNameChanged		);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnTitleChanged		);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::columnDescriptionChanged	);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &LabelModel::chosenColumnChanged		);
-	connect(this,					&LabelModel::chosenColumnChanged,				this, &LabelModel::onChosenColumnChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnTitleChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnDescriptionChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &LabelModel::columnDataTypeChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &LabelModel::refresh					);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &ColumnModel::filteredOutChangedHandler);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::filteredOutChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnNameChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnTitleChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnDescriptionChanged	);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::chosenColumnChanged		);
+	connect(this,					&ColumnModel::chosenColumnChanged,				this, &ColumnModel::onChosenColumnChanged	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnNameChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnTitleChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnDescriptionChanged	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &ColumnModel::allFiltersReset			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &ColumnModel::labelFilterChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &ColumnModel::columnDataTypeChanged	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &ColumnModel::refresh					);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
 
-bool LabelModel::labelNeedsFilter(size_t col)
+bool ColumnModel::labelNeedsFilter(size_t col)
 {
 	QVariant result = DataSetPackage::pkg()->headerData(col, Qt::Orientation::Horizontal, int(DataSetPackage::specialRoles::labelsHasFilter));
 
 	return result.type() == QVariant::Bool && result.toBool();
 }
 
-std::string LabelModel::columnName(size_t col)
+std::string ColumnModel::columnName(size_t col)
 {
 	if(	!	node() 
 		||	DataSetPackage::pkg()->columnCount(DataSetPackage::pkg()->indexForSubNode(node()->parent())) <= int(col))
@@ -39,42 +39,42 @@ std::string LabelModel::columnName(size_t col)
 	return DataSetPackage::pkg()->getColumnName(col);
 }
 
-QString LabelModel::columnNameQ()
+QString ColumnModel::columnNameQ()
 {
 	return QString::fromStdString(column() ? column()->name() : "");
 }
 
 
-void LabelModel::setColumnNameQ(QString newColumnName)
+void ColumnModel::setColumnNameQ(QString newColumnName)
 {
 	if(column())
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnName, SetColumnPropertyCommand::ColumnProperty::Name));
 }
 
-QString LabelModel::columnTitle() const
+QString ColumnModel::columnTitle() const
 {
 	return QString::fromStdString(column() ? column()->title() : "");
 }
 
-void LabelModel::setColumnTitle(const QString & newColumnTitle)
+void ColumnModel::setColumnTitle(const QString & newColumnTitle)
 {
 	if(column())
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnTitle, SetColumnPropertyCommand::ColumnProperty::Title));
 }
 
-QString LabelModel::columnDescription() const
+QString ColumnModel::columnDescription() const
 {
 	return QString::fromStdString(column() ? column()->description() : "");
 }
 
-void LabelModel::setColumnDescription(const QString & newColumnDescription)
+void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 {
 	if(column())
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnDescription, SetColumnPropertyCommand::ColumnProperty::Description));
 }
 
 
-std::vector<bool> LabelModel::filterAllows(size_t col)
+std::vector<bool> ColumnModel::filterAllows(size_t col)
 {
 	DataSetPackage *	pkg = DataSetPackage::pkg();
 	QModelIndex			p	= pkg->indexForSubNode(node());
@@ -86,7 +86,7 @@ std::vector<bool> LabelModel::filterAllows(size_t col)
 	return allows;
 }
 
-std::vector<std::string> LabelModel::labels(size_t col)
+std::vector<std::string> ColumnModel::labels(size_t col)
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
 	QModelIndex					p	= pkg->indexForSubNode(node());
@@ -98,7 +98,7 @@ std::vector<std::string> LabelModel::labels(size_t col)
 	return labels;
 }
 
-std::vector<size_t> LabelModel::getSortedSelection() const
+std::vector<size_t> ColumnModel::getSortedSelection() const
 {
 	std::map<QString, size_t> mapValueToRow;
 
@@ -115,7 +115,7 @@ std::vector<size_t> LabelModel::getSortedSelection() const
 	return out;
 }
 
-void LabelModel::setValueMaxWidth()
+void ColumnModel::setValueMaxWidth()
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
 	QModelIndex					p	= pkg->indexForSubNode(node());
@@ -133,7 +133,7 @@ void LabelModel::setValueMaxWidth()
 	emit valueMaxWidthChanged();
 }
 
-void LabelModel::setLabelMaxWidth()
+void ColumnModel::setLabelMaxWidth()
 {
 	DataSetPackage *			pkg = DataSetPackage::pkg();
 	QModelIndex					p	= pkg->indexForSubNode(node());
@@ -151,7 +151,7 @@ void LabelModel::setLabelMaxWidth()
 	emit labelMaxWidthChanged();
 }
 
-void LabelModel::moveSelectionUp()
+void ColumnModel::moveSelectionUp()
 {
 	std::vector<size_t> indexes = getSortedSelection();
 	if (indexes.size() < 1)
@@ -161,7 +161,7 @@ void LabelModel::moveSelectionUp()
 	_undoStack->pushCommand(new MoveLabelCommand(this, indexes, true));
 }
 
-void LabelModel::moveSelectionDown()
+void ColumnModel::moveSelectionDown()
 {
 	std::vector<size_t> indexes = getSortedSelection();
 	if (indexes.size() < 1)
@@ -171,13 +171,13 @@ void LabelModel::moveSelectionDown()
 	_undoStack->pushCommand(new MoveLabelCommand(this, indexes, false));
 }
 
-void LabelModel::reverse()
+void ColumnModel::reverse()
 {
 	_lastSelected = -1;
 	_undoStack->pushCommand(new ReverseLabelCommand(this));
 }
 
-bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool ColumnModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
 	if(role == int(DataSetPackage::specialRoles::selected))
 		return false;
@@ -190,7 +190,7 @@ bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int 
 	return result;
 }
 
-QVariant LabelModel::data(	const QModelIndex & index, int role) const
+QVariant ColumnModel::data(	const QModelIndex & index, int role) const
 {
 	if(role == int(DataSetPackage::specialRoles::selected))
 	{
@@ -201,23 +201,23 @@ QVariant LabelModel::data(	const QModelIndex & index, int role) const
 	return DataSetTableProxy::data(index, role > 0 ? role : int(DataSetPackage::specialRoles::label));
 }
 
-void LabelModel::filteredOutChangedHandler(int c)
+void ColumnModel::filteredOutChangedHandler(int c)
 {
 	if(c == chosenColumn())
 		emit filteredOutChanged();
 }
 
-int LabelModel::filteredOut() const
+int ColumnModel::filteredOut() const
 {
 	return DataSetPackage::pkg()->filteredOut(chosenColumn());
 }
 
-void LabelModel::resetFilterAllows()
+void ColumnModel::resetFilterAllows()
 {
 	DataSetPackage::pkg()->resetFilterAllows(chosenColumn());
 }
 
-void LabelModel::setVisible(bool visible)
+void ColumnModel::setVisible(bool visible)
 {
 	//visible = visible && rowCount() > 0; //cannot show labels when there are no labels
 
@@ -228,17 +228,17 @@ void LabelModel::setVisible(bool visible)
 	emit visibleChanged(_visible);
 }
 
-int LabelModel::dataColumnCount() const
+int ColumnModel::dataColumnCount() const
 {
 	return DataSetPackage::pkg()->dataColumnCount();
 }
 
-Column * LabelModel::column() const 
+Column * ColumnModel::column() const 
 {
 	return static_cast<Column *>(node());
 }
 
-int LabelModel::chosenColumn() const
+int ColumnModel::chosenColumn() const
 {
 	Column * c = column();
 	
@@ -248,7 +248,7 @@ int LabelModel::chosenColumn() const
 	return c->data()->columnIndex(c);
 }
 
-void LabelModel::setChosenColumn(int chosenColumn)
+void ColumnModel::setChosenColumn(int chosenColumn)
 {
 	//This only works as long as we have a single dataSet but lets not go overboard with rewriting stuff atm
 	DataSet * data = DataSetPackage::pkg()->dataSet();
@@ -258,7 +258,7 @@ void LabelModel::setChosenColumn(int chosenColumn)
 }
 
 
-void LabelModel::columnDataTypeChanged(const QString & colName)
+void ColumnModel::columnDataTypeChanged(const QString & colName)
 {
 	int colIndex = DataSetPackage::pkg()->getColumnIndex(colName);
 
@@ -272,7 +272,7 @@ void LabelModel::columnDataTypeChanged(const QString & colName)
 	}
 }
 
-void LabelModel::setRowWidth(double len)
+void ColumnModel::setRowWidth(double len)
 {
 	if (abs(len - _rowWidth) > 0.001)
 	{
@@ -282,8 +282,8 @@ void LabelModel::setRowWidth(double len)
 	}
 }
 
-///Override of headerData because it doesnt get QModelIndex and thus cannot know whether it is proxied by labelmodel or something else...
-QVariant LabelModel::headerData(int section, Qt::Orientation orientation, int role)	const
+///Override of headerData because it doesnt get QModelIndex and thus cannot know whether it is proxied by columnModel or something else...
+QVariant ColumnModel::headerData(int section, Qt::Orientation orientation, int role)	const
 {
 	if (section < 0 || section >= (orientation == Qt::Horizontal ? columnCount() : rowCount()))
 		return QVariant();
@@ -299,7 +299,7 @@ QVariant LabelModel::headerData(int section, Qt::Orientation orientation, int ro
 	return QVariant();
 }
 
-void LabelModel::onChosenColumnChanged()
+void ColumnModel::onChosenColumnChanged()
 {
 	_selected.clear();
 	_lastSelected = -1;
@@ -308,7 +308,7 @@ void LabelModel::onChosenColumnChanged()
 	//dataChanged probably not needed 'cause we are in a reset
 }
 
-void LabelModel::refresh()
+void ColumnModel::refresh()
 {
 	//if(column() && column()->type() == columnType::scale)
 	//	setChosenColumn(-1);
@@ -321,13 +321,13 @@ void LabelModel::refresh()
 	setLabelMaxWidth();
 }
 
-void LabelModel::changeSelectedColumn(QPoint selectionStart)
+void ColumnModel::changeSelectedColumn(QPoint selectionStart)
 {
 	if (selectionStart.x() != chosenColumn())
 		setChosenColumn(selectionStart.x());
 }
 
-void LabelModel::removeAllSelected()
+void ColumnModel::removeAllSelected()
 {
 	QMap<QString, size_t> mapValueToRow;
 
@@ -345,12 +345,12 @@ void LabelModel::removeAllSelected()
 		if (mapValueToRow.contains(selectedValue))
 		{
 			int selectedRow = int(mapValueToRow[selectedValue]);
-			emit dataChanged(LabelModel::index(selectedRow, 0), LabelModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
+			emit dataChanged(ColumnModel::index(selectedRow, 0), ColumnModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 }
 
-void LabelModel::setSelected(int row, int modifier)
+void ColumnModel::setSelected(int row, int modifier)
 {
 	if (modifier & Qt::ShiftModifier && _lastSelected >= 0)
 	{
@@ -360,14 +360,14 @@ void LabelModel::setSelected(int row, int modifier)
 		{
 			QString rowValue = data(index(i, 0), int(DataSetPackage::specialRoles::value)).toString();
 			_selected.insert(rowValue);
-			emit dataChanged(LabelModel::index(i, 0), LabelModel::index(i, 0), {int(DataSetPackage::specialRoles::selected)});
+			emit dataChanged(ColumnModel::index(i, 0), ColumnModel::index(i, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 	else if (modifier & Qt::ControlModifier)
 	{
 		QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
 		_selected.insert(rowValue);
-		emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
+		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
 	else
 	{
@@ -376,20 +376,20 @@ void LabelModel::setSelected(int row, int modifier)
 		removeAllSelected();
 		if (!disableCurrent)	_selected.insert(rowValue);
 		else					_selected.erase(rowValue);
-		emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
+		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
 	_lastSelected = row;
 
 }
 
-void LabelModel::unselectAll()
+void ColumnModel::unselectAll()
 {
 	_selected.clear();
 	_lastSelected = -1;
-	emit dataChanged(LabelModel::index(0, 0), LabelModel::index(rowCount(), 0), {int(DataSetPackage::specialRoles::selected)});
+	emit dataChanged(ColumnModel::index(0, 0), ColumnModel::index(rowCount(), 0), {int(DataSetPackage::specialRoles::selected)});
 }
 
-bool LabelModel::setChecked(int rowIndex, bool checked)
+bool ColumnModel::setChecked(int rowIndex, bool checked)
 {
 	_editing = true;
 	_undoStack->pushCommand(new FilterLabelCommand(this, rowIndex, checked));
@@ -398,14 +398,14 @@ bool LabelModel::setChecked(int rowIndex, bool checked)
 	return data(index(rowIndex, 0), int(DataSetPackage::specialRoles::filter)).toBool();
 }
 
-void LabelModel::setLabel(int rowIndex, QString label)
+void ColumnModel::setLabel(int rowIndex, QString label)
 {
 	_editing = true;
 	_undoStack->pushCommand(new SetLabelCommand(this, rowIndex, label));
 	_editing = false;
 }
 
-bool LabelModel::showLabelEditor() const
+bool ColumnModel::showLabelEditor() const
 {
 	if(column())
 			return column()->type() != columnType::scale && rowCount() > 0;

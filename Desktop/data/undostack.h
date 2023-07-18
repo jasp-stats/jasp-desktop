@@ -5,7 +5,7 @@
 #include <QAbstractItemModel>
 #include <json/json.h>
 
-class LabelModel;
+class ColumnModel;
 class FilterModel;
 class ComputedColumnsModel;
 
@@ -47,7 +47,7 @@ public:
 	void redo()					override;
 
 private:
-	LabelModel*				_labelModel = nullptr;
+	ColumnModel*			_columnModel = nullptr;
 	int						_colId		= -1,
 							_labelIndex = -1;
 	QString					_newLabel,
@@ -63,7 +63,7 @@ public:
 	void redo()					override;
 
 private:
-	LabelModel*				_labelModel = nullptr;
+	ColumnModel*			_columnModel = nullptr;
 	int						_colId		= -1,
 							_labelIndex = -1;
 	bool					_checked	= false;
@@ -80,8 +80,8 @@ public:
 private:
 	std::vector<size_t>		_getIndexes();
 	void					_moveLabels(bool up);
-
-	LabelModel*				_labelModel = nullptr;
+	
+	ColumnModel*			_columnModel = nullptr;
 	int						_colId		= -1;
 	QStringList				_labels;
 	bool					_up			= false;
@@ -96,7 +96,7 @@ public:
 	void redo()					override;
 
 private:
-	LabelModel*				_labelModel = nullptr;
+	ColumnModel*			_columnModel = nullptr;
 	int						_colId		= -1;
 };
 

@@ -27,21 +27,21 @@ import "."
 FocusScope
 {
 	id:			variablesContainer
-	visible:	labelModel.visible && labelModel.chosenColumn > -1
+	visible:	columnModel.visible && columnModel.chosenColumn > -1
 
 	property real calculatedBaseHeight:			buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height
 	property real calculatedMinimumHeight:										columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
 	property real calculatedPreferredHeight:									columnDescriptionVariablesWindow.height		+ calculatedBaseHeight
-	property real calculatedMaximumHeight:		!labelModel.showLabelEditor ? columnDescriptionVariablesWindow.height		+ calculatedBaseHeight :  parent.height * 0.7
+	property real calculatedMaximumHeight:		!columnModel.showLabelEditor ? columnDescriptionVariablesWindow.height		+ calculatedBaseHeight :  parent.height * 0.7
 
 
 	Connections
 	{
-		target: labelModel
+		target: columnModel
 		
 		function onChosenColumnChanged(chosenColumn)
 		{
-			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
+			if(columnModel.chosenColumn > -1 && columnModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere
 		}
@@ -69,9 +69,9 @@ FocusScope
 				if(controlPressed)
 				{
 					if (shiftPressed)
-						labelModel.redo();
+						columnModel.redo();
 					else
-						labelModel.undo();
+						columnModel.undo();
 					event.accepted = true;
 				}
 			}
@@ -120,9 +120,9 @@ FocusScope
 			TextField
 			{
 				id:					columnNameVariablesWindow
-				value:				labelModel.columnName
-				onValueChanged:		if(labelModel.columnName !== value) labelModel.columnName = value
-				undoModel:			labelModel
+				value:				columnModel.columnName
+				onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
+				undoModel:			columnModel
 
 				anchors
 				{
@@ -137,9 +137,9 @@ FocusScope
 			{
 				id:					columnTitleVariablesWindow
 				label:				qsTr("Title: ");
-				value:				labelModel.columnTitle
-				onValueChanged:		if(labelModel.columnTitle !== value) labelModel.columnTitle = value
-				undoModel:			labelModel
+				value:				columnModel.columnTitle
+				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
+				undoModel:			columnModel
 
 				anchors
 				{
@@ -163,11 +163,11 @@ FocusScope
 				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 5 * jaspTheme.uiScale))
 				control.padding:	3 * jaspTheme.uiScale
 
-				text:				labelModel.columnDescription
-				onEditingFinished: 	if(labelModel.columnDescription !== text) labelModel.columnDescription = text
+				text:				columnModel.columnDescription
+				onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
 				applyScriptInfo:	""
 				placeholderText:	"..."
-				undoModel:			labelModel
+				undoModel:			columnModel
 				useTabAsSpaces:		false
 
 				property int maxHeight:	100 * jaspTheme.uiScale
@@ -179,7 +179,7 @@ FocusScope
 				color:				jaspTheme.controlBackgroundColor
 				border.color:		jaspTheme.uiBorder
 				border.width:		1
-				visible:			labelModel.showLabelEditor
+				visible:			columnModel.showLabelEditor
 
 				anchors
 				{
@@ -203,7 +203,7 @@ FocusScope
 						bottom:			parent.bottom
 					}
 
-					model:						labelModel
+					model:						columnModel
 					cacheItems:					false
 					expandDataSet:				false
 					toolTip:					qsTr("Edit the labels here or choose which values should be filtered out.")
@@ -212,11 +212,11 @@ FocusScope
 					//flickableInteractive:		false
 					doubleClickWorkaround:		false
 
-					Binding { target: labelModel; property: "rowWidth"; value: Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
+					Binding { target: columnModel; property: "rowWidth"; value: Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
 
 					property real filterColWidth:	60  * jaspTheme.uiScale
-					property real valueColWidth:	(labelModel.valueMaxWidth + 10) * jaspTheme.uiScale
-					property real labelColMinWidth:	(labelModel.labelMaxWidth + 10) * jaspTheme.uiScale
+					property real valueColWidth:	(columnModel.valueMaxWidth + 10) * jaspTheme.uiScale
+					property real labelColMinWidth:	(columnModel.labelMaxWidth + 10) * jaspTheme.uiScale
 
 					columnHeaderDelegate:	Item
 					{
@@ -306,7 +306,7 @@ FocusScope
 
 								onClicked:			(mouse)=>
 								{
-									labelModel.setSelected(rowIndex, mouse.modifiers);
+									columnModel.setSelected(rowIndex, mouse.modifiers);
 									selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
 								}
 								onDoubleClicked:	(mouse)=>
@@ -328,7 +328,7 @@ FocusScope
 									anchors.topMargin:		levelsTableView.itemVerticalPadding
 									z:						-1
 
-									onClicked:				if (!labelModel.setChecked(rowIndex, checked)) checked = true; // Case when all labels are unchecked.
+									onClicked:				if (!columnModel.setChecked(rowIndex, checked)) checked = true; // Case when all labels are unchecked.
 
 									background: Item
 									{
@@ -399,16 +399,16 @@ FocusScope
 
 									onEditingFinished:
 									{
-										if(chosenColumnWas === labelModel.chosenColumn && rowIndex >= 0)
-											labelModel.setLabel(rowIndex, text)
+										if(chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
+											columnModel.setLabel(rowIndex, text)
 									}
 
 									onActiveFocusChanged:
 									{
 										if (activeFocus)
 										{
-											chosenColumnWas = labelModel.chosenColumn
-											labelModel.removeAllSelected()
+											chosenColumnWas = columnModel.chosenColumn
+											columnModel.removeAllSelected()
 										}
 									}
 
@@ -437,8 +437,8 @@ FocusScope
 				anchors.bottom:		parent.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
-				property int	shownButtons:		(labelModel.showLabelEditor ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-				property real	minimumHeight:		!labelModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
+				property int	shownButtons:		(columnModel.showLabelEditor ? 4 : 1) + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+				property real	minimumHeight:		!columnModel.showLabelEditor ? buttonHeight : (buttonHeight + 2 * spacing) * shownButtons - spacing
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
 				RoundedButton
@@ -446,13 +446,13 @@ FocusScope
 					//text: "UP"
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 
-					onClicked:		labelModel.moveSelectionUp()
+					onClicked:		columnModel.moveSelectionUp()
 					toolTip:		qsTr("Move selected labels up")
 
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		columnModel.showLabelEditor
 				}
 
 				RoundedButton
@@ -460,35 +460,35 @@ FocusScope
 					//text: "DOWN"
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 
-					onClicked:		labelModel.moveSelectionDown()
+					onClicked:		columnModel.moveSelectionDown()
 					toolTip:		qsTr("Move selected labels down")
 
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		columnModel.showLabelEditor
 				}
 
 				RoundedButton
 				{
 					//text: "REVERSE"
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-					onClicked:		labelModel.reverse()
+					onClicked:		columnModel.reverse()
 
 					toolTip:		qsTr("Reverse order of all labels")
 
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		labelModel.showLabelEditor
+					visible:		columnModel.showLabelEditor
 				}
 
 				RoundedButton
 				{
 					id:				eraseFiltersOnThisColumn
 					iconSource:		jaspTheme.iconPath + "eraser.png"
-					onClicked:		labelModel.resetFilterAllows()
-					visible:		labelModel.filteredOut > 0
+					onClicked:		columnModel.resetFilterAllows()
+					visible:		columnModel.filteredOut > 0
 
 					toolTip:		qsTr("Reset all filter checkmarks for this column")
 
@@ -502,7 +502,7 @@ FocusScope
 					id:				eraseFiltersOnAllColumns
 					iconSource:		jaspTheme.iconPath + "eraser_all.png"
 					onClicked:		dataSetModel.resetAllFilters()
-					visible:		dataSetModel.columnsFilteredCount > (labelModel.filteredOut > 0 ? 1 : 0)
+					visible:		dataSetModel.columnsFilteredCount > (columnModel.filteredOut > 0 ? 1 : 0)
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
@@ -519,7 +519,7 @@ FocusScope
 				{
 					id:				variablesWindowCloseButton
 					iconSource:		jaspTheme.iconPath + "cross.png"
-					onClicked:		labelModel.visible = false;
+					onClicked:		columnModel.visible = false;
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
