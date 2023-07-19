@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2023-10-06 13:45+0000\n"
-"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
+"Last-Translator: Nico <episcience@outlook.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
 "Language: de\n"
