@@ -542,21 +542,6 @@ FocusScope
 					sourceSize {	width:	headerRoot.__iconDim * 2
 									height:	headerRoot.__iconDim * 2 }
 
-					MouseArea
-					{
-						enabled:			!virtual
-						anchors.fill:		parent
-						onClicked:			computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to change the columns formulas")
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-
-						cursorShape:		Qt.PointingHandCursor
-
-					}
 				}
 
 				Text
@@ -619,28 +604,14 @@ FocusScope
 					anchors.verticalCenter:	parent.verticalCenter
 					anchors.margins:		visible ? 1 : 0
 
-					MouseArea
-					{
-						anchors.fill:		parent
-						onClicked:			computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse && columnError.length > 0
-						ToolTip.text:		columnError
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-						cursorShape:		Qt.PointingHandCursor
-
-					}
-
 				}
 
 				MouseArea
 				{
-					anchors.left:		colIsComputed.right
+					anchors.left:		colIcon.right
 					anchors.top:		parent.top
 					anchors.bottom:		parent.bottom
-					anchors.right:		colHasError.left
+					anchors.right:		parent.right
 					acceptedButtons:	Qt.LeftButton | Qt.RightButton
 					onClicked:			(mouseEvent)=>
 					{

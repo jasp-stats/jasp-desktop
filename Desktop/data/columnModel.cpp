@@ -255,6 +255,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 	
 	subNodeModel()->selectNode(data ? data->column(chosenColumn) : nullptr);
 	emit showLabelEditorChanged();
+	emit showComputedColumnChanged();
 }
 
 
@@ -267,6 +268,7 @@ void ColumnModel::columnDataTypeChanged(const QString & colName)
 //		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
 //			setChosenColumn(-1);
 		emit showLabelEditorChanged();
+		emit showComputedColumnChanged();
 		
 		invalidate();
 	}
@@ -316,6 +318,7 @@ void ColumnModel::refresh()
 	beginResetModel();
 	endResetModel();
 	emit showLabelEditorChanged();
+	emit showComputedColumnChanged();
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
@@ -409,5 +412,12 @@ bool ColumnModel::showLabelEditor() const
 {
 	if(column())
 			return column()->type() != columnType::scale && rowCount() > 0;
+	return false;
+}
+
+bool ColumnModel::showComputedColumn() const
+{
+	if(column())
+		return column()->isComputed();
 	return false;
 }
