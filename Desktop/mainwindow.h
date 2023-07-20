@@ -33,7 +33,7 @@
 #include "data/datasettablemodel.h"
 #include "data/fileevent.h"
 #include "data/filtermodel.h"
-#include "data/labelmodel.h"
+#include "data/columnModel.h"
 #include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"
@@ -277,7 +277,7 @@ private:
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 	LanguageModel				*	_languageModel			= nullptr;
 	ColumnTypesModel			*	_columnTypesModel		= nullptr;
-	LabelModel					*	_labelModel				= nullptr;
+	ColumnModel					*	_columnModel				= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;

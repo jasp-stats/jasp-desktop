@@ -1,6 +1,6 @@
 
-#ifndef LABELMODEL_H
-#define LABELMODEL_H
+#ifndef COLUMN_MODEL_H
+#define COLUMN_MODEL_H
 
 
 #include "datasettableproxy.h"
@@ -10,7 +10,7 @@
 /// 
 /// This pipes through the label-information for a single column from DataSetPackage
 /// The column is selected by changing `proxyParentColumn` from DataSetTableProxy
-class LabelModel : public DataSetTableProxy
+class ColumnModel : public DataSetTableProxy
 {
 	Q_OBJECT
 
@@ -24,9 +24,12 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
 	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
 	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
+	Q_PROPERTY(bool		showComputedColumn	READ showComputedColumn 							NOTIFY showComputedColumnChanged)
+	Q_PROPERTY(bool		columnIsFiltered	READ columnIsFiltered								NOTIFY columnIsFilteredChanged	)
+
 
 public:
-				LabelModel();
+	ColumnModel();
 
 	bool		labelNeedsFilter(size_t col);
 	std::string columnName(size_t col); ///< Not a proxy columnIndex!
@@ -63,9 +66,12 @@ public:
 	void setColumnTitle(const QString & newColumnTitle);
 
 	void setColumnDescription(const QString & newColumnDescription);
+	void setLabelMaxWidth();
+
 
 	bool showLabelEditor() const;
-	void setLabelMaxWidth();
+	bool showComputedColumn() const;
+	bool columnIsFiltered() const;
 
 
 public slots:
@@ -94,7 +100,8 @@ signals:
 	void columnTitleChanged();
 	void columnDescriptionChanged();
 	void showLabelEditorChanged();
-
+	void showComputedColumnChanged();
+	void columnIsFilteredChanged();
 
 
 
@@ -113,4 +120,4 @@ private:
 	UndoStack*			_undoStack		= nullptr;
 };
 
-#endif // LABELMODEL_H
+#endif // COLUMN_MODEL_H
