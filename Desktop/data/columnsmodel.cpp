@@ -1,5 +1,4 @@
 #include "columnsmodel.h"
-#include "jasptheme.h"
 #include "log.h"
 #include "utilities/qutils.h"
 
@@ -19,12 +18,11 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 
 	auto * info = new VariableInfo(_singleton);
 	
-	connect(this, &ColumnsModel::namesChanged,		info, &VariableInfo::namesChanged		);
-	connect(this, &ColumnsModel::columnsChanged,	info, &VariableInfo::columnsChanged	);
-	connect(this, &ColumnsModel::columnTypeChanged, info, &VariableInfo::columnTypeChanged	);
-	connect(this, &ColumnsModel::labelsChanged,		info, &VariableInfo::labelsChanged		);
-	connect(this, &ColumnsModel::labelsReordered,	info, &VariableInfo::labelsReordered	);
-
+	connect(this, &ColumnsModel::namesChanged,					info, &VariableInfo::namesChanged		);
+	connect(this, &ColumnsModel::columnsChanged,				info, &VariableInfo::columnsChanged		);
+	connect(this, &ColumnsModel::columnTypeChanged,				info, &VariableInfo::columnTypeChanged	);
+	connect(this, &ColumnsModel::labelsChanged,					info, &VariableInfo::labelsChanged		);
+	connect(this, &ColumnsModel::labelsReordered,				info, &VariableInfo::labelsReordered	);
 }
 
 ColumnsModel::~ColumnsModel()
@@ -86,8 +84,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::VariableTypeIcon:			return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DefaultIconType);
 		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DisabledIconType);
 		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::InactiveIconType);
-		case VariableInfo::Labels:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::labelsStrList));
-		case VariableInfo::StringValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesStrList));
+		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::NameRole:					return	data(qIndex, ColumnsModel::NameRole);
 		case VariableInfo::RowCount:					return	rowCount();
@@ -158,4 +155,24 @@ void ColumnsModel::datasetChanged(  QStringList                             chan
 					   emit columnsChanged(changedColumns);
 			   }
 	   }
+}
+
+QVariant ColumnsModel::_getLabels(int colId) const
+{
+	QStringList labels = QTransposeProxyModel::data(index(colId, 0), int(DataSetPackage::specialRoles::labelsStrList)).toStringList();
+	QStringList unusedLabels = labels;
+
+	int count = _tableModel->rowCount();
+	for (int i = 0; i < count; i++)
+	{
+		unusedLabels.removeAll(_tableModel->data(_tableModel->index(i, colId)).toString());
+		if (unusedLabels.isEmpty())
+			break;
+	}
+
+	// Warning: the order of the labels must be kept.
+	for (const QString& unusedLabel : unusedLabels)
+		labels.removeAll(unusedLabel);
+
+	return labels;
 }

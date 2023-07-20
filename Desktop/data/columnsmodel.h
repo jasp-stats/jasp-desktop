@@ -44,6 +44,8 @@ signals:
 	void labelsReordered(	QString					columnName);
 
 private:
+	QVariant				_getLabels(int colId) const;
+
 	DataSetTableModel		* _tableModel	= nullptr;
 	static ColumnsModel		* _singleton;
 };
