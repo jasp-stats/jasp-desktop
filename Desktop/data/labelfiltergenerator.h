@@ -2,7 +2,7 @@
 #define LABELFILTERGENERATOR_H
 
 #include <QObject>
-#include "data/labelmodel.h"
+#include "data/columnModel.h"
 
 ///
 /// This is used to generate R-filters based on what the user disables/enables in the label-editor (or variableswindow)
@@ -11,7 +11,7 @@ class labelFilterGenerator : public QObject
 	Q_OBJECT
 
 public:
-	labelFilterGenerator(LabelModel *labelModel, QObject *parent = NULL);
+	labelFilterGenerator(ColumnModel *columnModel, QObject *parent = NULL);
 
 	///Generates entire filter
 	std::string generateFilter();
@@ -27,9 +27,9 @@ private:
 	std::string	generateLabelFilter(size_t col);
 
 	std::string easyFilterConstructorRScript = "";
-
-
-	LabelModel * _labelModel = nullptr;
+	
+	
+	ColumnModel * _columnModel = nullptr;
 
 signals:
 	void setGeneratedFilter(QString generatedFilter);
