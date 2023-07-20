@@ -142,6 +142,23 @@ private:
 	int						_computedColumnType		= -1;
 };
 
+class SetComputedColumnCodeCommand: public UndoModelCommand
+{
+public:
+	SetComputedColumnCodeCommand(QAbstractItemModel *model, const std::string& name, const QString& rCode, const QString& jsonCode);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	ComputedColumnsModel*	_computedColumnModel = nullptr;
+	std::string				_name;
+	QString					_oldRCode,
+							_newRCode,
+							_oldJsonCode,
+							_newJsonCode;
+};
+
 class SetDataCommand : public UndoModelCommand
 {
 public:

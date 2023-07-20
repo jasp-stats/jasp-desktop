@@ -469,6 +469,31 @@ void CreateComputedColumnCommand::redo()
 	DataSetPackage::pkg()->createComputedColumn(fq(_name), columnType(_columnType), computedColumnType(_computedColumnType));
 }
 
+SetComputedColumnCodeCommand::SetComputedColumnCodeCommand(QAbstractItemModel *model, const std::string& name, const QString& rCode, const QString& jsonCode)
+	: UndoModelCommand(model), _name{name}, _newRCode{rCode}, _newJsonCode{jsonCode}
+{
+	_computedColumnModel = ComputedColumnsModel::singleton();
+	setText(QObject::tr("Set code to computed column with name '%1").arg(tq(name)));
+}
+
+void SetComputedColumnCodeCommand::undo()
+{
+	_computedColumnModel->selectColumn(DataSetPackage::pkg()->getColumn(_name));
+	_computedColumnModel->setComputeColumnJson(_oldJsonCode);
+	_computedColumnModel->sendCode(_oldRCode);
+}
+
+void SetComputedColumnCodeCommand::redo()
+{
+	_computedColumnModel->selectColumn(DataSetPackage::pkg()->getColumn(_name));
+	_oldJsonCode = _computedColumnModel->computeColumnJson();
+	_oldRCode = _computedColumnModel->computeColumnRCode();
+
+	_computedColumnModel->setComputeColumnJson(_newJsonCode);
+	_computedColumnModel->sendCode(_newRCode);
+}
+
+
 UndoModelCommand::UndoModelCommand(QAbstractItemModel *model)
 	: QUndoCommand(UndoStack::singleton()->parentCommand()), _model{model}
 {

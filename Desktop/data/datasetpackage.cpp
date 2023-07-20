@@ -505,9 +505,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case Qt::DisplayRole:						[[fallthrough]];
 		case int(specialRoles::label):				return tq((*column)[index.row()]);
 		case int(specialRoles::description):		return tq(column->description());
-		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name(), true);
+		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
-		case int(specialRoles::valuesStrList):		return getColumnValuesAsStringList(getColumnIndex(column->name()));
 		case int(specialRoles::inEasyFilter):		return isColumnUsedInEasyFilter(column->name());
 		case int(specialRoles::value):				return tq(column->getValue(index.row()));
 		case int(specialRoles::name):				return tq(column->name());
@@ -547,9 +546,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::filter):				return labels[index.row()]->filterAllows();
 		case int(specialRoles::value):				return tq(labels[index.row()]->originalValueAsString(true));
 		case int(specialRoles::description):		return tq(labels[index.row()]->description());
-		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name(), true);
+		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
-		case int(specialRoles::valuesStrList):		return getColumnValuesAsStringList(getColumnIndex(column->name()));
 		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
 		case Qt::DisplayRole:
 		case int(specialRoles::label):				return tq(labels[index.row()]->label());
@@ -1840,52 +1838,21 @@ std::string DataSetPackage::getColumnName(size_t columnIndex) const
 	return _dataSet && _dataSet->column(columnIndex) ? _dataSet->column(columnIndex)->name() : "";
 }
 
-QStringList DataSetPackage::getColumnLabelsAsStringList(const std::string & columnName, bool dropUnused)	const
+QStringList DataSetPackage::getColumnLabelsAsStringList(const std::string & columnName)	const
 {
 	int colIndex = getColumnIndex(columnName);
 
-	if(colIndex > -1)	return getColumnLabelsAsStringList(colIndex, dropUnused);
+	if(colIndex > -1)	return getColumnLabelsAsStringList(colIndex);
 	else				return QStringList();;
 }
 
-QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex, bool dropUnused)	const
+QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	const
 {
 	QStringList list;
 	if(columnIndex < 0 || columnIndex >= dataColumnCount()) return list;
 
 	for (const Label * label : _dataSet->columns()[columnIndex]->labels())
 		list.append(tq(label->label()));
-
-	if(dropUnused)
-	{
-		QStringList notUsedLabels = list;
-		int max = rowCount();
-
-		for (int i = 0; i < max; i++)
-		{
-			QString value = data(index(i, columnIndex)).toString();
-			notUsedLabels.removeAll(value);
-			if (notUsedLabels.count() == 0) break;
-		}
-
-		// The order of the labels must be kept.
-		for (const QString& notUsedLabel : notUsedLabels)
-			list.removeAll(notUsedLabel);
-	}
-
-	return list;
-}
-
-QStringList DataSetPackage::getColumnValuesAsStringList(size_t columnIndex)	const
-{
-	QStringList list;
-	if(columnIndex < 0 || columnIndex >= dataColumnCount()) return list;
-
-	size_t rows = rowCount();
-	Column * col = _dataSet->columns()[columnIndex];
-
-	for(size_t i = 0; i < rows; i++)
-		list.append(QString::number(col->labels()[i]->value()));
 
 	return list;
 }
