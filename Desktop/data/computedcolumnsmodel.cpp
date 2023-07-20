@@ -136,8 +136,7 @@ void ComputedColumnsModel::emitSendComputeCode(const QString & columnName, const
 
 void ComputedColumnsModel::sendCode(const QString & code, const QString & json)
 {
-	setComputeColumnJson(json);
-	sendCode(code);
+	_undoStack->push(new SetComputedColumnCodeCommand(DataSetPackage::pkg(), _selectedColumn->name(), code, json));
 }
 
 
