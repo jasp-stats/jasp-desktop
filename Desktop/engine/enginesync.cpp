@@ -945,7 +945,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
 	
-#ifdef _WIN32 
+#ifdef _WIN32
 	fixPATHForWindows(env);
 #endif
 	
