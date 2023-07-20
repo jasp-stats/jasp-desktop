@@ -13,6 +13,7 @@ FocusScope
 	property bool	opened:						false
 	property bool	changed:					computedColumnsInterface.computeColumnUsesRCode ? computeColumnEdit.changed : computedColumnConstructor.somethingChanged
 	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
+	property bool	showName:					true
 
 	Connections
 	{
@@ -138,6 +139,7 @@ FocusScope
 			color:						jaspTheme.textEnabled
 			anchors.top:				parent.top
 			anchors.horizontalCenter:	parent.horizontalCenter
+			height:						showName ? implicitHeight : 0
 
 			horizontalAlignment:		Text.AlignHCenter
 			font.pixelSize:				(baseFontSize + 4) * preferencesModel.uiScale
@@ -320,7 +322,7 @@ FocusScope
 		Item
 		{
 			id:				computeColumnButtons
-			height:			closeColumnEditorButton.height
+			height:			helpButton.height
 			anchors
 			{
 				left:		parent.left
@@ -340,7 +342,7 @@ FocusScope
 				{
 					left:	parent.left
 					bottom: parent.bottom
-					top:	closeColumnEditorButton.top
+					top:	helpButton.top
 				}
 			}
 
@@ -355,7 +357,7 @@ FocusScope
 
 				anchors.left:	removeColumnButton.right
 				anchors.bottom:	parent.bottom
-				anchors.top:	closeColumnEditorButton.top
+				anchors.top:	helpButton.top
 
 				onClicked:		computedColumnConstructor.showGeneratedRCode = !computedColumnConstructor.showGeneratedRCode
 
@@ -370,7 +372,7 @@ FocusScope
 				anchors.left:	showGeneratedRCode.right
 				anchors.right:	helpButton.left
 				anchors.bottom:	parent.bottom
-				anchors.top:	closeColumnEditorButton.top
+				anchors.top:	helpButton.top
 				onClicked:		computedColumnContainer.applyComputedColumn()
 				toolTip:		computeColumnEdit.changedSinceLastApply ? qsTr("Click to compute column") : qsTr("Column (in line to be) computed")
 				
@@ -380,22 +382,10 @@ FocusScope
 			{
 				id:				helpButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
-				anchors.right:	closeColumnEditorButton.left
-				anchors.bottom: parent.bottom
-				anchors.top:	closeColumnEditorButton.top
-				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
-				toolTip:		qsTr("Open Documentation")
-			}
-
-
-			JaspControls.RectangularButton
-			{
-				id:				closeColumnEditorButton
-				iconSource:		jaspTheme.iconPath + "cross.png"
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
-				onClicked:		computedColumnContainer.askIfChangedOrClose()
-				toolTip:		qsTr("Close computed column window")
+				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
+				toolTip:		qsTr("Open Documentation")
 			}
 		}
 
