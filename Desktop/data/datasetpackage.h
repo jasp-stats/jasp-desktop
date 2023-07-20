@@ -247,9 +247,8 @@ public:
 				void						setColumnDataInts(		size_t columnIndex, const intvec		& ints);
 				void						setColumnDataDbls(		size_t columnIndex, const doublevec		& dbls);
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex)			const;
-				QStringList					getColumnLabelsAsStringList(const std::string & columnName,	bool dropUnused = false)	const;
-				QStringList					getColumnLabelsAsStringList(size_t columnIndex,				bool dropUnused = false)	const;
-				QStringList					getColumnValuesAsStringList(size_t columnIndex)				const;
+				QStringList					getColumnLabelsAsStringList(const std::string & columnName)	const;
+				QStringList					getColumnLabelsAsStringList(size_t columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
 				void						unicifyColumnNames();
 				Json::Value					serializeColumn(const std::string& columnName)					const;

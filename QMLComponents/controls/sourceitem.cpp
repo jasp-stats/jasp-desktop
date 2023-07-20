@@ -106,6 +106,14 @@ void SourceItem::connectModels()
 		connect(_nativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
 		connect(_nativeModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
 	}
+	if (_listControl->useSourceLevels() && _nativeModel != infoProviderModel())
+	{
+		QAbstractItemModel* providerModel = infoProviderModel(); // When the levels/labels of the source is used, then any change of the provider model must also be signalled
+		connect(providerModel, &QAbstractItemModel::rowsInserted,		this, &SourceItem::_resetModel);
+		connect(providerModel, &QAbstractItemModel::rowsRemoved,		this, &SourceItem::_resetModel);
+		connect(providerModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
+		connect(providerModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
+	}
 
 	if (_isVariableInfoModel)
 	{
