@@ -421,3 +421,10 @@ bool ColumnModel::showComputedColumn() const
 		return column()->isComputed();
 	return false;
 }
+
+bool ColumnModel::columnIsFiltered() const
+{
+	if(column())
+		return column()->hasFilter();
+	return false;
+}

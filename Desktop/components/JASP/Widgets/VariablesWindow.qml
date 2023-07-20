@@ -24,18 +24,19 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import "."
 
-import "FilterConstructor"
-
 
 FocusScope
 {
 	id:			variablesContainer
 	visible:	columnModel.visible && columnModel.chosenColumn > -1
 
-	property real calculatedBaseHeight:			columnNameVariablesWindow.height + columnDescriptionVariablesWindow.height
-	property real calculatedMinimumHeight:		calculatedBaseHeight + columnModel.showLabelEditor ?  0.35 * parent.height : 0
-	property real calculatedPreferredHeight:	calculatedBaseHeight + columnModel.showLabelEditor ?  0.4 * parent.height : 0
-	property real calculatedMaximumHeight:		!columnModel.showLabelEditor ? calculatedBaseHeight :  parent.height * 0.7
+	property real calculatedBaseHeight:			common.height + jaspTheme.generalAnchorMargin
+	property real calculatedMinimumHeight:		calculatedBaseHeight + (tabView.visible ?  0.28 * parent.height : 0)
+	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.32 * parent.height : 0)
+	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  parent.height * 0.7
+
+
+	onCalculatedMinimumHeightChanged: console.log("!!!" + calculatedMinimumHeight)
 
 	Connections
 	{
@@ -45,7 +46,7 @@ FocusScope
 		{
 			if(columnModel.chosenColumn > -1 && columnModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
-				common.focus = true //So we just put it somewhere
+				common.focus = true //So we just put it somewhere				
 		}
 	}
 
@@ -94,7 +95,7 @@ FocusScope
 			height:				30 * jaspTheme.uiScale
 			width:				height
 			iconSource:			jaspTheme.iconPath + "close-button.png"
-			onClicked:			columnModel.visible = false
+			onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
 			toolTip:			qsTr("Remove this analysis")
 			radius:				height
 			anchors
@@ -205,7 +206,7 @@ FocusScope
 
 		Rectangle
 		{
-			id: tabViewWrapper
+			id: tabView
 
 			visible: columnModel.showLabelEditor || columnModel.showComputedColumn
 
@@ -232,6 +233,21 @@ FocusScope
 
 				property var	editorTitles:		[ qsTr("Label Editor"), qsTr("Computed Column") ]
 				property var	editorActive:		[ columnModel.showLabelEditor, columnModel.showComputedColumn ]
+				property int	numEditors:			editorActive.reduce(function getSum(total, num) { return total + Math.round(num)}, 0);
+
+				Connections
+				{
+					target: columnModel
+
+					function onChosenColumnChanged(chosenColumn)
+					{
+						//if it is a computed column open that screen by default
+						if(!columnModel.showComputedColumn || columnModel.columnIsFiltered)
+							bar.currentIndex = 0
+						else
+							bar.currentIndex = 1
+					}
+				}
 
 				Repeater
 				{
@@ -307,9 +323,9 @@ FocusScope
 				{
 					top:			roundingHider.top
 					left:			parent.left
-					leftMargin:		bar.currentIndex === 0 ? bar.tabButtonWidth - 1 : 0
+					leftMargin:		bar.currentIndex === 0 || bar.numEditors === 1 ? bar.tabButtonWidth - 1 : 0
 					right:			bar.right
-					rightMargin:	bar.currentIndex === 0 ? 0 : bar.tabButtonWidth  - 1
+					rightMargin:	bar.currentIndex === 0 || bar.numEditors === 1 ? 0 : bar.tabButtonWidth  - 1
 				}
 				height:	1
 				color:	jaspTheme.uiBorder
@@ -694,13 +710,14 @@ FocusScope
 
 				Item
 				{
-					id: computedColumnWindow
+					id: computedColumn
 					Rectangle
 					{
 						anchors.fill: parent
 
 						ComputeColumnWindow
 						{
+							id: computedColumnWindow
 							visible:	true
 							showName:	false
 							anchors
@@ -709,6 +726,16 @@ FocusScope
 								right:			parent.right
 								top:			parent.top
 								bottom:			parent.bottom
+							}
+
+							Connections
+							{
+								target: columnModel
+
+								function onChosenColumnChanged(chosenColumn)
+								{
+									computedColumnWindow.open(columnModel.columnName);
+								}
 							}
 						}
 					}

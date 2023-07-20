@@ -25,6 +25,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
 	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
 	Q_PROPERTY(bool		showComputedColumn	READ showComputedColumn 							NOTIFY showComputedColumnChanged)
+	Q_PROPERTY(bool		columnIsFiltered	READ columnIsFiltered								NOTIFY columnIsFilteredChanged	)
 
 
 public:
@@ -65,10 +66,12 @@ public:
 	void setColumnTitle(const QString & newColumnTitle);
 
 	void setColumnDescription(const QString & newColumnDescription);
+	void setLabelMaxWidth();
+
 
 	bool showLabelEditor() const;
 	bool showComputedColumn() const;
-	void setLabelMaxWidth();
+	bool columnIsFiltered() const;
 
 
 public slots:
@@ -98,7 +101,7 @@ signals:
 	void columnDescriptionChanged();
 	void showLabelEditorChanged();
 	void showComputedColumnChanged();
-
+	void columnIsFilteredChanged();
 
 
 
