@@ -17,4 +17,7 @@ export -f setVersion
 git submodule update --remote
 git submodule foreach setVersion
 
-
+# To check it: git submodule update --remote
+# Then:
+# git submodule foreach 'head -4 DESCRIPTION | tail +4'
+# git submodule foreach 'head -15 inst/Description.qml | tail +5'
