@@ -128,7 +128,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync				= new EngineSync(this);
 	_datasetTableModel		= new DataSetTableModel();
 	_dataSetModelVarInfo	= new DataSetTableModel(false);
-	_labelModel				= new LabelModel();
+	_columnModel			= new ColumnModel();
 	
 	initLog(); //initLog needs _preferences and _engineSync!
 
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
-	_labelFilterGenerator	= new labelFilterGenerator(_labelModel,		this);
+	_labelFilterGenerator	= new labelFilterGenerator(_columnModel,		this);
 	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
@@ -185,7 +185,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
-	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"						);
+	qmlRegisterType<ColumnModel>								("JASP",		1, 0, "ColumnModel"						);
 	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
@@ -456,7 +456,7 @@ void MainWindow::loadQML()
 	Log::log() << "Initializing QML" << std::endl;
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this							);
-	_qml->rootContext()->setContextProperty("labelModel",				_labelModel						);
+	_qml->rootContext()->setContextProperty("columnModel",				_columnModel					);
 	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel						);
 	_qml->rootContext()->setContextProperty("dataSetModel",				_datasetTableModel				);
 	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel					);
@@ -579,7 +579,7 @@ void MainWindow::loadQML()
 	connect(_package,	&DataSetPackage::columnDataTypeChanged,			DataSetView::lastInstancedDataSetView(),	&DataSetView::columnDataTypeChanged);
 
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::showComputedColumn,		this,			&MainWindow::showComputedColumn);
-	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_labelModel,	&LabelModel::changeSelectedColumn);
+	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
 	Log::log() << "QML Initialized!"  << std::endl;
 
@@ -1123,7 +1123,7 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 
 void MainWindow::closeVariablesPage()
 {
-	_labelModel->setVisible(false);
+	_columnModel->setVisible(false);
 }
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)

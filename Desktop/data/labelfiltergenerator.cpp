@@ -1,18 +1,18 @@
 #include "labelfiltergenerator.h"
 
-labelFilterGenerator::labelFilterGenerator(LabelModel *labelModel, QObject *parent)
-	: QObject(parent), _labelModel(labelModel)
+labelFilterGenerator::labelFilterGenerator(ColumnModel *columnModel, QObject *parent)
+	: QObject(parent), _columnModel(columnModel)
 {
-	connect(_labelModel,	&LabelModel::labelFilterChanged,	this,	&labelFilterGenerator::labelFilterChanged	);
-	connect(_labelModel,	&LabelModel::allFiltersReset,		this,	&labelFilterGenerator::labelFilterChanged	);
+	connect(_columnModel,	&ColumnModel::labelFilterChanged,	this,	&labelFilterGenerator::labelFilterChanged	);
+	connect(_columnModel,	&ColumnModel::allFiltersReset,		this,	&labelFilterGenerator::labelFilterChanged	);
 }
 
 std::string labelFilterGenerator::generateFilter()
 {
 	int neededFilters = 0;
-
-	for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
-		if(_labelModel->labelNeedsFilter(col))
+	
+	for(size_t col=0; col<_columnModel->dataColumnCount(); col++)
+		if(_columnModel->labelNeedsFilter(col))
 			neededFilters++;
 
 	std::stringstream newGeneratedFilter;
@@ -30,10 +30,10 @@ std::string labelFilterGenerator::generateFilter()
 
 		if(moreThanOne)
 			newGeneratedFilter << "(";
-
-
-		for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
-			if(_labelModel->labelNeedsFilter(col))
+		
+		
+		for(size_t col=0; col<_columnModel->dataColumnCount(); col++)
+			if(_columnModel->labelNeedsFilter(col))
 			{
 				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);
 				first = false;
@@ -56,20 +56,20 @@ void labelFilterGenerator::labelFilterChanged()
 
 std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 {
-	std::string columnName = _labelModel->columnName(col);
+	std::string columnName = _columnModel->columnName(col);
 	std::stringstream out;
 	int pos = 0, neg = 0;
 	bool first = true;
-
-	std::vector<bool> filterAllows = _labelModel->filterAllows(col);
+	
+	std::vector<bool> filterAllows = _columnModel->filterAllows(col);
 	for(bool allow : filterAllows)
 		(allow ? pos : neg)++;
 
 	bool bePositive = pos <= neg;
 
 	out << "(";
-
-	std::vector<std::string> labels = _labelModel->labels(col);
+	
+	std::vector<std::string> labels = _columnModel->labels(col);
 	for(size_t row=0; row<filterAllows.size(); row++)
 		if(filterAllows[row] == bePositive)
 		{
