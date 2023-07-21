@@ -250,6 +250,7 @@ int ColumnModel::chosenColumn() const
 
 void ColumnModel::setChosenColumn(int chosenColumn)
 {
+	emit beforeChangingColumn(chosenColumn);
 	//This only works as long as we have a single dataSet but lets not go overboard with rewriting stuff atm
 	DataSet * data = DataSetPackage::pkg()->dataSet();
 	

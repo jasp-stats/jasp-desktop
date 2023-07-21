@@ -43,7 +43,6 @@ public:
 	void				redo()				{ _undoStack->redo(); }
 	QString				undoText()			{ return _undoStack->undoText(); }
 	QString				redoText()			{ return _undoStack->redoText(); }
-	void				columnDataTypeChanged(QString colName);
 
 signals:
 	void				undoChanged();

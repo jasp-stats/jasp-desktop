@@ -102,6 +102,7 @@ signals:
 	void showLabelEditorChanged();
 	void showComputedColumnChanged();
 	void columnIsFilteredChanged();
+	void beforeChangingColumn(int chosenColumn);
 
 
 
