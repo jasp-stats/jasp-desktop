@@ -430,7 +430,7 @@ bool ComputedColumnsModel::showAnalysisFormForColumn(const QString & columnName)
 {
 	try
 	{
-		Column		* col		= dataSet()->column(fq(columnName));
+		Column		* col		= dataSet() ? dataSet()->column(fq(columnName)) : nullptr;
 		Analysis	* analysis	= col && col->analysisId() != -1 ? Analyses::analyses()->get(col->analysisId()) : nullptr;
 
 		if(analysis)
