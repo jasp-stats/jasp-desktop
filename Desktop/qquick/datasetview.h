@@ -223,8 +223,6 @@ public slots:
 	QString		undoText()								{ return _model->undoText(); }
 	QString		redoText()								{ return _model->redoText(); }
 
-	void		columnDataTypeChanged(QString colName)	{ _model->columnDataTypeChanged(colName); }
-
 	void		clearEdit();
 	void		edit(int row, int column);
 	void		destroyEditItem(bool restoreItem=true);

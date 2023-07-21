@@ -161,13 +161,6 @@ int ExpandDataProxyModel::getRole(const std::string &roleName) const
 		return it->second;
 }
 
-void ExpandDataProxyModel::columnDataTypeChanged(QString colName)
-{
-	// A column type has been changed: either it was explicitly set, and then it is already in the undoStack,
-	// or it is due a data change command, then this change must be added in the undoStack as child of this command.
-	// TODO
-}
-
 void ExpandDataProxyModel::removeRows(int start, int count)
 {
 	if (!_sourceModel)
@@ -177,8 +170,11 @@ void ExpandDataProxyModel::removeRows(int start, int count)
 		_undoStack->startMacro(QObject::tr("Removes %1 rows from %2").arg(count).arg(start + 1));
 
 	for (int i = 0; i < count; i++)
-		removeRow(start + i);
-	_undoStack->endMacro();
+		if (start < _sourceModel->rowCount())
+			removeRow(start);
+
+	if (count > 1)
+		_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::removeColumns(int start, int count)
@@ -190,9 +186,11 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 		_undoStack->startMacro(QObject::tr("Removes %1 columns from %2").arg(count).arg(start + 1));
 
 	for (int i = 0; i < count; i++)
-		removeColumn(start + i);
+		if (start < _sourceModel->columnCount())
+			removeColumn(start);
 
-	_undoStack->endMacro();
+	if (count > 1)
+		_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::removeRow(int row)
@@ -257,10 +255,10 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 
 void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
 {
-	if (!_sourceModel || row < 0 || col < 0)
+	if (!_sourceModel || row < 0 || col < 0 || cells.size() == 0 || cells[0].size() == 0)
 		return;
 
-	_expandIfNecessary(row + cells.size() > 0 ? cells[0].size() : 0, col + cells.size());
+	_expandIfNecessary(row + cells[0].size() - 1, col + cells.size() - 1);
 	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, cells, newColNames));
 }
 
