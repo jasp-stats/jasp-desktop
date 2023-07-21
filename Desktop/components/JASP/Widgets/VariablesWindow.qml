@@ -35,12 +35,19 @@ FocusScope
 	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.32 * parent.height : 0)
 	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  parent.height * 0.7
 
-
-	onCalculatedMinimumHeightChanged: console.log("!!!" + calculatedMinimumHeight)
-
 	Connections
 	{
 		target: columnModel
+
+		function onBeforeChangingColumn(chosenColumn)
+		{
+			if (columnModel.visible && columnModel.chosenColumn >= 0)
+			{
+				if(columnModel.columnName !== columnNameVariablesWindow.value) columnModel.columnName = columnNameVariablesWindow.value
+				if(columnModel.columnTitle !== columnTitleVariablesWindow.value) columnModel.columnTitle = columnTitleVariablesWindow.value
+				if(columnModel.columnDescription !== columnDescriptionVariablesWindow.text) columnModel.columnDescription = columnDescriptionVariablesWindow.text
+			}
+		}
 		
 		function onChosenColumnChanged(chosenColumn)
 		{
@@ -89,29 +96,11 @@ FocusScope
 			z:					-1
 		}
 
-		MenuButton
-		{
-			id:					closeButton
-			height:				30 * jaspTheme.uiScale
-			width:				height
-			iconSource:			jaspTheme.iconPath + "close-button.png"
-			onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
-			toolTip:			qsTr("Remove this analysis")
-			radius:				height
-			anchors
-			{
-				top:			parent.top
-				right:			parent.right
-				margins:		jaspTheme.generalAnchorMargin
-			}
-		}
-
 
 		Item
 		{
 			id:					common
 			anchors.top:		parent.top
-			anchors.right:		closeButton.left
 			anchors.left:		parent.left
 			anchors.leftMargin: 0
 			anchors.margins:	jaspTheme.generalAnchorMargin
@@ -151,7 +140,8 @@ FocusScope
 			TextField
 			{
 				id:					columnTitleVariablesWindow
-				label:				qsTr("Title: ");
+				label:				qsTr("Long name: ");
+				fieldWidth:			columnNameVariablesWindow.fieldWidth * 1.5
 				value:				columnModel.columnTitle
 				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 				undoModel:			columnModel
@@ -190,7 +180,7 @@ FocusScope
 					right:			parent.right
 					rightMargin:	jaspTheme.generalAnchorMargin
 				}
-				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 5 * jaspTheme.uiScale))
+				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 20 * jaspTheme.uiScale))
 				control.padding:	3 * jaspTheme.uiScale
 
 				text:				columnModel.columnDescription
@@ -201,6 +191,23 @@ FocusScope
 				useTabAsSpaces:		false
 
 				property int maxHeight:	100 * jaspTheme.uiScale
+			}
+
+			MenuButton
+			{
+				id:					closeButton
+				height:				33 * jaspTheme.uiScale
+				width:				height
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+				toolTip:			qsTr("Close variable window")
+				radius:				height
+				anchors
+				{
+					top:			parent.top
+					right:			parent.right
+					rightMargin:	jaspTheme.generalAnchorMargin
+				}
 			}
 		}
 
