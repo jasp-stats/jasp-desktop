@@ -126,8 +126,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	_setTitle: function (title, format) {
 
-		this.viewNotes.firstNoteNoteBox.ghostText = title + ` - ${i18n("Introduction")}: ` + this.viewNotes.firstNoteNoteBox.ghostTextDefault;
-		this.viewNotes.lastNoteNoteBox.ghostText  = title + ` - ${i18n("Conclusion")}: `   + this.viewNotes.lastNoteNoteBox.ghostTextDefault;
+		this.viewNotes.firstNoteNoteBox.ghostText = title + ` - ${i18n("Introduction:")} ` + this.viewNotes.firstNoteNoteBox.ghostTextDefault;
+		this.viewNotes.lastNoteNoteBox.ghostText  = title + ` - ${i18n("Conclusion:")} `   + this.viewNotes.lastNoteNoteBox.ghostTextDefault;
 
 		this.toolbar.title = title;
 		this.toolbar.titleTag = format;

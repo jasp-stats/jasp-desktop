@@ -313,7 +313,7 @@ Item
 				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
 				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
-				"Introduction"		: qsTr("Introduction"),		"Conclusion" : qsTr("Conclusion")
+				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:")
 			}
 
 			function setTranslatedResultsString()
