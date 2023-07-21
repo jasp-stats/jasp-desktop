@@ -18,6 +18,50 @@ FocusScope
 		border.width:	1
 		border.color:	jaspTheme.uiBorder
 
+		Rectangle
+		{
+			id:					changeModeNotifier
+			anchors.centerIn:	parent
+			height:				changeModeNotifierText.implicitHeight * 1.5
+			width:				changeModeNotifierText.implicitWidth + 2 * jaspTheme.generalMenuMargin
+			radius:				20
+			color:				jaspTheme.grayDarker
+			opacity:			changeModeNotifierTimer.running ? 0.8 : 0
+			visible:			opacity > 0
+
+			Behavior on opacity	{ enabled: preferencesModel.animationsOn; PropertyAnimation { duration: 100 } }
+
+			Connections
+			{
+				target:				ribbonModel
+				function onDataModeChanged()
+				{
+					if (ribbonModel.dataMode)
+						changeModeNotifierTimer.restart()
+				}
+			}
+
+			Timer
+			{
+				id:				changeModeNotifierTimer
+				running:		false
+				repeat:			false
+				interval:		900
+			}
+
+			Text
+			{
+				id:					changeModeNotifierText
+				color:				jaspTheme.white
+				font.family: 		jaspTheme.fontLabel.family
+				font.bold:			jaspTheme.fontLabel.bold
+				font.pixelSize:		26
+				anchors.centerIn:	parent
+				text:				qsTr("Change to data editing mode")
+				z:					2
+			}
+		}
+
 		JASPDataView
 		{
 			focus:					__myRoot.focus
@@ -623,13 +667,18 @@ FocusScope
 							{
 								if(mouseEvent.button === Qt.LeftButton)
 								{
-									columnModel.chosenColumn	= columnIndex;
-									columnModel.visible		= true;
-	
-									if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+									if (columnModel.chosenColumn === columnIndex && columnModel.visible)
+										columnModel.visible = false;
+									else
 									{
-										filterWindow.showEasyFilter = true
-										filterWindow.open()
+										columnModel.chosenColumn	= columnIndex;
+										columnModel.visible			= true;
+	
+										if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+										{
+											filterWindow.showEasyFilter = true
+											filterWindow.open()
+										}
 									}
 								}
 
@@ -647,9 +696,15 @@ FocusScope
 					hoverEnabled:		true
 					ToolTip.visible:	containsMouse
 					ToolTip.text:		virtual ? qsTr("Add computed column")
-											: ("<b>" + columnTitle + "</b><br>") +
-											  ( columnDescription !== "" ? "<i>" + columnDescription + "</i><br><br>" : "") +
-											  ((columnType === columnTypeScale ? qsTr("Click here to change variable") : qsTr("Click here to change the variable/labels")) + (columnIsFiltered ? qsTr(" or inspect filter") : "" ))
+											: ("<b>" + columnTitle + "</b>"
+												+ (columnDescription === "" ? "" : "<br><i>" + columnDescription + "</i>")
+												+ "<br><br>"
+												+ (!columnModel.visible	? qsTr("Click here to change variable settings")
+																		: (columnModel.chosenColumn === columnIndex ? qsTr("Click here to close variable window")
+																													: qsTr("Click here to change selected variable")
+																		  )
+												  )
+											  )
 					ToolTip.timeout:	3000
 					ToolTip.delay:		500
 					cursorShape:		Qt.PointingHandCursor
