@@ -4337,3 +4337,11 @@ msgstr ""
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr ""
+
+msgctxt "MainPage|"
+msgid "Introduction:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Conclusion:"
+msgstr ""

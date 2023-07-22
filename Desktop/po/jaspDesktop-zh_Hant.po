@@ -4152,3 +4152,11 @@ msgstr "引用已復製到剪貼板"
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr "LaTeX 代碼已復製到剪貼板"
+
+msgctxt "MainPage|"
+msgid "Introduction:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Conclusion:"
+msgstr ""

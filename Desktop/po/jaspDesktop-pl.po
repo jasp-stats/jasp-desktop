@@ -4339,3 +4339,11 @@ msgstr "Cytowania skopiowano do schowka"
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr "LaTex skopiowano do schowka"
+
+msgctxt "MainPage|"
+msgid "Introduction:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Conclusion:"
+msgstr ""

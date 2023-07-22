@@ -4359,3 +4359,11 @@ msgstr "Citas copiadas ao portapapeis"
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr "Código LaTeX copiado ao portapapeis"
+
+msgctxt "MainPage|"
+msgid "Introduction:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Conclusion:"
+msgstr ""

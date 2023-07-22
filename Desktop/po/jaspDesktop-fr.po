@@ -4405,3 +4405,11 @@ msgstr "Citations copiées dans le presse-papier"
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr "Code LaTeX copié dans le presse-papier"
+
+msgctxt "MainPage|"
+msgid "Introduction:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Conclusion:"
+msgstr ""
