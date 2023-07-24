@@ -19,6 +19,7 @@ ColumnModel::ColumnModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubM
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &ColumnModel::labelFilterChanged		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &ColumnModel::columnDataTypeChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &ColumnModel::refresh					);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsBeingRemoved,			this, &ColumnModel::checkRemovedColumns		);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
@@ -329,6 +330,16 @@ void ColumnModel::changeSelectedColumn(QPoint selectionStart)
 {
 	if (selectionStart.x() != chosenColumn())
 		setChosenColumn(selectionStart.x());
+}
+
+void ColumnModel::checkRemovedColumns(int columnIndex, int count)
+{
+	int currentCol = chosenColumn();
+	if ((columnIndex <= currentCol) && (currentCol < columnIndex + count))
+	{
+		setVisible(false);
+		setChosenColumn(-1);
+	}
 }
 
 void ColumnModel::removeAllSelected()
