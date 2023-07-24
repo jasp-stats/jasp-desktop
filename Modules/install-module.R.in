@@ -39,20 +39,6 @@ result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@",
 	onlyModPkg=FALSE,
 	frameworkLibrary="@R_LIBRARY_PATH@")
 
-# hack for jaspAudit / jfa -- remove after release
-if ("@MODULE@" == "jaspAudit") {
-  options(renv.config.install.verbose = TRUE)
-  options(install.opts = "--no-multiarch --no-docs --no-test-load");
-  jaspBase::addRenvBeforeAfterDispatch()
-  renv::install("koenderks/jfa", library = "@MODULES_BINARY_PATH@/@MODULE@")
-  if (identical(.Platform$OS.type, "windows")) {
-    # Ridiculous....
-    unlink("@MODULES_RENV_CACHE_PATH@/../jaspAudit/jfa" , recursive = TRUE)
-    Sys.junction(to="@MODULES_RENV_CACHE_PATH@/../jaspAudit/jfa", from="@MODULES_RENV_CACHE_PATH@/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa")
-  }
-}
-
-
 if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
 }
