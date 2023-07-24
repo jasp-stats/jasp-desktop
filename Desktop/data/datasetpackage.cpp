@@ -2117,6 +2117,7 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 	if(column == -1)
 		return false;
 
+	emit columnsBeingRemoved(column, count);
 	if(count >= dataColumnCount())
 	{
 		resetModelOneCell();
@@ -2273,15 +2274,7 @@ void DataSetPackage::removeColumn(const std::string & name)
 	int colIndex = getColumnIndex(name);
 	if(colIndex == -1) return;
 
-
-	beginResetModel();
-	_dataSet->removeColumn(name);
-	endResetModel();
-
-	if(isLoaded()) setModified(true);
-
-	if (!_synchingData) // If we are synchronising, the datasetChanged is already called
-		emit datasetChanged({}, {tq(name)}, {}, false, false);
+	removeColumns(colIndex, 1);
 }
 
 void DataSetPackage::resetModelOneCell()
