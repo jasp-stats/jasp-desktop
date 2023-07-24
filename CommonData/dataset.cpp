@@ -93,7 +93,7 @@ Column *DataSet::column(const std::string &name)
 
 Column *DataSet::column(size_t index)
 {
-	if(index >= _columns.size())
+	if(index < 0 || index >= _columns.size())
 		return nullptr;
 
 	return _columns[index];
