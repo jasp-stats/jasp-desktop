@@ -315,6 +315,7 @@ signals:
 				void				showWarning(						QString title, QString msg);
 				void				showComputedColumn(					QString	   columnName);
 				void				manualEditsChanged();
+				void				columnsBeingRemoved(				int columnIndex, int count);
 
 public slots:
 				void				refresh()																		{ beginResetModel(); endResetModel(); }
