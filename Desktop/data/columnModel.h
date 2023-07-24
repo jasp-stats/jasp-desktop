@@ -86,6 +86,7 @@ public slots:
 	void onChosenColumnChanged();
 	void refresh();
 	void changeSelectedColumn(QPoint selectionStart);
+	void checkRemovedColumns(int columnIndex, int count);
 
 signals:
 	void visibleChanged(bool visible);
