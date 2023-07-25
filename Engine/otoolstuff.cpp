@@ -102,6 +102,9 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				stringUtils::trim(line);
 				line = stringUtils::replaceBy(line, " ", "\\ ");
 
+				if(printStuff)
+					std::cout << "OTOOL: " << line << std::endl;
+
 				// Know prefixes to be replaced
 				const std::map<std::string, std::string> prefixes_map = {
 					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", framework_resources + "lib"},
@@ -117,6 +120,10 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
 					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
 					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+#ifndef __aarch64__
+					,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+#endif
 				};
 
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
