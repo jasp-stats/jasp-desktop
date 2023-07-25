@@ -112,7 +112,7 @@ FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;
 
-	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->dataFileReadOnly())
 	{
 		event = _computer->browseSave();
 		if (event->isCompleted())
@@ -277,7 +277,6 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 			_currentFilePath		= event->path();
 			_currentFileType		= event->type();
-			_currentFileReadOnly	= event->isReadOnly();
 			_OSF->setProcessing(false);
 		}
 	}
@@ -292,7 +291,6 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		_computer->clearFileName();
 		_currentFilePath		= "";
 		_currentFileType		= Utils::FileType::unknown;
-		_currentFileReadOnly	= false;
 		clearSyncData();
 	}
 
@@ -398,7 +396,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
+		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->dataFileReadOnly())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
