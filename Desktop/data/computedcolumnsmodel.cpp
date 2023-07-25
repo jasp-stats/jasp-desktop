@@ -94,7 +94,7 @@ void ComputedColumnsModel::selectColumn(Column * column)
 
 void ComputedColumnsModel::setComputeColumnNameSelected(const QString & newName)
 {
-	if(!_selectedColumn || _selectedColumn->name() != fq(newName))
+	if (DataSetPackage::pkg()->dataSet() && (!_selectedColumn || _selectedColumn->name() != fq(newName)))
 		selectColumn(DataSetPackage::pkg()->dataSet()->column(fq(newName)));
 }
 
