@@ -83,7 +83,6 @@ public:
 	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
 	QString			getCurrentFilePath()	const { return _currentFilePath; }
 	QString			getDefaultOutFileName();
-	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
 	void			showPreferences();
 	void			syncDataFile(const QString& path, bool waitForExistence = false);
@@ -158,8 +157,7 @@ private:
 	FileEvent::FileMode				_mode						= FileEvent::FileOpen;
 	QString							_currentFilePath;
 	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
-	bool							_currentFileReadOnly		= false,
-									_visible					= false;
+	bool							_visible					= false;
 	FileOperation					_fileoperation				= ActionButtons::None;
 	MainWindow*						_mainWindow					= nullptr;
 };
