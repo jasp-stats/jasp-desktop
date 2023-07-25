@@ -484,42 +484,6 @@ if(APPLE)
     message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
   endif()
 
-  if(NOT EXISTS ${RENV_PATH})
-    message(STATUS "renv is not installed!")
-    message(CHECK_START "Installing 'renv'")
-
-    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
-		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
-
-    set(ENV{JASP_R_HOME} ${R_HOME_PATH})
-
-    execute_process(
-	  COMMAND_ECHO STDERR
-	  #ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
-
-    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
-      message(CHECK_FAIL "unsuccessful.")
-      message(FATAL_ERROR "'renv' installation has failed!")
-    endif()
-
-    message(CHECK_PASS "successful.")
-
-    message(CHECK_START "Patching Frameworks/.../library")
-    execute_process(
-	  COMMAND_ECHO STDOUT
-	  #ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
-        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
-  endif()
-
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
@@ -556,6 +520,42 @@ if(APPLE)
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
+  endif()
+
+  if(NOT EXISTS ${RENV_PATH})
+    message(STATUS "renv is not installed!")
+    message(CHECK_START "Installing 'renv'")
+
+    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
+		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
+
+    set(ENV{JASP_R_HOME} ${R_HOME_PATH})
+
+    execute_process(
+	  COMMAND_ECHO STDERR
+	  #ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'renv' installation has failed!")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
+    message(CHECK_START "Patching Frameworks/.../library")
+    execute_process(
+	  COMMAND_ECHO STDOUT
+	  #ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
 
   message(CHECK_START "Checking for 'libRInside'")
