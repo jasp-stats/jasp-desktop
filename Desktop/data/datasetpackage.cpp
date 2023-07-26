@@ -1655,7 +1655,11 @@ void DataSetPackage::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Va
 			else
 				Log::log() << "Cannot find key " << key << std::flush;
 
-			_dataSet->columns()[columnIndex]->labelByValue(key)->setOriginalValue(val);
+			Label* label = _dataSet->columns()[columnIndex]->labelByValue(key);
+			if (label)
+				label->setOriginalValue(val);
+			else
+				Log::log() << "Cannot find label for key " << key << std::endl;
 		}
 	}
 }
