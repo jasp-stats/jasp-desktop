@@ -1,4 +1,4 @@
-export VERSION=0.17.3
+export VERSION=0.18.0
 
 function setVersion {
     BRANCH=`git remote show origin | sed -n "/HEAD branch/s/.*: //p"`
