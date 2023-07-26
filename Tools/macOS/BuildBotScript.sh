@@ -9,6 +9,8 @@
 # 	for us, just before calling this script.
 # 	- [ ] Enable the arm64 build, when we can, if necessary.
 
+cd ../../
+
 cmake -E remove_directory build
 cmake -E make_directory build
 
