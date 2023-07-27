@@ -14,7 +14,7 @@ cd ../../
 cmake -E remove_directory build
 cmake -E make_directory build
 
-source ~/zshrc
+source ~/.zshrc
 export PATH="$QT_DIR/../../Tools/Ninja:$PATH"
 ls $QT_DIR/../../Tools/Ninja
 env
