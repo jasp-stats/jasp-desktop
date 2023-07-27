@@ -14,7 +14,9 @@ cd ../../
 cmake -E remove_directory build
 cmake -E make_directory build
 
-cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR;$QT_DIR/Tools/Ninja" -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang 
+export PATH="$QT_DIR/Tools/Ninja:$PATH"
+
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$QT_DIR -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang 
 cmake --build build --target all
 cmake --build build --target install
 cmake --build build --target dmg
