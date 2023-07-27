@@ -17,6 +17,7 @@ cmake -E make_directory build
 export PATH="$QT_DIR/../../Tools/Ninja:$PATH"
 ls $QT_DIR/../../Tools/Ninja
 env
+cat ~/.zshrc
 
 cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$QT_DIR -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang 
 cmake --build build --target all
