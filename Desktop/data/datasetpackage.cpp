@@ -365,8 +365,8 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 	case dataSetBaseNodeType::filters:
 	{
 		DataSet * data = dynamic_cast<DataSet*>(node->parent());
-		
-		return data->rowCount();
+
+		return data ? data->rowCount() : 0;
 	}
 		
 	case dataSetBaseNodeType::column:
