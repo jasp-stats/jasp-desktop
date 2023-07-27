@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-07-28 19:32+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4140,17 +4146,16 @@ msgstr "结论："
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "切换到数据编辑模式"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "全选"
@@ -4158,18 +4163,17 @@ msgstr "全选"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "剪切"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "拷贝"
@@ -4177,64 +4181,64 @@ msgstr "拷贝"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "粘贴"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "清空单元格"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "撤销： %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "重做：%1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "选择列"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "在前方插入列"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "在后方插入列"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "删除列"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "选择行"
 
 msgctxt "DataTableView|"
 msgid "Insert row before"
@@ -4246,75 +4250,73 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "删除行"
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "单击此处选择行，按住 Shift 键可多选。"
 
 msgctxt "DataTableView|"
 msgid "Click here to change variable settings"
-msgstr ""
+msgstr "单击此处更改变量设置"
 
 msgctxt "DataTableView|"
 msgid "Click here to close variable window"
-msgstr ""
+msgstr "单击此处关闭变量窗口"
 
 msgctxt "DataTableView|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "单击此处更改所选变量"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "关闭筛选器窗口"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "重命名列"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "重命名"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "将列 %1 重命名为 %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "关闭而不重命名列"
 
 msgctxt "VariablesWindow|"
 msgid "Name: "
-msgstr ""
+msgstr "名称： "
 
 msgctxt "VariablesWindow|"
 msgid "Long name: "
-msgstr ""
+msgstr "长名称： "
 
 msgctxt "VariablesWindow|"
 msgid "Description: "
-msgstr ""
+msgstr "说明： "
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "关闭变量窗口"
 
 msgctxt "VariablesWindow|"
 msgid "Label Editor"
-msgstr ""
+msgstr "标签编辑器"
 
 msgctxt "VariablesWindow|"
 msgid "Computed Column"
-msgstr ""
+msgstr "计算列"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "值"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "标签"
@@ -4322,72 +4324,72 @@ msgstr "标签"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "列 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Removes %1 rows from %2"
-msgstr ""
+msgstr "从 %2 中删除 %1 行"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Removes %1 columns from %2"
-msgstr ""
+msgstr "从 %2 中删除 %1 列"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "将行 “%2” 列“%3”中的值设置为“%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "插入计算列 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "插入列 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert row %1"
-msgstr ""
+msgstr "插入行 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "移除列 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "移除行 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "将值粘贴到行 %1 列“%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
+msgstr "将列 “%2” 类型设置为 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name from '%1' to '%2'"
-msgstr ""
+msgstr "将列名称从“%1”更改为“%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title from '%1' to '%2'"
-msgstr ""
+msgstr "将列标题从 “%1”更改为 “%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description from '%1' to '%2'"
-msgstr ""
+msgstr "将列说明从“%1”更改为“%2”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4488,87 +4490,86 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "删除行"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "清空单元格"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "撤消"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "重做"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "分析视图"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "切换到 JASP 分析视图"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "数据编辑"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "切换到 JASP 数据编辑视图"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "新建数据"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "打开空的数据工作区"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "插入"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "插入空白的行或列"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "移除"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "移除行或列"
 
 msgctxt "RibbonModel|"
 msgid "Undo/Redo"
-msgstr ""
+msgstr "撤销/重做"
 
 msgctxt "RibbonModel|"
 msgid "Undo/Redo changes"
-msgstr ""
+msgstr "撤销/重做更改"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "数据同步"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "打开外部数据同步"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "关闭外部数据同步"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "撤销： %1"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "重做：%1"
