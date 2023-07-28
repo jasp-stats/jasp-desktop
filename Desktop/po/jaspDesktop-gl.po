@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-07-28 19:32+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -1613,7 +1619,7 @@ msgstr "Engadir Columna"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr "Eliminar Columna"
+msgstr "Eliminar columna"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -4333,17 +4339,16 @@ msgstr "Conclusión:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Cambiar ao modo de edición de datos"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Instrución"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Control"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "Escoller Todo"
@@ -4351,18 +4356,17 @@ msgstr "Escoller Todo"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Copiar"
@@ -4370,144 +4374,144 @@ msgstr "Copiar"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "Pegar"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Limpar celas"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Borrar"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Desfacer: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Volver facer: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "Elixir columna"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Inserir columna antes"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Inserir columna despois"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "Eliminar columna"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "Escoller fila"
 
 msgctxt "DataTableView|"
 msgid "Insert row before"
-msgstr ""
+msgstr "Inserir fila antes"
 
 msgctxt "DataTableView|"
 msgid "Insert row after"
-msgstr ""
+msgstr "Inserir fila despois"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "Eliminar fila"
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
+"Fai click aquí para elixir a fila, pulsando 'shift' para unha selección "
+"múltiple."
 
 msgctxt "DataTableView|"
 msgid "Click here to change variable settings"
-msgstr ""
+msgstr "Fai click aquí para trocar a configuración das variables"
 
 msgctxt "DataTableView|"
 msgid "Click here to close variable window"
-msgstr ""
+msgstr "Fai click aquí para pechar a xanela das variables"
 
 msgctxt "DataTableView|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Fai click aquí para cambiar a variable seleccionada"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "Pechar a xanela de filtros"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "Volver nomear a columna"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "Volver nomear"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "Cambiar nome da columna %1 a %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "Pechar sen cambiar o nome de columna"
 
 msgctxt "VariablesWindow|"
 msgid "Name: "
-msgstr ""
+msgstr "Nome: "
 
 msgctxt "VariablesWindow|"
 msgid "Long name: "
-msgstr ""
+msgstr "Nome longo: "
 
 msgctxt "VariablesWindow|"
 msgid "Description: "
-msgstr ""
+msgstr "Descrición: "
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Pechar a xanela de variables"
 
 msgctxt "VariablesWindow|"
 msgid "Label Editor"
-msgstr ""
+msgstr "Editor de Etiquetas"
 
 msgctxt "VariablesWindow|"
 msgid "Computed Column"
-msgstr ""
+msgstr "Columna calculada"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Valor"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "Etiqueta"
@@ -4515,253 +4519,254 @@ msgstr "Etiqueta"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "Columna %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Removes %1 rows from %2"
-msgstr ""
+msgstr "Elimina %1 filas de %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Removes %1 columns from %2"
-msgstr ""
+msgstr "Elimina %1 columnas de %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "Establecer o valor de '%1' na fila %2 columna '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "Inserir a columna calculada '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "Inserir a columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert row %1"
-msgstr ""
+msgstr "Inserir a fila '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "Quitar a columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "Quitar a fila '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "Pegar valores na fila %1 columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
+msgstr "Establecer o tipo '%1' para a columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name from '%1' to '%2'"
-msgstr ""
+msgstr "Trocar o nome de columna de '%1' a '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title from '%1' to '%2'"
-msgstr ""
+msgstr "Trocar o título de columna de '%1' a '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description from '%1' to '%2'"
-msgstr ""
+msgstr "Trocar a descrición de columna de '%1' a '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "Establecer a etiqueta do valor '%1' da columna '%2' de '%3' a '%4'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Filtrar as filas que teñan a etiqueta '%1' na columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Quitar o filtro das filas que teñan a etiqueta '%1' na columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "Subir a etiqueta '%1' da columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "Baixar a etiqueta '%1' da columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "Subir as etiquetas da columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "Baixar as etiquetas da columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%2'"
-msgstr ""
+msgstr "Reverter as etiquetas da columna '%2'"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "Trocar o filtro de arrastrar e soltar"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Trocar o filtro de R"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1"
-msgstr ""
+msgstr "Crear unha columna calculada de nome '%1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1"
-msgstr ""
+msgstr "Establecer o código da columna calculada de nome '%1"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP ten un ficheiro de datos asociado, pero editáchelo. Queres volver "
+"cargalo dos datos asociados ou xerar un novo ficheiro?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Volver cargar ficheiro de datos"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "Agardando o inicio (da maquinaria) do módulo: %1"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Inserir columna antes"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Inserir columna despois"
 
 msgctxt "RibbonModel|"
 msgid "Insert row before"
-msgstr ""
+msgstr "Inserir fila antes"
 
 msgctxt "RibbonModel|"
 msgid "Insert row after"
-msgstr ""
+msgstr "Inserir fila despois"
 
 msgctxt "RibbonModel|"
 msgid "Computed Columns"
-msgstr ""
+msgstr "Columnas calculadas"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Eliminar columna"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Eliminar fila"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Limpar celas"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Desfacer"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Volver facer"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Analizar"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Trocar JASP ao modo de análise"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Editar os datos"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Trocar JASP ao modo de edición de datos"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Novos datos"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Abrir unha área de traballo sen datos"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Inserir"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Inserir columnas ou filas baleiras"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Quitar"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Quitar columnas ou filas"
 
 msgctxt "RibbonModel|"
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Desfacer/Refacer"
 
 msgctxt "RibbonModel|"
 msgid "Undo/Redo changes"
-msgstr ""
+msgstr "Desfacer/Refacer cambios"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Sincronización"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "Acender a sincronización de datos externos"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Apagar a sincronización de datos externos"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Desfacer: %1"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Volver facer: %1"
