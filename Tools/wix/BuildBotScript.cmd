@@ -41,4 +41,4 @@ cmake --build build --target wix
 
 cmake --build build --target zip
 
-REM cmake --build build --target upload
+cmake --build build --target upload
