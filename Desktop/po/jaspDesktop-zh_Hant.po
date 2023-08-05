@@ -4295,9 +4295,10 @@ msgctxt "VariablesWindow|"
 msgid "Computed Column"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
-msgstr ""
+msgstr "數值"
 
 msgctxt "ColumnModel|"
 msgid "Label"
