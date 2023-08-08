@@ -125,8 +125,9 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 							dir			  = resource.substr(0, resource.length() - filename.length() - 1),
 							destination   = TempFiles::createSpecific(dir, resourceEntry.fileName());
 
-            resourceEntry.writeEntryToTempFiles(); //this one doesnt really need to give feedback as the files are pretty tiny
+			resourceEntry.writeEntryToTempFiles(); //this one doesnt really need to give feedback as the files are pretty tiny
 
+			/* This is double, since writeEntryToTempFiles do that already...
 			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream);
 			std::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
 
@@ -154,7 +155,7 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 				throw std::runtime_error("Could not read resource files.");
 
 			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
-
+			*/
             progressCallback( 66.666 + int((33.333 / double(resources.size())) * ++resourceCounter));// "Loading Analyses",
 		}
 	}
