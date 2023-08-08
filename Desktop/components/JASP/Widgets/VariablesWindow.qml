@@ -727,6 +727,7 @@ FocusScope
 							id: computedColumnWindow
 							visible:	true
 							showName:	false
+                            showColumnRemove: false
 							anchors
 							{
 								left:			parent.left

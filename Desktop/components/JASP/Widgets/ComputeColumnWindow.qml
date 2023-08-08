@@ -14,6 +14,7 @@ FocusScope
 	property bool	changed:					computedColumnsInterface.computeColumnUsesRCode ? computeColumnEdit.changed : computedColumnConstructor.somethingChanged
 	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
 	property bool	showName:					true
+    property bool   showColumnRemove:                 true
 
 	Connections
 	{
@@ -334,6 +335,8 @@ FocusScope
 			JaspControls.RectangularButton
 			{
 				id:				removeColumnButton
+                visible:        computedColumnContainer.showColumnRemove
+                width:          visible ? implicitWidth : 0
 				iconSource:		jaspTheme.iconPath + "square_trashcan.png"
 				toolTip:		qsTr("Remove computed column")
 				onClicked:		computedColumnsInterface.removeColumn()
