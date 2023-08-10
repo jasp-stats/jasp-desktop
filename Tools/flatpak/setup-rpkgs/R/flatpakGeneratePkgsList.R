@@ -93,7 +93,7 @@ validateFlatpakFolder(dirs)
 info <- createTarArchive(dirs, jaspDir, verbose = FALSE, compression = "best")
 
 # | HERE | you may wish to flip the local flag to adjust the script so it uses the local archive
-writeRpkgsJson(file.path(flatpakDir, "RPackages.json"), info, local = TRUE)
+writeRpkgsJson(file.path(flatpakDir, "RPackages.json"), info, local = FALSE)
 
 # IF you have ssh setup this will upload the tar.gz to static-jasp. It's nicer to do this via a terminal because there you see a progress bar
-uploadTarArchive(info["tar-file"], printOnly = TRUE)
+uploadTarArchive(info["tar-file"], printOnly = FALSE)

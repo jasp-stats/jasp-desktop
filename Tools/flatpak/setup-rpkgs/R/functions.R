@@ -664,7 +664,12 @@ writeRpkgsJson <- function(path, info, local = FALSE) {
 					"sha256": "%s"
 				}
 			],
-			"build-commands": [ "R --vanilla --file=%s" ]
+      "build-commands": ["cd ./flatpak-helper/local-cran/src/contrib", 
+					"gunzip rstanarm*", 
+					"tar --delete -vf rstanarm_*.tar rstanarm/cleanup",
+					"gzip rstanarm*.tar",
+					"cd -",
+					"R --vanilla --file=%s" ]
 		}
 	]
 }
