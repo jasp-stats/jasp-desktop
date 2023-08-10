@@ -214,6 +214,13 @@ div.jasp-image-image.no-data.error {
     background-color: #f3f3f3;
 }
 
+/*code block in jasp note */
+.ql-snow .ql-editor pre.ql-syntax {
+  background-color: #ebebeb;
+  display: block;
+  color: #555555;
+}
+
 /* Track */
 ::-webkit-scrollbar-track {
  background:    #FFFFFF;

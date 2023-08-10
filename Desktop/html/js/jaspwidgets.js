@@ -566,11 +566,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 		
 		this.$quillTooltip     = this.$el.find(".ql-tooltip");
-		var quillTooltipTheme  = this.$quill.theme.tooltip;
+		var quillThemeTooltip  = this.$quill.theme.tooltip;
 
 		// Change example link from quilljs.com to a sample link
-		var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
-		linkInput.dataset.link = 'https://jasp-stats.org';
+		var linkInput = quillThemeTooltip.root.querySelector('input[data-link]');
+			linkInput.dataset.link = 'https://jasp-stats.org';
 
 		// Add tooltips to the toolbar buttons
 		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
@@ -606,28 +606,42 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
 		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
 
-		// Customized quill editor syntax to fix code-block
-  		// FIXME: Fix css styles on export html when refactoring
-		let codeBlockCss = {
-			'background-color': '#ebebeb',
-			'display': 'block',
-			'color': '#555555'
-		};
-		this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
-			$('pre.ql-syntax').css(codeBlockCss);
-		});
-
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
 			event.preventDefault();
 		});
 
+		quillEditorElement.addEventListener('click', (event) => {
+			this.setQuillToolbarVisibility('block') //set toobar visiable;
+
+			let $formulaNode = this.$el.find('.ql-editor mjx-container')
+			 $formulaNode.on('click', (e) => {
+				let currentFormula = e.currentTarget
+				let formulaBlot = Quill.find(currentFormula);
+
+				let index = formulaBlot.offset(this.$quill.scroll);
+				let line = this.$quill.getIndex(formulaBlot)
+
+				this.oldBlot = formulaBlot // Get legacy formula range to remove while save
+
+				quillThemeTooltip.edit('formula', currentFormula.getAttribute('data-value'));
+
+				let saveFunction = quillThemeTooltip.save;
+				quillThemeTooltip.save = () => {
+ 					if (this.oldBlot)
+						this.oldBlot.remove();
+					saveFunction.call(quillThemeTooltip);
+					this.oldBlot = null;
+				};
+			});
+		});
+
 		quillEditorElement.addEventListener('focusout', (event) => {
 		    // Always keep editor available while a tooltip editor show
 		    if (this.$quillTooltip.is(':visible')) {
-			return;
+				return;
 		    } else {
-			self.setQuillToolbarVisibility('none');
+				self.setQuillToolbarVisibility('none');
 		    }
 		});
 
