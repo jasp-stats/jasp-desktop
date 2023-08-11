@@ -5,6 +5,9 @@ JASP supports reading data directly from a database through [Qt Sql](https://doc
 
 Support for most databases hasn't yet been tested but as the interface is basically a passthrough to qt's sql support it is made available for people to try. If you've managed to get an undocumented database running let us know with a feature request at [our issue page](https://github.com/jasp-stats/jasp-issues/issues/new/choose).
 
+The Qt database drivers are often wrappers around real drivers that must be installed and discoverable using the systems PATH environment variable.
+For example the Postgress drivers can be found [here](https://www.postgresql.org/download/).
+
 ## Configuration
 
 The configuration is roughly the arguments going into [QSqlDatabase](https://doc.qt.io/qt-6/qsqldatabase.html#details) and can mean different things depending on which database driver is loaded. So describing them here is not very practical, instead some examples will probably work best.
