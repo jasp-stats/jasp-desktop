@@ -34,7 +34,7 @@ DropDown
 		{ label: qsTr("ggplot2"),			value: "ggplot2"		},
 		{ label: qsTr("Gray"),				value: "gray"			},
 		{ label: qsTr("Blue"),				value: "blue"			},
-		{ label: qsTr("Sport teams: NBA"),	value: "nBA"			},
+		{ label: qsTr("Sports teams: NBA"),	value: "sportsTeamsNBA"	},
 		{ label: qsTr("Grand Budapest"),	value: "grandBudapest"	}
 	]
 }
