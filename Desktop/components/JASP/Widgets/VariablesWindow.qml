@@ -554,6 +554,7 @@ FocusScope
 
 											Text
 											{
+												id	 :					cellValue
 												color:					jaspTheme.grayDarker
 												text:					itemValue
 												elide:					Text.ElideMiddle
@@ -593,11 +594,12 @@ FocusScope
 												verticalAlignment:	Text.AlignVCenter
 
 												property int chosenColumnWas: -1
+												property string lableText: text ? text : cellValue.text // Set value as label if label text is empty.
 
 												onEditingFinished:
 												{
 													if(chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
-														columnModel.setLabel(rowIndex, text)
+														columnModel.setLabel(rowIndex, lableText)
 												}
 
 												onActiveFocusChanged:
