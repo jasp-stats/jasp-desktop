@@ -639,7 +639,7 @@ uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", ve
     stop2("Archive does not exist")
 
   archivePath <- normalizePath(archivePath)
-  archiveName <- basename(archivePath)
+  archiveName <- "flatpak_archive_buildbot.tar.gz"
 
   cmd <- sprintf("scp %s jonathonlove@static.jasp-stats.org:static.jasp-stats.org/%s", archivePath, archiveName)
   if (printOnly) cat(cmd) else system(cmd)
@@ -678,7 +678,7 @@ writeRpkgsJson <- function(path, info, local = FALSE) {
   location <- if (local) {
     file.path("file:/", normalizePath(info["tar-file"]))
   } else {
-    paste0("http://static.jasp-stats.org/", "archives/flatpak_archive.tar.gz")
+    paste0("http://static.jasp-stats.org/", "flatpak_archive_buildbot.tar.gz")
   }
 
   new <- sprintf(template, location, info["sha256"], info["r-file"])
