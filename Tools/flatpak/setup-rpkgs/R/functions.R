@@ -678,7 +678,7 @@ writeRpkgsJson <- function(path, info, local = FALSE) {
   location <- if (local) {
     file.path("file:/", normalizePath(info["tar-file"]))
   } else {
-    paste0("http://static.jasp-stats.org/", basename(info["tar-file"]))
+    paste0("http://static.jasp-stats.org/", "buildbot_flatpak_bundle.tar.gz"))
   }
 
   new <- sprintf(template, location, info["sha256"], info["r-file"])
