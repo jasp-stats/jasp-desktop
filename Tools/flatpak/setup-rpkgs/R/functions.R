@@ -665,6 +665,7 @@ writeRpkgsJson <- function(path, info, local = FALSE) {
 				}
 			],
       "build-commands": ["cd ./flatpak-helper/local-cran/src/contrib", 
+          "pwd",
 					"gunzip rstanarm*", 
 					"tar --delete -vf rstanarm_*.tar rstanarm/cleanup",
 					"gzip rstanarm*.tar",
