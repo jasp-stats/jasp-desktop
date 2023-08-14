@@ -205,7 +205,7 @@ bool Label::setLabel(const std::string & label)
 {
 	if(_label != label)
 	{
-		_label = label;
+		_label = label.empty() ? originalValueAsString() : label;
 
 		dbUpdate();
 		return true;
