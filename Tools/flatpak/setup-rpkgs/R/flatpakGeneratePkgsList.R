@@ -96,4 +96,4 @@ info <- createTarArchive(dirs, jaspDir, verbose = FALSE, compression = "best")
 writeRpkgsJson(file.path(flatpakDir, "RPackages.json"), info, local = FALSE)
 
 # IF you have ssh setup this will upload the tar.gz to static-jasp. It's nicer to do this via a terminal because there you see a progress bar
-uploadTarArchive(info["tar-file"], printOnly = FALSE)
+uploadTarArchive(info["tar-file"], printOnly = TRUE)
