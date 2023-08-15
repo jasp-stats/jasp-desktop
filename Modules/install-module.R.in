@@ -27,45 +27,40 @@ options("JASP_RENV_INSTALL_OPTIONS" = list(
 options(renv.config.install.verbose = TRUE)
 
 if (@IS_LINUX_LOCAL_BUILD@) {
-	# Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
-	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
+  # Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
+  Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
 
 if (@IS_FLATPAK_USED@) {
-	source('/app/lib64/Rprofile.R');
+  source('/app/lib64/Rprofile.R');
 }
 
-# The R_LIBRARY_PATH might already be there, but depending on the configuration 
-# of the CMake, we might be installing in a different location, so, I just add
-# it anyway! It gets to if-y. 
-.libPaths(c("@R_LIBRARY_PATH@"))
+.libPaths("@JASPMODULEINSTALLER_LIBRARY@")
+sandboxPaths <- renv:::renv_sandbox_activate()
 
 options(
-  configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
+  configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'"), #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
+  PKGDEPENDS_LIBRARY = "@PKGDEPENDS_LIBRARY@"
 )
 
-if (jaspBase::getOS() == "osx" || jaspBase::getOS() == "windows") {
-  options(pkgType = "@R_BINARY_TYPE@")
-}
+options(error = recover)
+jaspModuleInstaller::installJaspModule(
+    modulePkg           = "@MODULES_SOURCE_PATH@/@MODULE@",
+    repos               = "@R_REPOSITORY@",
+    moduleLibrary       = "@MODULES_BINARY_PATH@/@MODULE@",
+    onlyModPkg          = FALSE,
+    frameworkLibrary    = "@R_LIBRARY_PATH@"
+)
 
-# Related to the comment above, there is variable here called, 
-# `libPathsToUse` but it is not connected to anything. If this works,
-# then, I don't need to set the libPaths() anymore perhaps.
-result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
-	repos="@R_REPOSITORY@", 
-	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
-	onlyModPkg=FALSE,
-	libPathsToUse='',
-	frameworkLibrary="@R_LIBRARY_PATH@")
-
+result <- "succes"
 if (result == "succes") {
-	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
+  cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
 }
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") { 
-	source('@MODULES_BINARY_PATH@/symlinkTools.R')
-	convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+if (Sys.info()["sysname"] == "Darwin") {
+  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }
