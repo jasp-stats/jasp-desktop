@@ -125,17 +125,11 @@ TextAreaBase
 						{
 							if (shiftPressed)
 							{
-								if (!canRedo)
-								{
-									if (textArea.redo())
-										event.accepted = true;
-								}
-							}
-							else if (!canUndo)
-							{
-								if (textArea.undo())
+								if (textArea.redo())
 									event.accepted = true;
 							}
+							else if (textArea.undo())
+									event.accepted = true;
 						}
 						break;
 					default:
