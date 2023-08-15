@@ -171,17 +171,16 @@ Rectangle
 	Rectangle
 	{
 		id		: borderLeft
-		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
 		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
 		radius	: separator ? width : 0
-		height	: separator ? height * 0.6 : parent.height
+		height	: separator ? parent.height * 0.6 : parent.height
 		anchors
 		{
-			left		: parent.left
-			top			: parent.top
-			//bottom		: parent.bottom
-			topMargin	: separator ? height/6 : 0
-			//bottomMargin: separator ? height/5 : 0
+			left:				separator ? undefined				: parent.left
+			horizontalCenter:	separator ? parent.horizontalCenter	: undefined
+			top:				parent.top
+			topMargin:			separator ? parent.height * 0.2		: 0
 		}
 	}
 
