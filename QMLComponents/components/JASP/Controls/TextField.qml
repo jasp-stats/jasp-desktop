@@ -236,17 +236,11 @@ TextInputBase
 			{
 				if (shiftPressed)
 				{
-					if (!canRedo)
-					{
 						if (textField.redo())
 							event.accepted = true;
-					}
 				}
-				else if (!canUndo)
-				{
-					if (textField.undo())
+				else if (textField.undo())
 						event.accepted = true;
-				}
 			}
 		}
 	}
