@@ -200,9 +200,7 @@ endif()
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.desktop
           DESTINATION ${JASP_INSTALL_PREFIX}/share/applications)
 
-  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
-          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
-
+  # install app icons
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
           DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
 
@@ -212,8 +210,24 @@ endif()
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
           DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/apps)
 
+  # mime type .jasp icon
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/mimetypes
+          RENAME application-x-jaspstats-jasp.svg)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/64/org.jaspstats.JASP.png
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/64x64/mimetypes
+          RENAME application-x-jaspstats-jasp.png)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/mimetypes
+          RENAME application-x-jaspstats-jasp.png)
+
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.appdata.xml
           DESTINATION ${JASP_INSTALL_PREFIX}/share/metainfo)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.mime.xml
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/mime/packages)
 
 endif()
 
