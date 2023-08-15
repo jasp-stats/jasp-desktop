@@ -520,7 +520,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		}
 
 		QStringList rightValues;
-		for (const QString& value : rightValues)
+		for (const QString& value : values)
 		{
 			columnType type = columnType(requestInfo(VariableInfo::VariableType, value).toInt());
 			if (types.contains(type))
