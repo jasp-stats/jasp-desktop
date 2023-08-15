@@ -1072,10 +1072,7 @@ bool EngineRepresentation::willProcessAnalysis(Analysis * analysis)
 	if(_stopRequested || !channel() || !analysis || !idle() || !analysis->shouldRun())
 		return false;
 
-	const std::string modName = analysis->dynamicModule()->name();
-
-	return	(	runsAnalysis()					&& _dynModName == modName && _moduleLoaded)
-			|| (analysis->utilityRunAllowed()	&& runsUtility()		 );
+	return runsAnalysis() && _dynModName == analysis->dynamicModule()->name() && _moduleLoaded;
 }
 
 void canIRegisterModule(const std::string & name);

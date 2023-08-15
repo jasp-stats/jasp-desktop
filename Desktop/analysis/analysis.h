@@ -113,10 +113,9 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				utilityRunAllowed() const				{ return  isSaveImg() || isEditImg() || isRewriteImgs();							}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && form();	}
-			bool				beingTranslated()                        { return _beingTranslated; };
-			void				setBeingTranslated(bool value)           { _beingTranslated = value; };
+			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form();	}
+			bool				beingTranslated()						{ return _beingTranslated; };
+			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
