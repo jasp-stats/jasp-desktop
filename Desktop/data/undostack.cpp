@@ -17,6 +17,8 @@ void UndoStack::pushCommand(UndoModelCommand *command)
 {
 	if (!_parentCommand) // Push to the stack only when no macro is started: in this case the command is autmatically added to the _parentCommand
 		push(command);
+	else
+		Log::log() << "Not pushing now!" << std::endl;
 }
 
 void UndoStack::startMacro(const QString &text)

@@ -93,19 +93,19 @@ FocusScope
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),			func: function() { dataTableView.view.cut(false) },							icon: "menu-data-cut"				},
-					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),			func: function() { dataTableView.view.copy(false) },						icon: "menu-data-copy"				},
-					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),			func: function() { dataTableView.view.paste(false) },						icon: "menu-data-paste"				},
-					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),							func: function() { dataTableView.view.cellsClear(); },						icon: "menu-cells-clear"			},
-					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },	icon: "menu-undo", enabled: dataTableView.view.undoText() !== ""	},
-					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },	icon: "menu-redo", enabled: dataTableView.view.redoText() !== ""	},
+					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),										func: function() { dataTableView.view.cut(false) },			icon: "menu-data-cut"				},
+					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),										func: function() { dataTableView.view.copy(false) },		icon: "menu-data-copy"				},
+					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),										func: function() { dataTableView.view.paste(false) },		icon: "menu-data-paste"				},
+					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),														func: function() { dataTableView.view.cellsClear(); },		icon: "menu-cells-clear"			},
+					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },				icon: "menu-undo", enabled: dataTableView.view.undoText() !== ""	},
+					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },				icon: "menu-redo", enabled: dataTableView.view.redoText() !== ""	},
 				]
 
 				if(!header || !rowheader)
 				{
 					menuModel.push({ text: "---" });
 					if (!header)
-						menuModel.push({ text: qsTr("Select column"),						func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
 					menuModel.push(
 						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
 						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
@@ -117,7 +117,7 @@ FocusScope
 				{
 					menuModel.push({ text: "---" })
 					if (!header)
-						menuModel.push({ text: qsTr("Select row"),							func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
+						menuModel.push({ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
 					menuModel.push(
 						{ text: qsTr("Insert row above"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 						{ text: qsTr("Insert row below"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
@@ -290,14 +290,16 @@ FocusScope
 							if(controlPressed)
 							{
 								if (shiftPressed)
-								{
-									if (!canRedo)
 										theView.redo();
-								}
-								else if (!canUndo)
+								else
 									theView.undo();
 							}
 							break;
+
+						case Qt.Key_Y:
+							if(controlPressed && !shiftPressed)
+								theView.redo();
+								break;
 
 						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 
