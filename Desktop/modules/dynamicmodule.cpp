@@ -399,7 +399,7 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 std::string DynamicModule::getLibPathsToUse() const
 {
-	return "c('" + AppDirs::rHome().toStdString() + "/library', '" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "')";
+	return "c('" + shortenWinPaths(moduleRLibrary()).toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
 }
 
 ///It would probably be better to move all of this code to jasp-r-pkg or something, but for now this works fine.
