@@ -55,7 +55,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS",			 R_HOME + "/library");
+    env.insert("R_LIBS",			programDir.absoluteFilePath(R_HOME + "/R_cpp_includes_library") + ";" + R_HOME + "/library");
 
 	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
@@ -73,7 +73,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("RHOME",				rHome.absolutePath()); //For Rscript
 	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
-	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
+	env.insert("R_LIBS",			programDir.absoluteFilePath("../R/R_cpp_includes_library") + ":" + rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library") + custom_R_library);
 	env.insert("JAGS_HOME",			rHome.absolutePath() + "/opt/jags/lib/JAGS/");
 	// env.insert("JAGS_LIBDIR",		rHome.absolutePath() + "/opt/jags/lib/");
 
@@ -86,9 +86,11 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("TZDIR",				TZDIR);
 
 #else  // linux
-	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
+//	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
-	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+//	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library") + ":" + programDir.absoluteFilePath("../R/R_cpp_includes_library"));
+	// TODO: the last one should be the sandbox, not the actual library!
+	env.insert("R_LIBS",			programDir.absoluteFilePath("../R/R_cpp_includes_library") + ":" + programDir.absoluteFilePath("R/library") + custom_R_library);
 #endif
 
 	env.insert("R_LIBS_SITE",		"");
@@ -98,6 +100,11 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	// Sorry Joris, I still had to do this because I couldn't get your method to work!
 	env.insert("R_LIBS_USER", (AppDirs::programDir().absolutePath().toStdString() + "/../R/library").c_str());
 #endif
+
+	Log::log() <<	"R_LIBS:"			<< env.value("R_LIBS")			<< "\n" <<
+					"R_LIBS_USER:"		<< env.value("R_LIBS_USER")		<< "\n" <<
+					"LD_LIBRARY_PATH:"	<< env.value("LD_LIBRARY_PATH") << "\n" <<
+					std::endl;
 
 	return(env);	
 }

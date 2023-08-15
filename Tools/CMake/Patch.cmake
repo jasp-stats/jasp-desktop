@@ -42,7 +42,7 @@ else()
   file(
     GLOB_RECURSE
     LIBRARIES
-    #FOLLOW_SYMLINKS #Turned this off because it got infinitely regressed
+    FOLLOW_SYMLINKS #Don turned this off because it got infinitely regressed, but Joris turned it back on because we use symlinks to go to packages nowadays...
     "${PATH}/*.so"
     "${PATH}/*.dylib")
   list(
@@ -69,6 +69,9 @@ else()
     ${LIBRARIES}
     ${BINARIES})
 
+
+  message(STATUS "* Patching got files: ${Files}")
+
   set(NEW_ID "")
   set(FRAMEWORK_RESOURCES "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources")
 
@@ -76,6 +79,9 @@ else()
 
     get_filename_component(FILE_NAME ${FILE} NAME)
     get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
+
+    message(STATUS "** Patching in Dir '$DIRECTORY' the file '${FILE}'")
+
 
     string(LENGTH "${PATH}/" PATH_LENGTH)
     string(
