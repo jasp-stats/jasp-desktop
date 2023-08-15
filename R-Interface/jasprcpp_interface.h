@@ -124,6 +124,7 @@ typedef size_t			(*logWriteDef)			(const void * buf, size_t len);
 
 // Calls from rbridge to jaspRCPP
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultFont, const char * tempDir);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init_jaspBase();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bool normalizedNotation, bool exactPValues);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int ppi, const char* imageBackground);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int analysisID, int analysisRevision, bool developerMode);
