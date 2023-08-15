@@ -341,19 +341,13 @@ FocusScope
 								{
 									if (shiftPressed)
 									{
-										if (!canRedo)
-										{
-											filterModel.redo()
-											event.accepted = true
-										}
+										filterModel.redo()
+										event.accepted = true
 									}
 									else
 									{
-										if (!canUndo)
-										{
-											filterModel.undo()
-											event.accepted = true
-										}
+										filterModel.undo()
+										event.accepted = true
 									}
 								}
 							}
