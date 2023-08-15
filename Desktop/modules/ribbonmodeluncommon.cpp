@@ -24,7 +24,7 @@ bool RibbonModelUncommon::filterAcceptsRow(int source_row, const QModelIndex &) 
 	
 	auto * button = _ribbonModel->ribbonButtonModelAt(size_t(source_row));
 
-	return  button->remember() && (!button->isCommon() || !button->isBundled());
+	return  button->remember() && !button->separator() && (!button->isCommon() || !button->isBundled());
 }
 
 void RibbonModelUncommon::setModuleEnabled(int filteredRow, bool checked)
