@@ -146,3 +146,6 @@
 	path = Modules/jaspSurvival
 	url = https://github.com/jasp-stats/jaspSurvival
 	branch = master
+[submodule "Engine/jaspModuleInstaller"]
+	path = Engine/jaspModuleInstaller
+	url = https://github.com/jasp-stats/jaspModuleInstaller.git
