@@ -150,3 +150,6 @@
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
 	branch = master
+[submodule "Engine/jaspModuleInstaller"]
+	path = Engine/jaspModuleInstaller
+	url = https://github.com/jasp-stats/jaspModuleInstaller.git
