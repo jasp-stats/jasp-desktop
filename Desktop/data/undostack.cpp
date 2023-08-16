@@ -5,6 +5,7 @@
 #include "filtermodel.h"
 #include "computedcolumnsmodel.h"
 #include "utilities/qutils.h"
+#include "columnutils.h"
 
 UndoStack* UndoStack::_undoStack = nullptr;
 
@@ -60,6 +61,9 @@ void SetDataCommand::undo()
 void SetDataCommand::redo()
 {
 	_oldValue = _model->data(_model->index(_row, _col));
+	if(fq(_oldValue.toString()) == ColumnUtils::emptyValue)
+		_oldValue = "";
+
 	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
 
 	_model->setData(_model->index(_row, _col), _newValue, _role);
