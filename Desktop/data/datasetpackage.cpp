@@ -656,8 +656,9 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value))
 			{
 				bool changed = false;
+				bool typeChanged = false;
 
-				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString()), changed))
+				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString()), changed, typeChanged))
 				{
 					if(changed)
 					{
@@ -679,6 +680,9 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 
 						emit labelsReordered(tq(column->name()));
 
+						if(typeChanged)
+							emit columnDataTypeChanged(tq(column->name()));
+
 						setModified(true);
 
 						//emit label dataChanged just in case
@@ -692,6 +696,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 					column->rememberOriginalColumnType();
 					pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
 					changed = true;
+					emit columnDataTypeChanged(tq(column->name()));
 				}
 
 				if(changed && column->hasFilter())
