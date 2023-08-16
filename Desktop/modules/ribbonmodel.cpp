@@ -141,33 +141,47 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
 	});
 
-	_undoEntry = new AnalysisEntry([&](){ emit this->dataUndo();						},	"undo",							fq(tr("Undo")),					true,		"menu-undo");
-	_redoEntry = new AnalysisEntry([&](){ emit this->dataRedo();						},	"redo",							fq(tr("Redo")),					true,		"menu-redo");
 
-	_entriesUndo = new AnalysisEntries(
-	{
-		_undoEntry,
-		_redoEntry
-	});
-		
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);
 	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),				"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),			false);
 	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit genShowEmptyData();	 },							fq(tr("Open a workspace without data")),			true);
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
-	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo/Redo")),				"data-button-undo-redo.svg", _entriesUndo,																	fq(tr("Undo/Redo changes")));
 	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
 	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	true, [&](){ emit setDataSynchronisation(false); },					fq(tr("Turn external data synchronisation off")),	true);
+
+	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					false);
+	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	false);
 
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
 	connect(this, &RibbonModel::dataLoadedChanged,		_insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_removeButton,			&RibbonButton::setEnabled);
-	connect(this, &RibbonModel::dataLoadedChanged,		_undoButton,					&RibbonButton::setEnabled);
-	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::undoChanged, this,	&RibbonModel::setUndoRedoMenu);
 
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOnButton,	[=](bool synching){ _synchroniseOnButton->setEnabled(!synching); });
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOffButton,	[=](bool synching){ _synchroniseOffButton->setEnabled(synching); });
+
+	{
+		DataSetView * view = DataSetView::lastInstancedDataSetView();
+
+		auto setUnAndRedoButtonLambda = [&,view]()
+		{
+			QString undoText = view->undoText(),
+					redoText = view->redoText();
+
+			_undoButton->setEnabled(!undoText.isEmpty());
+			_redoButton->setEnabled(!redoText.isEmpty());
+
+			_undoButton->setToolTip(tr("Undo %2 (%1+Z)")				.arg(getShortCutKey()).arg(undoText));
+			_redoButton->setToolTip(tr("Redo %2 (%1+shift+Z or %1+Y)")	.arg(getShortCutKey()).arg(redoText));
+		};
+
+
+
+		connect(view, &DataSetView::undoChanged,			setUnAndRedoButtonLambda);
+		connect(this, &RibbonModel::dataLoadedChanged,		setUnAndRedoButtonLambda);
+	}
+
 
 	addRibbonButtonModel(_dataSwitchButton,			size_t(RowType::Analyses));
 	addRibbonButtonModel(_dataNewButton,			size_t(RowType::Analyses));
@@ -180,6 +194,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	addRibbonButtonModel(_insertButton,				size_t(RowType::Data));
 	addRibbonButtonModel(_removeButton,				size_t(RowType::Data));
 	addRibbonButtonModel(_undoButton,				size_t(RowType::Data));
+	addRibbonButtonModel(_redoButton,				size_t(RowType::Data));
 }
 
 void RibbonModel::addSpecialRibbonButtonsLate()
@@ -426,23 +441,3 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButton* model)
 	if(row > -1)
 		emit dataChanged(index(row), index(row));
 }
-
-void RibbonModel::setUndoRedoMenu()
-{
-	DataSetView* view = DataSetView::lastInstancedDataSetView();
-	QString undoText = view->undoText(),
-			redoText = view->redoText();
-	_undoEntry->setEnabled(!undoText.isEmpty());
-	_redoEntry->setEnabled(!redoText.isEmpty());
-	_undoEntry->setMenu(fq(tr("Undo: %1").arg(undoText)));
-	_redoEntry->setMenu(fq(tr("Redo: %1").arg(redoText)));
-}
-
-/*void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)
-{
-	if(moduleName == "*")
-		return;
-
-	RibbonButton * ribMod = ribbonButtonModel(moduleName.toStdString());
-	ribMod->setEnabled(true);
-}*/
