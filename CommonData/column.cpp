@@ -905,6 +905,7 @@ bool Column::setAsScale(const doublevec & values)
 	}
 
 	setType(columnType::scale);
+	labelsClear(); //delete now unused labels so they can not be erroneously reused when returning to non-scalar type
 	if(!_data->writeBatchedToDB())
 		db().columnSetValues(_id, _dbls);
 	incRevision();
