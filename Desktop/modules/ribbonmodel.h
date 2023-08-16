@@ -127,7 +127,6 @@ public slots:
 	void addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
 	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
-	//void moduleLoadingSucceeded(const QString & moduleName);
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentRow(int currentRow);
 
@@ -136,7 +135,6 @@ private slots:
 	void dynamicModuleChanged(	Modules::DynamicModule * module);
 	void dynamicModuleReplaced(	Modules::DynamicModule * oldModule, Modules::DynamicModule * module);
 	void ribbonButtonModelChanged(RibbonButton* model);
-	void setUndoRedoMenu();
 
 private: // functions
 	void addRibbonButtonModel(RibbonButton* model, size_t row);
@@ -148,8 +146,7 @@ private: // fields
 	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
 	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
-										*	_entriesDelete			= nullptr,
-										*	_entriesUndo			= nullptr;
+										*	_entriesDelete			= nullptr;
 	RibbonButton						*	_analysesButton			= nullptr,
 										*	_dataSwitchButton		= nullptr,
 										*	_dataNewButton			= nullptr,
@@ -157,10 +154,8 @@ private: // fields
 										*	_removeButton			= nullptr,
 										*	_synchroniseOnButton	= nullptr,
 										*	_synchroniseOffButton	= nullptr,
-										*	_undoButton				= nullptr;
-
-	Modules::AnalysisEntry				*	_undoEntry				= nullptr,
-										*	_redoEntry				= nullptr;
+										*	_undoButton				= nullptr,
+										*	_redoButton				= nullptr;
 
 	
 	static RibbonModel * _singleton;
