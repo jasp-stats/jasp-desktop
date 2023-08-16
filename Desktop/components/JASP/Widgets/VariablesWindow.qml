@@ -370,7 +370,9 @@ FocusScope
 					id: labelWindow
 					Rectangle
 					{
-						anchors.fill: parent
+						anchors.fill:	parent
+						color:			jaspTheme.uiBackground
+
 						Rectangle
 						{
 							id:					tableBackground
