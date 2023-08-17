@@ -164,7 +164,7 @@ Rectangle
 
 		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
 
-		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
 	}
 
