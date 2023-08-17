@@ -658,7 +658,9 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				bool changed = false;
 				bool typeChanged = false;
 
-				if(column->setStringValueToRowIfItFits(index.row(), fq(value.toString()), changed, typeChanged))
+				const std::string val = fq(value.toString());
+
+				if(column->setStringValueToRowIfItFits(index.row(), val == ColumnUtils::emptyValue ? "" : val, changed, typeChanged))
 				{
 					if(changed)
 					{
@@ -1997,7 +1999,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 		for(int r=0; r<rowMax; r++)
 		{
 			std::string cellVal = fq(cells[c][r]);
-			colVals[r + row] = cellVal;
+			colVals[r + row] = cellVal == ColumnUtils::emptyValue ? "" : cellVal;
 		}
 
 		std::string colName = getColumnName(dataCol),
