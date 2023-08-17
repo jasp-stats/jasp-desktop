@@ -164,23 +164,36 @@ Rectangle
 
 		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
 
-		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
+	}
+
+	Rectangle
+	{
+		id:			separatorLine
+		visible:	separator
+		color:		jaspTheme.gray
+		width:		2 * jaspTheme.uiScale
+		radius:		width
+		height:		parent.height * 0.6
+		anchors
+		{
+			horizontalCenter:	parent.horizontalCenter
+			top:				parent.top
+			topMargin:			parent.height * 0.2
+		}
 	}
 
 	Rectangle
 	{
 		id		: borderLeft
 		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
-		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
-		radius	: separator ? width : 0
-		height	: separator ? parent.height * 0.6 : parent.height
+		width   : showPressed ? 1 : 0
 		anchors
 		{
-			left:				separator ? undefined				: parent.left
-			horizontalCenter:	separator ? parent.horizontalCenter	: undefined
+			left:				parent.left
 			top:				parent.top
-			topMargin:			separator ? parent.height * 0.2		: 0
+			bottom:				parent.bottom
 		}
 	}
 
