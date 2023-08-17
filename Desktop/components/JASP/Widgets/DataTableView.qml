@@ -662,7 +662,28 @@ FocusScope
 					anchors.bottom:		parent.bottom
 					anchors.right:		parent.right
 					acceptedButtons:	Qt.LeftButton | Qt.RightButton
-					onClicked:			(mouseEvent)=>
+					onDoubleClicked:	(mouseEvent)=>
+					{
+						if(mouseEvent.button !== Qt.LeftButton)
+							return;
+
+						if (columnModel.chosenColumn === columnIndex && columnModel.visible)
+							columnModel.visible = false;
+						else
+						{
+							columnModel.chosenColumn	= columnIndex;
+							columnModel.visible			= true;
+
+							if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+							{
+								filterWindow.showEasyFilter = true
+								filterWindow.open()
+							}
+						}
+
+					}
+
+					onClicked:	(mouseEvent)=>
 					{
 						if(columnIndex >= 0)
 						{
@@ -670,27 +691,11 @@ FocusScope
 								createComputeDialog.open()
 							else
 							{
-								if(mouseEvent.button === Qt.LeftButton)
-								{
-									if (columnModel.chosenColumn === columnIndex && columnModel.visible)
-										columnModel.visible = false;
-									else
-									{
-										columnModel.chosenColumn	= columnIndex;
-										columnModel.visible			= true;
-	
-										if(dataSetModel.columnUsedInEasyFilter(columnIndex))
-										{
-											filterWindow.showEasyFilter = true
-											filterWindow.open()
-										}
-									}
-								}
-
 								if(ribbonModel.dataMode)
 								{
 									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+
 									if(mouseEvent.button === Qt.RightButton)
 									   dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 								}
@@ -704,9 +709,9 @@ FocusScope
 											: ("<b>" + columnTitle + "</b>"
 												+ (columnDescription === "" ? "" : "<br><i>" + columnDescription + "</i>")
 												+ "<br><br>"
-												+ (!columnModel.visible	? qsTr("Click here to change variable settings")
-																		: (columnModel.chosenColumn === columnIndex ? qsTr("Click here to close variable window")
-																													: qsTr("Click here to change selected variable")
+												+ (!columnModel.visible	? qsTr("Doubleclick here to change variable settings")
+																		: (columnModel.chosenColumn === columnIndex ? qsTr("Doubleclick here to close variable window")
+																													: qsTr("Doubleclick here to change selected variable")
 																		  )
 												  )
 											  )
