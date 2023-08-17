@@ -170,17 +170,30 @@ Rectangle
 
 	Rectangle
 	{
-		id		: borderLeft
-		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
-		width   : separator ? 2 * jaspTheme.uiScale : showPressed ? 1 : 0
-		radius	: separator ? width : 0
-		height	: separator ? parent.height * 0.6 : parent.height
+		id:			separatorLine
+		visible:	separator
+		color:		jaspTheme.gray
+		width:		2 * jaspTheme.uiScale
+		radius:		width
+		height:		parent.height * 0.6
 		anchors
 		{
-			left:				separator ? undefined				: parent.left
-			horizontalCenter:	separator ? parent.horizontalCenter	: undefined
+			horizontalCenter:	parent.horizontalCenter
 			top:				parent.top
-			topMargin:			separator ? parent.height * 0.2		: 0
+			topMargin:			parent.height * 0.2
+		}
+	}
+
+	Rectangle
+	{
+		id		: borderLeft
+		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		width   : showPressed ? 1 : 0
+		anchors
+		{
+			left:				parent.left
+			top:				parent.top
+			bottom:				parent.bottom
 		}
 	}
 
