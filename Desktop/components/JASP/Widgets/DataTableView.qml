@@ -404,7 +404,7 @@ FocusScope
 									dataTableView.view.clearEdit()
 									dataTableView.showPopupMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 								}
-								else
+								else if(!shiftPressed)
 									dataTableView.view.edit(rowIndex, columnIndex)
 
 							}
