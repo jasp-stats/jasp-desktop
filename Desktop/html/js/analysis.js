@@ -583,7 +583,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	overwriteUserData: function(userdata) {
 		this.userdata = userdata;
-		console.log("New userdata: %o", this.userdata);
 		var firstNote = this.viewNotes.firstNoteNoteBox
 		var lastNote = this.viewNotes.lastNoteNoteBox
 		var newList = []
