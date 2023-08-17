@@ -328,7 +328,7 @@ void ColumnModel::refresh()
 
 void ColumnModel::changeSelectedColumn(QPoint selectionStart)
 {
-	if (selectionStart.x() != chosenColumn())
+	if (selectionStart.x() != chosenColumn() && visible())
 		setChosenColumn(selectionStart.x());
 }
 
