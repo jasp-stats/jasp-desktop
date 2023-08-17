@@ -12,6 +12,7 @@ CheckBox                            1.0 CheckBox.qml
 Chi2TestTableView                   1.0 Chi2TestTableView.qml
 CIField                             1.0 CIField.qml
 ColumnLayout                        1.0 ColumnLayout.qml
+ColorPalette                        1.0 ColorPalette.qml
 ComboBox                            1.0 ComboBox.qml
 ComponentsList                      1.0 ComponentsList.qml
 ComputedColumnField                 1.0 ComputedColumnField.qml

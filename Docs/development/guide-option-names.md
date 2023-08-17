@@ -238,6 +238,7 @@ Notice that the options are nested within another option both in Qml and in the 
 - `max`: maximum
 - `min`: minimum
 - `*SavedToData`: Append this to options that are used to add columns to the data set. E.g., `predictionSavedToData`, `factorScoreSavedToData`, etc.
+- `colorPalette`: dropdown for specifying color palette options
 
 ### Specific to Bayesian analyses
 - `samplingMethod`: radiobutton for selecting type of MCMC sampling (e.g., `auto`, `manual`, `bas`, `mcmc`, etc.)
