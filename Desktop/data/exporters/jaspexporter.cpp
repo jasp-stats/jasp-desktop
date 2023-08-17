@@ -30,6 +30,7 @@
 #include "utilenums.h"
 #include "utilities/qutils.h"
 #include <fstream>
+#include "appinfo.h"
 
 const Version JASPExporter::jaspArchiveVersion = Version("4.0.0");
 time_t JASPExporter::_now;
@@ -68,7 +69,8 @@ void JASPExporter::saveManifest(archive * a)
 {
     Json::Value manifest = Json::objectValue;
 
-    manifest["jaspArchiveVersion"] = jaspArchiveVersion.asString();
+	manifest["jaspArchiveVersion"]	= jaspArchiveVersion.asString();
+	manifest["jaspVersion"]			= AppInfo::version.asString();
 
     makeEntry(a, "manifest.json", manifest.toStyledString());
 }
