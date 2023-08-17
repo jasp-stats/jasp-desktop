@@ -1559,7 +1559,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 {
     JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
     
-	typeChanged = changed = false;
+	changed = false;
 
 	bool convertedSuccesfully = value == "";
 
@@ -1655,8 +1655,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
                                 )
 								&&
                                 ColumnUtils::convertValueToDoubleForImport(value,				dbl))
-							if(changeType(_preEditType) == columnTypeChangeResult::changed) //Just try it
-								typeChanged = true;
+							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
 
 					if(oldLabel)
