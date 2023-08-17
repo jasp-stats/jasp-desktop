@@ -1556,11 +1556,11 @@ Label * Column::labelByRow(int row) const
 }
 
 
-bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed)
+bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed, bool & typeChanged)
 {
     JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
     
-	changed = false;
+	typeChanged = changed = false;
 
 	bool convertedSuccesfully = value == "";
 
@@ -1656,8 +1656,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
                                 )
 								&&
                                 ColumnUtils::convertValueToDoubleForImport(value,				dbl))
-							changeType(_preEditType); //Just try it
-
+							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
 
 					if(oldLabel)
