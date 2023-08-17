@@ -43,9 +43,9 @@ FocusScope
 		{
 			if (columnModel.visible && columnModel.chosenColumn >= 0)
 			{
-				if(columnModel.columnName !== columnNameVariablesWindow.value) columnModel.columnName = columnNameVariablesWindow.value
-				if(columnModel.columnTitle !== columnTitleVariablesWindow.value) columnModel.columnTitle = columnTitleVariablesWindow.value
-				if(columnModel.columnDescription !== columnDescriptionVariablesWindow.text) columnModel.columnDescription = columnDescriptionVariablesWindow.text
+				if(columnModel.columnName !== columnNameVariablesWindow.value)				columnModel.columnName			= columnNameVariablesWindow.value
+				if(columnModel.columnTitle !== columnTitleVariablesWindow.value)			columnModel.columnTitle			= columnTitleVariablesWindow.value
+				if(columnModel.columnDescription !== columnDescriptionVariablesWindow.text) columnModel.columnDescription	= columnDescriptionVariablesWindow.text
 			}
 		}
 		
