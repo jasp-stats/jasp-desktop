@@ -1559,7 +1559,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 {
     JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
     
-	changed = false;
+	typeChanged = changed = false;
 
 	bool convertedSuccesfully = value == "";
 
