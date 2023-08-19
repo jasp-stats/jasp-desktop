@@ -4442,14 +4442,6 @@ msgid "Select row"
 msgstr "Zeile auswählen"
 
 msgctxt "DataTableView|"
-msgid "Insert row before"
-msgstr "Zeile davor einfügen"
-
-msgctxt "DataTableView|"
-msgid "Insert row after"
-msgstr "Zeile danach einfügen"
-
-msgctxt "DataTableView|"
 msgid "Delete row"
 msgstr "Zeile löschen"
 
@@ -4458,18 +4450,6 @@ msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
 "Hier klicken um die Zeile auszuwählen; Umschalttaste gedrückt halten, um "
 "mehrere auszuwählen."
-
-msgctxt "DataTableView|"
-msgid "Click here to change variable settings"
-msgstr "Hier klicken, um Variableneinstellungen zu ändern"
-
-msgctxt "DataTableView|"
-msgid "Click here to close variable window"
-msgstr "Hier klicken, um das Variablenfenster zu schließen"
-
-msgctxt "DataTableView|"
-msgid "Click here to change selected variable"
-msgstr "Hier klicken, um ausgewählte Variable zu ändern"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
@@ -4678,14 +4658,6 @@ msgid "Insert column after"
 msgstr "Spalte danach einfügen"
 
 msgctxt "RibbonModel|"
-msgid "Insert row before"
-msgstr "Zeile davor einfügen"
-
-msgctxt "RibbonModel|"
-msgid "Insert row after"
-msgstr "Zeile danach einfügen"
-
-msgctxt "RibbonModel|"
 msgid "Computed Columns"
 msgstr "Berechnete Spalten"
 
@@ -4750,14 +4722,6 @@ msgid "Remove columns or rows"
 msgstr "Spalten oder Zeilen entfernen"
 
 msgctxt "RibbonModel|"
-msgid "Undo/Redo"
-msgstr "Rückgängig machen / Wiederholen"
-
-msgctxt "RibbonModel|"
-msgid "Undo/Redo changes"
-msgstr "Änderungen rückgängig machen / wiederholen"
-
-msgctxt "RibbonModel|"
 msgid "Synchronisation"
 msgstr "Synchronisierung"
 
@@ -4769,12 +4733,90 @@ msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
 msgstr "Externe Datensynchronisation ausschalten"
 
-#, qt-format
+msgctxt "DataTableView|"
+msgid "Insert row above"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Insert row below"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change variable settings"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to close variable window"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change selected variable"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #2"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #3"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Blue"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Sports teams: NBA"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Grand Budapest"
+msgstr ""
+
 msgctxt "RibbonModel|"
-msgid "Undo: %1"
-msgstr "Rückgängig machen: %1"
+msgid "Insert row above"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Insert row below"
+msgstr ""
 
 #, qt-format
 msgctxt "RibbonModel|"
-msgid "Redo: %1"
-msgstr "Wiederholen: %1"
+msgid "Undo changes, %1+Z"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo changes, %1+shift+Z or %1+Y"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo %2 (%1+Z)"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo %2 (%1+shift+Z or %1+Y)"
+msgstr ""
