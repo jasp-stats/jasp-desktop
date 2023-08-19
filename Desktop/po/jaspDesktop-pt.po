@@ -4364,31 +4364,11 @@ msgid "Select row"
 msgstr ""
 
 msgctxt "DataTableView|"
-msgid "Insert row before"
-msgstr ""
-
-msgctxt "DataTableView|"
-msgid "Insert row after"
-msgstr ""
-
-msgctxt "DataTableView|"
 msgid "Delete row"
 msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
-
-msgctxt "DataTableView|"
-msgid "Click here to change variable settings"
-msgstr ""
-
-msgctxt "DataTableView|"
-msgid "Click here to close variable window"
-msgstr ""
-
-msgctxt "DataTableView|"
-msgid "Click here to change selected variable"
 msgstr ""
 
 msgctxt "FilterWindow|"
@@ -4598,14 +4578,6 @@ msgid "Insert column after"
 msgstr ""
 
 msgctxt "RibbonModel|"
-msgid "Insert row before"
-msgstr ""
-
-msgctxt "RibbonModel|"
-msgid "Insert row after"
-msgstr ""
-
-msgctxt "RibbonModel|"
 msgid "Computed Columns"
 msgstr ""
 
@@ -4671,14 +4643,6 @@ msgid "Remove columns or rows"
 msgstr ""
 
 msgctxt "RibbonModel|"
-msgid "Undo/Redo"
-msgstr ""
-
-msgctxt "RibbonModel|"
-msgid "Undo/Redo changes"
-msgstr ""
-
-msgctxt "RibbonModel|"
 msgid "Synchronisation"
 msgstr ""
 
@@ -4690,12 +4654,90 @@ msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
 msgstr ""
 
-#, qt-format
+msgctxt "DataTableView|"
+msgid "Insert row above"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Insert row below"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change variable settings"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to close variable window"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change selected variable"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #2"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #3"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Blue"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Sports teams: NBA"
+msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "Grand Budapest"
+msgstr ""
+
 msgctxt "RibbonModel|"
-msgid "Undo: %1"
+msgid "Insert row above"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Insert row below"
 msgstr ""
 
 #, qt-format
 msgctxt "RibbonModel|"
-msgid "Redo: %1"
+msgid "Undo changes, %1+Z"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo changes, %1+shift+Z or %1+Y"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo %2 (%1+Z)"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo %2 (%1+shift+Z or %1+Y)"
 msgstr ""
