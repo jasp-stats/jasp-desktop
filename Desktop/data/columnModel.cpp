@@ -204,6 +204,8 @@ QVariant ColumnModel::data(	const QModelIndex & index, int role) const
 
 void ColumnModel::filteredOutChangedHandler(int c)
 {
+	JASPTIMER_SCOPE(ColumnModel::filteredOutChangedHandler);
+
 	if(c == chosenColumn())
 		emit filteredOutChanged();
 }
@@ -406,6 +408,8 @@ void ColumnModel::unselectAll()
 
 bool ColumnModel::setChecked(int rowIndex, bool checked)
 {
+	JASPTIMER_SCOPE(ColumnModel::setChecked);
+
 	_editing = true;
 	_undoStack->pushCommand(new FilterLabelCommand(this, rowIndex, checked));
 	_editing = false;

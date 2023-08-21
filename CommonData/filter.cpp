@@ -14,6 +14,8 @@ void Filter::dbCreate()
 
 void Filter::dbUpdate()
 {
+	JASPTIMER_SCOPE(Filter::dbUpdate);
+
 	assert(_id != -1);
 
 	db().transactionWriteBegin();
