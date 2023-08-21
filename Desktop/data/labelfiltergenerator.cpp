@@ -9,6 +9,8 @@ labelFilterGenerator::labelFilterGenerator(ColumnModel *columnModel, QObject *pa
 
 std::string labelFilterGenerator::generateFilter()
 {
+	JASPTIMER_SCOPE(labelFilterGenerator::generateFilter);
+
 	int neededFilters = 0;
 	
 	for(size_t col=0; col<_columnModel->dataColumnCount(); col++)
@@ -51,11 +53,14 @@ std::string labelFilterGenerator::generateFilter()
 
 void labelFilterGenerator::labelFilterChanged()
 {
+	JASPTIMER_SCOPE(labelFilterGenerator::labelFilterChanged);
 	emit setGeneratedFilter(QString::fromStdString(generateFilter()));
 }
 
 std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 {
+	JASPTIMER_SCOPE(labelFilterGenerator::generateLabelFilter);
+
 	std::string columnName = _columnModel->columnName(col);
 	std::stringstream out;
 	int pos = 0, neg = 0;

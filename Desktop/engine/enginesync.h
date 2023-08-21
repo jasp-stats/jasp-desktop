@@ -171,8 +171,7 @@ private:
 private:
 	static EngineSync				*	_singleton;
 	RFilterStore					*	_waitingFilter					= nullptr;
-	bool								_filterRunning					= false,
-										_stopProcessing					= false,
+	bool								_stopProcessing					= false,
 										_dataMode						= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
