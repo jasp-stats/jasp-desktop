@@ -167,9 +167,9 @@ void RibbonButton::bindYourself()
 	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,								&RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
 
-	connect(this,								&RibbonButton::enabledChanged,			this, &RibbonButton::activeChanged		);
-	connect(this,								&RibbonButton::dataLoadedChanged,		this, &RibbonButton::activeChanged		);
-	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::activeChanged		);
+	connect(this,								&RibbonButton::enabledChanged,			[=]() { setActiveDefault(); });
+	connect(this,								&RibbonButton::dataLoadedChanged,		[=]() { setActiveDefault(); });
+	connect(this,								&RibbonButton::requiresDataChanged,		[=]() { setActiveDefault(); });
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }
@@ -218,6 +218,20 @@ void RibbonButton::setEnabled(bool enabled)
 
 		emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
 	}
+}
+
+void RibbonButton::setActiveDefault()
+{
+	setActive(enabled() && (!requiresData() || dataLoaded()));
+}
+
+void RibbonButton::setActive(bool active)
+{
+	if (_active == active)
+		return;
+
+	_active = active;
+	emit activeChanged();
 }
 
 void RibbonButton::setIsCommon(bool isCommon)

@@ -150,8 +150,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
 	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	true, [&](){ emit setDataSynchronisation(false); },					fq(tr("Turn external data synchronisation off")),	true);
 
-	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					false);
-	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	false);
+	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true);
+	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true);
 
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
@@ -169,8 +169,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 			QString undoText = view->undoText(),
 					redoText = view->redoText();
 
-			_undoButton->setEnabled(!undoText.isEmpty());
-			_redoButton->setEnabled(!redoText.isEmpty());
+			_undoButton->setActive(!undoText.isEmpty());
+			_redoButton->setActive(!redoText.isEmpty());
 
 			_undoButton->setToolTip(tr("Undo %2 (%1+Z)")				.arg(getShortCutKey()).arg(undoText));
 			_redoButton->setToolTip(tr("Redo %2 (%1+shift+Z or %1+Y)")	.arg(getShortCutKey()).arg(redoText));

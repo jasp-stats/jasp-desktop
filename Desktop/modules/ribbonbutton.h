@@ -44,7 +44,7 @@ class RibbonButton : public QObject
 	Q_PROPERTY(QString	iconSource		READ iconSource			WRITE setIconSource			NOTIFY iconSourceChanged	)
 	Q_PROPERTY(QVariant	menu			READ menu											NOTIFY analysisMenuChanged	)
 	Q_PROPERTY(bool		dataLoaded		READ dataLoaded										NOTIFY dataLoadedChanged	)
-	Q_PROPERTY(bool		active			READ active											NOTIFY activeChanged		)
+	Q_PROPERTY(bool		active			READ active				WRITE setActive				NOTIFY activeChanged		)
 	Q_PROPERTY(QString	toolTip			READ toolTip			WRITE setToolTip			NOTIFY toolTipChanged		)
 	Q_PROPERTY(bool		special			READ isSpecial										NOTIFY isSpecialChanged		)
 	Q_PROPERTY(bool		ready			READ ready				WRITE setReady				NOTIFY readyChanged			)
@@ -74,7 +74,7 @@ public:
 	QVariant					menu()														const			{ return QVariant::fromValue(_menuModel);					}
 	stringvec					getAllEntries()												const;
 	bool						dataLoaded()												const			{ return Modules::DynamicModules::dynMods() &&  Modules::DynamicModules::dynMods()->dataLoaded();	}
-	bool						active()													const			{ return _enabled && (!requiresData() || dataLoaded());		}
+	bool						active()													const			{ return _active;											}
 	QString						toolTip()													const			{ return _toolTip;											}
 	bool						isBundled()													const			{ return _module && _module->isBundled();					}
 	QString						version()													const			{ return !_module ? "?" : _module->versionQ();				}
@@ -103,6 +103,7 @@ public slots:
 	void setReady(bool ready);
 	void setError(bool error);
 	void setRemember(bool remember);
+	void setActive(bool active);
 
 
 	void runSpecial(QString func);;
@@ -129,6 +130,7 @@ signals:
 
 private:
 	void bindYourself();
+	void setActiveDefault();
 
 
 private:
@@ -137,6 +139,7 @@ private:
 									_isDynamicModule	= true,
 									_isCommonModule		= false,
 									_enabled			= false,
+									_active				= false,
 									_ready				= false,
 									_error				= false,
 									_remember			= true,

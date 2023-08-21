@@ -73,7 +73,7 @@ FocusScope
 		case Qt.Key_Space:
 			if (currentIndex > -1)
 			{
-				menu.props['functionCall'](currentIndex)
+				callMenuAction(currentIndex)
 				menu.currentIndex = -1;
 			}
 			closeMenu();
@@ -161,6 +161,13 @@ FocusScope
 				menu.sourceItem.myMenuOpen = false;
 		}
 		menu.hide();
+	}
+
+	function callMenuAction(index)
+	{
+		if (menu.sourceItem !== null)
+			menu.sourceItem.forceActiveFocus()
+		menu.props['functionCall'](index)
 	}
 
 	Rectangle
@@ -331,7 +338,7 @@ FocusScope
 									id				: mouseArea
 									hoverEnabled	: true
 									anchors.fill	: parent
-									onClicked		: menu.props['functionCall'](index)
+									onClicked		: callMenuAction(index)
 									enabled			: menuItem.itemEnabled
 								}
 							}
