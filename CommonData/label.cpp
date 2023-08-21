@@ -45,6 +45,8 @@ void Label::dbDelete()
 
 void Label::dbCreate()
 {
+	JASPTIMER_SCOPE(Label::dbCreate);
+
 	if(_column->batchedLabel())
 		return;
 		
@@ -74,6 +76,8 @@ void Label::dbLoad(int labelId)
 
 void Label::dbUpdate()
 {
+	JASPTIMER_SCOPE(Label::dbUpdate);
+
 	if(_column->batchedLabel())
 		return;
 	
@@ -146,6 +150,8 @@ void Label::setDescription(const std::string &description)
 
 void Label::setFilterAllows(bool allowFilter)
 {
+	JASPTIMER_SCOPE(Label::setFilterAllows);
+
 	if(_filterAllows != allowFilter)
 	{
 		_filterAllows = allowFilter;

@@ -40,6 +40,7 @@
 #include "log.h"
 #include "utilities/processhelper.h"
 #include "dirs.h"
+#include "modules/ribbonmodel.h"
 
 using namespace boost::interprocess;
 
@@ -421,12 +422,7 @@ void EngineSync::process()
 	processSettingsChanged();
 	
 	if(!anEngineIsLoadingData)
-	{
 		processFilterScript();
-
-		if(_filterRunning)
-			return; //Do not do anything else while waiting for a filter to return
-	}
 
 	processLogCfgRequests();
 
@@ -505,8 +501,9 @@ void EngineSync::process()
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
-	if(_waitingFilter)
-		delete _waitingFilter;
+	JASPTIMER_SCOPE(EngineSync::sendFilter);
+
+	delete _waitingFilter;
 
 	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
 	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
@@ -541,16 +538,12 @@ void EngineSync::processFilterScript()
 	if (!_waitingFilter)
 		return;
 
-	//First we make sure nothing else is running before we ask the engine to run the filter
-	if(!_filterRunning && !_dataMode)
-	{
-		Log::log() << "Pausing and resuming engines to make sure nothing else is running when we start the filter." << std::endl;
+	JASPTIMER_SCOPE(EngineSync::processFilterScript);
 
-		pauseEngines(); //Make sure engines pause/stop
-		_filterRunning = true;
-		resumeEngines();
-	}
-	else //So previous loop we made sure nothing else is running, and maybe we had to kill an engine to make it understand, followed by a restart. Now we are ready to run the filter
+	//First we make sure nothing else is running before we ask the engine to run the filter
+	if(!_dataMode)
+		RibbonModel::singleton()->showData();
+	else //So previous loop we made sure nothing else is running by switching to data editing mode
 	{
 		try
 		{
@@ -571,7 +564,7 @@ void EngineSync::filterDone(int requestID)
 	if(requestID != _filterCurrentRequestID)
 		return;
 
-	_filterRunning = false; //Allow other stuff to happen
+	Log::log() << "Filter with request " << requestID << " done!" << std::endl;
 }
 
 
@@ -1299,8 +1292,7 @@ void EngineSync::cleanRestart()
 		_waitingCompCols.pop();
 	}
 
-	if(_waitingFilter)
-		delete _waitingFilter;
+	delete _waitingFilter;
 	_waitingFilter = nullptr;
 
 	TempFiles::clearSessionDir();
