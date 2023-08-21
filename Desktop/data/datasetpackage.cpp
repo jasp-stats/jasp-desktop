@@ -871,6 +871,8 @@ bool DataSetPackage::setDescriptionOnLabel(const QModelIndex & index, const QStr
 
 bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue)
 {
+	JASPTIMER_SCOPE(DataSetPackage::setAllowFilterOnLabel);
+
 	Label  * label  = dynamic_cast<Label*>(indexPointerToNode(index));
 	Column * column = dynamic_cast<Column*>(label->parent());
 	
@@ -909,7 +911,7 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 		labels[row]->setFilterAllows(newAllowValue);
 
 		if(before != column->hasFilter())
-			notifyColumnFilterStatusChanged(col);
+			notifyColumnFilterStatusChanged(col); //basically resetModel now
 
 		emit labelFilterChanged();
 		QModelIndex columnParentNode = indexForSubNode(column);
@@ -1049,6 +1051,8 @@ bool DataSetPackage::isColumnUsedInEasyFilter(const std::string & colName) const
 
 void DataSetPackage::notifyColumnFilterStatusChanged(int columnIndex)
 {
+	JASPTIMER_SCOPE(DataSetPackage::notifyColumnFilterStatusChanged);
+
 	emit columnsFilteredCountChanged();
 	//emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex); //this keeps crashing jasp and i dont know why
 	beginResetModel();

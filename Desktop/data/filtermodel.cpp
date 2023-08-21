@@ -129,6 +129,8 @@ void FilterModel::setConstructorR(QString newConstructorR)
 }
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 {
+	JASPTIMER_SCOPE(FilterModel::setGeneratedFilter);
+
 	_setGeneratedFilter(newGeneratedFilter);
 	// After this commit https://github.com/jasp-stats/jasp-desktop/commit/65f007cba2ff8986fc3ad86ac4b1a00fa706769b  the filter was not executed.
 	// If a model reset is called just before, this will set the generatedFilter to the right value, and _setGeneratedFilter will returns false
@@ -138,12 +140,14 @@ void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 
 bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
 {
+	JASPTIMER_SCOPE(FilterModel::_setGeneratedFilter);
+
 	if (newGeneratedFilter != generatedFilter())
 	{
 		if(DataSetPackage::filter())
 			DataSetPackage::filter()->setGeneratedFilter(fq(newGeneratedFilter));
 
-		emit generatedFilterChanged();
+		emit generatedFilterChanged(); //does nothing?
 		return true;
 	}
 
@@ -177,6 +181,8 @@ void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 
 void FilterModel::sendGeneratedAndRFilter()
 {
+	JASPTIMER_SCOPE(FilterModel::sendGeneratedAndRFilter);
+
 	setFilterErrorMsg("");
 	_lastSentRequestId = emit sendFilter(generatedFilter(), rFilter());
 }
