@@ -1295,7 +1295,7 @@ QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 
 	_model->insertColumn(col, computed, R);
 
-	return tq(DataSetPackage::pkg()->dataSet()->column(col)->name());
+	return tq(DataSetPackage::pkg()->dataSet()->column(col)->name()); // This will break as soon as we start filtering/sorting columns
 }
 
 QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
