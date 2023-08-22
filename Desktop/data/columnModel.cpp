@@ -351,7 +351,7 @@ void ColumnModel::checkRemovedColumns(int columnIndex, int count)
 	}
 }
 
-void ColumnModel::openComputedColumn(QString name)
+void ColumnModel::openComputedColumn(const QString & name)
 {
 	setChosenColumn(name);
 	setVisible(true);
