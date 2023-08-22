@@ -262,7 +262,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 	emit showComputedColumnChanged();
 }
 
-void ColumnModel::setChosenColumn(QString &chosenName)
+void ColumnModel::setChosenColumn(const QString & chosenName)
 {
 	DataSet * data = DataSetPackage::pkg()->dataSet();
 	Column* col = data->column(fq(chosenName));
