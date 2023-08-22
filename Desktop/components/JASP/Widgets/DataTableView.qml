@@ -711,7 +711,7 @@ FocusScope
 												+ "<br><br>"
 												+ (!columnModel.visible	? qsTr("Doubleclick here to change variable settings")
 																		: (columnModel.chosenColumn === columnIndex ? qsTr("Doubleclick here to close variable window")
-																													: qsTr("Doubleclick here to change selected variable")
+																													: qsTr("Click here to change selected variable")
 																		  )
 												  )
 											  )
