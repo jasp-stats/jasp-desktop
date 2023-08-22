@@ -262,6 +262,13 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 	emit showComputedColumnChanged();
 }
 
+void ColumnModel::setChosenColumn(const QString & chosenName)
+{
+	DataSet * data = DataSetPackage::pkg()->dataSet();
+	Column* col = data->column(fq(chosenName));
+	setChosenColumn(data->columnIndex(col));
+}
+
 
 void ColumnModel::columnDataTypeChanged(const QString & colName)
 {
@@ -342,6 +349,12 @@ void ColumnModel::checkRemovedColumns(int columnIndex, int count)
 		setVisible(false);
 		setChosenColumn(-1);
 	}
+}
+
+void ColumnModel::openComputedColumn(const QString & name)
+{
+	setChosenColumn(name);
+	setVisible(true);
 }
 
 void ColumnModel::removeAllSelected()
