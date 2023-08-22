@@ -167,6 +167,7 @@ void RibbonButton::bindYourself()
 	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,								&RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
 
+	setActiveDefault();
 	connect(this,								&RibbonButton::enabledChanged,			[=]() { setActiveDefault(); });
 	connect(this,								&RibbonButton::dataLoadedChanged,		[=]() { setActiveDefault(); });
 	connect(this,								&RibbonButton::requiresDataChanged,		[=]() { setActiveDefault(); });
