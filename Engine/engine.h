@@ -135,7 +135,6 @@ private: // Data:
 	std::string				_analysisName,
 							_analysisTitle,
 							_analysisDataKey,
-							_analysisOptions,
 							_analysisResultsMeta,
 							_analysisStateKey,
 							_analysisResultsString,
@@ -146,6 +145,7 @@ private: // Data:
 							_langR				= "en";
 
 	Json::Value				_imageOptions,
+							_analysisOptions	= Json::nullValue,
 							_analysisResults;
 
 	IPCChannel			*	_channel = nullptr;

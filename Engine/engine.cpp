@@ -574,7 +574,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_resultFont			= jsonRequest.get("resultFont",		"").asString();
+		_resultFont				= jsonRequest.get("resultFont",			"").asString();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -583,10 +583,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		
 		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
 		
-		ColumnEncoder::encodeColumnNamesinOptions(optionsEnc);
-		_analysisOptions		= optionsEnc.toStyledString();
-
-        //Debug encoded stuff? -> Log::log() << "Options encoded: " << _analysisOptions << std::endl;
+		_analysisOptions		= optionsEnc; //store unencoded
 	}
 	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pass that msg on by itself.
 }
@@ -634,10 +631,16 @@ void Engine::runAnalysis()
 	default:	break;
 	}
 
+	provideDataSet();
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey,
-												   _analysisId, _analysisRevision, _developerMode);
+	Json::Value encodedAnalysisOptions = _analysisOptions;
+
+	ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions);
+
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
+								encodedAnalysisOptions.toStyledString(),
+								_analysisStateKey, _analysisId, _analysisRevision, _developerMode);
 
 	switch(_analysisStatus)
 	{
@@ -802,14 +805,16 @@ DataSet * Engine::provideDataSet()
 
 	if(_dataSet)
 	{
-		Log::log() << "There is a dataset, checking for updates.\n";
+		Log::log() << "There is a dataset, ";
 		if(_dataSet->checkForUpdates())
 		{
-			Log::log() << "updates found, loading\n";
+			Log::log(false) << "updates found, loading them.";
 			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
 		}
+		else
+			Log::log(false) << "no updates found.";
 
-		Log::log() << std::flush;
+		Log::log(false) << std::endl;
 	}
 	else if(_db->dataSetGetId() != -1)	_dataSet = new DataSet(_db->dataSetGetId());
 
