@@ -78,6 +78,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void setChosenColumn(int chosenColumn);
+	void setChosenColumn(QString& chosenName);
 	void setSelected(int row, int modifier);
 	void setColumnNameQ(QString newColumnName);
 	void removeAllSelected();
@@ -87,6 +88,7 @@ public slots:
 	void refresh();
 	void changeSelectedColumn(QPoint selectionStart);
 	void checkRemovedColumns(int columnIndex, int count);
+	void openComputedColumn(QString name);
 
 signals:
 	void visibleChanged(bool visible);
