@@ -48,6 +48,7 @@ set(JASP_EXTRA_MODULES
     "jaspProphet"
     "jaspQualityControl"
     "jaspReliability"
+    "jaspRobustTTests"
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspTimeSeries"
