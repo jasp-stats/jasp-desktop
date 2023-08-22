@@ -26,6 +26,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
 	Q_PROPERTY(bool		showComputedColumn	READ showComputedColumn 							NOTIFY showComputedColumnChanged)
 	Q_PROPERTY(bool		columnIsFiltered	READ columnIsFiltered								NOTIFY columnIsFilteredChanged	)
+	Q_PROPERTY(bool		nameEditable		READ nameEditable									NOTIFY nameEditableChanged		)
 
 
 public:
@@ -36,7 +37,7 @@ public:
 	QString		columnNameQ();
 	QString		columnTitle() const;
 	QString		columnDescription() const;
-	bool		setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)						override;
+	bool		setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
 	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
 
@@ -45,6 +46,7 @@ public:
 	int			dataColumnCount()	const;
 	int			chosenColumn()		const;
 	Column *	column()			const;
+	bool		nameEditable()		const;
 	
 	Q_INVOKABLE void reverse();
 	Q_INVOKABLE void moveSelectionUp();
@@ -64,7 +66,6 @@ public:
 	double labelMaxWidth()		const	{ return _labelMaxWidth;	}
 
 	void setColumnTitle(const QString & newColumnTitle);
-
 	void setColumnDescription(const QString & newColumnDescription);
 	void setLabelMaxWidth();
 
@@ -73,7 +74,8 @@ public:
 	bool showComputedColumn() const;
 	bool columnIsFiltered() const;
 
-
+	
+	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -108,7 +110,9 @@ signals:
 	void beforeChangingColumn(int chosenColumn);
 
 
-
+	
+	void nameEditableChanged();
+	
 private:
 	std::vector<size_t> getSortedSelection()					const;
 	void				setValueMaxWidth();
