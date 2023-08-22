@@ -78,7 +78,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void setChosenColumn(int chosenColumn);
-	void setChosenColumn(QString& chosenName);
+	void setChosenColumn(const QString & chosenName);
 	void setSelected(int row, int modifier);
 	void setColumnNameQ(QString newColumnName);
 	void removeAllSelected();
