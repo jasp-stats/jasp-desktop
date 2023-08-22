@@ -541,9 +541,9 @@ void EngineSync::processFilterScript()
 	JASPTIMER_SCOPE(EngineSync::processFilterScript);
 
 	//First we make sure nothing else is running before we ask the engine to run the filter
-	if(!_dataMode)
+	if(!_dataMode && Analyses::analyses()->count())
 		RibbonModel::singleton()->showData();
-	else //So previous loop we made sure nothing else is running by switching to data editing mode
+	else //So previous loop we made sure nothing else is running by switching to data editing mode or not having analyses
 	{
 		try
 		{
