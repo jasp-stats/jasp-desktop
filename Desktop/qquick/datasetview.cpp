@@ -1294,7 +1294,7 @@ QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 		col = _selectionStart.x() != -1 ? _selectionStart.x() : 0;
 
 	_model->insertColumn(col, computed, R);
-
+	auto a = _model->headerData(col-1, Qt::Horizontal).toString();
 	return _model->headerData(col, Qt::Horizontal).toString();
 }
 
@@ -1303,7 +1303,7 @@ QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
 	if(col == -1)
 		col = _selectionEnd.x() != -1 ? _selectionEnd.x()
 									  : _selectionStart.x() != -1 ? _selectionStart.x()
-																  : _model->columnCount(false);
+																  : _model->columnCount(false) - 1;
 
 	return columnInsertBefore(col + 1, computed, R);
 }
