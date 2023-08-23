@@ -141,7 +141,7 @@ FocusScope
 			{
 				id:					columnTitleVariablesWindow
 				label:				qsTr("Long name: ");
-				fieldWidth:			columnNameVariablesWindow.fieldWidth * 1.5
+				fieldWidth:			Math.min(closeButton.x - x - control.x, columnNameVariablesWindow.fieldWidth * 1.5)
 				value:				columnModel.columnTitle
 				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 				undoModel:			columnModel

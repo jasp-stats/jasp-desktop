@@ -76,7 +76,7 @@ FocusScope
 	{
 		id:				minWidthCollector
 
-		property int minWidth: 400 * preferencesModel.uiScale
+		property int minWidth: 500 * preferencesModel.uiScale
 
 		anchors
 		{
