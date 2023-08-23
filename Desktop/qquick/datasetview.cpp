@@ -1202,30 +1202,26 @@ void DataSetView::paste(bool includeHeader)
 	std::vector<std::vector<QString>> newData;
 
 	QStringList newNames;
-
 	size_t row = 0, col = 0;
 	for(const QString & rowStr : clipboard->text().split("\n"))
 	{
 		col = 0;
-		if(rowStr != "")
+		if(includeHeader)
 		{
-			if(includeHeader)
+			newNames = rowStr.split("\t");
+			includeHeader = false;
+		}
+		else
+		{
+			for(const QString & cellStr : rowStr.split("\t"))
 			{
-				newNames = rowStr.split("\t");
-				includeHeader = false;
-			}
-			else
-			{
-				for(const QString & cellStr : rowStr.split("\t"))
-				{
-					if(newData.size()		<= col) newData.	 resize(col+1);
-					if(newData[col].size()	<= row)	newData[col].resize(row+1);
+				if(newData.size()		<= col) newData.	 resize(col+1);
+				if(newData[col].size()	<= row)	newData[col].resize(row+1);
 
-					newData[col][row] = cellStr;
-					col++;
-				}
-				row++;
+				newData[col][row] = cellStr;
+				col++;
 			}
+			row++;
 		}
 	}
 
