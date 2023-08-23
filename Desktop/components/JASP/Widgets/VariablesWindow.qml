@@ -56,15 +56,15 @@ FocusScope
 				common.focus = true //So we just put it somewhere
             
             
-            if(!columnModel.nameEditable && columnModel.columnName != "") // so probably (computed) column from an analysis so try to show it
-                computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
+            //if(!columnModel.nameEditable && columnModel.columnName != "") // so probably (computed) column from an analysis so try to show it
+            //    computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
 		}
         
-        function onVisibleChanged(visible)
+        /*function onVisibleChanged(visible)
         {
             if(visible && !columnModel.nameEditable && columnModel.columnName != "") // so probably (computed) column from an analysis so try to show it
                 computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)   
-        }
+        }*/
 	}
 
 	Item

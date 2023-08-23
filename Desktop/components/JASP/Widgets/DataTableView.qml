@@ -679,6 +679,9 @@ FocusScope
 								filterWindow.showEasyFilter = true
 								filterWindow.open()
 							}
+                            
+                            if(!columnModel.nameEditable && columnModel.columnName != "") // so probably (computed) column from an analysis so try to show it  
+                                computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
                         }
 
 					}
