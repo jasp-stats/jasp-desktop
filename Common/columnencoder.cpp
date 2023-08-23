@@ -110,20 +110,20 @@ std::string ColumnEncoder::encode(const std::string &in)
 {
 	if(in == "") return "";
 
-	if(_encodingMap.count(in) == 0)
+	if(encodingMap().count(in) == 0)
 		throw std::runtime_error("Trying to encode columnName but '" + in + "' is not a columnName!");
 
-	return _encodingMap[in];
+	return encodingMap().at(in);
 }
 
 std::string ColumnEncoder::decode(const std::string &in)
 {
 	if(in == "") return "";
 
-	if(_decodingMap.count(in) == 0)
+	if(decodingMap().count(in) == 0)
 		throw std::runtime_error("Trying to decode columnName but '" + in + "' is not an encoded columnName!");
 
-	return _decodingMap[in];
+	return decodingMap().at(in);
 }
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names)
@@ -362,6 +362,7 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 
 	return positions;
 }
+
 
 void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool replaceStrict)
 {
