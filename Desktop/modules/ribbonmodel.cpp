@@ -153,7 +153,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true);
 	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true);
 
-	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		[=](bool loaded){ _dataSwitchButton->setEnabled(loaded); _dataSwitchButton->setActive(DataSetPackage::pkg()->hasDataSet() && DataSetPackage::pkg()->dataSet()->columnCount() > 0); });
 	connect(this, &RibbonModel::dataLoadedChanged,		_dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
 	connect(this, &RibbonModel::dataLoadedChanged,		_insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_removeButton,			&RibbonButton::setEnabled);
