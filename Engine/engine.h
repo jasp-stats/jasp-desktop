@@ -46,19 +46,19 @@ public:
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();
 
-	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideDataSet()->column(columnName)->type()); }
+	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideAndUpdateDataSet()->column(columnName)->type()); }
 
 	//return true if changed:
-	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->column(columnName)->overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);				}
 	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);				}
 	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);				}
-	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);			}
 
 	bool isColumnNameOk(std::string columnName);
 
 	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels);
 
-	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
+	int dataSetRowCount()	{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
 
 	bool paused() { return _engineState == engineState::paused; }
 
@@ -102,7 +102,7 @@ private: // Methods:
 	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
 	void sendRCodeError(		int rCodeRequestId);
 
-	DataSet * provideDataSet();
+	DataSet * provideAndUpdateDataSet();
 
 	void provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
 	void provideStateFileName(											std::string & root,	std::string & relativePath);
@@ -135,7 +135,6 @@ private: // Data:
 	std::string				_analysisName,
 							_analysisTitle,
 							_analysisDataKey,
-							_analysisOptions,
 							_analysisResultsMeta,
 							_analysisStateKey,
 							_analysisResultsString,
@@ -146,6 +145,7 @@ private: // Data:
 							_langR				= "en";
 
 	Json::Value				_imageOptions,
+							_analysisOptions	= Json::nullValue,
 							_analysisResults;
 
 	IPCChannel			*	_channel = nullptr;
