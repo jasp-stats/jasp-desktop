@@ -231,7 +231,7 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 {
 	QUndoCommand* parentCommand = nullptr;
 
-	if (!_sourceModel || row < 0 || col < 0 || row >= rowCount() || col >= columnCount())
+	if (!_sourceModel || row < 0 || col < 0)
 		return;
 
 	if (col >= _sourceModel->columnCount() || row >= _sourceModel->rowCount())
