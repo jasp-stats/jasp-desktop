@@ -1173,16 +1173,15 @@ void DatabaseInterface::labelsSetOrder(const intintmap & orderPerDbId)
 	
 	bindParametersType _bindParams = [&](sqlite3_stmt * stmt)
 	{
-		sqlite3_bind_int(stmt, 1, iter->first);
-		sqlite3_bind_int(stmt, 2, iter->second);
+		sqlite3_bind_int(stmt, 1, iter->second);
+		sqlite3_bind_int(stmt, 2, iter->first);
+		iter++;
 	};
 
 	_runStatementsRepeatedly("UPDATE Labels SET ordering=? WHERE id=?", [&](bindParametersType ** bindParams, size_t)
 	{
 		(*bindParams) = &_bindParams;
-		
-		iter++;
-		
+				
 		return iter != orderPerDbId.end();
 	});
 
