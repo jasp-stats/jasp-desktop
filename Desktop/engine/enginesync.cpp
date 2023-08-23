@@ -40,7 +40,6 @@
 #include "log.h"
 #include "utilities/processhelper.h"
 #include "dirs.h"
-#include "modules/ribbonmodel.h"
 
 using namespace boost::interprocess;
 
@@ -51,6 +50,12 @@ EngineSync::EngineSync(QObject *parent)
 {
 	assert(!_singleton);
 	_singleton = this;
+	
+	_filterRunningResetTimer = new QTimer(this);
+	_filterRunningResetTimer->setInterval(2000);
+	_filterRunningResetTimer->setSingleShot(true);
+	
+	connect(_filterRunningResetTimer, &QTimer::timeout, this, [&](){ _filterRunning = false; });
 	
 	using namespace Modules;
 
@@ -423,10 +428,10 @@ void EngineSync::process()
 	
 	if(!anEngineIsLoadingData)
 		processFilterScript();
-
+		
 	processLogCfgRequests();
 
-	if(_stopProcessing || _dataMode)
+	if(_stopProcessing || _dataMode || _filterRunning)
 	{
 		processComputedColumnQueue();
 		return;
@@ -541,8 +546,12 @@ void EngineSync::processFilterScript()
 	JASPTIMER_SCOPE(EngineSync::processFilterScript);
 
 	//First we make sure nothing else is running before we ask the engine to run the filter
-	if(!_dataMode && Analyses::analyses()->count())
-		RibbonModel::singleton()->showData();
+	if(!_dataMode && !_filterRunning)
+	{
+		pauseEngines();
+		_filterRunning = true;	
+		resumeEngines();
+	}
 	else //So previous loop we made sure nothing else is running by switching to data editing mode or not having analyses
 	{
 		try
@@ -564,7 +573,9 @@ void EngineSync::filterDone(int requestID)
 	if(requestID != _filterCurrentRequestID)
 		return;
 
-	Log::log() << "Filter with request " << requestID << " done!" << std::endl;
+	Log::log() << "Filter with request " << requestID << " done! Starting timer for allowing analyses to run later" << std::endl;
+	
+	_filterRunningResetTimer->start();
 }
 
 
