@@ -170,9 +170,11 @@ private:
 
 private:
 	static EngineSync				*	_singleton;
+	QTimer							*	_filterRunningResetTimer		= nullptr;
 	RFilterStore					*	_waitingFilter					= nullptr;
 	bool								_stopProcessing					= false,
-										_dataMode						= false;
+										_dataMode						= false,
+										_filterRunning					= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
