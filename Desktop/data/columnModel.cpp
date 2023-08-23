@@ -427,7 +427,7 @@ bool ColumnModel::setChecked(int rowIndex, bool checked)
 	_undoStack->pushCommand(new FilterLabelCommand(this, rowIndex, checked));
 	_editing = false;
 
-	return data(index(rowIndex, 0), int(DataSetPackage::specialRoles::filter)).toBool();
+	return data(index(rowIndex, 0), int(DataSetPackage::specialRoles::filter)).toBool() == checked;
 }
 
 void ColumnModel::setLabel(int rowIndex, QString label)
