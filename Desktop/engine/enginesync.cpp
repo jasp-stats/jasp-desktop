@@ -52,7 +52,7 @@ EngineSync::EngineSync(QObject *parent)
 	_singleton = this;
 	
 	_filterRunningResetTimer = new QTimer(this);
-	_filterRunningResetTimer->setInterval(2000);
+	_filterRunningResetTimer->setInterval(1000);
 	_filterRunningResetTimer->setSingleShot(true);
 	
 	connect(_filterRunningResetTimer, &QTimer::timeout, this, [&](){ _filterRunning = false; });
