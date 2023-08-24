@@ -287,6 +287,8 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 	connect(this,					&MainWindow::dataAvailableChanged,					_ribbonModel,			&RibbonModel::dataLoadedChanged								);
+	connect(this,					&MainWindow::dataAvailableChanged,					this,					&MainWindow::checkEmptyWorkspace							);
+	connect(this,					&MainWindow::analysesAvailableChanged,				this,					&MainWindow::checkEmptyWorkspace							);
 	connect(this,					&MainWindow::showComputedColumn,					_columnModel,			&ColumnModel::openComputedColumn							);
 
 
@@ -881,6 +883,12 @@ void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
 		_analyses->refreshAllAnalyses();
 }
 
+void MainWindow::checkEmptyWorkspace()
+{
+	if (!analysesAvailable() && !dataAvailable())
+		_fileMenu->close();
+}
+
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -1060,7 +1068,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		if (_package->isModified())
+		if (_package->isModified() && (dataAvailable() || analysesAvailable()))
 		{
 			QString title = windowTitle();
 			title.chop(1);
