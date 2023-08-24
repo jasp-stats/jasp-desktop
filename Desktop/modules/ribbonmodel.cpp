@@ -158,7 +158,13 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	connect(this, &RibbonModel::dataLoadedChanged,							_dataSwitchButton,	[=](bool loaded)			{ _dataSwitchButton	->setEnabled(loaded);				});
 	connect(this, &RibbonModel::dataLoadedChanged,							_dataNewButton,		[=](bool loaded)			{ _dataNewButton	->setEnabled(!loaded);				});
 	connect(MainWindow::singleton(), &MainWindow::dataAvailableChanged,		_dataSwitchButton,	[=](bool dataAvailable)		{ _dataSwitchButton	->setActive(dataAvailable);			});
-	connect(MainWindow::singleton(), &MainWindow::analysesAvailableChanged, _dataNewButton,		[=](bool analysesAvailable)	{ _dataNewButton	->setActive(!analysesAvailable); _dataNewButton->setTitle(analysesAvailable ? fq(tr("No Data")) : fq(tr("New Data")));	});
+
+	connect(MainWindow::singleton(), &MainWindow::analysesAvailableChanged, _dataNewButton,		[=](bool analysesAvailable)
+	{
+		_dataNewButton	->setActive(	!analysesAvailable);
+		_dataNewButton	->setTitle(		 analysesAvailable ? fq(tr("No Data"))	: fq(tr("New Data"))	);
+		_dataNewButton	->setIconSource( analysesAvailable ? "data-button.svg"	: "data-button-new.svg"	);
+	});
 
 	connect(this, &RibbonModel::dataLoadedChanged,		_insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_removeButton,			&RibbonButton::setEnabled);
