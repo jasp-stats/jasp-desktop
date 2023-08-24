@@ -1268,7 +1268,7 @@ void MainWindow::populateUIfromDataSet()
 
 	bool hasAnalyses = _analyses->count() > 0;
 
-	setDataAvailable((_package->rowCount() > 0 || _package->columnCount() > 0));
+	setDataAvailable(_package->dataSet() && (_package->dataSet()->rowCount() > 0 && _package->dataSet()->columnCount() > 0));
 
 	hideProgress();
 

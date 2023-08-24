@@ -49,8 +49,8 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	bindYourself();
 }
 
-RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip, bool enabled, bool remember)
-	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr), _specialButtonFunc(justThisFunction)
+RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip, bool enabled, bool remember, bool defaultActiveBinding)
+	: QObject(parent), _enabled(enabled), _defaultActiveBinding(defaultActiveBinding), _remember(remember), _special(true), _module(nullptr), _specialButtonFunc(justThisFunction)
 {
 	_menuModel = new MenuModel(this);
 
@@ -64,8 +64,8 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	bindYourself();
 }
 
-RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember)
-	: QObject(parent), _enabled(enabled), _remember(remember), _special(true), _module(nullptr)
+RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember, bool defaultActiveBinding)
+	: QObject(parent), _enabled(enabled), _defaultActiveBinding(defaultActiveBinding), _remember(remember), _special(true), _module(nullptr)
 {
 	_menuModel = new MenuModel(this, funcEntries);
 
@@ -167,10 +167,13 @@ void RibbonButton::bindYourself()
 	connect(this,								&RibbonButton::requiresDataChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,								&RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
 
-	setActiveDefault();
-	connect(this,								&RibbonButton::enabledChanged,			[=]() { setActiveDefault(); });
-	connect(this,								&RibbonButton::dataLoadedChanged,		[=]() { setActiveDefault(); });
-	connect(this,								&RibbonButton::requiresDataChanged,		[=]() { setActiveDefault(); });
+	if (_defaultActiveBinding)
+	{
+		setActiveDefault();
+		connect(this,								&RibbonButton::enabledChanged,			[=]() { setActiveDefault(); });
+		connect(this,								&RibbonButton::dataLoadedChanged,		[=]() { setActiveDefault(); });
+		connect(this,								&RibbonButton::requiresDataChanged,		[=]() { setActiveDefault(); });
+	}
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }
