@@ -5,21 +5,22 @@
 
 ColumnModel::ColumnModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
-	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &ColumnModel::filteredOutChangedHandler);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::filteredOutChanged		);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnNameChanged		);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnTitleChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &ColumnModel::filteredOutChangedHandler	);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::filteredOutChanged			);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnNameChanged			);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::nameEditableChanged			);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnTitleChanged			);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::columnDescriptionChanged	);
-	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::chosenColumnChanged		);
-	connect(this,					&ColumnModel::chosenColumnChanged,				this, &ColumnModel::onChosenColumnChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnNameChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnTitleChanged		);
+	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::chosenColumnChanged			);
+	connect(this,					&ColumnModel::chosenColumnChanged,				this, &ColumnModel::onChosenColumnChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnNameChanged			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnTitleChanged			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::columnDescriptionChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &ColumnModel::allFiltersReset			);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &ColumnModel::labelFilterChanged		);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &ColumnModel::columnDataTypeChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &ColumnModel::refresh					);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsBeingRemoved,			this, &ColumnModel::checkRemovedColumns		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &ColumnModel::allFiltersReset				);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &ColumnModel::labelFilterChanged			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &ColumnModel::columnDataTypeChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &ColumnModel::refresh						);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsBeingRemoved,			this, &ColumnModel::checkRemovedColumns			);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
@@ -447,7 +448,7 @@ bool ColumnModel::showLabelEditor() const
 bool ColumnModel::showComputedColumn() const
 {
 	if(column())
-		return column()->isComputed();
+		return column()->isComputed() && (column()->codeType() == computedColumnType::rCode || column()->codeType() == computedColumnType::constructorCode);
 	return false;
 }
 
@@ -457,3 +458,12 @@ bool ColumnModel::columnIsFiltered() const
 		return column()->hasFilter();
 	return false;
 }
+
+bool ColumnModel::nameEditable() const
+{
+	if(column())
+		return !(column()->isComputed() && (column()->codeType() == computedColumnType::analysisNotComputed || column()->codeType() == computedColumnType::analysis));
+	return true;
+}
+
+

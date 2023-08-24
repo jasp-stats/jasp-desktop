@@ -260,7 +260,7 @@ protected:
 
 	QQmlContext *	setStyleDataItem(			QQmlContext * previousContext, bool active, size_t col, size_t row, bool emptyValLabel = true);
 	QQmlContext *	setStyleDataRowNumber(		QQmlContext * previousContext, QString text, int row);
-	QQmlContext *	setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError, int columnType);
+	QQmlContext *	setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError, int columnType, int computedColumnType);
 
 
 	void			addLine(float x0, float y0, float x1, float y1);

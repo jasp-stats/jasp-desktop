@@ -158,7 +158,7 @@ TextInputBase
 		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
 		font:					jaspTheme.font
 		activeFocusOnPress:		textField.editable
-		color:					enabled || !textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		color:					enabled && textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 		padding:				jaspTheme.jaspControlPadding
 		leftPadding:			jaspTheme.labelSpacing

@@ -233,7 +233,7 @@ void Column::setAnalysisId(int analysisId)
 {
 	JASPTIMER_SCOPE(Column::setAnalysisId);
 
-	if(_analysisId != analysisId)
+	if(_analysisId == analysisId)
 		return;
 	
 	_analysisId = analysisId;
@@ -804,6 +804,9 @@ columnTypeChangeResult Column::changeType(columnType colType)
 	}
 	else
 	{
+		if(codeType() == computedColumnType::analysis)
+			return columnTypeChangeResult::generatedFromAnalysis;
+
 		setDefaultValues(colType);
 		invalidate();
 		return columnTypeChangeResult::changed;	

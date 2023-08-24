@@ -16,6 +16,7 @@ public:
 		NameRole = Qt::UserRole + 1,
 		TypeRole,
 		ColumnTypeRole,
+		ComputedColumnTypeRole,
 		IconSourceRole,
 		ToolTipRole
 	 };

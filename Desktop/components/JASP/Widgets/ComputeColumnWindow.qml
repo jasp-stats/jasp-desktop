@@ -73,9 +73,9 @@ FocusScope
 		if(computedColumnsInterface.computeColumnNameSelected != columnName && computedColumnsInterface.computeColumnNameSelected != "" && computedColumnContainer.changed)
 			saveDialog.open()
 
-		if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
+		/*if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
 			close();
-		else
+		else*/
 		{
 			computedColumnsInterface.computeColumnNameSelected	= columnName;
 			opened = true
@@ -220,6 +220,7 @@ FocusScope
 			{
 				id:						computedColumnConstructor
 				anchors.fill:			parent
+                anchors.leftMargin:     1
 				visible:				!computedColumnsInterface.computeColumnUsesRCode
 
 				showGeneratedRCode:		false

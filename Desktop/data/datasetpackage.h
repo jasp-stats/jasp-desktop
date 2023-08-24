@@ -122,8 +122,8 @@ public:
 				bool				insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				QString				insertColumnSpecial(int column, bool computed, bool R);
-				QString				appendColumnSpecial(			bool computed, bool R);
+				QString				insertColumnSpecial(int column, bool computed,  computedColumnType compColType);
+				QString				appendColumnSpecial(			bool computed,  computedColumnType compColType);
 
 				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
 				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }

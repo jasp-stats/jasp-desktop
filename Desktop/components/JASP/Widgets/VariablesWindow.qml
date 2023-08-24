@@ -53,7 +53,7 @@ FocusScope
 		{
 			if(columnModel.chosenColumn > -1 && columnModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
-				common.focus = true //So we just put it somewhere				
+				common.focus = true //So we just put it somewhere
 		}
 	}
 
@@ -127,7 +127,8 @@ FocusScope
 				value:				columnModel.columnName
 				onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
 				undoModel:			columnModel
-
+                editable:           columnModel.nameEditable
+                
 				anchors
 				{
 					top:			nameLabel.top
