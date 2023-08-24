@@ -491,6 +491,13 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
+	_qml->rootContext()->setContextProperty("computedColumnTypeRCode",					int(computedColumnType::rCode)					);
+	_qml->rootContext()->setContextProperty("computedColumnTypeUnknown",				int(computedColumnType::unknown)				);
+	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysis",				int(computedColumnType::analysis)				);
+	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
+	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
+
+
 	bool	debug	= false,
 			isMac	= false,
 			isLinux = false;
