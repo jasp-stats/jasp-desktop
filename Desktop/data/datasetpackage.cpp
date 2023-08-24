@@ -2581,7 +2581,7 @@ void DataSetPackage::requestComputedColumnDestruction(const std::string& columnN
 
 	Column * col = dataSet()->column(columnName);
 
-	if(!col->isComputed())
+	if(!col || !col->isComputed())
 		return ;
 
 	removeColumn(columnName);
