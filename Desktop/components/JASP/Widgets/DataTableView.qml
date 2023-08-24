@@ -680,8 +680,8 @@ FocusScope
 								filterWindow.open()
 							}
                             
-                            if(!columnModel.nameEditable && columnModel.columnName != "") // so probably (computed) column from an analysis so try to show it  
-                                computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
+                            if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
+                                computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
                         }
 
 					}
