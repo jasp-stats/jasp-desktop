@@ -186,6 +186,7 @@ private:
 	void _openDbJson();
 	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
+	void checkEmptyWorkspace();
 
 signals:
 	void saveJaspFile();

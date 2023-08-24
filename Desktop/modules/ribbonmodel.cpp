@@ -24,6 +24,7 @@
 #include "data/datasetpackage.h"
 #include "jasptheme.h"
 #include "qquick/datasetview.h"
+#include "mainwindow.h"
 
 using namespace Modules;
 
@@ -143,18 +144,28 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);
-	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),				"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),			false);
-	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit genShowEmptyData();	 },							fq(tr("Open a workspace without data")),			true);
+	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),				"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),			false, false, false);
+	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit genShowEmptyData();	 },							fq(tr("Open a workspace without data")),			true, false, false);
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
 	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
 	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	true, [&](){ emit setDataSynchronisation(false); },					fq(tr("Turn external data synchronisation off")),	true);
 
-	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true);
-	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true);
+	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true, false, false);
+	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true, false, false);
 
-	connect(this, &RibbonModel::dataLoadedChanged,		_dataSwitchButton,		[=](bool loaded){ _dataSwitchButton->setEnabled(loaded); _dataSwitchButton->setActive(DataSetPackage::pkg()->hasDataSet() && DataSetPackage::pkg()->dataSet()->columnCount() > 0); });
-	connect(this, &RibbonModel::dataLoadedChanged,		_dataNewButton,			[=](bool loaded){ _dataNewButton->setEnabled(	 !loaded); });
+	_dataNewButton->setActive(true);
+	connect(this, &RibbonModel::dataLoadedChanged,							_dataSwitchButton,	[=](bool loaded)			{ _dataSwitchButton	->setEnabled(loaded);				});
+	connect(this, &RibbonModel::dataLoadedChanged,							_dataNewButton,		[=](bool loaded)			{ _dataNewButton	->setEnabled(!loaded);				});
+	connect(MainWindow::singleton(), &MainWindow::dataAvailableChanged,		_dataSwitchButton,	[=](bool dataAvailable)		{ _dataSwitchButton	->setActive(dataAvailable);			});
+
+	connect(MainWindow::singleton(), &MainWindow::analysesAvailableChanged, _dataNewButton,		[=](bool analysesAvailable)
+	{
+		_dataNewButton	->setActive(	!analysesAvailable);
+		_dataNewButton	->setTitle(		 analysesAvailable ? fq(tr("No Data"))	: fq(tr("New Data"))	);
+		_dataNewButton	->setIconSource( analysesAvailable ? "data-button.svg"	: "data-button-new.svg"	);
+	});
+
 	connect(this, &RibbonModel::dataLoadedChanged,		_insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_removeButton,			&RibbonButton::setEnabled);
 

@@ -694,14 +694,11 @@ FocusScope
 								createComputeDialog.open()
 							else
 							{
-								if(ribbonModel.dataMode)
-								{
-									if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-									   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+								if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
+								   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 
-									if(mouseEvent.button === Qt.RightButton)
-									   dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
-								}
+								if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
+									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
 							}
 						}
 					}
