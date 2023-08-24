@@ -56,8 +56,8 @@ public:
 
 	RibbonButton(QObject *parent);
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
-	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction, std::string toolTip = "", bool enabled = true, bool remember = false);
-	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip = "", bool enabled = true, bool remember = false);
+	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction, std::string toolTip = "", bool enabled = true, bool remember = false, bool defaultActiveBinding = true);
+	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip = "", bool enabled = true, bool remember = false, bool defaultActiveBinding = true);
 	~RibbonButton();
 
 
@@ -140,6 +140,7 @@ private:
 									_isCommonModule		= false,
 									_enabled			= false,
 									_active				= false,
+									_defaultActiveBinding = true,
 									_ready				= false,
 									_error				= false,
 									_remember			= true,
