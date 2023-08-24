@@ -277,7 +277,7 @@ private:
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 	LanguageModel				*	_languageModel			= nullptr;
 	ColumnTypesModel			*	_columnTypesModel		= nullptr;
-	ColumnModel					*	_columnModel				= nullptr;
+	ColumnModel					*	_columnModel			= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;

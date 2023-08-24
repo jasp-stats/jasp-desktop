@@ -535,7 +535,7 @@ FocusScope
 
 					MouseArea
 					{
-						enabled:			!virtual
+						enabled:			!virtual && computedColumnType != computedColumnTypeAnalysis
 						anchors.fill:		parent
 						onClicked:
 						{
@@ -571,7 +571,7 @@ FocusScope
 						ToolTip.text:		qsTr("Click here to change column type")
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
-						cursorShape:		Qt.PointingHandCursor
+                        cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 				}
 
@@ -679,7 +679,10 @@ FocusScope
 								filterWindow.showEasyFilter = true
 								filterWindow.open()
 							}
-						}
+                            
+                            if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
+                                computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
+                        }
 
 					}
 
@@ -706,7 +709,8 @@ FocusScope
 					hoverEnabled:		true
 					ToolTip.visible:	containsMouse
 					ToolTip.text:		virtual ? qsTr("Add computed column")
-											: ("<b>" + columnTitle + "</b>"
+											:   ("<b>" + columnTitle + "</b>"
+                                                + (computedColumnType == computedColumnTypeAnalysis ? "<br>" + qsTr("Computed by an analysis") + "<br>": "")
 												+ (columnDescription === "" ? "" : "<br><i>" + columnDescription + "</i>")
 												+ "<br><br>"
 												+ (!columnModel.visible	? qsTr("Doubleclick here to change variable settings")

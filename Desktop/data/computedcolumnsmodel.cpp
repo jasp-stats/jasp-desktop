@@ -317,6 +317,9 @@ void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
 											bool					rowCountChanged,
 											bool					/*hasNewColumns*/)
 {
+	if(!DataSetPackage::pkg()->dataSet()) //Can occur during closing of a workspace in rare occasions.
+		return;
+	
 	std::string concatenatedMissings = fq(missingColumns.join(", "));
 
 	for(Column * col : computedColumns())

@@ -789,11 +789,12 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 			setStyleDataColumnHeader(itemCon->context,
 									_model->headerData(col, Qt::Orientation::Horizontal).toString(),
 									col,
-									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnIsComputed")).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnIsComputed")	).toBool(),
 									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnIsInvalidated")).toBool(),
-									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("filter")).toBool(),
-									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnError")).toString(),
-									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnType")).toInt());
+									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("filter")				).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnError")	).toString(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnType")			).toInt(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnType"	)	).toInt());
 		}
 		else
 		{
@@ -805,11 +806,12 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 												nullptr,
 												_model->headerData(col, Qt::Orientation::Horizontal).toString(),
 												col,
-												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnIsComputed")).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnIsComputed")	).toBool(),
 												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnIsInvalidated")).toBool(),
-												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("filter")).toBool(),
-												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnError")).toString(),
-												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnType")).toInt()));
+												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("filter")				).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnError")	).toString(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnType")			).toInt(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("computedColumnType")	).toInt()));
 
 			_columnHeaderDelegate->create(localIncubator, itemCon->context);
 			columnHeader = qobject_cast<QQuickItem*>(localIncubator.object());
@@ -1502,6 +1504,7 @@ void DataSetView::edit(int row, int col)
 		setSelectionEnd(QPoint(-1, -1));
 
 	clearEdit();
+	
 	setEditing(true);
 	positionEditItem(row, col);
 }
@@ -1587,7 +1590,7 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 	return previousContext;
 }
 
-QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, QString computedError, int columnType)
+QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, QString computedError, int columnType, int computedColumnType)
 {
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
@@ -1598,6 +1601,7 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 	previousContext->setContextProperty("columnDescription",	_model->headerData(column, Qt::Horizontal, _model->getRole("description")));
 	previousContext->setContextProperty("columnIsComputed",		isComputed);
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
+	previousContext->setContextProperty("computedColumnType",	computedColumnType);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
 	previousContext->setContextProperty("columnError",			computedError);
 	previousContext->setContextProperty("columnType",			columnType);

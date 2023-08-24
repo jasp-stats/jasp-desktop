@@ -35,14 +35,16 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
 	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
 
-	QString		colName = QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::name)).toString();
-	columnType	colType = static_cast<columnType>(QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::columnType)).toInt());
+	QString				colName		= QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::name)).toString();
+	columnType			colType		= static_cast<columnType>			(QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::columnType			)).toInt());
+	computedColumnType	codeType	= static_cast<computedColumnType>	(QTransposeProxyModel::data(index, int(DataSetPackage::specialRoles::computedColumnType	)).toInt());
 
 	switch(role)
 	{
 	case NameRole:					return colName;
 	case TypeRole:					return "column";
 	case ColumnTypeRole:			return int(colType);
+	case ComputedColumnTypeRole:	return int(codeType);
 	case IconSourceRole:			return VariableInfo::getIconFile(colType, VariableInfo::DefaultIconType);
 	case ToolTipRole:
 	{
@@ -110,6 +112,7 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 		{ NameRole,					"columnName"			},
 		{ TypeRole,					"type"					},
 		{ ColumnTypeRole,			"columnType"			},
+		{ ComputedColumnTypeRole,	"computedColumnType"	},
 		{ IconSourceRole,			"columnIcon"			},
 		{ ToolTipRole,				"toolTip"				}
 	};

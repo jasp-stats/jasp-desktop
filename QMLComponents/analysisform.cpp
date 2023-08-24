@@ -189,8 +189,8 @@ void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
 {
 	if (isComputed)
 	{
-		connect(control, &JASPControl::requestComputedColumnCreation, _analysis, &AnalysisBase::requestComputedColumnCreationHandler);
-		connect(control, &JASPControl::requestComputedColumnDestruction, _analysis, &AnalysisBase::requestComputedColumnDestructionHandler);
+		connect(control, &JASPControl::requestComputedColumnCreation,		_analysis, &AnalysisBase::requestComputedColumnCreationHandler);
+		connect(control, &JASPControl::requestComputedColumnDestruction,	_analysis, &AnalysisBase::requestComputedColumnDestructionHandler);
 	}
 	else
 		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);

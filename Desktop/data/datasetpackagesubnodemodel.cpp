@@ -58,12 +58,12 @@ QString DataSetPackageSubNodeModel::insertColumnSpecial(int column, bool compute
 {
 	int sourceColumn = column > columnCount() ? columnCount() : column;
 	sourceColumn = mapToSource(index(0, sourceColumn)).column();
-	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
+	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R ? computedColumnType::rCode : computedColumnType::constructorCode);
 }
 
 QString DataSetPackageSubNodeModel::appendColumnSpecial(bool computed, bool R)
 {
-	return DataSetPackage::pkg()->appendColumnSpecial(computed, R);
+	return DataSetPackage::pkg()->appendColumnSpecial(computed, R ? computedColumnType::rCode : computedColumnType::constructorCode);
 }
 
 void DataSetPackageSubNodeModel::modelWasReset()
