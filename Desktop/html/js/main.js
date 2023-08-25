@@ -548,38 +548,25 @@ $(document).ready(function () {
 	$("body").on("click", window.unselectByClickingBody)
 })
 
-var wrapHTML = function (html, exportParams, doctype = false) {
-	var completehtml = ""
-	if(doctype)
-		completehtml = "<!DOCTYPE HTML>\n"
-	completehtml += "<html>\n"
-	completehtml += "	<head>\n"
-	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
-	completehtml += "		<title>JASP</title>"
-	completehtml += "		<style>"
-	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
-	if (exportParams.isFormatted())
-		completehtml += "			body {font-family: sans-serif;}"
-	completehtml += "		</style>"
-	completehtml += "	</head>\n"
+var wrapHTML = function (htmlStrings, exportParams, doctype = false) {
 
-	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
-	completehtml += "	<body " + styles + ">\n";
-	
-	//const htmlObj = $.parseHTML(html);
-	//	$(htmlObj).find('mjx-assistive-mml math').remove();
-	//const result = $(htmlObj).prop('outerHTML');
+    let result = ""
+    let html = new DOMParser().parseFromString(htmlStrings, 'text/html'); // here to parse as `xml` or `application/xhtml+xml`
 
-	//Dont convert to DOM because it replace <img.../> with <img...> which breaks unitTest(Recursive)
-	const mjxAssistReg = /\<mjx-assistive-mml.+?\<\/mjx-assistive-mml\>/g;
-	html = html.replace(mjxAssistReg, "");
+    $(html).find('head').prepend(`<title>JASP</title>`)
+                        .prepend(`<style>p {margin-top:1em; margin-bottom:1em;}
+                                ${exportParams.isFormatted() ? `body {font-family: sans-serif;}` : `body {display: block; font-family: sans-serif; padding: 0px; margin: 0px;}`}
+                                </style>`);
 
-	completehtml += html
+    $(html).find('mjx-assistive-mml').remove(); // remove mathml stuff from export
 
-	completehtml += "	</body>\n"
-	completehtml += "</html>";
-	return completehtml;
-};
+    result = new XMLSerializer().serializeToString(html);
+
+    if(doctype)
+        result = "<!DOCTYPE HTML>\n" + result;
+
+    return result;
+}
 
 var pushHTMLToClipboard = function (exportContent, exportParams) {
 
