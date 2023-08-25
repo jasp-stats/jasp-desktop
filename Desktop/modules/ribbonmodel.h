@@ -146,7 +146,8 @@ private: // fields
 	stringvec								_commonModulesToLoad;
 	size_t									_currentRow				= size_t(RowType::Analyses);
 	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
-										*	_entriesDelete			= nullptr;
+										*	_entriesDelete			= nullptr,
+										*	_entriesSynchronisationOn = nullptr;
 	RibbonButton						*	_analysesButton			= nullptr,
 										*	_dataSwitchButton		= nullptr,
 										*	_dataNewButton			= nullptr,
