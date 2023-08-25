@@ -144,7 +144,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 	_entriesSynchronisationOn = new AnalysisEntries(
 	{
-		new AnalysisEntry([&]() { MainWindow::singleton()->startDataEditorHandler(); },		"open-datafile",				fq(tr("Open datafile with default spreadsheed editor")),	true, ""),
+		new AnalysisEntry([&]() { MainWindow::singleton()->startDataEditorHandler(); },		"open-datafile",				fq(tr("Open datafile with default spreadsheet editor")),	true, ""),
 		new AnalysisEntry([&]() { emit setDataSynchronisation(false);	},					"stop-externaledit",			fq(tr("Turn external data synchronisation off")),			true, "")
 	});
 
