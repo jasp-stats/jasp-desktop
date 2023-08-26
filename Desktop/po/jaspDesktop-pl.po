@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-08-26 02:53+0000\n"
+"Last-Translator: Eryk Michalak <gnu.ewm@protonmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -4305,7 +4311,7 @@ msgstr "LaTex skopiowano do schowka"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "Wstęp:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
@@ -4321,7 +4327,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #, fuzzy
 msgctxt "DataTableView|"
@@ -4331,18 +4337,17 @@ msgstr "Zaznacz wszystko"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Wytnij"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Kopiuj"
@@ -4350,16 +4355,16 @@ msgstr "Kopiuj"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "Wklej"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
@@ -4367,7 +4372,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4377,7 +4382,7 @@ msgstr ""
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4387,7 +4392,7 @@ msgstr ""
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
@@ -4427,7 +4432,7 @@ msgstr ""
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "Zmień nazwę"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
@@ -4440,7 +4445,7 @@ msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Name: "
-msgstr ""
+msgstr "Nazwa: "
 
 msgctxt "VariablesWindow|"
 msgid "Long name: "
@@ -4448,7 +4453,7 @@ msgstr ""
 
 msgctxt "VariablesWindow|"
 msgid "Description: "
-msgstr ""
+msgstr "Opis: "
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
@@ -4462,12 +4467,10 @@ msgctxt "VariablesWindow|"
 msgid "Computed Column"
 msgstr ""
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Wartość"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "Etykieta"
@@ -4641,11 +4644,11 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Cofnij"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Ponów"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
@@ -4673,13 +4676,12 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Wstaw"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr ""
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "Usuń"
@@ -4690,7 +4692,7 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Synchronizacja"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"

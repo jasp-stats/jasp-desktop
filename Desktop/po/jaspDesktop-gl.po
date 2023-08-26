@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-08-24 13:54+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -4721,88 +4727,88 @@ msgstr "Apagar a sincronización de datos externos"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Inserir fila enriba"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Inserir fila debaixo"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "Premer dobre click aquí para trocar a configuración de variables"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "Premer dobre click aquí para pechar a xanela de variables"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to change selected variable"
-msgstr ""
+msgstr "Premer dobre click aquí para trocar a variable elixida"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Paleta de cores"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Daltónica"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "Daltónica #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "Daltónica #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Violeta"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "GGplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Gris"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Azul"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Equipos deportivos: NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Gran Budapest"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Inserir fila enriba"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Inserir fila debaixo"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Desfacer cambios, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Refacer cambios, %1+shift+Z ou %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Desfacer %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "Refacer %2 (%1+shift+Z ou %1+Y)"
