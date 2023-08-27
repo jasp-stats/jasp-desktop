@@ -110,10 +110,11 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 				this.views = _.without(this.analyses, analysis);
 
 				analysesVar.setBottomSpacerHeight();
+
+				analysis.$el.addClass("removed"); 
+				analysis.$el.remove(); 
 			});
 		});
-
-		
 	},
 
 	removeAnalysisId: function (analysisId) {

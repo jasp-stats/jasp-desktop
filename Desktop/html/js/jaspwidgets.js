@@ -175,8 +175,10 @@ JASPWidgets.Exporter = {
 			var viewList = [];
 			for (var i = 0; i < exportObj.views.length; i++) {
 				var view = exportObj.views[i];
-				if (exportParams.includeNotes || view.$el.hasClass('jasp-notes') === false)
-					viewList.push(view);
+				if (exportParams.includeNotes || view.$el.hasClass('jasp-notes') === false) {
+					if (view.$el.hasClass('removed') === false)
+						viewList.push(view);
+				}
 			}
 
 			if (viewList.length === 0)
@@ -203,7 +205,7 @@ JASPWidgets.Exporter = {
 		var self = parent;
 		var index = i;
 		var callback = completedCallback;
-		var trackerView = view;
+
 		var cc = function (exParams, exContent) {
 			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
@@ -211,8 +213,8 @@ JASPWidgets.Exporter = {
 				var completeText = "";
 				var raw = null;
 				if (!exportParams.error) {
-					completeText = "<div " + self.getStyleAttr() + ">\n";
-					completeText += '<div style="display:inline-block; ' + innerStyle + '">\n';
+					completeText = `<div class="${self.className}" ${self.getStyleAttr()} >\n`;
+					completeText += `<div style="display:inline-block; ${innerStyle}">\n`;
 					if (!self.disableTitleExport && self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
