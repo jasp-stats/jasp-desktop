@@ -12,7 +12,7 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	setAcceptedRowsTrue();
 
 	connect(this,					&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter				);
-	connect(infoProviderModel(),	&QAbstractItemModel::modelReset,				this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
+	//connect(infoProviderModel(),	&QAbstractItemModel::modelReset,				this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
 	connect(_tableView,				SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))								);
 	connect(_tableView,				SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
 	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
@@ -47,7 +47,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return requestInfo(VariableInfo::RowCount).toUInt();
+	return requestInfo(VariableInfo::DataSetRowCount).toUInt();
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -110,8 +110,8 @@ void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value
 	{
 		if (_tableTerms.values[0][row] != value)
 		{
-			bool gotLarger							= _tableTerms.values[0][row].toString().size() != value.toString().size();
-			_tableTerms.values[0][row]							= value.toDouble();
+			bool gotLarger									= _tableTerms.values[0][row].toString().size() != value.toString().size();
+			_tableTerms.values[0][row]						= value.toDouble();
 			_enteredValues[_filteredRowToData[size_t(row)]] = value.toDouble();
 
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
@@ -274,7 +274,7 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 
 	std::string colName = _tableTerms.colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
-	return requestInfo(VariableInfo::Value, tq(colName), rowData);
+	return requestInfo(VariableInfo::DataSetValue, tq(colName), rowData);
 }
 
 
