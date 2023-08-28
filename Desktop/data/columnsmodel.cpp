@@ -74,9 +74,10 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 			return QVariant();
 
 		//remember, the model is transposed:
-		QModelIndex qIndex = index(colIndex, 0);
+		QModelIndex qColIndex = index(colIndex, 0),
+					qValIndex = index(colIndex, row);
 
-		int			colTypeInt	= data(qIndex, ColumnsModel::ColumnTypeRole).toInt();
+		int			colTypeInt	= data(qColIndex, ColumnsModel::ColumnTypeRole).toInt();
 		columnType	colTypeHere	= static_cast<columnType>(colTypeInt);
 
 		switch(info)
@@ -87,11 +88,10 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DisabledIconType);
 		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::InactiveIconType);
 		case VariableInfo::Labels:						return	_getLabels(colIndex);
-		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesDblList));
-		case VariableInfo::NameRole:					return	data(qIndex, ColumnsModel::NameRole);
-		case VariableInfo::RowCount:					return	rowCount(); //Amount of Columns!
+		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::valuesDblList));
+		case VariableInfo::NameRole:					return	data(qColIndex, ColumnsModel::NameRole);
 		case VariableInfo::DataSetRowCount:				return	DataSetPackage::pkg()->dataRowCount();
-		case VariableInfo::Value:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::value));
+		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::data(qValIndex, int(DataSetPackage::specialRoles::value));
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
 		case VariableInfo::VariableNames:				return	getColumnNames();
