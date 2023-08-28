@@ -90,7 +90,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::NameRole:					return	data(qColIndex, ColumnsModel::NameRole);
-		case VariableInfo::DataSetRowCount:				return	DataSetPackage::pkg()->dataRowCount();
+		case VariableInfo::DataSetRowCount:				return  QTransposeProxyModel::columnCount();
 		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::data(qValIndex, int(DataSetPackage::specialRoles::value));
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
