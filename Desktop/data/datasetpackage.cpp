@@ -812,7 +812,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				
 				stringvec changedCols = {column->name()};
 				endSynchingDataChangedColumns(changedCols, false, false);
-				setManualEdits(true);
+				//setManualEdits(true); // A label change is not a data change, so don't set manual edit: this would unset synchronisation if it was on.
 				return true;
 			}
 			break;
