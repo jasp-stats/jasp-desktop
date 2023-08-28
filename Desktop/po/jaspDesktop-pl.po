@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-08-26 02:53+0000\n"
-"Last-Translator: Eryk Michalak <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2023-08-30 04:56+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
 "Language: pl\n"
@@ -4323,13 +4323,12 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "Zaznacz wszystko"
@@ -4368,7 +4367,7 @@ msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Wyczyść komórki"
 
 msgctxt "DataTableView|"
 msgid "Del"
