@@ -12,7 +12,7 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	setAcceptedRowsTrue();
 
 	connect(this,					&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter				);
-	connect(infoProviderModel(),	&QAbstractItemModel::modelReset,				this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
+	//connect(infoProviderModel(),	&QAbstractItemModel::modelReset,				this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
 	connect(_tableView,				SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))								);
 	connect(_tableView,				SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
 	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
@@ -47,7 +47,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return requestInfo(VariableInfo::RowCount).toUInt();
+	return requestInfo(VariableInfo::DataSetRowCount).toUInt();
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)

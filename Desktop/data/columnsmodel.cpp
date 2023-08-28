@@ -89,7 +89,8 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::NameRole:					return	data(qIndex, ColumnsModel::NameRole);
-		case VariableInfo::RowCount:					return	rowCount();
+		case VariableInfo::RowCount:					return	rowCount(); //Amount of Columns!
+		case VariableInfo::DataSetRowCount:				return	DataSetPackage::pkg()->dataRowCount();
 		case VariableInfo::Value:						return	QTransposeProxyModel::data(qIndex, int(DataSetPackage::specialRoles::value));
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
