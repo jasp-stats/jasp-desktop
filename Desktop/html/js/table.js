@@ -801,10 +801,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			style = JASPWidgets.Exporter.getTableContentStyles($elObj, exportParams);
 
-			if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
+			/*if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
 				attrs += 'rowspan="' + $elObj.prop("rowspan") + '" '
 			if ($elObj.prop("colspan") && $elObj.prop("colspan") != 1)
-				attrs += 'colspan="' + $elObj.prop("colspan") + '" '
+				attrs += 'colspan="' + $elObj.prop("colspan") + '" '*/
 		}
 		else if (tag === "table") {
 			style = JASPWidgets.Exporter.getTableStyles($elObj, exportParams);
