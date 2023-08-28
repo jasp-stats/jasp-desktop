@@ -309,7 +309,7 @@ TableViewBase
 					FormulaField
 					{
 						id:						formlaInput
-						inputType:				itemInputType
+						inputType:				itemInputType === undefined ? "string" : itemInputType
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
