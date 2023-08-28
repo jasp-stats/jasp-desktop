@@ -142,7 +142,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
 	});
 
-	_entriesSynchronisationOn = new AnalysisEntries(
+	_entriesSynchOn = new AnalysisEntries(
 	{
 		new AnalysisEntry([&]() { MainWindow::singleton()->startDataEditorHandler(); },		"open-datafile",				fq(tr("Open datafile with default spreadsheet editor")),	true, ""),
 		new AnalysisEntry([&]() { emit setDataSynchronisation(false);	},					"stop-externaledit",			fq(tr("Turn external data synchronisation off")),			true, "")
@@ -154,7 +154,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
 	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
-	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	_entriesSynchronisationOn,											fq(tr("Turn external data synchronisation off")),	true);
+	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	_entriesSynchOn,													fq(tr("Turn external data synchronisation off")),	true);
 
 	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true, false, false);
 	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true, false, false);
