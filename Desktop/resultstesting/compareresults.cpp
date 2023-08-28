@@ -27,12 +27,12 @@ void compareResults::sanitizeHtml(QString & result)
 
 	std::vector<std::pair<QString, QString>> replacers (
 		{
-			std::make_pair("&nbsp;",	" "),
-			std::make_pair("&tau;",		"tau"),
-			std::make_pair("<br>",		"\n"),
-			std::make_pair("\"Segoe UI\"", ""), //Why are we replacing these fonts anyway?
-			std::make_pair("\"Helvetica Neue\"", ""),
-			std::make_pair("\"Lucida Grande\"", "")
+			std::make_pair("&nbsp;",						" "),
+			std::make_pair("&tau;",							"tau"),
+			std::make_pair("<br>",							"\n"),
+			std::make_pair("&qout;Segoe UI&qout;",			""), //Why are we replacing these fonts anyway?
+			std::make_pair("&qout;Helvetica Neue&qout;",	""),
+			std::make_pair("&qout;Lucida Grande&qout;",		"")
 		});
 
 	for(auto & p : replacers)
@@ -265,13 +265,13 @@ result compareResults::convertXmltoResultStruct(const QString &  resultXml)
 			//ignore
 			break;
 		}
-	}
-
-	if(xml.hasError())
-	{
-		std::cerr << "xml hadError: " << xml.errorString().toStdString() << "!" << std::endl;
-		//const char * xmlDivider = "<---------------------------------------------------------------------------------------------------------------------------------------------------------------------->\n";
-		//std::cerr << "broken XML:\n" << xmlDivider << resultXml.toStdString() << xmlDivider << std::endl;
+		
+		if(xml.hasError())
+		{
+			std::cerr << "xml hadError at (line=" << xml.lineNumber() << ", col=" << xml.columnNumber() << ", slice=" << resultXml.sliced(xml.characterOffset(), std::min(10, int(resultXml.size() - xml.characterOffset()))) << ") : " << xml.errorString().toStdString() << "!" << std::endl;
+			//const char * xmlDivider = "<---------------------------------------------------------------------------------------------------------------------------------------------------------------------->\n";
+			//std::cerr << "broken XML:\n" << xmlDivider << resultXml.toStdString() << xmlDivider << std::endl;
+		}
 	}
 
 	return res;
@@ -297,15 +297,18 @@ bool compareResults::compare(const QString & resultOld, const QString & resultNe
 	out << "hallo";
 	out << "Old result:\n" << resultOld << "\n";
 	out << "Old result conversion:" << "\n"; */
+	
 	result oldRes = convertXmltoResultStruct(resultOld);
 	std::cout << "\nConverted to:\n" << oldRes.toString() << "" << std::endl;
+	//out << "\nConverted to:\n" << tq(oldRes.toString()) << "\n\n----------------------\n\n";
 
 	std::cout << "New result conversion:" << std::endl;
 	//out << "New result\n" << resultNew << "\n" << "\n";
 	//out << "New result conversion:" << "\n";
 	result newRes = convertXmltoResultStruct(resultNew);
 	std::cout << "\nConverted to:\n" << newRes.toString() << "" << std::endl;
-	//file.close():
+	//out << "\nConverted to:\n" << tq(newRes.toString()) << "\n";
+	//file.close();
 
 	succes = oldRes == newRes;
 

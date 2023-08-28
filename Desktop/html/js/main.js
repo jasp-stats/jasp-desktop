@@ -566,10 +566,15 @@ var wrapHTML = function (html, exportParams, doctype = false) {
 	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
 	completehtml += "	<body " + styles + ">\n";
 	
-	const htmlObj = $.parseHTML(html);
-		$(htmlObj).find('mjx-assistive-mml math').remove();
-	const result = $(htmlObj).prop('outerHTML');
-	completehtml += result
+	//const htmlObj = $.parseHTML(html);
+	//	$(htmlObj).find('mjx-assistive-mml math').remove();
+	//const result = $(htmlObj).prop('outerHTML');
+
+	//Dont convert to DOM because it replace <img.../> with <img...> which breaks unitTest(Recursive)
+	const mjxAssistReg = /\<mjx-assistive-mml.+?\<\/mjx-assistive-mml\>/g;
+	html = html.replace(mjxAssistReg, "");
+
+	completehtml += html
 
 	completehtml += "	</body>\n"
 	completehtml += "</html>";
