@@ -1316,6 +1316,11 @@ void Column::labelsRemoveBeyond(size_t indexToStartRemoving)
 	
 	_labels.resize(indexToStartRemoving);
 
+	_resetLabelValueMap();
+}
+
+void Column::_resetLabelValueMap()
+{
 	_labelByValueMap.clear();
 	for(Label * label : _labels)
 		_labelByValueMap[label->value()] = label;
@@ -1661,12 +1666,29 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
                                 ColumnUtils::convertValueToDoubleForImport(value,				dbl))
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
+					else if(_type == columnType::nominalText)
+					{
+						// If all the values are now integers, change the column to nominal
+						bool onlyIntegers = true;
+						for(size_t i=0; i<_labels.size(); i++)
+						{
+							if (!_labels[i]->originalValue().isInt())
+							{
+								onlyIntegers = false;
+								break;
+							}
+						}
+
+						if (onlyIntegers)
+							_changeColumnToNominalOrOrdinal(columnType::nominal);
+					}
 
 					if(oldLabel)
 					{
 						oldLabel->dbDelete();
 						delete oldLabel;
 					}
+					_resetLabelValueMap();
 					_dbUpdateLabelOrder();
 				}
 			}
