@@ -834,10 +834,10 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 	emit labelFilterChanged();
 
 	QModelIndex parentModel = indexForSubNode(_dataSet->dataNode());
-	emit dataChanged(DataSetPackage::index(0, columnIndex,	parentModel),	DataSetPackage::index(rowCount(), columnIndex, parentModel), {int(specialRoles::filter)} );
+	emit dataChanged(DataSetPackage::index(0, columnIndex,	parentModel),	DataSetPackage::index(rowCount() - 1, columnIndex, parentModel), {int(specialRoles::filter)} );
 
 	parentModel = indexForSubNode(_dataSet->column(columnIndex));
-	emit dataChanged(DataSetPackage::index(0, 0,	parentModel),			DataSetPackage::index(rowCount(parentModel), columnCount(parentModel), parentModel), {int(specialRoles::filter)} );
+	emit dataChanged(DataSetPackage::index(0, 0,	parentModel),			DataSetPackage::index(rowCount(parentModel) - 1, columnCount(parentModel) - 1, parentModel), {int(specialRoles::filter)} );
 
 
 	emit filteredOutChanged(columnIndex);
