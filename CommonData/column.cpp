@@ -1239,6 +1239,9 @@ int Column::labelsAdd(int display)
 
 int Column::labelsAdd(const std::string &display)
 {
+	if(display == "")
+		return std::numeric_limits<int>::lowest();
+
 	int newValue = 0;
 	for(Label * label : _labels)
 		if(newValue <= label->value())
@@ -1579,7 +1582,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 
 	bool convertedSuccesfully = value == "";
 
-	if(convertedSuccesfully)
+	if(convertedSuccesfully && _type != columnType::nominalText)
 	{
 		if(_type == columnType::scale ? setValue(row, NAN) : setValue(row, std::numeric_limits<int>::lowest()))
 			changed = true;
@@ -1675,6 +1678,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 					}
 					else if(_type == columnType::nominalText && (_preEditType == columnType::nominal || _preEditType == columnType::ordinal))
 					{
+						bool tryValueIntegers = false;
 						int integer;
 						if(     (
 									!oldLabel ||
@@ -1682,7 +1686,28 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 								)
 								&&
 								ColumnUtils::convertValueToIntForImport(value,				integer))
+						{
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
+							tryValueIntegers = !typeChanged;
+						}
+						else
+							tryValueIntegers = true;
+
+						if(tryValueIntegers)
+						{
+							//maybe there are non-integer labels yet integer values?
+							bool onlyIntegers = true;
+							int integer;
+							for(size_t i=0; onlyIntegers && i<_labels.size(); i++)
+								if  ( ! (	_labels[i]->originalValue().isInt() ||
+											(_labels[i]->originalValue().isDouble() && double(int(_labels[i]->originalValue().asDouble())) == _labels[i]->originalValue().asDouble())
+										)
+									)
+									onlyIntegers = false;
+
+							if (onlyIntegers)
+								_changeColumnToNominalOrOrdinal(_preEditType);
+						}
 					}
 
 					if(oldLabel)
