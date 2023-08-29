@@ -46,10 +46,10 @@ std::function<void(const std::string &, std::string &, std::string &)>	rbridge_f
 std::function<void(std::string &, std::string &)>							rbridge_stateFileSource			= NULL,
 																			rbridge_jaspResultsFileSource	= NULL;
 
-std::function<bool(const std::string &, const	std::vector<double>&)											> rbridge_setColumnDataAsScaleEngine		= NULL;
+std::function<bool(const std::string &, const	std::vector<double>&)										> rbridge_setColumnDataAsScaleEngine		= NULL;
 std::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsOrdinalEngine		= NULL;
 std::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsNominalEngine		= NULL;
-std::function<bool(const std::string &, const	std::vector<std::string>&)										> rbridge_setColumnDataAsNominalTextEngine	= NULL;
+std::function<bool(const std::string &, const	std::vector<std::string>&)									> rbridge_setColumnDataAsNominalTextEngine	= NULL;
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
@@ -136,10 +136,10 @@ void rbridge_setStateFileSource(		std::function<void (std::string &, std::string
 void rbridge_setJaspResultsFileSource(	std::function<void (std::string &, std::string &)> source)						{	rbridge_jaspResultsFileSource	= source; }
 
 void rbridge_setColumnFunctionSources(			std::function<int (const std::string &)																		> getTypeSource,
-												std::function<bool(const std::string &, const std::vector<double>		&)										> scaleSource,
+												std::function<bool(const std::string &, const std::vector<double>		&)									> scaleSource,
 												std::function<bool(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> ordinalSource,
 												std::function<bool(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> nominalSource,
-												std::function<bool(const std::string &, const std::vector<std::string>&)										> nominalTextSource)
+												std::function<bool(const std::string &, const std::vector<std::string>&)									> nominalTextSource)
 {
 	rbridge_getColumnTypeEngine					= getTypeSource;
 	rbridge_setColumnDataAsScaleEngine			= scaleSource;

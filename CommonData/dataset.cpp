@@ -329,7 +329,7 @@ void DataSet::incRevision()
 	}
 }
 
-bool DataSet::checkForUpdates()
+bool DataSet::checkForUpdates(stringvec * colsChanged)
 {
 	JASPTIMER_SCOPE(DataSet::checkForUpdates);
 
@@ -339,6 +339,12 @@ bool DataSet::checkForUpdates()
 	if(_revision != db().dataSetGetRevision(_dataSetID))
 	{
 		dbLoad();
+		if(colsChanged)
+		{
+			colsChanged->clear();
+			for(Column * col : _columns)
+				colsChanged->push_back(col->name());
+		}
 		return true;
 	}
 	else
@@ -346,7 +352,13 @@ bool DataSet::checkForUpdates()
 		bool somethingChanged = _filter->checkForUpdates();
 
 		for(Column * col : _columns)
-			somethingChanged = col->checkForUpdates() || somethingChanged;
+			if(col->checkForUpdates())
+			{
+				somethingChanged = true;
+
+				if(colsChanged)
+					colsChanged->push_back(col->name());
+			}
 
 		return somethingChanged;
 	}

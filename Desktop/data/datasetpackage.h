@@ -220,6 +220,8 @@ public:
 				bool						isColumnNameFree(			const QString		&	name)		const	{ return isColumnNameFree(name.toStdString()); }
 				bool						isColumnComputed(			size_t					colIndex)	const;
 				bool						isColumnComputed(			const std::string	&	name)		const;
+				bool						isColumnAnalysisNotComputed(const std::string	&	name)		const;
+
 				bool						isColumnInvalidated(		size_t					colIndex)	const;
 
 				int							setColumnTypeFromQML(	int columnIndex, int		newColumnType);
@@ -333,6 +335,7 @@ public slots:
 				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
 				void				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
 				void				requestComputedColumnDestruction(	const std::string & columnName);
+				void				checkDataSetForUpdates();
 
 
 private:

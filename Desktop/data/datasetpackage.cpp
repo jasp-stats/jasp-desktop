@@ -603,7 +603,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		case Qt::DisplayRole:									return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->name());
 		case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
 		case int(specialRoles::labelsHasFilter):				return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->hasFilter();
-		case int(specialRoles::columnIsComputed):				return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->isComputed();
+		case int(specialRoles::columnIsComputed):				return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->isComputed() && _dataSet->column(section)->codeType() != computedColumnType::analysisNotComputed;
 		case int(specialRoles::computedColumnError):			return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->error());
 		case int(specialRoles::computedColumnIsInvalidated):	return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->invalidated();
 		case int(specialRoles::columnType):						return int(	!_dataSet || !_dataSet->column(section) ? columnType::unknown			: _dataSet->column(section)->type());
@@ -1009,8 +1009,15 @@ bool DataSetPackage::isColumnComputed(size_t colIndex) const
 bool DataSetPackage::isColumnComputed(const std::string & name) const
 {
 	const Column * normalCol = _dataSet->column(name);
-	
+
 	return normalCol && normalCol->isComputed();
+}
+
+bool DataSetPackage::isColumnAnalysisNotComputed(const std::string & name) const
+{
+	const Column * normalCol = _dataSet->column(name);
+
+	return normalCol && normalCol->codeType() == computedColumnType::analysisNotComputed;
 }
 
 bool DataSetPackage::isColumnInvalidated(size_t colIndex) const
@@ -2587,6 +2594,21 @@ void DataSetPackage::requestComputedColumnDestruction(const std::string& columnN
 	removeColumn(columnName);
 
 	emit checkForDependentColumnsToBeSent(tq(columnName));
+}
+
+void DataSetPackage::checkDataSetForUpdates()
+{
+	if(!_dataSet)
+		return;
+
+	stringvec changedCols;
+
+	if(_dataSet->checkForUpdates(&changedCols))
+	{
+		refresh();
+
+		emit datasetChanged(tq(changedCols), {}, {}, false, false);
+	}
 }
 
 bool DataSetPackage::manualEdits() const

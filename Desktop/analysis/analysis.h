@@ -189,7 +189,7 @@ public slots:
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 	void					boundValueChangedHandler()																	override;
 	void					requestComputedColumnCreationHandler(	const std::string & columnName)						override;
-	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override	{ emit requestColumnCreation(columnName, this, colType); }
+	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override;
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
 	void					setRSyntaxTextInResult();

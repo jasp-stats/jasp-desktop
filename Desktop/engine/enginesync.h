@@ -110,6 +110,7 @@ signals:
 	void		plotEditorRefresh();
 	void		settingsChanged();
 	void		reloadData();
+	void		checkDataSetForUpdates();
 
 private:
 	//These process functions can request a new engine to be started:
