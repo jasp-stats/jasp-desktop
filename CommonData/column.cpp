@@ -1420,7 +1420,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	stringset	valuesToAdd;
 	intset		valuesToRemove;
 	strintmap	result;
-	int			maxLabelKey = 0;
 
 	for (const std::string& v : new_values)
 		valuesToAdd.insert(v);
@@ -1430,8 +1429,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	{
 		std::string labelText	= label->originalValueAsString();
 		int labelValue			= label->value();
-
-		maxLabelKey = std::max(labelValue, maxLabelKey); //to be used in labelsResetValues
 
 		auto it = valuesToAdd.find(labelText);
 		if (it != valuesToAdd.end())
@@ -1449,11 +1446,11 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	if (valuesToRemove.size() > 0)
 	{
 		labelsRemoveValues(valuesToRemove);
-		result = labelsResetValues(maxLabelKey);
+		//result = labelsResetValues(maxLabelKey);
 	}
 
 	for (const std::string & newLabel : valuesToAdd)
-		result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
+		result[newLabel] = labelsAdd(newLabel);
 
 	//Now all thats left is to use the new_labels mapping. As far as I can see during this refactor it is only used when importing from ReadStat
 	//And there we can have string-value and string-label in the same datafile that can be different.
