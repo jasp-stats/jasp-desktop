@@ -799,8 +799,15 @@ columnTypeChangeResult Column::changeType(columnType colType)
 	{
 		if (colType == _type)				
 			return columnTypeChangeResult::changed;
-		else								
-			return colType == columnType::scale ? _changeColumnToScale() : _changeColumnToNominalOrOrdinal(colType);
+		else
+		{
+			columnTypeChangeResult changeResult = colType == columnType::scale ? _changeColumnToScale() : _changeColumnToNominalOrOrdinal(colType);
+
+			if(changeResult == columnTypeChangeResult::changed && _type != columnType::nominalText && _preEditType != _type)
+				_preEditType = _type;
+
+			return changeResult;
+		}
 	}
 	else
 	{
@@ -1666,21 +1673,16 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
                                 ColumnUtils::convertValueToDoubleForImport(value,				dbl))
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
-					else if(_type == columnType::nominalText)
+					else if(_type == columnType::nominalText && (_preEditType == columnType::nominal || _preEditType == columnType::ordinal))
 					{
-						// If all the values are now integers, change the column to nominal
-						bool onlyIntegers = true;
-						for(size_t i=0; i<_labels.size(); i++)
-						{
-							if (!_labels[i]->originalValue().isInt())
-							{
-								onlyIntegers = false;
-								break;
-							}
-						}
-
-						if (onlyIntegers)
-							_changeColumnToNominalOrOrdinal(columnType::nominal);
+						int integer;
+						if(     (
+									!oldLabel ||
+									!ColumnUtils::convertValueToIntForImport(oldLabel->label(),	integer)
+								)
+								&&
+								ColumnUtils::convertValueToIntForImport(value,				integer))
+							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
 
 					if(oldLabel)
