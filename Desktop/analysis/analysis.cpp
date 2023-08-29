@@ -485,6 +485,13 @@ void Analysis::requestComputedColumnCreationHandler(const std::string& columnNam
 		addOwnComputedColumn(columnName);
 }
 
+void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
+{
+	emit requestColumnCreation(columnName, this, colType);
+
+	addOwnComputedColumn(columnName);
+}
+
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
 	emit requestComputedColumnDestruction(columnName);

@@ -145,6 +145,7 @@ public slots:
 
 signals:
 	void			engineTerminated();
+	void			checkDataSetForUpdates();
 	void			filterDone(																int requestID);
 	void			processFilterErrorMsg(			const QString & error,					int requestId = -1);
 	void			processNewFilterResult(			int requestId);

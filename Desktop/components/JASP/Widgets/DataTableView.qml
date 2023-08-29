@@ -614,7 +614,7 @@ FocusScope
 
 
 					width:		columnIsInvalidated ? headerRoot.__iconDim : 0
-					visible:	columnIsInvalidated
+					visible:	columnIsInvalidated && columnIsComputed
 
 					anchors.right:			colFilterOn.left
 					anchors.verticalCenter:	parent.verticalCenter

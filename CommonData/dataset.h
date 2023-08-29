@@ -63,7 +63,7 @@ public:
 			void			setRowCount(	size_t rowCount);
 
 			void			incRevision() override;
-			bool			checkForUpdates();
+			bool			checkForUpdates(stringvec * colsChanged = nullptr);
 
 			const Columns &	computedColumns() const;
 			
