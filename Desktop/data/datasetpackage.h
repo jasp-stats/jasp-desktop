@@ -85,9 +85,10 @@ public:
 		void				enginesReceiveNewData();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
 
-		SubNodeModel	*	dataSubModel	() { return _dataSubModel;	 }
-		SubNodeModel	*	filterSubModel	() { return _filterSubModel; }
-		SubNodeModel	*	labelsSubModel	() { return _labelsSubModel; }
+		SubNodeModel	*	dataSubModel	() { return _dataSubModel;		}
+		SubNodeModel	*	filterSubModel	() { return _filterSubModel;	}
+		SubNodeModel	*	labelsSubModel	() { return _labelsSubModel;	}
+		UndoStack		*	undoStack		() { return _undoStack;			}
 		
 		DataSetBaseNode *	indexPointerToNode(			const QModelIndex	& index	) const;
 		bool				dataSetBaseNodeStillExists(	DataSetBaseNode		* node	) const;
@@ -143,6 +144,7 @@ public:
 				bool				isJaspFile()						const	{ return _isJaspFile;					  } ///< for readability
 				bool				isModified()						const	{ return _isModified;					   }
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
+				bool				manualEdits()						const;
 				QString				windowTitle()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
@@ -179,6 +181,7 @@ public:
 				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)								{ _id							= id;				}
 				void				setWaitingForReady()								{ _analysesHTMLReady			= false;			}
+				void				setManualEdits(bool newManualEdits);
 				void				setLoaded(bool loaded = true);
 
 				bool						initColumnAsScale(				size_t				colNo,		const std::string & newName, const doublevec	& values, const std::string & title = "");
@@ -275,11 +278,6 @@ public:
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
 
-
-				bool manualEdits() const;
-				void setManualEdits(bool newManualEdits);
-
-				UndoStack*					undoStack() { return _undoStack; }
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
