@@ -1,4 +1,4 @@
-#include "columnModel.h"
+#include "columnmodel.h"
 #include "log.h"
 #include "jasptheme.h"
 #include "utilities/qutils.h"

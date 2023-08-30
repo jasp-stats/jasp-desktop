@@ -1,7 +1,7 @@
 #include "undostack.h"
 #include "log.h"
 #include "datasettablemodel.h"
-#include "columnModel.h"
+#include "columnmodel.h"
 #include "filtermodel.h"
 #include "computedcolumnsmodel.h"
 #include "utilities/qutils.h"
