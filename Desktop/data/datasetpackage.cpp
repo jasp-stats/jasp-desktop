@@ -2310,12 +2310,27 @@ void DataSetPackage::resetModelOneCell()
 	if(isLoaded()) setModified(true);
 
 	setData(index(0,0), "", Qt::DisplayRole);
+	
+	stringvec columnNames = getColumnNames();
+	bool rowCountChanged = dataRowCount() > 1;
 
 	beginResetModel();
 	setDataSetSize(1, 1);
-	setColumnName(0, freeNewColumnName(0), false);
+	std::string newColumnName = freeNewColumnName(0);
+	setColumnName(0, newColumnName, false);
 	setColumnType(0, columnType::scale,	false);
 	endResetModel();
+	
+	
+	QStringList changedColumns, missingColumns;
+	
+	for(size_t i=0; i<columnNames.size(); i++)
+		if(columnNames[i] == newColumnName)
+			changedColumns.append(tq(columnNames[i]));
+		else
+			missingColumns.append(tq(columnNames[i]));
+	
+	emit datasetChanged(changedColumns, missingColumns, {}, rowCountChanged, changedColumns.size() == 0);
 }
 
 bool DataSetPackage::columnExists(Column *column)
