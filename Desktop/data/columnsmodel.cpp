@@ -154,7 +154,7 @@ void ColumnsModel::datasetChanged(  QStringList                             chan
 					   {
 							   changedColumns.clear();
 							   for (int i = 0; i < rowCount(); i++)
-									   changedColumns.push_back(data(index(i, 0), int(dataPkgRoles::name)).toString());
+									   changedColumns.push_back(data(index(i, 0), NameRole).toString());
 					   }
 					   emit columnsChanged(changedColumns);
 			   }
