@@ -799,8 +799,15 @@ columnTypeChangeResult Column::changeType(columnType colType)
 	{
 		if (colType == _type)				
 			return columnTypeChangeResult::changed;
-		else								
-			return colType == columnType::scale ? _changeColumnToScale() : _changeColumnToNominalOrOrdinal(colType);
+		else
+		{
+			columnTypeChangeResult changeResult = colType == columnType::scale ? _changeColumnToScale() : _changeColumnToNominalOrOrdinal(colType);
+
+			if(changeResult == columnTypeChangeResult::changed && _type != columnType::nominalText && _preEditType != _type)
+				_preEditType = _type;
+
+			return changeResult;
+		}
 	}
 	else
 	{
@@ -1232,6 +1239,9 @@ int Column::labelsAdd(int display)
 
 int Column::labelsAdd(const std::string &display)
 {
+	if(display == "")
+		return std::numeric_limits<int>::lowest();
+
 	int newValue = 0;
 	for(Label * label : _labels)
 		if(newValue <= label->value())
@@ -1316,6 +1326,11 @@ void Column::labelsRemoveBeyond(size_t indexToStartRemoving)
 	
 	_labels.resize(indexToStartRemoving);
 
+	_resetLabelValueMap();
+}
+
+void Column::_resetLabelValueMap()
+{
 	_labelByValueMap.clear();
 	for(Label * label : _labels)
 		_labelByValueMap[label->value()] = label;
@@ -1405,7 +1420,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	stringset	valuesToAdd;
 	intset		valuesToRemove;
 	strintmap	result;
-	int			maxLabelKey = 0;
 
 	for (const std::string& v : new_values)
 		valuesToAdd.insert(v);
@@ -1415,8 +1429,6 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	{
 		std::string labelText	= label->originalValueAsString();
 		int labelValue			= label->value();
-
-		maxLabelKey = std::max(labelValue, maxLabelKey); //to be used in labelsResetValues
 
 		auto it = valuesToAdd.find(labelText);
 		if (it != valuesToAdd.end())
@@ -1434,11 +1446,11 @@ strintmap Column::labelsSyncStrings(const stringvec &new_values, const strstrmap
 	if (valuesToRemove.size() > 0)
 	{
 		labelsRemoveValues(valuesToRemove);
-		result = labelsResetValues(maxLabelKey);
+		//result = labelsResetValues(maxLabelKey);
 	}
 
 	for (const std::string & newLabel : valuesToAdd)
-		result[newLabel] = labelsAdd(++maxLabelKey, newLabel, true, "", newLabel);
+		result[newLabel] = labelsAdd(newLabel);
 
 	//Now all thats left is to use the new_labels mapping. As far as I can see during this refactor it is only used when importing from ReadStat
 	//And there we can have string-value and string-label in the same datafile that can be different.
@@ -1567,7 +1579,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 
 	bool convertedSuccesfully = value == "";
 
-	if(convertedSuccesfully)
+	if(convertedSuccesfully && _type != columnType::nominalText)
 	{
 		if(_type == columnType::scale ? setValue(row, NAN) : setValue(row, std::numeric_limits<int>::lowest()))
 			changed = true;
@@ -1646,6 +1658,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 						if(_labels[i] == oldLabel)
 						{
 							_labels.erase(_labels.begin() + i);
+							oldLabel->dbDelete();
 							break;
 						}
 
@@ -1661,12 +1674,43 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
                                 ColumnUtils::convertValueToDoubleForImport(value,				dbl))
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
-
-					if(oldLabel)
+					else if(_type == columnType::nominalText && (_preEditType == columnType::nominal || _preEditType == columnType::ordinal))
 					{
-						oldLabel->dbDelete();
-						delete oldLabel;
+						bool tryValueIntegers = false;
+						int integer;
+						if(     (
+									!oldLabel ||
+									!ColumnUtils::convertValueToIntForImport(oldLabel->label(),	integer)
+								)
+								&&
+								ColumnUtils::convertValueToIntForImport(value,				integer))
+						{
+							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
+							tryValueIntegers = !typeChanged;
+						}
+						else
+							tryValueIntegers = true;
+
+						if(tryValueIntegers)
+						{
+							//maybe there are non-integer labels yet integer values?
+							bool onlyIntegers = true;
+							int integer;
+							for(size_t i=0; onlyIntegers && i<_labels.size(); i++)
+								if  ( ! (	_labels[i]->originalValue().isInt() ||
+											(_labels[i]->originalValue().isDouble() && double(int(_labels[i]->originalValue().asDouble())) == _labels[i]->originalValue().asDouble())
+										)
+									)
+									onlyIntegers = false;
+
+							if (onlyIntegers)
+								_changeColumnToNominalOrOrdinal(_preEditType);
+						}
 					}
+
+					delete oldLabel;
+
+					_resetLabelValueMap();
 					_dbUpdateLabelOrder();
 				}
 			}

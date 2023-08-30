@@ -179,6 +179,7 @@ protected:
 			bool					_resetEmptyValuesForScale(		intstrmap & emptyValuesMap);
 			bool					_resetEmptyValuesForNominalText(intstrmap & emptyValuesMap, bool tryToConvert = true);
 			
+			void					_resetLabelValueMap();
 
 private:
 			DataSet		*			_data				= nullptr;
