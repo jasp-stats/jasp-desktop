@@ -2130,7 +2130,7 @@ void Column::deserialize(const Json::Value &json)
 	if (labels.isArray())
 	{
 		for (const Json::Value& labelJson : labels)
-			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), labelJson["id"].asInt());
+			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), -1);
 	}
 
 	incRevision();
