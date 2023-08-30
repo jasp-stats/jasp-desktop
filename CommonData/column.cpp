@@ -1658,6 +1658,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 						if(_labels[i] == oldLabel)
 						{
 							_labels.erase(_labels.begin() + i);
+							oldLabel->dbDelete();
 							break;
 						}
 
@@ -1707,11 +1708,8 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 						}
 					}
 
-					if(oldLabel)
-					{
-						oldLabel->dbDelete();
-						delete oldLabel;
-					}
+					delete oldLabel;
+
 					_resetLabelValueMap();
 					_dbUpdateLabelOrder();
 				}
