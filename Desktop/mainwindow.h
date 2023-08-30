@@ -33,7 +33,7 @@
 #include "data/datasettablemodel.h"
 #include "data/fileevent.h"
 #include "data/filtermodel.h"
-#include "data/columnModel.h"
+#include "data/columnmodel.h"
 #include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"

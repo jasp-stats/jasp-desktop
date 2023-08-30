@@ -2,7 +2,7 @@
 #define LABELFILTERGENERATOR_H
 
 #include <QObject>
-#include "data/columnModel.h"
+#include "data/columnmodel.h"
 
 ///
 /// This is used to generate R-filters based on what the user disables/enables in the label-editor (or variableswindow)
