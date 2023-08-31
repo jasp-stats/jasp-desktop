@@ -352,7 +352,7 @@ $(document).ready(function () {
 			hideInstructions()
 	}
 
-	window.remove = function (id) {
+	window.removeAnalysisTrigger = function (id) {
 
 		window.unselect()
 
