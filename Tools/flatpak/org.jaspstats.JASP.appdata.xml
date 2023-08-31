@@ -35,9 +35,24 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-        <release version="0.18.0" date="2023-08-01">
+        <release version="0.18.0" date="2023-08-31">
                 <description>
-beta
+Main New Feature:
+	• Data Editing
+New Features and Improvements:
+	• New module: Robust TTests
+	• Show color palettes https://github.com/jasp-stats/jasp-issues/issues/2122
+	• Make LaTeX formula editable: https://github.com/jasp-stats/jasp-desktop/pull/5186
+Bug fixes:
+	• ANOVA: Refreshing old jasp file engine crash https://github.com/jasp-stats/jasp-test-release/issues/2347
+	• T-Test: cannot render Bayesian sequential analysis with robustness check https://github.com/jasp-stats/jasp-issues/issues/2252
+	• CFA error with grouping variable: https://github.com/jasp-stats/jasp-issues/issues/2182
+	• Improve Quality Control: https://github.com/jasp-stats/jaspQualityControl/pull/263
+	• Fix variance components plot failing for i18n: https://github.com/jasp-stats/jaspQualityControl/pull/270
+	• Add more translatable strings: https://github.com/jasp-stats/jasp-desktop/pull/5144
+	• Application stops responding when filtering data: https://github.com/jasp-stats/jasp-issues/issues/1644
+	• JASP files can be send via E-Mails, there are not blocked by E-Mail servers.
+	• Learn Bayes: Buffons Needle problems when tosses = 0: https://github.com/jasp-stats/jaspLearnBayes/pull/169
                 </description>
         </release>
         <release version="0.17.3" date="2023-07-04">
