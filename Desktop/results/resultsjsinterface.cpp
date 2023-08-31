@@ -319,7 +319,7 @@ void ResultsJsInterface::unselect()
 
 void ResultsJsInterface::removeAnalysis(Analysis *analysis)
 {
-	runJavaScript("window.remove(" + QString::number(analysis->id()) + ")");
+	runJavaScript("window.removeAnalysisTrigger(" + QString::number(analysis->id()) + ")");
 }
 
 void ResultsJsInterface::removeAnalyses()
