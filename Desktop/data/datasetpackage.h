@@ -196,10 +196,10 @@ public:
 				intstrmap					initColumnAsNominalText(		size_t				colNo,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
 				intstrmap					initColumnAsNominalText(		const std::string & colName,	const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "")	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels, title); }
 				intstrmap					initColumnAsNominalText(		QVariant			colID,		const std::string & newName, const stringvec	& values,	const strstrmap & labels = strstrmap(), const std::string & title = "");
-				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values, const std::string & title = "");
+				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values,	const std::string & title = "", columnType desiredType = columnType::unknown);
 				void						initializeComputedColumns();
 				
-				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
+				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList(), intvec colTypes = intvec());
 
 				void						storeInEmptyValues(		const std::string	& columnName, const intstrmap & emptyValues);
 
@@ -341,7 +341,6 @@ private:
 				bool				setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue);
 				bool				setDescriptionOnLabel(const QModelIndex & index, const QString & newDescription);
 				QModelIndex			lastCurrentCell();
-				void				resetModelOneCell();
 
 
 private:

@@ -247,6 +247,36 @@ private:
 	Json::Value				_serializedColumn;
 };
 
+class RemoveColumnsCommand : public UndoModelCommand
+{
+public:
+	RemoveColumnsCommand(QAbstractItemModel *model, int start, int count);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int							_start = -1,
+								_count = 0;
+	std::vector<Json::Value>	_serializedColumns;
+};
+
+
+class RemoveRowsCommand : public UndoModelCommand
+{
+public:
+	RemoveRowsCommand(QAbstractItemModel *model, int start, int count);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int									_start = -1,
+										_count = 0;
+	std::vector<std::vector<QString>>	_values;
+	std::vector<int>					_colTypes;
+};
+
 class RemoveRowCommand : public UndoModelCommand
 {
 public:

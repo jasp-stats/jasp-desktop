@@ -76,6 +76,8 @@ QVariant ExpandDataProxyModel::headerData(int section, Qt::Orientation orientati
 	{
 		if (section < _sourceModel->rowCount())
 			return _sourceModel->headerData(section, orientation, role);
+		else if (section == 0 && role == int(dataPkgRoles::maxRowHeaderString))
+			return "XXXX";
 		else
 			return  DataSetPackage::pkg()->dataRowCount() + (section - _sourceModel->rowCount()) + 1;
 	}
@@ -163,34 +165,24 @@ int ExpandDataProxyModel::getRole(const std::string &roleName) const
 
 void ExpandDataProxyModel::removeRows(int start, int count)
 {
-	if (!_sourceModel)
+	if (!_sourceModel || count <= 0 || start < 0 || start >= _sourceModel->rowCount())
 		return;
 
-	if (count > 1)
-		_undoStack->startMacro(QObject::tr("Removes %1 rows from %2").arg(count).arg(start + 1));
+	if (start + count >= _sourceModel->rowCount())
+		count = _sourceModel->rowCount() - start;
 
-	for (int i = 0; i < count; i++)
-		if (start < _sourceModel->rowCount())
-			removeRow(start);
-
-	if (count > 1)
-		_undoStack->endMacro();
+	_undoStack->pushCommand(new RemoveRowsCommand(_sourceModel, start, count));
 }
 
 void ExpandDataProxyModel::removeColumns(int start, int count)
 {
-	if (!_sourceModel)
+	if (!_sourceModel || count <= 0 || start < 0 || start >= _sourceModel->columnCount())
 		return;
 
-	if (count > 1)
-		_undoStack->startMacro(QObject::tr("Removes %1 columns from %2").arg(count).arg(start + 1));
+	if (start + count >= _sourceModel->columnCount())
+		count = _sourceModel->columnCount() - start;
 
-	for (int i = 0; i < count; i++)
-		if (start < _sourceModel->columnCount())
-			removeColumn(start);
-
-	if (count > 1)
-		_undoStack->endMacro();
+	_undoStack->pushCommand(new RemoveColumnsCommand(_sourceModel, start, count));
 }
 
 void ExpandDataProxyModel::removeRow(int row)

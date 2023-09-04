@@ -106,6 +106,29 @@ void InsertRowCommand::redo()
 	_model->insertRow(_row);
 }
 
+RemoveColumnsCommand::RemoveColumnsCommand(QAbstractItemModel *model, int start, int count)
+	: UndoModelCommand(model), _start{start}, _count{count}
+{
+	setText(QObject::tr("Remove %1 columns from '%2'").arg(_count).arg(columnName(_start)));
+}
+
+void RemoveColumnsCommand::undo()
+{
+	_model->insertColumns(_start, _count);
+	for (int col = _start; col < _start + _count; col++)
+		DataSetPackage::pkg()->deserializeColumn(columnName(col).toStdString(), _serializedColumns[col - _start]);
+}
+
+void RemoveColumnsCommand::redo()
+{
+	if (_start + _count > _model->columnCount())
+		_count = _model->columnCount() - _start;
+	for (int col = _start; col < _start + _count; col++)
+		_serializedColumns.push_back(DataSetPackage::pkg()->serializeColumn(columnName(col).toStdString()));
+	_model->removeColumns(_start, _count);
+}
+
+
 RemoveColumnCommand::RemoveColumnCommand(QAbstractItemModel *model, int col)
 	: UndoModelCommand(model), _col{col}
 {
@@ -123,6 +146,46 @@ void RemoveColumnCommand::redo()
 	_serializedColumn = DataSetPackage::pkg()->serializeColumn(columnName(_col).toStdString());
 	_model->removeColumn(_col);
 }
+
+RemoveRowsCommand::RemoveRowsCommand(QAbstractItemModel *model, int start, int count)
+	: UndoModelCommand(model), _start{start}, _count{count}
+{
+	setText(QObject::tr("Remove rows %1 to %2").arg(rowName(_start), rowName(_start + count)));
+}
+
+void RemoveRowsCommand::undo()
+{
+	_model->insertRows(_start, _count);
+
+	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
+
+	if (dataSetTable)
+		dataSetTable->pasteSpreadsheet(_start, 0, _values, QStringList(), _colTypes);
+	else
+	{
+		for (int i = 0; i < _model->columnCount() && i < _values.size(); i++)
+			for (int j = _start; j < _count; j++)
+				_model->setData(_model->index(j, i), _values[i][j], 0);
+	}
+}
+
+void RemoveRowsCommand::redo()
+{
+	_values.clear();
+	for (int i = 0; i < _model->columnCount(); i++)
+	{
+		_values.push_back(std::vector<QString>());
+		_colTypes.push_back(_model->data(_model->index(0, i), int(dataPkgRoles::columnType)).toInt());
+
+		for (int j = _start; j < _start + _count; j++)
+			if (j < _model->rowCount())
+				_values[i].push_back(_model->data(_model->index(j, i)).toString());
+	}
+
+	_model->removeRows(_start, _count);
+}
+
+
 
 RemoveRowCommand::RemoveRowCommand(QAbstractItemModel *model, int row)
 	: UndoModelCommand(model), _row{row}
