@@ -122,7 +122,25 @@ if(APPLE)
     DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/exec/
   )
 
-    
+
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+	  install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgfortran.5.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgfortran.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libquadmath.0.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libquadmath.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+  endif()
 
   # I had to do this manually, since `macdeployqt` misses it.
   # See here: https://bugreports.qt.io/browse/QTBUG-100686

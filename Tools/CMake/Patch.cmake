@@ -137,7 +137,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/"
-            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib/"
+            "${FRAMEWORK_RESOURCES}/lib/"
             NEW_ID
             ${FILE})
 
