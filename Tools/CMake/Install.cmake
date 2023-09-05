@@ -140,6 +140,10 @@ if(APPLE)
 		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libquadmath.dylib
 		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
 	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgcc_s.1.1.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
   endif()
 
   # I had to do this manually, since `macdeployqt` misses it.
