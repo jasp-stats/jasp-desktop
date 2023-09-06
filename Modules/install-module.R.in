@@ -31,9 +31,9 @@ options(
 )
 
 if (jaspBase::getOS() == "osx") {
-	options(pkgType = "mac.binary")
+  options(pkgType = "mac.binary")
 } else if (jaspBase::getOS() == "windows") {
-	options(pkgType = "win.binary")
+  options(pkgType = "win.binary")
 }
 
 # Related to the comment above, there is variable here called, 
