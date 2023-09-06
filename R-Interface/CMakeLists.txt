@@ -58,9 +58,19 @@ if(WIN32)
 
   # This is a variable and it's provided by the main CMakeFiles.txt.
   # It is here only if we someone wants to build the R-Interface separately.
-  set(RTOOLS_PATH
+  if(${R_VERSION} VERSION_GREATER_EQUAL "4.3.0")
+    set(RTOOLS_PATH
+      "C:/rtools43/ucrt64"
+       CACHE PATH "Path to Rtools43 ucrt64 folder")
+  elseif(${R_VERSION} VERSION_GREATER_EQUAL "4.2.0")
+    set(RTOOLS_PATH
       "C:/rtools42/ucrt64"
       CACHE PATH "Path to Rtools42 ucrt64 folder")
+  else()
+    message(
+        FATAL_ERROR
+        "Please use a supported R-version. If you're building JASP with a version of R older than 4.2.0 then adjust the RTOOLS_PATH in the CMake code above this error.")
+  endif()
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
