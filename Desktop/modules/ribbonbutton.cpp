@@ -216,8 +216,8 @@ void RibbonButton::setEnabled(bool enabled)
 	{
 		if(!isSpecial())
 		{
-			if(enabled)	DynamicModules::dynMods()->loadModule(name());
-			else		DynamicModules::dynMods()->unloadModule(name());
+			if(enabled)	DynamicModules::dynMods()->loadModule(_module->name());
+			else		DynamicModules::dynMods()->unloadModule(_module->name());
 		}
 
 		emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
