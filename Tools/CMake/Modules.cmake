@@ -397,7 +397,7 @@ endif()
 
           fetchcontent_declare(
             jags
-            URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.1.tar.gz"
+            URL "http://static.jasp-stats.org/JAGS-4.3.1.tar.gz"
             URL_HASH
               SHA256=f9258355b5e9eb13bd33c5fa720f0cbebacea7d0a4a42b71b0fb14501ee14229
           )
