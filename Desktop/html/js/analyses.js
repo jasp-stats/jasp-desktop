@@ -110,7 +110,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 				this.views = _.without(this.analyses, analysis);
 
 				analysesVar.setBottomSpacerHeight();
-
+				// just add classNmae then will not be collected in exports from jaspWidgets.js,
+				// then removed element from the DOM.
 				analysis.$el.addClass("removed"); 
 				analysis.$el.remove(); 
 			});
