@@ -146,6 +146,12 @@ if(WIN32)
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_PATH}")
 
+    message(CHECK_START "Looking for Rtools42 legacy")
+    if(DEFINED RTOOLS42_HOME)
+        unset(RTOOLS42_HOME)
+    endif()
+
+
   else()
 
     # @todo, apparently, Rtool42 registers an environment variable called

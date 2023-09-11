@@ -8,12 +8,12 @@
 
 [requires]
 boost/[>=1.82.0 <2.0.0]
-libiconv/1.16
-libarchive/3.5.2
-zlib/1.2.11
+libiconv/1.17
+libarchive/3.6.2
+zlib/1.2.13
 zstd/1.5.2
 jsoncpp/1.9.5
-openssl/1.1.1m
+openssl/3.0.10
 bison/3.7.6
 brotli/1.0.9
 sqlite3/3.38.5
@@ -21,8 +21,8 @@ gmp/6.3.0
 mpfr/4.2.1
 
 [generators]
-cmake_paths
-cmake_find_package
+CMakeDeps
+CMakeToolchain
 
 [options]
 brotli:shared=True

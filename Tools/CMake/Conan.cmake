@@ -22,14 +22,7 @@ if(USE_CONAN)
   set(CONAN_FILE_PATH ${CMAKE_SOURCE_DIR})
 
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
-
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CONAN_COMPILER_RUNTIME "MDd")
-  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CONAN_COMPILER_RUNTIME "MD")
-  else()
-    set(CONAN_COMPILER_RUNTIME "MDd")
-  endif()
+  set(CONAN_COMPILER_RUNTIME "dynamic")
 
   if(WIN32)
 
@@ -39,8 +32,9 @@ if(USE_CONAN)
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
-        conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-        compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/conan_build
+      -s build_type=${CMAKE_BUILD_TYPE}
+      -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
 
   elseif(APPLE)
 
@@ -68,7 +62,7 @@ if(USE_CONAN)
 
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
+  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/conanbuild.bat)
     message(CHECK_PASS "successful")
   else()
     message(CHECK_FAIL "unsuccessful")
@@ -78,7 +72,8 @@ if(USE_CONAN)
     )
   endif()
 
-  include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+  include(${CMAKE_BINARY_DIR}/conan_build/conan_toolchain.cmake)
+
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

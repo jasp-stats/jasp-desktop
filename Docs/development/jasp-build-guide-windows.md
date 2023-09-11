@@ -103,11 +103,11 @@ You can download Conan from their [GitHub Release page](https://github.com/conan
 After installing Conan, you should make sure that Conan is configured correctly. Open the Windows Terminal, or the Command Prompt, and run the following commands:
 
 ```bash
-conan profile new default --detect
-conan profile show default
+conan profile detect --name default
+conan profile show
 ```
 
-You should see something like this. CMake later uses this template to modify some of its parameters and download and prepare the dependencies accordingly. For instance, if you are building a Debug version of JASP, CMake will change this profile to account for that.
+You should see something like below, you can edit the `default` file in `path\to\user\username\.conan2\profiles` by notepad. CMake later uses this template to modify some of its parameters and download and prepare the dependencies accordingly. For instance, if you are building a Debug version of JASP, CMake will change this profile to account for that.
 
 ```
 [settings]
@@ -120,8 +120,9 @@ compiler.version=16
 build_type=Debug
 [options]
 [conf]
-[build_requires]
-[env]
+tools.microsoft.msbuild:vs_version=17
+tools.cmake.cmaketoolchain:generator=Ninja
+[tool_requires]
 ```
 
 > 💡 Although CMake and Qt Creator will run Conan process for you, if it's your very first time configuring JASP, and you ran into any problem, you can run the Conan command manually. If things go wrong, CMake configuration will stop and tells you what you should do to resolve the Conan issue. 
