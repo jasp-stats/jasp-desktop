@@ -36,7 +36,7 @@ public:
 
 			int					id()						const	{ return _id;				}
 	const	std::string		&	description()				const	{ return _description;		}
-			std::string			label(bool shorten = false)	const	{ return !shorten || _label.size() <= MAX_LABEL_DISPLAY_LENGTH ? _label : _label.substr(0, MAX_LABEL_DISPLAY_LENGTH);	}
+			std::string			label(bool shorten = false)	const	{ return !shorten || _label.size() <= MAX_LABEL_DISPLAY_LENGTH ? _label : _label.substr(0, MAX_LABEL_DISPLAY_LENGTH) + "...";	}
 			int					value()						const	{ return _value;			}
 			int					order()						const	{ return _order;			}
 			bool				filterAllows()				const	{ return _filterAllows;		}
