@@ -185,24 +185,6 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 	_undoStack->pushCommand(new RemoveColumnsCommand(_sourceModel, start, count));
 }
 
-void ExpandDataProxyModel::removeRow(int row)
-{
-	if (!_sourceModel)
-		return;
-
-	if (row >= 0 && row < _sourceModel->rowCount())
-		_undoStack->pushCommand(new RemoveRowCommand(_sourceModel, row));
-}
-
-void ExpandDataProxyModel::removeColumn(int col)
-{
-	if (!_sourceModel)
-		return;
-
-	if (col >= 0 && col < _sourceModel->columnCount())
-		_undoStack->pushCommand(new RemoveColumnCommand(_sourceModel, col));
-}
-
 void ExpandDataProxyModel::insertRow(int row)
 {
 	if (!_sourceModel)

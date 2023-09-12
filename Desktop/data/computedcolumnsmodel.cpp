@@ -304,7 +304,7 @@ void ComputedColumnsModel::removeColumn()
 		return;
 
 	// TODO pass RemoveColumnCommand aab
-	_undoStack->pushCommand(new RemoveColumnCommand(DataSetPackage::pkg(), _selectedColumn->id()));
+	_undoStack->pushCommand(new RemoveColumnsCommand(DataSetPackage::pkg(), _selectedColumn->id(), 1));
 
 	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
 	setComputeColumnNameSelected("");

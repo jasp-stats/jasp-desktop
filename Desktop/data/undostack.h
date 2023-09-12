@@ -234,19 +234,6 @@ private:
 	int						_row = -1;
 };
 
-class RemoveColumnCommand : public UndoModelCommand
-{
-public:
-	RemoveColumnCommand(QAbstractItemModel *model, int col);
-
-	void undo()					override;
-	void redo()					override;
-
-private:
-	int						_col = -1;
-	Json::Value				_serializedColumn;
-};
-
 class RemoveColumnsCommand : public UndoModelCommand
 {
 public:
@@ -276,20 +263,6 @@ private:
 	std::vector<std::vector<QString>>	_values;
 	std::vector<int>					_colTypes;
 };
-
-class RemoveRowCommand : public UndoModelCommand
-{
-public:
-	RemoveRowCommand(QAbstractItemModel *model, int row);
-
-	void undo()					override;
-	void redo()					override;
-
-private:
-	int						_row = -1;
-	QVariantList			_values;
-};
-
 
 class UndoStack : public QUndoStack
 {
