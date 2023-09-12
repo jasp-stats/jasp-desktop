@@ -35,7 +35,9 @@
 class ArchiveReader
 {
 public:
+	ArchiveReader(){}
 	ArchiveReader(const std::string &archivePath, const std::string &entryPath);
+	ArchiveReader(ArchiveReader && other) = default;
 
 	~ArchiveReader();
 
@@ -75,6 +77,8 @@ public:
 	 * @return
 	 */
 	std::string readAllData(int blockSize, int &errorCode);
+
+	void openEntry(const std::string &archivePath, const std::string &entryPath);
 
 	/**
 	 * @brief close Closes archive/file.
@@ -137,7 +141,7 @@ private:
 	std::string					_archivePath,
 								_entryPath;
 
-	void openEntry(const std::string &archivePath, const std::string &entryPath);
+
 };
 
 #endif // ARCHIVEREADER_H

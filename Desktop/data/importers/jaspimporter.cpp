@@ -40,7 +40,7 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 
 	DataSetPackage * packageData = DataSetPackage::pkg();
 
-        packageData->setIsJaspFile(true);
+	packageData->setIsJaspFile(true);
 
 	readManifest(path);
 
@@ -174,9 +174,10 @@ void JASPImporter::readManifest(const std::string &path)
 {
 	bool            foundVersion		= false;
 	std::string     manifestName		= "manifest.json";
-	ArchiveReader	manifestReader		= ArchiveReader(path, manifestName);
+	ArchiveReader	manifestReader;
+	manifestReader.openEntry(path, manifestName); //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
 	int             size				= manifestReader.bytesAvailable(),
-		errorCode;
+					errorCode;
 
 	if (size > 0)
 	{

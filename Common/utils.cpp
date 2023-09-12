@@ -256,7 +256,10 @@ std::wstring Utils::getShortPathWin(const std::wstring & longPath)
 
 	length = GetShortPathName(longPath.c_str(), buffer, length);
 	if (length == 0)
+	{
+		delete[] buffer;
 		return longPath;
+	}
 
 	std::wstring shortPath(buffer, length);
 	
@@ -279,5 +282,20 @@ string Utils::wstringToString(const std::wstring & wstr)
 
 	return str;
 
+}
+
+wstring Utils::stringToWString(const std::string &str)
+{
+	std::wstring wstr;
+
+	//get size of buffer we need
+	int requiredSize = MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, NULL, 0);
+	wstr.resize(requiredSize);
+
+	//convert it
+	MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, wstr.data(), wstr.size());
+	wstr.resize(requiredSize-1);//drop /nul
+
+	return wstr;
 }
 #endif

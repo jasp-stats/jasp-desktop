@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <archive_entry.h>
 #include "log.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -57,7 +58,11 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
-        int r = archive_read_open_filename(_archive, pathArchive.string().c_str(), 10240);
+#ifdef _WIN32
+		int r = archive_read_open_filename_w(_archive, Utils::stringToWString(pathArchive.string()).c_str(), 10240);
+#else
+		int r = archive_read_open_filename(_archive, pathArchive.c_str(), 10240);
+#endif
 
 		if (r == ARCHIVE_OK)
 		{
@@ -76,6 +81,7 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 					break;
 				}
 			}
+
 			if (!success)
 				throw runtime_error("No entry (" + entryPath + ") found in archive file.");
 		}
@@ -238,7 +244,11 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 		archive_read_support_filter_all(a);
 		archive_read_support_format_all(a);
 
-        int r = archive_read_open_filename(a, pathArchive.string().c_str(), 10240);
+#ifdef _WIN32
+		int r = archive_read_open_filename_w(a, Utils::stringToWString(pathArchive.string()).c_str(), 10240);
+#else
+		int r = archive_read_open_filename(a, pathArchive.c_str(), 10240);
+#endif
 
 		if (r == ARCHIVE_OK)
 		{

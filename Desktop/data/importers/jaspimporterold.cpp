@@ -320,7 +320,8 @@ void JASPImporterOld::readManifest(const std::string &path)
 {
 	bool            foundVersion		= false;
 	std::string     manifestName		= "META-INF/MANIFEST.MF";
-	ArchiveReader	manifest			= ArchiveReader(path, manifestName);
+	ArchiveReader	manifest;
+	manifest.openEntry(path, manifestName);  //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
 	int             size				= manifest.bytesAvailable();
 
 	if (size > 0)
@@ -352,8 +353,6 @@ void JASPImporterOld::readManifest(const std::string &path)
 
 	if ( ! foundVersion)
 		throw std::runtime_error("Archive missing version information.");
-
-	manifest.close();
 }
 
 bool JASPImporterOld::parseJsonEntry(Json::Value &root, const std::string &path,  const std::string &entry, bool required)
