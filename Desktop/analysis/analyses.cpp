@@ -286,6 +286,7 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	emit countChanged();
 	emit analysisRemoved(analysis);
+	emit somethingModified();
 
 	delete analysis;
 }

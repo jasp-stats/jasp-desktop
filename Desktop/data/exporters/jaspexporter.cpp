@@ -50,14 +50,18 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
 	archive_write_set_compression_xz(a);
-	
-	if (archive_write_open_filename(a, path.c_str()) != ARCHIVE_OK)
-		throw std::runtime_error("File could not be opened.");
 
-    saveManifest(a);    progressCallback(10);
-    saveAnalyses(a);    progressCallback(30);
-    saveResults(a);     progressCallback(70);
-    saveDatabase(a);    progressCallback(100);
+#ifdef _WIN32
+	if (archive_write_open_filename_w(a, tq(path).toStdWString().c_str()) != ARCHIVE_OK)
+#else
+	if (archive_write_open_filename(a, path.c_str()) != ARCHIVE_OK)
+#endif
+		throw std::runtime_error(std::string("File could not be opened because of ") + archive_error_string(a));
+
+	saveManifest(a);    progressCallback(10);
+	saveAnalyses(a);    progressCallback(30);
+	saveResults(a);     progressCallback(70);
+	saveDatabase(a);    progressCallback(100);
 
 	if (archive_write_close(a) != ARCHIVE_OK)
 		throw std::runtime_error("File could not be closed.");
