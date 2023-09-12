@@ -106,45 +106,70 @@ void InsertRowCommand::redo()
 	_model->insertRow(_row);
 }
 
-RemoveColumnCommand::RemoveColumnCommand(QAbstractItemModel *model, int col)
-	: UndoModelCommand(model), _col{col}
+RemoveColumnsCommand::RemoveColumnsCommand(QAbstractItemModel *model, int start, int count)
+	: UndoModelCommand(model), _start{start}, _count{count}
 {
-	setText(QObject::tr("Remove column '%1'").arg(columnName(_col)));
+	if (count == 1)
+		setText(QObject::tr("Remove column '%1'").arg(columnName(_start)));
+	else
+		setText(QObject::tr("Remove %1 columns from '%2'").arg(_count).arg(columnName(_start)));
 }
 
-void RemoveColumnCommand::undo()
+void RemoveColumnsCommand::undo()
 {
-	_model->insertColumn(_col);
-	DataSetPackage::pkg()->deserializeColumn(columnName(_col).toStdString(), _serializedColumn);
+	_model->insertColumns(_start, _count);
+	for (int col = _start; col < _start + _count; col++)
+		DataSetPackage::pkg()->deserializeColumn(columnName(col).toStdString(), _serializedColumns[col - _start]);
 }
 
-void RemoveColumnCommand::redo()
+void RemoveColumnsCommand::redo()
 {
-	_serializedColumn = DataSetPackage::pkg()->serializeColumn(columnName(_col).toStdString());
-	_model->removeColumn(_col);
+	if (_start + _count > _model->columnCount())
+		_count = _model->columnCount() - _start;
+	for (int col = _start; col < _start + _count; col++)
+		_serializedColumns.push_back(DataSetPackage::pkg()->serializeColumn(columnName(col).toStdString()));
+	_model->removeColumns(_start, _count);
 }
 
-RemoveRowCommand::RemoveRowCommand(QAbstractItemModel *model, int row)
-	: UndoModelCommand(model), _row{row}
+RemoveRowsCommand::RemoveRowsCommand(QAbstractItemModel *model, int start, int count)
+	: UndoModelCommand(model), _start{start}, _count{count}
 {
-	setText(QObject::tr("Remove row %1").arg(rowName(_row)));
+	if (count == 1)
+		setText(QObject::tr("Remove row %1").arg(rowName(_start)));
+	else
+		setText(QObject::tr("Remove rows %1 to %2").arg(rowName(_start), rowName(_start + count)));
 }
 
-void RemoveRowCommand::undo()
+void RemoveRowsCommand::undo()
 {
-	_model->insertRow(_row);
+	_model->insertRows(_start, _count);
 
-	for (int i = 0; i < _model->columnCount() && i < _values.count(); i++)
-		_model->setData(_model->index(_row, i), _values[i], 0);
+	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
+
+	if (dataSetTable)
+		dataSetTable->pasteSpreadsheet(_start, 0, _values, QStringList(), _colTypes);
+	else
+	{
+		for (int i = 0; i < _model->columnCount() && i < _values.size(); i++)
+			for (int j = _start; j < _count; j++)
+				_model->setData(_model->index(j, i), _values[i][j], 0);
+	}
 }
 
-void RemoveRowCommand::redo()
+void RemoveRowsCommand::redo()
 {
 	_values.clear();
 	for (int i = 0; i < _model->columnCount(); i++)
-		_values.push_back(_model->data(_model->index(_row, i)));
+	{
+		_values.push_back(std::vector<QString>());
+		_colTypes.push_back(_model->data(_model->index(0, i), int(dataPkgRoles::columnType)).toInt());
 
-	_model->removeRow(_row);
+		for (int j = _start; j < _start + _count; j++)
+			if (j < _model->rowCount())
+				_values[i].push_back(_model->data(_model->index(j, i)).toString());
+	}
+
+	_model->removeRows(_start, _count);
 }
 
 PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > &cells, const QStringList &newColNames)

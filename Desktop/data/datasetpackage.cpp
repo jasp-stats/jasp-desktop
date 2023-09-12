@@ -1412,7 +1412,7 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::st
 }
 
 
-void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values, const std::string & title)
+void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values, const std::string & title, columnType desiredType)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnWithStrings);
 	
@@ -1431,8 +1431,8 @@ void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 		
 	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
 
-	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
-	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
+	auto isNominalInt			= [&](){ return valuesAreIntegers && (desiredType == columnType::nominal || uniqueValues.size() == minIntForThresh); };
+	auto isOrdinal				= [&](){ return valuesAreIntegers && (desiredType == columnType::ordinal || (uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale)); };
 	auto isScalar				= [&](){ return ColumnUtils::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 	
 	JASPTIMER_STOP(DataSetPackage::initColumnWithStrings preamble);
@@ -1989,7 +1989,7 @@ void DataSetPackage::deserializeColumn(const std::string& columnName, const Json
 	column->deserialize(col);
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames, intvec coltypes)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
 
@@ -2010,19 +2010,26 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 
 	for(int c=0; c<colMax; c++)
 	{
-		int							dataCol = c +  col;
-		stringvec	colVals = getColumnDataStrs(dataCol);
+		int			dataCol		= c + col;
+		stringvec	colVals		= getColumnDataStrs(dataCol);
+		columnType	desiredType	= coltypes.size() > c ? columnType(coltypes[c]) : columnType::unknown;
 
 		for(int r=0; r<rowMax; r++)
 		{
 			std::string cellVal = fq(cells[c][r]);
+			if (desiredType != columnType::unknown && desiredType != columnType::scale)
+			{
+				Label* label = _dataSet->columns()[dataCol]->labelByDisplay(cellVal);
+				if (label)
+					cellVal = (desiredType == columnType::nominalText) ? label->originalValue().asString() : std::to_string(label->value());
+			}
 			colVals[r + row] = cellVal == ColumnUtils::emptyValue ? "" : cellVal;
 		}
 
 		std::string colName = getColumnName(dataCol),
 					newName = newColNames.size() > c && newColNames[c] != "" ? fq(newColNames[c]) : colName == "" ? freeNewColumnName(dataCol) : colName;
 		
-		initColumnWithStrings(dataCol, newName, colVals);
+		initColumnWithStrings(dataCol, newName, colVals, "", desiredType);
 
 		if(newName != "")
 			changed.push_back(newName);
@@ -2146,11 +2153,6 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 		return false;
 
 	emit columnsBeingRemoved(column, count);
-	if(count >= dataColumnCount())
-	{
-		resetModelOneCell();
-		return true;
-	}
 
 	if(isLoaded()) setModified(true);
 
@@ -2228,12 +2230,6 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 	if(row == -1)
 		return false;
 
-	if(count >= dataRowCount())
-	{
-		resetModelOneCell();
-		return true;
-	}
-
 	if(isLoaded()) setModified(true);
 
 	setManualEdits(true); //Don't synch with external file after editing
@@ -2303,34 +2299,6 @@ void DataSetPackage::removeColumn(const std::string & name)
 	if(colIndex == -1) return;
 
 	removeColumns(colIndex, 1);
-}
-
-void DataSetPackage::resetModelOneCell()
-{
-	if(isLoaded()) setModified(true);
-
-	setData(index(0,0), "", Qt::DisplayRole);
-	
-	stringvec columnNames = getColumnNames();
-	bool rowCountChanged = dataRowCount() > 1;
-
-	beginResetModel();
-	setDataSetSize(1, 1);
-	std::string newColumnName = freeNewColumnName(0);
-	setColumnName(0, newColumnName, false);
-	setColumnType(0, columnType::scale,	false);
-	endResetModel();
-	
-	
-	QStringList changedColumns, missingColumns;
-	
-	for(size_t i=0; i<columnNames.size(); i++)
-		if(columnNames[i] == newColumnName)
-			changedColumns.append(tq(columnNames[i]));
-		else
-			missingColumns.append(tq(columnNames[i]));
-	
-	emit datasetChanged(changedColumns, missingColumns, {}, rowCountChanged, changedColumns.size() == 0);
 }
 
 bool DataSetPackage::columnExists(Column *column)

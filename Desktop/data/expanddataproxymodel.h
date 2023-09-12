@@ -30,8 +30,6 @@ public:
 
 	void				removeRows(int start, int count);
 	void				removeColumns(int start, int count);
-	void				removeRow(int row);
-	void				removeColumn(int col);
 	void				insertRow(int row);
 	void				insertColumn(int col, bool computed, bool R);
 	void				pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());

@@ -1265,6 +1265,8 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 void Column::labelsRemoveValues(std::set<int> valuesToRemove)
 {
+	if (valuesToRemove.empty()) return;
+
 	JASPTIMER_SCOPE(Column::labelsRemoveValues);
 
 	_labels.erase(

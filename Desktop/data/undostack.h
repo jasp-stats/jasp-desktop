@@ -234,32 +234,35 @@ private:
 	int						_row = -1;
 };
 
-class RemoveColumnCommand : public UndoModelCommand
+class RemoveColumnsCommand : public UndoModelCommand
 {
 public:
-	RemoveColumnCommand(QAbstractItemModel *model, int col);
+	RemoveColumnsCommand(QAbstractItemModel *model, int start, int count);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	int						_col = -1;
-	Json::Value				_serializedColumn;
+	int							_start = -1,
+								_count = 0;
+	std::vector<Json::Value>	_serializedColumns;
 };
 
-class RemoveRowCommand : public UndoModelCommand
+
+class RemoveRowsCommand : public UndoModelCommand
 {
 public:
-	RemoveRowCommand(QAbstractItemModel *model, int row);
+	RemoveRowsCommand(QAbstractItemModel *model, int start, int count);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	int						_row = -1;
-	QVariantList			_values;
+	int									_start = -1,
+										_count = 0;
+	std::vector<std::vector<QString>>	_values;
+	std::vector<int>					_colTypes;
 };
-
 
 class UndoStack : public QUndoStack
 {
