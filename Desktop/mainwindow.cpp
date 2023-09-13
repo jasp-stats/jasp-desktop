@@ -836,6 +836,11 @@ void MainWindow::saveKeyPressed()
 	if (_package->isModified()) _fileMenu->save();
 }
 
+void MainWindow::saveAsKeyPressed()
+{
+	if (_package->hasDataSet()) _fileMenu->saveAs();
+}
+
 void MainWindow::openKeyPressed()
 {
 	_fileMenu->showFileOpenMenu();

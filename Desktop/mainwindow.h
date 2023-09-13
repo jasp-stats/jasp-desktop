@@ -125,6 +125,7 @@ public slots:
 	void showAbout();
 
 	void saveKeyPressed();
+	void saveAsKeyPressed();
 	void openKeyPressed();
 	void syncKeyPressed();
 	void refreshKeyPressed();

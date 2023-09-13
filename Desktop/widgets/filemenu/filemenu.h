@@ -74,6 +74,7 @@ public:
 	FileEvent *	open(const QString &filepath);
 	FileEvent * open(const Json::Value & databaseInfo);
 	FileEvent *	save();
+	FileEvent *	saveAs();
 	void		sync();
 
 	void			setCurrentDataFile(const QString		& path);
