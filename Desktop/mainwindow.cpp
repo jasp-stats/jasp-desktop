@@ -836,6 +836,11 @@ void MainWindow::saveKeyPressed()
 	if (_package->isModified()) _fileMenu->save();
 }
 
+void MainWindow::saveAsKeyPressed()
+{
+	if (_package->isLoaded()) _fileMenu->saveAs();
+}
+
 void MainWindow::openKeyPressed()
 {
 	_fileMenu->showFileOpenMenu();
@@ -1490,22 +1495,23 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 bool MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
-	QString path = QString::fromStdString(_package->dataFilePath());
+	QString dataFilePath = QString::fromStdString(_package->dataFilePath());
+
 	if (
-			(path.isEmpty() || _package->manualEdits())
-			|| path.startsWith("http")
-			|| !QFileInfo::exists(path)
-			|| Utils::getFileSize(path.toStdString()) == 0
+			(dataFilePath.isEmpty() || _package->manualEdits())
+			|| dataFilePath.startsWith("http")
+			|| !QFileInfo::exists(dataFilePath)
+			|| Utils::getFileSize(dataFilePath.toStdString()) == 0
 			|| _package->dataFileReadOnly()
 	)
 	{
 		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
-		if (path.startsWith("http"))			message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
+		if (dataFilePath.startsWith("http"))	message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
 		else if (_package->dataFileReadOnly())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
 
 		MessageForwarder::DialogResponse choice;
 
-		const bool manualEditsMode = _package->manualEdits() && !path.isEmpty() && !_package->dataFileReadOnly();
+		const bool manualEditsMode = _package->manualEdits() && !dataFilePath.isEmpty() && !_package->dataFileReadOnly();
 
 		if (manualEditsMode)
 		{
@@ -1542,17 +1548,17 @@ bool MainWindow::startDataEditorHandler()
 				name = name.replace('#', '_');
 			}
 
-			QFileInfo pkgFile(_package->currentFile());
-			if (pkgFile.dir().exists() && !pkgFile.absolutePath().startsWith(AppDirs::examples()) && !_package->dataFileReadOnly()) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
+			QFileInfo pkgFile(_package->currentFile()); // dataFilePath might be empty, so take the current file (the file from which the workspace is loaded, that is a jasp or a data file)
+			if (pkgFile.dir().exists() && !pkgFile.absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
 				name = pkgFile.dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
 
-			path = MessageForwarder::browseSaveFile(caption, name, filter);
+			dataFilePath = MessageForwarder::browseSaveFile(caption, name, filter);
 
-			if (path == "")
+			if (dataFilePath == "")
 				return false;
 
-			if (!path.endsWith(".csv", Qt::CaseInsensitive))
-				path.append(".csv");
+			if (!dataFilePath.endsWith(".csv", Qt::CaseInsensitive))
+				dataFilePath.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileGenerateData);
 			break;
@@ -1567,8 +1573,8 @@ bool MainWindow::startDataEditorHandler()
 				QString caption = "Find Data File";
 				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods)";
 
-				path = MessageForwarder::browseOpenFile(caption, "", filter);
-				if (path == "")
+				dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
+				if (dataFilePath == "")
 					return false;
 
 				event = new FileEvent(this, FileEvent::FileSyncData);
@@ -1583,18 +1589,18 @@ bool MainWindow::startDataEditorHandler()
 		{
 			connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
 			connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
-			event->setPath(path);
+			event->setPath(dataFilePath);
 			_loader->io(event);
 			showProgress();
 		}
 		else
 		{
-			startDataEditor(path);
+			startDataEditor(dataFilePath);
 			_package->setSynchingExternally(true);
 		}
 	}
 	else
-		startDataEditor(path);
+		startDataEditor(dataFilePath);
 
 	return true;
 }

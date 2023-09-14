@@ -108,13 +108,18 @@ FileEvent *FileMenu::open(const Json::Value & dbJson)
 	return event;
 }
 
+FileEvent *FileMenu::saveAs()
+{
+	return _computer->browseSave();
+}
+
 FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;
 
-	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->dataFileReadOnly())
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentFileIsExample())
 	{
-		event = _computer->browseSave();
+		event = saveAs();
 		if (event->isCompleted())
 			return event;
 	}
@@ -302,7 +307,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		{
 		case FileEvent::FileOpen:
 		case FileEvent::FileSave:
-			enableButtonsForOpenedWorkspace(event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
+			enableButtonsForOpenedWorkspace((!event->isReadOnly() && event->type() == Utils::FileType::jasp) || event->operation() == FileEvent::FileSave);
 			break;
 
 		case FileEvent::FileClose:
@@ -396,7 +401,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->dataFileReadOnly())
+		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->currentFileIsExample())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
