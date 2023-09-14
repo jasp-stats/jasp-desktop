@@ -2478,12 +2478,20 @@ void DataSetPackage::setEmptyValues(Json::Value &emptyValues)
 	_dataSet->setEmptyValuesJson(emptyValues);
 }
 
+bool DataSetPackage::jaspFileReadOnly() const
+{
+	return currentFile().startsWith(AppDirs::examples());
+}
+
 void DataSetPackage::setDataFilePath(std::string filePath)				
-{ 
+{
 	if(!_dataSet || _dataSet->dataFilePath() == filePath)
-		return;
+		return;	
 
 	_dataSet->setDataFilePath(filePath);
+	if (tq(filePath).startsWith(AppDirs::examples()))
+		setDataFileReadOnly(true);
+
 	emit synchingExternallyChanged(synchingExternally());
 }
 

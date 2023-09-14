@@ -110,20 +110,14 @@ FileEvent *FileMenu::open(const Json::Value & dbJson)
 
 FileEvent *FileMenu::saveAs()
 {
-	FileEvent *event = _computer->browseSave();
-
-	if (!event->isCompleted())
-		// If the JASP file is saved on the computer, it should not be read only anymore (if it was)
-		DataSetPackage::pkg()->setDataFileReadOnly(false);
-
-	return event;
+	return _computer->browseSave();
 }
 
 FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;
 
-	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->dataFileReadOnly())
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->jaspFileReadOnly())
 	{
 		event = saveAs();
 		if (event->isCompleted())
@@ -407,7 +401,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->dataFileReadOnly())
+		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->jaspFileReadOnly())
 			save();
 		else
 			setMode(FileEvent::FileSave);			

@@ -158,7 +158,9 @@ public:
 		const	Version			&	archiveVersion()					const	{ return _archiveVersion;						   }
 				Json::Value			emptyValuesJson()					const	{ return _dataSet->emptyValuesJson(); 				}
 
+				// The data file might be read-only if it comes from the examples or read from an external database
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						     }
+				bool				jaspFileReadOnly()					const;
 				uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					      }
 				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;							}
