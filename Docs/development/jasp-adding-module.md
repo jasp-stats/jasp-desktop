@@ -162,7 +162,7 @@ The help folder is where you place the documentation for your module. You should
 - **Image**:To be able to refer to another helpfile or an image in your module's  helpfile or in the `info` field of the = options in QML you can use a special string.
 This string is `%HELP_FOLDER%` and when loaded it will be replaced with the path to the `help`-folder of your module.
 So suppose you have an image in `module/help/img/picture.png`, to link to it you would put `"%HELP_FOLDER%/img/picture.png"` in your markdown.
-- **Math**:If you want to add math expressions to help documentation, use TeX/LaTeX code into `\\\\(...\\\\)` for inline style or `\\\\[...\\\\]` for block style math expressions, note that you may need to escape characters such `\\\\(\\alpha+\\beta\\\\)` to get $\alpha+\beta$.
+- **Math**:If you want to add math expressions to help documentation, use TeX/LaTeX code into `\\\\(...\\\\)` or `$...$` for inline style, and use `\\\\[...\\\\]` or `$$...$$` for block style math expressions, note that you may need to escape characters such `$\\alpha+\\beta$` to get $\alpha+\beta$.
 - **R Code**:Suppose want to display example R code block or highlighting in the help documentation, you can use ` ```r ``` ` with your R code.
 
 #### Package Metadata
