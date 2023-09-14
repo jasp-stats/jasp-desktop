@@ -2478,7 +2478,7 @@ void DataSetPackage::setEmptyValues(Json::Value &emptyValues)
 	_dataSet->setEmptyValuesJson(emptyValues);
 }
 
-bool DataSetPackage::jaspFileReadOnly() const
+bool DataSetPackage::currentFileIsExample() const
 {
 	return currentFile().startsWith(AppDirs::examples());
 }

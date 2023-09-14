@@ -117,7 +117,7 @@ FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;
 
-	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->jaspFileReadOnly())
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentFileIsExample())
 	{
 		event = saveAs();
 		if (event->isCompleted())
@@ -401,7 +401,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->jaspFileReadOnly())
+		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->currentFileIsExample())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
