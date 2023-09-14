@@ -307,7 +307,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		{
 		case FileEvent::FileOpen:
 		case FileEvent::FileSave:
-			enableButtonsForOpenedWorkspace(event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
+			enableButtonsForOpenedWorkspace((!event->isReadOnly() && event->type() == Utils::FileType::jasp) || event->operation() == FileEvent::FileSave);
 			break;
 
 		case FileEvent::FileClose:
