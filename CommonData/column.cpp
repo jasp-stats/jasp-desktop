@@ -89,10 +89,11 @@ void Column::setName(const std::string &name)
 	if(_name == name)
 		return;
 
+	_name = getUniqueName(name);
+
 	if(_title.empty() || _title == _name)
 		setTitle(name);
 
-	_name = name;
 	db().columnSetName(_id, _name);
 	incRevision();
 }
@@ -2085,7 +2086,10 @@ Json::Value Column::serialize() const
 
 void Column::deserialize(const Json::Value &json)
 {
-	_name				= json["name"].asString();
+	if (json.isNull())
+		return;
+
+	_name				= getUniqueName(json["name"].asString());
 	db().columnSetName(_id, _name);
 
 	_title				= json["title"].asString();
@@ -2136,6 +2140,35 @@ void Column::deserialize(const Json::Value &json)
 	}
 
 	incRevision();
+}
+
+std::string Column::getUniqueName(const std::string &name) const
+{
+	std::string result	= name;
+	int	suffix			= 1;
+	bool foundSameName	= false;
+
+	do
+	{
+		foundSameName	= false;
+		for(Column * col : _data->columns())
+		{
+			if (col != this && col->name() == result)
+			{
+				foundSameName = true;
+				break;
+			}
+		}
+
+		if (foundSameName)
+		{
+			suffix++;
+			result = name + " " + std::to_string(suffix);
+		}
+
+	} while (foundSameName);
+
+	return result;
 }
 
 bool Column::dependsOn(const std::string & columnName, bool refresh)

@@ -164,6 +164,7 @@ public:
 			const	stringset	 &	dependsOnColumns(bool refresh = true);
 			Json::Value				serialize()																const;
 			void					deserialize(const Json::Value& info);
+			std::string				getUniqueName(const std::string& name)									const;
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);

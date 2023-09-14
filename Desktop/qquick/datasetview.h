@@ -191,7 +191,7 @@ public slots:
 
 	void		cut(	bool includeHeader = false) { _copy(includeHeader, true);  }
 	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
-	void		paste(	bool includeHeader = false);
+	void		paste(	bool includeHeader = false, QPoint where = QPoint());
 
 	void		columnSelect(				int col,		bool shiftPressed = false, bool rightClicked = false);
 	QString		columnInsertBefore(			int col = -1,	bool computed = false, bool R = false);
@@ -326,6 +326,7 @@ protected:
 	long		_selectScrollMs			= 0;
 	QPoint		_selectionStart			= QPoint(-1, -1),
 				_selectionEnd			= QPoint(-1, -1);
+	std::vector<Json::Value> _copiedColumns;
 
 
 };

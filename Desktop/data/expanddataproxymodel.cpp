@@ -242,3 +242,25 @@ int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
 
 	return data(0, columnIndex, int(dataPkgRoles::columnType)).toInt();
 }
+
+void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)
+{
+	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0 || startCol == copiedColumns[0])
+		return;
+
+	_expandIfNecessary(0, startCol + copiedColumns.size() - 1);
+	_undoStack->endMacro(new CopyColumnsCommand(_sourceModel, startCol, copiedColumns));
+}
+
+Json::Value ExpandDataProxyModel::serializedColumn(int col)
+{
+	Json::Value result;
+	if (col < _sourceModel->columnCount())
+	{
+		QString colName = _sourceModel->headerData(col, Qt::Orientation::Horizontal).toString();
+		if (!colName.isEmpty())
+			result = DataSetPackage::pkg()->serializeColumn(colName.toStdString());
+	}
+
+	return result;
+}

@@ -264,6 +264,21 @@ private:
 	std::vector<int>					_colTypes;
 };
 
+class CopyColumnsCommand : public UndoModelCommand
+{
+public:
+	CopyColumnsCommand(QAbstractItemModel* model, int startCol, const std::vector<Json::Value>& copiedColumns);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int							_startCol = -1;
+	std::vector<Json::Value>	_copiedColumns,
+								_originalColumns;
+
+};
+
 class UndoStack : public QUndoStack
 {
 	Q_OBJECT

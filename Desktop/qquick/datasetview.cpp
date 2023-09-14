@@ -1131,6 +1131,9 @@ void DataSetView::pollSelectScroll(int row, int col)
 
 void DataSetView::_copy(bool includeHeader, bool clear)
 {
+	if (!_selectionModel->hasSelection())
+		return;
+
 	QModelIndexList selected = _selectionModel->selectedIndexes();
 
 	std::vector<QStringList>	rows;
@@ -1158,12 +1161,16 @@ void DataSetView::_copy(bool includeHeader, bool clear)
 	}
 
 	int rowsSelected = rows.size();
+	_copiedColumns.clear();
 
 	if(includeHeader)
 	{
 		rows.insert(rows.begin(), tq(std::vector<std::string>(maxCol - minCol + 1, "")));
 		for(int c=minCol; c<=maxCol; c++)
+		{
+			_copiedColumns.push_back(_model->serializedColumn(c));
 			rows[0][c-minCol] = _model->headerData(c, Qt::Horizontal).toString();
+		}
 	}
 
 	if(rows.size() == 0)
@@ -1180,58 +1187,68 @@ void DataSetView::_copy(bool includeHeader, bool clear)
 
 	if(clear)
 	{
-		QPoint topLeft = selectionTopLeft();
+		if(includeHeader)
+			_model->removeColumns(minCol, 1 + (maxCol - minCol));
+		else
+		{
+			QPoint topLeft = selectionTopLeft();
 
-		Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
-		_model->pasteSpreadsheet(
-					topLeft.y(),
-					topLeft.x(),
-					std::vector<std::vector<QString>>(
-						(maxCol - minCol) + 1,
-						std::vector<QString>(
-							rowsSelected,
-							""
+			Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
+			_model->pasteSpreadsheet(
+						topLeft.y(),
+						topLeft.x(),
+						std::vector<std::vector<QString>>(
+							(maxCol - minCol) + 1,
+							std::vector<QString>(
+								rowsSelected,
+								""
+							)
 						)
-					)
-		);
+			);
+		}
 	}
 }
 
-void DataSetView::paste(bool includeHeader)
+void DataSetView::paste(bool includeHeader, QPoint where)
 {
-	QClipboard * clipboard = QGuiApplication::clipboard();
+	QPoint topLeft = where.isNull() ? selectionTopLeft() : where;
 
-	std::vector<std::vector<QString>> newData;
-
-	QStringList newNames;
-	size_t row = 0, col = 0;
-	for(const QString & rowStr : clipboard->text().split("\n"))
+	if (includeHeader && _copiedColumns.size() > 0)
+		_model->copyColumns(topLeft.x(), _copiedColumns);
+	else
 	{
-		col = 0;
-		if(includeHeader)
+		QClipboard * clipboard = QGuiApplication::clipboard();
+
+		std::vector<std::vector<QString>> newData;
+
+		QStringList newNames;
+		size_t row = 0, col = 0;
+		for(const QString & rowStr : clipboard->text().split("\n"))
 		{
-			newNames = rowStr.split("\t");
-			includeHeader = false;
-		}
-		else
-		{
-			for(const QString & cellStr : rowStr.split("\t"))
+			col = 0;
+			if(includeHeader)
 			{
-				if(newData.size()		<= col) newData.	 resize(col+1);
-				if(newData[col].size()	<= row)	newData[col].resize(row+1);
-
-				newData[col][row] = cellStr;
-				col++;
+				newNames = rowStr.split("\t");
+				includeHeader = false;
 			}
-			row++;
+			else
+			{
+				for(const QString & cellStr : rowStr.split("\t"))
+				{
+					if(newData.size()		<= col) newData.	 resize(col+1);
+					if(newData[col].size()	<= row)	newData[col].resize(row+1);
+
+					newData[col][row] = cellStr;
+					col++;
+				}
+				row++;
+			}
 		}
+
+		Log::log() << "DataSetView about to paste to data at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
+
+		_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), newData, newNames);
 	}
-
-	QPoint topLeft = selectionTopLeft();
-
-	Log::log() << "DataSetView about to paste to data at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
-
-	_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), newData, newNames);
 }
 
 QPoint DataSetView::selectionTopLeft() const

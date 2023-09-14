@@ -124,6 +124,8 @@ void RemoveColumnsCommand::undo()
 
 void RemoveColumnsCommand::redo()
 {
+	_serializedColumns.clear();
+
 	if (_start + _count > _model->columnCount())
 		_count = _model->columnCount() - _start;
 	for (int col = _start; col < _start + _count; col++)
@@ -159,6 +161,8 @@ void RemoveRowsCommand::undo()
 void RemoveRowsCommand::redo()
 {
 	_values.clear();
+	_colTypes.clear();
+
 	for (int i = 0; i < _model->columnCount(); i++)
 	{
 		_values.push_back(std::vector<QString>());
@@ -359,6 +363,7 @@ MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<
 	if (_columnModel)
 	{
 		_colId = _columnModel->chosenColumn();
+		_labels.clear();
 
 		QStringList allLabels = DataSetPackage::pkg()->getColumnLabelsAsStringList(_colId);
 		for (int i : indexes)
@@ -522,6 +527,52 @@ void SetComputedColumnCodeCommand::redo()
 	_computedColumnModel->sendCode(_newRCode);
 }
 
+CopyColumnsCommand::CopyColumnsCommand(QAbstractItemModel *model, int startCol, const std::vector<Json::Value>& copiedColumns)
+	: UndoModelCommand(model), _startCol{startCol}, _copiedColumns{copiedColumns}
+{
+	if (copiedColumns.size() == 0)
+		setObsolete(true);
+	else
+	{
+		QString firstColName = tq(copiedColumns[0]["name"].asString());
+		if (copiedColumns.size() == 1)
+			setText(QObject::tr("Copy column '%1 into column number %2").arg(firstColName).arg(startCol));
+		else
+		{
+			QString lastColName = tq(copiedColumns[copiedColumns.size() - 1]["name"].asString());
+			setText(QObject::tr("Copy columns '%1' to '%2'").arg(firstColName).arg(lastColName));
+		}
+	}
+}
+
+void CopyColumnsCommand::undo()
+{
+	int colMax = _model->columnCount();
+
+	for (int i = 0; i < _originalColumns.size(); i++)
+	{
+		if (colMax > _startCol + 1)
+			DataSetPackage::pkg()->deserializeColumn(columnName(_startCol + i).toStdString(), _originalColumns[i]);
+	}
+}
+
+void CopyColumnsCommand::redo()
+{
+	int colMax = _model->columnCount();
+	_originalColumns.clear();
+
+	for (int i = 0; i < _copiedColumns.size(); i++)
+	{
+		if (colMax > _startCol + i)
+			_originalColumns.push_back(DataSetPackage::pkg()->serializeColumn(columnName(_startCol + i).toStdString()));
+	}
+
+	for (int i = 0; i < _copiedColumns.size(); i++)
+	{
+		if (colMax > _startCol + i)
+			DataSetPackage::pkg()->deserializeColumn(columnName(_startCol + i).toStdString(), _copiedColumns[i]);
+	}
+}
 
 UndoModelCommand::UndoModelCommand(QAbstractItemModel *model)
 	: QUndoCommand(UndoStack::singleton()->parentCommand()), _model{model}

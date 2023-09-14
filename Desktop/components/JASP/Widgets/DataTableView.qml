@@ -83,25 +83,27 @@ FocusScope
 			//flickableInteractive:	!ribbonModel.dataMode
 			onDoubleClicked:		__myRoot.doubleClicked()
 
-			function showPopupMenu(fromItem, globalPos, rowIndex, columnIndex, header, rowheader)
+			function showPopupMenu(fromItem, globalPos, rowIndex, columnIndex, header, rowheader, virtual)
 			{
 				var ctrlCmd = MACOS ? qsTr("Cmd") : qsTr("Ctrl");
+				var colHeader = header && !rowheader
+				var point   = virtual ? Qt.point(columnIndex, rowIndex) : Qt.point(0, 0);
 
 				var menuModel =
 				[
-					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),				func: function() { dataTableView.view.selectAll() },						icon: "menu-select-all"				},
+					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),											func: function() { dataTableView.view.selectAll() },			icon: "menu-select-all",	enabled: !virtual				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),										func: function() { dataTableView.view.cut(false) },			icon: "menu-data-cut"				},
-					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),										func: function() { dataTableView.view.copy(false) },		icon: "menu-data-copy"				},
-					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),										func: function() { dataTableView.view.paste(false) },		icon: "menu-data-paste"				},
-					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),														func: function() { dataTableView.view.cellsClear(); },		icon: "menu-cells-clear"			},
-					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },				icon: "menu-undo", enabled: dataTableView.view.undoText() !== ""	},
-					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },				icon: "menu-redo", enabled: dataTableView.view.redoText() !== ""	},
+					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),										func: function() { dataTableView.view.cut(colHeader) },			icon: "menu-data-cut",		enabled: !virtual				},
+					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),										func: function() { dataTableView.view.copy(colHeader) },		icon: "menu-data-copy",		enabled: !virtual				},
+					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),										func: function() { dataTableView.view.paste(colHeader, point)},	icon: "menu-data-paste"				},
+					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),														func: function() { dataTableView.view.cellsClear(); },			icon: "menu-cells-clear",	enabled: !virtual				},
+					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },					icon: "menu-undo",			enabled: dataTableView.view.undoText() !== ""	},
+					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },					icon: "menu-redo",			enabled: dataTableView.view.redoText() !== ""	},
 				]
 
-				if(!header || !rowheader)
+				if(!virtual && (!header || !rowheader))
 				{
 					menuModel.push({ text: "---" });
 					if (!header)
@@ -113,7 +115,7 @@ FocusScope
 
 				 }
 
-				if(!header || rowheader)
+				if(!virtual && (!header || rowheader))
 				{
 					menuModel.push({ text: "---" })
 					if (!header)
@@ -257,7 +259,7 @@ FocusScope
 						case Qt.Key_C:
 							if(controlPressed)
 							{
-								theView.copy(shiftPressed);
+								theView.copy(false);
 								event.accepted = true;
 							}
 							break;
@@ -265,7 +267,7 @@ FocusScope
 						case Qt.Key_X:
 							if(controlPressed)
 							{
-								theView.cut(shiftPressed);
+								theView.cut(false);
 								event.accepted = true;
 							}
 							break;
@@ -690,15 +692,15 @@ FocusScope
 					{
 						if(columnIndex >= 0)
 						{
-							if (virtual)
-								createComputeDialog.open()
-							else
-							{
-								if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-								   dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+							if(!virtual && (mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton))
+								dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
 
-								if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
-									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false);
+							if(ribbonModel.dataMode)
+							{
+								if (mouseEvent.button === Qt.RightButton)
+									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex, true, false, virtual);
+								else if (virtual && mouseEvent.button === Qt.LeftButton)
+									createComputeDialog.open()
 							}
 						}
 					}

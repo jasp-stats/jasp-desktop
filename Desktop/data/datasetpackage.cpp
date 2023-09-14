@@ -1987,6 +1987,7 @@ void DataSetPackage::deserializeColumn(const std::string& columnName, const Json
 {
 	Column		*	column	= _dataSet->column(columnName);
 	column->deserialize(col);
+	emit datasetChanged({tq(columnName)}, {}, {}, false, false);
 }
 
 void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames, intvec coltypes)
