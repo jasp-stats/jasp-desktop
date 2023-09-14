@@ -63,6 +63,9 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 		throw std::runtime_error("File could not be closed.");
 
 	archive_write_free(a);
+
+	//Make sure it is now always considered "loading" in DataSetPackage
+	DataSetPackage::pkg()->setLoaded(true);
 }
 
 void JASPExporter::saveManifest(archive * a)
