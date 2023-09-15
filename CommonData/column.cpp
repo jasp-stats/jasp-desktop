@@ -89,10 +89,11 @@ void Column::setName(const std::string &name)
 	if(_name == name)
 		return;
 
+	std::string orgName = _name;
 	_name = getUniqueName(name);
 
-	if(_title.empty() || _title == _name)
-		setTitle(name);
+	if(_title.empty() || _title == orgName)
+		setTitle(_name);
 
 	db().columnSetName(_id, _name);
 	incRevision();

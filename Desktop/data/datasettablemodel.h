@@ -49,7 +49,7 @@ public:
 
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
-	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList(), std::vector<int> colTypes = std::vector<int>());
+	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, std::vector<int> colTypes = std::vector<int>());
 
 	bool					showInactive()							const				{ return _showInactive;	}
 
