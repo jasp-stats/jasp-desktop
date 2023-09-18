@@ -180,7 +180,7 @@ private:
 class PasteSpreadsheetCommand : public UndoModelCommand
 {
 public:
-	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& cells, const QStringList& newColNames);
+	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& cells);
 
 	void undo()					override;
 	void redo()					override;
@@ -188,7 +188,6 @@ public:
 private:
 	std::vector<std::vector<QString>>	_newCells,
 										_oldCells;
-	QStringList							_newColNames;
 	int									_row = -1,
 										_col = -1;
 };
@@ -262,6 +261,21 @@ private:
 										_count = 0;
 	std::vector<std::vector<QString>>	_values;
 	std::vector<int>					_colTypes;
+};
+
+class CopyColumnsCommand : public UndoModelCommand
+{
+public:
+	CopyColumnsCommand(QAbstractItemModel* model, int startCol, const std::vector<Json::Value>& copiedColumns);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int							_startCol = -1;
+	std::vector<Json::Value>	_copiedColumns,
+								_originalColumns;
+
 };
 
 class UndoStack : public QUndoStack

@@ -1960,23 +1960,6 @@ std::string DataSetPackage::freeNewColumnName(size_t startHere)
 	}
 }
 
-void DataSetPackage::unicifyColumnNames()
-{
-	for(int c=0; c<dataColumnCount(); c++)
-	{
-		std::string name = getColumnName(c);
-
-		for(int c1=c+1; c1<dataColumnCount(); c1++)
-			if(getColumnName(c1) == name)
-			{
-				std::string newName = name + "'";
-				while(!isColumnNameFree(newName))
-					newName = newName + "'";
-				setColumnName(c1, newName);
-			}
-	}
-}
-
 Json::Value DataSetPackage::serializeColumn(const std::string& columnName) const
 {
 	Column*	column	= _dataSet->column(columnName);
@@ -1987,9 +1970,10 @@ void DataSetPackage::deserializeColumn(const std::string& columnName, const Json
 {
 	Column		*	column	= _dataSet->column(columnName);
 	column->deserialize(col);
+	emit datasetChanged({tq(columnName)}, {}, {}, false, false);
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames, intvec coltypes)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, intvec coltypes)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
 
@@ -1998,7 +1982,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	bool	rowCountChanged = int(row + rowMax) > dataRowCount()	,
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
 
-	//beginResetModel();
 	beginSynchingData(false);
 	
 	if(colCountChanged || rowCountChanged)	
@@ -2026,30 +2009,15 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colVals[r + row] = cellVal == ColumnUtils::emptyValue ? "" : cellVal;
 		}
 
-		std::string colName = getColumnName(dataCol),
-					newName = newColNames.size() > c && newColNames[c] != "" ? fq(newColNames[c]) : colName == "" ? freeNewColumnName(dataCol) : colName;
-		
-		initColumnWithStrings(dataCol, newName, colVals, "", desiredType);
+		std::string colName = getColumnName(dataCol);
+		initColumnWithStrings(dataCol, colName, colVals, "", desiredType);
 
-		if(newName != "")
-			changed.push_back(newName);
+		changed.push_back(colName);
 
 	}
 
 	strstrmap		changeNameColumns;
-	if(newColNames.size() > 0)
-	{
-		unicifyColumnNames();
-
-		stringvec colNamesNew = getColumnNames();
-
-		for(size_t i=0; i<colNames.size() && i < colNamesNew.size(); i++)
-			if(colNames[i] != colNamesNew[i])
-				changeNameColumns[colNames[i]] = colNamesNew[i];
-	}
-	
-
-	stringvec				missingColumns;
+	stringvec		missingColumns;
 
 	endSynchingData(changed, missingColumns, changeNameColumns, rowCountChanged, colCountChanged, false);
 	setManualEdits(true); //set manual edits here so external synching is turned off, endSynchingData also just reset it, so thats why it is way down here

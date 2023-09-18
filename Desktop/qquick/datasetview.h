@@ -38,6 +38,7 @@ struct ItemContextualized
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
+
 	Q_PROPERTY( QAbstractItemModel	*	model					READ model					WRITE setModel					NOTIFY modelChanged					)
 	Q_PROPERTY( int						itemHorizontalPadding	READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
 	Q_PROPERTY( int						itemVerticalPadding		READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged	)
@@ -188,10 +189,17 @@ public slots:
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
 
+	bool		isVirtual		(const QPoint& point);
+	bool		isColumnHeader	(const QPoint& p) { return p.x() >= 0	&& p.y() == -1; }
+	bool		isRowHeader		(const QPoint& p) { return p.x() == -1	&& p.y() >= 0;	}
+	bool		isCell			(const QPoint& p) { return p.x() >= 0	&& p.y() >= 0;	}
 
-	void		cut(	bool includeHeader = false) { _copy(includeHeader, true);  }
-	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
-	void		paste(	bool includeHeader = false);
+
+
+
+	void		cut(	QPoint where = QPoint(-1,-1)) { _copy(where, true);  }
+	void		copy(	QPoint where = QPoint(-1,-1)) { _copy(where, false); }
+	void		paste(	QPoint where = QPoint(-1,-1));
 
 	void		columnSelect(				int col,		bool shiftPressed = false, bool rightClicked = false);
 	QString		columnInsertBefore(			int col = -1,	bool computed = false, bool R = false);
@@ -232,7 +240,7 @@ public slots:
 
 	int			setColumnType(int columnIndex, int newColumnType)	{ return _model->setColumnType(columnIndex, newColumnType); }
 protected:
-	void		_copy(bool includeHeader, bool clear);
+	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		determineCurrentViewPortIndices();
 	void		storeOutOfViewItems();
@@ -326,6 +334,7 @@ protected:
 	long		_selectScrollMs			= 0;
 	QPoint		_selectionStart			= QPoint(-1, -1),
 				_selectionEnd			= QPoint(-1, -1);
+	std::vector<Json::Value> _copiedColumns;
 
 
 };

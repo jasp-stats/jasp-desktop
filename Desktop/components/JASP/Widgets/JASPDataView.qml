@@ -84,17 +84,17 @@ FocusScope
 			switch(event.key)
 			{
 			case Qt.Key_C:
-				theView.copy(shiftPressed);
+				theView.copy();
 				event.accepted = true;
 				break;
 
 			case Qt.Key_X:
-				theView.cut(shiftPressed);
+				theView.cut();
 				event.accepted = true;
 				break;
 
 			case Qt.Key_V:
-				theView.paste(shiftPressed);
+				theView.paste();
 				event.accepted = true;
 				break;
 

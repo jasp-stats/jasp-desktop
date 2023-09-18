@@ -80,10 +80,10 @@ int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
 	return data(index(0, columnIndex), int(DataSetPackage::specialRoles::columnType)).toInt();
 }
 
-void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, QStringList newColNames, std::vector<int> colTypes)
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, std::vector<int> colTypes)
 {
 	QModelIndex idx = mapToSource(index(row, col));
-	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, newColNames, colTypes);
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes);
 }
 
 QString DataSetTableModel::insertColumnSpecial(int column, bool computed, bool R)

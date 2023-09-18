@@ -89,10 +89,12 @@ void Column::setName(const std::string &name)
 	if(_name == name)
 		return;
 
-	if(_title.empty() || _title == _name)
-		setTitle(name);
+	std::string orgName = _name;
+	_name = getUniqueName(name);
 
-	_name = name;
+	if(_title.empty() || _title == orgName)
+		setTitle(_name);
+
 	db().columnSetName(_id, _name);
 	incRevision();
 }
@@ -2085,10 +2087,17 @@ Json::Value Column::serialize() const
 
 void Column::deserialize(const Json::Value &json)
 {
-	_name				= json["name"].asString();
+	if (json.isNull())
+		return;
+
+	std::string name = json["name"].asString(),
+				title = json["title"].asString();
+
+	_name				= getUniqueName(name);
 	db().columnSetName(_id, _name);
 
-	_title				= json["title"].asString();
+	// If title was equal to name, then they should still stay the same if the name is changed to be unique.
+	_title				= name == title ? _name : title;
 	db().columnSetTitle(_id, _title);
 
 	_description		= json["description"].asString();
@@ -2136,6 +2145,35 @@ void Column::deserialize(const Json::Value &json)
 	}
 
 	incRevision();
+}
+
+std::string Column::getUniqueName(const std::string &name) const
+{
+	std::string result	= name;
+	int	suffix			= 1;
+	bool foundSameName	= false;
+
+	do
+	{
+		foundSameName	= false;
+		for(Column * col : _data->columns())
+		{
+			if (col != this && col->name() == result)
+			{
+				foundSameName = true;
+				break;
+			}
+		}
+
+		if (foundSameName)
+		{
+			suffix++;
+			result = name + " " + std::to_string(suffix);
+		}
+
+	} while (foundSameName);
+
+	return result;
 }
 
 bool Column::dependsOn(const std::string & columnName, bool refresh)

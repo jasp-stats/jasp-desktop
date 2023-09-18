@@ -227,13 +227,13 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 	_undoStack->endMacro(new SetDataCommand(_sourceModel, row, col, value, role));
 }
 
-void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
+void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells)
 {
 	if (!_sourceModel || row < 0 || col < 0 || cells.size() == 0 || cells[0].size() == 0)
 		return;
 
 	_expandIfNecessary(row + cells[0].size() - 1, col + cells.size() - 1);
-	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, cells, newColNames));
+	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, cells));
 }
 
 int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
@@ -241,4 +241,26 @@ int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
 	_undoStack->pushCommand(new SetColumnTypeCommand(_sourceModel, columnIndex, columnType));
 
 	return data(0, columnIndex, int(dataPkgRoles::columnType)).toInt();
+}
+
+void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)
+{
+	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0 || startCol == copiedColumns[0])
+		return;
+
+	_expandIfNecessary(0, startCol + copiedColumns.size() - 1);
+	_undoStack->endMacro(new CopyColumnsCommand(_sourceModel, startCol, copiedColumns));
+}
+
+Json::Value ExpandDataProxyModel::serializedColumn(int col)
+{
+	Json::Value result;
+	if (col < _sourceModel->columnCount())
+	{
+		QString colName = _sourceModel->headerData(col, Qt::Orientation::Horizontal).toString();
+		if (!colName.isEmpty())
+			result = DataSetPackage::pkg()->serializeColumn(colName.toStdString());
+	}
+
+	return result;
 }

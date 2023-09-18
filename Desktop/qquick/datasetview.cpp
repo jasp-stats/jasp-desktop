@@ -1093,6 +1093,11 @@ bool DataSetView::relaxForSelectScroll()
 	return true;
 }
 
+bool DataSetView::isVirtual(const QPoint& point)
+{
+	return point.x() >= _model->columnCount(false) || point.y() >= _model->rowCount(false);
+}
+
 
 void DataSetView::pollSelectScroll(int row, int col)
 {
@@ -1129,8 +1134,11 @@ void DataSetView::pollSelectScroll(int row, int col)
 
 
 
-void DataSetView::_copy(bool includeHeader, bool clear)
+void DataSetView::_copy(QPoint where, bool clear)
 {
+	if (!_selectionModel->hasSelection())
+		return;
+
 	QModelIndexList selected = _selectionModel->selectedIndexes();
 
 	std::vector<QStringList>	rows;
@@ -1158,12 +1166,16 @@ void DataSetView::_copy(bool includeHeader, bool clear)
 	}
 
 	int rowsSelected = rows.size();
+	_copiedColumns.clear();
 
-	if(includeHeader)
+	if(isColumnHeader(where))
 	{
 		rows.insert(rows.begin(), tq(std::vector<std::string>(maxCol - minCol + 1, "")));
 		for(int c=minCol; c<=maxCol; c++)
+		{
+			_copiedColumns.push_back(_model->serializedColumn(c));
 			rows[0][c-minCol] = _model->headerData(c, Qt::Horizontal).toString();
+		}
 	}
 
 	if(rows.size() == 0)
@@ -1182,39 +1194,45 @@ void DataSetView::_copy(bool includeHeader, bool clear)
 	{
 		QPoint topLeft = selectionTopLeft();
 
-		Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
-		_model->pasteSpreadsheet(
-					topLeft.y(),
-					topLeft.x(),
-					std::vector<std::vector<QString>>(
-						(maxCol - minCol) + 1,
-						std::vector<QString>(
-							rowsSelected,
-							""
+		if(isColumnHeader(where))
+			_model->removeColumns(minCol, 1 + (maxCol - minCol));
+		else if(isRowHeader(where))
+			_model->removeRows(topLeft.y(), rowsSelected);
+		else
+		{
+			Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
+			_model->pasteSpreadsheet(
+						topLeft.y(),
+						topLeft.x(),
+						std::vector<std::vector<QString>>(
+							(maxCol - minCol) + 1,
+							std::vector<QString>(
+								rowsSelected,
+								""
+							)
 						)
-					)
-		);
+			);
+		}
 	}
 }
 
-void DataSetView::paste(bool includeHeader)
+void DataSetView::paste(QPoint where)
 {
-	QClipboard * clipboard = QGuiApplication::clipboard();
-
-	std::vector<std::vector<QString>> newData;
-
-	QStringList newNames;
-	size_t row = 0, col = 0;
-	for(const QString & rowStr : clipboard->text().split("\n"))
+	if (isColumnHeader(where) && where.x() >= 0 && _copiedColumns.size() > 0)
+		_model->copyColumns(where.x(), _copiedColumns);
+	else
 	{
-		col = 0;
-		if(includeHeader)
+		QPoint topLeft = isCell(where) ? where : selectionTopLeft();
+
+		QClipboard * clipboard = QGuiApplication::clipboard();
+		Log::log() << "Clipboard: " << clipboard->text();
+
+		std::vector<std::vector<QString>> newData;
+
+		size_t row = 0, col = 0;
+		for(const QString & rowStr : clipboard->text().split("\n"))
 		{
-			newNames = rowStr.split("\t");
-			includeHeader = false;
-		}
-		else
-		{
+			col = 0;
 			for(const QString & cellStr : rowStr.split("\t"))
 			{
 				if(newData.size()		<= col) newData.	 resize(col+1);
@@ -1225,13 +1243,11 @@ void DataSetView::paste(bool includeHeader)
 			}
 			row++;
 		}
+
+		Log::log() << "DataSetView about to paste data (" << col << " columns and " << row << " rows) at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
+
+		_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), newData);
 	}
-
-	QPoint topLeft = selectionTopLeft();
-
-	Log::log() << "DataSetView about to paste to data at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
-
-	_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), newData, newNames);
 }
 
 QPoint DataSetView::selectionTopLeft() const
@@ -1410,7 +1426,7 @@ void DataSetView::cellsClear()
 
 	std::vector<std::vector<QString>> cells(cols, std::vector<QString>(rows, QString("")));
 
-	_model->pasteSpreadsheet(row0, col0, cells, {});
+	_model->pasteSpreadsheet(row0, col0, cells);
 }
 ;
 void DataSetView::columnsAboutToBeInserted(const QModelIndex & parent, int first, int last)

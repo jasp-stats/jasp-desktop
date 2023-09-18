@@ -201,7 +201,7 @@ public:
 				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values,	const std::string & title = "", columnType desiredType = columnType::unknown);
 				void						initializeComputedColumns();
 				
-				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList(), intvec colTypes = intvec());
+				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, intvec colTypes = intvec());
 
 				void						storeInEmptyValues(		const std::string	& columnName, const intstrmap & emptyValues);
 
@@ -257,7 +257,6 @@ public:
 				QStringList					getColumnLabelsAsStringList(const std::string & columnName)	const;
 				QStringList					getColumnLabelsAsStringList(size_t columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
-				void						unicifyColumnNames();
 				Json::Value					serializeColumn(const std::string& columnName)					const;
 				void						deserializeColumn(const std::string& columnName, const Json::Value& col);
 
