@@ -2090,10 +2090,14 @@ void Column::deserialize(const Json::Value &json)
 	if (json.isNull())
 		return;
 
-	_name				= getUniqueName(json["name"].asString());
+	std::string name = json["name"].asString(),
+				title = json["title"].asString();
+
+	_name				= getUniqueName(name);
 	db().columnSetName(_id, _name);
 
-	_title				= json["title"].asString();
+	// If title was equal to name, then they should still stay the same if the name is changed to be unique.
+	_title				= name == title ? _name : title;
 	db().columnSetTitle(_id, _title);
 
 	_description		= json["description"].asString();
