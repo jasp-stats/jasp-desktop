@@ -376,7 +376,8 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
-	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);	
+	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
+	connect(_fileMenu,				&FileMenu::showContact,								this,					&MainWindow::showContact									);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -570,6 +571,7 @@ void MainWindow::loadQML()
 
 	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading ContactWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	
@@ -1633,6 +1635,13 @@ void MainWindow::showAbout()
 	_aboutModel->setVisible(true);
 }
 
+void MainWindow::showContact()
+{
+	setContactVisible(true);
+}
+
+
+
 
 void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
@@ -1976,4 +1985,17 @@ QString MainWindow::versionString()
 		+	" (" + QString::fromStdString(AppInfo::getArchLabel()) + ")"
 #endif
 			;
+}
+
+bool MainWindow::contactVisible() const
+{
+	return _contactVisible;
+}
+
+void MainWindow::setContactVisible(bool newContactVisible)
+{
+	if (_contactVisible == newContactVisible)
+		return;
+	_contactVisible = newContactVisible;
+	emit contactVisibleChanged();
 }
