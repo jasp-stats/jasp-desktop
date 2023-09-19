@@ -7,10 +7,6 @@ WavyWindow
 {
 	id:				contactWindow
 
-   
-	property string labelcolor:			"#F99800"
-	property string closebuttoncolor:	"#50B0E3"
-
 	visible:				mainWindow.contactVisible
 	onVisibleChanged:		mainWindow.contactVisible = visible
 	onCloseModel:			{ mainWindow.contactVisible = false }

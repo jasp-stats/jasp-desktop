@@ -7,10 +7,6 @@ WavyWindow
 {
 	id:				aboutWindow
 
-   
-	property string labelcolor:			"#F99800"
-	property string closebuttoncolor:	"#50B0E3"
-
 	visible:				aboutModel.visible
 	onVisibleChanged:		aboutModel.visible = visible
 	onCloseModel:			{ aboutModel.visible = false }

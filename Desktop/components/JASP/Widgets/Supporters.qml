@@ -96,7 +96,9 @@ Item
 	MouseArea
 	{
 		cursorShape:			Qt.PointingHandCursor
-		acceptedButtons:		Qt.NoButton
+		acceptedButtons:		Qt.LeftButton
 		anchors.fill:			parent
+		onClicked:				Qt.openUrlExternally("https://jasp-stats.org/how-to-support/")
+		z:						-8
 	}
 }
