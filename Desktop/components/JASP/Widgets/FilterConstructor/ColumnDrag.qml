@@ -6,6 +6,8 @@ DragGeneric {
 
 	shownChild: showMe
 	dragKeys: showMe.dragKeys
+    
+    property alias maxSize: showMe.maxSize
 
 	JASPColumn
 	{
