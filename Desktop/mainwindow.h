@@ -80,6 +80,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool		contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 
 
 	friend class FileMenu;
@@ -105,6 +106,9 @@ public:
 
 	static MainWindow * singleton() { return _singleton; }
 
+	bool contactVisible() const;
+	void setContactVisible(bool newContactVisible);
+
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void plotPPIChangedHandler(int ppi, bool wasUserAction);
@@ -123,6 +127,7 @@ public slots:
 	void clearModulesFoldersUser();
 
 	void showAbout();
+	void showContact();
 
 	void saveKeyPressed();
 	void saveAsKeyPressed();
@@ -210,6 +215,8 @@ signals:
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
 	void showComputedColumn(		QString		columnName);
+
+	void contactVisibleChanged();
 
 private slots:
 	void resultsPageLoaded();
@@ -310,7 +317,8 @@ private:
 									_analysesAvailable		= false,
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
-									_checkAutomaticSync		= false;
+									_checkAutomaticSync		= false,
+									_contactVisible			= false;
 									
 	QFont							_defaultFont;
 };
