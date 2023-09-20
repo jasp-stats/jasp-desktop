@@ -10,7 +10,8 @@ Item
 
 	property real	maxSize:		baseFontSize * 10 * preferencesModel.uiScale
 					height:			filterConstructor.blockDim
-					width:			colIcon.width + colName.width
+					implicitWidth:	colIcon.width + colName.width
+                    width:          implicitWidth
 	property bool	isNumerical:	columnIcon.indexOf("scale") >= 0
 	property bool	isOrdinal:		columnIcon.indexOf("ordinal") >= 0
 
@@ -53,7 +54,7 @@ Item
 			bottom:		parent.bottom
 		}
 
-		width:			Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize)
+        width:          Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize - colIcon.width)
 		font.pixelSize: baseFontSize * preferencesModel.uiScale
 		color:			jaspTheme.textEnabled
 		leftPadding:	2

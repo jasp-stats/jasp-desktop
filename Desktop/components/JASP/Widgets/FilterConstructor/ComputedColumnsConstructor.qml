@@ -142,6 +142,7 @@ FocusScope
 			anchors.top:	parent.top
 			anchors.left:	columnsLeftScrollBar.right
 			anchors.bottom:	parent.bottom
+            width:          maxWidth
 		}
 	}
 
@@ -153,13 +154,8 @@ FocusScope
 		anchors.left: columnList.right
 		anchors.right: funcVarLists.left
 		anchors.bottom: parent.bottom
-		//border.width: 1
-		//border.color: "grey"
 
 		z: -1
-		//clip: true
-
-
 
 		Rectangle
 		{
@@ -355,8 +351,6 @@ FocusScope
 				margins:		2 * preferencesModel.uiScale
 				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 			}
-
-			width:	80 * preferencesModel.uiScale //for init or something?
 		}
 	}
 
