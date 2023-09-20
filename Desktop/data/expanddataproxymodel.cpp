@@ -245,7 +245,7 @@ int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
 
 void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)
 {
-	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0 || startCol == copiedColumns[0].asInt())
+	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0)
 		return;
 
 	_expandIfNecessary(0, startCol + copiedColumns.size() - 1);
