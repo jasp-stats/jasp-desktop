@@ -87,22 +87,6 @@ FocusScope
 			rightMargin:	Math.min(0, filterContainer.width - minWidthCollector.minWidth)
 		}
 
-		Keys.onPressed: (event) =>
-		{
-			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
-			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
-
-			if (event.key === Qt.Key_Z && controlPressed)
-			{
-				if (shiftPressed)
-					filterModel.redo()
-				else
-					filterModel.undo()
-
-				event.accepted = true;
-			}
-		}
-
 		Item
 		{
 			anchors.fill:		parent
@@ -331,28 +315,6 @@ FocusScope
 							font.family:			"Courier"
 							font.pixelSize:			baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
-
-							Keys.onPressed: (event) =>
-							{
-								var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
-								var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  )
-
-								if (event.key === Qt.Key_Z && controlPressed)
-								{
-									if (shiftPressed)
-									{
-										filterModel.redo()
-										event.accepted = true
-									}
-									else
-									{
-										filterModel.undo()
-										event.accepted = true
-									}
-								}
-							}
-
-
 
 						}
 

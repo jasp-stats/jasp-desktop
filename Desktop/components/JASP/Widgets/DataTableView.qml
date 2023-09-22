@@ -295,7 +295,7 @@ FocusScope
 							if(controlPressed)
 							{
 								if (shiftPressed)
-										theView.redo();
+									theView.redo();
 								else
 									theView.undo();
 							}
