@@ -868,6 +868,16 @@ void MainWindow::zoomResetKeyPressed()
 	_preferences->zoomReset();
 }
 
+void MainWindow::undo()
+{
+	DataSetPackage::pkg()->undoStack()->undo();
+}
+
+void MainWindow::redo()
+{
+	DataSetPackage::pkg()->undoStack()->redo();
+}
+
 void MainWindow::syncKeyPressed()
 {
 	_fileMenu->sync();

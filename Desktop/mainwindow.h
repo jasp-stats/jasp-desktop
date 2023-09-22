@@ -137,6 +137,8 @@ public slots:
 	void zoomInKeyPressed();
 	void zoomOutKeyPressed();
 	void zoomResetKeyPressed();	
+	void undo();
+	void redo();
 
 	QObject * loadQmlData(QString data, QUrl url);
 

@@ -55,8 +55,6 @@ public slots:
 
 	void applyConstructorJson(	QString constructorJson);
 	void applyRFilter(			QString rFilter);
-	void undo() { _undoStack->undo(); }
-	void redo() { _undoStack->redo(); }
 
 	void processFilterResult(int requestId);
 	void processFilterErrorMsg(QString filterErrorMsg, int requestId);
