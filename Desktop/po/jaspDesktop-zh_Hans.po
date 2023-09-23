@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-09-23 16:10+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4621,12 +4627,12 @@ msgstr "无数据"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "从 %2 中删除 %1 列"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "移除 %1 至 %2 行"
 
 #, qt-format
 msgctxt "QObject|"
