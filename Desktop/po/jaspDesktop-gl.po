@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-09-02 09:39+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/gl/>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -4503,16 +4497,6 @@ msgstr "Columna %1"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr "Elimina %1 filas de %2"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr "Elimina %1 columnas de %2"
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr "Establecer o valor de '%1' na fila %2 columna '%3'"
 
@@ -4823,8 +4807,29 @@ msgstr "Esta columna xérase mediante unha análise e o seu tipo está fixado."
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr "Abrir o ficheiro de datos co editor predeterminado de follas de cálculo"
+msgstr ""
+"Abrir o ficheiro de datos co editor predeterminado de follas de cálculo"
 
 msgctxt "RibbonModel|"
 msgid "No Data"
 msgstr "Sen datos"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr ""

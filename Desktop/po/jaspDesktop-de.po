@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-09-02 09:39+0000\n"
-"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4517,16 +4511,6 @@ msgstr "Spalte %1"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr "Entfernt %1 Zeilen aus %2"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr "Entfernt %1 Spalten aus %2"
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr "Wert auf '%1' setzen in Zeile %2 Spalte '%3'"
 
@@ -4842,3 +4826,23 @@ msgstr "Datendatei öffnen mit Standard-Tabellen-Editor"
 msgctxt "RibbonModel|"
 msgid "No Data"
 msgstr "Keine Daten"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr ""

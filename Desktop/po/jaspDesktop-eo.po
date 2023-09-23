@@ -4139,16 +4139,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr ""
 
@@ -4461,4 +4451,24 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "No Data"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
 msgstr ""

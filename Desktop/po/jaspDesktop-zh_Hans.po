@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-09-05 03:04+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hans/>\n"
-"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -2940,8 +2934,8 @@ msgstr "<i>无法加载存档中模块的描述：'%1'</i>"
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 %5维护。</"
 "i><br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
@@ -4308,16 +4302,6 @@ msgstr "列 %1"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr "从 %2 中删除 %1 行"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr "从 %2 中删除 %1 列"
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr "将行 “%2” 列“%3”中的值设置为“%1”"
 
@@ -4633,3 +4617,23 @@ msgstr "使用默认的电子表格编辑器打开数据文件"
 msgctxt "RibbonModel|"
 msgid "No Data"
 msgstr "无数据"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr ""
