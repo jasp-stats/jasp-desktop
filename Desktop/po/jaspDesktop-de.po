@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-09-23 16:10+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.1-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4830,19 +4836,19 @@ msgstr "Keine Daten"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "%1 Spalten von '%2' entfernen"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "Zeilen %1 bis %2 entfernen"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1 into column number %2"
-msgstr ""
+msgstr "Spalte '%1 in Spalte Nummer %2 kopieren"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "Spalte '%1' nach '%2' kopieren"
