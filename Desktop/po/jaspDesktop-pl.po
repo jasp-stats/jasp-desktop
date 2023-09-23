@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-09-06 14:54+0000\n"
-"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"pl/>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -3053,8 +3047,8 @@ msgstr "<i>Nie udało się załadować opisu modułu w archiwum: '%1'</i>"
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Wersja %2</i><br><p>%3</p><br><i>Utworzona przez %4 i "
 "utrzymywana przez %5.</i><br><i>Więcej informacji można znaleźć na stronie "
@@ -4483,16 +4477,6 @@ msgstr "Kolumna %1"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr "Usuwa %1 wierszy z %2"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr "Usuwa %1 kolumn z %2"
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr "Ustaw wartość na '%1' w wierszu %2 kolumny '%3'"
 
@@ -4810,3 +4794,23 @@ msgstr "Otwórz plik danych za pomocą domyślnego edytora"
 msgctxt "RibbonModel|"
 msgid "No Data"
 msgstr "Brak danych"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr ""
