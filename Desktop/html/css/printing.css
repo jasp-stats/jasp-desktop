@@ -20,10 +20,10 @@
 	.jasp-notes			    			{ page-break-inside:	avoid;	}
 
 	.jasp-table-primitive		   		{ page-break-inside:	avoid;	}
-    .jasp-table table               	{ table-layout:fixed !important;  width: 90em !important; }
+    .jasp-table table               	{ table-layout:fixed !important;  width: 20cm !important; }
     .jasp-table table td            	{ white-space: pre-wrap !important; word-wrap: break-all !important; }
 
-	.jasp-rsyntax-container 			{ max-width: 90em !important; }
+	.jasp-rsyntax-container 			{ max-width: 20cm !important; }
 
 }
 
