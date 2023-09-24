@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-09-23 16:10+0000\n"
+"PO-Revision-Date: 2023-09-25 11:59+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -131,7 +131,7 @@ msgstr "全选"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "复制所选"
+msgstr "拷贝所选"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
@@ -4642,4 +4642,4 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "拷贝列 '%1' 至 '%2'"
