@@ -584,6 +584,10 @@ pre {
     border-style: ridge;
 }
 
+.jasp-rsyntax-container pre {
+    white-space: pre-wrap;
+}
+
 /*.jasp-indent {
 	margin-left: .5em ;
 	padding-left: 0.8em ;
