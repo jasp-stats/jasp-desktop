@@ -89,6 +89,8 @@
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
 
+#include "cooperativedefs.h"
+
 using namespace std;
 using namespace Modules;
 
@@ -255,6 +257,39 @@ QString MainWindow::windowTitle() const
 	return _package->windowTitle();
 }
 
+const QStringList & MainWindow::coopThankYou() const
+{
+	return Coop::welcomepageThankYous();
+}
+
+const QString & MainWindow::coopEducators() const
+{
+	//Little magic trick ;)
+	static QString educators = []()->QString
+	{
+		QStringList tmp = Coop::educatorsTier();
+
+		if(tmp.size() == 0)
+			return "Something is wrong with Coop::educatorsTier()";
+
+		tmp[tmp.size()-1].prepend(tr("and "));
+
+		return tmp.join(", ");
+	}();
+
+	return educators;
+}
+
+const QString & MainWindow::coopHowToSupport() const
+{
+	return Coop::howToSupport();
+}
+
+const QString & MainWindow::coopUrl() const
+{
+	return Coop::cooperativeUrl();
+}
+
 bool MainWindow::checkDoSync()
 {
 	//Only do this if we are *not* running in reporting mode. 
@@ -378,6 +413,7 @@ void MainWindow::makeConnections()
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
 	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
 	connect(_fileMenu,				&FileMenu::showContact,								this,					&MainWindow::showContact									);
+	connect(_fileMenu,				&FileMenu::showCooperative,							this,					&MainWindow::showCooperative								);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -569,10 +605,11 @@ void MainWindow::loadQML()
 
 
 
-	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
-	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	Log::log() << "Loading ContactWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
-	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+	Log::log() << "Loading HelpWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	Log::log() << "Loading AboutWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading ContactWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
+	Log::log() << "Loading CooperativeWindow"	<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CooperativeWindow.qml"));
+	Log::log() << "Loading MainWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	
 	//To make sure we connect to the "main datasetview":
@@ -1650,8 +1687,10 @@ void MainWindow::showContact()
 	setContactVisible(true);
 }
 
-
-
+void MainWindow::showCooperative()
+{
+	setCooperativeVisible(true);
+}
 
 void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
@@ -2008,4 +2047,17 @@ void MainWindow::setContactVisible(bool newContactVisible)
 		return;
 	_contactVisible = newContactVisible;
 	emit contactVisibleChanged();
+}
+
+bool MainWindow::cooperativeVisible() const
+{
+	return _cooperativeVisible;
+}
+
+void MainWindow::setCooperativeVisible(bool newCooperativeVisible)
+{
+	if (_cooperativeVisible == newCooperativeVisible)
+		return;
+	_cooperativeVisible = newCooperativeVisible;
+	emit cooperativeVisibleChanged();
 }

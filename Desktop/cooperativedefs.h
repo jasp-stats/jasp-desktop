@@ -1,0 +1,54 @@
+#ifndef COOPERATIVEDEFS_H
+#define COOPERATIVEDEFS_H
+
+#include "QStringList"
+
+namespace Coop
+{
+
+const QStringList & welcomepageThankYous()
+{
+	// Want to thank an institution on the welcomepage?
+	// Just add an entry in the list below:
+	static QStringList list =
+	{
+		"University of Amsterdam",
+		"M&S / Faculty of Social Sciences / Utrecht University",
+		"Nyenrode Business University",
+		"KU Leuven",
+		"Tilburg University",
+	};
+
+	return list;
+}
+
+const QStringList & educatorsTier()
+{
+	// Want to add an institution to the educators tier in the cooperative window?
+	// Just add an entry in the list below:
+	static QStringList list =
+	{
+		"University of Amsterdam",
+		"Utrecht University",
+		"Nyenrode Business University",
+		"KU Leuven",
+		"Tilburg University",
+	};
+
+	return list;
+}
+
+const QString & howToSupport()
+{
+	static QString howTo = "https://jasp-stats.org/how-to-support/";
+	return howTo;
+}
+
+const QString & cooperativeUrl()
+{
+	static QString coop = "https://jasp-stats.org/cooperative/";
+	return coop;
+}
+
+}
+#endif // COOPERATIVEDEFS_H
