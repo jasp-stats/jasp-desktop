@@ -30,6 +30,7 @@ void ActionButtons::loadButtonData(std::vector<ActionButtons::DataRow> &data)
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
 		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}							},
 		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
+		{FileOperation::Cooperative,	tr("Cooperative"),		true,	{}																																				},
 		{FileOperation::About,			tr("About"),			true,	{}																																				}
 	  };
 }

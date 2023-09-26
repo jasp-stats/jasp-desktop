@@ -49,14 +49,7 @@ Item
 
 			Repeater
 			{
-				model:
-				[
-					"Tilburg University",
-					"KU Leuven",
-					"Nyenrode Business University",
-					"M&S / Faculty of Social Sciences / Utrecht University",
-					"University of Amsterdam"
-				]
+				model:	mainWindow.coopThankYou
 
 				Text
 				{
@@ -98,7 +91,7 @@ Item
 		cursorShape:			Qt.PointingHandCursor
 		acceptedButtons:		Qt.LeftButton
 		anchors.fill:			parent
-		onClicked:				Qt.openUrlExternally("https://jasp-stats.org/how-to-support/")
+		onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
 		z:						-8
 	}
 }
