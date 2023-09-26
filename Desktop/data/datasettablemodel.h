@@ -53,7 +53,7 @@ public:
 
 	bool					showInactive()							const				{ return _showInactive;	}
 
-	QString					insertColumnSpecial(int column, bool computed, bool R);
+	QString					insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
 
 signals:
 	void					columnsFilteredCountChanged();

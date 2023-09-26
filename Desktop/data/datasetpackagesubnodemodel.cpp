@@ -54,16 +54,16 @@ int DataSetPackageSubNodeModel::columnCount(const QModelIndex & parent) const
 	return col;
 }
 
-QString DataSetPackageSubNodeModel::insertColumnSpecial(int column, bool computed, bool R)
+QString DataSetPackageSubNodeModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
 {
 	int sourceColumn = column > columnCount() ? columnCount() : column;
 	sourceColumn = mapToSource(index(0, sourceColumn)).column();
-	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R ? computedColumnType::rCode : computedColumnType::constructorCode);
+	return DataSetPackage::pkg()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, props);
 }
 
-QString DataSetPackageSubNodeModel::appendColumnSpecial(bool computed, bool R)
+QString DataSetPackageSubNodeModel::appendColumnSpecial(const QMap<QString, QVariant>& props)
 {
-	return DataSetPackage::pkg()->appendColumnSpecial(computed, R ? computedColumnType::rCode : computedColumnType::constructorCode);
+	return DataSetPackage::pkg()->appendColumnSpecial(props);
 }
 
 void DataSetPackageSubNodeModel::modelWasReset()

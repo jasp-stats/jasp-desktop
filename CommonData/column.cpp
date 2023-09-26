@@ -161,17 +161,15 @@ void Column::setCodeType(computedColumnType codeType)
 	if(codeType == _codeType)
 		return;
 
-	bool becameComputed = codeType != _codeType && _codeType == computedColumnType::unknown;
-	
-	_codeType = codeType;
-
-	if(becameComputed)
+	if(_codeType == computedColumnType::notComputed)
 	{
-		_isComputed = true;
 		_constructorJson = Json::objectValue;
 		_constructorJson["formulas"] = Json::arrayValue;
-
 	}
+
+	_codeType = codeType;
+	_isComputed = _codeType != computedColumnType::notComputed;
+
 	
 	dbUpdateComputedColumnStuff();
 }

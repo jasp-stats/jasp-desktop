@@ -123,8 +123,8 @@ public:
 				bool				insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				QString				insertColumnSpecial(int column, bool computed,  computedColumnType compColType);
-				QString				appendColumnSpecial(			bool computed,  computedColumnType compColType);
+				QString				insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
+				QString				appendColumnSpecial(			const QMap<QString, QVariant>& props);
 
 				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
 				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }
@@ -251,6 +251,7 @@ public:
 				void						setColumnName(			size_t columnIndex, const std::string	& newName,			bool resetModel = true);
 				void						setColumnTitle(			size_t columnIndex, const std::string	& newTitle,			bool resetModel = true);
 				void						setColumnDescription(	size_t columnIndex, const std::string	& newDescription,	bool resetModel = true);
+				void						setColumnAsComputed(	size_t columnIndex, computedColumnType	type,				bool resetModel = true);
 				void						setColumnDataInts(		size_t columnIndex, const intvec		& ints);
 				void						setColumnDataDbls(		size_t columnIndex, const doublevec		& dbls);
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex)			const;
@@ -292,7 +293,6 @@ signals:
 				void				allFiltersReset();
 				void				labelFilterChanged();
 				void				labelChanged(			QString columnName, QString originalLabel, QString newLabel);
-				void				dataSetChanged();
 				void				columnDataTypeChanged(	QString columnName);
 				void				labelsReordered(		QString columnName);
 				void				isModifiedChanged();
@@ -314,7 +314,6 @@ signals:
 				bool				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(	QString columnName);
 				void				showWarning(						QString title, QString msg);
-				void				showComputedColumn(					QString	   columnName);
 				void				manualEditsChanged();
 				void				columnsBeingRemoved(				int columnIndex, int count);
 

@@ -607,7 +607,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		case int(specialRoles::computedColumnError):			return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->error());
 		case int(specialRoles::computedColumnIsInvalidated):	return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->invalidated();
 		case int(specialRoles::columnType):						return int(	!_dataSet || !_dataSet->column(section) ? columnType::unknown			: _dataSet->column(section)->type());
-		case int(specialRoles::computedColumnType):				return int(	!_dataSet || !_dataSet->column(section) ? computedColumnType::unknown	: _dataSet->column(section)->codeType());
+		case int(specialRoles::computedColumnType):				return int(	!_dataSet || !_dataSet->column(section) ? computedColumnType::notComputed	: _dataSet->column(section)->codeType());
 		case int(specialRoles::description):					return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->description());
 		case int(specialRoles::title):							return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->title());
 		}
@@ -1237,7 +1237,6 @@ void DataSetPackage::endLoadingData(bool informEngines)
 	enginesReceiveNewData();
 
 	emit modelInit();
-	emit dataSetChanged();
 }
 
 void DataSetPackage::setDataSetSize(size_t columnCount, size_t rowCount)
@@ -1782,6 +1781,24 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 		endResetModel();
 }
 
+void DataSetPackage::setColumnAsComputed(size_t columnIndex, computedColumnType type, bool resetModel)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
+	if(resetModel)
+		beginResetModel();
+
+	column->setCodeType(type);
+
+	if(resetModel)
+		endResetModel();
+}
+
 void DataSetPackage::setColumnDataInts(size_t columnIndex, const intvec & ints)
 {
 	JASPTIMER_SCOPE(DataSetPackage::setColumnDataInts);
@@ -2025,7 +2042,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	if(isLoaded()) setModified(true);
 }
 
-QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedColumnType compColType)
+QString DataSetPackage::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
 {
 	if(column < 0)
 		column = 0;
@@ -2043,12 +2060,14 @@ QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedC
 	stringvec changed;
 
 	_dataSet->insertColumn(column);
-	const std::string & name = freeNewColumnName(column);
-	setColumnName(column, name, false);
-	_dataSet->column(column)->setDefaultValues(columnType::scale);
 
-	if(computed)
-		_dataSet->column(column)->setCodeType(compColType);
+	const std::string & name = props.contains("name") ? fq(props["name"].toString()) : freeNewColumnName(column);
+	columnType type = props.contains("type") ? columnType(props["type"].toInt()) : columnType::scale;
+	setColumnName(column, name, false);
+	_dataSet->column(column)->setDefaultValues(type);
+
+	if(props.contains("computed"))
+		_dataSet->column(column)->setCodeType(computedColumnType(props["computed"].toInt()));
 
 	_dataSet->incRevision();
 
@@ -2063,16 +2082,16 @@ QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedC
 	strstrmap		changeNameColumns;
 	stringvec		missingColumns;
 
-	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
 	if(isLoaded()) setModified(true);
 
 	return QString::fromStdString(name);
 }
 
-QString DataSetPackage::appendColumnSpecial(bool computed, computedColumnType compColType)
+QString DataSetPackage::appendColumnSpecial(const QMap<QString, QVariant>& props)
 {
-	return insertColumnSpecial(dataColumnCount(), computed, compColType);
+	return insertColumnSpecial(dataColumnCount(), props);
 }
 
 
@@ -2506,7 +2525,7 @@ void DataSetPackage::checkComputedColumnDependenciesForAnalysis(Analysis * analy
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
 {
-	QString nameTemp = insertColumnSpecial(dataColumnCount(), true, desiredType);
+	QString nameTemp = insertColumnSpecial(dataColumnCount(), { std::make_pair("computed", int(desiredType)) });
 
 	Column	* newComputedColumn = DataSetPackage::pkg()->dataSet()->column(nameTemp.toStdString());
 
@@ -2519,8 +2538,6 @@ Column * DataSetPackage::createComputedColumn(const std::string & name, columnTy
 		newComputedColumn->setAnalysisId(analysis->id());
 
 	endResetModel();
-
-	emit showComputedColumn(tq(name));
 
 	return newComputedColumn;
 }

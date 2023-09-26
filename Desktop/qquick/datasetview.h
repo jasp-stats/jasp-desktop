@@ -163,7 +163,6 @@ signals:
 	void		selectionBudgesLeft();
 	void		selectionBudgesRight();
 
-	void		showComputedColumn(QString name);
 	void		undoChanged();
 	
 public slots:

@@ -14,13 +14,10 @@ ComputedColumnsModel::ComputedColumnsModel()
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 
-	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,					&ComputedColumnsModel::onDataSetChanged						);
-
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnJsonChanged				);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnRCodeChanged			);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnUsesRCodeChanged		);
-	connect(this,					&ComputedColumnsModel::refreshProperties,		this,					&ComputedColumnsModel::computeColumnNameSelectedChanged		);
 	connect(this,					&ComputedColumnsModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
 	connect(this,					&ComputedColumnsModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
 	//connect(this,					&ComputedColumnsModel::headerDataChanged,		DataSetPackage::pkg(),	&DataSetPackage::headerDataChanged,							Qt::QueuedConnection);
@@ -58,11 +55,6 @@ QString ComputedColumnsModel::computeColumnError()
 	return !_selectedColumn ? "" : tq(_selectedColumn->error());
 }
 
-QString ComputedColumnsModel::computeColumnNameSelected()
-{
-	return !_selectedColumn ? "" : tq(_selectedColumn->name());;
-}
-
 void ComputedColumnsModel::setComputeColumnRCode(const QString & newCode)
 {
 	if(!_selectedColumn)
@@ -90,12 +82,6 @@ void ComputedColumnsModel::selectColumn(Column * column)
 		_selectedColumn = column;
 		emit refreshProperties();
 	}
-}
-
-void ComputedColumnsModel::setComputeColumnNameSelected(const QString & newName)
-{
-	if (DataSetPackage::pkg()->dataSet() && (!_selectedColumn || _selectedColumn->name() != fq(newName)))
-		selectColumn(DataSetPackage::pkg()->dataSet()->column(fq(newName)));
 }
 
 bool ComputedColumnsModel::areLoopDependenciesOk(const std::string & columnName)
@@ -307,7 +293,6 @@ void ComputedColumnsModel::removeColumn()
 	_undoStack->pushCommand(new RemoveColumnsCommand(DataSetPackage::pkg(), _selectedColumn->id(), 1));
 
 	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
-	setComputeColumnNameSelected("");
 	emit refreshData();
 }
 
@@ -392,15 +377,6 @@ void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
 
 	emit refreshData();
 }
-
-void ComputedColumnsModel::onDataSetChanged()
-{
-	if(_selectedColumn && !DataSetPackage::pkg()->columnExists(_selectedColumn))
-		_selectedColumn = nullptr;
-	
-	emit refreshProperties();
-}
-
 
 Column * ComputedColumnsModel::createComputedColumn(const std::string & name, int colType, computedColumnType computeType, Analysis * analysis)
 {

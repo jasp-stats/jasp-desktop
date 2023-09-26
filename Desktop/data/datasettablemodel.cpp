@@ -86,15 +86,15 @@ void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vect
 	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes);
 }
 
-QString DataSetTableModel::insertColumnSpecial(int column, bool computed, bool R)
+QString DataSetTableModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
 {
 	if(column >= columnCount())
-		return subNodeModel()->appendColumnSpecial(computed, R);
+		return subNodeModel()->appendColumnSpecial(props);
 
 	int sourceColumn = column > columnCount() ? columnCount() : column;
 	sourceColumn = mapToSource(index(0, sourceColumn)).column();
 
-	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
+	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, props);
 }
 
 

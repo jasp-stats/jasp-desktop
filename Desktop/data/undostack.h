@@ -24,17 +24,19 @@ protected:
 class SetColumnPropertyCommand: public UndoModelCommand
 {
 public:
-	enum class ColumnProperty { Name, Title, Description };
+	enum class ColumnProperty { Name, Title, Description, ComputedColumn };
 
-	SetColumnPropertyCommand(QAbstractItemModel *model, QString newValue, ColumnProperty prop);
+	SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
+	QString friendlyColumnType(int tyoe);
+
 	ColumnProperty			_prop	= ColumnProperty::Name;
 	int						_colId	= -1;
-	QString					_newValue,
+	QVariant				_newValue,
 							_oldValue;
 };
 
@@ -210,15 +212,14 @@ private:
 class InsertColumnCommand : public UndoModelCommand
 {
 public:
-	InsertColumnCommand(QAbstractItemModel *model, int col, bool computed, bool R);
+	InsertColumnCommand(QAbstractItemModel *model, int col, const QMap<QString, QVariant>& props = {});
 
 	void undo()					override;
 	void redo()					override;
 
 private:
 	int						_col		= -1;
-	bool					_computed	= false,
-							_R			= false;
+	QMap<QString, QVariant>	_props;
 };
 
 class InsertRowCommand : public UndoModelCommand

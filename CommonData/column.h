@@ -192,12 +192,12 @@ private:
 			bool					_isComputed			= false,
 									_invalidated		= false,
 									_batchedLabel		= false;
-			computedColumnType		_codeType			= computedColumnType::unknown;
+			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
 									_description,
 									_error,
-									_rCode				= "#Enter your R code here :)";
+									_rCode;
 			Json::Value				_constructorJson	= Json::objectValue;
 			doublevec				_dbls;
 			intvec					_ints;

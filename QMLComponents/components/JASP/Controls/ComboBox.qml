@@ -1,5 +1,5 @@
 import QtQuick			2.11
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.4 as QTC
 import QtQuick.Layouts	1.3
 import JASP				1.0
 
@@ -8,7 +8,7 @@ ComboBoxBase
 {
 	id:					comboBox
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
-	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
+	implicitWidth:		setLabelAbove ? Math.max(control.width, rectangleLabel.width) : (rectangleLabel.width + jaspTheme.labelSpacing + control.width)
 	background:			useExternalBorder ? externalControlBackground : control.background
 	innerControl:		control
 	title:				label
@@ -82,7 +82,7 @@ ComboBoxBase
 		}
 	}
 
-	ComboBox
+	QTC.ComboBox
 	{
 						id:				control
 						model:			comboBox.model
@@ -125,8 +125,8 @@ ComboBoxBase
 				width:					15 * preferencesModel.uiScale
 				x:						3  * preferencesModel.uiScale
 				anchors.verticalCenter: parent.verticalCenter
-				source:					!visible ? "" : comboBox.currentColumnTypeIcon
-				visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
+				source:					!visible ? "" : ((comboBox.currentColumnTypeIcon && comboBox.isBound) ? comboBox.currentColumnTypeIcon : comboBox.values[comboBox.currentIndex].columnTypeIcon)
+				visible:				comboBox.showVariableTypeIcon && !control.isEmptyValue && (comboBox.currentColumnType || !comboBox.isBound)
 			}
 
 			Text
@@ -175,7 +175,7 @@ ComboBoxBase
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
-		popup: Popup
+		popup: QTC.Popup
 		{
 			y:				control.height - 1
 			width:			comboBoxBackground.width
@@ -221,7 +221,7 @@ ComboBoxBase
 			}
 		}
 
-		delegate: ItemDelegate
+		delegate: QTC.ItemDelegate
 		{
 			height:								jaspTheme.comboBoxHeight
 			width:								comboBoxBackground.width
@@ -245,7 +245,7 @@ ComboBoxBase
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						visible ? model.columnTypeIcon : ""
+					source:						visible ? (comboBox.isBound ? model.columnTypeIcon : comboBox.values[index].columnTypeIcon) : ""
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter

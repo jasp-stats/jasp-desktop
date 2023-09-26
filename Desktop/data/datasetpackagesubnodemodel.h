@@ -17,8 +17,8 @@ public:
 	int					rowCount(		const QModelIndex & parent = QModelIndex())	const	override;
 	int					columnCount(	const QModelIndex & parent = QModelIndex())	const	override;
 
-	QString				insertColumnSpecial(int column, bool computed, bool R);
-	QString				appendColumnSpecial(			bool computed, bool R);
+	QString				insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
+	QString				appendColumnSpecial(			const QMap<QString, QVariant>& props);
 
 	
 	void				selectNode(DataSetBaseNode * node);
