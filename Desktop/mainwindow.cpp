@@ -259,7 +259,7 @@ QString MainWindow::windowTitle() const
 
 const QStringList & MainWindow::coopThankYou() const
 {
-	return Coop::welcomepageThankYous();
+	return Coop::educatorsTier();
 }
 
 const QString & MainWindow::coopEducators() const

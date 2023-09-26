@@ -6,7 +6,7 @@
 namespace Coop
 {
 
-const QStringList & welcomepageThankYous()
+const QStringList & educatorsTier()
 {
 	// Want to thank an institution on the welcomepage?
 	// Just add an entry in the list below:
@@ -22,31 +22,15 @@ const QStringList & welcomepageThankYous()
 	return list;
 }
 
-const QStringList & educatorsTier()
-{
-	// Want to add an institution to the educators tier in the cooperative window?
-	// Just add an entry in the list below:
-	static QStringList list =
-	{
-		"University of Amsterdam",
-		"Utrecht University",
-		"Nyenrode Business University",
-		"KU Leuven",
-		"Tilburg University",
-	};
-
-	return list;
-}
-
 const QString & howToSupport()
 {
-	static QString howTo = "https://jasp-stats.org/how-to-support/";
+	static QString howTo = "https://jasp-stats.org/cooperative-how-to-join/";
 	return howTo;
 }
 
 const QString & cooperativeUrl()
 {
-	static QString coop = "https://jasp-stats.org/cooperative/";
+	static QString coop = "https://jasp-stats.org/cooperative-vision-and-goals/";
 	return coop;
 }
 
