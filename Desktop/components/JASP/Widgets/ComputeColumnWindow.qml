@@ -71,20 +71,6 @@ FocusScope
 			rightMargin:	Math.min(0, computedColumnContainer.width - minWidthCollector.minWidth)
 		}
 
-		Text
-		{
-			id:							computeColumnTitle
-			text:						computedColumnsInterface.computeColumnNameSelected !== "" ? qsTr("Computed Column: ") + computedColumnsInterface.computeColumnNameSelected : qsTr("Select a column")
-			color:						jaspTheme.textEnabled
-			anchors.top:				parent.top
-			anchors.horizontalCenter:	parent.horizontalCenter
-			height:						showName ? implicitHeight : 0
-
-			horizontalAlignment:		Text.AlignHCenter
-			font.pixelSize:				(baseFontSize + 4) * preferencesModel.uiScale
-			font.bold:					true
-		}
-
 		Item
 		{
 			id: computeColumnCodeArea
