@@ -4132,7 +4132,7 @@ msgstr "結論:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "切換到資料編輯模式"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
