@@ -4209,11 +4209,11 @@ msgstr "Opcje dostępności"
 
 msgctxt "PrefsUI|"
 msgid "ALT-Navigation mode"
-msgstr ""
+msgstr "Nawigacja przy pomocy klawisza ALT"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr ""
+msgstr "Wskazuje czy nawigacja klawiszem ALT jest aktywna."
 
 msgctxt "MainPage|"
 msgid "Bold"
@@ -4309,24 +4309,23 @@ msgstr "Wstęp:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "Podsumowanie:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Przełącz w tryb edytora danych"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr "Zaznacz wszystko"
+msgstr "Wybierz wszystko"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4362,7 +4361,7 @@ msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Wyczyść komórki"
 
 msgctxt "DataTableView|"
 msgid "Del"
@@ -4371,7 +4370,7 @@ msgstr "Del"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Cofnij: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4381,7 +4380,7 @@ msgstr "%1+Z"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Ponów: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4390,39 +4389,41 @@ msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "Wybierz kolumnę"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Wstaw kolumnę przed"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Wstaw kolumnę po"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "Usuń kolumnę"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "Wybierz wiersz"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "Usuń wiersz"
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
+"Kliknij tutaj, aby wybrać wiersz. Przetrzymaj Shift, żeby wybrać kilka "
+"wierszy."
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "Zamknij okno filtrów"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "Zmień nazwę kolumny"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
@@ -4431,11 +4432,11 @@ msgstr "Zmień nazwę"
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "Zmień nazwę kolumny %1 na %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "Zamknij bez zapisywania zmian"
 
 msgctxt "VariablesWindow|"
 msgid "Name: "
@@ -4443,7 +4444,7 @@ msgstr "Nazwa: "
 
 msgctxt "VariablesWindow|"
 msgid "Long name: "
-msgstr ""
+msgstr "Długa nazwa: "
 
 msgctxt "VariablesWindow|"
 msgid "Description: "
@@ -4451,15 +4452,15 @@ msgstr "Opis: "
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Zamknij okno zmiennej"
 
 msgctxt "VariablesWindow|"
 msgid "Label Editor"
-msgstr ""
+msgstr "Edytor etykiet"
 
 msgctxt "VariablesWindow|"
 msgid "Computed Column"
-msgstr ""
+msgstr "Kolumna wyliczona"
 
 msgctxt "ColumnModel|"
 msgid "Value"
@@ -4472,169 +4473,161 @@ msgstr "Etykieta"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 rows from %2"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Removes %1 columns from %2"
-msgstr ""
+msgstr "Kolumna %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "Ustaw wartość na '%1' w wierszu %2 kolumny '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "Wstaw kolumnę wyliczoną '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "Wstaw kolumnę '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert row %1"
-msgstr ""
+msgstr "Wstaw wiersz %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "Usuń kolumnę '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "Usuń wiersz %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "Wklej wartości w wierszu %1 kolumny '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
+msgstr "Ustaw typ '%1' dla kolumny '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name from '%1' to '%2'"
-msgstr ""
+msgstr "Zmień nazwę kolumny z '%1' na '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title from '%1' to '%2'"
-msgstr ""
+msgstr "Zmień tytuł kolumny z '%1' na '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description from '%1' to '%2'"
-msgstr ""
+msgstr "Zmień opis kolumny z '%1' na '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "Ustaw etykietę dla wartości '%1' z kolumny '%2' od '%3' do '%4'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Odfiltrowane wiersze mają etykietę '%1' w kolumnie '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Wyłącz filtry dla wierszy mających etykietę '%1' w kolumnie '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "Przesuń w górę etykietę '%1' z kolumny '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "Przesuń w dół etykietę '%1' z kolumny '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "Przesuń w górę etykiety kolumny '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "Przesuń w dół etykiety kolumny '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%2'"
-msgstr ""
+msgstr "Odwróć kolejność etykiet w kolumnie '%2'"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "Zmień filtr typu \"przeciągnij i upuść\""
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Zmień filtr R"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1"
-msgstr ""
+msgstr "Stwórz kolumnę wyliczoną z nazwą '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1"
-msgstr ""
+msgstr "Wprowadź kod do kolumny wyliczonej o nazwie '%1'"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP posiada powiązany plik danych, ale został on zmieniony. Czy chcesz "
+"przeładować powiązany plik danych czy wygenerować nowy plik?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Przeładuj plik danych"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "Oczekiwanie na inicjalizację silnika modułu: %1"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Wstaw kolumnę przed"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Wstaw kolumnę po"
 
 msgctxt "RibbonModel|"
 msgid "Computed Columns"
-msgstr ""
+msgstr "Kolumny wyliczone"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Usuń kolumnę"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Usuń wiersz"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Wyczyść komórki"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
@@ -4646,27 +4639,27 @@ msgstr "Ponów"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Analizy"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Przełącz JASP w tryb analizy"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Edytuj dane"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Przełącz JASP w tryb edycji danych"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Nowe dane"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Otwórz pusty plik"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
@@ -4674,7 +4667,7 @@ msgstr "Wstaw"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Wstaw puste kolumny lub wiersze"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
@@ -4682,7 +4675,7 @@ msgstr "Usuń"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Usuń kolumny lub wiersze"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
@@ -4690,112 +4683,134 @@ msgstr "Synchronizacja"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "Włącz zewnętrzną synchronizację danych"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Wyłącz zewnętrzną synchronizację danych"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Wstaw wiersz powyżej"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Wstaw wiersz poniżej"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "Kliknij dwukrotnie tutaj, aby zmienić ustawienia zmiennej"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "Kliknij dwukrotnie tutaj, aby zamknąć okno zmiennej"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Paleta kolorów"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Kontrastowa"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "Kontrastowa #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "Kontrastowa #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Viridis"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Szary"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Niebieski"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Drużyny sportowe: NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Grand Budapest"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Wstaw wiersz powyżej"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Wstaw wiersz poniżej"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Cofni zmiany, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Ponów zmiany, %1+shift+Z lub %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Cofnij %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "Ponów %2 (%1+shift+Z lub %1+Y)"
 
 msgctxt "DataTableView|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "Obliczone przez analizę"
 
 msgctxt "DataTableView|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Kliknij tutaj, aby wybrać inną zmienną"
 
 msgctxt "DataSetPackage|"
 msgid "This column is generated by an analysis and its type is fixed."
 msgstr ""
+"Ta kolumna została stworzona przez analizę, dlatego nie można zmienić jej "
+"typu."
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Otwórz plik danych za pomocą domyślnego edytora"
 
 msgctxt "RibbonModel|"
 msgid "No Data"
+msgstr "Brak danych"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1 into column number %2"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
 msgstr ""
