@@ -1225,13 +1225,16 @@ void DataSetView::paste(QPoint where)
 		QPoint topLeft = isCell(where) ? where : selectionTopLeft();
 
 		QClipboard * clipboard = QGuiApplication::clipboard();
-		Log::log() << "Clipboard: " << clipboard->text();
+		//Log::log() << "Clipboard: " << clipboard->text(); //We should not log clipboard for privacy/data anonimity reasons
 
 		std::vector<std::vector<QString>> newData;
 
 		size_t row = 0, col = 0;
 		for(const QString & rowStr : clipboard->text().split("\n"))
 		{
+			if(!rowStr.contains("\t")) //some editors might throw an empty line onto the end of the clipboard. Should at least have one value on the row
+				continue;
+
 			col = 0;
 			for(const QString & cellStr : rowStr.split("\t"))
 			{
