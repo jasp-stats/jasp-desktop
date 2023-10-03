@@ -134,7 +134,7 @@ if(APPLE)
             ${CMAKE_BINARY_DIR}/JASP/
     COMMAND
       codesign --verbose --verify --deep --force --sign
-      "${APPLE_CODESIGN_IDENTITY}" --options runtime
+	  "${APPLE_CODESIGN_IDENTITY}" ${RUNTIMEHARDENING}
       "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "------ Creating the ${CPACK_DMG_VOLUME_NAME}")
 
