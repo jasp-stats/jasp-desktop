@@ -121,8 +121,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
 					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
 #ifndef __aarch64__
-					,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
-					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+					,{"libgfortran.dylib",					framework_resources + "lib/libgfortran.5.dylib"}
+					,{"libquadmath.dylib",					framework_resources + "lib/libquadmath.0.dylib"}
 #endif
 				};
 
