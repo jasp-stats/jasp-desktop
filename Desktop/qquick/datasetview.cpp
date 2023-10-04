@@ -1232,10 +1232,8 @@ void DataSetView::paste(QPoint where)
 		size_t row = 0, col = 0;
 		for(const QString & rowStr : clipboard->text().split("\n"))
 		{
-			if(!rowStr.contains("\t")) //some editors might throw an empty line onto the end of the clipboard. Should at least have one value on the row
-				continue;
-
 			col = 0;
+			if (rowStr.isEmpty()) continue; // Some editors might throw an empty line onto the end of the clipboard. Should at least have one value on the row
 			for(const QString & cellStr : rowStr.split("\t"))
 			{
 				if(newData.size()		<= col) newData.	 resize(col+1);
@@ -1246,6 +1244,8 @@ void DataSetView::paste(QPoint where)
 			}
 			row++;
 		}
+		for(auto& column : newData)
+			column.resize(row); // Make sure that all columns have the same number of rows
 
 		Log::log() << "DataSetView about to paste data (" << col << " columns and " << row << " rows) at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
 
