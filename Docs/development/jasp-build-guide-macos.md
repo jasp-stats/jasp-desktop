@@ -61,6 +61,12 @@ brew install conan cmake bison flex pkg-config automake autoconf create-dmg para
 
 > 💡 Optionally, you can install the Qt from the command line, and build JASP using that, e.g., `brew install qt`.
 
+#### Code signing
+JASP moves a copy of R around in its buildfolder, for which it needs to change things in all executables and binaries within.
+These changes break the cryptographic checks on such files and macOs won't allow you to run it in such cases.
+To get around this you need a sign certificate, at JASP we use an official one from Apple that allows us to distribute it.
+If you just want to build and run JASP locally however you do not need this.
+Instead you can create your own key and use that, [see this guide for more information](self-signing-macos.md)
 
 ### Configuring and Building JASP with Qt
 
