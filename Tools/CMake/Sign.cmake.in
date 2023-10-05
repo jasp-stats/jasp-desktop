@@ -33,7 +33,7 @@ execute_process(
   COMMAND
     codesign --force --deep --verbose --timestamp --strict --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-     "@JASP_INSTALL_PREFIX@")
+    ${RUNTIMEHARDENING} "@JASP_INSTALL_PREFIX@")
 message(CHECK_FAIL "successful.")
 
 # execute_process(COMMAND codesign --verify --verbose --display
@@ -49,7 +49,7 @@ execute_process(
   COMMAND
     codesign --verbose --timestamp --deep --force --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-     "@JASP_INSTALL_PREFIX@")
+    ${RUNTIMEHARDENING} "@JASP_INSTALL_PREFIX@")
 
 execute_process(COMMAND codesign --verify --verbose --display
                         "@JASP_INSTALL_PREFIX@")

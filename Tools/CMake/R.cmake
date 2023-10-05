@@ -416,7 +416,7 @@ if(APPLE)
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
             codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-			${APPLE_CODESIGN_IDENTITY} ${RUNTIMEHARDENING}
+            ${APPLE_CODESIGN_IDENTITY} ${RUNTIMEHARDENING}
             "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT
