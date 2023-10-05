@@ -292,13 +292,12 @@ endif()
 # ------ Code signing
 
 if(APPLE)
-	set(ADHOC_CODESIGN_IDENTITY "" CACHE STRING "Override code signing identity and disables hardened runtime if set")
-	set(REAL_CODESIGN_IDENTITY "AWJJ3YVK9B" CACHE STRING "Normal code signing identity that can be used for release, overridden by the adhoc one")
+	set(LOCAL_CODESIGN_IDENTITY $ENV{LOCAL_CODESIGN_IDENTITY})
 	set(RUNTIMEHARDENING "--options runtime")
 
-	if(NOT(ADHOC_CODESIGN_IDENTITY STREQUAL ""))
+	if(NOT(LOCAL_CODESIGN_IDENTITY STREQUAL ""))
 		set(RUNTIMEHARDENING "")
-		set(APPLE_CODESIGN_IDENTITY ${ADHOC_CODESIGN_IDENTITY})
+		set(APPLE_CODESIGN_IDENTITY ${LOCAL_CODESIGN_IDENTITY})
 
 	else()
 		set(APPLE_CODESIGN_IDENTITY "AWJJ3YVK9B")

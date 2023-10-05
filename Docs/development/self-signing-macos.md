@@ -22,8 +22,9 @@ Make sure to specify the key is for  "Code Signing" and create it.
 
 ### Using it in JASP
 To sure this in JASP be sure to start from an empty buildfolder, this to avoid any previous codesigning failures that might prevent R from running.
-Then set the `ADHOC_CODESIGN_IDENTITY` in the initial configuration for cmake.
+Then set the `LOCAL_CODESIGN_IDENTITY` in your environment somewhere, somehow.
 
+My suggestion is using the "Project Settings: Environment" tab under "Projects" in qtcreator:
 ![](img/self-signing-macos/IdentityProperty.png)
 
 This will make sure the correct certificate is used during building, but it will also disable hardened runtime because that breaks the build with this kind of certificate
