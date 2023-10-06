@@ -536,7 +536,7 @@ CopyColumnsCommand::CopyColumnsCommand(QAbstractItemModel *model, int startCol, 
 	{
 		QString firstColName = tq(copiedColumns[0]["name"].asString());
 		if (copiedColumns.size() == 1)
-			setText(QObject::tr("Copy column '%1 into column number %2").arg(firstColName).arg(startCol));
+			setText(QObject::tr("Copy column '%1' into column number '%2'").arg(firstColName).arg(startCol));
 		else
 		{
 			QString lastColName = tq(copiedColumns[copiedColumns.size() - 1]["name"].asString());

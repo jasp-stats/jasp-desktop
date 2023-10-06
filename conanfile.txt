@@ -7,7 +7,7 @@
 # The header files can be added to a target using ${CONAN_INCLUDE_DIRS_LIBRARY-NAME}
 
 [requires]
-boost/[>=1.78.0 <2.0.0]
+boost/[>=1.82.0 <2.0.0]
 libiconv/1.16
 libarchive/3.5.2
 zlib/1.2.11

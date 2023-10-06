@@ -69,24 +69,6 @@ FocusScope
 			rightMargin:	Math.min(0, variablesContainer.width - minWidth)
 		}
 
-		Keys.onPressed: (event) =>
-		{
-			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
-			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
-
-			if (event.key === Qt.Key_Z)
-			{
-				if(controlPressed)
-				{
-					if (shiftPressed)
-						columnModel.redo();
-					else
-						columnModel.undo();
-					event.accepted = true;
-				}
-			}
-		}
-
 		Rectangle
 		{
 			color:				jaspTheme.uiBackground

@@ -26,9 +26,11 @@ void ActionButtons::loadButtonData(std::vector<ActionButtons::DataRow> &data)
 		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
-		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}																	},
+		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}										},
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
 		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}							},
+		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
+		{FileOperation::Cooperative,	tr("Cooperative"),		true,	{}																																				},
 		{FileOperation::About,			tr("About"),			true,	{}																																				}
 	  };
 }

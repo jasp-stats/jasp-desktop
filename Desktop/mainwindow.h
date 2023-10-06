@@ -71,39 +71,51 @@ using Modules::Upgrader;
 class MainWindow : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
-	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
-	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
-	Q_PROPERTY(QString	windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
-	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
-	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
-	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
-	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
-	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
+	Q_PROPERTY(int			progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
+	Q_PROPERTY(QString		progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
+	Q_PROPERTY(QString		windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
+	Q_PROPERTY(int			screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
+	Q_PROPERTY(bool			dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
+	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
+	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
+	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
+	Q_PROPERTY(bool			cooperativeVisible	READ cooperativeVisible		WRITE setCooperativeVisible		NOTIFY cooperativeVisibleChanged	)
+	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT)
+	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT)
+	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT)
+	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT)
 
 
 	friend class FileMenu;
 public:
 	explicit MainWindow(QApplication *application);
-	void open(QString filepath);
-	void open(const Json::Value & dbJson);
-	void testLoadedJaspFile(int timeOut, bool save);
-	void reportHere(QString dir);
-
-	~MainWindow() override;
-
-	bool	progressBarVisible()	const	{ return _progressBarVisible;	}
-	int		progressBarProgress()	const	{ return _progressBarProgress;	}
-	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
-	QString	windowTitle()			const;
-	int		screenPPI()				const	{ return _screenPPI;			}
-	bool	dataAvailable()			const	{ return _dataAvailable;		}
-	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
-	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
-	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
-	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
+			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
+
+	void				open(QString filepath);
+	void				open(const Json::Value & dbJson);
+	void				testLoadedJaspFile(int timeOut, bool save);
+	void				reportHere(QString dir);
+
+	bool				progressBarVisible()	const	{ return _progressBarVisible;	}
+	int					progressBarProgress()	const	{ return _progressBarProgress;	}
+	const QString &		progressBarStatus()		const	{ return _progressBarStatus;	}
+	QString				windowTitle()			const;
+	int					screenPPI()				const	{ return _screenPPI;			}
+	bool				dataAvailable()			const	{ return _dataAvailable;		}
+	bool				analysesAvailable()		const	{ return _analysesAvailable;	}
+	bool				welcomePageVisible()	const	{ return _welcomePageVisible;	}
+	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
+	bool				contactVisible()		const;
+	bool				cooperativeVisible()	const;
+	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
+	const QStringList & coopThankYou()			const;
+	const QString &		coopEducators()			const;
+	const QString &		coopHowToSupport()		const;
+	const QString &		coopUrl()				const;
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -115,6 +127,8 @@ public slots:
 	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
+	void setContactVisible(bool newContactVisible);
+	void setCooperativeVisible(bool newCooperativeVisible);
 
 	void showRCommander();
 
@@ -123,6 +137,8 @@ public slots:
 	void clearModulesFoldersUser();
 
 	void showAbout();
+	void showContact();
+	void showCooperative();
 
 	void saveKeyPressed();
 	void saveAsKeyPressed();
@@ -132,6 +148,8 @@ public slots:
 	void zoomInKeyPressed();
 	void zoomOutKeyPressed();
 	void zoomResetKeyPressed();	
+	void undo();
+	void redo();
 
 	QObject * loadQmlData(QString data, QUrl url);
 
@@ -210,6 +228,10 @@ signals:
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
 	void showComputedColumn(		QString		columnName);
+
+	void contactVisibleChanged();
+
+	void cooperativeVisibleChanged();
 
 private slots:
 	void resultsPageLoaded();
@@ -310,7 +332,9 @@ private:
 									_analysesAvailable		= false,
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
-									_checkAutomaticSync		= false;
+									_checkAutomaticSync		= false,
+									_contactVisible			= false,
+									_cooperativeVisible		= false;
 									
 	QFont							_defaultFont;
 };

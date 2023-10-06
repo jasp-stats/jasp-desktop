@@ -78,7 +78,6 @@ FocusScope
 	Keys.onPressed: (event)=>
 	{
 		var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
-		var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
 
 		if(controlPressed)
 			switch(event.key)
@@ -99,16 +98,8 @@ FocusScope
 				break;
 
 			case Qt.Key_A:
-					theView.selectAll();
-					event.accepted = true;
-				break;
-
-			case Qt.Key_Z:
-					if (shiftPressed)
-						theView.redo()
-					else
-						theView.undo()
-					event.accepted = true;
+				theView.selectAll();
+				event.accepted = true;
 				break;
 			}
 	}

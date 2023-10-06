@@ -1,6 +1,6 @@
-import JASP.Controls 1.0
-import QtQuick.Controls 2.2
-import QtQuick 2.9
+import JASP.Controls
+import QtQuick.Controls
+import QtQuick
 
 
 Item
@@ -163,6 +163,7 @@ Item
 				anchors.top:	parent.top
 				anchors.left:	columnsLeftScrollBar.right
 				anchors.bottom:	parent.bottom
+                width:          maxWidth
 			}
 		}
 
@@ -326,7 +327,7 @@ Item
 					bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 				}
 
-				width:	80 * preferencesModel.uiScale //for init or something?
+				//width:	80 * preferencesModel.uiScale //for init or something?
 			}
 		}
 	}

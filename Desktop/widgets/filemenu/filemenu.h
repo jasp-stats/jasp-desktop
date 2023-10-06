@@ -110,6 +110,8 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
+	void showContact();
+	void showCooperative();
 	void modeChanged(FileEvent::FileMode mode);
 
 public slots:
@@ -124,6 +126,7 @@ public slots:
 	void showFileOpenMenu();
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
+	void showContactRequest();
 	void dataColumnAdded(QString columnName);
 	void analysesExportResults();
 	void refresh();
