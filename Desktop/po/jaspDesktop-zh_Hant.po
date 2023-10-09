@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-10-06 13:45+0000\n"
-"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"PO-Revision-Date: 2023-10-09 11:33+0000\n"
+"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -4122,11 +4122,11 @@ msgstr "切換到資料編輯模式"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #, fuzzy
 msgctxt "DataTableView|"
@@ -4140,7 +4140,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "剪下"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4159,7 +4159,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "貼上"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4168,16 +4168,16 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "清空儲存格"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "刪除"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "重做: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4187,7 +4187,7 @@ msgstr ""
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "重做: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4196,39 +4196,39 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "選擇行"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "插入左方欄"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "插入右方行"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "刪除行"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "選擇列"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "刪除列"
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "單按此處選擇列，按住Shift鍵可多選"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "關閉篩選器視窗"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "行重新命名"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
@@ -4237,35 +4237,35 @@ msgstr ""
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "將行 %1 重新命名為 %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "關閉而不重新命名\"行\""
 
 msgctxt "VariablesWindow|"
 msgid "Name: "
-msgstr ""
+msgstr "名稱: "
 
 msgctxt "VariablesWindow|"
 msgid "Long name: "
-msgstr ""
+msgstr "長名稱: "
 
 msgctxt "VariablesWindow|"
 msgid "Description: "
-msgstr ""
+msgstr "備註: "
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "關閉變量視窗"
 
 msgctxt "VariablesWindow|"
 msgid "Label Editor"
-msgstr ""
+msgstr "標籤編輯器"
 
 msgctxt "VariablesWindow|"
 msgid "Computed Column"
-msgstr ""
+msgstr "計算行"
 
 #, fuzzy
 msgctxt "ColumnModel|"
@@ -4274,32 +4274,32 @@ msgstr "數值"
 
 msgctxt "ColumnModel|"
 msgid "Label"
-msgstr ""
+msgstr "標籤"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "行 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "將列 “%2” 行“%3”中的值設定為“%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "插入計算行 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "插入行 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert row %1"
-msgstr ""
+msgstr "插入列 %1"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4309,12 +4309,12 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "刪除列 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "將值貼到列 %1 行“%2”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4324,32 +4324,32 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name from '%1' to '%2'"
-msgstr ""
+msgstr "將行名從“%1”更改為“%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title from '%1' to '%2'"
-msgstr ""
+msgstr "將行標題從 “%1”更改為 “%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description from '%1' to '%2'"
-msgstr ""
+msgstr "將行備註從“%1”更改為“%2”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "將行'%2' 的'%1' 標籤從 '%3' 設定為 '%4'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "篩選列在行'%2'中含有標籤 '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "刪除在行 '%2' 中含有標籤'%1'的列的篩選器"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4411,11 +4411,11 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "插入左方行"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "插入右方行"
 
 msgctxt "RibbonModel|"
 msgid "Computed Columns"
@@ -4423,11 +4423,11 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "刪除行"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "刪除列"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
@@ -4435,7 +4435,7 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "重做"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
