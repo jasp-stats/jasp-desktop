@@ -18,7 +18,7 @@ execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
 execute_process(
   WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
   COMMAND codesign --force --deep --verbose --timestamp --strict --sign
-          "@APPLE_CODESIGN_IDENTITY@" --options runtime R.framework)
+          "@APPLE_CODESIGN_IDENTITY@" ${RUNTIMEHARDENING} R.framework)
 
 message(CHECK_FAIL "successful.")
 
@@ -33,7 +33,7 @@ execute_process(
   COMMAND
     codesign --force --deep --verbose --timestamp --strict --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-    --options runtime "@JASP_INSTALL_PREFIX@")
+    ${RUNTIMEHARDENING} "@JASP_INSTALL_PREFIX@")
 message(CHECK_FAIL "successful.")
 
 # execute_process(COMMAND codesign --verify --verbose --display
@@ -49,7 +49,7 @@ execute_process(
   COMMAND
     codesign --verbose --timestamp --deep --force --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-    --options runtime "@JASP_INSTALL_PREFIX@")
+    ${RUNTIMEHARDENING} "@JASP_INSTALL_PREFIX@")
 
 execute_process(COMMAND codesign --verify --verbose --display
                         "@JASP_INSTALL_PREFIX@")

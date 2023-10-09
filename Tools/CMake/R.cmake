@@ -406,17 +406,17 @@ if(APPLE)
       message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
 
       set(SIGNING_RESULT "timeout")
-      while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
-                                                      "1"))
+      while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL "1"))
+
         execute_process(
-          #COMMAND_ECHO STDOUT
+          COMMAND_ECHO STDOUT
           #ERROR_QUIET 
-          OUTPUT_QUIET
+          #OUTPUT_QUIET
           TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
             codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-            ${APPLE_CODESIGN_IDENTITY} --options runtime
+            ${APPLE_CODESIGN_IDENTITY} ${RUNTIMEHARDENING}
             "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT

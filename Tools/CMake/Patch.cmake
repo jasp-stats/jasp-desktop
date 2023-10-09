@@ -393,7 +393,7 @@ else()
             TIMEOUT 30
             WORKING_DIRECTORY ${PATH}
             COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign
-                    ${APPLE_CODESIGN_IDENTITY} --options runtime "${FILE}"
+                    ${APPLE_CODESIGN_IDENTITY} ${RUNTIMEHARDENING}  "${FILE}"
             RESULT_VARIABLE SIGNING_RESULT
             OUTPUT_VARIABLE SIGNING_OUTPUT)
         endwhile()
