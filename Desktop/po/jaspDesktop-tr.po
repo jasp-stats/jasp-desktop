@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-10-06 13:45+0000\n"
-"Last-Translator: Ünal Halit ÖZDEN <uozden@ticaret.edu.tr>\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"tr/>\n"
-"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.1-dev\n"
 "X-Language: tr\n"
 "X-Qt-Contexts: true\n"
 
@@ -136,10 +130,6 @@ msgstr ""
 msgctxt "AboutWindow|"
 msgid "BibTeX"
 msgstr "BibTeX"
-
-msgctxt "AboutWindow|"
-msgid "Close"
-msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
@@ -1607,15 +1597,6 @@ msgstr ""
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
-
-msgctxt "WelcomePage|"
-msgid ""
-"Please keep in mind that this is a preview release and a number of features "
-"are still missing.\n"
-"\n"
-"If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
-"being developed at break-neck speed!"
 msgstr ""
 
 #, qt-format
@@ -4492,10 +4473,102 @@ msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Copy column '%1 into column number %2"
+msgid "Copy columns '%1' to '%2'"
+msgstr ""
+
+msgctxt "ContactWindow|"
+msgid "Contact JASP"
+msgstr ""
+
+#, qt-format
+msgctxt "ContactWindow|"
+msgid ""
+"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: "
+"please post an issue on our GitHub page, <a href=\"%3\">as explained here.</"
+"a>\n"
+"This will bring you in direct contact with the JASP software developers.\n"
+"\n"
+"For statistical questions: please post an issue <a href=\"%4\">on the JASP "
+"Forum.</a>\n"
+"\n"
+"For information on the JASP Cooperative: please read <a href=\"%5\">the "
+"information on the JASP website</a>\n"
+"\n"
+"For suggesting we add your institution to the <a href=\"%6\">JASP World Map</"
+"a> please send an email to <a href=\"%7\">communications@jasp-stats.org</"
+"a>.\n"
+"\n"
+"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
+msgstr ""
+
+#, fuzzy
+msgctxt "ContactWindow|"
+msgid "Select All"
+msgstr "Hepsini seç"
+
+msgctxt "ContactWindow|"
+msgid "Copy Selection"
+msgstr ""
+
+msgctxt "CooperativeWindow|"
+msgid "JASP Cooperative"
+msgstr ""
+
+#, qt-format
+msgctxt "CooperativeWindow|"
+msgid ""
+"<h3>Cooperative</h3>\n"
+"The institutions of higher learning that participate in the JASP Cooperative "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the cooperative, you can <a "
+"href=\"%2\">suggest that they join</a>.\n"
+"\n"
+"<i>Educator Institutions:</i>\n"
+"%1"
+msgstr ""
+
+#, fuzzy
+msgctxt "CooperativeWindow|"
+msgid "Select All"
+msgstr "Hepsini seç"
+
+msgctxt "CooperativeWindow|"
+msgid "Copy Selection"
+msgstr ""
+
+msgctxt "Supporters|"
+msgid "JASP is supported by the following institutions:"
+msgstr ""
+
+msgctxt "Supporters|"
+msgid "Suggest your institution joins the JASP Cooperative"
+msgstr ""
+
+#, fuzzy
+msgctxt "WavyWindow|"
+msgid "About JASP"
+msgstr "JASP Hakkında"
+
+msgctxt "WavyWindow|"
+msgid "Close"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Copy columns '%1' to '%2'"
+msgid "Copy column '%1' into column number '%2'"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "and "
+msgstr ""
+
+msgctxt "ActionButtons|"
+msgid "Contact"
+msgstr ""
+
+msgctxt "ActionButtons|"
+msgid "Cooperative"
 msgstr ""
