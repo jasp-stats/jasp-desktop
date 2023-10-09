@@ -1,6 +1,7 @@
 #include "columnsmodel.h"
 #include "log.h"
 #include "utilities/qutils.h"
+#include "mainwindow.h"
 
 ColumnsModel * ColumnsModel::_singleton = nullptr;
 
@@ -18,11 +19,15 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 
 	auto * info = new VariableInfo(_singleton);
 	
-	connect(this, &ColumnsModel::namesChanged,					info, &VariableInfo::namesChanged		);
-	connect(this, &ColumnsModel::columnsChanged,				info, &VariableInfo::columnsChanged		);
-	connect(this, &ColumnsModel::columnTypeChanged,				info, &VariableInfo::columnTypeChanged	);
-	connect(this, &ColumnsModel::labelsChanged,					info, &VariableInfo::labelsChanged		);
-	connect(this, &ColumnsModel::labelsReordered,				info, &VariableInfo::labelsReordered	);
+	connect(this, &ColumnsModel::namesChanged,							info, &VariableInfo::namesChanged		);
+	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::columnsChanged		);
+	connect(this, &ColumnsModel::columnTypeChanged,						info, &VariableInfo::columnTypeChanged	);
+	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged		);
+	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered	);
+	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged	);
+	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged	);
+	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged	);
+	connect(MainWindow::singleton(), &MainWindow::dataAvailableChanged, info, &VariableInfo::dataAvailableChanged );
 }
 
 ColumnsModel::~ColumnsModel()
@@ -95,6 +100,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Horizontal, int(DataSetPackage::specialRoles::maxColString)).toInt();
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
 		case VariableInfo::VariableNames:				return	getColumnNames();
+		case VariableInfo::DataAvailable:				return	MainWindow::singleton()->dataAvailable();
 		}
 	}
 	catch(std::exception & e)
@@ -126,6 +132,10 @@ int ColumnsModel::rowCount(const QModelIndex & p) const
 	return QTransposeProxyModel::rowCount(p);
 }
 
+QQmlContext* ColumnsModel::providerQMLContext() const
+{
+	return MainWindow::singleton()->giveRootQmlContext();
+}
 
 QStringList ColumnsModel::getColumnNames() const
 {

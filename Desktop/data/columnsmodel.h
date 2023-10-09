@@ -32,6 +32,7 @@ public:
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
 	QAbstractItemModel		*	providerModel()																				override	{ return this;	}
+	QQmlContext				*	providerQMLContext()																const	override;
 	static ColumnsModel		*	singleton()	{ return _singleton; }
 
 public slots:
