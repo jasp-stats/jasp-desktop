@@ -79,7 +79,7 @@ QString AppDirs::bundledModulesDir()
 #ifdef __APPLE__
 	 programDir().absoluteFilePath("../Modules/");
 #elif _WIN32
-	 programDir().absoluteFilePath("Modules") + '/';
+	 appData(false) + "/BundledJASPModules/";
 #elif FLATPAK_USED
 	"/app/bin/../Modules/";
 #else  //Normal linux build
@@ -88,7 +88,7 @@ QString AppDirs::bundledModulesDir()
 	// @Joris, I think these guys should be one level up,
 	// they are not binaries, so, they should not be in 
 	// the binary folder in my opinion.
-	
+
 	return folder;
 }
 
@@ -120,9 +120,12 @@ QString AppDirs::logDir()
 	return path;
 }
 
-QString AppDirs::appData()
+QString AppDirs::appData(bool roaming)
 {
-	return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+	if(roaming)
+		return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+	else
+		return processPath(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
 }
 
 /**
