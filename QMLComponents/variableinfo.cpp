@@ -1,5 +1,7 @@
 #include "variableinfo.h"
 #include "jasptheme.h"
+#include "QQmlContext"
+#include "QTimer"
 
 VariableInfo* VariableInfo::_singleton = nullptr;
 
@@ -7,7 +9,16 @@ VariableInfo::VariableInfo(VariableInfoProvider* providerInfo) :
 	QObject(providerInfo->providerModel()), _provider(providerInfo)
 {
 	if (_singleton == nullptr)
+	{
 		_singleton = this;
+		QTimer::singleShot(0, [&]() { _setDataSetInfoInContext(); });
+	}
+}
+
+void VariableInfo::_setDataSetInfoInContext()
+{
+	QQmlContext* context = _provider->providerQMLContext();
+	context->setContextProperty("dataSetInfo", this);
 }
 
 VariableInfo *VariableInfo::info()
@@ -50,4 +61,14 @@ QString VariableInfo::getIconFile(columnType colType, VariableInfo::IconType typ
 	}
 
 	return ""; //We are never getting here but GCC isn't convinced
+}
+
+int VariableInfo::rowCount()
+{
+	return _provider ? _provider->provideInfo(VariableInfo::DataSetRowCount).toInt() : 0;
+}
+
+bool VariableInfo::dataAvailable()
+{
+	return _provider ? _provider->provideInfo(VariableInfo::DataAvailable).toBool() : false;
 }
