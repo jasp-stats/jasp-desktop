@@ -3897,8 +3897,8 @@ msgid "Save"
 msgstr "儲存"
 
 msgctxt "Computer|"
-msgid "JASP Files (*.jasp)"
-msgstr "JASP 檔 （*.jasp）"
+msgid "JASP Files"
+msgstr "JASP 檔"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
@@ -3909,24 +3909,24 @@ msgid "HTML Files"
 msgstr "HTML文檔"
 
 msgctxt "Computer|"
-msgid "Portable Document Format (*.pdf)"
-msgstr "可攜式文件格式 （*.pdf）"
+msgid "Portable Document Format"
+msgstr "可攜式文件格式"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
 msgstr "將數據匯出為 CSV 格式"
 
 msgctxt "Computer|"
-msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr "CSV 檔 （*.csv *.txt *.tsv）"
+msgid "CSV Files"
+msgstr "CSV 檔"
 
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "同步資料"
 
 msgctxt "Computer|"
-msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr "資料檔案 （*.csv *.txt *.tsv *.sav *.ods）"
+msgid "Data Files"
+msgstr "資料檔案"
 
 msgctxt "AboutModel|"
 msgid ""
