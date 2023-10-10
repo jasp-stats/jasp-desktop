@@ -208,24 +208,6 @@ if(APPLE)
 
   find_package(Brotli 1.0.9 REQUIRED)
 
- # set(_LIB_BROTLICOMMON
- #     ${Brotli_LIB_DIRS}/libbrotlicommon.1.0.9.dylib
- # )
-
- # if(EXISTS "${_LIB_BROTLICOMMON}")
- #   message(CHECK_PASS "found")
- #   message(STATUS "  Copying the 'libbrotlicommon' to the local build folder")
- #   execute_process(
- #     WORKING_DIRECTORY ${Brotli_LIB_DIRS}
- #     COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_BROTLICOMMON}
- #             ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
- #   set(_LIB_BROTLICOMMON ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
- #   message(STATUS "  ${_LIB_BROTLICOMMON}")
- # else()
- #   message(CHECK_FAIL "not found")
- #   message(FATAL_ERROR "libbrotli is required for creating the DMG file. ")
- # endif()
-
 endif()
 
 if(WIN32)
