@@ -4083,8 +4083,8 @@ msgid "Save"
 msgstr "Zapisz"
 
 msgctxt "Computer|"
-msgid "JASP Files (*.jasp)"
-msgstr "Pliki JASP (*.jasp)"
+msgid "JASP Files"
+msgstr "Pliki JASP"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
@@ -4095,24 +4095,24 @@ msgid "HTML Files"
 msgstr "Pliki HTML"
 
 msgctxt "Computer|"
-msgid "Portable Document Format (*.pdf)"
-msgstr "Plik PDF (*.pdf)"
+msgid "Portable Document Format"
+msgstr "Plik PDF"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
 msgstr "Eksportuj dane do pliku CSV"
 
 msgctxt "Computer|"
-msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr "Pliki CSV (*.csv *.txt *.tsv)"
+msgid "CSV Files"
+msgstr "Pliki CSV"
 
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "Synchronizuj dane"
 
 msgctxt "Computer|"
-msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr "Pliki danych (*.csv *.txt *.tsv *.sav *.ods)"
+msgid "Data Files"
+msgstr "Pliki danych"
 
 msgctxt "AboutModel|"
 msgid ""
