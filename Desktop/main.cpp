@@ -503,7 +503,7 @@ int main(int argc, char *argv[])
 			if(jaspEngine.exists() && !DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
 			{
 				//TODO: make non blocking and kill after init is done automatically or dont show at all
-				QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
+				//QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
 
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
 				{

@@ -63,6 +63,7 @@ bool DynamicRuntimeInfo::parseStaticRuntimeInfoFile(const std::string &path)
 	std::ifstream in(path, std::ifstream::in);
     if(!in)
     {
+        _environment = RuntimeEnvironment::UNKNOWN;
         Log::log() << "Failed to open specified static runtime file" << std::endl;
         return false;
     }
