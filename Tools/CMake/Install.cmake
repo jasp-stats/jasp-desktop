@@ -356,6 +356,9 @@ if(WIN32)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
 
+  #msix stuff
+  install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
+
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
     DESTINATION Modules/
