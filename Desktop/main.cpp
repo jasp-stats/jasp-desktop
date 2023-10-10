@@ -502,14 +502,20 @@ int main(int argc, char *argv[])
 			QFile jaspEngine("JASPEngine.exe");
 			if(jaspEngine.exists() && !DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
 			{
-				//TODO: make non blocking and kill after init is done automatically or dont show at all
-				//QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
+				QMessageBox *msgBox = new QMessageBox(nullptr);
+				msgBox->setIcon( QMessageBox::Information );
+				msgBox->setText("JASP is setting a few things up. Just a moment please");
+				QPushButton *btn =  msgBox->addButton( "Ok", QMessageBox::AcceptRole );
+				msgBox->setAttribute(Qt::WA_DeleteOnClose); // delete pointer after close
+				msgBox->setModal(false);
+				msgBox->show();
 
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
 				{
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
 					exit(254);
 				}
+				msgBox->hide();
 			}
 #endif
 

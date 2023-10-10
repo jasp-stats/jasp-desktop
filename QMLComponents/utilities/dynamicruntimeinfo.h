@@ -1,6 +1,7 @@
 #ifndef DYNRUNTIMEINFO_H
 #define DYNRUNTIMEINFO_H
 
+#include <cstdint>
 #include <string>
 #include <map>
 
