@@ -23,6 +23,7 @@ if(USE_CONAN)
 
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
   set(CONAN_COMPILER_RUNTIME "dynamic")
+  set(CONAN_RESULT_FILE "conanbuild.bat") #for windows
 
   if(WIN32)
 
@@ -38,6 +39,8 @@ if(USE_CONAN)
 
   elseif(APPLE)
 
+    set(CONAN_RESULT_FILE "conanbuild.sh")
+
     if(CROSS_COMPILING)
 
       execute_process(
@@ -45,8 +48,8 @@ if(USE_CONAN)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx -s
-          arch=${CONAN_ARCH} -s arch_build=${CONAN_ARCH} --build=missing)
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s
+          arch=${CONAN_ARCH} -s arch_build=${CONAN_ARCH} --build=missing -of ${CMAKE_BINARY_DIR}/conan_build)
 
     else()
 
@@ -55,14 +58,14 @@ if(USE_CONAN)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx
-          --build=missing)
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET}
+          --build=missing -of ${CMAKE_BINARY_DIR}/conan_build)
 
     endif()
 
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/conanbuild.bat)
+  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/${CONAN_RESULT_FILE})
     message(CHECK_PASS "successful")
   else()
     message(CHECK_FAIL "unsuccessful")
