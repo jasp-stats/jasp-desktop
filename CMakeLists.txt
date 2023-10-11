@@ -32,7 +32,7 @@ if(APPLE)
   endif()
   
   
-  if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx")
+  if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx" OR "${CMAKE_OSX_SYSROOT}" STREQUAL "")
 	  execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
 		OUTPUT_VARIABLE SDKROOT
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
