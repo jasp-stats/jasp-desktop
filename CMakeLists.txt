@@ -27,9 +27,21 @@ if(APPLE)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "armv8")
   else()
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
+  
+  
+  if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx")
+	  execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
+		OUTPUT_VARIABLE SDKROOT
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set(CMAKE_OSX_SYSROOT ${SDKROOT})
+	message(STATUS "Got CMAKE_OSX_SYSROOT from xcrun as '${SDKROOT}'")
+  else()
+	message(STATUS "CMAKE_OSX_SYSROOT='${CMAKE_OSX_SYSROOT}'")
+  endif()
+ 
 
 endif()
 

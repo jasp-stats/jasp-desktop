@@ -33,7 +33,7 @@
 #       a CMake module. I leave this for later cleanup
 #
 
-set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/")
+set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development/")
 
 set(AVAILABLE_R_VERSIONS
     "R-4.1.2"
