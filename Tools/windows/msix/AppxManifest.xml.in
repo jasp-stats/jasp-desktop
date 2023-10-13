@@ -7,7 +7,7 @@
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
 
-<Identity Name="JASP.JASP.JASP"
+<Identity Name="45842JASP.JASP"
         Version="@JASP_VERSION@"
         Publisher="CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
     ProcessorArchitecture="x64"/>
@@ -15,7 +15,7 @@
 <Properties>
   <DisplayName>JASP</DisplayName>
   <PublisherDisplayName>JASP</PublisherDisplayName>
-  <Logo>Assets\JASPsquare256x256Logo.png</Logo>
+  <Logo>Assets\StoreLogo.png</Logo>
 </Properties>
 
 <Resources>
@@ -42,7 +42,7 @@
       Square44x44Logo="Assets\Square44x44Logo.png"
       Description="JASP"
       BackgroundColor="transparent">
-      <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+      <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png"/>
       <uap:SplashScreen Image="Assets\SplashScreen.png" />
     </uap:VisualElements>
 
@@ -55,7 +55,7 @@
             <uap:FileType>.csv</uap:FileType>
             <uap:FileType>.sav</uap:FileType>
           </uap:SupportedFileTypes>
-          <uap:Logo>Assets\JASPsquare44x44Logo.png</uap:Logo>
+          <uap:Logo>Assets\Square44x44Logo.png</uap:Logo>
 
         </uap3:FileTypeAssociation>
       </uap:Extension>
