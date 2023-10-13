@@ -496,12 +496,16 @@ int main(int argc, char *argv[])
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
 			ImgSchemeHandler  imgSchemeHandler;
 
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
+
 #ifdef _WIN32
 			// Since we introduced renv to JASP, we need to recreate the junctions from Modules -> renv-cache on first run. Because windows does not support proper symlinks on user perms
 			// For this JASP has the --junctions argument, and is run on first execution of a specific jasp version on a system.
-			QFile jaspEngine("JASPEngine.exe");
-			if(jaspEngine.exists() && !DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
+			Log::log() << "Checking if we need to recreate junctions or not" << std::endl;
+			if(!DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
 			{
+				Log::log() << "We need to recreate junctions!" << std::endl;
+
 				QMessageBox *msgBox = new QMessageBox(nullptr);
 				msgBox->setIcon( QMessageBox::Information );
 				msgBox->setText("JASP is setting a few things up. Just a moment please");
@@ -519,7 +523,6 @@ int main(int argc, char *argv[])
 			}
 #endif
 
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 
 			try
 			{

@@ -23,6 +23,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include "dynamicruntimeinfo.h"
 #endif
 #include "qutils.h"
 #include "utils.h"
@@ -75,20 +76,21 @@ QString AppDirs::userModulesDir()
 
 QString AppDirs::bundledModulesDir()
 {
-	static QString folder = 
-#ifdef __APPLE__
-	 programDir().absoluteFilePath("../Modules/");
-#elif _WIN32
-	 appData(false) + "/BundledJASPModules/";
+	static QString folder;
+#ifdef _WIN32
+	auto env = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment();
+	bool useAppdata =  env != DynamicRuntimeInfo::MSIX && env != DynamicRuntimeInfo::ZIP;
+	folder = useAppdata ? programDir().absoluteFilePath("Modules") + '/' : appData(false) + "/BundledJASPModules/";
+#elif __APPLE__
+	 folder = programDir().absoluteFilePath("../Modules/");
 #elif FLATPAK_USED
-	"/app/bin/../Modules/";
+	folder = "/app/bin/../Modules/";
 #else  //Normal linux build
-	programDir().absoluteFilePath("../Modules") + '/';
+	folder = programDir().absoluteFilePath("../Modules") + '/';
 #endif
 	// @Joris, I think these guys should be one level up,
-	// they are not binaries, so, they should not be in 
+	// they are not binaries, so, they should not be in
 	// the binary folder in my opinion.
-
 	return folder;
 }
 
@@ -199,7 +201,7 @@ QString AppDirs::renvCacheLocations()
 	QDir(renvRootLocation()).mkpath(renvCacheName); //create it if missing
 	
 	QString dynamicCache = renvRootLocation() + "/" + renvCacheName,
-			staticCache  = processPath(QDir(bundledModulesDir()).absoluteFilePath("renv-cache"));
+			staticCache  = processPath(programDir().absoluteFilePath("Modules/renv-cache"));
 	
 	const QChar separator =
 #ifdef WIN32

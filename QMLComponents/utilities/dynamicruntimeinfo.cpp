@@ -43,7 +43,7 @@ DynamicRuntimeInfo::DynamicRuntimeInfo()
 	_environment = RuntimeEnvironment::LINUX_LOCAL;
 #elif _WIN32
 	parseStaticRuntimeInfoFile(fq(AppDirs::programDir().absoluteFilePath(tq(staticInfoFileName)))); //will set runtime env info
-	parseDynamicRuntimeInfoFile(fq(AppDirs::bundledModulesDir() + tq(dynamicInfoFileName)));
+	parseDynamicRuntimeInfoFile(fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName)));
 #else
     _environment = RuntimeEnvironment::UNKNOWN;
 #endif
@@ -60,6 +60,7 @@ DynamicRuntimeInfo::DynamicRuntimeInfo()
 
 bool DynamicRuntimeInfo::parseStaticRuntimeInfoFile(const std::string &path)
 {
+	Log::log() << "Attempting to read static runtime information from: " + path << std::endl;
 	std::ifstream in(path, std::ifstream::in);
     if(!in)
     {
@@ -83,6 +84,7 @@ bool DynamicRuntimeInfo::parseStaticRuntimeInfoFile(const std::string &path)
 
 bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
 {
+	Log::log() << "Attempting to read dynamic runtime information from: " + path << std::endl;
     std::ifstream in(path, std::ifstream::in);
     if(!in)
 	{
@@ -106,11 +108,11 @@ bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
 
 bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()
 {
-	std::string path = fq(AppDirs::bundledModulesDir() + tq(dynamicInfoFileName));
+	std::string path = fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName));
     std::ofstream out(path, std::ofstream::out);
     if(!out)
     {
-        Log::log() << "Failed to open specified path for dynamic runtime info file" << std::endl;
+		Log::log() << "Failed to open specified path for writing dynamic runtime info file" << std::endl;
         return false;
     }
 

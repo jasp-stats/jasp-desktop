@@ -319,15 +319,15 @@ if(WIN32)
     NORMALIZE
     R_BIN_PATH_NATIVE)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/JASP.wxi.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxi.in
                  ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/JASP.wxs
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxs
                  ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/WIX.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/WIX.cmd.in
                  ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/ZIP.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/zip/ZIP.cmd.in
                  ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/CollectJunctions.cmd.in
@@ -346,7 +346,6 @@ if(WIN32)
                   ${CMAKE_BINARY_DIR}/msix.cmd @ONLY)
     install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
     install(FILES ${CMAKE_BINARY_DIR}/AppxManifest.xml DESTINATION .)
-    install(FILES ${CMAKE_SOURCE_DIR}/Tools/windows/msix/config.json DESTINATION .)
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/windows/msix/Assets DESTINATION .)
 
 
