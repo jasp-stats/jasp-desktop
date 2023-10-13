@@ -15,7 +15,7 @@
 <Properties>
   <DisplayName>JASP</DisplayName>
   <PublisherDisplayName>JASP</PublisherDisplayName>
-  <Logo>JASPsquare256x256Logo.png</Logo>
+  <Logo>Assets\JASPsquare256x256Logo.png</Logo>
 </Properties>
 
 <Resources>
