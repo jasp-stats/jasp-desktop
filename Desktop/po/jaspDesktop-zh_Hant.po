@@ -4704,3 +4704,19 @@ msgstr ""
 msgctxt "ActionButtons|"
 msgid "Cooperative"
 msgstr ""
+
+msgctxt "Computer|"
+msgid "JASP Files (*.jasp)"
+msgstr "JASP 檔 (*.jasp)"
+
+msgctxt "Computer|"
+msgid "Portable Document Format (*.pdf)"
+msgstr "可攜式文件格式 （*.pdf）"
+
+msgctxt "Computer|"
+msgid "CSV Files (*.csv *.txt *.tsv)"
+msgstr "CSV 檔 （*.csv *.txt *.tsv）"
+
+msgctxt "Computer|"
+msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
+msgstr "資料檔案 （*.csv *.txt *.tsv *.sav *.ods）"
