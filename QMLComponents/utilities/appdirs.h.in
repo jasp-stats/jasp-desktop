@@ -42,7 +42,7 @@ public:
 	static QString bundledModulesDir();
 	static QString documents();
 	static QString logDir();
-	static QString appData();
+	static QString appData(bool roaming = true);
 	static QString rHome();
 	static QDir    programDir();
 	static QString renvRootLocation();

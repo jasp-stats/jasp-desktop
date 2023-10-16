@@ -98,8 +98,8 @@
 	<Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" />
 	<Property       Id="ARPNOMODIFY"                Value="1" />
 
-	<WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBackground.png" />
-	<WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBanner.png" />
+	<WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\windows\installerBackground.png" />
+	<WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\windows\installerBanner.png" />
 
 	<!-- <Property Id="APPLICATIONFOLDER"					Value="[$(var.Program_Files)][ApplicationFolderName]"	/> -->
 	<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" 									/>
@@ -138,7 +138,7 @@
 	</UI>
 
 	<!-- JASP "license" -->
-	<WixVariable Id="WixUILicenseRtf" Value="$(var.JASP_SOURCE_DIR)\Tools\wix\jaspLicense.rtf" />
+	<WixVariable Id="WixUILicenseRtf" Value="$(var.JASP_SOURCE_DIR)\Tools\windows\jaspLicense.rtf" />
 
 
 	<Property Id="WixShellExecTarget" Value="[ExeLocation]" />

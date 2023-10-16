@@ -113,6 +113,7 @@ set(CMAKE_AUTOUIC ON)
 # Later, I would try tor remove this, for now, it's necessary because Conan
 # tends to mess up the directory structure
 if(WIN32)
+  include(InstallRequiredSystemLibraries)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO

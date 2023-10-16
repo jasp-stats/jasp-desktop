@@ -1,0 +1,11 @@
+{
+    "applications": [
+        {
+            "id": "JASP",
+            "executable": "JASP.exe"
+        }
+    ],
+    "processes": [
+        
+    ]
+}
