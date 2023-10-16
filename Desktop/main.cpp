@@ -43,7 +43,8 @@ const std::string	jaspExtension		= ".jasp",
 					removeJunctionsArg	= "--removeJunctions";
 
 #ifdef _WIN32
-
+#include "utilities/dynamicruntimeinfo.h"
+#include "utilities/appdirs.h"
 #include "utilities/processhelper.h"
 // This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode or remove-junction mode.
 // The junction-fixining mode is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
@@ -53,29 +54,57 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
 	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine();
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
-	
+
 	QProcess engine;
-	
+
 	engine.setProcessChannelMode(QProcess::ForwardedChannels);
 	engine.setProcessEnvironment(env);
 	engine.setWorkingDirectory(workDir);
 	engine.setProgram("JASPEngine.exe");
-	if (removeJunctions)	engine.setArguments({"--removeJunctions", workDir});
-	else					engine.setArguments({"--recreateJunctions", workDir});
+
+	QDir modulesDir(AppDirs::bundledModulesDir());
+	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive))
+	{
+		std::function<void(QDir)> removeDir = [&](QDir x) -> void {
+			for(const auto& entry : x.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files))
+			{
+				if(entry.isFile() || entry.isSymLink()) entry.absoluteDir().rmdir(entry.fileName());
+				else if(entry.isJunction()) entry.absoluteDir().rmdir(entry.fileName());
+				else if(entry.isDir()) removeDir(QDir(entry.absoluteFilePath()));
+			}
+			x.rmdir(".");
+		};
+		removeDir(modulesDir);
+	}
+
+	if (removeJunctions)
+	{
+		std::cout << "Junctions removal " << (!modulesDir.exists() ? "succeeded" : "failed") << std::endl;
+		return !modulesDir.exists();
+	}
+	else
+	{
+		bool created = QDir().mkpath(modulesDir.absolutePath());
+		if(created)
+			std::cout << "Junction folder created" << std::endl;
+		engine.setArguments({"--recreateJunctions", workDir + "/Modules/", modulesDir.absolutePath(), workDir + "/junctions.rds"});
+	}
 	engine.start();
-	
+
 	if(!engine.waitForStarted())		{	std::cerr << "JASPEngine failed to start for junctions!" << std::endl;						exit(2); }
 	//Something like 10 minutes tops should be more than enough for the junctions to be replaced and otherwise it probably crashed?
 	if(!engine.waitForFinished(600000)) {	std::cerr << "JASPEngine started but timed out before finishing junctions!" << std::endl;	exit(3); }
 
 	bool worked = engine.exitCode() == 0;
-	
-	std::cout << (removeJunctions ? "Removing" : "Replacing") << " junctions with JASPEngine seems to have " << (worked ? "worked." : "failed.")  << std::endl;
+	//log our success so we dont do it a second time
+	if(worked)
+		worked = worked && DynamicRuntimeInfo::getInstance()->writeDynamicRuntimeInfoFile();
 
-	
+	std::cout << "Replacing junctions with JASPEngine seems to have " << (worked ? "worked." : "failed.")  << std::endl;
+
 	if(exitAfterwards)
 		exit(engine.exitCode());
-	
+
 	return worked;
 }
 
@@ -184,7 +213,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				{
 					std::cerr << "Directory to write reports to " << testMe.absolutePath().toStdString() << " does not exist and cannot be created!" << std::endl;
 					letsExplainSomeThings = true;
-				}	
+				}
 				else
 					reportingDir = testMe.absolutePath();
 			}
@@ -252,9 +281,9 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					else
 					{
 						//Check whether it can be parsed as a json and if so assume it is a database connection json as returned by DatabaseConnectionInfo
-						
+
 						Json::Reader jsonReader;
-						
+
 						if(!jsonReader.parse(args[arg], dbJson))
 						{
 							std::cerr << "File to open " << args[arg] << " does not exist (and also is not a (database) json)!" << std::endl;
@@ -265,7 +294,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			}
 		}
 	}
-	
+
 	if(filePath == "" && reportingDir != "")
 	{
 		std::cerr << "If you want JASP to run in reportingmode you should also give it a jaspfile to run off." << std::endl;
@@ -383,21 +412,21 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
-	
+
 	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, dbJson, reportingDir);
-	
+
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
-	
+
 	if(reportingDir!="")	Settings::setValue(Settings::REPORT_SHOW, true);
-	
+
 	QString filePathQ(QSTRING_FILE_ARG(filePath.c_str()));
 
 	//Now, to allow us to add some arguments we store the ones we got in a vector
 	std::vector<std::string> args(argv, argv + argc);
 
 //	std::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) ); This is not needed anymore since we set the locale to UTF8
-	
+
 	if(!dirTest)
 		//try
 		{
@@ -409,13 +438,13 @@ int main(int argc, char *argv[])
 				char dst[] = "LIBGL_ALWAYS_SOFTWARE=1";
 				putenv(dst);
 			}
-			
+
 			if(hideJASP)
 			{
 				args.push_back("-platform");
 				args.push_back("minimal");
 			}
-			
+
 			if(hideJASP)
 			{
 				args.push_back("-platform");
@@ -461,37 +490,47 @@ int main(int argc, char *argv[])
 			std::cout << "QtWebEngineQuick initialized" << std::endl;
 
 			Application a(argvsize, argvs);
-			
+
 			std::cout << "Application initialized" << std::endl;
 
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
 			ImgSchemeHandler  imgSchemeHandler;
 
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
+
 #ifdef _WIN32
-			// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths
-			// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
-			// However, we also want to support ZIP distributions of jasp, and there is no installer. But the good thing is it also means the user has write access to the main folder. Which means we can fix it now.
-			QFile junctionsCreationLog("junctions-recreated-successfully.log");
-			QFile jaspEngine("JASPEngine.exe");
-						
-			if(jaspEngine.exists() && !junctionsCreationLog.exists())
+			auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();
+			Log::log() << "Runtime Environment: " << runtimeEnv << std::endl;
+
+			// Since we introduced renv to JASP, we need to recreate the junctions from Modules -> renv-cache on first run. Because windows does not support proper symlinks on user perms
+			// For this JASP has the --junctions argument, and is run on first execution of a specific jasp version on a system.
+			Log::log() << "Checking if we need to recreate junctions or not" << std::endl;
+			if(!DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
 			{
-				QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
-				
+				Log::log() << "We need to recreate junctions!" << std::endl;
+
+				QMessageBox *msgBox = new QMessageBox(nullptr);
+				msgBox->setIcon( QMessageBox::Information );
+				msgBox->setText("JASP is setting a few things up. Just a moment please");
+				QPushButton *btn =  msgBox->addButton( "Ok", QMessageBox::AcceptRole );
+				msgBox->setAttribute(Qt::WA_DeleteOnClose); // delete pointer after close
+				msgBox->setModal(false);
+				msgBox->show();
+
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
-				{					
-					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support, or try the MSI." << std::endl;	
+				{
+					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
 					exit(254);
 				}
+				msgBox->hide();
 			}
 #endif
-			
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
-			
-			try 
+
+
+			try
 			{
 				std::cout << "Entering eventloop" << std::endl;
-				
+
 				int exitCode = a.exec();
 				JASPTIMER_STOP("JASP");
 				JASPTIMER_PRINTALL();

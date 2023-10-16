@@ -148,7 +148,7 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_purgeGlobalEnvironment();
 
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * modulesFolder, const char * linkFolder, const char * junctionsFilePath);
 
 } // extern "C"
 
