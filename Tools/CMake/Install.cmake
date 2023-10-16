@@ -319,25 +319,35 @@ if(WIN32)
     NORMALIZE
     R_BIN_PATH_NATIVE)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxi.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxi.in
                  ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxs
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxs
                  ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/WIX.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/WIX.cmd.in
                  ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/ZIP.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/zip/ZIP.cmd.in
                  ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/CollectJunctions.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/CollectJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/windowsPreInstallHacks.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/windowsPreInstallHacks.cmd.in
   ${CMAKE_BINARY_DIR}/windowsPreInstallHacks.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/RecreateJunctions.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
+
+  #msix stuff
+    configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest.xml.in
+                  ${CMAKE_BINARY_DIR}/AppxManifest.xml @ONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/msix.cmd.in
+                  ${CMAKE_BINARY_DIR}/msix.cmd @ONLY)
+    install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
+    install(FILES ${CMAKE_BINARY_DIR}/AppxManifest.xml DESTINATION .)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/windows/msix/Assets DESTINATION .)
+
 
   execute_process(
     WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}

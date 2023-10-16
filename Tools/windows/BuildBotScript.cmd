@@ -37,8 +37,10 @@ cmake --build build --target install
 
 cmake --build build --target collect-junctions
 
-cmake --build build --target wix
+@REM cmake --build build --target wix
 
-cmake --build build --target zip
+@REM cmake --build build --target zip
 
-cmake --build build --target upload
+cmake --build build --target msix
+
+@REM cmake --build build --target upload

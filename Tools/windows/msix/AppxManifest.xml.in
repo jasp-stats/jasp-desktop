@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
+  xmlns:uap6="http://schemas.microsoft.com/appx/manifest/uap/windows10/6"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+
+<Identity Name="45842JASP.JASP"
+        Version="@JASP_VERSION@"
+        Publisher="CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
+    ProcessorArchitecture="x64"/>
+
+<Properties>
+  <DisplayName>JASP</DisplayName>
+  <PublisherDisplayName>JASP</PublisherDisplayName>
+  <Logo>Assets\StoreLogo.png</Logo>
+</Properties>
+
+<Resources>
+  <Resource Language="en-us" />
+</Resources>
+
+<Dependencies>
+<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
+</Dependencies>
+
+<Capabilities>
+  <rescap:Capability Name="runFullTrust"/>
+</Capabilities>
+
+<Applications>
+  <Application Id="JASP" 
+    Executable="JASP.exe"
+    uap10:RuntimeBehavior="packagedClassicApp"
+    uap10:TrustLevel="mediumIL">
+
+    <uap:VisualElements
+      DisplayName="JASP"
+      Square150x150Logo="Assets\Square150x150Logo.png"
+      Square44x44Logo="Assets\Square44x44Logo.png"
+      Description="JASP"
+      BackgroundColor="transparent">
+      <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png"/>
+      <uap:SplashScreen Image="Assets\SplashScreen.png" />
+    </uap:VisualElements>
+
+
+    <Extensions>
+      <uap:Extension Category="windows.fileTypeAssociation">
+        <uap3:FileTypeAssociation Name="fileassociations">
+          <uap:SupportedFileTypes>
+            <uap:FileType>.jasp</uap:FileType>
+            <uap:FileType>.csv</uap:FileType>
+            <uap:FileType>.sav</uap:FileType>
+          </uap:SupportedFileTypes>
+          <uap:Logo>Assets\Square44x44Logo.png</uap:Logo>
+
+        </uap3:FileTypeAssociation>
+      </uap:Extension>
+    </Extensions>
+
+  </Application>
+</Applications>
+
+<Extensions>
+	<uap6:Extension Category="windows.loaderSearchPathOverride">
+      <uap6:LoaderSearchPathOverride>
+        <uap6:LoaderSearchPathEntry FolderPath="R\bin\x64" />
+        <uap6:LoaderSearchPathEntry FolderPath="R\opt\jags\x64\bin" />
+      </uap6:LoaderSearchPathOverride>
+	</uap6:Extension>  
+</Extensions>
+
+</Package>

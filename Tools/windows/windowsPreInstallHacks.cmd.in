@@ -1,4 +1,4 @@
-rem This file is generated from Tools/wix/windowsPostInstallHacks.cmd.in, if you want to change it,
+rem This file is generated from Tools/windows/windowsPostInstallHacks.cmd.in, if you want to change it,
 rem be aware that it will be overwritten. You can edit the template file, and rerun the CMake
 rem to see your changes here.
 rem

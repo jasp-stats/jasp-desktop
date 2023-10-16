@@ -80,7 +80,7 @@ extern "C" {
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
 	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
-	void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder);
+	void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
 	void rbridge_setFileNameSource(			std::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setSpecificFileNameSource(	std::function<void(const std::string &, std::string &, std::string &)> source);
