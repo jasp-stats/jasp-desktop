@@ -8,19 +8,26 @@
 class DynamicRuntimeInfo 
 {
 public:
-    enum RuntimeEnvironment{ ZIP, MSIX, MSI, R, FLATPAK, MAC, LINUX_LOCAL, UNKNOWN };
-    const std::map<std::string, RuntimeEnvironment> runtimeEnvironmentStringMap = {
+	enum RuntimeEnvironment{ ZIP, MSIX, MSI, R, FLATPAK, MAC, LINUX_LOCAL, UNKNOWN };
+	const std::map<std::string, RuntimeEnvironment> StringToRuntimeEnvironmentMap = {
         {"ZIP", RuntimeEnvironment::ZIP}, {"MSIX", RuntimeEnvironment::MSIX},
         {"MSI", RuntimeEnvironment::MSI}, {"R", RuntimeEnvironment::R},
         {"FLATPAK", RuntimeEnvironment::FLATPAK}, {"MAC", RuntimeEnvironment::MAC},
-        {"LINUX_LOCAL", RuntimeEnvironment::LINUX_LOCAL},
-    };
+		{"LINUX_LOCAL", RuntimeEnvironment::LINUX_LOCAL}, {"UNKNOWN", RuntimeEnvironment::UNKNOWN},
+	};
+	const std::map<RuntimeEnvironment, std::string> RuntimeEnvironmentToStringMap = {
+		{RuntimeEnvironment::ZIP, "ZIP"}, {RuntimeEnvironment::MSIX, "MSIX"},
+		{RuntimeEnvironment::MSI, "MSI"}, {RuntimeEnvironment::R, "R"},
+		{RuntimeEnvironment::FLATPAK, "FLATPAK"}, {RuntimeEnvironment::MAC, "MAC"},
+		{RuntimeEnvironment::LINUX_LOCAL, "LINUX_LOCAL"}, {RuntimeEnvironment::UNKNOWN, "UNKNOWN"},
+		};
 
     enum MicroArch{ AARCH64, X86_64, UNSUPPORTED };
 
 	bool bundledModulesInitialized();
 
-    RuntimeEnvironment getRuntimeEnvironment();
+	RuntimeEnvironment getRuntimeEnvironment();
+	std::string getRuntimeEnvironmentAsString();
 	RuntimeEnvironment getMicroArch();
 	uint64_t bundledModulesInitializedOnTimestamp();
     std::string bundledModulesInitializedByCommit();

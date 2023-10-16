@@ -499,6 +499,9 @@ int main(int argc, char *argv[])
 			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 
 #ifdef _WIN32
+			auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();
+			Log::log() << "Runtime Environment: " << runtimeEnv << std::endl;
+
 			// Since we introduced renv to JASP, we need to recreate the junctions from Modules -> renv-cache on first run. Because windows does not support proper symlinks on user perms
 			// For this JASP has the --junctions argument, and is run on first execution of a specific jasp version on a system.
 			Log::log() << "Checking if we need to recreate junctions or not" << std::endl;

@@ -73,8 +73,8 @@ bool DynamicRuntimeInfo::parseStaticRuntimeInfoFile(const std::string &path)
     in >> root;
 
 	std::string runtimeEnvironmentString = root.get("runtimeEnvironment", "").asString();
-    auto it = runtimeEnvironmentStringMap.find(runtimeEnvironmentString);
-    if(it == runtimeEnvironmentStringMap.end())
+	auto it = StringToRuntimeEnvironmentMap.find(runtimeEnvironmentString);
+	if(it == StringToRuntimeEnvironmentMap.end())
         _environment = RuntimeEnvironment::UNKNOWN;
     else 
         _environment = it->second;
@@ -130,7 +130,13 @@ bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()
 
 DynamicRuntimeInfo::RuntimeEnvironment DynamicRuntimeInfo::getRuntimeEnvironment()
 {
-    return _environment;
+	return _environment;
+}
+
+std::string DynamicRuntimeInfo::getRuntimeEnvironmentAsString()
+{
+	auto x =  RuntimeEnvironmentToStringMap.find(_environment);
+	return x != RuntimeEnvironmentToStringMap.end() ? x->second : RuntimeEnvironmentToStringMap.find(UNKNOWN)->second;
 }
 
 uint64_t DynamicRuntimeInfo::bundledModulesInitializedOnTimestamp()
