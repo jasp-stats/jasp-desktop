@@ -4,6 +4,7 @@
 #include "log.h"
 #include "dataset.h"
 #include "columntype.h"
+#include "version"
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
 
@@ -11,11 +12,11 @@ DatabaseInterface * DatabaseInterface::_singleton = nullptr;
 
 const std::string DatabaseInterface::_dbConstructionSql =
 //"PRAGMA foreign_keys=TRUE;\n"
-"CREATE TABLE DataSets		( id INTEGER PRIMARY KEY, dataFilePath TEXT, databaseJson TEXT, emptyValuesJson TEXT, revision INT DEFAULT 0, dataFileSynch INT);\n"
+"CREATE TABLE DataSets		( id INTEGER PRIMARY KEY, dataFilePath TEXT, description TEXT, databaseJson TEXT, emptyValuesJson TEXT, revision INT DEFAULT 0, dataFileSynch INT);\n"
 "CREATE TABLE Filters		( id INTEGER PRIMARY KEY, dataSet INT, rFilter TEXT, generatedFilter TEXT, constructorJson TEXT, constructorR TEXT, errorMsg TEXT"
 							", revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, title TEXT, description TEXT, columnType TEXT, colIdx INT, isComputed INT, invalidated INT NULL, "
-							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL, "
+							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL, emptyValuesJson TEXT, "
 							"analysisId INT NULL, revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Labels		( id INTEGER PRIMARY KEY, columnId INT, value INT, ordering INT, filterAllows INT, label TEXT, originalValueJson TEXT, description TEXT, FOREIGN KEY(columnId) REFERENCES Columns(id));\n";
 
@@ -36,41 +37,45 @@ DatabaseInterface::~DatabaseInterface()
 }
 
 
-int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
+int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetInsert);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(),	dataFilePath.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 2, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 3, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	4, dataSynch);
+		sqlite3_bind_text(stmt, 2, description.c_str(),		description.length(),		SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 3, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	5, dataSynch);
 	};
 
 	transactionWriteBegin();
-	int id = runStatementsId("INSERT INTO DataSets (dataFilePath, databaseJson, emptyValuesJson, dataFileSynch) VALUES (?, ?, ?, ?) RETURNING id;", prepare);
+	int id = runStatementsId("INSERT INTO DataSets (dataFilePath, description, databaseJson, emptyValuesJson, dataFileSynch) VALUES (?, ?, ?, ?, ?) RETURNING id;", prepare);
 	runStatements("CREATE TABLE " + dataSetName(id) + " (rowNumber INTEGER PRIMARY KEY);");
 	transactionWriteEnd();
 
 	return id;
 }
 
-void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFilePath, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
+void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFilePath, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetUpdate);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(),	dataFilePath.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 2, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 3, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	4, dataSynch);
-		sqlite3_bind_int(stmt,	5, dataSetId);
+		sqlite3_bind_text(stmt, 2, description.c_str(),		description.length(),		SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 3, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	5, dataSynch);
+		sqlite3_bind_int(stmt,	6, dataSetId);
 	};
 
-	runStatements("UPDATE DataSets SET dataFilePath=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, revision=revision+1 WHERE id = ?;", prepare);
+	Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
+
+	runStatements("UPDATE DataSets SET dataFilePath=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, revision=revision+1 WHERE id = ?;", prepare);
 }
 
-void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch)
+void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetLoad);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -82,20 +87,20 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, s
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 5);
+		assert(colCount == 6);
 
 		dataFilePath	= _wrap_sqlite3_column_text(stmt, 0);
-		databaseJson	= _wrap_sqlite3_column_text(stmt, 1);
-		emptyValuesJson = _wrap_sqlite3_column_text(stmt, 2);
-		revision		= sqlite3_column_int(		stmt, 3);
-		dataSynch		= sqlite3_column_int(		stmt, 4);
+		description		= _wrap_sqlite3_column_text(stmt, 1);
+		databaseJson	= _wrap_sqlite3_column_text(stmt, 2);
+		emptyValuesJson = _wrap_sqlite3_column_text(stmt, 3);
+		revision		= sqlite3_column_int(		stmt, 4);
+		dataSynch		= sqlite3_column_int(		stmt, 5);
 
-#ifdef SIR_LOG_A_LOT
 		Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
-#endif
 	};
 
-	runStatements("SELECT dataFilePath, databaseJson, emptyValuesJson, revision, dataFileSynch FROM DataSets WHERE id = ?;", prepare, processRow);
+	ensureCorrectDb();
+	runStatements("SELECT dataFilePath, description, databaseJson, emptyValuesJson, revision, dataFileSynch FROM DataSets WHERE id = ?;", prepare, processRow);
 }
 
 int DatabaseInterface::dataSetColCount(int dataSetId)
@@ -1073,7 +1078,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, bool &invalidated, c
 					error				= _wrap_sqlite3_column_text(stmt,	4);
 		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	5);
 
-		codeType = codeTypeStr.empty() ? computedColumnType::unknown : computedColumnTypeFromString(codeTypeStr);
+		codeType = codeTypeStr.empty() ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr);
 
 		constructorJson = Json::objectValue;
 		Json::Reader().parse(constructorJsonStr, constructorJson);
@@ -1597,6 +1602,8 @@ void DatabaseInterface::load()
 	}
 	else
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
+
+	ensureCorrectDb();
 }
 
 void DatabaseInterface::close()
@@ -1607,6 +1614,19 @@ void DatabaseInterface::close()
 		sqlite3_close(_db);
 		_db = nullptr;
 	}
+}
+
+void DatabaseInterface::ensureCorrectDb()
+{
+	transactionWriteBegin();
+
+	// Check whether the description column exists in DataSets table
+	int count = runStatementsId("SELECT COUNT(*) AS CNTREC FROM pragma_table_info('DataSets') WHERE name='description'");
+	if (count == 0)
+		runStatements("ALTER TABLE DataSets ADD COLUMN description TEXT");
+
+	transactionWriteEnd();
+
 }
 
 void DatabaseInterface::transactionWriteBegin()

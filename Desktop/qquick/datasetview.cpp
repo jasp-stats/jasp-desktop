@@ -1024,21 +1024,6 @@ void DataSetView::setSelectionStart(QPoint selectionStart)
 	_selectionStart = selectionStart;
 	emit selectionStartChanged(_selectionStart);
 
-	/*if(_model->headerData(_selectionStart.column(), Qt::Horizontal, _roleNameToRole["columnIsComputed"]).toBool())
-	{
-		if(_editing)
-		{
-			destroyEditItem();
-			setEditing(false);
-		}
-
-		storeTextItem(selectionStart.row(), selectionStart.column());
-		createTextItem(selectionStart.row(), selectionStart.column());
-
-		//emit showComputedColumn(_model->headerData(_selectionStart.column(), Qt::Horizontal).toString());
-	}
-	else*/
-
 	_selectionEnd = QPoint(-1, -1);
 	emit selectionEndChanged(_selectionEnd);
 }
@@ -1326,12 +1311,12 @@ QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
 }
 void DataSetView::columnComputedInsertAfter(int col, bool R)
 {
-	emit showComputedColumn(columnInsertAfter(col, true, R));
+	columnInsertAfter(col, true, R);
 }
 
 void DataSetView::columnComputedInsertBefore(int col, bool R)
 {
-	emit showComputedColumn(columnInsertBefore(col, true, R));
+	columnInsertBefore(col, true, R);
 }
 
 void DataSetView::columnsDelete()

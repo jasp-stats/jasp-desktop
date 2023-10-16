@@ -1,15 +1,11 @@
 #include "preferencesmodel.h"
-#include "utils.h"
 #include "utilities/qutils.h"
-
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
 #include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
-#include "utilities/appdirs.h"
-#include "enginedefinitions.h"
 #include "columnutils.h"
 #include "preferencesmodelbase.h"
 #include <QQuickWindow>
@@ -20,8 +16,6 @@ using namespace std;
 PreferencesModel::PreferencesModel(QObject *parent) :
 	PreferencesModelBase(parent)
 {	
-	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
-
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
 	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
 	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
@@ -152,11 +146,9 @@ double PreferencesModel::uiScale()
 	return _uiScale;
 }
 
-QStringList PreferencesModel::missingValues()		const
+QStringList PreferencesModel::emptyValues()		const
 {
-	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
-
-	return items;
+	return _splitValues(Settings::value(Settings::EMPTY_VALUES_LIST).toString());
 }
 
 QStringList PreferencesModel::modulesRemembered()	const
@@ -389,37 +381,30 @@ void PreferencesModel::zoomReset()
 	setUiScale(1.0);
 }
 
-void PreferencesModel::removeMissingValue(QString value)
+void PreferencesModel::removeEmptyValue(QString value)
 {
-	QStringList currentValues = missingValues();
+	QStringList currentValues = emptyValues();
 	if(currentValues.contains(value))
 	{
 		currentValues.removeAll(value);
-		Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
-		emit missingValuesChanged();
+		_setEmptyValues(currentValues);
 	}
 }
 
-void PreferencesModel::addMissingValue(QString value)
+void PreferencesModel::addEmptyValue(QString value)
 {
+	QStringList currentValues = emptyValues();
+	if(!currentValues.contains(value))
 	{
-		QStringList currentValues = missingValues();
-		if(!currentValues.contains(value))
-		{
-			currentValues.append(value);
-			Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
-			emit missingValuesChanged();
-		}
+		currentValues.append(value);
+		_setEmptyValues(currentValues);
 	}
 }
 
-void PreferencesModel::resetMissingValues()
+void PreferencesModel::resetEmptyValues()
 {
-	QStringList currentValues = missingValues();
-	Settings::setValue(Settings::MISSING_VALUES_LIST, Settings::defaultMissingValues);
-
-	if(missingValues() != currentValues)
-		emit missingValuesChanged();
+	QStringList defaultValues = _splitValues(Settings::defaultEmptyValues);
+	_setEmptyValues(defaultValues);
 }
 
 void PreferencesModel::setCustomThresholdScale(bool newCustomThresholdScale)
@@ -439,13 +424,6 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
 	emit thresholdScaleChanged(newThresholdScale);
 
-}
-
-void PreferencesModel::updateUtilsMissingValues()
-{
-	stringvec miss = fq(missingValues());
-	ColumnUtils::_currentEmptyValues = stringset(miss.begin(), miss.end());
-	ColumnUtils::processEmptyValues();
 }
 
 void PreferencesModel::_loadDatabaseFont()
@@ -549,4 +527,25 @@ void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 void PreferencesModel::currentThemeNameHandler()
 {
 	setCurrentThemeName(JaspTheme::currentTheme()->themeName());
+}
+
+void PreferencesModel::_setEmptyValues(const QStringList& values)
+{
+	if (values != emptyValues())
+	{
+		emit aboutToChangeEmptyValues(values);
+		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
+		emit emptyValuesChanged();
+	}
+}
+
+QStringList PreferencesModel::_splitValues(const QString &values) const
+{
+	QStringList items = values.split("|");
+	std::set<QString> orderedValues; // use std::set to order the items
+	for (const QString& item : items)
+		orderedValues.insert(item);
+
+	return QStringList(orderedValues.begin(), orderedValues.end());
+
 }

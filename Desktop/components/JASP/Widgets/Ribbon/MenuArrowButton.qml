@@ -34,6 +34,7 @@ Rectangle
 	{
 		Hamburger,
 		Plus,
+		Tools,
 		LeftArrow,
 		RightArrow
 	}
@@ -46,7 +47,8 @@ Rectangle
 	readonly property bool pressed:		mice.pressed || showPressed
 	readonly property bool hamburger:	buttonType == MenuArrowButton.ButtonType.Hamburger || buttonType == MenuArrowButton.ButtonType.LeftArrow
 	readonly property bool showArrow:	buttonType == MenuArrowButton.ButtonType.LeftArrow || buttonType == MenuArrowButton.ButtonType.RightArrow 
-	
+	readonly property bool isTools:		buttonType == MenuArrowButton.ButtonType.Tools
+
 
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
@@ -72,12 +74,24 @@ Rectangle
 		property real	barWidth:		baseHeight / 2
 		property color	barColor:		jaspTheme.jaspBlue
 
+		Image
+		{
+			id:				toolsIcon
+			source:			jaspTheme.iconPath + "/workspace-tools.svg"
+			width:			parent.width
+			height:			width
+			anchors.centerIn: parent
+
+			visible:		isTools
+		}
+
 		Item
 		{
 			id:					topBar
 			anchors.centerIn:	parent
 			height:				hamburgerArrow.barThickness
 			width:				parent.width
+			visible:			!isTools
 
 			Rectangle
 			{
@@ -105,6 +119,7 @@ Rectangle
 			width:	parent.width
 			radius:	hamburgerArrow.barRadius
 			color:	hamburgerArrow.barColor
+			visible:			!isTools
 
 			anchors.centerIn:	parent
 		}
@@ -115,6 +130,7 @@ Rectangle
 			anchors.centerIn:	parent
 			height:				hamburgerArrow.barThickness
 			width:				parent.width
+			visible:			!isTools
 
 			Rectangle
 			{
@@ -130,8 +146,8 @@ Rectangle
 				rotation:			!ribbonButton.showArrow ? 0 : ribbonButton.hamburger ? 45 : -45
 				radius:				hamburgerArrow.barRadius
 				color:				hamburgerArrow.barColor
-
 			}
+
 		}
 	}
 

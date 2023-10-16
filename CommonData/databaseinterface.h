@@ -6,6 +6,7 @@
 #include <string>
 #include "utils.h"
 #include <json/json.h>
+#include "version.h"
 
 
 class DataSet;
@@ -74,9 +75,9 @@ public:
 	int			dataSetGetId();
 	bool		dataSetExists(			int dataSetId);
 	void		dataSetDelete(			int dataSetId);
-	int			dataSetInsert(							const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
-	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Updates an existing DataSet row in DataSets
-	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,			 std::string & databaseJson,			std::string & emptyValuesJson, int & revision, bool & dataSynch);	///< Loads an existing DataSet row into arguments
+	int			dataSetInsert(							const std::string & dataFilePath = "", const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
+	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false);		///< Updates an existing DataSet row in DataSets
+	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,			 std::string & description,			   std::string & databaseJson,			  std::string & emptyValuesJson, int & revision, bool & dataSynch);	///< Loads an existing DataSet row into arguments
 	static int	dataSetColCount(		int dataSetId);
 	static int	dataSetRowCount(		int dataSetId);
 	void		dataSetSetRowCount(		int dataSetId, size_t rowCount);
@@ -136,7 +137,7 @@ public:
 	void		columnGetValuesInts(		int columnId,	intvec		& ints);
 	void		columnGetValuesDbls(		int columnId,	doublevec	& dbls);
 	std::string columnBaseName(				int columnId) const;
-    void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
+	void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Labels
 	void		labelsClear(			int columnId);
@@ -164,6 +165,7 @@ private:
 	void		create();										///< Creates a new sqlite database in sessiondir and loads it
 	void		load();											///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 	void		close();										///< Closes the loaded database and disconnects
+	void		ensureCorrectDb();
 
 	int			_transactionWriteDepth	= 0,
 				_transactionReadDepth	= 0;

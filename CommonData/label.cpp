@@ -195,7 +195,7 @@ std::string Label::originalValueAsString(bool fancyEmptyValue) const
 		return std::to_string(_originalValue.asInt());
 
 	case Json::realValue:
-		return ColumnUtils::doubleToDisplayString(_originalValue.asDouble(), fancyEmptyValue);
+		return _column->doubleToDisplayString(_originalValue.asDouble(), fancyEmptyValue);
 
 	case Json::stringValue:
 		return _originalValue.asString();

@@ -310,7 +310,7 @@ FocusScope
 
 						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
 						case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
-						case Qt.Key_Left:	if(colI	> 0 && editItem.cursorPosition <= 0)		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
+						case Qt.Key_Left:	if(colI	> 0 && (editItem.cursorPosition <= 0 || !itemEditable))		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
 						case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 &&
 											   editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
 						case Qt.Key_Backtab: if(colI > 0)										{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false; } break;
@@ -695,22 +695,17 @@ FocusScope
 					{
 						if(columnIndex >= 0)
 						{
-							if(!virtual && (mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton))
-								dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+							if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
+								dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
 
-							if(ribbonModel.dataMode)
-							{
-								if (mouseEvent.button === Qt.RightButton)
-									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex);
-								else if (virtual && mouseEvent.button === Qt.LeftButton)
-									createComputeDialog.open()
-							}
+							if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
+								dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex)
 						}
 					}
 
 					hoverEnabled:		true
 					ToolTip.visible:	containsMouse
-					ToolTip.text:		virtual ? qsTr("Add computed column")
+					ToolTip.text:		virtual ? qsTr("Add column")
 											:   ("<b>" + columnTitle + "</b>"
                                                 + (computedColumnType == computedColumnTypeAnalysis ? "<br>" + qsTr("Computed by an analysis") + "<br>": "")
 												+ (columnDescription === "" ? "" : "<br><i>" + columnDescription + "</i>")

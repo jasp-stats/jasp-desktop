@@ -46,7 +46,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
-	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
+	Q_PROPERTY(QStringList	emptyValues				READ emptyValues													NOTIFY emptyValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
@@ -90,7 +90,7 @@ public:
 	QString		customEditor()							const;
 	QString		developerFolder()						const;
 	QString		fixedDecimalsForJS()					const;
-	QStringList	missingValues()							const;
+	QStringList	emptyValues()							const;
 	bool		customThresholdScale()					const;
 	int			thresholdScale()						const;
 	bool		logToFile()								const;
@@ -152,10 +152,9 @@ public slots:
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
-	void updateUtilsMissingValues();
-	void removeMissingValue(			QString		value);
-	void addMissingValue(				QString		value);
-	void resetMissingValues();
+	void removeEmptyValue(				QString		value);
+	void addEmptyValue(					QString		value);
+	void resetEmptyValues();
 	void setCustomThresholdScale(		bool		customThresholdScale);
 	void setThresholdScale(				int			thresholdScale);
 	void setLogToFile(					bool		logToFile);
@@ -205,7 +204,7 @@ signals:
 	void whiteBackgroundChanged();
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
-	void missingValuesChanged();
+	void emptyValuesChanged();
 	void developerModeChanged(			bool		developerMode);
 	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
@@ -241,6 +240,7 @@ signals:
 	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
 	void ALTNavModeActiveChanged(		bool		ALTNavModeActive);
+	void aboutToChangeEmptyValues(		QStringList newValues);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);
@@ -255,7 +255,9 @@ private:
 	bool			_githubPatCustom; //Should be initialized on prefs construction
 
 	void			_loadDatabaseFont();
-	QString			_checkFontList(QString fonts) const;	
+	QString			_checkFontList(QString fonts)					const;
+	QStringList		_splitValues(const QString& values)				const;
+	void			_setEmptyValues(const QStringList& values);
 };
 
 #endif // PREFERENCESDIALOG_H

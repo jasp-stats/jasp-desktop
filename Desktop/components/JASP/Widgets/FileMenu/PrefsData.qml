@@ -196,7 +196,7 @@ ScrollView
 
 					text:				preferencesModel.dataLabelNA
 					onEditingFinished:	preferencesModel.dataLabelNA = text
-					nextEl:				missingValuesList.firstComponent
+					nextEl:				missingValuesList
 
 					anchors
 					{
@@ -208,9 +208,9 @@ ScrollView
 
 			PrefsMissingValues
 			{
-				id: 			missingValuesList
-				navigateFrom:   missingValueDataLabelInput
-				navigateTo:     noBomNative
+				id:					missingValuesList
+				model:				preferencesModel
+				KeyNavigation.tab:	noBomNative
 			}
 			
 

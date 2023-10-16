@@ -7,6 +7,8 @@
 #include "undostack.h"
 #include <QTimer>
 
+class DataSetTableModel;
+
 /// 
 /// This pipes through the label-information for a single column from DataSetPackage
 /// The column is selected by changing `proxyParentColumn` from DataSetTableProxy
@@ -14,29 +16,46 @@ class ColumnModel : public DataSetTableProxy
 {
 	Q_OBJECT
 
-	Q_PROPERTY(int		filteredOut			READ filteredOut									NOTIFY filteredOutChanged		)
-	Q_PROPERTY(int		chosenColumn		READ chosenColumn		WRITE setChosenColumn		NOTIFY chosenColumnChanged		)
-	Q_PROPERTY(bool		visible				READ visible			WRITE setVisible			NOTIFY visibleChanged			)
-	Q_PROPERTY(QString	columnName			READ columnNameQ		WRITE setColumnNameQ		NOTIFY columnNameChanged		)
-	Q_PROPERTY(QString	columnTitle			READ columnTitle		WRITE setColumnTitle		NOTIFY columnTitleChanged		)
-	Q_PROPERTY(QString	columnDescription	READ columnDescription	WRITE setColumnDescription	NOTIFY columnDescriptionChanged	)
-	Q_PROPERTY(double	rowWidth			READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
-	Q_PROPERTY(double	valueMaxWidth		READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
-	Q_PROPERTY(double	labelMaxWidth		READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
-	Q_PROPERTY(bool		showLabelEditor		READ showLabelEditor								NOTIFY showLabelEditorChanged	)
-	Q_PROPERTY(bool		showComputedColumn	READ showComputedColumn 							NOTIFY showComputedColumnChanged)
-	Q_PROPERTY(bool		columnIsFiltered	READ columnIsFiltered								NOTIFY columnIsFilteredChanged	)
-	Q_PROPERTY(bool		nameEditable		READ nameEditable									NOTIFY nameEditableChanged		)
-
+	Q_PROPERTY(int			filteredOut					READ filteredOut												NOTIFY filteredOutChanged				)
+	Q_PROPERTY(int			chosenColumn				READ chosenColumn				WRITE setChosenColumn			NOTIFY chosenColumnChanged				)
+	Q_PROPERTY(bool			visible						READ visible					WRITE setVisible				NOTIFY visibleChanged					)
+	Q_PROPERTY(QString		columnName					READ columnNameQ				WRITE setColumnNameQ			NOTIFY columnNameChanged				)
+	Q_PROPERTY(QString		columnTitle					READ columnTitle				WRITE setColumnTitle			NOTIFY columnTitleChanged				)
+	Q_PROPERTY(QString		columnDescription			READ columnDescription			WRITE setColumnDescription		NOTIFY columnDescriptionChanged			)
+	Q_PROPERTY(double		rowWidth					READ rowWidth					WRITE setRowWidth				NOTIFY rowWidthChanged					)
+	Q_PROPERTY(double		valueMaxWidth				READ valueMaxWidth												NOTIFY valueMaxWidthChanged				)
+	Q_PROPERTY(double		labelMaxWidth				READ labelMaxWidth												NOTIFY labelMaxWidthChanged				)
+	Q_PROPERTY(bool			columnIsFiltered			READ columnIsFiltered											NOTIFY columnIsFilteredChanged			)
+	Q_PROPERTY(bool			nameEditable				READ nameEditable												NOTIFY nameEditableChanged				)
+	Q_PROPERTY(QString		computedType				READ computedType				WRITE setComputedType			NOTIFY computedTypeChanged				)
+	Q_PROPERTY(bool			computedTypeEditable		READ computedTypeEditable										NOTIFY computedTypeEditableChanged		)
+	Q_PROPERTY(QVariantList	computedTypeValues			READ computedTypeValues											NOTIFY computedTypeValuesChanged		)
+	Q_PROPERTY(QString		currentColumnType			READ currentColumnType			WRITE setColumnType				NOTIFY columnTypeChanged				)
+	Q_PROPERTY(QVariantList	columnTypeValues			READ columnTypeValues											CONSTANT								)
+	Q_PROPERTY(bool			useCustomEmptyValues		READ useCustomEmptyValues		WRITE setUseCustomEmptyValues	NOTIFY useCustomEmptyValuesChanged		)
+	Q_PROPERTY(QStringList	emptyValues					READ emptyValues				WRITE setCustomEmptyValues		NOTIFY emptyValuesChanged				)
+	Q_PROPERTY(QVariantList	tabs						READ tabs														NOTIFY tabsChanged						)
+	Q_PROPERTY(bool 		isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
 
 public:
-	ColumnModel();
+	ColumnModel(DataSetTableModel* dataSetTableModel);
+
+	static QMap<computedColumnType, QString>	columnTypeFriendlyName;
 
 	bool		labelNeedsFilter(size_t col);
 	std::string columnName(size_t col); ///< Not a proxy columnIndex!
 	QString		columnNameQ();
-	QString		columnTitle() const;
-	QString		columnDescription() const;
+	QString		columnTitle()					const;
+	QString		columnDescription()				const;
+	QString		computedType()					const;
+	bool		computedTypeEditable()			const;
+	QVariantList computedTypeValues()			const;
+	QString		currentColumnType()				const;
+	QVariantList columnTypeValues()				const;
+	bool		useCustomEmptyValues()			const;
+	QStringList emptyValues()					const;
+
+
 	bool		setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
 	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
@@ -54,6 +73,9 @@ public:
 	Q_INVOKABLE void resetFilterAllows();
 	Q_INVOKABLE void unselectAll();
 	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
+	Q_INVOKABLE void addEmptyValue(QString value);
+	Q_INVOKABLE void removeEmptyValue(QString value);
+	Q_INVOKABLE void resetEmptyValues();
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
 	Q_INVOKABLE void undo()				{ _undoStack->undo(); }
 	Q_INVOKABLE void redo()				{ _undoStack->redo(); }
@@ -67,15 +89,17 @@ public:
 
 	void setColumnTitle(const QString & newColumnTitle);
 	void setColumnDescription(const QString & newColumnDescription);
+	void setComputedType(QString computedType);
+	void setColumnType(QString type);
 	void setLabelMaxWidth();
+	void setUseCustomEmptyValues(bool useCustomMissingValues);
+	void setCustomEmptyValues(const QStringList& customMissingValues);
 
+	QVariantList tabs()		const;
 
-	bool showLabelEditor() const;
-	bool showComputedColumn() const;
 	bool columnIsFiltered() const;
+	bool isVirtual()		const	{ return _virtual; }
 
-	
-	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -91,6 +115,8 @@ public slots:
 	void changeSelectedColumn(QPoint selectionStart);
 	void checkRemovedColumns(int columnIndex, int count);
 	void openComputedColumn(const QString & name);
+	void checkCurrentColumn( QStringList changedColumns, QStringList missingColumns, QMap<QString, QString>	changeNameColumns, bool rowCountChanged, bool hasNewColumns);
+
 
 signals:
 	void visibleChanged(bool visible);
@@ -104,28 +130,41 @@ signals:
 	void chosenColumnChanged();
 	void columnTitleChanged();
 	void columnDescriptionChanged();
-	void showLabelEditorChanged();
-	void showComputedColumnChanged();
+	void computedTypeChanged();
+	void computedTypeEditableChanged();
+	void computedTypeValuesChanged();
+	void columnTypeChanged();
 	void columnIsFilteredChanged();
 	void beforeChangingColumn(int chosenColumn);
-
-
-	
 	void nameEditableChanged();
-	
+	void tabsChanged();
+	void useCustomEmptyValuesChanged();
+	void emptyValuesChanged();
+	void isVirtualChanged();
+
 private:
 	std::vector<size_t> getSortedSelection()					const;
 	void				setValueMaxWidth();
+	void				clearVirtual();
 
-private:
+	struct
+	{
+		QString				name, title, description;
+		columnType			type = columnType::scale;
+		computedColumnType	computedType = computedColumnType::notComputed;
+	} _dummyColumn;
+
 	bool				_visible		= false,
-						_editing		= false;
+						_editing		= false,
+						_virtual		= false;
+	int					_currentColId	= -1;
 	double				_valueMaxWidth	= 10,
 						_labelMaxWidth	= 10,
 						_rowWidth		= 60;
 	std::set<QString>	_selected;
 	int					_lastSelected	= -1;
 	UndoStack*			_undoStack		= nullptr;
+	DataSetTableModel*	_dataSetTableModel = nullptr;
 };
 
 #endif // COLUMN_MODEL_H

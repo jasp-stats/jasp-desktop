@@ -8,13 +8,9 @@ import "FilterConstructor"
 FocusScope
 {
 	id:				computedColumnContainer
-	visible:		opened
 
-	property bool	opened:						false
 	property bool	changed:					computedColumnsInterface.computeColumnUsesRCode ? computeColumnEdit.changed : computedColumnConstructor.somethingChanged
 	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
-	property bool	showName:					true
-    property bool   showColumnRemove:                 true
 
 	Connections
 	{
@@ -29,20 +25,6 @@ FocusScope
 		{
 			computeColumnEdit.text = computedColumnsInterface.computeColumnRCode;
 		}
-
-		function computeColumnNameSelectedChanged()
-		{
-			if(computedColumnsInterface.computeColumnNameSelected == "")
-				close();
-			else
-				open(computedColumnsInterface.computeColumnNameSelected)
-		}
-
-		function onRefreshProperties()
-		{
-			if(!computedColumnsInterface.dataSetLoaded)
-				close();
-		}
 	}
 
 	Rectangle
@@ -54,33 +36,6 @@ FocusScope
 		anchors.fill:	parent
 		z:				-1
 	}
-
-	function close()
-    {
-		opened = false
-    }
-
-	Connections
-	{
-		target:		mainWindow
-		function	onShowComputedColumn(columnName) { open(columnName); }
-	}
-
-	function open(columnName)
-    {
-		messages.log("ComputeColumnWindow::open("+columnName+")")
-
-		if(computedColumnsInterface.computeColumnNameSelected != columnName && computedColumnsInterface.computeColumnNameSelected != "" && computedColumnContainer.changed)
-			saveDialog.open()
-
-		/*if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
-			close();
-		else*/
-		{
-			computedColumnsInterface.computeColumnNameSelected	= columnName;
-			opened = true
-		}
-    }
 
 	function applyComputedColumn()
 	{
@@ -96,10 +51,9 @@ FocusScope
 	function askIfChangedOrClose()
 	{
 		if(computedColumnContainer.changed)	saveDialog.open()
-		else								close()
 	}
 
-	property real desiredMinimumHeight:  computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
+	property real desiredMinimumHeight:  computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight)
 
 
 	Item
@@ -117,28 +71,13 @@ FocusScope
 			rightMargin:	Math.min(0, computedColumnContainer.width - minWidthCollector.minWidth)
 		}
 
-		Text
-		{
-			id:							computeColumnTitle
-			text:						computedColumnsInterface.computeColumnNameSelected !== "" ? qsTr("Computed Column: ") + computedColumnsInterface.computeColumnNameSelected : qsTr("Select a column")
-			color:						jaspTheme.textEnabled
-			anchors.top:				parent.top
-			anchors.horizontalCenter:	parent.horizontalCenter
-			height:						showName ? implicitHeight : 0
-
-			horizontalAlignment:		Text.AlignHCenter
-			font.pixelSize:				(baseFontSize + 4) * preferencesModel.uiScale
-			font.bold:					true
-
-		}
-
 		Item
 		{
 			id: computeColumnCodeArea
 
 			anchors
 			{
-				top:			computeColumnTitle.bottom
+				top:			parent.top
 				bottom:			computeColumnErrorScroll.top
 				left:			parent.left
 				right:			parent.right
@@ -171,6 +110,7 @@ FocusScope
 					height:					Math.max(contentHeight + 30, parent.height - 10)
 					selectByMouse:			true
 					onActiveFocusChanged:	if(!activeFocus) deselect()
+					placeholderText:		"Enter your R code here"
 
 					property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
@@ -319,23 +259,6 @@ FocusScope
 
 			JaspControls.RectangularButton
 			{
-				id:				removeColumnButton
-                visible:        computedColumnContainer.showColumnRemove
-                width:          visible ? implicitWidth : 0
-				iconSource:		jaspTheme.iconPath + "square_trashcan.png"
-				toolTip:		qsTr("Remove computed column")
-				onClicked:		computedColumnsInterface.removeColumn()
-
-				anchors
-				{
-					left:	parent.left
-					bottom: parent.bottom
-					top:	helpButton.top
-				}
-			}
-
-			JaspControls.RectangularButton
-			{
 				id:			showGeneratedRCode
 				visible:	!computedColumnsInterface.computeColumnUsesRCode
 				width:		visible ? implicitWidth : 0
@@ -343,7 +266,7 @@ FocusScope
 				toolTip:	qsTr("Show generated R code")
 				iconSource: jaspTheme.iconPath + "/R.png"
 
-				anchors.left:	removeColumnButton.right
+				anchors.left:	parent.left
 				anchors.bottom:	parent.bottom
 				anchors.top:	helpButton.top
 
@@ -382,11 +305,9 @@ FocusScope
 			id:			saveDialog
 			title:		qsTr("Would you like to save your changes to the Computed Column?")
 			text:		qsTr("Your changes will be lost if you don't save them.")
-			onDiscard:	computedColumnContainer.close()
 			onSave:
 			{
 				computedColumnContainer.applyComputedColumn()
-				computedColumnContainer.close()
 			}
 		}
 	}

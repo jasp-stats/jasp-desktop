@@ -5,6 +5,7 @@
 #include "column.h"
 #include "filter.h"
 #include "emptyvalues.h"
+#include "version.h"
 
 typedef std::vector<Column*> Columns;
 
@@ -29,13 +30,12 @@ public:
 			int				rowCount()				const ;
 			bool			dataFileSynch()			const { return _dataFileSynch;			}
 	const	std::string &	dataFilePath()			const { return _dataFilePath;			}
-			Json::Value		emptyValuesJson()		const { return _emptyValues.toJson();	}
 	const	std::string &	databaseJson()			const { return _databaseJson;			}
 			bool			writeBatchedToDB()		const { return _writeBatchedToDB;		}
 
 			void			dbCreate();
 			void			dbUpdate();
-            void			dbLoad(int index = -1, std::function<void(float)> progressCallback = [](float){});
+			void			dbLoad(int index = -1, const Version& loadedJaspVersion = Version(), std::function<void(float)> progressCallback = [](float){});
 			void			dbDelete();
 
 			void			beginBatchedToDB();
@@ -54,7 +54,6 @@ public:
 			size_t			getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
 
-			void			setEmptyValuesJson(	const Json::Value & emptyValues)	{ _emptyValues.fromJson(emptyValues);		dbUpdate(); }
 			void			setDataFilePath(	const std::string & dataFilePath)	{ _dataFilePath		= dataFilePath;			dbUpdate(); }
 			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }
 			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
@@ -70,16 +69,26 @@ public:
 			void			loadOldComputedColumnsJson(const Json::Value & json); ///< Should act the same as the old ComputedColumns::fromJson() to allow loading "older jaspfiles"
 			stringset		findUsedColumnNames(std::string searchThis);
 
-			void								storeInEmptyValues(const std::string & columnName, const intstrmap & emptyValues) { _emptyValues.storeInEmptyValues(columnName, emptyValues); }
-			std::map<std::string, intstrmap >	resetEmptyValues();
-	
 			DatabaseInterface	 &	db();
 	const	DatabaseInterface	 &	db() const;
 	
 			DataSetBaseNode		 *	dataNode()		const { return _dataNode; }
 			DataSetBaseNode		 *	filtersNode()	const { return _filtersNode; }
 
-	
+			std::map<std::string, intstrmap > resetMissingData(const std::vector<Column*>& columns);
+			void					setMissingData(const std::string & columnName, const intstrmap & missingData)			{ _emptyValues.setMissingData(columnName, missingData);			dbUpdate();	}
+			void					setEmptyValuesJson(			const Json::Value & emptyValues, bool updateDB = true);
+	const	stringset			&	emptyValues(				const std::string& colName)							const	{ return _emptyValues.emptyValues(colName);									}
+	const	doubleset			&	doubleEmptyValues(			const std::string& colName)							const	{ return _emptyValues.doubleEmptyValues(colName);							}
+	const	intstrmap			&	missingData(				const std::string& colName)							const	{ return _emptyValues.missingData(colName);									}
+	const	stringset			&	workspaceEmptyValues()															const	{ return _emptyValues.workspaceEmptyValues();								}
+			void					setCustomEmptyValues(		const std::string& colName, const stringset& values)		{ _emptyValues.setCustomEmptyValues(colName, values);			dbUpdate();	}
+			bool					hasCustomEmptyValues(		const std::string& colName)							const	{ return _emptyValues.hasCutomEmptyValues(colName);							}
+			void					setHasCustomEmptyValues(	const std::string& colName, bool hasCustom)					{ _emptyValues.setHasCustomEmptyValues(colName, hasCustom);		dbUpdate();	}
+			void					setWorkspaceEmptyValues(	const stringset& values);
+	const	std::string			&	description()																	const	{ return _description; }
+			void					setDescription(				const std::string& desc);
+
 private:
 	DataSetBaseNode			*	_dataNode				= nullptr, //To make sure we have a pointer to flesh out the node hierarchy we add a "data" node, so we can place it next to the "filters" node in the tree
 							*	_filtersNode			= nullptr;
@@ -92,7 +101,8 @@ private:
 	EmptyValues					_emptyValues;
 	bool						_writeBatchedToDB		= false,
 								_dataFileSynch			= false;
-
+	stringset					_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
+	std::string					_description;
 };
 
 #endif // DATASET_H

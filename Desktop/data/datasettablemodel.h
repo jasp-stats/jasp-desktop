@@ -41,7 +41,6 @@ public:
 	Q_INVOKABLE QVariant	getColumnTypesWithIcons()				const				{ return DataSetPackage::pkg()->getColumnTypesWithIcons();							}
 	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const;
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
-	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType);
 	
 	//the following column-int passthroughs will fail once columnfiltering is added...
 
@@ -53,7 +52,7 @@ public:
 
 	bool					showInactive()							const				{ return _showInactive;	}
 
-	QString					insertColumnSpecial(int column, bool computed, bool R);
+	QString					insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
 
 signals:
 	void					columnsFilteredCountChanged();

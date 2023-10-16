@@ -34,6 +34,7 @@ typedef std::vector<int>						intvec;
 typedef std::vector<size_t>						sizetvec;
 typedef std::set<int>							intset;
 typedef std::set<size_t>						sizetset;
+typedef std::set<double>						doubleset;
 typedef std::map<int,			std::string>	intstrmap;
 typedef std::map<std::string,	std::string>	strstrmap;
 typedef std::map<std::string,	int>			strintmap;

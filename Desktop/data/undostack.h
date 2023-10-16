@@ -4,6 +4,7 @@
 #include <QUndoStack>
 #include <QAbstractItemModel>
 #include <json/json.h>
+#include "stringutils.h"
 
 class ColumnModel;
 class FilterModel;
@@ -14,8 +15,8 @@ class UndoModelCommand : public QUndoCommand
 public:
 	UndoModelCommand(QAbstractItemModel* model = nullptr);
 
-	QString				columnName(int colIndex)				const;
-	QString				rowName(int rowIndex)					const;
+	QString		columnName(int colIndex)			const;
+	QString		rowName(int rowIndex)				const;
 
 protected:
 	QAbstractItemModel*	_model = nullptr;
@@ -24,19 +25,39 @@ protected:
 class SetColumnPropertyCommand: public UndoModelCommand
 {
 public:
-	enum class ColumnProperty { Name, Title, Description };
+	enum class ColumnProperty { Name, Title, Description, ComputedColumn };
 
-	SetColumnPropertyCommand(QAbstractItemModel *model, QString newValue, ColumnProperty prop);
+	SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
+	QString friendlyColumnType(int tyoe);
+
 	ColumnProperty			_prop	= ColumnProperty::Name;
 	int						_colId	= -1;
-	QString					_newValue,
+	QVariant				_newValue,
 							_oldValue;
 };
+
+class SetWorkspacePropertyCommand: public UndoModelCommand
+{
+public:
+	enum class WorkspaceProperty { Name, Description };
+
+	SetWorkspacePropertyCommand(QAbstractItemModel *model, QVariant newValue, WorkspaceProperty prop);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+
+	WorkspaceProperty		_prop	= WorkspaceProperty::Description;
+	QVariant				_newValue,
+							_oldValue;
+};
+
 
 class SetLabelCommand: public UndoModelCommand
 {
@@ -210,15 +231,14 @@ private:
 class InsertColumnCommand : public UndoModelCommand
 {
 public:
-	InsertColumnCommand(QAbstractItemModel *model, int col, bool computed, bool R);
+	InsertColumnCommand(QAbstractItemModel *model, int col, const QMap<QString, QVariant>& props = {});
 
 	void undo()					override;
 	void redo()					override;
 
 private:
 	int						_col		= -1;
-	bool					_computed	= false,
-							_R			= false;
+	QMap<QString, QVariant>	_props;
 };
 
 class InsertRowCommand : public UndoModelCommand
@@ -276,6 +296,46 @@ private:
 	std::vector<Json::Value>	_copiedColumns,
 								_originalColumns;
 
+};
+
+class SetUseCustomEmptyValuesCommand: public UndoModelCommand
+{
+public:
+	SetUseCustomEmptyValuesCommand(QAbstractItemModel* model, bool useCustom);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int							_colId = -1;
+	bool						_useCustom = false;
+};
+
+class SetCustomEmptyValuesCommand: public UndoModelCommand
+{
+public:
+	SetCustomEmptyValuesCommand(QAbstractItemModel* model, const QStringList& emptyValues);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int							_colId = -1;
+	stringset					_newCustomEmptyValues,
+								_oldCustomEmptyValues;
+};
+
+class SetWorkspaceEmptyValuesCommand: public UndoModelCommand
+{
+public:
+	SetWorkspaceEmptyValuesCommand(QAbstractItemModel* model, const QStringList& emptyValues);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	stringset					_newEmptyValues,
+								_oldEmptyValues;
 };
 
 class UndoStack : public QUndoStack

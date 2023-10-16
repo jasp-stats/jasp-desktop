@@ -2,7 +2,7 @@
 
 QSettings* Settings::_settings = nullptr;
 
-const char *	Settings::defaultMissingValues = "NaN|nan|.|NA";
+const char *	Settings::defaultEmptyValues = "NaN|nan|.|NA";
 
 const Settings::Setting Settings::Values[] = {
 	{"numDecimals",					3},
@@ -10,7 +10,7 @@ const Settings::Setting Settings::Values[] = {
 	{"normalizedNotation",			true},
 	{"useDefaultSpreadsheetEditor",	1},
 	{"spreadsheetEditorName",		""},
-	{"MissingValueList",			Settings::defaultMissingValues},
+	{"MissingValueList",			Settings::defaultEmptyValues},
 	{"instructionsShown",			false},
 	{"recentFolders",				""},
 	{"recentItems",					""},

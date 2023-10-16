@@ -1,9 +1,8 @@
-import QtQuick			2.11
-import QtQuick.Controls	2.2
-import QtQuick.Layouts	1.3
-
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
+import JASP.Controls
+import "./FileMenu"
 
 FocusScope
 {
@@ -106,9 +105,64 @@ FocusScope
 
 			Column
 			{
+				id:			workspaceSpecs
+				spacing:	jaspTheme.rowSpacing
+				width:		slidePart.width - vertScroller.width
+				visible:	ribbonModel.dataMode
+
+				MenuHeader
+				{
+					headertext:	qsTr("Workspace settings")
+					anchorMe:	false
+					width:		parent.width - (2 * jaspTheme.generalMenuMargin)
+					x:			jaspTheme.generalMenuMargin
+				}
+
+
+				PrefsGroupRect
+				{
+					spacing:	jaspTheme.rowSpacing
+					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
+
+					Text
+					{
+						anchors.margins:	3 * preferencesModel.uiScale
+						text:				qsTr("Name: %1").arg(workspaceModel.name)
+					}
+
+					TextArea
+					{
+						anchors.margins:	3 * preferencesModel.uiScale
+						title:				qsTr("Description: ")
+						height:				100 * jaspTheme.uiScale
+						control.padding:	3 * jaspTheme.uiScale
+						text:				workspaceModel.description
+						onEditingFinished: 	if(workspaceModel.description !== text) workspaceModel.description = text
+						applyScriptInfo:	""
+						placeholderText:	"..."
+						undoModel:			columnModel
+						useTabAsSpaces:		false
+						nextTabItem:		missingValues
+
+					}
+				}
+
+				PrefsMissingValues
+				{
+					id:			missingValues
+					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
+					height:		200 * jaspTheme.uiScale
+					x:			jaspTheme.generalAnchorMargin
+					model:		workspaceModel
+				}
+			}
+
+			Column
+			{
 				id:			modules
 				spacing:	4  * preferencesModel.uiScale
 				width:		slidePart.width - vertScroller.width
+				visible:	!ribbonModel.dataMode
 
 				property int buttonMargin:	3  * preferencesModel.uiScale
 				property int buttonWidth:	width - (buttonMargin * 2)
@@ -132,7 +186,7 @@ FocusScope
 					activeFocusOnTab:	false
 				}
 
-				ToolSeparator
+				QTC.ToolSeparator
 				{
 					orientation:				Qt.Horizontal
 					width:						modules.buttonWidth
@@ -158,7 +212,7 @@ FocusScope
 					readonly property bool folderSelected: preferencesModel.developerFolder != ""
 				}
 
-				ToolSeparator
+				QTC.ToolSeparator
 				{
 					orientation:				Qt.Horizontal
 					width:						modules.buttonWidth

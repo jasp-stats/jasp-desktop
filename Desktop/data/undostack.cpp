@@ -12,6 +12,8 @@ UndoStack* UndoStack::_undoStack = nullptr;
 UndoStack::UndoStack(QObject* parent) : QUndoStack(parent)
 {
 	_undoStack = this;
+
+	connect(this, &QUndoStack::indexChanged, []() { DataSetPackage::pkg()->setModified(true); });
 }
 
 void UndoStack::pushCommand(UndoModelCommand *command)
@@ -71,10 +73,11 @@ void SetDataCommand::redo()
 	_newColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
 }
 
-InsertColumnCommand::InsertColumnCommand(QAbstractItemModel *model, int column, bool computed, bool R)
-	: UndoModelCommand(model), _col{column}, _computed{computed}, _R{R}
+InsertColumnCommand::InsertColumnCommand(QAbstractItemModel *model, int column, const QMap<QString, QVariant>& props)
+	: UndoModelCommand(model), _col{column}, _props{props}
 {
-	setText(_computed ? QObject::tr("Insert computed column '%1'").arg(_col) : QObject::tr("Insert column '%1'").arg(columnName(_col)));
+	QString colName = props.contains("name") ? props["name"].toString() : columnName(_col);
+	setText(props.contains("computed") ? QObject::tr("Insert computed column '%1'").arg(_col) : QObject::tr("Insert column '%1'").arg(colName));
 }
 
 void InsertColumnCommand::undo()
@@ -87,7 +90,7 @@ void InsertColumnCommand::redo()
 	DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(_model);
 
 	if (dataSetTable)
-		dataSetTable->insertColumnSpecial(_col, _computed, _R);
+		dataSetTable->insertColumnSpecial(_col, _props);
 }
 
 InsertRowCommand::InsertRowCommand(QAbstractItemModel *model, int row)
@@ -210,21 +213,22 @@ void PasteSpreadsheetCommand::redo()
 SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, int col, int colType)
 	: UndoModelCommand(model), _col{col}, _newColType{colType}
 {
-	setText(QObject::tr("Set type '%1' to column '%2'").arg(columnTypeToQString(columnType(colType))).arg(columnName(col)));
+	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
+	setText(QObject::tr("Set type '%1' to column '%2'").arg(columnTypeToQString(columnType(colType)), columnName(col)));
 }
 
 void SetColumnTypeCommand::undo()
 {
-	_model->setData(_model->index(0, _col), _oldColType, int(dataPkgRoles::columnType));
+	DataSetPackage::pkg()->setColumnType(_col, columnType(_oldColType));
 }
 
 void SetColumnTypeCommand::redo()
 {
-	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
-	_model->setData(_model->index(0, _col), _newColType, int(dataPkgRoles::columnType));
+	if (!DataSetPackage::pkg()->setColumnType(_col, columnType(_newColType)))
+		setObsolete(true);
 }
 
-SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QString newValue, ColumnProperty prop)
+SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
 	: UndoModelCommand(model), _prop(prop), _newValue{newValue}
 {
 	ColumnModel* columnModel = qobject_cast<ColumnModel*>(model);
@@ -236,15 +240,19 @@ SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QS
 		{
 		case ColumnProperty::Name:
 			_oldValue = columnModel->columnNameQ();
-			setText(QObject::tr("Change column name from '%1' to '%2'").arg(_oldValue).arg(_newValue));
+			setText(QObject::tr("Change column name of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
 			break;
 		case ColumnProperty::Title:
 			_oldValue = columnModel->columnTitle();
-			setText(QObject::tr("Change column title from '%1' to '%2'").arg(_oldValue).arg(_newValue));
+			setText(QObject::tr("Change column title of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
 			break;
 		case ColumnProperty::Description:
 			_oldValue = columnModel->columnDescription();
-			setText(QObject::tr("Change column description from '%1' to '%2'").arg(_oldValue).arg(_newValue));
+			setText(QObject::tr("Change column description of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
+			break;
+		case ColumnProperty::ComputedColumn:
+			_oldValue = int(computedColumnTypeFromQString(columnModel->computedType()));
+			setText(QObject::tr("Set computed type of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), friendlyColumnType(_oldValue.toInt()), friendlyColumnType(_newValue.toInt())));
 			break;
 		}
 	}
@@ -262,13 +270,16 @@ void SetColumnPropertyCommand::undo()
 	case ColumnProperty::Name:
 		// In case that the command that deletes a column is undone, the id may change.
 		// As the column can be also recognize with its name, use it.
-		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_newValue), fq(_oldValue));
+		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_newValue.toString()), fq(_oldValue.toString()));
 		break;
 	case ColumnProperty::Title:
-		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_oldValue));
+		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_oldValue.toString()));
 		break;
 	case ColumnProperty::Description:
-		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_oldValue));
+		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_oldValue.toString()));
+		break;
+	case ColumnProperty::ComputedColumn:
+		DataSetPackage::pkg()->setColumnAsComputed(_colId, computedColumnType(_oldValue.toInt()));
 		break;
 	}
 }
@@ -278,17 +289,52 @@ void SetColumnPropertyCommand::redo()
 	switch (_prop)
 	{
 	case ColumnProperty::Name:
-		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_oldValue), fq(_newValue));
+		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_oldValue.toString()), fq(_newValue.toString()));
 		break;
 	case ColumnProperty::Title:
-		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_newValue));
+		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_newValue.toString()));
 		break;
 	case ColumnProperty::Description:
-		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_newValue));
+		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_newValue.toString()));
+		break;
+	case ColumnProperty::ComputedColumn:
+		DataSetPackage::pkg()->setColumnAsComputed(_colId, computedColumnType(_newValue.toInt()));
 		break;
 	}
 
 }
+
+QString SetColumnPropertyCommand::friendlyColumnType(int type)
+{
+	return ColumnModel::columnTypeFriendlyName[computedColumnType(type)];
+}
+
+
+SetWorkspacePropertyCommand::SetWorkspacePropertyCommand(QAbstractItemModel *model, QVariant newValue, WorkspaceProperty prop)
+	: UndoModelCommand(model), _prop(prop), _newValue{newValue}
+{
+	if (prop == WorkspaceProperty::Description)
+	{
+		_oldValue = DataSetPackage::pkg()->description();
+		setText(QObject::tr("Change workspace description from '%1' to '%2'").arg(_oldValue.toString(), _newValue.toString()));
+	}
+	else
+		// No other properties are settable
+		setObsolete(true);
+}
+
+void SetWorkspacePropertyCommand::undo()
+{
+	if (_prop == WorkspaceProperty::Description)
+		DataSetPackage::pkg()->setDescription(_oldValue.toString());
+}
+
+void SetWorkspacePropertyCommand::redo()
+{
+	if (_prop == WorkspaceProperty::Description)
+		DataSetPackage::pkg()->setDescription(_newValue.toString());
+}
+
 
 SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel)
 	: UndoModelCommand(model), _labelIndex{labelIndex}, _newLabel{newLabel}
@@ -573,6 +619,87 @@ void CopyColumnsCommand::redo()
 			DataSetPackage::pkg()->deserializeColumn(columnName(_startCol + i).toStdString(), _copiedColumns[i]);
 	}
 }
+
+SetUseCustomEmptyValuesCommand::SetUseCustomEmptyValuesCommand(QAbstractItemModel *model, bool useCustom)
+	: UndoModelCommand(model), _useCustom{useCustom}
+{
+	ColumnModel* columnModel = qobject_cast<ColumnModel*>(model);
+	if (columnModel)
+	{
+		Column* col = columnModel->column();
+		_colId = columnModel->chosenColumn();
+		std::string colName = col->name();
+
+		if (_useCustom)
+			setText(QObject::tr("Use custom empty values for column '%1").arg(tq(colName)));
+		else
+			setText(QObject::tr("Use default empty values for column '%1").arg(tq(colName)));
+	}
+	else
+		setObsolete(true);
+}
+
+void SetUseCustomEmptyValuesCommand::undo()
+{
+	DataSetPackage::pkg()->setColumnHasCustomEmptyValues(_colId, !_useCustom);
+}
+
+void SetUseCustomEmptyValuesCommand::redo()
+{
+	DataSetPackage::pkg()->setColumnHasCustomEmptyValues(_colId, _useCustom);
+}
+
+SetCustomEmptyValuesCommand::SetCustomEmptyValuesCommand(QAbstractItemModel *model, const QStringList& customEmptyValues)
+	: UndoModelCommand(model)
+{
+	ColumnModel* columnModel = qobject_cast<ColumnModel*>(model);
+	if (columnModel)
+	{
+		Column* col = columnModel->column();
+		_colId = columnModel->chosenColumn();
+		std::string colName = col->name();
+		_oldCustomEmptyValues = col->emptyValues();
+		_newCustomEmptyValues.clear();
+		for (const QString& val : customEmptyValues)
+			_newCustomEmptyValues.insert(fq(val));
+
+		setText(QObject::tr("Set empty values for column '%1").arg(tq(colName)));
+	}
+	else
+		setObsolete(true);
+}
+
+void SetCustomEmptyValuesCommand::undo()
+{
+	DataSetPackage::pkg()->setColumnCustomEmptyValues(_colId, _oldCustomEmptyValues);
+}
+
+void SetCustomEmptyValuesCommand::redo()
+{
+	DataSetPackage::pkg()->setColumnCustomEmptyValues(_colId, _newCustomEmptyValues);
+}
+
+SetWorkspaceEmptyValuesCommand::SetWorkspaceEmptyValuesCommand(QAbstractItemModel *model, const QStringList& emptyValues)
+	: UndoModelCommand(model)
+{
+	_oldEmptyValues = DataSetPackage::pkg()->workspaceEmptyValues();
+	_newEmptyValues.clear();
+	for (const QString& val : emptyValues)
+		_newEmptyValues.insert(fq(val));
+
+	setText(QObject::tr("Set workspace empty values"));
+}
+
+void SetWorkspaceEmptyValuesCommand::undo()
+{
+	DataSetPackage::pkg()->setWorkspaceEmptyValues(_oldEmptyValues);
+}
+
+void SetWorkspaceEmptyValuesCommand::redo()
+{
+	DataSetPackage::pkg()->setWorkspaceEmptyValues(_newEmptyValues);
+}
+
 
 UndoModelCommand::UndoModelCommand(QAbstractItemModel *model)
 	: QUndoCommand(UndoStack::singleton()->parentCommand()), _model{model}

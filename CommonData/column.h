@@ -63,7 +63,7 @@ public:
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
 			
-			bool					resetEmptyValues(intstrmap &emptyValuesMap);
+			bool					resetMissingData(intstrmap &emptyValuesMap);
 
 			bool					overwriteDataWithScale(	 doublevec	scalarData);
 			bool					overwriteDataWithOrdinal(intvec		ordinalData, intstrmap levels);
@@ -165,6 +165,14 @@ public:
 			Json::Value				serialize()																const;
 			void					deserialize(const Json::Value& info);
 			std::string				getUniqueName(const std::string& name)									const;
+			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true)		const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
+			bool					hasCustomEmptyValues()			const;
+			const stringset		&	emptyValues()					const;
+			const doubleset		&	doubleEmptyValues()			const;
+			void					setHasCustomEmptyValues(bool hasCustom);
+			void					setCustomEmptyValues(const stringset& customEmptyValues);
+			bool					isEmptyValue(const std::string& val)	const;
+			bool					isEmptyValue(const double &val)			const;
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
@@ -176,9 +184,9 @@ protected:
 			columnTypeChangeResult	_changeColumnToScale();
 			
 			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
-			bool					_resetEmptyValuesForNominal(	intstrmap & emptyValuesMap);
-			bool					_resetEmptyValuesForScale(		intstrmap & emptyValuesMap);
-			bool					_resetEmptyValuesForNominalText(intstrmap & emptyValuesMap, bool tryToConvert = true);
+			bool					_resetMissingDataForNominal(	intstrmap & missingDataMap);
+			bool					_resetMissingDataForScale(		intstrmap & missingDataMap);
+			bool					_resetMissingDataForNominalText(intstrmap & missingDataMap, bool tryToConvert = true);
 			
 			void					_resetLabelValueMap();
 
@@ -192,18 +200,17 @@ private:
 			bool					_isComputed			= false,
 									_invalidated		= false,
 									_batchedLabel		= false;
-			computedColumnType		_codeType			= computedColumnType::unknown;
+			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
 									_description,
 									_error,
-									_rCode				= "#Enter your R code here :)";
+									_rCode;
 			Json::Value				_constructorJson	= Json::objectValue;
 			doublevec				_dbls;
 			intvec					_ints;
 			stringset				_dependsOnColumns;
-			std::map<int, Label*>	_labelByValueMap;
-			
+			std::map<int, Label*>	_labelByValueMap;			
 };
 
 #endif // COLUMN_H

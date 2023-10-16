@@ -159,7 +159,6 @@ signals:
 	void visibleChanged(				bool		visible);
 	void movingChanged(					bool		moving);
 	void emptyQMLCache();
-	void dataSetChanged();
 	void somethingModified();
     void analysesExportResults();
 	bool developerMode();
