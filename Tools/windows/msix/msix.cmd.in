@@ -1,0 +1,21 @@
+rem This file is generated from Tools/windows/msix/msix.cmd.in, if you want to change it,
+rem be aware that it will be overwritten. You can edit the template file, and rerun the CMake
+rem to see your changes here.
+rem
+rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem `cmake --build . --target msix`
+
+
+rem -------- Temporary fix to transfer modules to cache --------
+
+echo Transfering module folders to renv-cache (we should get rid of this in the future)
+
+pushd .
+cd "@JASP_INSTALL_DIR_NATIVE@"
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
+cd "@JASP_BINARY_DIR_NATIVE@"
+MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.msix"
+
+rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"  
+popd

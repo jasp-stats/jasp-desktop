@@ -1,4 +1,4 @@
-rem This file is generated from Tools/WIX.cmd.in, if you want to change it, be aware 
+rem This file is generated from Tools/windows/msi/WIX.cmd.in, if you want to change it, be aware 
 rem that it will be overwritten. You can edit the template file, and rerun the CMake
 rem to see your changes here.
 rem 
