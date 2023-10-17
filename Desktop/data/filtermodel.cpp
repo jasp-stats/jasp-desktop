@@ -124,7 +124,7 @@ void FilterModel::setConstructorR(QString newConstructorR)
 			DataSetPackage::filter()->setConstructorR(fq(newConstructorR));
 
 		emit constructorRChanged();
-		emit updateGeneratedFilterWithR(newConstructorR);
+		setGeneratedFilter(tq(_labelFilterGenerator->generateFilter()));
 	}
 }
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
