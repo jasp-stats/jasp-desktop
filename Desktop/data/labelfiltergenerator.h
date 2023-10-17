@@ -20,14 +20,10 @@ public:
 
 public slots:
 	void labelFilterChanged();
-	void easyFilterConstructorRCodeChanged(QString newRScript);
 
 private:
 	///Generates sub-filter for specified column
-	std::string	generateLabelFilter(size_t col);
-
-	std::string easyFilterConstructorRScript = "";
-	
+	std::string	generateLabelFilter(size_t col);	
 	
 	ColumnModel * _columnModel = nullptr;
 

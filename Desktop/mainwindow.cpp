@@ -450,7 +450,6 @@ void MainWindow::makeConnections()
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_package,				&DataSetPackage::refresh									);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
-	connect(_filterModel,			&FilterModel::updateGeneratedFilterWithR,			_labelFilterGenerator,	&labelFilterGenerator::easyFilterConstructorRCodeChanged	);
 
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter,							Qt::QueuedConnection);
 

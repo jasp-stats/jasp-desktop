@@ -137,6 +137,8 @@ void DataSetPackage::reset(bool newDataSet)
 	_dataMode					= false;
 	_manualEdits				= false;
 
+	_columnNameUsedInEasyFilter.clear();
+
 	setLoaded(false);
 	setModified(false);
 	setSynchingExternally(false); //Default is off, AsyncLoader::loadPackage(...) will turn it on for non-jasp

@@ -18,13 +18,15 @@ std::string labelFilterGenerator::generateFilter()
 			neededFilters++;
 
 	std::stringstream newGeneratedFilter;
+	Filter* filter = DataSetPackage::pkg()->filter();
+	std::string filterRScript = filter ? filter->constructorR() : "";
 
 	newGeneratedFilter << "generatedFilter <- ";
 
 	if(neededFilters == 0)
 	{
-		if(easyFilterConstructorRScript == "")	return DEFAULT_FILTER_GEN;
-		else									newGeneratedFilter << "("<< easyFilterConstructorRScript <<")";
+		if(filterRScript == "")	return DEFAULT_FILTER_GEN;
+		else					newGeneratedFilter << "("<< filterRScript <<")";
 	}
 	else
 	{
@@ -44,8 +46,8 @@ std::string labelFilterGenerator::generateFilter()
 		if(moreThanOne)
 			newGeneratedFilter << ")";
 
-		if(easyFilterConstructorRScript != "")
-				newGeneratedFilter << " & \n("<<easyFilterConstructorRScript<<")";
+		if(filterRScript != "")
+				newGeneratedFilter << " & \n("<<filterRScript<<")";
 	}
 
 	return newGeneratedFilter.str();
@@ -84,13 +86,4 @@ std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 	out << ")";
 
 	return out.str();
-}
-
-void labelFilterGenerator::easyFilterConstructorRCodeChanged(QString newRScript)
-{
-	if(easyFilterConstructorRScript != newRScript.toStdString())
-	{
-		easyFilterConstructorRScript = newRScript.toStdString();
-		emit setGeneratedFilter(QString::fromStdString(generateFilter()));
-	}
 }

@@ -79,7 +79,6 @@ signals:
 	void constructorJsonChanged();
 
 	void updateColumnsUsedInConstructedFilter(std::set<std::string> columnNames);
-	void updateGeneratedFilterWithR(QString constructorR);
 
 	void refreshAllAnalyses();
 	void filterUpdated();
