@@ -25,10 +25,11 @@ QString AboutModel::copyrightMessage()
 
 QString AboutModel::citation()
 {
-	return tq("JASP Team (" +  AppInfo::getBuildYear() + "). JASP (Version " + AppInfo::version.asString() +
-		#ifdef JASP_DEBUG
-			"-Debug-" + AppInfo::gitCommit //If it is a debug version that is actually being cited (highly unusual I suppose and downright dangerous, but ok.) In that scenario I'm pretty sure one would want to know the exact commit even though it might be ugly.
-		#endif
+	return tq("JASP Team (" +  AppInfo::getBuildYear() + ").\nJASP (Version " + AppInfo::version.asString() //+
+	//ok nvm the debug stuff I just want it to look like it does in release
+	//	#ifdef JASP_DEBUG
+	//		"-Debug-" + AppInfo::gitCommit //If it is a debug version that is actually being cited (highly unusual I suppose and downright dangerous, but ok.) In that scenario I'm pretty sure one would want to know the exact commit even though it might be ugly.
+	//	#endif
 			+ ") [Computer software].");
 }
 

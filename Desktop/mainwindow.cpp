@@ -259,25 +259,43 @@ QString MainWindow::windowTitle() const
 
 const QStringList & MainWindow::coopThankYou() const
 {
-	return Coop::educatorsTier();
+	static QStringList thankYou = [](){
+		QStringList thankThese = Coop::educatorsTier();
+		thankThese.append(Coop::sponsorsTier());
+		return thankThese;
+	}();
+	
+	return thankYou;
+}
+
+
+const QString MainWindow::coopConcatter(QStringList listIn, const QString & name) const
+{
+	if(listIn.size() == 0)
+		return "Something is wrong with " + name;
+
+	if(listIn.size() > 1)
+		listIn[listIn.size()-1] = tr("and %1").arg(listIn[listIn.size()-1]);
+
+	return listIn.join(", ");
 }
 
 const QString & MainWindow::coopEducators() const
 {
-	//Little magic trick ;)
-	static QString educators = []()->QString
-	{
-		QStringList tmp = Coop::educatorsTier();
-
-		if(tmp.size() == 0)
-			return "Something is wrong with Coop::educatorsTier()";
-
-		tmp[tmp.size()-1].prepend(tr("and "));
-
-		return tmp.join(", ");
-	}();
-
+	static QString educators = coopConcatter(Coop::educatorsTier(), "Coop::educatorsTier()");
 	return educators;
+}
+
+const QString & MainWindow::coopSponsors() const
+{
+	static QString sponsors = coopConcatter(Coop::sponsorsTier(), "Coop::sponsorsTier()");
+	return sponsors;
+}
+
+const QString & MainWindow::coopSupporters() const
+{
+	static QString supporters = coopConcatter(Coop::supportersTier(), "Coop::supportersTier()");
+	return supporters;
 }
 
 const QString & MainWindow::coopHowToSupport() const

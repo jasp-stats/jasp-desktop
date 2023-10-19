@@ -5,20 +5,22 @@ import QtQuick.Controls as QC
 
 WavyWindow
 {
-	id:				contactWindow
-
+	id:						contactWindow
+	title:					qsTr("Contact JASP")
 	visible:				mainWindow.contactVisible
 	onVisibleChanged:		mainWindow.contactVisible = visible
 	onCloseModel:			{ mainWindow.contactVisible = false }
+	width:					800 * jaspTheme.uiScale
+	height:					600 * jaspTheme.uiScale
 
-	title:					qsTr("Contact JASP")
 
-	QC.TextArea
+	Text
 	{
 		id:				contactText
 		textFormat:		Text.RichText
 		text:
-qsTr("For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>
+qsTr("<h3>Contact</h3>
+For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>
 This will bring you in direct contact with the JASP software developers.
 
 For statistical questions: please post an issue <a href=\"%4\">on the JASP Forum.</a>
@@ -38,30 +40,33 @@ For individual donations: please visit <a href=\"%8\">the JASP website</a>.
 .arg("mailto:communications@jasp-stats.org")
 .arg("https://jasp-stats.org/donate/")
 .replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
-		color:			jaspTheme.textEnabled
-		leftPadding:	0
-		topPadding:		0
-		bottomPadding:	0
-		wrapMode:		TextEdit.Wrap
-		font.family:	jaspTheme.font
-		font.pixelSize:	16 * jaspTheme.uiScale
-		width:			parent.width
+		color:					jaspTheme.textEnabled
+		linkColor:				jaspTheme.jaspBlue
+		leftPadding:			0
+		topPadding:				0
+		bottomPadding:			0
+		wrapMode:				TextEdit.Wrap
+		font.family:			jaspTheme.font
+		font.pixelSize:			16 * jaspTheme.uiScale
+		width:					parent.width
+		horizontalAlignment:	Qt.AlignHCenter
 
-		selectByMouse:	true
-		readOnly:		true
-
-		onPressed:		(event)=>{ if (event.button === Qt.RightButton)	contextMenu.popup()  }
-
-		QC.Menu
+		//selectByMouse:	true
+		//readOnly:		true
+		
+		onLinkActivated:	(link)=>{ Qt.openUrlExternally(link) }
+		
+		MouseArea
 		{
-			id:		contextMenu
-			width:	120
-
-			QC.Action { text: qsTr("Select All");		onTriggered: contactText.selectAll();	}
-			QC.Action { text: qsTr("Copy Selection");	onTriggered: contactText.copy();		}
+			id:					mouseAreaContactText
+			anchors.fill:		parent
+			acceptedButtons:	Qt.LeftButton
+			onClicked:			(event)=>{ if (event.button === Qt.LeftButton && myText.linkHovered) Qt.openUrlExternally(myText.hoveredLink)  }
+			cursorShape:		myText.linkHovered ?  Qt.PointingHandCursor  : Qt.ArrowCursor
+			
+			property Item myText:	contactText
 		}
 
-		onLinkActivated:	(link)=>{ Qt.openUrlExternally(link) }
 
 		MouseArea
 		{

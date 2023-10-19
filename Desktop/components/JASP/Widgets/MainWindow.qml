@@ -26,12 +26,12 @@ Window
 	id:					mainWindowRoot
 	title:				mainWindow.windowTitle
 	visible:			true
-	width:				1248
-	height:				768
+	width:				1280
+	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
-	minimumHeight:		600 * jaspTheme.uiScale
+	minimumHeight:		640 * jaspTheme.uiScale
 
 	onVisibleChanged:
 		if(!visible)
@@ -76,7 +76,7 @@ Window
 
 	function mod (a, n)
 	{
-		return ((a % n) + n) % n;
+		return (a + n) % n;
 	}
 
 	Item

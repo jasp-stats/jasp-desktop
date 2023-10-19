@@ -30,6 +30,7 @@
      id="defs3747" />
   <sodipodi:namedview
      pagecolor="#ffffff"
+     pageopacity="0.0"
      bordercolor="#666666"
      borderopacity="1"
      objecttolerance="10"
@@ -56,12 +57,16 @@
      id="rect3734-5"
      x="-1901.0265"
      y="-0.00444747"
-     style="fill:#ffffff" />
+     style="fill:#ffffff" 
+     opacity="0.0"
+     />
+     
   <g
      id="g3783"
      transform="translate(-35)">
     <rect
        style="fill:#ffffff"
+       opacity="0.0"
        y="0"
        x="70"
        id="rect3734"

@@ -84,6 +84,8 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			cooperativeVisible	READ cooperativeVisible		WRITE setCooperativeVisible		NOTIFY cooperativeVisibleChanged	)
 	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT)
 	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT)
+	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT)
+	Q_PROPERTY(QString		coopSupporters		READ coopSupporters											CONSTANT)
 	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT)
 	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT)
 
@@ -114,6 +116,8 @@ public:
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & coopThankYou()			const;
 	const QString &		coopEducators()			const;
+	const QString &		coopSponsors()			const;
+	const QString &		coopSupporters()		const;
 	const QString &		coopHowToSupport()		const;
 	const QString &		coopUrl()				const;
 
@@ -168,6 +172,7 @@ public slots:
 	void	reloadResults() const;
 
 private:
+	
 	void makeConnections();
 	void initLog();
 	void initQWidgetGUIParts();
@@ -184,13 +189,14 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 
-	void		removeAnalysis(Analysis *analysis);
-	void		analysesCountChangedHandler();
-	void		analysisChangedDownstreamHandler(int id, QString options);
-	void		analysisSaveImageHandler(int id, QString options);
-	void		analysisEditImageHandler(int id, QString options);
-	void		removeAnalysisRequestHandler(int id);
-	Json::Value getResultsMeta();
+	void			removeAnalysis(Analysis *analysis);
+	void			analysesCountChangedHandler();
+	void			analysisChangedDownstreamHandler(int id, QString options);
+	void			analysisSaveImageHandler(int id, QString options);
+	void			analysisEditImageHandler(int id, QString options);
+	void			removeAnalysisRequestHandler(int id);
+	Json::Value		getResultsMeta();
+	const QString	coopConcatter(QStringList listIn, const QString & name) const;
 
 	void startComparingResults();
 	void analysesForComparingDoneAlready();
