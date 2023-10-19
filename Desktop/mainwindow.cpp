@@ -259,25 +259,43 @@ QString MainWindow::windowTitle() const
 
 const QStringList & MainWindow::coopThankYou() const
 {
-	return Coop::educatorsTier();
+	static QStringList thankYou = [](){
+		QStringList thankThese = Coop::educatorsTier();
+		thankThese.append(Coop::sponsorsTier());
+		return thankThese;
+	}();
+	
+	return thankYou;
+}
+
+
+const QString MainWindow::coopConcatter(QStringList listIn, const QString & name) const
+{
+	if(listIn.size() == 0)
+		return "Something is wrong with " + name;
+
+	if(listIn.size() > 1)
+		listIn[listIn.size()-1] = tr("and %1").arg(listIn[listIn.size()-1]);
+
+	return listIn.join(", ");
 }
 
 const QString & MainWindow::coopEducators() const
 {
-	//Little magic trick ;)
-	static QString educators = []()->QString
-	{
-		QStringList tmp = Coop::educatorsTier();
-
-		if(tmp.size() == 0)
-			return "Something is wrong with Coop::educatorsTier()";
-
-		tmp[tmp.size()-1].prepend(tr("and "));
-
-		return tmp.join(", ");
-	}();
-
+	static QString educators = coopConcatter(Coop::educatorsTier(), "Coop::educatorsTier()");
 	return educators;
+}
+
+const QString & MainWindow::coopSponsors() const
+{
+	static QString sponsors = coopConcatter(Coop::sponsorsTier(), "Coop::sponsorsTier()");
+	return sponsors;
+}
+
+const QString & MainWindow::coopSupporters() const
+{
+	static QString supporters = coopConcatter(Coop::supportersTier(), "Coop::supportersTier()");
+	return supporters;
 }
 
 const QString & MainWindow::coopHowToSupport() const
@@ -288,6 +306,32 @@ const QString & MainWindow::coopHowToSupport() const
 const QString & MainWindow::coopUrl() const
 {
 	return Coop::cooperativeUrl();
+}
+
+const QString MainWindow::contactText() const
+{
+	return tr(
+		"<h3>Contact</h3>\n"
+		"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>\n"
+		"This will bring you in direct contact with the JASP software developers.\n"
+		"\n"
+		"For statistical questions: please post an issue <a href=\"%4\">on the JASP Forum.</a>\n"
+		"\n"
+		"For information on the JASP Cooperative: please read <a href=\"%5\">the information on the JASP website</a>\n"
+		"\n"
+		"For suggesting we add your institution to the <a href=\"%6\">JASP World Map</a> please send an email to <a href=\"%7\">communications@jasp-stats.org</a>.\n"
+		"\n"
+		"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
+	)
+	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
+	.arg("https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Feature+Request&projects=&template=feature-request.yml&title=%5BFeature+Request%5D%3A+"
+	, "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Bug&projects=&template=bug-report.yml&title=%5BBug%5D%3A+"
+	, "https://jasp-stats.org/2018/03/29/request-feature-report-bug-jasp/"
+	, "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"
+	, coopUrl()
+	, "https://jasp-stats.org/world-map/"
+	, "mailto:communications@jasp-stats.org"
+	, "https://jasp-stats.org/donate/");
 }
 
 bool MainWindow::checkDoSync()
@@ -474,6 +518,7 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				this,					&MainWindow::contactTextChanged,							Qt::QueuedConnection); //Probably not necessary but we can check once there actually are translations
 	connect(_languageModel,			&LanguageModel::pauseEngines,						_engineSync,			&EngineSync::pauseEngines									);
 	connect(_languageModel,			&LanguageModel::stopEngines,						_engineSync,			&EngineSync::stopEngines									);
 	connect(_languageModel,			&LanguageModel::resumeEngines,						_engineSync,			&EngineSync::resumeEngines,									Qt::QueuedConnection);

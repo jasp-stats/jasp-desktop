@@ -33,7 +33,7 @@ public:
 	static	QString openSourceUrl()		{ return "https://github.com/jasp-stats/jasp-desktop/blob/development/NOTICE.txt"; }
 	static	QString citation();
 	static	QString citationUrl()		{ return "https://jasp-stats.org/faq/how-do-i-cite-jasp/"; }
-	static	QString warranty()			{ return tr("This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING <br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> PARTICULAR PURPOSE."); }
+	static	QString warranty()			{ return tr("This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."); }
 	static	QString commit();
 	static	QString commitUrl()			{ return "https://github.com/jasp-stats/jasp-desktop/commit/" + commit(); }
 	static	QString branch();

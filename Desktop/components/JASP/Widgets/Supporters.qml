@@ -12,7 +12,7 @@ Item
 	ColumnLayout
 	{
 		id:							supportColumn
-		spacing:					welcomeRoot.scaler * 20
+		spacing:					welcomeRoot.scaler * 10
 		anchors.left:				parent.left
 		anchors.right:				parent.right
 
@@ -30,42 +30,47 @@ Item
 			Layout.fillWidth:		true
 		}
 
-		SwipeView
+		ListView
 		{
 			id:						swipeSupporters
 			orientation:			Qt.Vertical
 			Layout.fillWidth:		true
 			clip:					true
 			currentIndex:			Math.floor(Math.random() * count)
-			wheelEnabled:			true
+			//wheelEnabled:			true
+            height:                 65 * welcomeRoot.scaler
+            model:                  mainWindow.coopThankYou
+            snapMode:               ListView.SnapOneItem
+            onCurrentIndexChanged:  gottaMoveItMoveIt.restart()
 
-			Timer
+            Timer
 			{
+                id:                 gottaMoveItMoveIt // https://www.youtube.com/watch?v=vuo8kD5zF5I
 				interval:			5000
 				repeat:				true
 				running:			true
-				onTriggered:		{ swipeSupporters.setCurrentIndex((swipeSupporters.currentIndex + 1) % swipeSupporters.count) }
+				onTriggered:		{ swipeSupporters.currentIndex = ((swipeSupporters.currentIndex + 1) % swipeSupporters.count) }
 			}
 
-			Repeater
-			{
-				model:	mainWindow.coopThankYou
 
-				Text
-				{
-					text:					String(modelData).replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
-					font.family:			jaspTheme.font
-					font.weight:			Font.Bold
-					font.pixelSize:         (4 + fontPixelSize) * welcomeRoot.scaler
-					color:					jaspTheme.white
-					wrapMode:				TextEdit.Wrap
-					renderType:				Text.QtRendering
-					textFormat:				Text.StyledText
-					horizontalAlignment:	Text.AlignHCenter
 
-					width:					swipeSupporters.width
-				}
-			}
+            delegate:   Text
+            {
+                text:					String(modelData).replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
+                font.family:			jaspTheme.font
+                font.weight:			Font.Bold
+                font.pixelSize:         (4 + fontPixelSize) * welcomeRoot.scaler
+                color:					jaspTheme.white
+                wrapMode:				TextEdit.Wrap
+                renderType:				Text.QtRendering
+                textFormat:				Text.StyledText
+                horizontalAlignment:	Text.AlignHCenter
+                verticalAlignment:      Text.AlignVCenter
+                
+                height:                 swipeSupporters.height
+                width:					swipeSupporters.width
+            }
+			
 
 
 		}

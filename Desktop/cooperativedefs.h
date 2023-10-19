@@ -22,6 +22,31 @@ const QStringList & educatorsTier()
 	return list;
 }
 
+const QStringList & sponsorsTier()
+{
+	// Want to thank an institution on the welcomepage?
+	// Just add an entry in the list below:
+	static QStringList list =
+	{
+		"The College of Arts and Sciences and the Department of Statistics at Texas A&M University",
+		"Department of Pediatrics, MosaKids Children’s Hospital, Maastricht University Medical Centre (MUMC+)",
+	};
+
+	return list;
+}
+
+const QStringList & supportersTier()
+{
+	// Want to thank an institution on the welcomepage?
+	// Just add an entry in the list below:
+	static QStringList list =
+	{
+		"Vrije Universiteit Amsterdam – EMFC/RC program",
+	};
+
+	return list;
+}
+
 const QString & howToSupport()
 {
 	static QString howTo = "https://jasp-stats.org/cooperative-how-to-join/";

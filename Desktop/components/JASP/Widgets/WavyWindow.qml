@@ -10,15 +10,15 @@ Window
 {
 	id:				aboutWindow
 
-	width:			1000 * preferencesModel.uiScale
-	height:			550 * preferencesModel.uiScale
+	width:			1200 * preferencesModel.uiScale
+	height:			600 * preferencesModel.uiScale
 
-	minimumWidth:	850
-	minimumHeight:	550
+	minimumWidth:	Math.min(500, 500 * preferencesModel.uiScale)
+	minimumHeight:	Math.min(500, 500 * preferencesModel.uiScale)
 
 	default property alias	content:			contentInfo.children
 			property string labelcolor:			"#F99800"
-			property string closebuttoncolor:	"#50B0E3"
+			property string closebuttoncolor:	jaspTheme.blue
 
 	visible:				false
 	title:					qsTr("About JASP")
@@ -43,28 +43,23 @@ Window
 		anchors.right:	parent.right
 		height:			parent.height/4
 
-		source:		jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+		source:			jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+		z:				10
 	}
 
 	Item
 	{
-		id:				jaspLogo
-
-		width:			parent.height / 3
-		height:			parent.height / 5.5
-		anchors
-		{
-			left:		parent.left
-			leftMargin: 50 * preferencesModel.uiScale
-			top:		aboutInfoBox.top
-			topMargin:	25 * preferencesModel.uiScale
-		}
-
+		id:					jaspLogo
+		z:					15
+		width:				parent.height / 3
+		height:				parent.height / 5.5
+		anchors.centerIn:	topWave
+		
 		Image
 		{
 			anchors.fill:		parent
 			fillMode:			Image.PreserveAspectFit
-			source:				jaspTheme.iconPath + "jasp-logo-black.svg"
+			source:				jaspTheme.iconPath + "jasp-logo.svg"
 			sourceSize.width:	width  * 2
 			sourceSize.height:	height * 2
 			mipmap:				true
@@ -74,36 +69,67 @@ Window
 	Rectangle
 	{
 		id:							aboutInfoBox
+		z:							5
 
 		anchors
 		{
 			top:			topWave.bottom
-			left:			jaspLogo.right
+			left:			parent.left
 			right:			parent.right
-			leftMargin:		25
-			rightMargin:	15
+			leftMargin:		15 * jaspTheme.uiScale
+			rightMargin:	x
+            bottom:         bottomWave.top
 		}
-		height:			contentInfo.height
-		color:			jaspTheme.white
+        
+        color:				jaspTheme.white
+        
+		Flickable
+        {
+			id:						contentFlicker
+			anchors
+			{
+				top:				parent.top
+				left:				parent.left
+				right:				scrollingOnTheRight.left
+				bottom:				parent.bottom
+			}
+            
+			contentWidth:			width
+			contentHeight:			contentInfo.childrenRect.height
 
-		Column
+            Column
+            {
+                id:				contentInfo
+                spacing:		5 * preferencesModel.uiScale
+                width:          contentFlicker.width
+    
+                //This is where the subitems go!
+            }
+		}
+		
+		JC.JASPScrollBar
 		{
-			id:				contentInfo
-			anchors.left:	parent.left
-			anchors.top:	parent.top
-			anchors.right:	parent.right
-			spacing:		5 * preferencesModel.uiScale
-
-			//This is where the subitems go!
+			id:				scrollingOnTheRight
+			flickable:		contentFlicker
+			manualAnchor:	true
+			
+			anchors
+			{
+				top:		parent.top
+				right:		parent.right
+				bottom:		parent.bottom
+			}
 		}
+		
+
 	}
 
 	Rectangle
 	{
 		id:					closeButton
+		z:					12
 		x:					aboutWindow.width / 2 - parent.x -width / 2
-		anchors.top:		aboutInfoBox.bottom
-		anchors.topMargin:	10 * preferencesModel.uiScale
+		anchors.centerIn:	bottomWave
 		color:				closebuttoncolor
 		radius:				5 * preferencesModel.uiScale
 		height:				25 * preferencesModel.uiScale
@@ -133,13 +159,13 @@ Window
 	Image
 	{
 		id:					bottomWave
-		z:					-1
 
 		anchors.bottom:		parent.bottom
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		height:				parent.height/4
 		source:				jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+		z:					10
 	}
 }
 
