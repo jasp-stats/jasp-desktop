@@ -82,12 +82,13 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			cooperativeVisible	READ cooperativeVisible		WRITE setCooperativeVisible		NOTIFY cooperativeVisibleChanged	)
-	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT)
-	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT)
-	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT)
-	Q_PROPERTY(QString		coopSupporters		READ coopSupporters											CONSTANT)
-	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT)
-	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT)
+	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT							)
+	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT							)
+	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT							)
+	Q_PROPERTY(QString		coopSupporters		READ coopSupporters											CONSTANT							)
+	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT							)
+	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT							)
+	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 
 
 	friend class FileMenu;
@@ -120,6 +121,7 @@ public:
 	const QString &		coopSupporters()		const;
 	const QString &		coopHowToSupport()		const;
 	const QString &		coopUrl()				const;
+	const QString 		contactText()			const;
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -234,10 +236,9 @@ signals:
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
 	void showComputedColumn(		QString		columnName);
-
 	void contactVisibleChanged();
-
 	void cooperativeVisibleChanged();
+	void contactTextChanged();
 
 private slots:
 	void resultsPageLoaded();
