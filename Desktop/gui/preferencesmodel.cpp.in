@@ -533,7 +533,6 @@ void PreferencesModel::_setEmptyValues(const QStringList& values)
 {
 	if (values != emptyValues())
 	{
-		emit aboutToChangeEmptyValues(values);
 		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
 		emit emptyValuesChanged();
 	}
@@ -544,7 +543,7 @@ QStringList PreferencesModel::_splitValues(const QString &values) const
 	QStringList items = values.split("|");
 	std::set<QString> orderedValues; // use std::set to order the items
 	for (const QString& item : items)
-		orderedValues.insert(item);
+		orderedValues.insert(stripFirstAndLastChar(item,"\""));
 
 	return QStringList(orderedValues.begin(), orderedValues.end());
 

@@ -456,7 +456,6 @@ void MainWindow::makeConnections()
 	connect(_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 	connect(_loader,				&AsyncLoader::checkDoSync,							this,					&MainWindow::checkDoSync,									Qt::BlockingQueuedConnection);
 
-	connect(_preferences,			&PreferencesModel::aboutToChangeEmptyValues,		_package,				&DataSetPackage::preferredEmptyValuesBeingChanged			);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
@@ -2097,4 +2096,9 @@ void MainWindow::setCooperativeVisible(bool newCooperativeVisible)
 		return;
 	_cooperativeVisible = newCooperativeVisible;
 	emit cooperativeVisibleChanged();
+}
+
+void MainWindow::setDefaultWorkspaceEmptyValues()
+{
+	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
 }

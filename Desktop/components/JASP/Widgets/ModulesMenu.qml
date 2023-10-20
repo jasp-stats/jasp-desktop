@@ -154,6 +154,7 @@ FocusScope
 					height:		200 * jaspTheme.uiScale
 					x:			jaspTheme.generalAnchorMargin
 					model:		workspaceModel
+					resetButtonTooltip: qsTr("Reset missing values with the ones set in Data Preferences")
 				}
 			}
 

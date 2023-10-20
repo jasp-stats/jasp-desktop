@@ -329,7 +329,6 @@ public slots:
 				void				columnWasOverwritten(				const std::string & columnName, const std::string & possibleError);
 				void				notifyColumnFilterStatusChanged(	int columnIndex);
 				void				setColumnsUsedInEasyFilter(			stringset usedColumns);
-				void				preferredEmptyValuesBeingChanged(	QStringList newValues);
 				void				setCurrentFile(						QString currentFile);
 				void				setFolder(							QString folder);
 				void				generateEmptyData();

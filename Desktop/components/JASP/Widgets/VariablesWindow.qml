@@ -413,6 +413,8 @@ FocusScope
 						enabled:			useCustomValues.checked
 						showTitle:			false
 						model:				columnModel
+						resetButtonTooltip: qsTr("Reset missing values with the ones set in your workspace")
+
 					}
 
 					Text
@@ -424,7 +426,7 @@ FocusScope
 						MouseArea
 						{
 							anchors.fill:	parent
-							onClicked:		mainWindowRoot.showModuleMenu()
+							onClicked:		mainWindowRoot.showWorkspaceMenu()
 							cursorShape:	Qt.PointingHandCursor
 						}
 					}

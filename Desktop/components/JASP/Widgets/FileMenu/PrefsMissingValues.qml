@@ -6,8 +6,11 @@ import JASP.Controls
 FocusScope
 {
 	id:		missingValuesWidget
-	property bool	showTitle:		true
-	property var	model:			preferencesModel
+	property var	model:						preferencesModel
+	property bool	showTitle:					true
+	property bool	showResetWorkspaceButton:	false
+	property string resetButtonLabel:			qsTr("Reset")
+	property string resetButtonTooltip
 
 	implicitWidth:		400 * preferencesModel.uiScale
 	implicitHeight: 	250 * preferencesModel.uiScale
@@ -141,6 +144,7 @@ FocusScope
 				anchors.top:		parent.top
 				anchors.topMargin:	-1
 				anchors.right:		parent.right
+				toolTip:			qsTr("Add a missing value")
 
 				KeyNavigation.tab:	resetButton
 
@@ -157,13 +161,31 @@ FocusScope
 
 		RoundedButton
 		{
-			id:					resetButton
-			text:				qsTr("Reset")
-			onClicked:			missingValuesWidget.model.resetEmptyValues()
+			id:					setWorkspaceButton
+			text:				qsTr("Set current workspace with these values")
+			toolTip:			qsTr("Set the current workspace missing values with these values")
+			onClicked:			mainWindow.setDefaultWorkspaceEmptyValues()
+			visible:			mainWindow.dataAvailable && showResetWorkspaceButton
 
 			anchors
 			{
 				top:			addValueItem.bottom
+				left:			valuesRectangle.right
+				right:			parent.right
+				margins:		jaspTheme.generalAnchorMargin
+			}
+		}
+
+		RoundedButton
+		{
+			id:					resetButton
+			text:				resetButtonLabel
+			toolTip:			resetButtonTooltip
+			onClicked:			missingValuesWidget.model.resetEmptyValues()
+
+			anchors
+			{
+				top:			setWorkspaceButton.visible ? setWorkspaceButton.bottom : addValueItem.bottom
 				left:			valuesRectangle.right
 				right:			parent.right
 				margins:		jaspTheme.generalAnchorMargin

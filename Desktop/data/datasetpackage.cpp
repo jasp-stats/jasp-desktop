@@ -1856,19 +1856,6 @@ void DataSetPackage::setColumnDataDbls(size_t columnIndex, const doublevec & dbl
 	col->incRevision();
 }
 
-void DataSetPackage::preferredEmptyValuesBeingChanged(QStringList newValues)
-{
-	// If workspace empty values are the same as the previous preferred empty values,
-	// then update the workspace empty values with the new values
-	if (tql(workspaceEmptyValues()) == PreferencesModel::prefs()->emptyValues())
-	{
-		stringset values;
-		for (const QString& val : newValues)
-			values.insert(fq(val));
-		setWorkspaceEmptyValues(values);
-	}
-}
-
 bool DataSetPackage::setFilterData(const std::string & rFilter, const boolvec & filterResult)
 {
 	filter()->setRFilter(rFilter);
@@ -2016,10 +2003,8 @@ const stringset& DataSetPackage::workspaceEmptyValues() const
 void DataSetPackage::setDefaultWorkspaceEmptyValues()
 {
 	stringset values;
-	QStringList list = Settings::value(Settings::EMPTY_VALUES_LIST).toString().split("|");
-	for (const QString & item : list)
-		values.insert(stripFirstAndLastChar(item,"\"").toStdString());
-
+	for (const QString& value : PreferencesModel::prefs()->emptyValues())
+		 values.insert(fq(value));
 	setWorkspaceEmptyValues(values);
 }
 

@@ -575,9 +575,9 @@ void ColumnModel::refresh()
 	emit nameEditableChanged();
 	emit columnTitleChanged();
 	emit columnDescriptionChanged();
+	emit computedTypeValuesChanged();
 	emit computedTypeChanged();
 	emit computedTypeEditableChanged();
-	emit computedTypeValuesChanged();
 	emit columnTypeChanged();
 	emit useCustomEmptyValuesChanged();
 	emit emptyValuesChanged();

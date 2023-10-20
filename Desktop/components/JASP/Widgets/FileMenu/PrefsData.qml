@@ -206,13 +206,43 @@ ScrollView
 				}
 			}
 
-			PrefsMissingValues
+			Item
 			{
-				id:					missingValuesList
-				model:				preferencesModel
-				KeyNavigation.tab:	noBomNative
+				width:	parent.width
+				height: missingValuesList.height
+
+				PrefsMissingValues
+				{
+					id:					missingValuesList
+					model:				preferencesModel
+					showResetWorkspaceButton: true
+					resetButtonLabel:	qsTr("Reset with standard values")
+					resetButtonTooltip:	qsTr("Reset missing values with the standard JASP missing values")
+					KeyNavigation.tab:	noBomNative
+				}
+
+				Text
+				{
+					visible:			mainWindow.dataAvailable
+					anchors
+					{
+						top:			parent.top
+						left:			missingValuesList.right
+						leftMargin:		jaspTheme.generalAnchorMargin
+						right:			parent.right
+						rightMargin:	jaspTheme.generalAnchorMargin
+					}
+					text:				qsTr("Show workspace missing values")
+					color:				jaspTheme.blueDarker
+					wrapMode:			Text.Wrap
+					MouseArea
+					{
+						anchors.fill:	parent
+						onClicked:		mainWindowRoot.showWorkspaceMenu()
+						cursorShape:	Qt.PointingHandCursor
+					}
+				}
 			}
-			
 
 			PrefsGroupRect
 			{
