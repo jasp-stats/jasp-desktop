@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-10-18 15:29+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.1\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4619,7 +4625,7 @@ msgstr "拷贝列 '%1' 至 '%2'"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "联系 JASP"
 
 #, qt-format
 msgctxt "ContactWindow|"
@@ -4641,20 +4647,30 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"对于<a href=\"%1\">功能请求</a> 以及 <a href=\"%2\">bug 报告</a>: 请按照 <a "
+"href=\"%3\">此处</a>的指引在 GitHub 上发布问题。\n"
+"这将使您和 JASP 软件的开发人员直接取得联系。\n"
+"\n"
+"对于统计相关讨论: 请发布在 <a href=\"%4\"> JASP 论坛(英文)。</a>\n"
+"\n"
+"如需了解 JASP 合作社: 请阅读 <a href=\"%5\">JASP 网站的相关信息。</a>\n"
+"\n"
+"如建议我们将您所在的机构添加到 <a href=\"%6\">JASP 用户世界地图</a> "
+"请发送邮件至 <a href=\"%7\">communications@jasp-stats.org</a>.\n"
+"\n"
+"对于个人捐赠：请访问 <a href=\"%8\"> 捐赠 JASP</a>.\n"
 
-#, fuzzy
 msgctxt "ContactWindow|"
 msgid "Select All"
 msgstr "全选"
 
-#, fuzzy
 msgctxt "ContactWindow|"
 msgid "Copy Selection"
 msgstr "拷贝所选"
 
 msgctxt "CooperativeWindow|"
 msgid "JASP Cooperative"
-msgstr ""
+msgstr "JASP 合作社"
 
 #, qt-format
 msgctxt "CooperativeWindow|"
@@ -4671,31 +4687,36 @@ msgid ""
 "<i>Educator Institutions:</i>\n"
 "%1"
 msgstr ""
+"<h3>合作社</h3>\n"
+"参与 JASP 合作社的高等教育机构共同支持 JASP 的持续开发和维护，从而为其机构的"
+"学生和世界各地其他机构的学生提供宝贵的教育服务。\n"
+"\n"
+"如果您的机构还不是 JASP 合作社成员，您可以 <a href=\"%2\""
+">建议机构加入合作社</a>.\n"
+"\n"
+"<i>教育机构：</i>\n"
+"%1"
 
-#, fuzzy
 msgctxt "CooperativeWindow|"
 msgid "Select All"
 msgstr "全选"
 
-#, fuzzy
 msgctxt "CooperativeWindow|"
 msgid "Copy Selection"
 msgstr "拷贝所选"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP 由以下机构提供支持："
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Cooperative"
-msgstr ""
+msgstr "建议您的机构加入 JASP 合作社"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
-msgstr "关于JASP"
+msgstr "关于 JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "关闭"
@@ -4703,16 +4724,16 @@ msgstr "关闭"
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "拷贝列 '%1' 至列 '%2'"
 
 msgctxt "MainWindow|"
 msgid "and "
-msgstr ""
+msgstr "和 "
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "联系"
 
 msgctxt "ActionButtons|"
 msgid "Cooperative"
-msgstr ""
+msgstr "合作社"
