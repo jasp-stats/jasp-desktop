@@ -499,7 +499,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image'],
+			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -592,6 +592,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
 		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
 		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
+		this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')

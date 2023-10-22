@@ -255,15 +255,47 @@ Item
 				}
 			}
 
+			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be', 'player.vimeo.com', 'www.bilibili.com', 'v.qq.com'];
+
+			function isURLInWhitelist(hostname) 
+			{
+				for (var i = 0; i < urlWhitelist.length; i++) 
+				{
+					if (hostname === urlWhitelist[i]) 
+						return true;
+				}
+				return false;
+			}
+
+			onFullScreenRequested: function(request) 
+			{
+				request.accept()
+				analysesModel.visible = false
+				mainWindowRoot.toggleFullScreen()
+			}
+
 			onNavigationRequested: (request)=>
 			{
+				var requestedURL = new URL(request.url);
+
 				if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
 					request.accept()
 				else
 				{
 					if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
-						Qt.openUrlExternally(request.url);
-					request.reject();
+					{
+                        Qt.openUrlExternally(request.url);
+					}
+  					else if(isURLInWhitelist(requestedURL.hostname))
+					{
+						request.accept();
+						console.log("Navigation requeste accepted:", requestedURL.hostname)
+					}
+					else
+					{
+						request.reject();
+						console.log("Navigation requeste rejected:", requestedURL.hostname)
+					}
 				}
 			}
 
@@ -314,7 +346,7 @@ Item
 				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
 				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
-				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image")
+				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video")
 			}
 
 			function setTranslatedResultsString()
