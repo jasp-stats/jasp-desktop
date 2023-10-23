@@ -525,7 +525,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				syntax: true,
 				toolbar: toolbarOptions,
 				blotFormatter: {
-					// left for config options here
+					specs: [QuillBlotFormatter.ImageSpec]
 				  },
 				keyboard: {
 					bindings: {
