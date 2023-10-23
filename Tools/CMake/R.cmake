@@ -375,17 +375,17 @@ if(APPLE)
 
       # Patch and sign all first party libraries
 	  execute_process(
-		#COMMAND_ECHO STDOUT
+		COMMAND_ECHO STDOUT
 		#ERROR_QUIET 
-    OUTPUT_QUIET
+		#OUTPUT_QUIET
 		WORKING_DIRECTORY ${R_HOME_PATH}
 		COMMAND
 		  ${CMAKE_COMMAND} -D
 		  NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-		  -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-		  R_DIR_NAME=${R_DIR_NAME} -D
-		  SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
-		  CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+		  -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH}
+		  -D R_DIR_NAME=${R_DIR_NAME}
+		  -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1
+		  -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
 		  ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
@@ -407,20 +407,35 @@ if(APPLE)
 
       set(SIGNING_RESULT "timeout")
       while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL "1"))
-
-        execute_process(
-          COMMAND_ECHO STDOUT
-          #ERROR_QUIET 
-          #OUTPUT_QUIET
-          TIMEOUT 30
-          WORKING_DIRECTORY ${R_HOME_PATH}
-          COMMAND
-            codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-            ${APPLE_CODESIGN_IDENTITY} ${RUNTIMEHARDENING}
-            "${R_HOME_PATH}/bin/exec/R"
-          RESULT_VARIABLE SIGNING_RESULT
-          OUTPUT_VARIABLE SIGNING_OUTPUT
-          ERROR_VARIABLE SIGNING_ERROR)
+          if(RUNTIMEHARDENING)
+            execute_process(
+                COMMAND_ECHO STDOUT
+                #ERROR_QUIET
+                #OUTPUT_QUIET
+                TIMEOUT 30
+                WORKING_DIRECTORY ${R_HOME_PATH}
+                COMMAND
+                  codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+                  ${APPLE_CODESIGN_IDENTITY} --options runtime
+                  "${R_HOME_PATH}/bin/exec/R"
+                RESULT_VARIABLE SIGNING_RESULT
+                OUTPUT_VARIABLE SIGNING_OUTPUT
+                ERROR_VARIABLE SIGNING_ERROR)
+          else()
+            execute_process(
+              COMMAND_ECHO STDOUT
+              #ERROR_QUIET
+              #OUTPUT_QUIET
+              TIMEOUT 30
+              WORKING_DIRECTORY ${R_HOME_PATH}
+              COMMAND
+                codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+                ${APPLE_CODESIGN_IDENTITY}
+                "${R_HOME_PATH}/bin/exec/R"
+              RESULT_VARIABLE SIGNING_RESULT
+              OUTPUT_VARIABLE SIGNING_OUTPUT
+              ERROR_VARIABLE SIGNING_ERROR)
+          endif()
       endwhile()
 
       if(NOT (SIGNING_RESULT MATCHES "timeout"))
@@ -530,8 +545,8 @@ if(APPLE)
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
@@ -549,7 +564,7 @@ if(APPLE)
     execute_process(
 	  COMMAND_ECHO STDERR
 	  #ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
+	  WORKING_DIRECTORY ${R_HOME_PATH}
 	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
@@ -567,8 +582,8 @@ if(APPLE)
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
@@ -875,7 +890,6 @@ elseif(LINUX)
 
     execute_process(
       COMMAND_ECHO STDOUT
-      #ERROR_QUIET OUTPUT_QUIET
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
 	          --file=${SCRIPT_DIRECTORY}/install-RInside.R)
 
