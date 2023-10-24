@@ -42,7 +42,7 @@ else()
   file(
     GLOB_RECURSE
     LIBRARIES
-    #FOLLOW_SYMLINKS #Turned this off because it got infinitely regressed, but Joris turned it back on cause it breaks things
+    #FOLLOW_SYMLINKS #Turned this off because it got infinitely regressed
     "${PATH}/*.so"
     "${PATH}/*.dylib")
   list(
