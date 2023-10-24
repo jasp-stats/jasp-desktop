@@ -64,7 +64,7 @@ int handle_value_label(const char *val_labels, readstat_value_t value, const cha
 bool ReadStatImporter::extSupported(const std::string & ext)
 {
 	static std::set<std::string> supportedExts({"dta", "por", "sav", "zsav", "sas7bdat", "sas7bcat", "xpt", ".dta", ".por", ".sav", ".zsav", ".sas7bdat", ".sas7bcat", ".xpt"});
-	return supportedExts.count(ext) > 0;
+	return supportedExts.count(stringUtils::toLower(ext)) > 0;
 }
 
 
