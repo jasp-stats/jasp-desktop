@@ -22,14 +22,8 @@ if(USE_CONAN)
   set(CONAN_FILE_PATH ${CMAKE_SOURCE_DIR})
 
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
-
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CONAN_COMPILER_RUNTIME "MDd")
-  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CONAN_COMPILER_RUNTIME "MD")
-  else()
-    set(CONAN_COMPILER_RUNTIME "MDd")
-  endif()
+  set(CONAN_COMPILER_RUNTIME "dynamic")
+  set(CONAN_RESULT_FILE "conanbuild.bat") #for windows
 
   if(WIN32)
 
@@ -39,10 +33,13 @@ if(USE_CONAN)
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
-        conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-        compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/conan_build
+      -s build_type=${CMAKE_BUILD_TYPE}
+      -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
 
   elseif(APPLE)
+
+    set(CONAN_RESULT_FILE "conanbuild.sh")
 
     if(CROSS_COMPILING)
 
@@ -51,8 +48,8 @@ if(USE_CONAN)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx -s
-          arch=${CONAN_ARCH} -s arch_build=${CONAN_ARCH} --build=missing)
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s
+          arch=${CONAN_ARCH} -s arch_build=${CONAN_ARCH} --build=missing -of ${CMAKE_BINARY_DIR}/conan_build)
 
     else()
 
@@ -61,14 +58,14 @@ if(USE_CONAN)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx
-          --build=missing)
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET}
+          --build=missing -of ${CMAKE_BINARY_DIR}/conan_build)
 
     endif()
 
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
+  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/${CONAN_RESULT_FILE})
     message(CHECK_PASS "successful")
   else()
     message(CHECK_FAIL "unsuccessful")
@@ -78,7 +75,8 @@ if(USE_CONAN)
     )
   endif()
 
-  include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+  include(${CMAKE_BINARY_DIR}/conan_build/conan_toolchain.cmake)
+
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

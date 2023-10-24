@@ -68,6 +68,9 @@ cmake-build-*
 # Xcode project
 xcode-project/
 
+# Conan
+CMakeUserPresets.json
+
 
 # Temporary 
 Frameworks/

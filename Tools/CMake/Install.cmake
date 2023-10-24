@@ -150,7 +150,7 @@ if(APPLE)
   # See here: https://bugreports.qt.io/browse/QTBUG-100686
   #
   # Feel free to remove it when the bug is fixed
-  install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
+  #install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
 
   install(
     DIRECTORY ${MODULES_BINARY_PATH}/
