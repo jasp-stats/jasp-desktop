@@ -2,6 +2,7 @@
 #define READSTATIMPORTER_H
 
 #include "importer.h"
+#include "stringutils.h"
 #include <string>
 
 ///
@@ -10,7 +11,7 @@ class ReadStatImporter : public Importer
 {
 
 public:
-	ReadStatImporter(std::string ext) : Importer(), _ext(ext)
+	ReadStatImporter(std::string ext) : Importer(), _ext(stringUtils::toLower(ext))
 	{
             DataSetPackage::pkg()->setIsJaspFile(false);
 
