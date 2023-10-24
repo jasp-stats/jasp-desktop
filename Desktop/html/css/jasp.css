@@ -597,6 +597,14 @@ pre {
   font-family: monospace, monospace;
 }
 
+/* quill editor of jasp annotations styles */
+
+iframe.ql-video {
+	width: 100%;
+	padding: 15px;
+	min-height: 360px;
+  }
+
 /* The following code convinces webengine to have scrollbars that look sorta like JASPScrollBar */
 /* width */
 ::-webkit-scrollbar {
