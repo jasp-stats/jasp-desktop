@@ -30,6 +30,7 @@ if(insideJASP)
 	scope: Parchment.Scope.BLOCK
 	});
 
+	Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 	Quill.register('formats/linebreak', LineBreakClass);
 	
@@ -498,7 +499,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block'],
+			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -523,6 +524,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			modules: {
 				syntax: true,
 				toolbar: toolbarOptions,
+				blotFormatter: {
+					specs: [QuillBlotFormatter.ImageSpec]
+				  },
 				keyboard: {
 					bindings: {
 						smartbreak: {
@@ -587,6 +591,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
 		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
+		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
@@ -616,6 +621,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		quillEditorElement.addEventListener('click', (event) => {
 			this.setQuillToolbarVisibility('block') //set toobar visiable;
 
+			//// LaTex editor
 			let $formulaNode = this.$el.find('.ql-editor mjx-container')
 			 $formulaNode.on('click', (e) => {
 				let currentFormula = e.currentTarget
@@ -636,6 +642,16 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 					this.oldBlot = null;
 				};
 			});
+
+			//// Image resizer
+			let $imgBlot = this.$el.find('.ql-editor p img');
+            let $blotResizer = this.$el.find('.blot-formatter__overlay');
+			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
+
+			// auto show/hide resizer handles while hover/leave.
+            $blotResizer.on( "mouseenter", ()=> { $resizeHandles.show()} ).on( "mouseleave", ()=> { $resizeHandles.hide()} );
+            $imgBlot.on(     "mouseenter", ()=> { $resizeHandles.show()} ).on( "mouseleave", ()=> { $resizeHandles.hide()} );
+
 		});
 
 		quillEditorElement.addEventListener('focusout', (event) => {
