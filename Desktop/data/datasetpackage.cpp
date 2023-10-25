@@ -1803,6 +1803,9 @@ void DataSetPackage::setColumnHasCustomEmptyValues(size_t columnIndex, bool hasC
 	column->setHasCustomEmptyValues(hasCustomEmptyValue);
 
 	emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+
+	if(!hasCustomEmptyValue)
+		resetMissingData({column});
 }
 
 void DataSetPackage::setColumnCustomEmptyValues(size_t columnIndex, const stringset& customEmptyValues)
