@@ -20,7 +20,7 @@ public:
 	const	doubleset &		doubleEmptyValues(const std::string& colName)								const;
 	const	stringset &		workspaceEmptyValues()														const;
 	const	intstrmap &		missingData(const std::string& colName)										const;
-			bool			hasCutomEmptyValues(const std::string& colName)								const { return _customEmptyValuesPerColumn.contains(colName);	}
+			bool			hasCutomEmptyValues(const std::string& colName)								const { return _customEmptyValuesPerColumn.count(colName);	}
 			void			setWorkspaceEmptyValues(const stringset& values);
 			void			setCustomEmptyValues(const std::string& colName, const stringset& values);
 			void			setMissingData(const std::string& colName, const intstrmap &data);

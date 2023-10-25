@@ -100,12 +100,12 @@ void EmptyValues::setWorkspaceEmptyValues(const stringset& values)
 
 const stringset& EmptyValues::emptyValues(const std::string& colName) const
 {
-	return _customEmptyValuesPerColumn.contains(colName) ? _customEmptyValuesPerColumn.at(colName) : _workspaceEmptyValues;
+	return _customEmptyValuesPerColumn.count(colName) ? _customEmptyValuesPerColumn.at(colName) : _workspaceEmptyValues;
 }
 
 const doubleset& EmptyValues::doubleEmptyValues(const std::string &colName) const
 {
-	return _customDoubleEmptyValuesPerColumn.contains(colName) ? _customDoubleEmptyValuesPerColumn.at(colName) : _workspaceDoubleEmptyValues;
+	return _customDoubleEmptyValuesPerColumn.count(colName) ? _customDoubleEmptyValuesPerColumn.at(colName) : _workspaceDoubleEmptyValues;
 }
 
 void EmptyValues::setCustomEmptyValues(const std::string &colName, const stringset& values)
@@ -116,7 +116,7 @@ void EmptyValues::setCustomEmptyValues(const std::string &colName, const strings
 
 const intstrmap& EmptyValues::missingData(const std::string &colName) const
 {
-	return _missingData.contains(colName) ? _missingData.at(colName) : _emptyMissingData;
+	return _missingData.count(colName) ? _missingData.at(colName) : _emptyMissingData;
 }
 
 void EmptyValues::setMissingData(const std::string& colName, const intstrmap &data)

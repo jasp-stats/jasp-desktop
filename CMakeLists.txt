@@ -39,7 +39,7 @@ if(APPLE)
 	set(CMAKE_OSX_SYSROOT ${SDKROOT})
 	message(STATUS "Got CMAKE_OSX_SYSROOT from xcrun as '${SDKROOT}'")
   else()
-	message(STATUS "CMAKE_OSX_SYSROOT='${CMAKE_OSX_SYSROOT}'")
+	message(STATUS "CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}")
   endif()
  
 

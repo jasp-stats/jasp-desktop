@@ -2257,7 +2257,7 @@ bool Column::isEmptyValue(const std::string& val) const
 	if (val.empty()) return true;
 
 	const stringset &values = emptyValues();
-	return values.contains(val);
+	return values.count(val);
 }
 
 bool Column::isEmptyValue(const double &val) const

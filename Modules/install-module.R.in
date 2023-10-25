@@ -43,6 +43,7 @@ result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@",
 	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE,
+	libPathsToUse='',
 	frameworkLibrary="@R_LIBRARY_PATH@")
 
 if (result == "succes") {
