@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls as QTC
 import JASP.Controls
-
+import QtQuick.Layouts
 
 FocusScope
 {
@@ -45,13 +45,13 @@ FocusScope
 			id:				valuesRectangle
 			color:			jaspTheme.white
 			border.color:	jaspTheme.grayLighter
-			width:			(parent.width - 2 * jaspTheme.generalAnchorMargin) / 2
 			clip:			true
 			anchors
 			{
 				top:		showTitle ? missingValuesTitle.bottom : parent.top
-				bottom:		parent.bottom
+				bottom:		buttons.top
 				left:		parent.left
+				right:		parent.right
 				margins:	jaspTheme.generalAnchorMargin
 			}
 
@@ -108,87 +108,82 @@ FocusScope
 			}
 		}
 
-		Item
+		ColumnLayout
 		{
-			id:				addValueItem
-			height:			addButton.height
+			id:		buttons
+
 			anchors
 			{
-				top:		valuesRectangle.top
-				left:		valuesRectangle.right
+				left:		parent.left
 				right:		parent.right
+				bottom:		parent.bottom
 				margins:	jaspTheme.generalAnchorMargin
-				topMargin:	0
 			}
 
-			TextField
+			Item
 			{
-				id:					missingValueToAddText
-				control.onAccepted:	addButton.clicked();
-				focus:				true
-				anchors
+				id:					addValueItem
+				height:				addButton.height
+				Layout.fillWidth:	true
+
+
+				TextField
 				{
-					right:			addButton.left
-					rightMargin:	jaspTheme.generalAnchorMargin
+					id:					missingValueToAddText
+					control.onAccepted:	addButton.clicked();
+					focus:				true
+					anchors
+					{
+						right:			addButton.left
+						rightMargin:	jaspTheme.generalAnchorMargin
+					}
+					fieldWidth:			parent.width - addButton.width - jaspTheme.generalAnchorMargin
+					KeyNavigation.tab:	addButton
 				}
-				fieldWidth:			parent.width - addButton.width - jaspTheme.generalAnchorMargin
-				KeyNavigation.tab:	addButton
+
+				RoundedButton
+				{
+					id:					addButton
+					iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
+					height:				missingValueToAddText.height + 2
+					width:				height
+					anchors.top:		parent.top
+					anchors.topMargin:	-1
+					anchors.right:		parent.right
+					toolTip:			qsTr("Add a missing value")
+
+					KeyNavigation.tab:	resetButton
+
+					onClicked:
+					{
+						if (missingValueToAddText.control.text)
+						{
+							missingValuesWidget.model.addEmptyValue(missingValueToAddText.control.text)
+							missingValueToAddText.control.text = ""
+						}
+					}
+				}
 			}
 
 			RoundedButton
 			{
-				id:					addButton
-				iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
-				height:				missingValueToAddText.height + 2
-				width:				height
-				anchors.top:		parent.top
-				anchors.topMargin:	-1
-				anchors.right:		parent.right
-				toolTip:			qsTr("Add a missing value")
+				Layout.fillWidth:	true
+				id:					setWorkspaceButton
+				text:				qsTr("Set current workspace with these values")
+				toolTip:			qsTr("Set the current workspace missing values with these values")
+				onClicked:			mainWindow.setDefaultWorkspaceEmptyValues()
+				visible:			mainWindow.dataAvailable && showResetWorkspaceButton
 
-				KeyNavigation.tab:	resetButton
-
-				onClicked:
-				{
-					if (missingValueToAddText.control.text)
-					{
-						missingValuesWidget.model.addEmptyValue(missingValueToAddText.control.text)
-						missingValueToAddText.control.text = ""
-					}
-				}
 			}
-		}
 
-		RoundedButton
-		{
-			id:					setWorkspaceButton
-			text:				qsTr("Set current workspace with these values")
-			toolTip:			qsTr("Set the current workspace missing values with these values")
-			onClicked:			mainWindow.setDefaultWorkspaceEmptyValues()
-			visible:			mainWindow.dataAvailable && showResetWorkspaceButton
-
-			anchors
+			RoundedButton
 			{
-				top:			addValueItem.bottom
-				left:			valuesRectangle.right
-				right:			parent.right
-				margins:		jaspTheme.generalAnchorMargin
-			}
-		}
+				Layout.fillWidth:	true
+				id:					resetButton
+				text:				resetButtonLabel
+				toolTip:			resetButtonTooltip
+				onClicked:			missingValuesWidget.model.resetEmptyValues()
 
-		RoundedButton
-		{
-			id:					resetButton
-			text:				resetButtonLabel
-			toolTip:			resetButtonTooltip
-			onClicked:			missingValuesWidget.model.resetEmptyValues()
-
-			anchors
-			{
-				top:			setWorkspaceButton.visible ? setWorkspaceButton.bottom : addValueItem.bottom
-				left:			valuesRectangle.right
-				right:			parent.right
-				margins:		jaspTheme.generalAnchorMargin
 			}
 		}
 	}
