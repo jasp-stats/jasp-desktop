@@ -271,6 +271,7 @@ Item
 			{
 				request.accept()
 				analysesModel.visible = false
+				minimizeDataPanel()
 				mainWindowRoot.toggleFullScreen()
 			}
 
@@ -279,23 +280,22 @@ Item
 				var requestedURL = new URL(request.url);
 
 				if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
+				{
 					request.accept()
+				}
+				else if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
+				{
+					Qt.openUrlExternally(request.url);
+				}
+				else if(isURLInWhitelist(requestedURL.hostname))
+				{
+					request.accept();
+					console.log("Navigation requeste accepted:", requestedURL.hostname)
+				}
 				else
 				{
-					if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
-					{
-                        Qt.openUrlExternally(request.url);
-					}
-  					else if(isURLInWhitelist(requestedURL.hostname))
-					{
-						request.accept();
-						console.log("Navigation requeste accepted:", requestedURL.hostname)
-					}
-					else
-					{
-						request.reject();
-						console.log("Navigation requeste rejected:", requestedURL.hostname)
-					}
+					request.reject();
+					console.log("Navigation requeste rejected:", requestedURL.hostname)
 				}
 			}
 
