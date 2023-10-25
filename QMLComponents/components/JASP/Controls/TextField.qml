@@ -136,7 +136,7 @@ TextInputBase
 	Rectangle
 	{
 		id:					beforeLabelRect
-		width:				beforeLabel.implicitWidth + beforeLabel.x
+		width:				beforeLabel.width + beforeLabel.x
 		height:				control.height
 		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
 		visible:			beforeLabel.text && textField.visible
@@ -147,6 +147,7 @@ TextInputBase
 			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			text:					textField.label
+			width:					implicitWidth
 		}
 	}
 

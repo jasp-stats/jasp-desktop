@@ -91,130 +91,128 @@ FocusScope
 			width:			    parent.width
 			height:				columnNameVariablesWindow.height + columnDescriptionVariablesWindow.height + computedTypeVariableWindow.height + 4 * jaspTheme.generalAnchorMargin
 
-			Label
+			ColumnLayout
 			{
-				id: nameLabel
-				text: qsTr("Name: ")
-				width: descriptionLabel.contentWidth > nameLabel.contentWidth ? descriptionLabel.implicitWidth : nameLabel.implicitWidth
+				id:			leftColumn
+				width:		Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth, columnNameVariablesWindow.implicitWidth)
+				spacing:	0
+
 				anchors
 				{
-					top:			parent.top
-					topMargin:		jaspTheme.generalAnchorMargin
-					left:			parent.left
-					leftMargin:		jaspTheme.generalAnchorMargin
+					top:		common.top
+					left:		common.left
+					bottom:		common.bottom
+					margins:	jaspTheme.generalAnchorMargin
 				}
+
+				TextField
+				{
+					id:					columnNameVariablesWindow
+					placeholderText:	qsTr("<Fill in the name of the column>")
+					value:				columnModel.columnName
+					onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
+					undoModel:			columnModel
+					editable:           columnModel.nameEditable
+					label:				qsTr("Name: ")
+					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+
+				}
+
+
+				DropDown
+				{
+					id: columnTypeVariableWindow
+
+					label:				qsTr("Column type: ")
+					isBound:			false
+					showVariableTypeIcon: true
+					values:				columnModel.columnTypeValues
+					currentValue:		columnModel.currentColumnType
+					onValueChanged:		columnModel.currentColumnType = currentValue
+					controlMinWidth:	200 * jaspTheme.uiScale
+					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
+					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+				}
+
+				DropDown
+				{
+					id: computedTypeVariableWindow
+
+					label:				qsTr("Computed type: ")
+					values:				columnModel.computedTypeValues
+					currentValue:		columnModel.computedType
+					onValueChanged:		columnModel.computedType = currentValue
+					enabled:			columnModel.computedTypeEditable
+					controlMinWidth:	200 * jaspTheme.uiScale
+
+					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
+				}
+
 			}
 
-			TextField
-			{
-				id:					columnNameVariablesWindow
-				placeholderText:	qsTr("<Fill in the name of the column>")
-				value:				columnModel.columnName
-				onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
-				undoModel:			columnModel
-                editable:           columnModel.nameEditable
-                
-				anchors
-				{
-					top:			nameLabel.top
-					left:			nameLabel.right
-					leftMargin:		jaspTheme.generalAnchorMargin
-				}
-			}
 
-
-			TextField
+			ColumnLayout
 			{
-				id:					columnTitleVariablesWindow
-				label:				qsTr("Long name: ");
-				placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-				fieldWidth:			Math.min(closeButton.x - x - control.x, columnNameVariablesWindow.fieldWidth * 1.5)
-				value:				columnModel.columnTitle
-				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
-				undoModel:			columnModel
+				id:			rightColumn
+				width:		columnTitleVariablesWindow.implicitWidth
+				spacing:	0
 
 				anchors
 				{
-					left:			columnNameVariablesWindow.right
-					leftMargin:		jaspTheme.generalAnchorMargin
-					top:			columnNameVariablesWindow.top
+					top:		common.top
+					left:		leftColumn.right
+					right:		common.right
+					bottom:		common.bottom
+					margins:	jaspTheme.generalAnchorMargin
 				}
-			}
 
-			Label
-			{
-				id: descriptionLabel
-				text: qsTr("Description: ")
-				width: descriptionLabel.contentWidth > nameLabel.contentWidth ? descriptionLabel.implicitWidth : nameLabel.implicitWidth
-				anchors
+
+				TextField
 				{
-					top:			columnTitleVariablesWindow.bottom
-					topMargin:		jaspTheme.generalAnchorMargin
-					left:			parent.left
-					leftMargin:		jaspTheme.generalAnchorMargin
-				}
-			}
+					id:					columnTitleVariablesWindow
+					label:				qsTr("Long name: ");
+					placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
+					fieldWidth:			columnDescriptionVariablesWindow.width - closeButton.width
+					value:				columnModel.columnTitle
+					onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
+					undoModel:			columnModel
+					controlLabel.width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
 
-			TextArea
-			{
-				id:					columnDescriptionVariablesWindow
-				anchors
+				}
+
+				RowLayout
 				{
-					top:			descriptionLabel.top
-					left:			descriptionLabel.right
-					leftMargin:		jaspTheme.generalAnchorMargin
-					right:			parent.right
-					rightMargin:	jaspTheme.generalAnchorMargin
+					id:	descriptionRow
+
+					width:	parent.width
+
+					Label
+					{
+						id: descriptionLabel
+						text: qsTr("Description: ")
+						width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+
+					}
+
+					TextArea
+					{
+						id:					columnDescriptionVariablesWindow
+
+						height:				Math.min(maxHeight, control.contentHeight + 20 * jaspTheme.uiScale)
+						control.padding:	3 * jaspTheme.uiScale
+
+						text:				columnModel.columnDescription
+						onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
+						applyScriptInfo:	""
+						placeholderText:	"..."
+						undoModel:			columnModel
+						useTabAsSpaces:		false
+
+						property int maxHeight:	100 * jaspTheme.uiScale
+						Layout.fillWidth:	true
+					}
 				}
-				height:				Math.max(columnNameVariablesWindow.height, Math.min(maxHeight, control.contentHeight + 20 * jaspTheme.uiScale))
-				control.padding:	3 * jaspTheme.uiScale
-
-				text:				columnModel.columnDescription
-				onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
-				applyScriptInfo:	""
-				placeholderText:	"..."
-				undoModel:			columnModel
-				useTabAsSpaces:		false
-
-				property int maxHeight:	100 * jaspTheme.uiScale
-			}
-
-			DropDown
-			{
-				id: columnTypeVariableWindow
-
-				anchors
-				{
-					top:			columnDescriptionVariablesWindow.bottom
-					topMargin:		jaspTheme.generalAnchorMargin
-					left:			parent.left
-					leftMargin:		jaspTheme.generalAnchorMargin
-				}
-
-				label:				qsTr("Column type: ")
-				isBound:			false
-				showVariableTypeIcon: true
-				values:				columnModel.columnTypeValues
-				currentValue:		columnModel.currentColumnType
-				onValueChanged:		columnModel.currentColumnType = currentValue
-			}
-
-			DropDown
-			{
-				id: computedTypeVariableWindow
-				anchors
-				{
-					top:			columnDescriptionVariablesWindow.bottom
-					topMargin:		jaspTheme.generalAnchorMargin
-					left:			columnTypeVariableWindow.right
-					leftMargin:		jaspTheme.generalAnchorMargin
-				}
-
-				label:				qsTr("Computed type: ")
-				values:				columnModel.computedTypeValues
-				currentValue:		columnModel.computedType
-				onValueChanged:		columnModel.computedType = currentValue
-				enabled:			columnModel.computedTypeEditable
 			}
 
 			MenuButton
@@ -228,6 +226,8 @@ FocusScope
 				radius:				height
 				anchors
 				{
+
+					topMargin:		columnTitleVariablesWindow.y
 					top:			parent.top
 					right:			parent.right
 					rightMargin:	jaspTheme.generalAnchorMargin

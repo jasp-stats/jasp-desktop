@@ -79,6 +79,7 @@ ComboBoxBase
 			font:		jaspTheme.font
 			anchors.verticalCenter: parent.verticalCenter
 			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			width:		implicitWidth
 		}
 	}
 
