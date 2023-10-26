@@ -1347,7 +1347,8 @@ int DataSetPackage::getColIndex(QVariant colID)
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 		return colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 
-	else _dataSet->getColumnIndex(fq(colID.toString()));
+	else
+		return _dataSet->getColumnIndex(fq(colID.toString()));
 }
 
 bool DataSetPackage::convertVecToInt(int colIndex, const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap)
