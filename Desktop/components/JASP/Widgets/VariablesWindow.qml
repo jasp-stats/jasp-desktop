@@ -89,13 +89,13 @@ FocusScope
 			anchors.leftMargin: 0
 			anchors.margins:	jaspTheme.generalAnchorMargin
 			width:			    parent.width
-			height:				columnNameVariablesWindow.height + columnDescriptionVariablesWindow.height + computedTypeVariableWindow.height + 4 * jaspTheme.generalAnchorMargin
+			height:				Math.max(leftColumn.childrenRect.height, rightColumn.childrenRect.height) + 2 * jaspTheme.generalAnchorMargin
 
-			ColumnLayout
+			Column
 			{
 				id:			leftColumn
 				width:		Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth, columnNameVariablesWindow.implicitWidth)
-				spacing:	0
+				spacing:	jaspTheme.rowGroupSpacing
 
 				anchors
 				{
@@ -105,17 +105,22 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
-				TextField
+				RowLayout
 				{
-					id:					columnNameVariablesWindow
-					placeholderText:	qsTr("<Fill in the name of the column>")
-					value:				columnModel.columnName
-					onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
-					undoModel:			columnModel
-					editable:           columnModel.nameEditable
-					label:				qsTr("Name: ")
-					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+					height:				longNameRow.height
 
+					TextField
+					{
+						id:					columnNameVariablesWindow
+						placeholderText:	qsTr("<Fill in the name of the column>")
+						value:				columnModel.columnName
+						onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
+						undoModel:			columnModel
+						editable:           columnModel.nameEditable
+						label:				qsTr("Name: ")
+						controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+
+					}
 				}
 
 
@@ -148,15 +153,12 @@ FocusScope
 					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
 					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
 				}
-
 			}
 
-
-			ColumnLayout
+			Column
 			{
 				id:			rightColumn
-				width:		columnTitleVariablesWindow.implicitWidth
-				spacing:	0
+				spacing:	jaspTheme.rowGroupSpacing
 
 				anchors
 				{
@@ -167,30 +169,47 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
-
-				TextField
+				RowLayout
 				{
-					id:					columnTitleVariablesWindow
-					label:				qsTr("Long name: ");
-					placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-					fieldWidth:			columnDescriptionVariablesWindow.width - closeButton.width
-					value:				columnModel.columnTitle
-					onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
-					undoModel:			columnModel
-					controlLabel.width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+					id:					longNameRow
+					width:				parent.width
 
+
+					TextField
+					{
+						id:					columnTitleVariablesWindow
+						label:				qsTr("Long name: ");
+						placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
+						fieldWidth:			columnDescriptionVariablesWindow.width - closeButton.width
+						value:				columnModel.columnTitle
+						onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
+						undoModel:			columnModel
+						controlLabel.width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+
+					}
+
+					MenuButton
+					{
+						id:					closeButton
+						height:				33 * jaspTheme.uiScale
+						width:				height
+						iconSource:			jaspTheme.iconPath + "close-button.png"
+						onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+						toolTip:			qsTr("Close variable window")
+						radius:				height
+					}
 				}
 
 				RowLayout
 				{
-					id:	descriptionRow
+					id:					descriptionRow
 
-					width:	parent.width
+					width:				parent.width
 
 					Label
 					{
-						id: descriptionLabel
-						text: qsTr("Description: ")
+						id:		descriptionLabel
+						text:	qsTr("Description: ")
 						width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
 
 					}
@@ -199,7 +218,7 @@ FocusScope
 					{
 						id:					columnDescriptionVariablesWindow
 
-						height:				Math.min(maxHeight, control.contentHeight + 20 * jaspTheme.uiScale)
+						height:				columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
 						control.padding:	3 * jaspTheme.uiScale
 
 						text:				columnModel.columnDescription
@@ -209,30 +228,13 @@ FocusScope
 						undoModel:			columnModel
 						useTabAsSpaces:		false
 
-						property int maxHeight:	100 * jaspTheme.uiScale
-						Layout.fillWidth:	true
+						Layout.fillWidth:		true
+
 					}
 				}
 			}
 
-			MenuButton
-			{
-				id:					closeButton
-				height:				33 * jaspTheme.uiScale
-				width:				height
-				iconSource:			jaspTheme.iconPath + "close-button.png"
-				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
-				toolTip:			qsTr("Close variable window")
-				radius:				height
-				anchors
-				{
 
-					topMargin:		columnTitleVariablesWindow.y
-					top:			parent.top
-					right:			parent.right
-					rightMargin:	jaspTheme.generalAnchorMargin
-				}
-			}
 		}
 
 		Rectangle
