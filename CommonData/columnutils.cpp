@@ -86,7 +86,7 @@ bool ColumnUtils::isDoubleValue(const string &value)
 }
 
 
-void ColumnUtils::_deEuropeaniseForImport(std::string & value)
+void ColumnUtils::deEuropeaniseForImport(std::string & value)
 {
 	int dots	= 0,
 		commas	= 0;
@@ -133,7 +133,7 @@ void ColumnUtils::_deEuropeaniseForImport(std::string & value)
 	}
 }
 
-bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &intValue, const Column* col)
+bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &intValue)
 {
 	JASPTIMER_SCOPE(ColumnUtils::convertValueToIntForImport);
 	
@@ -148,10 +148,10 @@ bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &i
 	return true;
 }
 
-bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue, const Column* col)
+bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue)
 {
 	std::string v = strValue;
-	_deEuropeaniseForImport(v);
+	deEuropeaniseForImport(v);
 
 	if(col && col->isEmptyValue(v))
 		doubleValue = NAN;

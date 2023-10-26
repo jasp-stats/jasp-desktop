@@ -23,14 +23,14 @@ public:
 	static bool isIntValue(		const std::string	& value);
 	static bool isDoubleValue(	const std::string	& value);
 
-	static bool	convertValueToIntForImport(		const	std::string & strValue, int &intValue,		const Column* col = nullptr);
-	static bool	convertValueToDoubleForImport(	const	std::string & strValue, double &doubleValue, const Column* col = nullptr);
+	static bool	convertValueToIntForImport(		const	std::string & strValue, int		& intValue);
+	static bool	convertValueToDoubleForImport(	const	std::string & strValue, double	& doubleValue);
 	static void	convertEscapedUnicodeToUTF8(			std::string & inputStr);
+	static void	deEuropeaniseForImport(					std::string & value);
 
 	static std::string	doubleToString(			double dbl, int precision = 10);
 
 private:
-	static void			_deEuropeaniseForImport(		std::string & value);
 	static std::string _convertEscapedUnicodeToUTF8(	std::string hex);
 };
 

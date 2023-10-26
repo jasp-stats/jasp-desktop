@@ -1365,7 +1365,7 @@ bool DataSetPackage::convertVecToInt(int colIndex, const std::vector<std::string
 	{
 		int intValue = std::numeric_limits<int>::lowest();
 
-		if (ColumnUtils::convertValueToIntForImport(value, intValue, _dataSet->column(colIndex)))
+		if (_dataSet->column(colIndex)->convertValueToIntForImport(value, intValue))
 		{
 			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
 			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));

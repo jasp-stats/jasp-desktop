@@ -152,7 +152,7 @@ const doubleset& Column::doubleEmptyValues() const
 
 void Column::setHasCustomEmptyValues(bool hasCustom)
 {
-	JASPTIMER_SCOPE(Column::setHasCustomMisingValues);
+	JASPTIMER_SCOPE(Column::setHasCustomEmptyValues);
 
 	if (_data->hasCustomEmptyValues(_name) == hasCustom)
 		return;
@@ -164,7 +164,7 @@ void Column::setHasCustomEmptyValues(bool hasCustom)
 
 void Column::setCustomEmptyValues(const stringset& customEmptyValues)
 {
-	JASPTIMER_SCOPE(Column::customEmptyValues);
+	JASPTIMER_SCOPE(Column::setCustomEmptyValues);
 
 	if (hasCustomEmptyValues() && emptyValues() == customEmptyValues)
 		return;
@@ -1617,6 +1617,33 @@ Label * Column::labelByRow(int row) const
 	return nullptr;
 }
 
+bool Column::convertValueToIntForImport(const std::string &strValue, int &intValue) const
+{
+	JASPTIMER_SCOPE(Column::convertValueToIntForImport);
+
+	if(isEmptyValue(strValue))
+	{
+			intValue = std::numeric_limits<int>::lowest();
+			return true;
+	}
+
+	return ColumnUtils::getIntValue(strValue, intValue);
+}
+
+bool Column::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue) const
+{
+	std::string v = strValue;
+	ColumnUtils::deEuropeaniseForImport(v);
+
+	if(isEmptyValue(v))
+	{
+			doubleValue = NAN;
+			return true;
+	}
+
+	return ColumnUtils::getDoubleValue(strValue, doubleValue);
+}
+
 
 bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed, bool & typeChanged)
 {
@@ -1638,7 +1665,7 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 		{
 			double newDoubleToSet = NAN;
 
-			if(ColumnUtils::convertValueToDoubleForImport(value, newDoubleToSet, this))
+			if(convertValueToDoubleForImport(value, newDoubleToSet))
 			{
 				if(setValue(row, newDoubleToSet))
 					changed = true;
@@ -1715,10 +1742,10 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 						double dbl;
                         if(     (
                                     !oldLabel ||
-									!ColumnUtils::convertValueToDoubleForImport(oldLabel->label(),	dbl, this)
+									!convertValueToDoubleForImport(oldLabel->label(),	dbl)
                                 )
 								&&
-								ColumnUtils::convertValueToDoubleForImport(value,				dbl, this))
+								convertValueToDoubleForImport(value,				dbl))
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 					}
 					else if(_type == columnType::nominalText && (_preEditType == columnType::nominal || _preEditType == columnType::ordinal))
@@ -1727,10 +1754,10 @@ bool Column::setStringValueToRowIfItFits(size_t row, const std::string & value, 
 						int integer;
 						if(     (
 									!oldLabel ||
-									!ColumnUtils::convertValueToIntForImport(oldLabel->label(),	integer, this)
+									!convertValueToIntForImport(oldLabel->label(),	integer)
 								)
 								&&
-								ColumnUtils::convertValueToIntForImport(value,				integer, this))
+								convertValueToIntForImport(value,				integer))
 						{
 							typeChanged = changeType(_preEditType) == columnTypeChangeResult::changed; //Just try it
 							tryValueIntegers = !typeChanged;
@@ -2006,7 +2033,7 @@ bool Column::isColumnDifferentFromStringValues(const stringvec & strVals) const
 		case columnType::nominal:
 		{
 			int intValue;
-			if(!ColumnUtils::convertValueToIntForImport(strVals[row], intValue) || !isValueEqual(row, intValue), this)
+			if(!convertValueToIntForImport(strVals[row], intValue) || !isValueEqual(row, intValue))
 				return true;
 			break;
 		}
@@ -2014,7 +2041,7 @@ bool Column::isColumnDifferentFromStringValues(const stringvec & strVals) const
 		case columnType::scale:
 		{
 			double doubleValue;
-			if(!ColumnUtils::convertValueToDoubleForImport(	strVals[row], doubleValue) || !isValueEqual(row, doubleValue), this)
+			if(!convertValueToDoubleForImport(	strVals[row], doubleValue) || !isValueEqual(row, doubleValue))
 				return true;
 			break;
 		}
