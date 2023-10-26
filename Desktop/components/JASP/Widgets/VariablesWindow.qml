@@ -422,7 +422,7 @@ FocusScope
 					Text
 					{
 						anchors.top:		parent.top
-						anchors.right:		missingValues.right
+						anchors.left:		missingValues.right
 						text:				qsTr("Change workspace missing values")
 						color:				jaspTheme.blueDarker
 						MouseArea

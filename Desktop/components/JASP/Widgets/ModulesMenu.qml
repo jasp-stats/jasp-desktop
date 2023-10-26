@@ -123,6 +123,8 @@ FocusScope
 				{
 					spacing:	jaspTheme.rowSpacing
 					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
+					color:		jaspTheme.uiBackground
+
 
 					Text
 					{
@@ -151,7 +153,6 @@ FocusScope
 				{
 					id:			missingValues
 					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
-					height:		200 * jaspTheme.uiScale
 					x:			jaspTheme.generalAnchorMargin
 					model:		workspaceModel
 					resetButtonTooltip: qsTr("Reset missing values with the ones set in Data Preferences")

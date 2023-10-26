@@ -12,8 +12,8 @@ FocusScope
 	property string resetButtonLabel:			qsTr("Reset")
 	property string resetButtonTooltip
 
-	implicitWidth:		400 * preferencesModel.uiScale
-	implicitHeight: 	250 * preferencesModel.uiScale
+	implicitWidth:		300 * preferencesModel.uiScale
+	implicitHeight: 	300 * preferencesModel.uiScale
 
 	Rectangle
 	{

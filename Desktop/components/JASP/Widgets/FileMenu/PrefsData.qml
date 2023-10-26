@@ -12,10 +12,11 @@ ScrollView
 	onActiveFocusChanged:	if(activeFocus) useDefaultEditor.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	Column {
+	Column
+	{
 
-		width: scrollPrefs.width
-		spacing: jaspTheme.rowSpacing
+		width:		scrollPrefs.width
+		spacing:	jaspTheme.rowSpacing
 
 		MenuHeader
 		{
