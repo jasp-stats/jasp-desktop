@@ -2281,21 +2281,11 @@ bool Column::isComputedByAnalysis(size_t analysisID)
 
 bool Column::isEmptyValue(const std::string& val) const
 {
-	if (val.empty()) return true;
-
-	const stringset &values = emptyValues();
-	return values.count(val);
+	return ColumnUtils::isEmptyValue(val, emptyValues());
 }
 
-bool Column::isEmptyValue(const double &val) const
+bool Column::isEmptyValue(const double val) const
 {
-	if (std::isnan(val)) return true;
-
-	const doubleset &values = doubleEmptyValues();
-	// Don't use values.contains(val): if values contains nan, then it returns always true...
-	for (double d : values)
-		if (d == val)
-			return true;
-	return false;
+	return ColumnUtils::isEmptyValue(val, doubleEmptyValues());
 }
 

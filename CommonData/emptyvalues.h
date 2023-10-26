@@ -12,19 +12,23 @@ protected:
 
 public:
 							EmptyValues();
+							~EmptyValues();
 
-			void			fromJson(const Json::Value & json);
+	static	EmptyValues *	singleton() { return _singleton; }
+
+			void			fromJson(				const Json::Value	& json);
 			Json::Value		toJson() const;
 
-	const	stringset &		emptyValues(const std::string& colName)										const;
-	const	doubleset &		doubleEmptyValues(const std::string& colName)								const;
-	const	stringset &		workspaceEmptyValues()														const;
-	const	intstrmap &		missingData(const std::string& colName)										const;
-			bool			hasCutomEmptyValues(const std::string& colName)								const { return _customEmptyValuesPerColumn.count(colName);	}
-			void			setWorkspaceEmptyValues(const stringset& values);
-			void			setCustomEmptyValues(const std::string& colName, const stringset& values);
-			void			setMissingData(const std::string& colName, const intstrmap &data);
-			void			setHasCustomEmptyValues(const std::string& colName, bool hasCustom);
+	const	stringset &		emptyValues(			const std::string	& colName)								const;
+	const	doubleset &		doubleEmptyValues(		const std::string	& colName)								const;
+	const	stringset &		workspaceEmptyValues()																const;
+	const	doubleset &		workspaceDoubleEmptyValues()														const;
+	const	intstrmap &		missingData(			const std::string	& colName)								const;
+			bool			hasCutomEmptyValues(	const std::string	& colName)								const;
+			void			setWorkspaceEmptyValues(const stringset		& values);
+			void			setCustomEmptyValues(	const std::string	& colName, const stringset	& values);
+			void			setMissingData(			const std::string	& colName, const intstrmap	& data);
+			void			setHasCustomEmptyValues(const std::string	& colName, bool hasCustom);
 
 private:
 	void					resetEmptyValues();
@@ -41,6 +45,8 @@ private:
 	std::map<std::string, doubleset>	_customDoubleEmptyValuesPerColumn;
 
 	const intstrmap						_emptyMissingData;
+
+	static EmptyValues *				_singleton; //I hope this really is a singleton, but I think there is never more than 1 DataSet active at the same time?
 };
 
 #endif // EMPTYVALUES_H

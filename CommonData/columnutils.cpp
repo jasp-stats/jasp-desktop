@@ -1,4 +1,6 @@
 #include "columnutils.h"
+#include "utils.h"
+#include "emptyvalues.h"
 
 #ifndef IGNORE_BOOST
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -137,7 +139,7 @@ bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &i
 {
 	JASPTIMER_SCOPE(ColumnUtils::convertValueToIntForImport);
 	
-	if(col && col->isEmptyValue(strValue))
+	if(isEmptyValue(strValue, EmptyValues::singleton()->workspaceEmptyValues()))
 		intValue = std::numeric_limits<int>::lowest();
 	else
 	{
@@ -153,13 +155,31 @@ bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, do
 	std::string v = strValue;
 	deEuropeaniseForImport(v);
 
-	if(col && col->isEmptyValue(v))
+	if(isEmptyValue(v, EmptyValues::singleton()->workspaceEmptyValues()))
 		doubleValue = NAN;
 	
 	else if (!ColumnUtils::getDoubleValue(v, doubleValue))
 		return false;
 	
 	return true;
+}
+
+bool ColumnUtils::isEmptyValue(const std::string & val, const stringset & emptyValues)
+{
+	if (val.empty()) return true;
+
+	return emptyValues.count(val);
+}
+
+bool ColumnUtils::isEmptyValue(const double val, const doubleset & doubleEmptyValues)
+{
+	if (std::isnan(val)) return true;
+
+	// Don't use doubleEmptyValues.contains(val): if values contains nan, then it returns always true...
+	for (double d : doubleEmptyValues)
+		if (!std::isnan(d) && d == val)
+			return true;
+	return false;
 }
 
 std::string ColumnUtils::doubleToString(double dbl, int precision)

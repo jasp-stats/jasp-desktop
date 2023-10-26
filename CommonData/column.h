@@ -172,7 +172,7 @@ public:
 			void					setHasCustomEmptyValues(		bool hasCustom);
 			void					setCustomEmptyValues(			const stringset		& customEmptyValues);
 			bool					isEmptyValue(					const std::string	& val)				const;
-			bool					isEmptyValue(					const double		& val)				const;
+			bool					isEmptyValue(					const double		  val)				const;
 			bool					convertValueToDoubleForImport(	const std::string	& strValue, double	& doubleValue)	const;
 			bool					convertValueToIntForImport(		const std::string	& strValue, int		& intValue)		const;
 

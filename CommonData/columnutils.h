@@ -6,8 +6,6 @@
 #include <set>
 #include <map>
 #include "utils.h"
-#include "stringutils.h"
-#include "column.h"
 
 class ColumnUtils
 {
@@ -25,6 +23,8 @@ public:
 
 	static bool	convertValueToIntForImport(		const	std::string & strValue, int		& intValue);
 	static bool	convertValueToDoubleForImport(	const	std::string & strValue, double	& doubleValue);
+	static bool	isEmptyValue(					const	std::string	& val,		const stringset & emptyValues);
+	static bool	isEmptyValue(					const	double		  val,		const doubleset & doubleEmptyValues);
 	static void	convertEscapedUnicodeToUTF8(			std::string & inputStr);
 	static void	deEuropeaniseForImport(					std::string & value);
 

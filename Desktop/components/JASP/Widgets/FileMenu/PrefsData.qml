@@ -214,12 +214,12 @@ ScrollView
 
 				PrefsMissingValues
 				{
-					id:					missingValuesList
-					model:				preferencesModel
-					showResetWorkspaceButton: true
-					resetButtonLabel:	qsTr("Reset with standard values")
-					resetButtonTooltip:	qsTr("Reset missing values with the standard JASP missing values")
-					KeyNavigation.tab:	noBomNative
+					id:							missingValuesList
+					model:						preferencesModel
+					showResetWorkspaceButton:	true
+					resetButtonLabel:			qsTr("Reset with standard values")
+					resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
+					KeyNavigation.tab:			noBomNative
 				}
 
 				Text

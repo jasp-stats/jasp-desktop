@@ -9,10 +9,7 @@
 #include <locale>
 #include <cctype>
 #include <iostream>
-
-typedef std::set<std::string>		stringset;
-typedef std::vector<std::string>	stringvec;
-typedef std::vector<stringvec>		stringvecvec;
+#include "utils.h"
 
 /// This class groups a variety of string related utility functions for use throughout JASP
 /// All functions are inline and here to avoid problems through the mixing of MSVC and GCC on Windows. 

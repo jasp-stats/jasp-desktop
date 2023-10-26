@@ -1398,7 +1398,7 @@ bool DataSetPackage::convertVecToDouble(int colIndex, const stringvec & values, 
 	{
 		double doubleValue = static_cast<double>(NAN);
 
-		if (ColumnUtils::convertValueToDoubleForImport(value, doubleValue, _dataSet->column(colIndex)))
+		if (_dataSet->column(colIndex)->convertValueToDoubleForImport(value, doubleValue))
 		{
 			doubleValues[row] = doubleValue;
 

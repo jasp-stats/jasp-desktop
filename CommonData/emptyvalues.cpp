@@ -2,8 +2,22 @@
 #include "columnutils.h"
 #include "log.h"
 
+EmptyValues * EmptyValues::_singleton = nullptr;
+
 EmptyValues::EmptyValues()
 {
+	if(_singleton)
+		Log::log() << "EmptyValues() while singleton is still existant..." << std::endl;
+
+	_singleton = this;
+}
+
+EmptyValues::~EmptyValues()
+{
+	if(_singleton == this)
+		_singleton = nullptr;
+	else
+		Log::log() << "~EmptyValues() while not the singleton..." << std::endl;
 }
 
 Json::Value EmptyValues::toJson() const
@@ -87,9 +101,14 @@ void EmptyValues::fromJson(const Json::Value & emptyValuesMap)
 	}
 }
 
-const stringset& EmptyValues::workspaceEmptyValues() const
+const stringset & EmptyValues::workspaceEmptyValues() const
 {
 	return _workspaceEmptyValues;
+}
+
+const doubleset & EmptyValues::workspaceDoubleEmptyValues() const
+{
+	return _workspaceDoubleEmptyValues;
 }
 
 void EmptyValues::setWorkspaceEmptyValues(const stringset& values)
@@ -117,6 +136,11 @@ void EmptyValues::setCustomEmptyValues(const std::string &colName, const strings
 const intstrmap& EmptyValues::missingData(const std::string &colName) const
 {
 	return _missingData.count(colName) ? _missingData.at(colName) : _emptyMissingData;
+}
+
+bool EmptyValues::hasCutomEmptyValues(const std::string &colName) const
+{
+	return _customEmptyValuesPerColumn.count(colName);
 }
 
 void EmptyValues::setMissingData(const std::string& colName, const intstrmap &data)
