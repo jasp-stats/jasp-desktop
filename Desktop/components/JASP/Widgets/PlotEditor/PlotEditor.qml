@@ -486,7 +486,7 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				text:				qsTr("Cancel")
-				buttonPadding:		20 * preferencesModel.uiScale
+				buttonWidthPadding:	20 * preferencesModel.uiScale
 				on_PressedChanged:	cancel()
 			}
 

@@ -202,7 +202,7 @@ void DataSet::dbCreate()
 	db().transactionWriteBegin();
 
 	//The variables are probably empty though:
-	_dataSetID	= db().dataSetInsert(_dataFilePath, _databaseJson, _emptyValues.toJson().toStyledString(), _dataFileSynch);
+	_dataSetID	= db().dataSetInsert(_dataFilePath, _description, _databaseJson, _emptyValues.toJson().toStyledString(), _dataFileSynch);
 	_filter = new Filter(this);
 	_filter->dbCreate();
 	_columns.clear();
@@ -215,11 +215,11 @@ void DataSet::dbCreate()
 void DataSet::dbUpdate()
 {
 	assert(_dataSetID > 0);
-	db().dataSetUpdate(_dataSetID, _dataFilePath, _databaseJson, _emptyValues.toJson().toStyledString(), _dataFileSynch);
+	db().dataSetUpdate(_dataSetID, _description, _dataFilePath, _databaseJson, _emptyValues.toJson().toStyledString(), _dataFileSynch);
 	incRevision();
 }
 
-void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
+void DataSet::dbLoad(int index, const Version& loadedJaspVersion, std::function<void(float)> progressCallback)
 {
 	//Log::log() << "loadDataSet(index=" << index << "), _dataSetID="<< _dataSetID <<";" << std::endl;
 
@@ -240,7 +240,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
 
 	std::string emptyVals;
 
-	db().dataSetLoad(_dataSetID, _dataFilePath, _databaseJson, emptyVals, _revision, _dataFileSynch);
+	db().dataSetLoad(_dataSetID, _description, _dataFilePath, _databaseJson, emptyVals, _revision, _dataFileSynch);
 	progressCallback(0.1);
 
 	if(!_filter)
@@ -272,8 +272,8 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
 	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.5 + p * 0.5); });
 
 	Json::Value emptyValsJson;
-	std::stringstream(emptyVals) >> emptyValsJson;
-	_emptyValues.fromJson(emptyValsJson);
+	Json::Reader().parse(emptyVals, emptyValsJson);
+	setEmptyValuesJson(emptyValsJson, false);
 }
 
 int DataSet::columnCount() const
@@ -398,24 +398,53 @@ void DataSet::loadOldComputedColumnsJson(const Json::Value &json)
 		col->findDependencies();
 }
 
-std::map<std::string, intstrmap> DataSet::resetEmptyValues()
+std::map<std::string, intstrmap> DataSet::resetMissingData(const std::vector<Column*>& cols)
 {
 	std::map<std::string, intstrmap> colChanged;
 
-	for (Column * col : _columns)
+	for (Column * col : cols)
 	{
-		intstrmap emptyValuesMap;
+		intstrmap missingDataMap = _emptyValues.missingData(col->name());
 
-		if (_emptyValues._map.count(col->name()))
-			emptyValuesMap = _emptyValues._map.at(col->name());
-
-		if (col->resetEmptyValues(emptyValuesMap))
-			colChanged[col->name()] = emptyValuesMap;
+		if (col->resetMissingData(missingDataMap))
+			colChanged[col->name()] = missingDataMap;
 	}
 
 	incRevision();
 
 	return colChanged;
+}
+
+void DataSet::setEmptyValuesJson(const Json::Value &emptyValues, bool updateDB)
+{
+	if (!emptyValues.isMember("workspaceEmptyValues"))
+	{
+		// For backword compatibility, if the workspaceEmptyValues are not specified, take the defdault ones
+		Json::Value updatedEmptyValues = emptyValues;
+		Json::Value emptyValuesJson(Json::arrayValue);
+		for (const std::string& val : _defaultEmptyvalues)
+			emptyValuesJson.append(val);
+		updatedEmptyValues["workspaceEmptyValues"] = emptyValuesJson;
+		_emptyValues.fromJson(updatedEmptyValues);
+	}
+	else
+		_emptyValues.fromJson(emptyValues);
+
+	if (updateDB)
+		dbUpdate();
+}
+
+void DataSet::setWorkspaceEmptyValues(const stringset &values)
+{
+	_defaultEmptyvalues = values;
+	_emptyValues.setWorkspaceEmptyValues(values);
+	dbUpdate();
+}
+
+void DataSet::setDescription(const std::string &desc)
+{
+	_description = desc;
+	dbUpdate();
 }
 
 DatabaseInterface &DataSet::db()	

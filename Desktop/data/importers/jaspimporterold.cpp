@@ -114,16 +114,16 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
 	if (emptyValuesJson.isNull())
 		// Really old JASP files: the empty values were '.', 'NaN' & 'nan'
-		ColumnUtils::setEmptyValues({"NaN", "nan", "."});
+		packageData->setWorkspaceEmptyValues({"NaN", "nan", "."}, false);
 	else
 	{
 		stringset emptyValues;
 		for (const Json::Value & emptyValueJson  : emptyValuesJson)
 			emptyValues.insert(emptyValueJson.asString());
-		ColumnUtils::setEmptyValues(emptyValues);
+		packageData->setWorkspaceEmptyValues(emptyValues, false);
 	}
 
-	packageData->setEmptyValues(dataSetDesc["emptyValuesMap"]);
+	packageData->setMissingData(dataSetDesc["emptyValuesMap"]);
 
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount	= dataSetDesc["rowCount"].asInt();

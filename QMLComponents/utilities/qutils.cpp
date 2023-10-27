@@ -41,17 +41,6 @@ QStringList tql(const std::vector<string> &from)
 	return result;
 }
 
-vector<string> fromQstringToStdVector(const QString &input, const QString &delimeter)
-{
-	QStringList list;
-	vector<string> result;
-	list = input.split(delimeter);
-	for (const QString & itm : list)
-		result.push_back(stripFirstAndLastChar(itm,"\"").toStdString());
-	
-	return result;
-}
-
 QString stripFirstAndLastChar(QString result, const QString &strip)
 {
 	if (result.left(1) == strip) result.remove(0,1);

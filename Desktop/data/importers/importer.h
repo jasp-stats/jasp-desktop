@@ -40,7 +40,7 @@ protected:
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	bool						initColumnAsScale(				QVariant colID,			std::string newName, const std::vector<double>		& values)							{ return DataSetPackage::pkg()->initColumnAsScale(colID, newName, values);										}
 
-	void						storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)																{ DataSetPackage::pkg()->storeInEmptyValues(columnName, emptyValues);											}
+	void						storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)																{ DataSetPackage::pkg()->storeMissingData(columnName, emptyValues);											}
 
 private:
 	void _syncPackage(

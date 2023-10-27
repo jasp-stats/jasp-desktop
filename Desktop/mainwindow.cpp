@@ -130,7 +130,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync				= new EngineSync(this);
 	_datasetTableModel		= new DataSetTableModel();
 	_dataSetModelVarInfo	= new DataSetTableModel(false);
-	_columnModel			= new ColumnModel();
+	_columnModel			= new ColumnModel(_datasetTableModel);
 	
 	initLog(); //initLog needs _preferences and _engineSync!
 
@@ -140,6 +140,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_odm					= new OnlineDataManager(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_columnModel,		this);
 	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
+	_workspaceModel			= new WorkspaceModel(this);
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
 	_ribbonModel			= new RibbonModel();
@@ -200,13 +201,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	QTimer::singleShot(0, [&]() { loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
-
-	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
-	if (missingvaluestring != "")
-	{
-		stringvec emptyV = fromQstringToStdVector(missingvaluestring, "|");
-		ColumnUtils::setEmptyValues(stringset(emptyV.begin(), emptyV.end()));
-	}
 
 	_engineSync->start(_preferences->plotPPI());
 
@@ -368,7 +362,6 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::dataAvailableChanged,					_ribbonModel,			&RibbonModel::dataLoadedChanged								);
 	connect(this,					&MainWindow::dataAvailableChanged,					this,					&MainWindow::checkEmptyWorkspace							);
 	connect(this,					&MainWindow::analysesAvailableChanged,				this,					&MainWindow::checkEmptyWorkspace							);
-	connect(this,					&MainWindow::showComputedColumn,					_columnModel,			&ColumnModel::openComputedColumn							);
 
 
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
@@ -389,7 +382,6 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::askUserForExternalDataFile,		this,					&MainWindow::startDataEditorHandler							);
 	connect(_package,				&DataSetPackage::runFilter,							_filterModel,			&FilterModel::sendGeneratedAndRFilter						);
 	connect(_package,				&DataSetPackage::showWarning,						_msgForwarder,			&MessageForwarder::showWarningQML,							Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::showComputedColumn,				this,					&MainWindow::showComputedColumn								);
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
@@ -464,7 +456,6 @@ void MainWindow::makeConnections()
 	connect(_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 	connect(_loader,				&AsyncLoader::checkDoSync,							this,					&MainWindow::checkDoSync,									Qt::BlockingQueuedConnection);
 
-	connect(_preferences,			&PreferencesModel::missingValuesChanged,			_package,				&DataSetPackage::emptyValuesChangedHandler					);
 	connect(_preferences,			&PreferencesModel::dataLabelNAChanged,				_package,				&DataSetPackage::refresh,									Qt::QueuedConnection);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
@@ -546,6 +537,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel						);
 	_qml->rootContext()->setContextProperty("dataSetModel",				_datasetTableModel				);
 	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel					);
+	_qml->rootContext()->setContextProperty("workspaceModel",			_workspaceModel					);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses						);
 	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules					);
 	_qml->rootContext()->setContextProperty("plotEditorModel",			_plotEditorModel				);
@@ -576,7 +568,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
 	_qml->rootContext()->setContextProperty("computedColumnTypeRCode",					int(computedColumnType::rCode)					);
-	_qml->rootContext()->setContextProperty("computedColumnTypeUnknown",				int(computedColumnType::unknown)				);
+	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysis",				int(computedColumnType::analysis)				);
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
@@ -672,7 +664,6 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::redo);
 
-	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::showComputedColumn,		this,			&MainWindow::showComputedColumn);
 	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
 	Log::log() << "QML Initialized!"  << std::endl;
@@ -1395,6 +1386,7 @@ void MainWindow::populateUIfromDataSet()
 	checkUsedModules();
 
 	_resultsJsInterface->setScrollAtAll(true);
+	_package->setModified(false);
 }
 
 void MainWindow::checkUsedModules()
@@ -2104,4 +2096,9 @@ void MainWindow::setCooperativeVisible(bool newCooperativeVisible)
 		return;
 	_cooperativeVisible = newCooperativeVisible;
 	emit cooperativeVisibleChanged();
+}
+
+void MainWindow::setDefaultWorkspaceEmptyValues()
+{
+	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
 }

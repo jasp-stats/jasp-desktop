@@ -190,11 +190,13 @@ void JASPImporter::readManifest(const std::string &path)
 		Json::Value     manifest;
 		parser.parse(manifestStr, manifest);
 
-		manifestStr = manifest.get("jaspArchiveVersion", "").asString();
+		std::string jaspArchiveVersionStr = manifest.get("jaspArchiveVersion", "").asString();
+		std::string jaspVersionStr = manifest.get("jaspVersion", "").asString();
 
-		foundVersion = ! manifestStr.empty();
+		foundVersion = ! jaspArchiveVersionStr.empty();
 
-		DataSetPackage::pkg()->setArchiveVersion(Version(manifestStr));
+		DataSetPackage::pkg()->setArchiveVersion(Version(jaspArchiveVersionStr));
+		DataSetPackage::pkg()->setJaspVersion(Version(jaspVersionStr));
 	}
 
 	if ( ! foundVersion)

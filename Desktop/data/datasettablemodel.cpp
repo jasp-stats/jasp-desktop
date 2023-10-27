@@ -74,27 +74,21 @@ bool DataSetTableModel::columnUsedInEasyFilter(int column) const
 			).toBool();
 }
 
-int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
-{
-	setData(index(0, columnIndex), newColumnType, int(DataSetPackage::specialRoles::columnType));
-	return data(index(0, columnIndex), int(DataSetPackage::specialRoles::columnType)).toInt();
-}
-
 void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, std::vector<int> colTypes)
 {
 	QModelIndex idx = mapToSource(index(row, col));
 	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes);
 }
 
-QString DataSetTableModel::insertColumnSpecial(int column, bool computed, bool R)
+QString DataSetTableModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
 {
 	if(column >= columnCount())
-		return subNodeModel()->appendColumnSpecial(computed, R);
+		return subNodeModel()->appendColumnSpecial(props);
 
 	int sourceColumn = column > columnCount() ? columnCount() : column;
 	sourceColumn = mapToSource(index(0, sourceColumn)).column();
 
-	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, computed, R);
+	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, props);
 }
 
 

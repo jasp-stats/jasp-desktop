@@ -45,7 +45,9 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	//True init is done in setEngineSync!
 	
 	_db			= new DatabaseInterface(true);
+
 	_dataSet	= new DataSet(); //We create one here to make sure filter() etc can actually work
+	setDefaultWorkspaceEmptyValues();
 	
 	connect(this, &DataSetPackage::isModifiedChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::loadedChanged,		this, &DataSetPackage::windowTitleChanged);
@@ -126,6 +128,7 @@ void DataSetPackage::reset(bool newDataSet)
 	else			deleteDataSet();
 
 	_archiveVersion				= Version();
+	_jaspVersion				= Version();
 	_analysesHTML				= QString();
 	_analysesData				= Json::arrayValue;
 	_warningMessage				= std::string();
@@ -609,7 +612,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		case int(specialRoles::computedColumnError):			return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->error());
 		case int(specialRoles::computedColumnIsInvalidated):	return		!_dataSet || !_dataSet->column(section) ? false							: _dataSet->column(section)->invalidated();
 		case int(specialRoles::columnType):						return int(	!_dataSet || !_dataSet->column(section) ? columnType::unknown			: _dataSet->column(section)->type());
-		case int(specialRoles::computedColumnType):				return int(	!_dataSet || !_dataSet->column(section) ? computedColumnType::unknown	: _dataSet->column(section)->codeType());
+		case int(specialRoles::computedColumnType):				return int(	!_dataSet || !_dataSet->column(section) ? computedColumnType::notComputed	: _dataSet->column(section)->codeType());
 		case int(specialRoles::description):					return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->description());
 		case int(specialRoles::title):							return tq(	!_dataSet || !_dataSet->column(section) ? "?"							: _dataSet->column(section)->title());
 		}
@@ -689,8 +692,6 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						if(typeChanged)
 							emit columnDataTypeChanged(tq(column->name()));
 
-						setModified(true);
-
 						//emit label dataChanged just in case
 						//QModelIndex parent = indexForSubNode(column);
 						//emit dataChanged(DataSetPackage::index(0, 0, parent), DataSetPackage::index(rowCount(parent)-1, columnCount(parent)-1, parent), { Qt::DisplayRole });
@@ -734,7 +735,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						if(value.toInt() >= int(columnType::unknown) && value.toInt() <= int(columnType::scale))
 						{
 							columnType converted = static_cast<columnType>(value.toInt());
-							if(setColumnType(index.column(), converted, false))
+							if(setColumnType(index.column(), converted))
 							{
 								aChange = true;
 								emit columnDataTypeChanged(tq(column->name()));
@@ -991,6 +992,20 @@ void DataSetPackage::setLoaded(bool loaded)
 	emit loadedChanged();
 }
 
+QString DataSetPackage::description() const
+{
+	return tq(_dataSet ? _dataSet->description() : "");
+}
+
+void DataSetPackage::setDescription(const QString &description)
+{
+	if (!_dataSet) return;
+
+	_dataSet->setDescription(fq(description));
+
+	emit descriptionChanged();
+}
+
 int DataSetPackage::findIndexByName(const std::string & name) const
 {
 	return _dataSet->getColumnIndex(name);
@@ -1110,7 +1125,7 @@ void DataSetPackage::resetAllFilters()
 	//this is only used in conjunction with a reset so dont do: emit headerDataChanged(Qt::Horizontal, 0, columnCount());
 }
 
-bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bool emitHeaderChanged)
+bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 {
 	if (_dataSet == nullptr)
 		return true;
@@ -1121,9 +1136,6 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType, bo
 
 	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
 	{
-//		if(emitHeaderChanged)
-//			emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-		//headerDataChanged results in segmentation fault, so we reset instead. feels bad might be temporary
 		beginResetModel();
 		endResetModel();
 		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex)->name()));
@@ -1184,12 +1196,6 @@ void DataSetPackage::columnWasOverwritten(const std::string & columnName, const 
 			emit dataChanged(index(0, col, indexForSubNode(_dataSet->dataNode())), index(rowCount()-1, col, indexForSubNode(_dataSet->dataNode())) );
 }
 
-int DataSetPackage::setColumnTypeFromQML(int columnIndex, int newColumnType)
-{
-	setColumnType(columnIndex, columnType(newColumnType));
-	return int(getColumnType(columnIndex));
-}
-
 void DataSetPackage::beginSynchingData(bool informEngines)
 {
 	beginLoadingData(informEngines);
@@ -1239,7 +1245,6 @@ void DataSetPackage::endLoadingData(bool informEngines)
 	enginesReceiveNewData();
 
 	emit modelInit();
-	emit dataSetChanged();
 }
 
 void DataSetPackage::setDataSetSize(size_t columnCount, size_t rowCount)
@@ -1265,6 +1270,7 @@ void DataSetPackage::createDataSet()
 	dbDelete();
 	deleteDataSet();
 	_dataSet = new DataSet();
+	setDefaultWorkspaceEmptyValues();
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 	
@@ -1277,7 +1283,7 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 		deleteDataSet(); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 
 	_dataSet = new DataSet(0);
-	_dataSet->dbLoad(1, progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple
+	_dataSet->dbLoad(1, jaspVersion(), progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 
@@ -1299,119 +1305,119 @@ void DataSetPackage::deleteDataSet()
 	_undoStack->clear();
 }
 
-bool DataSetPackage::initColumnAsScale(size_t colNo, const std::string & newName, const doublevec & values, const std::string & title)
+bool DataSetPackage::initColumnAsScale(size_t colNo, const std::string & newName, const doublevec & values)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsScale);
 	
 	bool result = _dataSet->columns()[colNo]->initAsScale(colNo, newName, values);
 
-	if(result && !title.empty())
-		_dataSet->columns()[colNo]->setTitle(title);
-
 	return result;
 }
 
-intstrmap DataSetPackage::initColumnAsNominalText(size_t colNo, const std::string & newName, const stringvec & values, const strstrmap & labels, const std::string & title)
+intstrmap DataSetPackage::initColumnAsNominalText(size_t colNo, const std::string & newName, const stringvec & values, const strstrmap & labels)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalText);
 	
 	intstrmap result =  _dataSet->columns()[colNo]->initAsNominalText(colNo, newName, values, labels);
 
-	if(!title.empty())
-		_dataSet->columns()[colNo]->setTitle(title);
-
 	return result;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, bool is_ordinal, const std::string & title)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, bool is_ordinal)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalOrOrdinal);
 	
 	bool result =  _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
 
-	if(result && !title.empty())
-		_dataSet->columns()[colNo]->setTitle(title);
-
 	return result;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal, const std::string & title)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal)
 {
 	JASPTIMER_SCOPE(DataSetPackage::initColumnAsNominalOrOrdinal with uniqueValues);
 	
 	bool result =  _dataSet->columns()[colNo]->initAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
 
-	if(result && !title.empty())
-		_dataSet->columns()[colNo]->setTitle(title);
 
 	return result;
 }
 
-bool DataSetPackage::initColumnAsScale(QVariant colID, const std::string & newName, const doublevec & values, const std::string & title)
+int DataSetPackage::getColIndex(QVariant colID)
 {
 	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
-	{
-		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		bool result =  initColumnAsScale(colNo, newName, values);
+		return colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 
-		if(result && !title.empty())
-			_dataSet->columns()[colNo]->setTitle(title);
-
-		return result;
-	}
 	else
-		return initColumnAsScale(colID.toString().toStdString(), newName, values);
-
-
+		return _dataSet->getColumnIndex(fq(colID.toString()));
 }
 
-intstrmap DataSetPackage::initColumnAsNominalText(QVariant colID, const std::string & newName, const stringvec & values, const strstrmap & labels, const std::string & title)
+bool DataSetPackage::convertVecToInt(int colIndex, const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap)
 {
-	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
+	JASPTIMER_SCOPE(ColumnUtils::convertVecToInt);
+
+	emptyValuesMap.clear();
+	uniqueValues.clear();
+	intValues.clear();
+	intValues.reserve(values.size());
+
+	int row = 0;
+
+	for (const std::string &value : values)
 	{
-		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		intstrmap result =  initColumnAsNominalText(colNo, newName, values, labels);
+		int intValue = std::numeric_limits<int>::lowest();
 
-		if(!title.empty())
-			_dataSet->columns()[colNo]->setTitle(title);
+		if (_dataSet->column(colIndex)->convertValueToIntForImport(value, intValue))
+		{
+			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
+			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));
 
-		return result;
+			intValues.push_back(intValue);
+		}
+		else
+		{
+			std::vector<int>().swap(intValues); //this clears intValues and guarentees its memory is released
+			return false;
+		}
+
+		row++;
 	}
-	else
-		return initColumnAsNominalText(colID.toString().toStdString(), newName, values, labels);
+
+	return true;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, bool is_ordinal, const std::string & title)
+
+bool DataSetPackage::convertVecToDouble(int colIndex, const stringvec & values, doublevec & doubleValues, intstrmap & emptyValuesMap)
 {
-	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
+	JASPTIMER_SCOPE(DataSetPackage::convertVecToDouble);
+
+	emptyValuesMap.clear();
+	doubleValues.clear();
+	doubleValues.resize(values.size());
+
+	int row = 0;
+	for (const std::string & value : values)
 	{
-		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		bool result =  initColumnAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
+		double doubleValue = static_cast<double>(NAN);
 
-		if(result && !title.empty())
-			_dataSet->columns()[colNo]->setTitle(title);
+		if (_dataSet->column(colIndex)->convertValueToDoubleForImport(value, doubleValue))
+		{
+			doubleValues[row] = doubleValue;
 
-		return result;
+			if (std::isnan(doubleValue) && value != ColumnUtils::emptyValue)
+				emptyValuesMap.insert(std::make_pair(row, value));
+		}
+		else
+		{
+			std::vector<double>().swap(doubleValues); //this clears doubleValues and guarentees its memory is released
+			return false;
+		}
+
+		row++;
 	}
-	else
-		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, is_ordinal);
+
+	return true;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, const std::string & newName, const intvec & values, const intstrmap &uniqueValues, bool is_ordinal, const std::string & title)
-{
-	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
-	{
-		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		bool result =  initColumnAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
-
-		if(result && !title.empty())
-			_dataSet->columns()[colNo]->setTitle(title);
-
-		return result;
-	}
-	else
-		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, uniqueValues, is_ordinal);
-}
 
 
 void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values, const std::string & title, columnType desiredType)
@@ -1423,32 +1429,33 @@ void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 	intvec		intValues;
 	doublevec	doubleValues;
 	intstrmap	emptyValuesMap;
+	int			colIndex = getColIndex(colId);
 
 	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
 	JASPTIMER_RESUME(DataSetPackage::initColumnWithStrings preamble);
-	bool valuesAreIntegers		= ColumnUtils::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
+	bool valuesAreIntegers		= convertVecToInt(colIndex, values, intValues, uniqueValues, emptyValuesMap);
 		
 	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
 
 	auto isNominalInt			= [&](){ return valuesAreIntegers && (desiredType == columnType::nominal || uniqueValues.size() == minIntForThresh); };
 	auto isOrdinal				= [&](){ return valuesAreIntegers && (desiredType == columnType::ordinal || (uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale)); };
-	auto isScalar				= [&](){ return ColumnUtils::convertVecToDouble(values, doubleValues, emptyValuesMap); };
+	auto isScalar				= [&](){ return convertVecToDouble(colIndex, values, doubleValues, emptyValuesMap); };
 	
 	JASPTIMER_STOP(DataSetPackage::initColumnWithStrings preamble);
 
 	JASPTIMER_RESUME(DataSetPackage::initColumnWithStrings followup - initing columns);
 	
-	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
-	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
-	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues	);
-	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values			);
+	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colIndex,	newName,	intValues,		true	);
+	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colIndex,	newName,	intValues,		false	);
+	else if	(isScalar())					initColumnAsScale(				colIndex,	newName,	doubleValues	);
+	else				emptyValuesMap =	initColumnAsNominalText(		colIndex,	newName,	values			);
 	
 	JASPTIMER_STOP(DataSetPackage::initColumnWithStrings followup - initing columns);
 
-	storeInEmptyValues(newName, emptyValuesMap);
+	storeMissingData(newName, emptyValuesMap);
 }
 
 void DataSetPackage::initializeComputedColumns()
@@ -1747,7 +1754,7 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
 }
 
-void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newTitle, bool resetModel)
+void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newTitle)
 {
 	if(!_dataSet)
 		return;
@@ -1755,18 +1762,11 @@ void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newT
 	Column* column = _dataSet->column(columnIndex);
 	if (!column)
 		return;
-
-	if(resetModel)
-		beginResetModel();
 
 	column->setTitle(newTitle);
-
-	if(resetModel)
-		endResetModel();
-
 }
 
-void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription, bool resetModel)
+void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription)
 {
 	if(!_dataSet)
 		return;
@@ -1775,13 +1775,54 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 	if (!column)
 		return;
 
-	if(resetModel)
-		beginResetModel();
-
 	column->setDescription(newDescription);
+}
 
-	if(resetModel)
-		endResetModel();
+void DataSetPackage::setColumnAsComputed(size_t columnIndex, computedColumnType type)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
+	column->setCodeType(type);
+
+	emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+}
+
+void DataSetPackage::setColumnHasCustomEmptyValues(size_t columnIndex, bool hasCustomEmptyValue)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	if (!column || column->hasCustomEmptyValues() == hasCustomEmptyValue)
+		return;
+
+	column->setHasCustomEmptyValues(hasCustomEmptyValue);
+
+	emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+
+	if(!hasCustomEmptyValue)
+		resetMissingData({column});
+}
+
+void DataSetPackage::setColumnCustomEmptyValues(size_t columnIndex, const stringset& customEmptyValues)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	if (!column || column->emptyValues() == customEmptyValues)
+		return;
+
+	column->setCustomEmptyValues(customEmptyValues);
+	resetMissingData({column});
+
+	emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+
 }
 
 void DataSetPackage::setColumnDataInts(size_t columnIndex, const intvec & ints)
@@ -1817,24 +1858,6 @@ void DataSetPackage::setColumnDataDbls(size_t columnIndex, const doublevec & dbl
 
 	col->setValues(dbls);
 	col->incRevision();
-}
-
-void DataSetPackage::emptyValuesChangedHandler()
-{
-	if (isLoaded())
-	{
-		beginSynchingData();
-
-		stringvec colChanged;
-		
-		for (const auto & it : _dataSet->resetEmptyValues())
-		{
-			colChanged.push_back(it.first);
-			storeInEmptyValues(it.first, it.second);
-		}
-
-		endSynchingDataChangedColumns(colChanged);
-	}
 }
 
 bool DataSetPackage::setFilterData(const std::string & rFilter, const boolvec & filterResult)
@@ -1975,6 +1998,52 @@ void DataSetPackage::deserializeColumn(const std::string& columnName, const Json
 	emit datasetChanged({tq(columnName)}, {}, {}, false, false);
 }
 
+const stringset& DataSetPackage::workspaceEmptyValues() const
+{
+	static stringset emptyVec;
+	return _dataSet ? _dataSet->workspaceEmptyValues() : emptyVec;
+}
+
+void DataSetPackage::setDefaultWorkspaceEmptyValues()
+{
+	stringset values;
+	for (const QString& value : PreferencesModel::prefs()->emptyValues())
+		 values.insert(fq(value));
+	setWorkspaceEmptyValues(values);
+}
+
+void DataSetPackage::resetMissingData(const std::vector<Column*>& cols, bool reset)
+{
+	if (isLoaded())
+	{
+		if (reset)
+			beginSynchingData();
+
+		stringvec colChanged;
+
+		for (const auto & it : _dataSet->resetMissingData(cols))
+		{
+			colChanged.push_back(it.first);
+			storeMissingData(it.first, it.second);
+		}
+
+		if (reset)
+			endSynchingDataChangedColumns(colChanged);
+	}
+}
+
+
+void DataSetPackage::setWorkspaceEmptyValues(const stringset &emptyValues, bool reset)
+{
+	if (!_dataSet) return;
+
+	_dataSet->setWorkspaceEmptyValues(emptyValues);
+
+	resetMissingData(_dataSet->columns(), reset);
+
+	emit workspaceEmptyValuesChanged();
+}
+
 void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, intvec coltypes)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
@@ -2023,11 +2092,9 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 
 	endSynchingData(changed, missingColumns, changeNameColumns, rowCountChanged, colCountChanged, false);
 	setManualEdits(true); //set manual edits here so external synching is turned off, endSynchingData also just reset it, so thats why it is way down here
-
-	if(isLoaded()) setModified(true);
 }
 
-QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedColumnType compColType)
+QString DataSetPackage::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
 {
 	if(column < 0)
 		column = 0;
@@ -2045,12 +2112,14 @@ QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedC
 	stringvec changed;
 
 	_dataSet->insertColumn(column);
-	const std::string & name = freeNewColumnName(column);
-	setColumnName(column, name, false);
-	_dataSet->column(column)->setDefaultValues(columnType::scale);
 
-	if(computed)
-		_dataSet->column(column)->setCodeType(compColType);
+	const std::string & name = props.contains("name") ? fq(props["name"].toString()) : freeNewColumnName(column);
+	columnType type = props.contains("type") ? columnType(props["type"].toInt()) : columnType::scale;
+	setColumnName(column, name, false);
+	_dataSet->column(column)->setDefaultValues(type);
+
+	if(props.contains("computed"))
+		_dataSet->column(column)->setCodeType(computedColumnType(props["computed"].toInt()));
 
 	_dataSet->incRevision();
 
@@ -2065,23 +2134,19 @@ QString DataSetPackage::insertColumnSpecial(int column, bool computed, computedC
 	strstrmap		changeNameColumns;
 	stringvec		missingColumns;
 
-	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
-
-	if(isLoaded()) setModified(true);
+	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
 	return QString::fromStdString(name);
 }
 
-QString DataSetPackage::appendColumnSpecial(bool computed, computedColumnType compColType)
+QString DataSetPackage::appendColumnSpecial(const QMap<QString, QVariant>& props)
 {
-	return insertColumnSpecial(dataColumnCount(), computed, compColType);
+	return insertColumnSpecial(dataColumnCount(), props);
 }
 
 
 bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & aparent)
 {
-	if(isLoaded()) setModified(true);
-
 	if(column > dataColumnCount())
 		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
@@ -2124,8 +2189,6 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 
 	emit columnsBeingRemoved(column, count);
 
-	if(isLoaded()) setModified(true);
-
 	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
@@ -2154,8 +2217,6 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 
 bool DataSetPackage::insertRows(int row, int count, const QModelIndex & aparent)
 {
-	if(isLoaded()) setModified(true);
-
 	if(row > dataRowCount())
 		row = dataRowCount();
 
@@ -2200,8 +2261,6 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 	if(row == -1)
 		return false;
 
-	if(isLoaded()) setModified(true);
-
 	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
@@ -2237,10 +2296,10 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 	return true;
 }
 
-void DataSetPackage::storeInEmptyValues(const std::string & columnName, const intstrmap & emptyValues)
+void DataSetPackage::storeMissingData(const std::string & columnName, const intstrmap & emptyValues)
 {
 	JASPTIMER_SCOPE(DataSetPackage::storeInEmptyValues);
-	_dataSet->storeInEmptyValues(columnName, emptyValues);
+	_dataSet->setMissingData(columnName, emptyValues);
 }
 
 Column * DataSetPackage::createColumn(const std::string & name, columnType columnType)
@@ -2443,8 +2502,9 @@ QString DataSetPackage::windowTitle() const
 	return name + (isModified() ? "*" : "") + folder;
 }
 
-void DataSetPackage::setEmptyValues(Json::Value &emptyValues)
+void DataSetPackage::setMissingData(Json::Value &emptyValues)
 { 
+	// This is used only for old jasp file that did not have a sqlite database
 	_dataSet->setEmptyValuesJson(emptyValues);
 }
 
@@ -2508,7 +2568,7 @@ void DataSetPackage::checkComputedColumnDependenciesForAnalysis(Analysis * analy
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
 {
-	QString nameTemp = insertColumnSpecial(dataColumnCount(), true, desiredType);
+	QString nameTemp = insertColumnSpecial(dataColumnCount(), { std::make_pair("computed", int(desiredType)) });
 
 	Column	* newComputedColumn = DataSetPackage::pkg()->dataSet()->column(nameTemp.toStdString());
 
@@ -2521,8 +2581,6 @@ Column * DataSetPackage::createComputedColumn(const std::string & name, columnTy
 		newComputedColumn->setAnalysisId(analysis->id());
 
 	endResetModel();
-
-	emit showComputedColumn(tq(name));
 
 	return newComputedColumn;
 }
@@ -2589,3 +2647,4 @@ void DataSetPackage::setManualEdits(bool newManualEdits)
 
 	emit manualEditsChanged();
 }
+

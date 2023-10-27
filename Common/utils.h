@@ -34,10 +34,14 @@ typedef std::vector<int>						intvec;
 typedef std::vector<size_t>						sizetvec;
 typedef std::set<int>							intset;
 typedef std::set<size_t>						sizetset;
+typedef std::set<double>						doubleset;
 typedef std::map<int,			std::string>	intstrmap;
 typedef std::map<std::string,	std::string>	strstrmap;
 typedef std::map<std::string,	int>			strintmap;
 typedef std::map<int, int>						intintmap;
+typedef std::set<std::string>					stringset;
+typedef std::vector<std::string>				stringvec;
+typedef std::vector<stringvec>					stringvecvec;
 
 /// One of the utility classes
 /// This is for the sort of functions that you might want to use in either Desktop or Engine. Should not be used in R-Interface or jaspResults.

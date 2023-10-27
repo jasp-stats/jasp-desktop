@@ -36,9 +36,11 @@ JASP shows missing values as blank in cells by default, you can also label them 
 
 ### Missing Value List
 
-In this list you can specify when observations in your datafile should be treated as missing (e.g., if you coded missing observations to be 999, you can add this value here and JASP will treat all cells with the value 999 as missing).
+In the Missing Value list you can specify when observations in your datafile should be treated as missing (e.g., if you coded missing observations to be 999, you can add this value here and JASP will treat all cells with the value 999 as missing).
+You can set here the default values that will be used for a new file. If you load a JASP file, it will load also the missing values used by this file: this values can be seen in the 'Workspace missing values' in the Data editing mode.
+It is also possible to set custom missing values per column (by double-clicking the header of a column).
 You can delete values from this list by selecting them and pressing the minus button.
-Clicking on "Reset" will restore all the default values.
+Clicking on "Reset" will restore this list with the JASP default values.
 
 ### Windows workaround
 

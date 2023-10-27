@@ -16,7 +16,6 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	computeColumnRCode			READ computeColumnRCode				WRITE setComputeColumnRCode				NOTIFY computeColumnRCodeChanged		)
 	Q_PROPERTY(QString	computeColumnJson			READ computeColumnJson														NOTIFY computeColumnJsonChanged			)
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
-	Q_PROPERTY(QString	computeColumnNameSelected	READ computeColumnNameSelected		WRITE setComputeColumnNameSelected		NOTIFY computeColumnNameSelectedChanged )
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY refreshProperties				)
 
 public:
@@ -28,14 +27,12 @@ public:
 				QString				computeColumnRCode();
 				QString				computeColumnRCodeCommentStripped();
 				QString				computeColumnError();
-				QString				computeColumnNameSelected();
 				QString				computeColumnJson();
 				Column			*	column() const;
 				bool				computeColumnUsesRCode();
 
 				void				selectColumn(					Column		  * column);
 				void				setComputeColumnRCode(			const QString & newCode);
-				void				setComputeColumnNameSelected(	const QString & newName);
 				void				setComputeColumnJson(			const QString & newJson);
 
 	Q_INVOKABLE void				sendCode(const QString & code);
@@ -70,7 +67,6 @@ signals:
 				void	computeColumnErrorChanged();
 				void	computeColumnJsonChanged();
 				void	refreshColumn(QString columnName);
-				void	computeColumnNameSelectedChanged();
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
 				void	sendComputeCode(QString columnName, QString code, columnType columnType);
 				void	computeColumnUsesRCodeChanged();
@@ -90,8 +86,6 @@ public slots:
 										QMap<QString, QString>	changeNameColumns,
 										bool					rowCountChanged,
 										bool					hasNewColumns);
-private slots:
-				void	onDataSetChanged();
 
 private:
 	static	ComputedColumnsModel	* _singleton;

@@ -1,4 +1,6 @@
 #include "columnutils.h"
+#include "utils.h"
+#include "emptyvalues.h"
 
 #ifndef IGNORE_BOOST
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -12,36 +14,7 @@ using namespace boost::posix_time;
 using namespace boost;
 
 
-///Internally the following actual missing values are used for scalar, ordinal/nominal and text:  NAN, std::numeric_limits<int>::lowest() and ""
-/// However, users might like to see something else hence we allow `emptyValue` to be changed through the settings.
-	  string			ColumnUtils::emptyValue					= "";
-const stringset			ColumnUtils::_defaultEmptyValues		= {"NaN", "nan", ".", "NA"};
-doublevec				ColumnUtils::_currentDoubleEmptyValues	= {};
-stringset				ColumnUtils::_currentEmptyValues		= ColumnUtils::_defaultEmptyValues;
-
-
-
-void ColumnUtils::setEmptyValues(const stringset &emptyvalues)
-{
-	JASPTIMER_SCOPE(ColumnUtils::setEmptyValues);
-	
-	_currentEmptyValues = emptyvalues;
-	processEmptyValues();
-}
-
-void ColumnUtils::processEmptyValues()
-{
-	JASPTIMER_SCOPE(ColumnUtils::processEmptyValues);
-	
-	_currentDoubleEmptyValues.clear();
-
-	for (const std::string & curEmptyVal : _currentEmptyValues)
-	{
-		double doubleValue;
-		if (ColumnUtils::getDoubleValue(curEmptyVal, doubleValue))
-			_currentDoubleEmptyValues.push_back(doubleValue);
-	}
-}
+string					ColumnUtils::emptyValue							= "";
 
 bool ColumnUtils::getIntValue(const string &value, int &intValue)
 {
@@ -115,7 +88,7 @@ bool ColumnUtils::isDoubleValue(const string &value)
 }
 
 
-void ColumnUtils::_deEuropeaniseForImport(std::string & value)
+void ColumnUtils::deEuropeaniseForImport(std::string & value)
 {
 	int dots	= 0,
 		commas	= 0;
@@ -162,34 +135,17 @@ void ColumnUtils::_deEuropeaniseForImport(std::string & value)
 	}
 }
 
-bool ColumnUtils::isEmptyValue(const std::string& val)
-{
-	if (val.empty()) 
-		return true;
-
-	return _currentEmptyValues.count(val);
-}
-
-bool ColumnUtils::isEmptyValue(const double &val)
-{
-	JASPTIMER_SCOPE(ColumnUtils::isEmptyValue double);
-	
-	if (std::isnan(val)) return true;
-
-	return std::find(_currentDoubleEmptyValues.begin(), _currentDoubleEmptyValues.end(), val) != _currentDoubleEmptyValues.end();
-}
-
 bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &intValue)
 {
 	JASPTIMER_SCOPE(ColumnUtils::convertValueToIntForImport);
 	
-	if (!isEmptyValue(strValue))
+	if(isEmptyValue(strValue, EmptyValues::singleton()->workspaceEmptyValues()))
+		intValue = std::numeric_limits<int>::lowest();
+	else
 	{
 		if (!ColumnUtils::getIntValue(strValue, intValue))
 			return false;
 	}
-	else
-		intValue = std::numeric_limits<int>::lowest();
 
 	return true;
 }
@@ -197,15 +153,33 @@ bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &i
 bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue)
 {
 	std::string v = strValue;
-	_deEuropeaniseForImport(v);
+	deEuropeaniseForImport(v);
 
-	if(isEmptyValue(v))
+	if(isEmptyValue(v, EmptyValues::singleton()->workspaceEmptyValues()))
 		doubleValue = NAN;
 	
 	else if (!ColumnUtils::getDoubleValue(v, doubleValue))
 		return false;
 	
 	return true;
+}
+
+bool ColumnUtils::isEmptyValue(const std::string & val, const stringset & emptyValues)
+{
+	if (val.empty()) return true;
+
+	return emptyValues.count(val);
+}
+
+bool ColumnUtils::isEmptyValue(const double val, const doubleset & doubleEmptyValues)
+{
+	if (std::isnan(val)) return true;
+
+	// Don't use doubleEmptyValues.contains(val): if values contains nan, then it returns always true...
+	for (double d : doubleEmptyValues)
+		if (!std::isnan(d) && d == val)
+			return true;
+	return false;
 }
 
 std::string ColumnUtils::doubleToString(double dbl, int precision)
@@ -218,84 +192,6 @@ std::string ColumnUtils::doubleToString(double dbl, int precision)
 	return conv.str();
 }
 
-std::string ColumnUtils::doubleToDisplayString(double dbl, bool fancyEmptyValue)
-{
-	JASPTIMER_SCOPE(ColumnUtils::doubleToDisplayString);
-
-	if (dbl > std::numeric_limits<double>::max())				return "∞";
-	else if (dbl < std::numeric_limits<double>::lowest())		return "-∞";
-	else if (ColumnUtils::isEmptyValue(dbl))					return fancyEmptyValue ? ColumnUtils::emptyValue : "";
-	else														return ColumnUtils::doubleToString(dbl);
-}
-
-
-
-bool ColumnUtils::convertVecToInt(const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap)
-{
-	JASPTIMER_SCOPE(ColumnUtils::convertVecToInt);
-	
-	emptyValuesMap.clear();
-	uniqueValues.clear();
-	intValues.clear();
-	intValues.reserve(values.size());
-
-	int row = 0;
-
-	for (const std::string &value : values)
-	{
-		int intValue = std::numeric_limits<int>::lowest();
-
-		if (ColumnUtils::convertValueToIntForImport(value, intValue))
-		{
-			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
-			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));
-
-			intValues.push_back(intValue);
-		}
-		else
-		{
-			std::vector<int>().swap(intValues); //this clears intValues and guarentees its memory is released
-			return false;
-		}
-
-		row++;
-	}
-
-	return true;
-}
-
-
-bool ColumnUtils::convertVecToDouble(const stringvec & values, doublevec & doubleValues, intstrmap & emptyValuesMap)
-{
-	JASPTIMER_SCOPE(ColumnUtils::convertVecToDouble);
-	
-	emptyValuesMap.clear();
-	doubleValues.clear();
-	doubleValues.resize(values.size());
-
-	int row = 0;
-	for (const std::string & value : values)
-	{
-		double doubleValue = static_cast<double>(NAN);
-
-		if (ColumnUtils::convertValueToDoubleForImport(value, doubleValue))
-		{
-			doubleValues[row] = doubleValue;
-
-			if (std::isnan(doubleValue) && value != ColumnUtils::emptyValue)
-				emptyValuesMap.insert(std::make_pair(row, value));
-		}
-		else
-		{
-			std::vector<double>().swap(doubleValues); //this clears doubleValues and guarentees its memory is released
-			return false;
-		}
-
-		row++;
-	}
-
-	return true;
-}
 
 // hex should be 4 hexadecimals characters
 std::string ColumnUtils::_convertEscapedUnicodeToUTF8(std::string hex)

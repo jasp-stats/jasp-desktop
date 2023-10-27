@@ -41,19 +41,15 @@ public:
 	Q_INVOKABLE QVariant	getColumnTypesWithIcons()				const				{ return DataSetPackage::pkg()->getColumnTypesWithIcons();							}
 	Q_INVOKABLE bool		columnUsedInEasyFilter(int column)		const;
 	Q_INVOKABLE void		resetAllFilters()											{		 DataSetPackage::pkg()->resetAllFilters();									}
-	Q_INVOKABLE int			setColumnTypeFromQML(int columnIndex, int newColumnType);
 	
 	//the following column-int passthroughs will fail once columnfiltering is added...
 
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
-
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
-
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, std::vector<int> colTypes = std::vector<int>());
-
 	bool					showInactive()							const				{ return _showInactive;	}
 
-	QString					insertColumnSpecial(int column, bool computed, bool R);
+	QString					insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
 
 signals:
 	void					columnsFilteredCountChanged();

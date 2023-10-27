@@ -198,7 +198,10 @@ void ExpandDataProxyModel::insertColumn(int col, bool computed, bool R)
 	if (!_sourceModel)
 		return;
 
-	_undoStack->pushCommand(new InsertColumnCommand(_sourceModel, col, computed, R));
+	QMap<QString, QVariant> props;
+	if (computed)
+		props["computed"] = int(R ? computedColumnType::rCode : computedColumnType::constructorCode);
+	_undoStack->pushCommand(new InsertColumnCommand(_sourceModel, col, props));
 }
 
 void ExpandDataProxyModel::_expandIfNecessary(int row, int col)

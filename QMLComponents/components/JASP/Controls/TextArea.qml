@@ -27,6 +27,7 @@ TextAreaBase
 	property alias	placeholderText		: control.placeholderText
 	property var	undoModel
 	property bool	useTabAsSpaces		: true
+	property var	nextTabItem
     
     signal applyRequest()
 	signal editingFinished()
@@ -96,7 +97,15 @@ TextAreaBase
 
 				font:				textArea.textType === JASP.TextTypeDefault || textArea.textType === JASP.TextTypeSource ? jaspTheme.font : jaspTheme.fontCode
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-				//wrapMode:			TextArea.Wrap
+
+				Component.onCompleted:
+				{
+					if (textArea.nextTabItem)
+					{
+						control.KeyNavigation.priority = KeyNavigation.BeforeItem
+						control.KeyNavigation.tab =	textArea.nextTabItem
+					}
+				}
 
 				Keys.onPressed: (event) =>
 				{

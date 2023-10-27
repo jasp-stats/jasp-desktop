@@ -12,10 +12,11 @@ ScrollView
 	onActiveFocusChanged:	if(activeFocus) useDefaultEditor.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	Column {
+	Column
+	{
 
-		width: scrollPrefs.width
-		spacing: jaspTheme.rowSpacing
+		width:		scrollPrefs.width
+		spacing:	jaspTheme.rowSpacing
 
 		MenuHeader
 		{
@@ -196,7 +197,7 @@ ScrollView
 
 					text:				preferencesModel.dataLabelNA
 					onEditingFinished:	preferencesModel.dataLabelNA = text
-					nextEl:				missingValuesList.firstComponent
+					nextEl:				missingValuesList
 
 					anchors
 					{
@@ -206,13 +207,43 @@ ScrollView
 				}
 			}
 
-			PrefsMissingValues
+			Item
 			{
-				id: 			missingValuesList
-				navigateFrom:   missingValueDataLabelInput
-				navigateTo:     noBomNative
+				width:	parent.width
+				height: missingValuesList.height
+
+				PrefsMissingValues
+				{
+					id:							missingValuesList
+					model:						preferencesModel
+					showResetWorkspaceButton:	true
+					resetButtonLabel:			qsTr("Reset with standard values")
+					resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
+					KeyNavigation.tab:			noBomNative
+				}
+
+				Text
+				{
+					visible:			mainWindow.dataAvailable
+					anchors
+					{
+						top:			parent.top
+						left:			missingValuesList.right
+						leftMargin:		jaspTheme.generalAnchorMargin
+						right:			parent.right
+						rightMargin:	jaspTheme.generalAnchorMargin
+					}
+					text:				qsTr("Show workspace missing values")
+					color:				jaspTheme.blueDarker
+					wrapMode:			Text.Wrap
+					MouseArea
+					{
+						anchors.fill:	parent
+						onClicked:		mainWindowRoot.showWorkspaceMenu()
+						cursorShape:	Qt.PointingHandCursor
+					}
+				}
 			}
-			
 
 			PrefsGroupRect
 			{

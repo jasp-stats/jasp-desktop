@@ -63,6 +63,13 @@ Window
  		ribbon.focusOnRibbonMenu();
 	}
 
+	function showWorkspaceMenu()
+	{
+		ribbonModel.showData()
+		fileMenuModel.visible = false
+		modulesMenu.opened	= true
+	}
+
 	function changeFocusToModulesMenu()
 	{
 		ribbon.showModulesMenuPressed();

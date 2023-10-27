@@ -143,7 +143,7 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 		break;
 
 	case columnType::nominalText:
-		DataSetPackage::pkg()->storeInEmptyValues(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
+		DataSetPackage::pkg()->storeMissingData(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
 		break;
 
 	default:

@@ -54,6 +54,7 @@
 #include "utilities/reporter.h"
 #include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
+#include "data/workspacemodel.h"
 
 #include "utilities/languagemodel.h"
 #include <vector>
@@ -135,6 +136,7 @@ public slots:
 	void setScreenPPI(int screenPPI);
 	void setContactVisible(bool newContactVisible);
 	void setCooperativeVisible(bool newCooperativeVisible);
+	void setDefaultWorkspaceEmptyValues();
 
 	void showRCommander();
 
@@ -235,7 +237,6 @@ signals:
 	void closeWindows();
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
-	void showComputedColumn(		QString		columnName);
 	void contactVisibleChanged();
 	void cooperativeVisibleChanged();
 	void contactTextChanged();
@@ -314,6 +315,7 @@ private:
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+	WorkspaceModel				*	_workspaceModel			= nullptr;
 
 	QSettings						_settings;
 
