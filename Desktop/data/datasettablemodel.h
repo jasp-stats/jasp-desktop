@@ -45,11 +45,8 @@ public:
 	//the following column-int passthroughs will fail once columnfiltering is added...
 
 	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
-
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
-
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, std::vector<int> colTypes = std::vector<int>());
-
 	bool					showInactive()							const				{ return _showInactive;	}
 
 	QString					insertColumnSpecial(int column, const QMap<QString, QVariant>& props);

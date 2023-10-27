@@ -78,6 +78,7 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::refresh						);
 	connect(this,					&DataSetTableProxy::nodeChanged,				this, &ColumnModel::chosenColumnChanged			);
 	connect(this,					&ColumnModel::chosenColumnChanged,				this, &ColumnModel::onChosenColumnChanged		);
+
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::refresh						);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &ColumnModel::allFiltersReset				);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &ColumnModel::labelFilterChanged			);
@@ -126,13 +127,13 @@ void ColumnModel::setColumnNameQ(QString newColumnName)
 	{
 		_undoStack->startMacro();
 
-		for (int colNr = _dataSetTableModel->columnCount(); colNr < _currentColId; colNr++)
+		for (int colNr = _dataSetTableModel->columnCount(); colNr < _currentColIndex; colNr++)
 			_undoStack->pushCommand(new InsertColumnCommand(_dataSetTableModel, colNr));
 
 		QMap<QString, QVariant> props;
 		props["name"] = newColumnName;
 		props["type"] = int(_dummyColumn.type);
-		_undoStack->endMacro(new InsertColumnCommand(_dataSetTableModel, _currentColId, props));
+		_undoStack->endMacro(new InsertColumnCommand(_dataSetTableModel, _currentColIndex, props));
 	}
 	else if(column())
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnName, SetColumnPropertyCommand::ColumnProperty::Name));
@@ -489,7 +490,10 @@ int ColumnModel::chosenColumn() const
 
 void ColumnModel::setChosenColumn(int chosenColumn)
 {
-	if (chosenColumn == _currentColId) return;
+	if (chosenColumn == _currentColIndex) return;
+
+	//If the user deletes the name the column ought to be removed because we cannot have columns without a name!
+	int deleteMe = column() && column()->name() == "" ? _currentColIndex : -1;
 
 	emit beforeChangingColumn(chosenColumn);
 
@@ -501,9 +505,13 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 	emit isVirtualChanged();
 
 	subNodeModel()->selectNode(!_virtual ? data->column(chosenColumn) : nullptr);
-	_currentColId = chosenColumn;
+
+	_currentColIndex = chosenColumn;
 
 	emit tabsChanged();
+
+	if(deleteMe >= 0)
+		_dataSetTableModel->removeColumn(deleteMe);
 }
 
 void ColumnModel::setChosenColumn(const QString & chosenName)
@@ -623,11 +631,11 @@ void ColumnModel::checkCurrentColumn(QStringList, QStringList missingColumns, QM
 	{
 		if (!_virtual && changeNameColumns.contains(colName))
 			setColumnNameQ(changeNameColumns[colName]);
-		if (hasNewColumns && _virtual && DataSetPackage::pkg()->dataColumnCount() >= _currentColId)
+		if (hasNewColumns && _virtual && DataSetPackage::pkg()->dataColumnCount() >= _currentColIndex)
 		{
 			// The current column is not virtual anymore: reset it
-			int colId = _currentColId;
-			_currentColId = -1;
+			int colId = _currentColIndex;
+			_currentColIndex = -1;
 			setChosenColumn(colId);
 		}
 	}

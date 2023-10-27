@@ -42,30 +42,30 @@ public:
 
 	static QMap<computedColumnType, QString>	columnTypeFriendlyName;
 
-	bool		labelNeedsFilter(size_t col);
-	std::string columnName(size_t col); ///< Not a proxy columnIndex!
-	QString		columnNameQ();
-	QString		columnTitle()					const;
-	QString		columnDescription()				const;
-	QString		computedType()					const;
-	bool		computedTypeEditable()			const;
-	QVariantList computedTypeValues()			const;
-	QString		currentColumnType()				const;
-	QVariantList columnTypeValues()				const;
-	bool		useCustomEmptyValues()			const;
-	QStringList emptyValues()					const;
+	bool			labelNeedsFilter(size_t col);
+	std::string		columnName(size_t col); ///< Not a proxy columnIndex!
+	QString			columnNameQ();
+	QString			columnTitle()					const;
+	QString			columnDescription()				const;
+	QString			computedType()					const;
+	bool			computedTypeEditable()			const;
+	QVariantList	computedTypeValues()			const;
+	QString			currentColumnType()				const;
+	QVariantList	columnTypeValues()				const;
+	bool			useCustomEmptyValues()			const;
+	QStringList		emptyValues()					const;
 
 
-	bool		setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
-	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
-	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
+	bool			setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
+	QVariant		data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
+	QVariant		headerData(int section, Qt::Orientation orientation, int role)							const	override;
 
-	bool		visible()			const {	return _visible; }
-	int			filteredOut()		const;
-	int			dataColumnCount()	const;
-	int			chosenColumn()		const;
-	Column *	column()			const;
-	bool		nameEditable()		const;
+	bool			visible()			const {	return _visible; }
+	int				filteredOut()		const;
+	int				dataColumnCount()	const;
+	int				chosenColumn()		const;
+	Column *		column()			const;
+	bool			nameEditable()		const;
 	
 	Q_INVOKABLE void reverse();
 	Q_INVOKABLE void moveSelectionUp();
@@ -154,17 +154,17 @@ private:
 		computedColumnType	computedType = computedColumnType::notComputed;
 	} _dummyColumn;
 
-	bool				_visible		= false,
-						_editing		= false,
-						_virtual		= false;
-	int					_currentColId	= -1;
-	double				_valueMaxWidth	= 10,
-						_labelMaxWidth	= 10,
-						_rowWidth		= 60;
-	std::set<QString>	_selected;
-	int					_lastSelected	= -1;
-	UndoStack*			_undoStack		= nullptr;
-	DataSetTableModel*	_dataSetTableModel = nullptr;
+	bool					_visible			= false,
+							_editing			= false,
+							_virtual			= false;
+	int						_currentColIndex	= -1;
+	double					_valueMaxWidth		= 10,
+							_labelMaxWidth		= 10,
+							_rowWidth			= 60;
+	std::set<QString>		_selected;
+	int						_lastSelected		= -1;
+	UndoStack			*	_undoStack			= nullptr;
+	DataSetTableModel	*	_dataSetTableModel	= nullptr;
 };
 
 #endif // COLUMN_MODEL_H
