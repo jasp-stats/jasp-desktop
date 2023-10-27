@@ -299,6 +299,8 @@ Item
 				{
 					request.reject();
 					console.log("Navigation requeste rejected:", requestedURL.hostname)
+
+					messages.showWarningQML(qsTr("Video link not accepted"), qsTr("JASP only allows the following videoservices: \n\n%1\n\nContact the JASP team to request adding another videoservice to the list.".arg(urlWhitelist.join(", "))));
 				}
 			}
 
