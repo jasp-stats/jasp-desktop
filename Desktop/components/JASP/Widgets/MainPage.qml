@@ -270,9 +270,12 @@ Item
 			onFullScreenRequested: function(request) 
 			{
 				request.accept()
-				analysesModel.visible = false
-				minimizeDataPanel()
-				mainWindowRoot.toggleFullScreen()
+
+				if(request.toggleOn)
+				{
+					analysesModel.visible = false
+					minimizeDataPanel()
+				}
 			}
 
 			onNavigationRequested: (request)=>
