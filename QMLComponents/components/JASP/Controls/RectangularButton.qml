@@ -44,7 +44,7 @@ Item
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 
-	on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
+	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
 
 	focus:								true
 	implicitWidth:						showIconAndText ?
