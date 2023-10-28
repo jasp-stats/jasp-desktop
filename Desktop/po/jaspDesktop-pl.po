@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-10-21 11:49+0000\n"
-"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"pl/>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -223,14 +217,6 @@ msgid "Reset"
 msgstr "Reset"
 
 msgctxt "ComputeColumnWindow|"
-msgid "Computed Column: "
-msgstr "Kolumna wynikowa: "
-
-msgctxt "ComputeColumnWindow|"
-msgid "Select a column"
-msgstr "Wybierz kolumnę"
-
-msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
 msgstr "wartość bezwzględna"
 
@@ -410,10 +396,6 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
 msgstr "generuje dane z rozkładu Weibulla o określonym kształcie i skali"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Remove computed column"
-msgstr "Usuń kolumnę"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -1510,38 +1492,6 @@ msgstr "górna granica:"
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "Semi-normalny"
-
-msgctxt "VariablesWindow|"
-msgid "Filter"
-msgstr "Filtr"
-
-msgctxt "VariablesWindow|"
-msgid "Value"
-msgstr "Wartość"
-
-msgctxt "VariablesWindow|"
-msgid "Label"
-msgstr "Etykieta"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels up"
-msgstr "Przenieś wybrane etykiety w górę"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels down"
-msgstr "Przenieś wybrane etykiety w dół"
-
-msgctxt "VariablesWindow|"
-msgid "Reverse order of all labels"
-msgstr "Odwróć kolejność wszystkich etykiet"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for this column"
-msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla tej kolumny"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for all columns"
-msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla wszystkich kolumn"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
@@ -2793,11 +2743,6 @@ msgstr "oś x"
 msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "oś y"
-
-msgctxt "VariablesWindow|"
-msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
-"Edytuj etykiety tutaj lub wybierz, które wartości mają zostać odfiltrowane."
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
@@ -4433,14 +4378,6 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "Zamknij okno zmiennej"
 
-msgctxt "VariablesWindow|"
-msgid "Label Editor"
-msgstr "Edytor etykiet"
-
-msgctxt "VariablesWindow|"
-msgid "Computed Column"
-msgstr "Kolumna wyliczona"
-
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Wartość"
@@ -4493,21 +4430,6 @@ msgstr "Wklej wartości w wierszu %1 kolumny '%2'"
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
 msgstr "Ustaw typ '%1' dla kolumny '%2'"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column name from '%1' to '%2'"
-msgstr "Zmień nazwę kolumny z '%1' na '%2'"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column title from '%1' to '%2'"
-msgstr "Zmień tytuł kolumny z '%1' na '%2'"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column description from '%1' to '%2'"
-msgstr "Zmień opis kolumny z '%1' na '%2'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4591,10 +4513,6 @@ msgstr "Wstaw kolumnę przed"
 msgctxt "RibbonModel|"
 msgid "Insert column after"
 msgstr "Wstaw kolumnę po"
-
-msgctxt "RibbonModel|"
-msgid "Computed Columns"
-msgstr "Kolumny wyliczone"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
@@ -4853,8 +4771,8 @@ msgstr ""
 "edukacyjną swoim studentom oraz osobom związanym z instytucjami edukacyjnymi "
 "na całym świecie.\n"
 "\n"
-"Jeśli Twoja instytucja nie jest jeszcze Partnerem JASP, możesz <a href=\"%1\""
-">zaproponować, aby się przyłączyła</a>.\n"
+"Jeśli Twoja instytucja nie jest jeszcze Partnerem JASP, możesz <a "
+"href=\"%1\">zaproponować, aby się przyłączyła</a>.\n"
 "\n"
 "<i><b>Instytucje Edukacyjne:</b></i>\n"
 "%2\n"
@@ -4901,10 +4819,10 @@ msgid ""
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
 "<h3>Kontakt</h3>\n"
-"W celu zgłaszania wniosków o <a href=\"%1\">nowe funkcje</a> oraz <a href=\"%"
-"2\">zgłaszania błędów</a> prosimy o zamieszczenie zgłoszenia na naszej "
-"stronie na GitHubie, <a href=\"%3\">zgodnie z instrukcjami zamieszczonymi "
-"tutaj.</a>\n"
+"W celu zgłaszania wniosków o <a href=\"%1\">nowe funkcje</a> oraz <a "
+"href=\"%2\">zgłaszania błędów</a> prosimy o zamieszczenie zgłoszenia na "
+"naszej stronie na GitHubie, <a href=\"%3\">zgodnie z instrukcjami "
+"zamieszczonymi tutaj.</a>\n"
 "Umożliwi to nawiązanie kontaktu bezpośrednio z deweloperami oprogramowania "
 "JASP.\n"
 "\n"
@@ -4915,9 +4833,228 @@ msgstr ""
 "zapoznanie się z <a href=\"%5\">informacjami zamieszczonymi na stronie "
 "internetowej.</a>\n"
 "\n"
-"Jeśli chcieliby Państwo zaproponować dodanie Państwa instytucji do <a href=\""
-"%6\">mapy użytkowników JASP</a>, prosimy o przesłanie wiadomości e-mail na "
-"adres <a href=\"%7\">communications@jasp-stats.org</a>.\n"
+"Jeśli chcieliby Państwo zaproponować dodanie Państwa instytucji do <a "
+"href=\"%6\">mapy użytkowników JASP</a>, prosimy o przesłanie wiadomości e-"
+"mail na adres <a href=\"%7\">communications@jasp-stats.org</a>.\n"
 "\n"
-"W celu przekazania indywidualnych dotacji prosimy o odwiedzenie <a href=\"%"
-"8\">oficjalnej strony JASP</a>.\n"
+"W celu przekazania indywidualnych dotacji prosimy o odwiedzenie <a "
+"href=\"%8\">oficjalnej strony JASP</a>.\n"
+
+msgctxt "DataTableView|"
+msgid "Add column"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Reset with standard values"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Reset missing values with the standard JASP missing values"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Show workspace missing values"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Add a missing value"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Set current workspace with these values"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Set the current workspace missing values with these values"
+msgstr ""
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr ""
+"Edytuj etykiety tutaj lub wybierz, które wartości mają zostać odfiltrowane."
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Filter"
+msgstr "Filtr"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Value"
+msgstr "Wartość"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Label"
+msgstr "Etykieta"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels up"
+msgstr "Przenieś wybrane etykiety w górę"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels down"
+msgstr "Przenieś wybrane etykiety w dół"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reverse order of all labels"
+msgstr "Odwróć kolejność wszystkich etykiet"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for this column"
+msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla tej kolumny"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for all columns"
+msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla wszystkich kolumn"
+
+msgctxt "MainPage|"
+msgid "Image"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Workspace settings"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Name: %1"
+msgstr ""
+
+#, fuzzy
+msgctxt "ModulesMenu|"
+msgid "Description: "
+msgstr "Opis: "
+
+msgctxt "ModulesMenu|"
+msgid "Reset missing values with the ones set in Data Preferences"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show workspace settings"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "<Fill in the name of the column>"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Column type: "
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Computed type: "
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Use custom values"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Reset missing values with the ones set in your workspace"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Change workspace missing values"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Not computed"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Computed with R code"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Computed with drag-and-drop"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Column generated by analysis"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Column added by analysis"
+msgstr ""
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Scale"
+msgstr "Skala"
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Ordinal"
+msgstr "Porządkowa"
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Nominal"
+msgstr "Nominalna"
+
+msgctxt "ColumnModel|"
+msgid "Computed column definition"
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Label editor"
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Missing Values"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column name of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column title of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column description of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set computed type of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change workspace description from '%1' to '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Set workspace empty values"
+msgstr ""

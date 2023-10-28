@@ -211,14 +211,6 @@ msgid "Reset"
 msgstr "リセット"
 
 msgctxt "ComputeColumnWindow|"
-msgid "Computed Column: "
-msgstr "計算された列: "
-
-msgctxt "ComputeColumnWindow|"
-msgid "Select a column"
-msgstr "列を選択"
-
-msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
 msgstr "絶対値"
 
@@ -392,10 +384,6 @@ msgid ""
 msgstr ""
 "指定された形状パラメータとスケールパラメータを持つワイブル分布からデータを生"
 "成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Remove computed column"
-msgstr "計算された列を削除"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -1493,38 +1481,6 @@ msgstr "上限："
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "ハーフノーマル"
-
-msgctxt "VariablesWindow|"
-msgid "Filter"
-msgstr "フィルター"
-
-msgctxt "VariablesWindow|"
-msgid "Value"
-msgstr "値"
-
-msgctxt "VariablesWindow|"
-msgid "Label"
-msgstr "ラベル"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels up"
-msgstr "選択したラベルを上に移動"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels down"
-msgstr "選択したラベルを下に移動します"
-
-msgctxt "VariablesWindow|"
-msgid "Reverse order of all labels"
-msgstr "すべてのラベルの順序を逆にする"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for this column"
-msgstr "この列のすべてのフィルタ チェックマークをリセットする"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for all columns"
-msgstr "すべての列のフィルターのチェックマークをリセット"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
@@ -2928,10 +2884,6 @@ msgstr "メインメニューの表示"
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
 msgstr "モジュールメニューの表示"
-
-msgctxt "VariablesWindow|"
-msgid "Edit the labels here or choose which values should be filtered out."
-msgstr "ここでラベルを編集したり、どの値をフィルタリングするかを選択します。"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
@@ -4349,14 +4301,6 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr ""
 
-msgctxt "VariablesWindow|"
-msgid "Label Editor"
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "Computed Column"
-msgstr ""
-
 #, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
@@ -4410,21 +4354,6 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column name from '%1' to '%2'"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column title from '%1' to '%2'"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Change column description from '%1' to '%2'"
 msgstr ""
 
 #, qt-format
@@ -4506,10 +4435,6 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
-
-msgctxt "RibbonModel|"
-msgid "Computed Columns"
 msgstr ""
 
 msgctxt "RibbonModel|"
@@ -4796,4 +4721,221 @@ msgid ""
 "a>.\n"
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Add column"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Reset with standard values"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Reset missing values with the standard JASP missing values"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Show workspace missing values"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Add a missing value"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Set current workspace with these values"
+msgstr ""
+
+msgctxt "PrefsMissingValues|"
+msgid "Set the current workspace missing values with these values"
+msgstr ""
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr "ここでラベルを編集したり、どの値をフィルタリングするかを選択します。"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Filter"
+msgstr "フィルター"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Value"
+msgstr "値"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Label"
+msgstr "ラベル"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels up"
+msgstr "選択したラベルを上に移動"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels down"
+msgstr "選択したラベルを下に移動します"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reverse order of all labels"
+msgstr "すべてのラベルの順序を逆にする"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for this column"
+msgstr "この列のすべてのフィルタ チェックマークをリセットする"
+
+#, fuzzy
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for all columns"
+msgstr "すべての列のフィルターのチェックマークをリセット"
+
+msgctxt "MainPage|"
+msgid "Image"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Workspace settings"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Name: %1"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Description: "
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Reset missing values with the ones set in Data Preferences"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show workspace settings"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "<Fill in the name of the column>"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Column type: "
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Computed type: "
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Use custom values"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Reset missing values with the ones set in your workspace"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Change workspace missing values"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Not computed"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Computed with R code"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Computed with drag-and-drop"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Column generated by analysis"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Column added by analysis"
+msgstr ""
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Scale"
+msgstr "スケール"
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Ordinal"
+msgstr "順序"
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Nominal"
+msgstr "名義"
+
+msgctxt "ColumnModel|"
+msgid "Computed column definition"
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Label editor"
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Missing Values"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column name of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column title of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column description of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set computed type of '%1' from '%2' to '%3'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change workspace description from '%1' to '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1"
+msgstr ""
+
+msgctxt "QObject|"
+msgid "Set workspace empty values"
 msgstr ""
