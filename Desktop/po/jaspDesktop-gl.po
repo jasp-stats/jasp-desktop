@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-10-28 17:30+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.2-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -1547,7 +1553,7 @@ msgstr "Log(FB₁₀)"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr "Engadir Columna"
+msgstr "Engadir columna"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
@@ -2260,7 +2266,7 @@ msgstr "Restablecer"
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr "Engadir Columna"
+msgstr "Engadir columna"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
@@ -4859,218 +4865,205 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Add column"
-msgstr ""
+msgstr "Engadir columna"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Restablecer cos valores típicos"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "Restablecer os valores ausentes cos valores ausentes típicos de JASP"
 
 msgctxt "PrefsData|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Amosar os valores ausentes da área de traballo"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Engadir un valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Fixar a área de traballo vixente con estes valores"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "Fixar os valores ausentes da área de traballo vixente con estes valores"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr "Editar aquí as etiquetas ou elixir qué valores deben filtrarse."
+msgstr "Editar aquí as etiquetas ou elixir que valores deben filtrarse."
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "Filtrar"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "Valor"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "Etiqueta"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "Mover cara arriba as etiquetas seleccionadas"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "Mover cara abaixo as etiquetas seleccionadas"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
 msgstr "Inverter a orde de todas as etiquetas"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr "Restablecer tódalas marcas de filtro para esta columna"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr "Restablecer tódalas marcas de filtro para tódalas columnas"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Imaxe"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Configuración da área de traballo"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Nome: %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "Descrición: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr ""
+msgstr "Restablecer os valores ausentes cos fixados en Preferencias de Datos"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Amosar a configuración da área de traballo"
 
 msgctxt "VariablesWindow|"
 msgid "<Fill in the name of the column>"
-msgstr ""
+msgstr "<Completa o nome da columna>"
 
 msgctxt "VariablesWindow|"
 msgid "Column type: "
-msgstr ""
+msgstr "Tipo de columna: "
 
 msgctxt "VariablesWindow|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Tipo calculado: "
 
 msgctxt "VariablesWindow|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Completa un nome máis descritivo da columna>"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Utilizar valores habituais"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr ""
+msgstr "Restablecer os valores ausentes cos fixados na túa área de traballo"
 
 msgctxt "VariablesWindow|"
 msgid "Change workspace missing values"
-msgstr ""
+msgstr "Trocar os valores ausentes da área de traballo"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "Non calculado"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "Calculado con código de R"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "Calculado con arrastrar e soltar"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Columna xerada pola análise"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Columna engadida pola análise"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Escala"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Nominal"
 msgstr "Nominal"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Definición da columna calculada"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Editor de etiquetas"
 
 msgctxt "ColumnModel|"
 msgid "Missing Values"
-msgstr ""
+msgstr "Valores Ausentes"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Trocar o nome da columna de '%1', de '%2' por '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Trocar o título da columna de '%1', de '%2' por '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Trocar a descrición da columna de '%1', de '%2' por '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Fixar o tipo calculado de '%1', de '%2' a '%3"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Trocar a descrición da área de traballo de '%1' a '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1"
-msgstr ""
+msgstr "Usar os valores baleiros habituais para a columna '%1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1"
-msgstr ""
+msgstr "Usar os valores baleiros predeterminados para a columna '%1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1"
-msgstr ""
+msgstr "Fixar os valores baleiros para a columna '%1"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Fixar os valores baleiros da área de traballo"
