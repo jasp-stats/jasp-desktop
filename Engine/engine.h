@@ -46,7 +46,8 @@ public:
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();
 
-	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideAndUpdateDataSet()->column(columnName)->type()); }
+	int  getColumnType(			const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown	: provideAndUpdateDataSet()->column(columnName)->type());		}
+	int  getColumnAnalysisId(	const std::string & columnName) { return     !isColumnNameOk(columnName) ? -1					: provideAndUpdateDataSet()->column(columnName)->analysisId();	}
 
 	//return true if changed:
 	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);				}

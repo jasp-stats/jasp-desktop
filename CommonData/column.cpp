@@ -28,7 +28,7 @@ void Column::dbLoad(int id, bool getValues)
 	db().transactionReadBegin();
 	
 					db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision);
-	_isComputed =   db().columnGetComputedInfo(	_id, _invalidated, _codeType, _rCode, _error, _constructorJson);
+	_isComputed =   db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
 
 	db().labelsLoad(this);
 	
@@ -176,7 +176,7 @@ void Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 	incRevision();
 }
 
@@ -2190,8 +2190,9 @@ void Column::deserialize(const Json::Value &json)
 	_error				= json["error"].asString();
 	_constructorJson	= json["constructorJson"];
 	_isComputed			= json["isComputed"].asBool();
+	_analysisId			= json["analysisId"].asInt();
 
-	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 
 
 	_dbls.clear();

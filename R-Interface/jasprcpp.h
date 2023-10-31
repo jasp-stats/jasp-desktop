@@ -92,23 +92,19 @@ typedef void (*sendFuncDef)(const char *);
 typedef void			(*logFuncDef)(const std::string &);
 typedef bool			(*setColumnDataFuncDef)	(std::string, Rcpp::RObject);
 typedef columnType		(*getColumnTypeFuncDef)	(std::string);
+typedef int				(*getColumnAnIdFuncDef) (std::string);
 
+void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
 
-RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax);
+RBridgeColumnType*		jaspRCPP_marshallSEXPs(			SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax);
+Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
+std::string				_jaspRCPP_System (				std::string cmd);
+columnType				jaspRCPP_getColumnType(			std::string columnName);
+int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
+void					jaspRCPP_crashPlease();
+void					jaspRCPP_checkForCrashRequest();
+void					jaspRCPP_postProcessLocalPackageInstall(	SEXP moduleLibFileNames);
 
-Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
-void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, size_t colMax);
-
-std::string  _jaspRCPP_System (std::string  cmd);
-
-void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
-
-columnType jaspRCPP_getColumnType(std::string columnName);
-
-void jaspRCPP_crashPlease();
-void jaspRCPP_checkForCrashRequest();
-
-
-std::string __sinkMe(const std::string code);
+std::string				__sinkMe(const std::string code);
 
 #endif // JASPRCPP_H
