@@ -85,6 +85,7 @@ Item
 	function getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }
 	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue; }
+	function getEditable(columnIndex, rowIndex)					{ return true; }
 
 	Grid
 	{
@@ -141,6 +142,7 @@ Item
 		function getColHeaderText(defaultName, colIndex) { return basicButtonTableView.getColHeaderText(defaultName, colIndex); }
 		function getRowHeaderText(defaultName, rowIndex) { return basicButtonTableView.getRowHeaderText(defaultName, rowIndex); }
 		function getDefaultValue(columnIndex, rowIndex)	 { return basicButtonTableView.getDefaultValue(columnIndex, rowIndex);	}
+		function getEditable(columnIndex, rowIndex)		 { return basicButtonTableView.getEditable(columnIndex, rowIndex);		}
 
 		Component.onCompleted	: basicButtonTableView.tableViewCompleted()
 	}

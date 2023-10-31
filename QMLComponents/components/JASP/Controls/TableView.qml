@@ -69,6 +69,7 @@ TableViewBase
 	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue;	}
 	function getValidator(columnIndex, rowIndex)				{ return validator;	}
+	function getEditable(columnIndex, rowIndex)					{ return true;	}
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -331,7 +332,7 @@ TableViewBase
 							tableView.itemChanged(columnIndex, rowIndex, displayValue, inputType)
 							tableView.setButtons()
 						}
-						editable:				itemEditable
+						editable:				itemEditable && tableView.getEditable(columnIndex, rowIndex)
 						multiple:				itemInputType === "formulaArray"
 					}
 				}
