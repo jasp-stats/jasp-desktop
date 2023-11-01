@@ -84,32 +84,27 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
                                                        JASP_EXTRA_MODULES))
   if(LINUX)
 
- #   if(LINUX_LOCAL_BUILD)
- #     set(jags_HOME /usr/local)
- #   endif()
+    if(LINUX_LOCAL_BUILD)
+      set(jags_HOME /usr/local)
+    endif()
 
- #   if(FLATPAK_USED)
- #     set(jags_HOME /app)
- #   endif()
+    if(FLATPAK_USED)
+      set(jags_HOME /app)
+    endif()
 
- #   message(CHECK_START "Looking for libjags.so")
- #
- #   execute_process(
- #      COMMAND_ECHO STDOUT
- #     #ERROR_QUIET OUTPUT_QUIET
- #     COMMAND pkg-config --)
- #
- #   find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib REQUIRED)
- #   if(EXISTS ${LIBJAGS})
- #     message(CHECK_PASS "found")
- #     message(STATUS "  ${LIBJAGS}")
- #   else()
- #     message(CHECK_FAIL "not found")
- #     message(
- #       FATAL_ERROR
- #         "JAGS is required for building on Linux, please follow the build instruction before you continue."
- #     )
- #   endif()
+    message(CHECK_START "Looking for libjags.so")
+
+    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib)
+    if(EXISTS ${LIBJAGS})
+      message(CHECK_PASS "found")
+      message(STATUS "  ${LIBJAGS}")
+    else()
+      message(CHECK_FAIL "not found")
+      message(
+        WARNING
+          "JAGS is required for building on Linux but wasnt found, perhaps JASP builds, otherwise follow the build instruction before you continue."
+      )
+    endif()
 
   else()
     # On macOS and Windows jags will live inside R.framework/ or R/
