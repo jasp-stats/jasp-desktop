@@ -255,7 +255,7 @@ Item
 				}
 			}
 
-			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be', '*.vimeo.com', '*.vimeocdn.com', '*.akamaized.net', '*.bilibili.com', '*.hdslb.com', '*.qq.com', '*.smtcdns.com'];
+			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be'] //'*.vimeo.com', '*.vimeocdn.com', '*.akamaized.net', '*.bilibili.com', '*.hdslb.com', '*.qq.com', '*.smtcdns.com'];
 
 			function isURLInWhitelist(hostname)
 			{
