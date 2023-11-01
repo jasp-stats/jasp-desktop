@@ -91,26 +91,6 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
 
-bool ColumnModel::labelNeedsFilter(size_t col)
-{
-	if (_virtual) return false;
-
-	QVariant result = DataSetPackage::pkg()->headerData(col, Qt::Orientation::Horizontal, int(DataSetPackage::specialRoles::labelsHasFilter));
-
-	return result.type() == QVariant::Bool && result.toBool();
-}
-
-std::string ColumnModel::columnName(size_t col)
-{
-	if (_virtual) return fq(_dummyColumn.name);
-
-	if(	!	node() 
-		||	DataSetPackage::pkg()->columnCount(DataSetPackage::pkg()->indexForSubNode(node()->parent())) <= int(col))
-		return "";
-
-	return DataSetPackage::pkg()->getColumnName(col);
-}
-
 QString ColumnModel::columnNameQ()
 {
 	if (_virtual) return _dummyColumn.name;
@@ -305,33 +285,6 @@ void ColumnModel::setColumnType(QString type)
 	emit tabsChanged();
 }
 
-
-std::vector<bool> ColumnModel::filterAllows(size_t col)
-{
-	DataSetPackage *	pkg = DataSetPackage::pkg();
-	QModelIndex			p	= pkg->indexForSubNode(node());
-	boolvec				allows(pkg->rowCount(p));
-
-	for(int row=0; row<pkg->rowCount(p); row++)
-		allows[row] = pkg->data(pkg->index(row, 0, p), int(DataSetPackage::specialRoles::filter)).toBool();
-
-	return allows;
-}
-
-std::vector<std::string> ColumnModel::labels(size_t col)
-{
-	if (_virtual) return {};
-
-	DataSetPackage *			pkg = DataSetPackage::pkg();
-	QModelIndex					p	= pkg->indexForSubNode(node());
-	std::vector<std::string>	labels(pkg->rowCount(p));
-
-	for(int row=0; row<pkg->rowCount(p); row++)
-		labels[row] = pkg->data(pkg->index(row, 0, p), Qt::DisplayRole).toString().toStdString();
-
-	return labels;
-}
-
 std::vector<size_t> ColumnModel::getSortedSelection() const
 {
 	if (_virtual) return {};
@@ -464,11 +417,6 @@ void ColumnModel::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
-}
-
-int ColumnModel::dataColumnCount() const
-{
-	return DataSetPackage::pkg()->dataColumnCount();
 }
 
 Column * ColumnModel::column() const 

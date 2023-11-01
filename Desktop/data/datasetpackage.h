@@ -238,44 +238,44 @@ public:
 				Json::Value					columnToJsonForJASPFile(size_t columnIndex, Json::Value & labelsData, size_t & dataSize);
 				void						columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Value columnDesc, size_t columnIndex, std::map<std::string, intintmap > & mapNominalTextValues);
 
-				int							getColumnIndex(			const std::string	& name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
-				int							getColumnIndex(			const QString		& name)			const	{ return getColumnIndex(name.toStdString()); }
-				Column*						getColumn(				const std::string	& name)					{ return _dataSet->column(name); }
-				enum columnType				getColumnType(			size_t columnIndex)					const;
-				std::string					getColumnName(			size_t columnIndex)					const;
-				intvec						getColumnDataInts(		size_t columnIndex);
-				doublevec					getColumnDataDbls(		size_t columnIndex);
-				stringvec					getColumnDataStrs(		size_t columnIndex);
-				void						setColumnName(			size_t columnIndex, const std::string	& newName,			bool resetModel = true);
-				void						setColumnTitle(			size_t columnIndex, const std::string	& newTitle);
-				void						setColumnDescription(	size_t columnIndex, const std::string	& newDescription);
-				void						setColumnAsComputed(	size_t columnIndex, computedColumnType	type);
-				void						setColumnHasCustomEmptyValues(size_t columnIndex, bool hasCustomEmptyValue);
-				void						setColumnCustomEmptyValues(	size_t columnIndex, const stringset& customEmptyValues);
-				void						setColumnDataInts(		size_t columnIndex, const intvec		& ints);
-				void						setColumnDataDbls(		size_t columnIndex, const doublevec		& dbls);
-				size_t						getMaximumColumnWidthInCharacters(int columnIndex)			const;
-				QStringList					getColumnLabelsAsStringList(const std::string & columnName)	const;
-				QStringList					getColumnLabelsAsStringList(size_t columnIndex)				const;
-				QList<QVariant>				getColumnValuesAsDoubleList(size_t columnIndex)				const;
-				Json::Value					serializeColumn(const std::string& columnName)					const;
-				void						deserializeColumn(const std::string& columnName, const Json::Value& col);
+				int							getColumnIndex(						const std::string & name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
+				int							getColumnIndex(						const QString	  & name)			const	{ return getColumnIndex(name.toStdString()); }
+				Column*						getColumn(							const std::string & name)					{ return _dataSet->column(name); }
+				enum columnType				getColumnType(						size_t				columnIndex)	const;
+				std::string					getColumnName(						size_t				columnIndex)	const;
+				intvec						getColumnDataInts(					size_t				columnIndex);
+				doublevec					getColumnDataDbls(					size_t				columnIndex);
+				stringvec					getColumnDataStrs(					size_t				columnIndex);
+				void						setColumnName(						size_t				columnIndex, const std::string	& newName,			bool resetModel = true);
+				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
+				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
+				void						setColumnAsComputed(				size_t				columnIndex, computedColumnType	  type);
+				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
+				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
+				void						setColumnDataInts(					size_t				columnIndex, const intvec		& ints);
+				void						setColumnDataDbls(					size_t				columnIndex, const doublevec	& dbls);
+				size_t						getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
+				QStringList					getColumnLabelsAsStringList(		const std::string & columnName)					const;
+				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;
+				stringvec					getColumnLabelsAsStrVec(			size_t				columnIndex)				const;
+				boolvec						getColumnFilterAllows(				size_t				columnIndex)				const;
+				QList<QVariant>				getColumnValuesAsDoubleList(		size_t				columnIndex)				const;
+				Json::Value					serializeColumn(					const std::string & columnName)					const;
+				void						deserializeColumn(					const std::string & columnName, const Json::Value& col);
 
+				void						resetFilterAllows(					size_t				columnIndex);
+				int							filteredOut(						size_t				columnIndex)				const;
+				bool						labelNeedsFilter(					size_t				columnIndex)				const;
+				void						labelMoveRows(						size_t				columnIndex, sizetvec rows, bool up);
+				void						labelReverse(						size_t				columnIndex);
+				bool						setFilterData(const std::string & filter, const boolvec & filterResult);
+				void						resetAllFilters();
+				std::vector<bool>			filterVector();
+				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->filter()->setFilterVector(newFilterVector); }
+				
 				const stringset&			workspaceEmptyValues()										const;
 				void						setWorkspaceEmptyValues(const stringset& emptyValues, bool resetModel = true);
 				void						setDefaultWorkspaceEmptyValues();
-
-				bool						setFilterData(const std::string & filter, const boolvec & filterResult);
-				void						resetFilterAllows(size_t columnIndex);
-				int							filteredOut(size_t column)									const;
-				void						resetAllFilters();
-
-				void						labelMoveRows(size_t column, std::vector<size_t> rows, bool up);
-				void						labelReverse(size_t column);
-
-				std::vector<bool>			filterVector();
-				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->filter()->setFilterVector(newFilterVector); }
-
 
 				void						databaseStartSynching(bool syncImmediately);
 				void						databaseStopSynching();
