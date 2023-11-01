@@ -755,12 +755,18 @@ elseif(LINUX)
 
     set(R_HOME_PATH $ENV{R_HOME})
 
-    if(R_HOME_PATH STREQUAL "")
+    if("${R_HOME_PATH}" STREQUAL "")
 
-      message(CHECK_FAIL "unsuccessful")
-      message(
-        FATAL_ERROR
-          "R is not installed in your system. Please install R and try again.")
+        if(NOT EXISTS "/usr/lib/R/bin/R")
+          message(CHECK_FAIL "unsuccessful.")
+          message(FATAL_ERROR "R is not installed in your system. Please install R and try again, or set R_HOME properly.")
+        else()
+            set($ENV{R_HOME} /usr/lib/R)
+            set(R_HOME_PATH /usr/lib/R)
+
+            message(CHECK_PASS "successful")
+            message(STATUS "R_HOME is ${R_HOME_PATH}")
+        endif()
 
     else()
 

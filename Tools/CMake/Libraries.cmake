@@ -179,7 +179,7 @@ if(LINUX)
     set(LIBREADSTAT_LIBRARY_DIRS /app/lib)
   else()
     set(LIBREADSTAT_INCLUDE_DIRS /usr/local/include /usr/include)
-    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib)
+    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu)
   endif()
 
   message(CHECK_START "Looking for libreadstat.so")
