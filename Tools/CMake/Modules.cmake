@@ -18,43 +18,52 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_COMMON_MODULES
-  "jaspDescriptives"
-	"jaspTTests"
-	"jaspAnova"
-	"jaspMixedModels"
-	"jaspRegression"
-	"jaspFrequencies"
-	"jaspFactor"
-)
+set(JASP_TEST_BUILD OFF CACHE BOOL "Do a quick build with just descriptives and testmodule")
 
-set(JASP_EXTRA_MODULES
-    "jaspAcceptanceSampling"
-    "jaspAudit"
-    "jaspBain"
-    "jaspBsts"
-    "jaspCircular"
-    "jaspCochrane"
-    "jaspDistributions"
-    "jaspEquivalenceTTests"
-    "jaspJags"
-    "jaspLearnBayes"
-    "jaspLearnStats"
-    "jaspMachineLearning"
-    "jaspMetaAnalysis"
-    "jaspNetwork"
-    "jaspPower"
-    "jaspPredictiveAnalytics"
-    "jaspProphet"
-    "jaspQualityControl"
-    "jaspReliability"
-    "jaspRobustTTests"
-    "jaspSem"
-    "jaspSummaryStatistics"
-    "jaspTimeSeries"
-    "jaspVisualModeling"
+if(NOT JASP_TEST_BUILD)
+	set(JASP_COMMON_MODULES
+		"jaspDescriptives"
+		"jaspTTests"
+		"jaspAnova"
+		"jaspMixedModels"
+		"jaspRegression"
+		"jaspFrequencies"
+		"jaspFactor"
+	)
+	
+	set(JASP_EXTRA_MODULES
+		"jaspAcceptanceSampling"
+		"jaspAudit"
+		"jaspBain"
+		"jaspBsts"
+		"jaspCircular"
+		"jaspCochrane"
+		"jaspDistributions"
+		"jaspEquivalenceTTests"
+		"jaspJags"
+		"jaspLearnBayes"
+		"jaspLearnStats"
+		"jaspMachineLearning"
+		"jaspMetaAnalysis"
+		"jaspNetwork"
+		"jaspPower"
+		"jaspPredictiveAnalytics"
+		"jaspProphet"
+		"jaspQualityControl"
+		"jaspReliability"
+		"jaspRobustTTests"
+		"jaspSem"
+		"jaspSummaryStatistics"
+		"jaspTimeSeries"
+		"jaspVisualModeling"
     )
-
+else() #it IS a test build
+	set(JASP_COMMON_MODULES
+		"jaspDescriptives"
+		"jaspTestModule"
+	)
+endif()
+	
 list(
   JOIN
   JASP_COMMON_MODULES
