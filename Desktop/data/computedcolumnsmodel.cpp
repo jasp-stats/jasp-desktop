@@ -432,7 +432,7 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 	std::set<std::string> colsToRemove;
 
 	for(Column * col : computedColumns())
-		if(col->analysisId() == analysis->id())
+		if(col->analysisId() == analysis->id() && col->codeType() != computedColumnType::analysisNotComputed)
 			colsToRemove.insert(col->name());
 
 	for(const std::string & col : colsToRemove)

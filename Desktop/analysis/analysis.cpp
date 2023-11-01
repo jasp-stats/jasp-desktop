@@ -100,7 +100,8 @@ Analysis::~Analysis()
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 		for(const std::string & col : computedColumns())
-			emit requestComputedColumnDestruction(col);
+			if(!DataSetPackage::pkg()->isColumnAnalysisNotComputed(col))
+				emit requestComputedColumnDestruction(col);
 }
 
 bool Analysis::checkAnalysisEntry()
