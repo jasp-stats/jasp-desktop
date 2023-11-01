@@ -255,14 +255,25 @@ Item
 				}
 			}
 
-			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be', 'player.vimeo.com', 'www.bilibili.com', 'v.qq.com'];
+			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be', '*.vimeo.com', '*.vimeocdn.com', '*.akamaized.net', '*.bilibili.com', '*.hdslb.com', '*.qq.com', '*.smtcdns.com'];
 
-			function isURLInWhitelist(hostname) 
+			function isURLInWhitelist(hostname)
 			{
-				for (var i = 0; i < urlWhitelist.length; i++) 
+				for (var i = 0; i < urlWhitelist.length; i++)
 				{
-					if (hostname === urlWhitelist[i]) 
+					var pattern = urlWhitelist[i];
+					if (pattern === hostname)
+					{
 						return true;
+					} 
+					else if (pattern.indexOf('*') !== -1)
+					{
+						const regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
+						if (regex.test(hostname))
+						{
+							return true;
+						}
+					}
 				}
 				return false;
 			}
@@ -299,8 +310,6 @@ Item
 				{
 					request.reject();
 					console.log("Navigation requeste rejected:", requestedURL.hostname)
-
-					messages.showWarningQML(qsTr("Video link not accepted"), qsTr("JASP only allows the following videoservices: \n\n%1\n\nContact the JASP team to request adding another videoservice to the list.".arg(urlWhitelist.join(", "))));
 				}
 			}
 
@@ -308,6 +317,7 @@ Item
 			{
 				resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineView.LoadSucceededStatus;
 				setTranslatedResultsString();
+				runJavaScript(`window.sendUrlWhitelist(${JSON.stringify(urlWhitelist)})`); //sent urlWhitelist to js side
 			}
 
 
@@ -351,7 +361,9 @@ Item
 				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
 				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
-				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video")
+				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video"), "Unsupported video services" : qsTr("Unsupported video services"), 
+				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list.")
+
 			}
 
 			function setTranslatedResultsString()
