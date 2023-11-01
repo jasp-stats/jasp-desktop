@@ -325,7 +325,7 @@ TableViewBase
 						parseDefaultValue:		tableView.parseDefaultValue
 						defaultValue:			tableView.getDefaultValue(columnIndex, rowIndex)
 						selectValueOnFocus:		true
-						validator:				getValidator(columnIndex, rowIndex)
+						validator:				tableView.getValidator(columnIndex, rowIndex)
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:
 						{
