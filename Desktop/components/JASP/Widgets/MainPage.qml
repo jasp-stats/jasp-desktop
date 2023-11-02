@@ -268,7 +268,7 @@ Item
 					} 
 					else if (pattern.indexOf('*') !== -1)
 					{
-						const regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
+						var regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
 						if (regex.test(hostname))
 						{
 							return true;

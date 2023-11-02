@@ -29,8 +29,8 @@ window.sendUrlWhitelist = function (RequestedURL) {
 }
 
 function isURLInWhitelist(hostname) {
-	for (var i = 0; i < videoUrlList.length; i++) {
-		var pattern = videoUrlList[i];
+	for (let i = 0; i < videoUrlList.length; i++) {
+		let pattern = videoUrlList[i];
 		if (pattern === hostname) {
 			return true;
 		} else if (pattern.indexOf('*') !== -1) {
@@ -71,6 +71,7 @@ if (insideJASP) {
 		} else if (/^(http):\/\//i.test(url)) {
 			url = url.replace(/^http:/i, 'https:');
 		}
+		
 		let matchs = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) ||
 			url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/) ||
 			url.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/);
@@ -104,7 +105,7 @@ if (insideJASP) {
 			node.setAttribute('frameborder', '0');
 			node.setAttribute('allowfullscreen', true);
 			node.setAttribute('src', value);
-			if (!isURLInWhitelist((new URL(value).hostname)))
+			if (!isURLInWhitelist((new URL(value).hostname))) {
 				node.innerHTML = $(div).dialog({ // give a warnning for unsupported urls and then remove from node.
 					modal: true, buttons: {
 						Ok: function () {
@@ -113,7 +114,12 @@ if (insideJASP) {
 						}
 					}
 				})
+			}
 			return node;
+		}
+		
+		static value(node){
+			return node.getAttribute('src');
 		}
 	}
 
@@ -121,7 +127,7 @@ if (insideJASP) {
 	EmbendVideo.className = 'ql-video';
 	EmbendVideo.tagName = 'IFRAME';
 
-	Quill.register(EmbendVideo);
+	Quill.register(EmbendVideo, true);
 
 }
 
