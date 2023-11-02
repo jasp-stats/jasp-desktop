@@ -198,8 +198,8 @@ private:
 			columnType				_type				= columnType::unknown,
 									_preEditType		= columnType::unknown;
 			int						_id					= -1,
-									_analysisId			= -1;
-			bool					_isComputed			= false,
+									_analysisId			= -1;		// Actually initialized in DatabaseInterface::columnInsert
+			bool					_isComputed			= false,	// Actually initialized in DatabaseInterface::columnInsert
 									_invalidated		= false,
 									_batchedLabel		= false;
 			computedColumnType		_codeType			= computedColumnType::notComputed;

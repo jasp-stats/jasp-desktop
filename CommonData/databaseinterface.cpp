@@ -379,7 +379,7 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 #endif
 
 	//Create column entry
-	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, isComputed) VALUES (?, ?, ?, ?, 0) RETURNING id;", [&](sqlite3_stmt * stmt)
+	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, isComputed, analysisId) VALUES (?, ?, ?, ?, 0, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
 	{
 		sqlite3_bind_int(stmt,	1, dataSetId);
 		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
