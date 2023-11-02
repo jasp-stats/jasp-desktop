@@ -26,15 +26,18 @@ QVariantList ColumnModel::computedTypeValues() const
 		computedChoices.push_back(rCodeChoice);
 		computedChoices.push_back(constructorCodeChoice);
 	}
+
 	if (analysisChoice.isEmpty())
 	{
 		QMap<QString, QVariant> uniqueChoice =			{ std::make_pair("value", computedColumnTypeToQString(computedColumnType::analysis)),			std::make_pair("label", columnTypeFriendlyName[computedColumnType::analysis])};
 		analysisChoice.push_back(uniqueChoice);
 	}
+
 	if (analysisNotComputedChoice.isEmpty())
 	{
 		QMap<QString, QVariant> uniqueChoice =			{ std::make_pair("value", computedColumnTypeToQString(computedColumnType::analysisNotComputed)), std::make_pair("label", columnTypeFriendlyName[computedColumnType::analysisNotComputed])};
 		analysisNotComputedChoice.push_back(uniqueChoice);
+		analysisNotComputedChoice.append(computedChoices);
 	}
 
 	computedColumnType type = column() ? column()->codeType() : computedColumnType::notComputed;
@@ -45,8 +48,10 @@ QVariantList ColumnModel::computedTypeValues() const
 	case computedColumnType::rCode:
 	case computedColumnType::constructorCode:
 		return computedChoices;
+
 	case computedColumnType::analysis:
 		return analysisChoice;
+
 	case computedColumnType::analysisNotComputed:
 		return analysisNotComputedChoice;
 	}
@@ -239,6 +244,7 @@ bool ColumnModel::computedTypeEditable() const
 	switch (column()->codeType())
 	{
 	case computedColumnType::notComputed:
+	case computedColumnType::analysisNotComputed:
 	case computedColumnType::constructorCode:
 	case computedColumnType::rCode:
 		return true;

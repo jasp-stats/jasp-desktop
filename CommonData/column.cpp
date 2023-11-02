@@ -205,9 +205,11 @@ void Column::setCodeType(computedColumnType codeType)
 		_constructorJson["formulas"] = Json::arrayValue;
 	}
 
-	_codeType = codeType;
-	_isComputed = _codeType != computedColumnType::notComputed;
+	if(_codeType == computedColumnType::analysisNotComputed)
+		_analysisId = -1;
 
+	_codeType	= codeType;
+	_isComputed = _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;
 	
 	dbUpdateComputedColumnStuff();
 }

@@ -18,7 +18,15 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_TEST_BUILD OFF CACHE BOOL "Do a quick build with just descriptives and testmodule")
+set(JASP_COMMON_MODULES
+  "jaspDescriptives"
+	"jaspTTests"
+	"jaspAnova"
+	"jaspMixedModels"
+	"jaspRegression"
+	"jaspFrequencies"
+	"jaspFactor"
+)
 
 if(NOT JASP_TEST_BUILD)
 	set(JASP_COMMON_MODULES
@@ -64,7 +72,7 @@ else() #it IS a test build
 		"jaspTestModule"
 	)
 endif()
-	
+
 list(
   JOIN
   JASP_COMMON_MODULES

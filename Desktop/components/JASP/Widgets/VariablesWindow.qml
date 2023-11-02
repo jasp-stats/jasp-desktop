@@ -44,11 +44,11 @@ FocusScope
 		{
 			if (columnModel.visible && columnModel.chosenColumn >= 0)
 			{
-				if(columnModel.columnName !== columnNameVariablesWindow.value)				columnModel.columnName			= columnNameVariablesWindow.value
-				if(columnModel.columnTitle !== columnTitleVariablesWindow.value)			columnModel.columnTitle			= columnTitleVariablesWindow.value
-				if(columnModel.columnDescription !== columnDescriptionVariablesWindow.text) columnModel.columnDescription	= columnDescriptionVariablesWindow.text
-				if(columnModel.computedType !== computedTypeVariableWindow.value)			columnModel.computedType		= computedTypeVariableWindow.value
-				if(columnModel.currentColumnType !== columnTypeVariableWindow.value)		columnModel.currentColumnType	= columnTypeVariableWindow.value
+				columnModel.columnName			= columnNameVariablesWindow.value
+				columnModel.columnTitle			= columnTitleVariablesWindow.value
+				columnModel.columnDescription	= columnDescriptionVariablesWindow.text
+				columnModel.computedType		= computedTypeVariableWindow.value
+				columnModel.currentColumnType	= columnTypeVariableWindow.value
 			}
 		}
 		
@@ -105,6 +105,8 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
+				property int labelWidth:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+
 				RowLayout
 				{
 					height:				longNameRow.height
@@ -118,7 +120,7 @@ FocusScope
 						undoModel:			columnModel
 						editable:           columnModel.nameEditable
 						label:				qsTr("Name: ")
-						controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+						controlLabel.width:	leftColumn.labelWidth
 
 					}
 				}
@@ -135,8 +137,7 @@ FocusScope
 					currentValue:		columnModel.currentColumnType
 					onValueChanged:		columnModel.currentColumnType = currentValue
 					controlMinWidth:	200 * jaspTheme.uiScale
-					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
-					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+					controlLabel.width:	leftColumn.labelWidth
 				}
 
 				DropDown
@@ -147,11 +148,27 @@ FocusScope
 					values:				columnModel.computedTypeValues
 					currentValue:		columnModel.computedType
 					onValueChanged:		columnModel.computedType = currentValue
-					enabled:			columnModel.computedTypeEditable
+					visible:			columnModel.computedTypeEditable
 					controlMinWidth:	200 * jaspTheme.uiScale
 
-					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
-					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
+					controlLabel.width:	leftColumn.labelWidth
+				}
+
+				Item
+				{
+					//Layout.fillWidth:		true
+					implicitWidth:			parent.width
+					implicitHeight:			showAnalysisButton.height
+					visible:				!columnModel.computedTypeEditable
+
+					RoundedButton
+					{
+						id:					showAnalysisButton
+						text:				qsTr("Show parent analysis")
+						width:				parent.width - x
+						x:					leftColumn.labelWidth
+						onClicked:			computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
+					}
 				}
 			}
 
@@ -203,7 +220,6 @@ FocusScope
 				RowLayout
 				{
 					id:					descriptionRow
-
 					width:				parent.width
 
 					Label

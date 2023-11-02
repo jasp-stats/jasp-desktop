@@ -685,8 +685,9 @@ FocusScope
 								filterWindow.open()
 							}
                             
-                            if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
-                                computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
+							//A button in VariablesWindow will do this? in any case, it is kind of annoying to have the analysis always pop up instead of variableswindow...
+							//if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
+							//    computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
                         }
 
 					}
