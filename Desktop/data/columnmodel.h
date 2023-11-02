@@ -43,7 +43,6 @@ public:
 	static QMap<computedColumnType, QString>	columnTypeFriendlyName;
 
 	bool			labelNeedsFilter(size_t col);
-	std::string		columnName(size_t col); ///< Not a proxy columnIndex!
 	QString			columnNameQ();
 	QString			columnTitle()					const;
 	QString			columnDescription()				const;
@@ -62,7 +61,6 @@ public:
 
 	bool			visible()			const {	return _visible; }
 	int				filteredOut()		const;
-	int				dataColumnCount()	const;
 	int				chosenColumn()		const;
 	Column *		column()			const;
 	bool			nameEditable()		const;
@@ -79,9 +77,6 @@ public:
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
 	Q_INVOKABLE void undo()				{ _undoStack->undo(); }
 	Q_INVOKABLE void redo()				{ _undoStack->redo(); }
-
-	boolvec			filterAllows(size_t col);
-	stringvec		labels(size_t col);
 
 	double rowWidth()			const	{ return _rowWidth;			}
 	double valueMaxWidth()		const	{ return _valueMaxWidth;	}

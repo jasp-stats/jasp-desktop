@@ -1902,13 +1902,40 @@ QStringList DataSetPackage::getColumnLabelsAsStringList(const std::string & colu
 QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	const
 {
 	QStringList list;
-	if(columnIndex < 0 || columnIndex >= dataColumnCount()) return list;
+	if(columnIndex < 0 || columnIndex >= dataColumnCount()) 
+		return list;
 
 	for (const Label * label : _dataSet->columns()[columnIndex]->labels())
 		list.append(tq(label->label()));
 
 	return list;
 }
+
+
+boolvec DataSetPackage::getColumnFilterAllows(size_t columnIndex) const 
+{
+	boolvec list;
+	if(columnIndex < 0 || columnIndex >= dataColumnCount()) 
+		return list;
+
+	for (const Label * label : _dataSet->columns()[columnIndex]->labels())
+		list.push_back(label->filterAllows());
+
+	return list;
+}
+
+stringvec DataSetPackage::getColumnLabelsAsStrVec(size_t columnIndex) const
+{
+	stringvec list;
+	if(columnIndex < 0 || columnIndex >= dataColumnCount()) 
+		return list;
+
+	for (const Label * label : _dataSet->columns()[columnIndex]->labels())
+		list.push_back(label->label());
+
+	return list;
+}
+
 
 QList<QVariant> DataSetPackage::getColumnValuesAsDoubleList(size_t columnIndex)	const
 {
@@ -1919,6 +1946,14 @@ QList<QVariant> DataSetPackage::getColumnValuesAsDoubleList(size_t columnIndex)	
 		list.append(value);
 
 	return list;
+}
+
+bool DataSetPackage::labelNeedsFilter(size_t columnIndex) const
+{
+	if(columnIndex < 0 || columnIndex >= dataColumnCount()) 
+		return false;
+			
+	return _dataSet->columns()[columnIndex]->hasFilter();
 }
 
 

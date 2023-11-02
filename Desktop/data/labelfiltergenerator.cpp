@@ -13,8 +13,10 @@ std::string labelFilterGenerator::generateFilter()
 
 	int neededFilters = 0;
 	
-	for(size_t col=0; col<_columnModel->dataColumnCount(); col++)
-		if(_columnModel->labelNeedsFilter(col))
+	DataSetPackage * pkg = DataSetPackage::pkg();
+	
+	for(size_t col=0; col<pkg->dataColumnCount(); col++)
+		if(pkg->labelNeedsFilter(col))
 			neededFilters++;
 
 	std::stringstream newGeneratedFilter;
@@ -36,8 +38,8 @@ std::string labelFilterGenerator::generateFilter()
 			newGeneratedFilter << "(";
 		
 		
-		for(size_t col=0; col<_columnModel->dataColumnCount(); col++)
-			if(_columnModel->labelNeedsFilter(col))
+		for(size_t col=0; col<pkg->dataColumnCount(); col++)
+			if(pkg->labelNeedsFilter(col))
 			{
 				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);
 				first = false;
@@ -62,28 +64,19 @@ void labelFilterGenerator::labelFilterChanged()
 std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 {
 	JASPTIMER_SCOPE(labelFilterGenerator::generateLabelFilter);
-
-	std::string columnName = _columnModel->columnName(col);
-	std::stringstream out;
-	int pos = 0, neg = 0;
-	bool first = true;
 	
-	std::vector<bool> filterAllows = _columnModel->filterAllows(col);
-	for(bool allow : filterAllows)
-		(allow ? pos : neg)++;
-
-	bool bePositive = pos <= neg;
-
-	out << "(";
+	DataSetPackage	*	pkg				= DataSetPackage::pkg();
+	std::string			columnName		= pkg->getColumnName(col);
+	boolvec				filterAllows	= pkg->getColumnFilterAllows(col);
+	stringvec			labels			= pkg->getColumnLabelsAsStrVec(col);
+	int					pos				= std::count_if(filterAllows.begin(), filterAllows.end(), [](bool f){ return f; }), 
+						cnt				= 0;
+	bool				bePositive		= pos <= filterAllows.size() - pos;
+	std::stringstream	out;
 	
-	std::vector<std::string> labels = _columnModel->labels(col);
 	for(size_t row=0; row<filterAllows.size(); row++)
 		if(filterAllows[row] == bePositive)
-		{
-			out << (!first ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
-			first = false;
-		}
-	out << ")";
-
-	return out.str();
+			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
+	
+	return "(" + out.str() + ")";
 }
