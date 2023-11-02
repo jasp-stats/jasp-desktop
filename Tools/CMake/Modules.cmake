@@ -56,7 +56,7 @@ if(NOT JASP_TEST_BUILD)
 		"jaspSummaryStatistics"
 		"jaspTimeSeries"
 		"jaspVisualModeling"
-    )
+        )
 else() #it IS a test build
 	set(JASP_COMMON_MODULES
 		"jaspDescriptives"
@@ -93,15 +93,16 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
     endif()
 
     message(CHECK_START "Looking for libjags.so")
-    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib REQUIRED)
+
+    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib)
     if(EXISTS ${LIBJAGS})
       message(CHECK_PASS "found")
       message(STATUS "  ${LIBJAGS}")
     else()
       message(CHECK_FAIL "not found")
       message(
-        FATAL_ERROR
-          "JAGS is required for building on Windows, please follow the build instruction before you continue."
+        WARNING
+          "JAGS is required for building on Linux but wasnt found, perhaps JASP builds, otherwise follow the build instruction before you continue."
       )
     endif()
 
