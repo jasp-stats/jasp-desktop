@@ -117,6 +117,12 @@ if(APPLE)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Upload.sh.in
                  ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
 
+  if(RUNTIMEHARDENING)
+      set(OPTIONS_RUNTIME "runtime")
+  else()
+      set(OPTIONS_RUNTIME "0")
+  endif()
+
   add_custom_target(
     dmg
     VERBATIM
@@ -134,7 +140,7 @@ if(APPLE)
             ${CMAKE_BINARY_DIR}/JASP/
     COMMAND
       codesign --verbose --verify --deep --force --sign
-	  "${APPLE_CODESIGN_IDENTITY}" ${RUNTIMEHARDENING}
+          "${APPLE_CODESIGN_IDENTITY}" --options ${OPTIONS_RUNTIME}
       "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "------ Creating the ${CPACK_DMG_VOLUME_NAME}")
 
