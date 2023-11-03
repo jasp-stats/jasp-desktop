@@ -1,32 +1,75 @@
-name: Ubuntu
+name: 'Ubuntu'
 
 on:
-  push:
-    branches:
-      - github-action-debug
+   pull_request:
+   workflow_dispatch:
 
 jobs:
-  qt:
-    name: Ubuntu Build
-    if: false
+      
+   build-jasp:
+   
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        qt-version: [6.2]
-
+    env:
+       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+  
     steps:
-      - name: Qt Requirements
+      - uses: actions/checkout@v3
+      
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.1'
+      
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v3
+        with:
+            version: 6.5.*
+            aqtversion: '==3.1.*'
+            host: 'linux'
+            target: 'desktop'
+            arch: 'gcc_64'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor'
+            tools: 'tools_qtcreator,qt.tools.qtcreator tools_ninja tools_cmake'
+            
+      - name: Install dependencies of build system
+        run: |     
+            sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev
+            sudo apt install libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake
+            sudo apt install gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev r-base
+            sudo apt install libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev #required by some r packgaes
+            sudo apt install libcurl4-openssl-dev #required by curl R packages
+            sudo apt install libmpfr-dev #required by rmpfr packages
+            sudo apt install jags
+            
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.4
+        id: install-boost
+        with:
+            # REQUIRED: Specify the required boost version
+            # A list of supported versions can be found here:
+            # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
+            boost_version: 1.83.0
+            platform_version: 22.04
+
+      - name: Install Readstat
         run: |
-          sudo apt update
-          brew update
-      - name: Dependencies
+            wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
+            tar -xzf readstat-*.tar.gz && cd readstat-*/
+            ./configure
+            make
+            sudo make install
+        
+      - name: Configure JASP desktop
         run: |
-          sudo apt-get -y install build-essential mercurial gfortran-9 gfortran-10 flex bison r-base cmake libarchive-dev zlibc libzstd-dev mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev libglew-dev libglfw3-dev libglm-dev libao-dev libmpg123-dev
-          brew install qt jsoncpp boost libarchive
-      - uses: actions/checkout@v2
-      - name: Configure
+            git submodule update --init
+            cmake -S . -B jasp-build
+        env:
+            BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+            Boost_INCLUDE_DIR: "${{steps.install-boost.outputs.BOOST_ROOT}}/include"
+            Boost_LIBRARY_DIRS: "${{steps.install-boost.outputs.BOOST_ROOT}}/lib"
+
+      - name: Build JASP desktop
         run: |
-          git submodule update --init
-          cmake -S . -B build -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DLINUX_LOCAL_BUILD=ON
-      - name: Build
-        run: cmake --build build
+            cmake --build jasp-build --target all
+        env:
+            JASP_TEST_BUILD: ON
+            LINUX_LOCAL_BUILD: ON
