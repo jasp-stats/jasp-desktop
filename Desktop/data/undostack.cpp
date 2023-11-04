@@ -631,9 +631,9 @@ SetUseCustomEmptyValuesCommand::SetUseCustomEmptyValuesCommand(QAbstractItemMode
 		std::string colName = col->name();
 
 		if (_useCustom)
-			setText(QObject::tr("Use custom empty values for column '%1").arg(tq(colName)));
+			setText(QObject::tr("Use custom empty values for column '%1'").arg(tq(colName)));
 		else
-			setText(QObject::tr("Use default empty values for column '%1").arg(tq(colName)));
+			setText(QObject::tr("Use default empty values for column '%1'").arg(tq(colName)));
 	}
 	else
 		setObsolete(true);
@@ -663,7 +663,7 @@ SetCustomEmptyValuesCommand::SetCustomEmptyValuesCommand(QAbstractItemModel *mod
 		for (const QString& val : customEmptyValues)
 			_newCustomEmptyValues.insert(fq(val));
 
-		setText(QObject::tr("Set empty values for column '%1").arg(tq(colName)));
+		setText(QObject::tr("Set empty values for column '%1'").arg(tq(colName)));
 	}
 	else
 		setObsolete(true);
