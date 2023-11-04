@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-11-02 16:25+0000\n"
-"Last-Translator: Michael Cantinotti <michael.cantinotti@uqtr.ca>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"fr/>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4577,25 +4571,30 @@ msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Insérer une colonne avant"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Insérer une colonne après"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Supprimer la colonne"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Supprimer la ligne"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Effacer les cellules"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
@@ -4959,9 +4958,10 @@ msgctxt "ModulesMenu|"
 msgid "Name: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr ""
+msgstr "Description: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
