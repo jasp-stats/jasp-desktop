@@ -4486,12 +4486,12 @@ msgstr "R-Filter aanpassen"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Create a computed column with name '%1"
+msgid "Create a computed column with name '%1'"
 msgstr "Creëer een berekende kolom met naam '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set code to computed column with name '%1"
+msgid "Set code to computed column with name '%1'"
 msgstr "Zet code voor berekende kolom met naam '%1'"
 
 msgctxt "MainWindow|"
@@ -5007,17 +5007,17 @@ msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use custom empty values for column '%1"
+msgid "Use custom empty values for column '%1'"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use default empty values for column '%1"
+msgid "Use default empty values for column '%1'"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set empty values for column '%1"
+msgid "Set empty values for column '%1'"
 msgstr ""
 
 msgctxt "QObject|"
