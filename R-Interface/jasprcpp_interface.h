@@ -60,7 +60,7 @@ struct RBridgeColumnDescription {
   bool    isScale;
   bool    hasLabels;
   bool    isOrdinal;
-	char**	labels;
+  char**  labels;
   size_t  nbLabels;
 } ;
 
@@ -80,6 +80,7 @@ typedef const char*					(STDCALL *RequestTempRootNameCB)        ();
 typedef bool						(STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
 typedef int							(STDCALL *GetColumnType)				(const char* columnName);
 typedef int							(STDCALL *GetColumnAnalysisId)			(const char* columnName);
+typedef const char *				(STDCALL *CreateColumn)					(const char* columnName);
 typedef bool						(STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
 typedef bool						(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
 typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
@@ -104,6 +105,7 @@ struct RBridgeCallBacks {
 	ReadADataSetCB					readFilterDataSetCB;
 	RequestPredefinedFileSourceCB	requestJaspResultsFileSourceCB;
 	GetColumnType					dataSetGetColumnType;
+	CreateColumn					dataSetCreateColumn;
 	GetColumnAnalysisId				dataSetGetColumnAnalysisId;
 	SetColumnAsScale				dataSetColumnAsScale;
 	SetColumnAsOrdinal				dataSetColumnAsOrdinal;

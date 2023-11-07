@@ -93,6 +93,7 @@ typedef void			(*logFuncDef)(const std::string &);
 typedef bool			(*setColumnDataFuncDef)	(std::string, Rcpp::RObject);
 typedef columnType		(*getColumnTypeFuncDef)	(std::string);
 typedef int				(*getColumnAnIdFuncDef) (std::string);
+typedef std::string		(*createColumnFuncDef)	(std::string);
 
 void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
 
@@ -101,6 +102,7 @@ Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels
 std::string				_jaspRCPP_System (				std::string cmd);
 columnType				jaspRCPP_getColumnType(			std::string columnName);
 int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
+std::string				jaspRCPP_createColumn(			std::string columnName);
 void					jaspRCPP_crashPlease();
 void					jaspRCPP_checkForCrashRequest();
 void					jaspRCPP_postProcessLocalPackageInstall(	SEXP moduleLibFileNames);

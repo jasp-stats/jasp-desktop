@@ -79,7 +79,7 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	if(parentPID != 0) //Otherwise we are just running to fix R packages
 		_db = new DatabaseInterface();
 
-        rbridge_setDataSetSource(			boost::bind(&Engine::provideAndUpdateDataSet,				this));
+	rbridge_setDataSetSource(			boost::bind(&Engine::provideAndUpdateDataSet,		this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
 	rbridge_setSpecificFileNameSource(	boost::bind(&Engine::provideSpecificFileName,		this, _1, _2, _3));
 
@@ -91,12 +91,12 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 										boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2),
 										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
 										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
-										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
+										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2),
+										boost::bind(&Engine::createColumn,					this, _1));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 	
 	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
-
 }
 
 void Engine::initialize()
@@ -460,7 +460,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	computeColumnResponse["columnName"]		= computeColumnName;
 
 
-        if(provideAndUpdateDataSet())
+    if(provideAndUpdateDataSet())
 	{
 		std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 		computeColumnResponse["columnName"]		= computeColumnNameEnc;
@@ -754,6 +754,68 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 	}
 }
 
+int Engine::getColumnType(const std::string &columnName)
+{
+	return int(!isColumnNameOk(columnName) ? columnType::unknown : provideAndUpdateDataSet()->column(columnName)->type());
+}
+
+int Engine::getColumnAnalysisId(const std::string &columnName)
+{
+	return	!isColumnNameOk(columnName)
+		? -1
+		: provideAndUpdateDataSet()->column(columnName)->analysisId();
+}
+
+std::string Engine::createColumn(const std::string &columnName)
+{
+	if(isColumnNameOk(columnName)) 
+		return "";
+
+	DataSet * data = provideAndUpdateDataSet();
+	Column  * col  = data->newColumn(columnName);
+
+	col->setAnalysisId(_analysisId);
+	col->setCodeType(computedColumnType::analysisNotComputed);
+	data->db().columnSetIndex(col->id(), data->columnCount() - 1);
+
+	reloadColumnNames();
+
+	return rbridge_encodeColumnName(columnName.c_str());
+	
+}
+
+bool Engine::setColumnDataAsScale(const std::string &columnName, const std::vector<double> &scalarData)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);
+}
+
+bool Engine::setColumnDataAsOrdinal(const std::string &columnName, std::vector<int> &ordinalData, const std::map<int, std::string> &levels)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);
+}
+
+bool Engine::setColumnDataAsNominal(const std::string &columnName, std::vector<int> &nominalData, const std::map<int, std::string> &levels)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);
+}
+
+bool Engine::setColumnDataAsNominalText(const std::string &columnName, const std::vector<std::string> &nominalData)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);
+}
+
 void Engine::sendAnalysisResults()
 {
 	Json::Value response			= Json::Value(Json::objectValue);
@@ -789,11 +851,9 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 		}
 	}
 	else if (filesToKeepValue.isString())
-	{
 		filesToKeep.push_back(filesToKeepValue.asString());
-	}
 
-	std::vector<std::string> tempFilesFromLastTime = TempFiles::retrieveList(_analysisId);
+	stringvec tempFilesFromLastTime = TempFiles::retrieveList(_analysisId);
 
 	Utils::remove(tempFilesFromLastTime, filesToKeep);
 
@@ -971,7 +1031,7 @@ void Engine::sendEnginePaused()
 void Engine::reloadColumnNames()
 {
 	Log::log() << "Engine rescanning columnNames for en/decoding" << std::endl;
-        ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
 }
 
 void Engine::resumeEngine(const Json::Value & jsonRequest)

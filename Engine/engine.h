@@ -46,14 +46,16 @@ public:
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();
 
-	int  getColumnType(			const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown	: provideAndUpdateDataSet()->column(columnName)->type());		}
-	int  getColumnAnalysisId(	const std::string & columnName) { return     !isColumnNameOk(columnName) ? -1					: provideAndUpdateDataSet()->column(columnName)->analysisId();	}
+	//the following functions in public can all be called (indirectly) from R
+	int  		getColumnType(			const std::string & columnName);
+	int  		getColumnAnalysisId(	const std::string & columnName);
+	std::string createColumn(			const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
 
 	//return true if changed:
-	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);				}
-	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);				}
-	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData);
+	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels);
+	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels);
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData);
 
 	bool isColumnNameOk(std::string columnName);
 

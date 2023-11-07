@@ -6,8 +6,7 @@
 
 Column::Column(DataSet * data, int id) 
 	: DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()), _data(data), _id(id)
-{
-}
+{}
 
 void Column::dbCreate(int index)
 {
@@ -21,7 +20,8 @@ void Column::dbLoad(int id, bool getValues)
 {
 	JASPTIMER_SCOPE(Column::dbLoad);
 
-	assert(_id != -1 || id != -1);
+	assert(_id == id || (id != -1 && _id == -1) || _id != -1);
+
 	if(id != -1)
 		_id = id;
 
@@ -45,7 +45,9 @@ void Column::dbLoadIndex(int index, bool getValues)
 {
 	JASPTIMER_SCOPE(Column::dbLoadIndex);
 
-	dbLoad(db().columnIdForIndex(_data->id(), index), getValues);
+	_id = db().columnIdForIndex(_data->id(), index);
+
+	dbLoad(_id, getValues);
 }
 
 void Column::dbDelete(bool cleanUpRest)

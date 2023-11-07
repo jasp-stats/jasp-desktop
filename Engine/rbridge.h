@@ -62,6 +62,7 @@ extern "C" {
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
 	int							STDCALL rbridge_getColumnType			(const char * columnName);
 	int							STDCALL rbridge_getColumnAnalysisId		(const char * columnName);
+	const char *				STDCALL rbridge_createColumn			(const char * columnName);
 	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
 	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
@@ -90,12 +91,13 @@ extern "C" {
 
 	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode);
 
-	void rbridge_setColumnFunctionSources(			std::function<int (const std::string &)																			> getTypeSource,
-													std::function<int (const std::string &)																			> getAnalysisIdSource,
-													std::function<bool(const std::string &, const	std::vector<double>&)											> scaleSource,
-													std::function<bool(const std::string &,			std::vector<int>&,			const std::map<int, std::string>&)	> ordinalSource,
-													std::function<bool(const std::string &,			std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
-													std::function<bool(const std::string &, const	std::vector<std::string>&)										> nominalTextSource);
+	void rbridge_setColumnFunctionSources(			std::function<int 			(const std::string &)																		> getTypeSource,
+													std::function<int 			(const std::string &)																		> getAnalysisIdSource,
+													std::function<bool			(const std::string &, const	std::vector<double>&)											> scaleSource,
+													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> ordinalSource,
+													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
+													std::function<bool			(const std::string &, const	std::vector<std::string>&)										> nominalTextSource,
+													std::function<std::string	(const std::string &)																		> createColumn);
 	void rbridge_setGetDataSetRowCountSource(		std::function<int()> source);
 
 	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);

@@ -581,18 +581,8 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	case analysisResultStatus::complete:
 		analysis->setResults(results, status);
 		clearAnalysisInProgress();
-
-		if(analysis->computedColumns().size() > 0)
-		{
-			checkForComputedColumns(results);
-
-			for(const auto & compCol : analysis->computedColumns())
-				if(DataSetPackage::pkg()->isColumnAnalysisNotComputed(compCol))
-				{
-					emit checkDataSetForUpdates(); //Maybe the analysis wrote some stuff?
-					break;
-				}
-		}
+		checkForComputedColumns(results);
+		emit checkDataSetForUpdates(); //Maybe the analysis wrote some stuff?
 
 		break;
 

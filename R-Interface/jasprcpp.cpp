@@ -36,14 +36,14 @@ ReadDataSetDescriptionCB		readDataSetDescriptionCB;
 RequestPredefinedFileSourceCB	requestStateFileSourceCB,
 								requestJaspResultsFileSourceCB;
 
+DataSetRowCount					dataSetRowCount;
+CreateColumn					dataSetCreateColumn;
 GetColumnType					dataSetGetColumnType;
 SetColumnAsScale				dataSetColumnAsScale;
 SetColumnAsOrdinal				dataSetColumnAsOrdinal;
 SetColumnAsNominal				dataSetColumnAsNominal;
 SetColumnAsNominalText			dataSetColumnAsNominalText;
 GetColumnAnalysisId				dataSetGetColumnAnalysisId;
-
-DataSetRowCount					dataSetRowCount;
 
 EnDecodeDef						encodeColumnName,
 								decodeColumnName,
@@ -99,6 +99,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readDataColumnNamesCB						= callbacks->readDataColumnNamesCB;
 	dataSetColumnAsScale						= callbacks->dataSetColumnAsScale;
 	dataSetGetColumnType						= callbacks->dataSetGetColumnType;
+	dataSetCreateColumn							= callbacks->dataSetCreateColumn;
 	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
 	readFullDataSetCB							= callbacks->readFullDataSetCB;
 	dataSetRowCount								= callbacks->dataSetRowCount;
@@ -161,6 +162,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//XPtr doesnt like it if it can't run a finalizer so here are some dummy variables:
 	static logFuncDef			_logFuncDef					= jaspRCPP_logString;
 	static getColumnTypeFuncDef _getColumnTypeFuncDef		= jaspRCPP_getColumnType;
+	static createColumnFuncDef	_createColumnFuncDef		= jaspRCPP_createColumn;
 	static getColumnAnIdFuncDef _getColumnAnIdFuncDef		= jaspRCPP_getColumnAnalysisId;
 	static setColumnDataFuncDef _setColumnDataAsScale		= jaspRCPP_setColumnDataAsScale;
 	static setColumnDataFuncDef _setColumnDataAsOrdinal		= jaspRCPP_setColumnDataAsOrdinal;
@@ -168,6 +170,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static setColumnDataFuncDef _setColumnDataAsNominalText	= jaspRCPP_setColumnDataAsNominalText;
 
 	rInside[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef);
+	rInside[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef);
 	rInside[".getColumnType"]					= Rcpp::XPtr<getColumnTypeFuncDef>(	& _getColumnTypeFuncDef);
 	rInside[".getColumnAnalysisId"]				= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnAnIdFuncDef);
 	rInside[".sendToDesktopFunction"]			= Rcpp::XPtr<sendFuncDef>(			&  sendToDesktopFunction);
@@ -189,7 +192,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
 	//Pass a whole bunch of pointers to jaspBase
-	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId)");
+	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setJaspLogFunction(	.logString					)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setSendFunc(			.sendToDesktopFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setPollMessagesFunc(	.pollMessagesFunction)");
@@ -688,6 +691,12 @@ int jaspRCPP_getColumnAnalysisId(std::string columnName)
 {
 	return dataSetGetColumnAnalysisId(columnName.c_str()); // columnName decoded in rbridge
 }
+
+std::string jaspRCPP_createColumn(std::string columnName)
+{
+	return dataSetCreateColumn(columnName.c_str());
+}
+
 
 bool jaspRCPP_columnIsScale(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == columnType::scale;		}
 bool jaspRCPP_columnIsOrdinal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == columnType::ordinal;		}
