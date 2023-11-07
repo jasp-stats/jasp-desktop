@@ -517,7 +517,7 @@ Terms SourceItem::_readAllTerms()
 	return terms;
 }
 
-Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables)
+Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables, const QMap<QString, QStringList>& termsMap)
 {
 	Terms filteredTerms;
 	JASPListControl* listControl = model->listView();
@@ -525,61 +525,84 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 
 	for (const Term& term : terms)
 	{
+		QString		value = term.asQString();
+		// There might be several original values: see jaspTestModule, "Test Sources with special attributes" analysis, "Source with controls" section
+		QStringList	originalValues = termsMap.contains(value) ? termsMap[value] : QStringList{value};
+
 		if (conditionVariables.length() > 0)
 		{
 			// If condition variables are used, use them
 			for (const ConditionVariable& conditionVariable : conditionVariables)
 			{
-				JASPControl* control = model->getRowControl(term.asQString(), conditionVariable.controlName);
-				if (control)
+				QJSValue value;
+				for (const QString& originalValue : originalValues)
 				{
-					QJSValue value;
-					QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
-
-					switch (valueVar.typeId())
+					JASPControl* control = model->getRowControl(originalValue, conditionVariable.controlName);
+					if (control)
 					{
-					case QMetaType::Int:
-					case QMetaType::UInt:		value = valueVar.toInt();		break;
-					case QMetaType::Double:		value = valueVar.toDouble();	break;
-					case QMetaType::Bool:		value = valueVar.toBool();		break;
-					default:					value = valueVar.toString();	break;
-					}
+						QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
 
-					jsEngine->globalObject().setProperty(conditionVariable.name, value);
+						switch (valueVar.typeId())
+						{
+						case QMetaType::Int:
+						case QMetaType::UInt:		value = valueVar.toInt();		break;
+						case QMetaType::Double:		value = valueVar.toDouble();	break;
+							// If at least one of the control is true, then the condition should be true. We can think of adding an extra attribute in the source property to be able to change this rule,
+							// but yeah, I cannot come up already with an understandable attribute name for the user, so it means that this situation is really really peculiar.
+							// Again, to understand the situation, look at the jaspTestModule, "Test Sources with special attributes" analysis, "Source with controls" section
+						case QMetaType::Bool:		value = (value.isBool() ? value.toBool() : false) || valueVar.toBool();		break;
+						default:					value = valueVar.toString();	break;
+						}
+
+					}
 				}
+				jsEngine->globalObject().setProperty(conditionVariable.name, value);
 			}
 		}
 		else
 		{
 			// If no condition variables are used, then set the values of the row controls in variables
-			RowControls* rowControls = model->getRowControls(term.asQString());
-			if (!rowControls) 
-				continue;
+			QMap<QString, QJSValue> conditionValues;
 
-			for (const QString& variable : rowControls->getJASPControlsMap().keys())
+			for (const QString& originalValue : originalValues)
 			{
-				JASPControl * control 		= rowControls->getJASPControl(variable);
-				BoundControl* boundControl 	= control ? control->boundControl() : nullptr;
+				RowControls* rowControls = model->getRowControls(originalValue);
+				if (!rowControls)
+					continue;
 
-				if (boundControl)
+				for (const QString& variable : rowControls->getJASPControlsMap().keys())
 				{
-					QJSValue value;
-					bool 				addValue  = true;
-					const Json::Value & jsonValue = boundControl->boundValue();
+					JASPControl * control 		= rowControls->getJASPControl(variable);
+					BoundControl* boundControl 	= control ? control->boundControl() : nullptr;
 
-					switch (jsonValue.type())
+					if (boundControl)
 					{
-					case Json::booleanValue:		value = jsonValue.asBool();			break;
-					case Json::uintValue:			value = jsonValue.asUInt();			break;
-					case Json::intValue:			value = jsonValue.asInt();			break;
-					case Json::realValue:			value = jsonValue.asDouble();		break;
-					case Json::stringValue:			value = tq(jsonValue.asString());	break;
-					default:						addValue = false;					break;
-					}
+						QJSValue value;
+						bool 				addValue  = true;
+						const Json::Value & jsonValue = boundControl->boundValue();
 
-					if (addValue)
-						jsEngine->globalObject().setProperty(variable, value);
+						switch (jsonValue.type())
+						{
+						case Json::booleanValue:		value = jsonValue.asBool();			break;
+						case Json::uintValue:			value = jsonValue.asUInt();			break;
+						case Json::intValue:			value = jsonValue.asInt();			break;
+						case Json::realValue:			value = jsonValue.asDouble();		break;
+						case Json::stringValue:			value = tq(jsonValue.asString());	break;
+						default:						addValue = false;					break;
+						}
+
+						if (addValue)
+						{
+							// Same remark as above, when condition variables are used
+							if (value.isBool() && conditionValues.contains(variable) && conditionValues[variable].isBool())
+								value = value.toBool() || conditionValues[variable].toBool();
+							conditionValues[variable] = value;
+						}
+					}
 				}
+
+				for (const QString& variable : conditionValues.keys())
+					jsEngine->globalObject().setProperty(variable, conditionValues[variable]);
 			}
 		}
 
@@ -603,7 +626,29 @@ Terms SourceItem::getTerms()
 		sourceTerms.discardWhatDoesContainTheseComponents(discardModel->_readAllTerms());
 
 	if (!_conditionExpression.isEmpty() && _listModel)
-		sourceTerms = filterTermsWithCondition(_listModel, sourceTerms, _conditionExpression, _conditionVariables);
+	{
+		QMap<QString, QStringList> map;
+		if (!_controlName.isEmpty()) //The sourceTerms are the values of this control, but to filter we need the values of the source
+		{
+			QStringList controlValues = sourceTerms.asQList();
+			for (const QString& sourceValue : _listModel->terms().asQList())
+			{
+				JASPControl* control = _listModel->getRowControl(sourceValue, _controlName);
+				if (control)
+				{
+					QString controlValue = control->property("value").toString();
+					if (controlValues.contains(controlValue))
+					{
+						QStringList list = map[controlValue];
+						list.push_back(sourceValue);
+						map[controlValue] = list;
+					}
+				}
+			}
+		}
+
+		sourceTerms = filterTermsWithCondition(_listModel, sourceTerms, _conditionExpression, _conditionVariables, map);
+	}
 
 	return sourceTerms;
 }
