@@ -4501,13 +4501,13 @@ msgstr "Trocar o filtro de R"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Create a computed column with name '%1"
-msgstr "Crear unha columna calculada de nome '%1"
+msgid "Create a computed column with name '%1'"
+msgstr "Crear unha columna calculada de nome '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set code to computed column with name '%1"
-msgstr "Establecer o código da columna calculada de nome '%1"
+msgid "Set code to computed column with name '%1'"
+msgstr "Establecer o código da columna calculada de nome '%1'"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5046,18 +5046,18 @@ msgstr "Trocar a descrición da área de traballo de '%1' a '%2'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use custom empty values for column '%1"
-msgstr "Usar os valores baleiros habituais para a columna '%1"
+msgid "Use custom empty values for column '%1'"
+msgstr "Usar os valores baleiros habituais para a columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use default empty values for column '%1"
-msgstr "Usar os valores baleiros predeterminados para a columna '%1"
+msgid "Use default empty values for column '%1'"
+msgstr "Usar os valores baleiros predeterminados para a columna '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set empty values for column '%1"
-msgstr "Fixar os valores baleiros para a columna '%1"
+msgid "Set empty values for column '%1'"
+msgstr "Fixar os valores baleiros para a columna '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"

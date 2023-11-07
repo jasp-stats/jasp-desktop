@@ -536,7 +536,7 @@ void SetRFilterCommand::redo()
 CreateComputedColumnCommand::CreateComputedColumnCommand(QAbstractItemModel *model, const QString &name, int columnType, int computedColumnType)
 	: UndoModelCommand(model), _name{name}, _columnType{columnType}, _computedColumnType{computedColumnType}
 {
-	setText(QObject::tr("Create a computed column with name '%1").arg(name));
+	setText(QObject::tr("Create a computed column with name '%1'").arg(name));
 }
 
 void CreateComputedColumnCommand::undo()
@@ -553,7 +553,7 @@ SetComputedColumnCodeCommand::SetComputedColumnCodeCommand(QAbstractItemModel *m
 	: UndoModelCommand(model), _name{name}, _newRCode{rCode}, _newJsonCode{jsonCode}
 {
 	_computedColumnModel = ComputedColumnsModel::singleton();
-	setText(QObject::tr("Set code to computed column with name '%1").arg(tq(name)));
+	setText(QObject::tr("Set code to computed column with name '%1'").arg(tq(name)));
 }
 
 void SetComputedColumnCodeCommand::undo()
@@ -631,9 +631,9 @@ SetUseCustomEmptyValuesCommand::SetUseCustomEmptyValuesCommand(QAbstractItemMode
 		std::string colName = col->name();
 
 		if (_useCustom)
-			setText(QObject::tr("Use custom empty values for column '%1").arg(tq(colName)));
+			setText(QObject::tr("Use custom empty values for column '%1'").arg(tq(colName)));
 		else
-			setText(QObject::tr("Use default empty values for column '%1").arg(tq(colName)));
+			setText(QObject::tr("Use default empty values for column '%1'").arg(tq(colName)));
 	}
 	else
 		setObsolete(true);
@@ -663,7 +663,7 @@ SetCustomEmptyValuesCommand::SetCustomEmptyValuesCommand(QAbstractItemModel *mod
 		for (const QString& val : customEmptyValues)
 			_newCustomEmptyValues.insert(fq(val));
 
-		setText(QObject::tr("Set empty values for column '%1").arg(tq(colName)));
+		setText(QObject::tr("Set empty values for column '%1'").arg(tq(colName)));
 	}
 	else
 		setObsolete(true);

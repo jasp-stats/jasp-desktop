@@ -4308,12 +4308,12 @@ msgstr "更改 R 筛选器"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Create a computed column with name '%1"
+msgid "Create a computed column with name '%1'"
 msgstr "创建名为 “%1” 的计算列"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set code to computed column with name '%1"
+msgid "Set code to computed column with name '%1'"
 msgstr "将代码设置为名为 “%1” 的计算列"
 
 msgctxt "MainWindow|"
@@ -4846,17 +4846,17 @@ msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use custom empty values for column '%1"
+msgid "Use custom empty values for column '%1'"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use default empty values for column '%1"
+msgid "Use default empty values for column '%1'"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set empty values for column '%1"
+msgid "Set empty values for column '%1'"
 msgstr ""
 
 msgctxt "QObject|"

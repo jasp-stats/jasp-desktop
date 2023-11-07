@@ -4513,13 +4513,13 @@ msgstr "R-Filter ändern"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Create a computed column with name '%1"
-msgstr "Berechnete Spalte erstellen mit Namen '%1"
+msgid "Create a computed column with name '%1'"
+msgstr "Berechnete Spalte erstellen mit Namen '%1'"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
-msgid "Set code to computed column with name '%1"
-msgstr "Code setzen auf berechnete Spalte mit Namen '%1"
+msgid "Set code to computed column with name '%1'"
+msgstr "Code setzen auf berechnete Spalte mit Namen '%1'"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5064,17 +5064,17 @@ msgstr "Arbeitsbereichsbeschreibung ändern von '%1' auf '%2'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use custom empty values for column '%1"
-msgstr "Benutzerdefinierte leere Werte für Spalte '%1"
+msgid "Use custom empty values for column '%1'"
+msgstr "Benutzerdefinierte leere Werte für Spalte '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Use default empty values for column '%1"
-msgstr "Standardmäßige leere Werte für Spalte '%1"
+msgid "Use default empty values for column '%1'"
+msgstr "Standardmäßige leere Werte für Spalte '%1'"
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Set empty values for column '%1"
+msgid "Set empty values for column '%1'"
 msgstr "Leere Werte für Spalte '%1 einstellen"
 
 msgctxt "QObject|"
