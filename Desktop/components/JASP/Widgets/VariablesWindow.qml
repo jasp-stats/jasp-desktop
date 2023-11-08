@@ -440,21 +440,6 @@ FocusScope
 						showTitle:			false
 						model:				columnModel
 						resetButtonTooltip: qsTr("Reset missing values with the ones set in your workspace")
-
-					}
-
-					Text
-					{
-						anchors.top:		parent.top
-						anchors.left:		missingValues.right
-						text:				qsTr("Change workspace missing values")
-						color:				jaspTheme.blueDarker
-						MouseArea
-						{
-							anchors.fill:	parent
-							onClicked:		mainWindowRoot.showWorkspaceMenu()
-							cursorShape:	Qt.PointingHandCursor
-						}
 					}
 				}
 			}

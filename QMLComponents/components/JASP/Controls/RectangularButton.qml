@@ -42,6 +42,7 @@ Item
 	property alias	border:				rect.border
 	property alias	radius:				rect.radius
 	property alias	font:				buttonText.font
+	property alias	buttonText:			buttonText
 	property alias	icon:				buttonIcon
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
