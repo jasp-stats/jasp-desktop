@@ -190,8 +190,9 @@ div.jasp-image-image.no-data.error {
 
 
 /* not use color invert for img in annotations */
-.jasp-notes .ql-editor p img {
-  filter:  invert(1);
+.ql-editor p img,
+iframe.ql-video:not(:fullscreen) {
+    filter:  invert(1) !important;
 }
 
 

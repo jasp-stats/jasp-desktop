@@ -255,15 +255,61 @@ Item
 				}
 			}
 
+			property var urlWhitelist : ['www.youtube.com', 'www.youtu.be'] //'*.vimeo.com', '*.vimeocdn.com', '*.akamaized.net', '*.bilibili.com', '*.hdslb.com', '*.qq.com', '*.smtcdns.com'];
+
+			function isURLInWhitelist(hostname)
+			{
+				for (var i = 0; i < urlWhitelist.length; i++)
+				{
+					var pattern = urlWhitelist[i];
+					if (pattern === hostname)
+					{
+						return true;
+					} 
+					else if (pattern.indexOf('*') !== -1)
+					{
+						var regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
+						if (regex.test(hostname))
+						{
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+
+			onFullScreenRequested: function(request) 
+			{
+				request.accept()
+
+				if(request.toggleOn)
+				{
+					analysesModel.visible = false
+					minimizeDataPanel()
+				}
+			}
+
 			onNavigationRequested: (request)=>
 			{
+				var requestedURL = new URL(request.url);
+
 				if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
+				{
 					request.accept()
+				}
+				else if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
+				{
+					Qt.openUrlExternally(request.url);
+				}
+				else if(isURLInWhitelist(requestedURL.hostname))
+				{
+					request.accept();
+					console.log("Navigation requeste accepted:", requestedURL.hostname)
+				}
 				else
 				{
-					if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
-						Qt.openUrlExternally(request.url);
 					request.reject();
+					console.log("Navigation requested rejected:", requestedURL.hostname)
 				}
 			}
 
@@ -271,6 +317,7 @@ Item
 			{
 				resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineView.LoadSucceededStatus;
 				setTranslatedResultsString();
+				runJavaScript(`window.sendUrlWhitelist(${JSON.stringify(urlWhitelist)})`); //sent urlWhitelist to js side
 			}
 
 
@@ -314,7 +361,9 @@ Item
 				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
 				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
-				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image")
+				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video"), "Unsupported video services" : qsTr("Unsupported video services"), 
+				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list.")
+
 			}
 
 			function setTranslatedResultsString()

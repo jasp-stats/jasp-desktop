@@ -22,28 +22,113 @@ function i18n(str) {
 	}
 }
 
-if(insideJASP)
-{
+var videoUrlList = [];
+
+window.sendUrlWhitelist = function (RequestedURL) {
+	videoUrlList = RequestedURL; // to get from MainPage.qml
+}
+
+function isURLInWhitelist(hostname) {
+	for (let i = 0; i < videoUrlList.length; i++) {
+		let pattern = videoUrlList[i];
+		if (pattern === hostname) {
+			return true;
+		} else if (pattern.indexOf('*') !== -1) {
+			const regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
+			if (regex.test(hostname)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+if (insideJASP) {
 	var Parchment = Quill.import('parchment');
 
 	var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
-	scope: Parchment.Scope.BLOCK
+		scope: Parchment.Scope.BLOCK
 	});
 
 	Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 	Quill.register('formats/linebreak', LineBreakClass);
-	
+
 	// See https://github.com/quilljs/quill/issues/262
 	var Link = Quill.import('formats/link');
-	Link.sanitize = function(url) {
-        // Check if the url contains the protocol, otherwise add it automatically
-        var checkUrl = url.match(/^(http|https):\/\//i); 
-        if (!checkUrl) {
-            url = "https://" + url;
-          }
-        return url;
+	Link.sanitize = function (url) {
+		// Check if the url contains the protocol, otherwise add it automatically
+		var checkUrl = url.match(/^(http|https):\/\//i);
+		if (!checkUrl) {
+			url = "https://" + url;
+		}
+		return url;
 	}
+
+	function customVideoUrl(url) {
+		if (!/^(http|https):\/\//i.test(url)) {
+			url = 'https://' + url;
+		} else if (/^(http):\/\//i.test(url)) {
+			url = url.replace(/^http:/i, 'https:');
+		}
+		
+		let matchs = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) ||
+			url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/) ||
+			url.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/);
+		if (matchs && matchs[2].length === 11) {
+			return ('https') + '://www.youtube.com/embed/' + matchs[2] + '?showinfo=0';
+		}
+		// enable it once h.264 encoding is available on qtwebengine
+		// if (matchs = url.match(/^(?:(https?):\/\/)?(?:www\.)?vimeo\.com\/(\d+)/)) {
+		// 	return (match[1] || 'https') + '://player.vimeo.com/video/' + matchs[2] + '/';
+		// }
+		// if (matchs = url.match(/(?:www\.|\/\/)bilibili\.com\/video\/(\w+)/)) {
+		// 	return 'https://player.bilibili.com/player.html?bvid=' + matchs[1]
+
+		// }
+		// if (matchs = url.match(/\/\/v\.qq\.com\/x\/cover\/.*\/([^\/]+)\.html\??.*/)) {
+		// 	return 'https://v.qq.com/txp/iframe/player.html?vid=' + matchs[1]
+		// }
+		
+		return url
+	}
+
+	const BlockEmbed = Quill.import("blots/block/embed");
+
+	class EmbendVideo extends BlockEmbed {
+		static create(value) {
+			value = customVideoUrl(value)
+			let node = super.create(value);
+			let div = document.createElement('div');
+				div.setAttribute("title", i18n("Unsupported video services"));
+			$(div).append(`${i18n('JASP only allows the following videoservices:')}<br><br> <i>"Youtube video"</i> <br><br>${i18n('Contact the JASP team to request adding another videoservice to the list.')}`)	
+			node.setAttribute('frameborder', '0');
+			node.setAttribute('allowfullscreen', true);
+			node.setAttribute('src', value);
+			if (!isURLInWhitelist((new URL(value).hostname))) {
+				node.innerHTML = $(div).dialog({ // give a warnning for unsupported urls and then remove from node.
+					modal: true, buttons: {
+						Ok: function () {
+							$(node).remove();
+							$(this).dialog("close");
+						}
+					}
+				})
+			}
+			return node;
+		}
+		
+		static value(node){
+			return node.getAttribute('src');
+		}
+	}
+
+	EmbendVideo.blotName = 'video';
+	EmbendVideo.className = 'ql-video';
+	EmbendVideo.tagName = 'IFRAME';
+
+	Quill.register(EmbendVideo, true);
+
 }
 
 JASPWidgets.Encodings = {
@@ -499,7 +584,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image'],
+			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -592,6 +677,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
 		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
 		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
+		this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
