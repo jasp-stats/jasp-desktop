@@ -33,8 +33,8 @@ FocusScope
 
 	property real calculatedBaseHeight:			common.height + jaspTheme.generalAnchorMargin
 	property real calculatedMinimumHeight:		calculatedBaseHeight + (tabView.visible ?  0.28 * parent.height : 0)
-	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.32 * parent.height : 0)
-	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  parent.height * 0.7
+	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.40 * parent.height : 0)
+	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.70 * parent.height
 
 	Connections
 	{
@@ -64,7 +64,7 @@ FocusScope
 	{
 		id:		minWidthVariables
 
-		property int minWidth: 600 * preferencesModel.uiScale
+		property int minWidth: 500 * preferencesModel.uiScale
 
 		anchors
 		{
@@ -198,7 +198,7 @@ FocusScope
 						id:					columnTitleVariablesWindow
 						label:				qsTr("Long name: ");
 						placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-						fieldWidth:			columnDescriptionVariablesWindow.width - closeButton.width
+						fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
 						value:				columnModel.columnTitle
 						onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 						undoModel:			columnModel
@@ -235,8 +235,10 @@ FocusScope
 					{
 						id:					columnDescriptionVariablesWindow
 						height:				implicitHeight
+						width:				implicitWidth
 						x:					rightColumn.labelWidth + jaspTheme.labelSpacing //Cause that happens inside TextField between labelRect and actual control
 						implicitHeight:		columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
+						implicitWidth:		descriptionRow.width - x
 						control.padding:	3 * jaspTheme.uiScale
 
 						text:				columnModel.columnDescription
@@ -246,7 +248,7 @@ FocusScope
 						undoModel:			columnModel
 						useTabAsSpaces:		false
 
-						Layout.fillWidth:	true
+
 
 					}
 				}
