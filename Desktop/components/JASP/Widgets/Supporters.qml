@@ -77,7 +77,7 @@ Item
 
 		Text
 		{
-			text:					qsTr("Suggest your institution joins the JASP Cooperative").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
+			text:					qsTr("Suggest your institution joins the JASP Community").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
 			font.family:			jaspTheme.font
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler

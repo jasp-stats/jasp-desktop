@@ -82,7 +82,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
-	Q_PROPERTY(bool			cooperativeVisible	READ cooperativeVisible		WRITE setCooperativeVisible		NOTIFY cooperativeVisibleChanged	)
+	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
 	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT							)
 	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT							)
 	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT							)
@@ -114,7 +114,7 @@ public:
 	bool				welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	bool				contactVisible()		const;
-	bool				cooperativeVisible()	const;
+	bool				communityVisible()	const;
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & coopThankYou()			const;
 	const QString &		coopEducators()			const;
@@ -135,7 +135,7 @@ public slots:
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
 	void setContactVisible(bool newContactVisible);
-	void setCooperativeVisible(bool newCooperativeVisible);
+	void setCommunityVisible(bool newCommunityVisible);
 	void setDefaultWorkspaceEmptyValues();
 
 	void showRCommander();
@@ -146,7 +146,7 @@ public slots:
 
 	void showAbout();
 	void showContact();
-	void showCooperative();
+	void showCommunity();
 
 	void saveKeyPressed();
 	void saveAsKeyPressed();
@@ -238,7 +238,7 @@ signals:
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
 	void contactVisibleChanged();
-	void cooperativeVisibleChanged();
+	void communityVisibleChanged();
 	void contactTextChanged();
 
 private slots:
@@ -343,7 +343,8 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
-									_cooperativeVisible		= false;		
+									_communityVisible		= false;
+									
 	QFont							_defaultFont;
 };
 

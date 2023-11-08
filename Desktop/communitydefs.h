@@ -1,5 +1,5 @@
-#ifndef COOPERATIVEDEFS_H
-#define COOPERATIVEDEFS_H
+#ifndef COMMUNITYDEFS_H
+#define COMMUNITYDEFS_H
 
 #include "QStringList"
 
@@ -49,15 +49,15 @@ const QStringList & supportersTier()
 
 const QString & howToSupport()
 {
-	static QString howTo = "https://jasp-stats.org/cooperative-how-to-join/";
+	static QString howTo = "https://jasp-stats.org/community-how-to-join/";
 	return howTo;
 }
 
-const QString & cooperativeUrl()
+const QString & communityUrl()
 {
-	static QString coop = "https://jasp-stats.org/cooperative-vision-and-goals/";
+	static QString coop = "https://jasp-stats.org/community-vision-and-goals/";
 	return coop;
 }
 
 }
-#endif // COOPERATIVEDEFS_H
+#endif // COMMUNITYDEFS_H

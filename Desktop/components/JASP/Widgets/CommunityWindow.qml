@@ -5,27 +5,27 @@ import QtQuick.Controls as QC
 
 WavyWindow
 {
-	id:						cooperativeWindow
-	title:					qsTr("JASP Cooperative")
+	id:						communityWindow
+	title:					qsTr("JASP Community")
 	height:					700
 	width:					1200
 
-	visible:				mainWindow.cooperativeVisible
-	onVisibleChanged:		mainWindow.cooperativeVisible = visible
-	onCloseModel:			{ mainWindow.cooperativeVisible = false }
+	visible:				mainWindow.communityVisible
+	onVisibleChanged:		mainWindow.communityVisible = visible
+	onCloseModel:			{ mainWindow.communityVisible = false }
 	
 	
 
 
 	Text
 	{
-		id:				cooperativeText
+		id:				communityText
 		textFormat:		Text.RichText
 		text:
-			qsTr("<h3>Cooperative</h3>
-The institutions of higher learning that participate in the JASP Cooperative jointly support the maintenance and further development of JASP, therefore providing an invaluable educational service to their own students and to those of other institutions worldwide.
+			qsTr("<h3>Community</h3>
+The institutions of higher learning that participate in the JASP community jointly support the maintenance and further development of JASP, therefore providing an invaluable educational service to their own students and to those of other institutions worldwide.
 
-If your institution is not yet part of the cooperative, you can <a href=\"%1\">suggest that they join</a>.
+If your institution is not yet part of the community of benefactors, you can <a href=\"%1\">suggest that they join</a>.
 
 <i><b>Educator Institutions:</b></i>
 %2
@@ -63,7 +63,7 @@ If your institution is not yet part of the cooperative, you can <a href=\"%1\">s
 			onClicked:			(event)=>{ if (event.button === Qt.LeftButton && myText.linkHovered) Qt.openUrlExternally(myText.hoveredLink)  }
 			cursorShape:		myText.linkHovered ?  Qt.PointingHandCursor  : Qt.ArrowCursor
 			
-			property Item myText:	cooperativeText
+			property Item myText:	communityText
 		}
 
 		MouseArea
@@ -73,7 +73,7 @@ If your institution is not yet part of the cooperative, you can <a href=\"%1\">s
 			hoverEnabled:		true
 			anchors.fill:		parent
 
-			cursorShape:		!containsMouse || cooperativeText.linkAt(mouseX, mouseY) === "" ? Qt.ArrowCursor : Qt.PointingHandCursor
+			cursorShape:		!containsMouse || communityText.linkAt(mouseX, mouseY) === "" ? Qt.ArrowCursor : Qt.PointingHandCursor
 		}
 	}
 
