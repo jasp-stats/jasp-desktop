@@ -185,6 +185,8 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
+				property int labelWidth:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+
 				RowLayout
 				{
 					id:					longNameRow
@@ -200,7 +202,7 @@ FocusScope
 						value:				columnModel.columnTitle
 						onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 						undoModel:			columnModel
-						controlLabel.width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+						controlLabel.width:	rightColumn.labelWidth
 
 					}
 
@@ -216,24 +218,25 @@ FocusScope
 					}
 				}
 
-				RowLayout
+				Item
 				{
 					id:					descriptionRow
 					width:				parent.width
+					height:				Math.max(descriptionLabel.height, columnDescriptionVariablesWindow.height)
 
 					Label
 					{
-						id:		descriptionLabel
-						text:	qsTr("Description: ")
-						width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
-
+						id:				descriptionLabel
+						text:			qsTr("Description: ")
+						width:			rightColumn.labelWidth
 					}
 
 					TextArea
 					{
 						id:					columnDescriptionVariablesWindow
-
-						height:				columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
+						height:				implicitHeight
+						x:					rightColumn.labelWidth + jaspTheme.labelSpacing //Cause that happens inside TextField between labelRect and actual control
+						implicitHeight:		columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
 						control.padding:	3 * jaspTheme.uiScale
 
 						text:				columnModel.columnDescription
@@ -243,7 +246,7 @@ FocusScope
 						undoModel:			columnModel
 						useTabAsSpaces:		false
 
-						Layout.fillWidth:		true
+						Layout.fillWidth:	true
 
 					}
 				}
