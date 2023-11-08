@@ -239,7 +239,11 @@ QString ColumnModel::computedType() const
 
 bool ColumnModel::computedTypeEditable() const
 {
-	if (_virtual || !column()) return false;
+	if(_virtual)
+		return true;
+
+	if (!column())
+		return false;
 
 	switch (column()->codeType())
 	{
@@ -248,6 +252,7 @@ bool ColumnModel::computedTypeEditable() const
 	case computedColumnType::constructorCode:
 	case computedColumnType::rCode:
 		return true;
+
 	default:
 		return false;
 	}
@@ -463,7 +468,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 
 	_currentColIndex = chosenColumn;
 
-	emit tabsChanged();
+	refresh();
 
 	if(deleteMe >= 0)
 		_dataSetTableModel->removeColumn(deleteMe);
@@ -687,6 +692,7 @@ bool ColumnModel::nameEditable() const
 {
 	if(column())
 		return !(column()->isComputed() && (column()->codeType() == computedColumnType::analysisNotComputed || column()->codeType() == computedColumnType::analysis));
+
 	return true;
 }
 
@@ -695,6 +701,7 @@ void ColumnModel::clearVirtual()
 	_dummyColumn.description.clear();
 	_dummyColumn.name.clear();
 	_dummyColumn.title.clear();
-	_dummyColumn.type = columnType::scale;
-	_dummyColumn.computedType = computedColumnType::notComputed;
+
+	_dummyColumn.type			= columnType::scale;
+	_dummyColumn.computedType	= computedColumnType::notComputed;
 }

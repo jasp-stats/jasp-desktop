@@ -158,7 +158,7 @@ FocusScope
 				{
 					implicitWidth:			parent.width
 					implicitHeight:			showAnalysisButton.height
-					visible:				!columnModel.computedTypeEditable || columnModel.computedType === "analysisNotComputed"
+					visible:				columnModel.computedType === "analysisNotComputed" || columnModel.computedType === "analysisNotComputed"
 
 					RoundedButton
 					{
@@ -391,14 +391,18 @@ FocusScope
 					"label" : 1,
 					"missingValues" : 2
 				}
-				currentIndex: tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
+				currentIndex:		tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
 
-				anchors.top: tabbar.bottom
-				anchors.bottom: parent.bottom
-				anchors.left:	parent.left
-				anchors.right:	parent.right
-				anchors.margins: jaspTheme.generalAnchorMargin * 0.5
-				anchors.topMargin: jaspTheme.generalAnchorMargin * 0.25
+				anchors
+				{
+
+					top:		tabbar.bottom
+					bottom:		parent.bottom
+					left:		parent.left
+					right:		parent.right
+					margins:	jaspTheme.generalAnchorMargin * 0.5
+					topMargin:	jaspTheme.generalAnchorMargin * 0.25
+				}
 
 				ComputeColumnWindow
 				{
