@@ -259,7 +259,7 @@ private slots:
 	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
-	void showAnalysis() { emit hideDataPanel(); _analyses->setVisible(true); }
+	void showAnalysis();
 
 	bool checkDoSync();
 	void unitTestTimeOut();
@@ -343,8 +343,7 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
-									_cooperativeVisible		= false;
-									
+									_cooperativeVisible		= false;		
 	QFont							_defaultFont;
 };
 

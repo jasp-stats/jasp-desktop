@@ -70,6 +70,7 @@ else() #it IS a test build
 	message(STATUS "JASP_TEST_BUILD is enabled, building with minimal modules")
 	set(JASP_COMMON_MODULES
 		"jaspDescriptives"
+		"jaspDistributions"
 		"jaspTestModule"
 	)
 endif()
@@ -90,8 +91,7 @@ configure_file(${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h.in
                ${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h @ONLY)
 message(STATUS "activemodules.h is successfully generated...")
 
-if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
-                                                       JASP_EXTRA_MODULES))
+if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST JASP_EXTRA_MODULES))
   if(LINUX)
 
     if(LINUX_LOCAL_BUILD)

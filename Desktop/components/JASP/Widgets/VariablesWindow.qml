@@ -310,14 +310,14 @@ FocusScope
 						{
 							// The bottom of buttons are hidden to remove their bottom line with the radius
 							// So the text has to be moved higher from the horizontal middle line.
-							id:					labelText
-							topPadding:			-tabbar.tabButtonRadius * 3/4
-							text:				columnModel.tabs[index].title
-							font:				jaspTheme.font
-							color:				jaspTheme.black
-							horizontalAlignment: Text.AlignHCenter
-							verticalAlignment:	Text.AlignVCenter
-							opacity:			checked ? 1 : .6
+							id:						labelText
+							topPadding:				-tabbar.tabButtonRadius * 3/4
+							text:					columnModel.tabs[index].title
+							font:					jaspTheme.font
+							color:					jaspTheme.black
+							horizontalAlignment:	Text.AlignHCenter
+							verticalAlignment:		Text.AlignVCenter
+							opacity:				checked ? 1 : .6
 						}
 
 						MouseArea
