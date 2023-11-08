@@ -136,3 +136,6 @@
 [submodule "Modules/jaspTestModule"]
 	path = Modules/jaspTestModule
 	url = https://github.com/jasp-stats/jaspTestModule
+[submodule "Modules/jaspProcess"]
+	path = Modules/jaspProcess
+	url = https://github.com/jasp-stats/jaspProcess
