@@ -156,10 +156,9 @@ FocusScope
 
 				Item
 				{
-					//Layout.fillWidth:		true
 					implicitWidth:			parent.width
 					implicitHeight:			showAnalysisButton.height
-					visible:				!columnModel.computedTypeEditable
+					visible:				!columnModel.computedTypeEditable || columnModel.computedType === "analysisNotComputed"
 
 					RoundedButton
 					{

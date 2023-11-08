@@ -324,7 +324,7 @@ signals:
 				void				descriptionChanged();
 
 public slots:
-				void				refresh()																		{ beginResetModel(); endResetModel(); }
+				void				refresh()			{ beginResetModel(); endResetModel(); }
 				void				refreshColumn(						QString columnName);
 				void				columnWasOverwritten(				const std::string & columnName, const std::string & possibleError);
 				void				notifyColumnFilterStatusChanged(	int columnIndex);

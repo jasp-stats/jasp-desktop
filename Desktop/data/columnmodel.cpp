@@ -264,7 +264,8 @@ void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 
 void ColumnModel::setComputedType(QString type)
 {
-	if (type == computedType()) return;
+	if (type == computedType())
+		return;
 
 	computedColumnType cType = computedColumnTypeFromString(type.toStdString());
 
