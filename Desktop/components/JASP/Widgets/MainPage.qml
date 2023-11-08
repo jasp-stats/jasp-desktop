@@ -309,7 +309,7 @@ Item
 				else
 				{
 					request.reject();
-					console.log("Navigation requeste rejected:", requestedURL.hostname)
+					console.log("Navigation requested rejected:", requestedURL.hostname)
 				}
 			}
 
