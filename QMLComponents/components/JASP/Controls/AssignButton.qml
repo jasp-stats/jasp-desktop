@@ -61,23 +61,7 @@ Button
 	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false; setState(); }
 	function setState()
 	{
-		var isEnabled = sourceM.enabled && targetM.enabled && sourceM.model && sourceM.model.selectedItems().length > 0;
-		if (isEnabled)
-		{
-			if (targetM.allowedColumns.length > 0)
-			{
-				isEnabled = false;
-				var sourceSelectedItemsTypes = sourceM.model.selectedItemsTypes()
-				for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
-				{
-					var itemType = sourceSelectedItemsTypes[i];
-					if (targetM.allowedColumns.includes(itemType))
-						isEnabled = true;
-				}
-			}
-		}
-		
-		enabled = isEnabled
+		enabled = sourceM.enabled && targetM.enabled && sourceM.model && sourceM.model.selectedItems().length > 0 && targetM.areTypesAllowed(sourceM.model.selectedItemsTypes());
 	}
 
 

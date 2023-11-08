@@ -78,26 +78,7 @@ VariablesListBase
 
 	function setEnabledState(source, dragging)
 	{
-		var result = !dragging;
-		if (dragging)
-		{
-			if (source.model.selectedItems().length > 0)
-			{
-				if (variablesList.allowedColumns.length > 0)
-				{
-					result = false;
-					var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
-					for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
-					{
-						var itemType = sourceSelectedItemsTypes[i];
-						if (variablesList.allowedColumns.includes(itemType))
-							result = true;
-					}
-				}
-				else
-					result = true;
-			}
-		}
+		var result = !dragging || areTypesAllowed(source.model.selectedItemsTypes());
 
 		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
 		itemRectangle.enabled = result
@@ -445,7 +426,7 @@ VariablesListBase
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraItem:				model.rowComponent
 
-				enabled: variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
+				enabled: variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])
 				
 				function setRelative(draggedRect)
 				{

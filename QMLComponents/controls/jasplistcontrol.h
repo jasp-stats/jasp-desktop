@@ -81,6 +81,7 @@ public:
 			JASPControl		*	getChildControl(QString key, QString name) override;
 
 	Q_INVOKABLE QString			getSourceType(QString name);
+	Q_INVOKABLE bool			areTypesAllowed(QStringList types);
 
 			const QVariant&		source()					const			{ return _source;				}
 			const QVariant&		values()					const			{ return _values;				}
