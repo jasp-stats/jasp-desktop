@@ -92,6 +92,7 @@ typedef void (*sendFuncDef)(const char *);
 typedef void			(*logFuncDef)(const std::string &);
 typedef bool			(*setColumnDataFuncDef)	(std::string, Rcpp::RObject);
 typedef columnType		(*getColumnTypeFuncDef)	(std::string);
+typedef bool			(*getColumnExistsFDef)	(std::string);
 typedef int				(*getColumnAnIdFuncDef) (std::string);
 typedef std::string		(*createColumnFuncDef)	(std::string);
 
@@ -101,6 +102,7 @@ RBridgeColumnType*		jaspRCPP_marshallSEXPs(			SEXP columns, SEXP columnsAsNumeri
 Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
 std::string				_jaspRCPP_System (				std::string cmd);
 columnType				jaspRCPP_getColumnType(			std::string columnName);
+bool					jaspRCPP_getColumnExists(		std::string columnName);
 int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
 std::string				jaspRCPP_createColumn(			std::string columnName);
 void					jaspRCPP_crashPlease();

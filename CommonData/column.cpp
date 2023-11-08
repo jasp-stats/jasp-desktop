@@ -1014,8 +1014,8 @@ bool Column::overwriteDataWithScale(doublevec scalarData)
 
 	size_t setVals = scalarData.size();
 
-	if(scalarData.size() != rowCount())
-		scalarData.resize(rowCount());
+	if(scalarData.size() != _data->rowCount())
+		scalarData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<scalarData.size(); setThis++)
 		scalarData[setThis] = static_cast<double>(std::nanf(""));
@@ -1029,8 +1029,8 @@ bool Column::overwriteDataWithOrdinal(intvec ordinalData, intstrmap levels)
 
 	size_t setVals = ordinalData.size();
 
-	if(ordinalData.size() != rowCount())
-		ordinalData.resize(rowCount());
+	if(ordinalData.size() != _data->rowCount())
+		ordinalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
 		ordinalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1044,8 +1044,8 @@ bool Column::overwriteDataWithOrdinal(intvec ordinalData)
 
 	size_t setVals = ordinalData.size();
 
-	if(ordinalData.size() != rowCount())
-		ordinalData.resize(rowCount());
+	if(ordinalData.size() != _data->rowCount())
+		ordinalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
 		ordinalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1059,8 +1059,8 @@ bool Column::overwriteDataWithNominal(intvec nominalData, intstrmap levels)
 
 	size_t setVals = nominalData.size();
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
 		nominalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1074,8 +1074,8 @@ bool Column::overwriteDataWithNominal(intvec nominalData)
 
 	size_t setVals = nominalData.size();
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
 		nominalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1087,8 +1087,8 @@ bool Column::overwriteDataWithNominal(stringvec nominalData)
 {
 	JASPTIMER_SCOPE(Column::overwriteDataWithNominal);
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	bool changedSomething = false;
 	setAsNominalText(nominalData, &changedSomething);

@@ -162,6 +162,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//XPtr doesnt like it if it can't run a finalizer so here are some dummy variables:
 	static logFuncDef			_logFuncDef					= jaspRCPP_logString;
 	static getColumnTypeFuncDef _getColumnTypeFuncDef		= jaspRCPP_getColumnType;
+	static getColumnExistsFDef	_getColumnExistsFuncDef		= jaspRCPP_getColumnExists;
 	static createColumnFuncDef	_createColumnFuncDef		= jaspRCPP_createColumn;
 	static getColumnAnIdFuncDef _getColumnAnIdFuncDef		= jaspRCPP_getColumnAnalysisId;
 	static setColumnDataFuncDef _setColumnDataAsScale		= jaspRCPP_setColumnDataAsScale;
@@ -172,6 +173,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef);
 	rInside[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef);
 	rInside[".getColumnType"]					= Rcpp::XPtr<getColumnTypeFuncDef>(	& _getColumnTypeFuncDef);
+	rInside[".getColumnExists"]					= Rcpp::XPtr<getColumnExistsFDef>(	& _getColumnExistsFuncDef);
 	rInside[".getColumnAnalysisId"]				= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnAnIdFuncDef);
 	rInside[".sendToDesktopFunction"]			= Rcpp::XPtr<sendFuncDef>(			&  sendToDesktopFunction);
 	rInside[".pollMessagesFunction"]			= Rcpp::XPtr<pollMessagesFuncDef>(	&  pollMessagesFunction);
@@ -192,7 +194,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
 	//Pass a whole bunch of pointers to jaspBase
-	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn)");
+	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .getColumnExists)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setJaspLogFunction(	.logString					)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setSendFunc(			.sendToDesktopFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setPollMessagesFunc(	.pollMessagesFunction)");
@@ -697,6 +699,17 @@ std::string jaspRCPP_createColumn(std::string columnName)
 	return dataSetCreateColumn(columnName.c_str());
 }
 
+bool jaspRCPP_getColumnExists(std::string columnName)
+{
+	
+	size_t			cols;
+	const char **	names = getAllColumnNames(cols, false);
+	
+	for(size_t i=0; i<cols; i++)
+		if(names[i] == columnName)
+			return true;
+	return false;
+}
 
 bool jaspRCPP_columnIsScale(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == columnType::scale;		}
 bool jaspRCPP_columnIsOrdinal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == columnType::ordinal;		}
