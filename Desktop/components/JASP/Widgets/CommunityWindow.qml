@@ -25,7 +25,7 @@ WavyWindow
 			qsTr("<h3>Community</h3>
 The institutions of higher learning that participate in the JASP community jointly support the maintenance and further development of JASP, therefore providing an invaluable educational service to their own students and to those of other institutions worldwide.
 
-If your institution is not yet part of the community of benefactors, you can <a href=\"%1\">suggest that they join</a>.
+If your institution is not yet part of the JASP community, you can <a href=\"%1\">suggest that they join</a>.
 
 <i><b>Educator Institutions:</b></i>
 %2

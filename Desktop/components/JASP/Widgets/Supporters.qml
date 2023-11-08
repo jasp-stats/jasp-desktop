@@ -88,15 +88,16 @@ Item
 			textFormat:				Text.StyledText
 			horizontalAlignment:	Text.AlignHCenter
 			Layout.fillWidth:		true
-		}
-	}
 
-	MouseArea
-	{
-		cursorShape:			Qt.PointingHandCursor
-		acceptedButtons:		Qt.LeftButton
-		anchors.fill:			parent
-		onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
-		z:						-8
+
+			MouseArea
+			{
+				cursorShape:			Qt.PointingHandCursor
+				acceptedButtons:		Qt.LeftButton
+				anchors.fill:			parent
+				onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
+				z:						-8
+			}
+		}
 	}
 }
