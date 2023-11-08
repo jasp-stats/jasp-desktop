@@ -27,7 +27,7 @@ Item
 	width			: implicitWidth
 	height			: implicitHeight
 	implicitWidth	: parent.width
-	implicitHeight	: Math.max(150 * preferencesModel.uiScale, (basicButtonTableView.showButtons ? buttonColumn.height : 0))
+	implicitHeight	: 150 * preferencesModel.uiScale + tableView.y + tableView.anchors.topMargin
 
 	property int preferredHeight:	implicitHeight
 	property int preferredWidth:	implicitWidth
@@ -84,7 +84,9 @@ Item
 
 	function getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }
 	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
-	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue; }
+	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue						}
+	function getValidator(columnIndex, rowIndex)				{ return tableView.validator				}
+	function getEditable(columnIndex, rowIndex)					{ return true								}
 
 	Grid
 	{
@@ -138,9 +140,11 @@ Item
 		property int maxWidth	: basicButtonTableView.width * ((basicButtonTableView.showButtons && !buttonsInRow) ? (3 / 4) : 1)
 		property int maxHeight	: basicButtonTableView.height
 
-		function getColHeaderText(defaultName, colIndex) { return basicButtonTableView.getColHeaderText(defaultName, colIndex); }
-		function getRowHeaderText(defaultName, rowIndex) { return basicButtonTableView.getRowHeaderText(defaultName, rowIndex); }
-		function getDefaultValue(columnIndex, rowIndex)	 { return basicButtonTableView.getDefaultValue(columnIndex, rowIndex);	}
+		function getColHeaderText(defaultName, colIndex)	{ return basicButtonTableView.getColHeaderText(defaultName, colIndex)	}
+		function getRowHeaderText(defaultName, rowIndex)	{ return basicButtonTableView.getRowHeaderText(defaultName, rowIndex)	}
+		function getDefaultValue(columnIndex, rowIndex)		{ return basicButtonTableView.getDefaultValue(columnIndex, rowIndex)	}
+		function getValidator(columnIndex, rowIndex)		{ return basicButtonTableView.getValidator(columnIndex, rowIndex)		}
+		function getEditable(columnIndex, rowIndex)			{ return basicButtonTableView.getEditable(columnIndex, rowIndex)		}
 
 		Component.onCompleted	: basicButtonTableView.tableViewCompleted()
 	}
