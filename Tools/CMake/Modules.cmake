@@ -48,6 +48,7 @@ if(NOT JASP_TEST_BUILD)
 		"jaspNetwork"
 		"jaspPower"
 		"jaspPredictiveAnalytics"
+		"jaspProcess"
 		"jaspProphet"
 		"jaspQualityControl"
 		"jaspReliability"
