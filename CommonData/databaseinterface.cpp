@@ -1004,21 +1004,22 @@ void DatabaseInterface::columnSetDescription(int columnId, const std::string & d
 	});
 }
 
-void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
+void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool isComputed, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
 
-	runStatements("UPDATE Columns SET isComputed=1, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	runStatements("UPDATE Columns SET isComputed=?, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
 	{
 		std::string codeT = computedColumnTypeToString(codeType);
 
-		sqlite3_bind_int(stmt,  1, int(invalidated));
-		sqlite3_bind_text(stmt, 2, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 3, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 4, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,  6, analysisId);
-		sqlite3_bind_int(stmt,  7, columnId);
+		sqlite3_bind_int(stmt,  1, int(isComputed));
+		sqlite3_bind_int(stmt,  2, int(invalidated));
+		sqlite3_bind_text(stmt, 3, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 6, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,  7, analysisId);
+		sqlite3_bind_int(stmt,  8, columnId);
 	});
 }
 

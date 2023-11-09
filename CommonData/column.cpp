@@ -178,7 +178,7 @@ void Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 	incRevision();
 }
 
@@ -279,18 +279,6 @@ void Column::setAnalysisId(int analysisId)
 		return;
 	
 	_analysisId = analysisId;
-	
-	dbUpdateComputedColumnStuff();
-}
-
-void Column::setIsComputed(bool isComputed)
-{
-	JASPTIMER_SCOPE(Column::setIsComputed);
-
-	if(_isComputed == isComputed)
-		return;
-	
-	_isComputed = isComputed;
 	
 	dbUpdateComputedColumnStuff();
 }
@@ -2196,7 +2184,7 @@ void Column::deserialize(const Json::Value &json)
 	_isComputed			= json["isComputed"].asBool();
 	_analysisId			= json["analysisId"].asInt();
 
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 
 
 	_dbls.clear();

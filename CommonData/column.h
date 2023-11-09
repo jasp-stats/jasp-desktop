@@ -48,7 +48,6 @@ public:
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
 			void					setInvalidated(		bool				invalidated		);
-			void					setIsComputed(		bool				isComputed		);
 			void					setCompColStuff(bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(enum columnType columnType = columnType::unknown);
 
