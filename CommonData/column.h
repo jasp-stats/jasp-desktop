@@ -48,7 +48,6 @@ public:
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
 			void					setInvalidated(		bool				invalidated		);
-			void					setIsComputed(		bool				isComputed		);
 			void					setCompColStuff(bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(enum columnType columnType = columnType::unknown);
 
@@ -198,8 +197,8 @@ private:
 			columnType				_type				= columnType::unknown,
 									_preEditType		= columnType::unknown;
 			int						_id					= -1,
-									_analysisId			= -1;
-			bool					_isComputed			= false,
+									_analysisId			= -1;		// Actually initialized in DatabaseInterface::columnInsert
+			bool					_isComputed			= false,	// Actually initialized in DatabaseInterface::columnInsert
 									_invalidated		= false,
 									_batchedLabel		= false;
 			computedColumnType		_codeType			= computedColumnType::notComputed;

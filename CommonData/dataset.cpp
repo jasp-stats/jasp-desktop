@@ -146,6 +146,8 @@ Column * DataSet::newColumn(const std::string &name)
 {
 	assert(_dataSetID > 0);
 	Column * col = new Column(this, db().columnInsert(_dataSetID, -1, name));
+	col->setName(name);
+
 	_columns.push_back(col);
 
 	incRevision();

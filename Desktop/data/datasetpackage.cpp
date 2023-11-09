@@ -1789,7 +1789,11 @@ void DataSetPackage::setColumnAsComputed(size_t columnIndex, computedColumnType 
 
 	column->setCodeType(type);
 
-	emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+	//emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
+	//we need to actually send lots of signals from ColumnModel but because of the undo/redo this is a bit convoluted now...
+
+	refresh();
+
 }
 
 void DataSetPackage::setColumnHasCustomEmptyValues(size_t columnIndex, bool hasCustomEmptyValue)
@@ -2643,7 +2647,7 @@ void DataSetPackage::requestComputedColumnDestruction(const std::string& columnN
 	Column * col = dataSet()->column(columnName);
 
 	if(!col || !col->isComputed())
-		return ;
+		return;
 
 	removeColumn(columnName);
 

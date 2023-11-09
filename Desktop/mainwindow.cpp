@@ -328,6 +328,14 @@ const QString MainWindow::contactText() const
 	, "https://jasp-stats.org/donate/");
 }
 
+
+void MainWindow::showAnalysis()
+{
+	_ribbonModel->showStatistics();
+	emit hideDataPanel();
+	_analyses->setVisible(true);
+}
+
 bool MainWindow::checkDoSync()
 {
 	//Only do this if we are *not* running in reporting mode. 

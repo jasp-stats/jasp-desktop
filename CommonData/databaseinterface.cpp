@@ -379,7 +379,7 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 #endif
 
 	//Create column entry
-	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, isComputed) VALUES (?, ?, ?, ?, 0) RETURNING id;", [&](sqlite3_stmt * stmt)
+	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, isComputed, analysisId) VALUES (?, ?, ?, ?, 0, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
 	{
 		sqlite3_bind_int(stmt,	1, dataSetId);
 		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
@@ -1004,20 +1004,22 @@ void DatabaseInterface::columnSetDescription(int columnId, const std::string & d
 	});
 }
 
-void DatabaseInterface::columnSetComputedInfo(int columnId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
+void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool isComputed, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
 
-	runStatements("UPDATE Columns SET isComputed=1, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	runStatements("UPDATE Columns SET isComputed=?, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
 	{
 		std::string codeT = computedColumnTypeToString(codeType);
 
-		sqlite3_bind_int(stmt,  1, int(invalidated));
-		sqlite3_bind_text(stmt, 2, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 3, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 4, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,  6, columnId);
+		sqlite3_bind_int(stmt,  1, int(isComputed));
+		sqlite3_bind_int(stmt,  2, int(invalidated));
+		sqlite3_bind_text(stmt, 3, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 6, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,  7, analysisId);
+		sqlite3_bind_int(stmt,  8, columnId);
 	});
 }
 
@@ -1055,7 +1057,7 @@ std::string DatabaseInterface::_wrap_sqlite3_column_text(sqlite3_stmt * stmt, in
 	return !col ? "" : std::string(reinterpret_cast<const char*>(col));	
 }
 
-bool DatabaseInterface::columnGetComputedInfo(int columnId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson)
+bool DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetComputedInfo);
 	bool isComputed = false;
@@ -1069,7 +1071,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, bool &invalidated, c
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 6);
+		assert(colCount == 7);
 
 					isComputed			= sqlite3_column_int(		stmt,	0);
 					invalidated			= sqlite3_column_int(		stmt,	1);
@@ -1077,6 +1079,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, bool &invalidated, c
 					rCode				= _wrap_sqlite3_column_text(stmt,	3);
 					error				= _wrap_sqlite3_column_text(stmt,	4);
 		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	5);
+					analysisId			= sqlite3_column_int(		stmt,	6);
 
 		codeType = codeTypeStr.empty() ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr);
 
@@ -1084,7 +1087,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, bool &invalidated, c
 		Json::Reader().parse(constructorJsonStr, constructorJson);
 	};
 
-	runStatements("SELECT isComputed, invalidated, codeType, rCode, error, constructorJson FROM Columns WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT isComputed, invalidated, codeType, rCode, error, constructorJson, analysisId FROM Columns WHERE id = ?;", prepare, processRow);
 
 	return isComputed;
 }

@@ -376,9 +376,9 @@ if(APPLE)
 
       # Patch and sign all first party libraries
 	  execute_process(
-		COMMAND_ECHO STDOUT
+		#COMMAND_ECHO STDOUT
 		#ERROR_QUIET 
-		#OUTPUT_QUIET
+		OUTPUT_QUIET
 		WORKING_DIRECTORY ${R_HOME_PATH}
 		COMMAND
 		  ${CMAKE_COMMAND} -D
@@ -540,8 +540,9 @@ if(APPLE)
     # Patching RInside and RCpp
     message(CHECK_START "Patching Frameworks/.../library")
     execute_process(
-	  COMMAND_ECHO STDOUT
-	  #ERROR_QUIET OUTPUT_QUIET
+	  #COMMAND_ECHO STDOUT
+	  #ERROR_QUIET 
+    OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
@@ -577,8 +578,9 @@ if(APPLE)
 
     message(CHECK_START "Patching Frameworks/.../library")
     execute_process(
-	  COMMAND_ECHO STDOUT
-	  #ERROR_QUIET OUTPUT_QUIET
+	  #COMMAND_ECHO STDOUT
+	  #ERROR_QUIET 
+    OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D

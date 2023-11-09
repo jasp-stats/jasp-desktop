@@ -8,12 +8,17 @@ FocusScope
 	id:		missingValuesWidget
 	property var	model:						preferencesModel
 	property bool	showTitle:					true
+	property bool	splitMe:					splitHeight > height
 	property bool	showResetWorkspaceButton:	false
+	property bool	showWorkspaceMissingValues:	true
+
 	property string resetButtonLabel:			qsTr("Reset")
 	property string resetButtonTooltip
+	property int	splitHeight:				200 * preferencesModel.uiScale
 
-	implicitWidth:		300 * preferencesModel.uiScale
+	implicitWidth:		(splitMe ? 600 : 300) * preferencesModel.uiScale
 	implicitHeight: 	300 * preferencesModel.uiScale
+
 
 	Rectangle
 	{
@@ -49,9 +54,9 @@ FocusScope
 			anchors
 			{
 				top:		showTitle ? missingValuesTitle.bottom : parent.top
-				bottom:		buttons.top
+				bottom:		splitMe ? parent.bottom : buttons.top
 				left:		parent.left
-				right:		parent.right
+				right:		splitMe ? parent.horizontalCenter : parent.right
 				margins:	jaspTheme.generalAnchorMargin
 			}
 
@@ -114,7 +119,7 @@ FocusScope
 
 			anchors
 			{
-				left:		parent.left
+				left:		splitMe ? parent.horizontalCenter : parent.left
 				right:		parent.right
 				bottom:		parent.bottom
 				margins:	jaspTheme.generalAnchorMargin
@@ -183,7 +188,17 @@ FocusScope
 				text:				resetButtonLabel
 				toolTip:			resetButtonTooltip
 				onClicked:			missingValuesWidget.model.resetEmptyValues()
+			}
 
+			RoundedButton
+			{
+				Layout.fillWidth:	true
+				id:					workspaceMissingValuesButton
+				text:				qsTr("Show workspace missing values")
+				toolTip:			qsTr("Opens the settings for workspace missing values")
+				onClicked:			mainWindowRoot.showWorkspaceMenu()
+				visible:			showWorkspaceMissingValues && mainWindow.dataAvailable
+				isLink:				true
 			}
 		}
 	}

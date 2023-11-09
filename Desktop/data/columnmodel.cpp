@@ -26,15 +26,18 @@ QVariantList ColumnModel::computedTypeValues() const
 		computedChoices.push_back(rCodeChoice);
 		computedChoices.push_back(constructorCodeChoice);
 	}
+
 	if (analysisChoice.isEmpty())
 	{
 		QMap<QString, QVariant> uniqueChoice =			{ std::make_pair("value", computedColumnTypeToQString(computedColumnType::analysis)),			std::make_pair("label", columnTypeFriendlyName[computedColumnType::analysis])};
 		analysisChoice.push_back(uniqueChoice);
 	}
+
 	if (analysisNotComputedChoice.isEmpty())
 	{
 		QMap<QString, QVariant> uniqueChoice =			{ std::make_pair("value", computedColumnTypeToQString(computedColumnType::analysisNotComputed)), std::make_pair("label", columnTypeFriendlyName[computedColumnType::analysisNotComputed])};
 		analysisNotComputedChoice.push_back(uniqueChoice);
+		analysisNotComputedChoice.append(computedChoices);
 	}
 
 	computedColumnType type = column() ? column()->codeType() : computedColumnType::notComputed;
@@ -45,8 +48,10 @@ QVariantList ColumnModel::computedTypeValues() const
 	case computedColumnType::rCode:
 	case computedColumnType::constructorCode:
 		return computedChoices;
+
 	case computedColumnType::analysis:
 		return analysisChoice;
+
 	case computedColumnType::analysisNotComputed:
 		return analysisNotComputedChoice;
 	}
@@ -234,14 +239,20 @@ QString ColumnModel::computedType() const
 
 bool ColumnModel::computedTypeEditable() const
 {
-	if (_virtual || !column()) return false;
+	if(_virtual)
+		return true;
+
+	if (!column())
+		return false;
 
 	switch (column()->codeType())
 	{
 	case computedColumnType::notComputed:
+	case computedColumnType::analysisNotComputed:
 	case computedColumnType::constructorCode:
 	case computedColumnType::rCode:
 		return true;
+
 	default:
 		return false;
 	}
@@ -258,7 +269,8 @@ void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 
 void ColumnModel::setComputedType(QString type)
 {
-	if (type == computedType()) return;
+	if (type == computedType())
+		return;
 
 	computedColumnType cType = computedColumnTypeFromString(type.toStdString());
 
@@ -456,7 +468,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 
 	_currentColIndex = chosenColumn;
 
-	emit tabsChanged();
+	refresh();
 
 	if(deleteMe >= 0)
 		_dataSetTableModel->removeColumn(deleteMe);
@@ -680,6 +692,7 @@ bool ColumnModel::nameEditable() const
 {
 	if(column())
 		return !(column()->isComputed() && (column()->codeType() == computedColumnType::analysisNotComputed || column()->codeType() == computedColumnType::analysis));
+
 	return true;
 }
 
@@ -688,6 +701,7 @@ void ColumnModel::clearVirtual()
 	_dummyColumn.description.clear();
 	_dummyColumn.name.clear();
 	_dummyColumn.title.clear();
-	_dummyColumn.type = columnType::scale;
-	_dummyColumn.computedType = computedColumnType::notComputed;
+
+	_dummyColumn.type			= columnType::scale;
+	_dummyColumn.computedType	= computedColumnType::notComputed;
 }

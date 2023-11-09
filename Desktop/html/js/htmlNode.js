@@ -29,7 +29,7 @@ convertModelToHtml = function(model)
 		optText = "";
 
 	var html = '<span style="max-width:'+optMaxWidth+'; display:block;">';
-	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"/>' + optText + '</div>'
+	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + optText + '</div>'
 	else if(optElementType === "")		html +=														optText + "</span>";
 	else if(optClass === "")			html += '<'+ optElementType +' >' +							optText + '</'+ optElementType +'></span>';
 	else								html += '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'></span>';

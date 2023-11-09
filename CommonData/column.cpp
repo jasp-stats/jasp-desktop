@@ -6,8 +6,7 @@
 
 Column::Column(DataSet * data, int id) 
 	: DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()), _data(data), _id(id)
-{
-}
+{}
 
 void Column::dbCreate(int index)
 {
@@ -21,14 +20,15 @@ void Column::dbLoad(int id, bool getValues)
 {
 	JASPTIMER_SCOPE(Column::dbLoad);
 
-	assert(_id != -1 || id != -1);
+	assert(_id == id || (id != -1 && _id == -1) || _id != -1);
+
 	if(id != -1)
 		_id = id;
 
 	db().transactionReadBegin();
 	
 					db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision);
-	_isComputed =   db().columnGetComputedInfo(	_id, _invalidated, _codeType, _rCode, _error, _constructorJson);
+	_isComputed =   db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
 
 	db().labelsLoad(this);
 	
@@ -45,7 +45,9 @@ void Column::dbLoadIndex(int index, bool getValues)
 {
 	JASPTIMER_SCOPE(Column::dbLoadIndex);
 
-	dbLoad(db().columnIdForIndex(_data->id(), index), getValues);
+	_id = db().columnIdForIndex(_data->id(), index);
+
+	dbLoad(_id, getValues);
 }
 
 void Column::dbDelete(bool cleanUpRest)
@@ -176,7 +178,7 @@ void Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 	incRevision();
 }
 
@@ -205,9 +207,11 @@ void Column::setCodeType(computedColumnType codeType)
 		_constructorJson["formulas"] = Json::arrayValue;
 	}
 
-	_codeType = codeType;
-	_isComputed = _codeType != computedColumnType::notComputed;
+	if(_codeType == computedColumnType::analysisNotComputed)
+		_analysisId = -1;
 
+	_codeType	= codeType;
+	_isComputed = _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;
 	
 	dbUpdateComputedColumnStuff();
 }
@@ -275,18 +279,6 @@ void Column::setAnalysisId(int analysisId)
 		return;
 	
 	_analysisId = analysisId;
-	
-	dbUpdateComputedColumnStuff();
-}
-
-void Column::setIsComputed(bool isComputed)
-{
-	JASPTIMER_SCOPE(Column::setIsComputed);
-
-	if(_isComputed == isComputed)
-		return;
-	
-	_isComputed = isComputed;
 	
 	dbUpdateComputedColumnStuff();
 }
@@ -1010,8 +1002,8 @@ bool Column::overwriteDataWithScale(doublevec scalarData)
 
 	size_t setVals = scalarData.size();
 
-	if(scalarData.size() != rowCount())
-		scalarData.resize(rowCount());
+	if(scalarData.size() != _data->rowCount())
+		scalarData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<scalarData.size(); setThis++)
 		scalarData[setThis] = static_cast<double>(std::nanf(""));
@@ -1025,8 +1017,8 @@ bool Column::overwriteDataWithOrdinal(intvec ordinalData, intstrmap levels)
 
 	size_t setVals = ordinalData.size();
 
-	if(ordinalData.size() != rowCount())
-		ordinalData.resize(rowCount());
+	if(ordinalData.size() != _data->rowCount())
+		ordinalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
 		ordinalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1040,8 +1032,8 @@ bool Column::overwriteDataWithOrdinal(intvec ordinalData)
 
 	size_t setVals = ordinalData.size();
 
-	if(ordinalData.size() != rowCount())
-		ordinalData.resize(rowCount());
+	if(ordinalData.size() != _data->rowCount())
+		ordinalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
 		ordinalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1055,8 +1047,8 @@ bool Column::overwriteDataWithNominal(intvec nominalData, intstrmap levels)
 
 	size_t setVals = nominalData.size();
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
 		nominalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1070,8 +1062,8 @@ bool Column::overwriteDataWithNominal(intvec nominalData)
 
 	size_t setVals = nominalData.size();
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
 		nominalData[setThis] = std::numeric_limits<int>::lowest();
@@ -1083,8 +1075,8 @@ bool Column::overwriteDataWithNominal(stringvec nominalData)
 {
 	JASPTIMER_SCOPE(Column::overwriteDataWithNominal);
 
-	if(nominalData.size() != rowCount())
-		nominalData.resize(rowCount());
+	if(nominalData.size() != _data->rowCount())
+		nominalData.resize(_data->rowCount());
 
 	bool changedSomething = false;
 	setAsNominalText(nominalData, &changedSomething);
@@ -2190,8 +2182,9 @@ void Column::deserialize(const Json::Value &json)
 	_error				= json["error"].asString();
 	_constructorJson	= json["constructorJson"];
 	_isComputed			= json["isComputed"].asBool();
+	_analysisId			= json["analysisId"].asInt();
 
-	db().columnSetComputedInfo(_id, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 
 
 	_dbls.clear();

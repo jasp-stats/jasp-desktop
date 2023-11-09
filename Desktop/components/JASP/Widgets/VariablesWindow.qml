@@ -33,8 +33,8 @@ FocusScope
 
 	property real calculatedBaseHeight:			common.height + jaspTheme.generalAnchorMargin
 	property real calculatedMinimumHeight:		calculatedBaseHeight + (tabView.visible ?  0.28 * parent.height : 0)
-	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.32 * parent.height : 0)
-	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  parent.height * 0.7
+	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.40 * parent.height : 0)
+	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.70 * parent.height
 
 	Connections
 	{
@@ -44,11 +44,11 @@ FocusScope
 		{
 			if (columnModel.visible && columnModel.chosenColumn >= 0)
 			{
-				if(columnModel.columnName !== columnNameVariablesWindow.value)				columnModel.columnName			= columnNameVariablesWindow.value
-				if(columnModel.columnTitle !== columnTitleVariablesWindow.value)			columnModel.columnTitle			= columnTitleVariablesWindow.value
-				if(columnModel.columnDescription !== columnDescriptionVariablesWindow.text) columnModel.columnDescription	= columnDescriptionVariablesWindow.text
-				if(columnModel.computedType !== computedTypeVariableWindow.value)			columnModel.computedType		= computedTypeVariableWindow.value
-				if(columnModel.currentColumnType !== columnTypeVariableWindow.value)		columnModel.currentColumnType	= columnTypeVariableWindow.value
+				columnModel.columnName			= columnNameVariablesWindow.value
+				columnModel.columnTitle			= columnTitleVariablesWindow.value
+				columnModel.columnDescription	= columnDescriptionVariablesWindow.text
+				columnModel.computedType		= computedTypeVariableWindow.value
+				columnModel.currentColumnType	= columnTypeVariableWindow.value
 			}
 		}
 		
@@ -64,7 +64,7 @@ FocusScope
 	{
 		id:		minWidthVariables
 
-		property int minWidth: 600 * preferencesModel.uiScale
+		property int minWidth: 500 * preferencesModel.uiScale
 
 		anchors
 		{
@@ -105,6 +105,8 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
+				property int labelWidth:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+
 				RowLayout
 				{
 					height:				longNameRow.height
@@ -118,7 +120,7 @@ FocusScope
 						undoModel:			columnModel
 						editable:           columnModel.nameEditable
 						label:				qsTr("Name: ")
-						controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+						controlLabel.width:	leftColumn.labelWidth
 
 					}
 				}
@@ -135,8 +137,7 @@ FocusScope
 					currentValue:		columnModel.currentColumnType
 					onValueChanged:		columnModel.currentColumnType = currentValue
 					controlMinWidth:	200 * jaspTheme.uiScale
-					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
-					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
+					controlLabel.width:	leftColumn.labelWidth
 				}
 
 				DropDown
@@ -147,11 +148,26 @@ FocusScope
 					values:				columnModel.computedTypeValues
 					currentValue:		columnModel.computedType
 					onValueChanged:		columnModel.computedType = currentValue
-					enabled:			columnModel.computedTypeEditable
+					visible:			columnModel.computedTypeEditable
 					controlMinWidth:	200 * jaspTheme.uiScale
 
-					controlLabel.width:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
-					//width:				Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth)
+					controlLabel.width:	leftColumn.labelWidth
+				}
+
+				Item
+				{
+					implicitWidth:			parent.width
+					implicitHeight:			showAnalysisButton.height
+					visible:				columnModel.computedType === "analysisNotComputed" || columnModel.computedType === "analysisNotComputed"
+
+					RoundedButton
+					{
+						id:					showAnalysisButton
+						text:				qsTr("Show parent analysis")
+						width:				parent.width - x
+						x:					leftColumn.labelWidth
+						onClicked:			computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
+					}
 				}
 			}
 
@@ -169,6 +185,8 @@ FocusScope
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
+				property int labelWidth:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+
 				RowLayout
 				{
 					id:					longNameRow
@@ -180,11 +198,11 @@ FocusScope
 						id:					columnTitleVariablesWindow
 						label:				qsTr("Long name: ");
 						placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-						fieldWidth:			columnDescriptionVariablesWindow.width - closeButton.width
+						fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
 						value:				columnModel.columnTitle
 						onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 						undoModel:			columnModel
-						controlLabel.width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
+						controlLabel.width:	rightColumn.labelWidth
 
 					}
 
@@ -200,25 +218,27 @@ FocusScope
 					}
 				}
 
-				RowLayout
+				Item
 				{
 					id:					descriptionRow
-
 					width:				parent.width
+					height:				Math.max(descriptionLabel.height, columnDescriptionVariablesWindow.height)
 
 					Label
 					{
-						id:		descriptionLabel
-						text:	qsTr("Description: ")
-						width:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
-
+						id:				descriptionLabel
+						text:			qsTr("Description: ")
+						width:			rightColumn.labelWidth
 					}
 
 					TextArea
 					{
 						id:					columnDescriptionVariablesWindow
-
-						height:				columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
+						height:				implicitHeight
+						width:				implicitWidth
+						x:					rightColumn.labelWidth + jaspTheme.labelSpacing //Cause that happens inside TextField between labelRect and actual control
+						implicitHeight:		columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
+						implicitWidth:		descriptionRow.width - x
 						control.padding:	3 * jaspTheme.uiScale
 
 						text:				columnModel.columnDescription
@@ -228,7 +248,7 @@ FocusScope
 						undoModel:			columnModel
 						useTabAsSpaces:		false
 
-						Layout.fillWidth:		true
+
 
 					}
 				}
@@ -290,14 +310,14 @@ FocusScope
 						{
 							// The bottom of buttons are hidden to remove their bottom line with the radius
 							// So the text has to be moved higher from the horizontal middle line.
-							id:					labelText
-							topPadding:			-tabbar.tabButtonRadius * 3/4
-							text:				columnModel.tabs[index].title
-							font:				jaspTheme.font
-							color:				jaspTheme.black
-							horizontalAlignment: Text.AlignHCenter
-							verticalAlignment:	Text.AlignVCenter
-							opacity:			checked ? 1 : .6
+							id:						labelText
+							topPadding:				-tabbar.tabButtonRadius * 3/4
+							text:					columnModel.tabs[index].title
+							font:					jaspTheme.font
+							color:					jaspTheme.black
+							horizontalAlignment:	Text.AlignHCenter
+							verticalAlignment:		Text.AlignVCenter
+							opacity:				checked ? 1 : .6
 						}
 
 						MouseArea
@@ -371,14 +391,18 @@ FocusScope
 					"label" : 1,
 					"missingValues" : 2
 				}
-				currentIndex: tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
+				currentIndex:		tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
 
-				anchors.top: tabbar.bottom
-				anchors.bottom: parent.bottom
-				anchors.left:	parent.left
-				anchors.right:	parent.right
-				anchors.margins: jaspTheme.generalAnchorMargin * 0.5
-				anchors.topMargin: jaspTheme.generalAnchorMargin * 0.25
+				anchors
+				{
+
+					top:		tabbar.bottom
+					bottom:		parent.bottom
+					left:		parent.left
+					right:		parent.right
+					margins:	jaspTheme.generalAnchorMargin * 0.5
+					topMargin:	jaspTheme.generalAnchorMargin * 0.25
+				}
 
 				ComputeColumnWindow
 				{
@@ -416,21 +440,6 @@ FocusScope
 						showTitle:			false
 						model:				columnModel
 						resetButtonTooltip: qsTr("Reset missing values with the ones set in your workspace")
-
-					}
-
-					Text
-					{
-						anchors.top:		parent.top
-						anchors.left:		missingValues.right
-						text:				qsTr("Change workspace missing values")
-						color:				jaspTheme.blueDarker
-						MouseArea
-						{
-							anchors.fill:	parent
-							onClicked:		mainWindowRoot.showWorkspaceMenu()
-							cursorShape:	Qt.PointingHandCursor
-						}
 					}
 				}
 			}

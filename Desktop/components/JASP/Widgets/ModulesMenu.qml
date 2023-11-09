@@ -151,11 +151,12 @@ FocusScope
 
 				PrefsMissingValues
 				{
-					id:			missingValues
-					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
-					x:			jaspTheme.generalAnchorMargin
-					model:		workspaceModel
-					resetButtonTooltip: qsTr("Reset missing values with the ones set in Data Preferences")
+					id:								missingValues
+					width:							parent.width - (jaspTheme.generalAnchorMargin * 2)
+					x:								jaspTheme.generalAnchorMargin
+					model:							workspaceModel
+					resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
+					showWorkspaceMissingValues:		false
 				}
 			}
 

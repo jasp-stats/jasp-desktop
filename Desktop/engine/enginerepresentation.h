@@ -173,7 +173,7 @@ signals:
 	void			stopAndDestroyEngine(			EngineRepresentation * e);
 	void			plotEditorRefresh();
 	void			runsAnalysisChanged(	bool runsAnalysis);
-	void			runsUtilityChanged(	bool runsUtility);
+	void			runsUtilityChanged(		bool runsUtility);
 	void			runsRCmdChanged(		bool runsRCmd);
 
 	bool			moduleHasEngine(const std::string & name);

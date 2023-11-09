@@ -18,7 +18,15 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_TEST_BUILD OFF CACHE BOOL "Do a quick build with just descriptives and testmodule")
+set(JASP_COMMON_MODULES
+  "jaspDescriptives"
+	"jaspTTests"
+	"jaspAnova"
+	"jaspMixedModels"
+	"jaspRegression"
+	"jaspFrequencies"
+	"jaspFactor"
+)
 
 if(NOT JASP_TEST_BUILD)
 	set(JASP_COMMON_MODULES
@@ -59,12 +67,14 @@ if(NOT JASP_TEST_BUILD)
 		"jaspVisualModeling"
         )
 else() #it IS a test build
+	message(STATUS "JASP_TEST_BUILD is enabled, building with minimal modules")
 	set(JASP_COMMON_MODULES
 		"jaspDescriptives"
+		"jaspDistributions"
 		"jaspTestModule"
 	)
 endif()
-	
+
 list(
   JOIN
   JASP_COMMON_MODULES
@@ -81,8 +91,7 @@ configure_file(${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h.in
                ${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h @ONLY)
 message(STATUS "activemodules.h is successfully generated...")
 
-if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
-                                                       JASP_EXTRA_MODULES))
+if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST JASP_EXTRA_MODULES))
   if(LINUX)
 
     if(LINUX_LOCAL_BUILD)
