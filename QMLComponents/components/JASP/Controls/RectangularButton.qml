@@ -35,6 +35,7 @@ Item
 	property bool	showIconAndText:	false
 	property bool	centerText:			true
 	property bool	iconLeft:			true
+	property bool	isLink:				false
 
 	property real	_scaledDim:			Math.max(jaspTheme.defaultRectangularButtonHeight, buttonText.height + 2 * buttonPadding)
 	property alias	_pressed:			buttonMouseArea.pressed
@@ -42,7 +43,6 @@ Item
 	property alias	border:				rect.border
 	property alias	radius:				rect.radius
 	property alias	font:				buttonText.font
-	property alias	buttonText:			buttonText
 	property alias	icon:				buttonIcon
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
@@ -71,11 +71,11 @@ Item
 	{
 		id: rect
 
-		color:			!enabled ? jaspTheme.buttonColorDisabled 
-								 : _pressed ? jaspTheme.buttonColorPressed 
-											: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered		
+		color:			!enabled ? jaspTheme.buttonColorDisabled
+								 : _pressed ? jaspTheme.buttonColorPressed
+											: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
 																											: jaspTheme.buttonColor
-		border.color:	(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered	
+		border.color:	(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered
 															   : jaspTheme.buttonBorderColor
 		border.width:	1
 		width:			parent.width
@@ -131,10 +131,14 @@ Item
 			text:		filterButtonRoot.text
 			wrapMode:	Text.Wrap
 			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-			color:		textColor == "default" ? (filterButtonRoot.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled) : textColor
+			color:		isLink
+							? (enabled ? jaspTheme.blueDarker : jaspTheme.textDisabled)
+							: (textColor == "default"
+								? (filterButtonRoot.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled)
+								: textColor)
 
 
-			font:	jaspTheme.font
+			font:	isLink ? jaspTheme.fontLink : jaspTheme.font
 			//font.pixelSize: jaspTheme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
 			//height: contentHeight

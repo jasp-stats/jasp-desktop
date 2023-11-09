@@ -30,6 +30,10 @@ JaspTheme
 	font.family:										preferencesModel.interfaceFont		//If you change the property .family the font won't respond to the UI anymore unless you use jaspFont in it somewhere...
 	font.weight:										Font.Normal
 
+	fontLink.pixelSize:									Math.round(12 * uiScale)
+	fontLink.family:									preferencesModel.interfaceFont
+	fontLink.weight:									Font.Normal
+	fontLink.underline:									true
 
 	fontLabel.bold:										true
 	fontLabel.pixelSize:								Math.round(18 * uiScale)

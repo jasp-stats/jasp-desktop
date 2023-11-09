@@ -198,8 +198,7 @@ FocusScope
 				toolTip:			qsTr("Opens the settings for workspace missing values")
 				onClicked:			mainWindowRoot.showWorkspaceMenu()
 				visible:			showWorkspaceMissingValues && mainWindow.dataAvailable
-				textColor:			enabled ? jaspTheme.blueDarker : jaspTheme.textDisabled
-				font.underline:		true
+				isLink:				true
 			}
 		}
 	}
