@@ -61,7 +61,7 @@ jobs:
       - name: Configure JASP desktop
         run: |
             git submodule update --init
-            cmake -S . -B jasp-build
+            cmake -S . -B jasp-build -DJASP_TEST_BUILD=ON
         env:
             BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
             Boost_INCLUDE_DIR: "${{steps.install-boost.outputs.BOOST_ROOT}}/include"
@@ -70,6 +70,3 @@ jobs:
       - name: Build JASP desktop
         run: |
             cmake --build jasp-build --target all
-        env:
-            JASP_TEST_BUILD: ON
-            LINUX_LOCAL_BUILD: ON
