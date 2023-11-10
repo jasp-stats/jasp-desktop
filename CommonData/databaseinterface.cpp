@@ -1246,6 +1246,9 @@ void DatabaseInterface::labelsLoad(Column * column)
 		Json::Value originalValueJson;
 		
 		reader.parse(originalValueJsonStr, originalValueJson);
+
+		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
+			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
 		
 		if(column->labels().size() == row)	column->labelsAdd(value, label, filterAllows, description, originalValueJson, order, id);
 		else								column->labels()[row]->setInformation(column, id, order, label, value, filterAllows, description, originalValueJson);
@@ -1277,7 +1280,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 		{
 			const Label			*	label			= *labelIter;
 			const std::string		labelDisplay	= label->label(),
-									origValJson		= label->originalValueAsString();
+									origValJson		= label->originalValue().toStyledString();
 			
 			
 			sqlite3_bind_int( stmt,	1, column->id());
