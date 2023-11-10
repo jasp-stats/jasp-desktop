@@ -68,7 +68,8 @@ VariablesFormBase
 
 	onListWidthChanged: if (initialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
 
-	onHeightChanged:	if (initialized )	setControlsSize();
+	onHeightChanged:			if (initialized)	setControlsSize()
+	onRemoveInvisiblesChanged:	if (initialized)	setControlsSize()
 
 	Repeater
 	{
@@ -105,8 +106,7 @@ VariablesFormBase
 			control.anchors.right		= variablesForm.right;
 			anchorTop					= control.bottom;
 			first = false
-			if (removeInvisibles)
-				control.visibleChanged.connect(setControlsSize)
+			control.visibleChanged.connect(setControlsSize)
 
 			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
 			var isControlComboBox	= (control instanceof ComboBox)
