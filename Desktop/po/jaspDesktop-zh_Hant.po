@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-11 03:01+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.2-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -4062,7 +4068,6 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "選擇全部"
@@ -4070,7 +4075,7 @@ msgstr "選擇全部"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
@@ -4079,17 +4084,16 @@ msgstr "剪下"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
-msgstr "複製報表"
+msgstr "複製"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
@@ -4098,7 +4102,7 @@ msgstr "貼上"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
@@ -4116,7 +4120,7 @@ msgstr "重做: %1"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4126,7 +4130,7 @@ msgstr "重做: %1"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
@@ -4166,7 +4170,7 @@ msgstr "行重新命名"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "重新命名"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
@@ -4193,7 +4197,6 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "關閉變量視窗"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "數值"
@@ -4230,7 +4233,7 @@ msgstr "插入列 %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "刪除列 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4245,7 +4248,7 @@ msgstr "將值貼到列 %1 行“%2”"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
+msgstr "將列 “%2”的類型設定為 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4265,60 +4268,61 @@ msgstr "刪除在行 '%2' 中含有標籤'%1'的列的篩選器"
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "將列“%2”的標籤“%1”上移"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "將列“%2”的標籤“%1”下移"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "將列“%1”的標籤上移"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "將列“%1”的標籤下移"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%2'"
-msgstr ""
+msgstr "反轉列“%2”的標籤"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "更改拖放過濾器"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "更改 R 過濾器"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr ""
+msgstr "創建名稱為 “%1” 的計算列"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr ""
+msgstr "將代碼設置為名稱為“%1” 的計算列"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
-msgstr ""
+msgstr "JASP "
+"具有關聯的資料檔，但您對其進行了編輯。是否要從關聯資料重新載入或生成新檔？"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "重新載入資料檔"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "正在等待模組 %1 的（引擎）初始化"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
@@ -4336,7 +4340,6 @@ msgctxt "RibbonModel|"
 msgid "Delete row"
 msgstr "刪除列"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Clear cells"
 msgstr "清空儲存格"
@@ -4347,48 +4350,47 @@ msgstr "重做"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "重做"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "分析"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "將 JASP 切換到分析模式"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "編輯資料"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "將 JASP 切換到資料編輯模式"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "新建資料"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "打開沒有資料的工作區"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "插入"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "插入空列或空行"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "移除"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "刪除列或行"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
@@ -4537,12 +4539,10 @@ msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Cooperative"
 msgstr ""
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
-msgstr "關於JASP"
+msgstr "關於 JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "關閉"
@@ -4643,17 +4643,14 @@ msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr ""
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr "在此處編輯標籤或選擇應濾掉的值。"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "篩選規則"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "數值"
@@ -4662,27 +4659,22 @@ msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr ""
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
-msgstr "上移選取標籤"
+msgstr "上移選取的標籤"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
-msgstr "下移選取標籤"
+msgstr "下移選取的標籤"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
 msgstr "反轉所有標籤順序"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr "重置此列所有過濾器設定"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr "重置所有列的所有過濾器設定"
@@ -4700,7 +4692,6 @@ msgctxt "ModulesMenu|"
 msgid "Name: %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "備註: "
@@ -4761,17 +4752,14 @@ msgctxt "QObject|"
 msgid "Column added by analysis"
 msgstr ""
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "連續"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Ordinal"
 msgstr "次序"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Nominal"
 msgstr "名義"
@@ -4830,4 +4818,29 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Create a computed column with name '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set code to computed column with name '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1"
 msgstr ""
