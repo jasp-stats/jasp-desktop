@@ -2,6 +2,7 @@ name: 'Ubuntu'
 
 on:
    pull_request:
+     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', '**.yml']
    workflow_dispatch:
 
 jobs:
