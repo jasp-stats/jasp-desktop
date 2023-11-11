@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-11-11 03:01+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hant/>\n"
-"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -4312,8 +4306,9 @@ msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
-msgstr "JASP "
-"具有關聯的資料檔，但您對其進行了編輯。是否要從關聯資料重新載入或生成新檔？"
+msgstr ""
+"JASP 具有關聯的資料檔，但您對其進行了編輯。是否要從關聯資料重新載入或生成新"
+"檔？"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
@@ -4627,10 +4622,6 @@ msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
 msgstr ""
 
-msgctxt "PrefsData|"
-msgid "Show workspace missing values"
-msgstr ""
-
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
 msgstr ""
@@ -4728,10 +4719,6 @@ msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
 
-msgctxt "VariablesWindow|"
-msgid "Change workspace missing values"
-msgstr ""
-
 msgctxt "QObject|"
 msgid "Not computed"
 msgstr ""
@@ -4820,27 +4807,31 @@ msgctxt "QObject|"
 msgid "Set workspace empty values"
 msgstr ""
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Create a computed column with name '%1"
+msgctxt "PrefsMissingValues|"
+msgid "Show workspace missing values"
 msgstr ""
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Set code to computed column with name '%1"
+msgctxt "PrefsMissingValues|"
+msgid "Opens the settings for workspace missing values"
 msgstr ""
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Use custom empty values for column '%1"
+msgctxt "MainPage|"
+msgid "Embed web video"
 msgstr ""
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Use default empty values for column '%1"
+msgctxt "MainPage|"
+msgid "Unsupported video services"
 msgstr ""
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Set empty values for column '%1"
+msgctxt "MainPage|"
+msgid "JASP only allows the following videoservices:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid ""
+"Contact the JASP team to request adding another videoservice to the list."
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Show parent analysis"
 msgstr ""

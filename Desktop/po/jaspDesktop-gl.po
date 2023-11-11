@@ -4869,10 +4869,6 @@ msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
 msgstr "Restablecer os valores ausentes cos valores ausentes típicos de JASP"
 
-msgctxt "PrefsData|"
-msgid "Show workspace missing values"
-msgstr "Amosar os valores ausentes da área de traballo"
-
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
 msgstr "Engadir un valor ausente"
@@ -4971,10 +4967,6 @@ msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr "Restablecer os valores ausentes cos fixados na túa área de traballo"
 
-msgctxt "VariablesWindow|"
-msgid "Change workspace missing values"
-msgstr "Trocar os valores ausentes da área de traballo"
-
 msgctxt "QObject|"
 msgid "Not computed"
 msgstr "Non calculado"
@@ -5062,3 +5054,33 @@ msgstr "Fixar os valores baleiros para a columna '%1'"
 msgctxt "QObject|"
 msgid "Set workspace empty values"
 msgstr "Fixar os valores baleiros da área de traballo"
+
+#, fuzzy
+msgctxt "PrefsMissingValues|"
+msgid "Show workspace missing values"
+msgstr "Amosar os valores ausentes da área de traballo"
+
+msgctxt "PrefsMissingValues|"
+msgid "Opens the settings for workspace missing values"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Embed web video"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Unsupported video services"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "JASP only allows the following videoservices:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid ""
+"Contact the JASP team to request adding another videoservice to the list."
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Show parent analysis"
+msgstr ""
