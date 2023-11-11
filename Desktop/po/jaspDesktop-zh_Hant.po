@@ -4062,7 +4062,6 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "選擇全部"
@@ -4070,7 +4069,7 @@ msgstr "選擇全部"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
@@ -4079,17 +4078,16 @@ msgstr "剪下"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
-msgstr "複製報表"
+msgstr "複製"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
@@ -4098,7 +4096,7 @@ msgstr "貼上"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
@@ -4116,7 +4114,7 @@ msgstr "重做: %1"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4126,7 +4124,7 @@ msgstr "重做: %1"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
@@ -4166,7 +4164,7 @@ msgstr "行重新命名"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "重新命名"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
@@ -4193,7 +4191,6 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "關閉變量視窗"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "數值"
@@ -4230,7 +4227,7 @@ msgstr "插入列 %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "刪除行 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4830,4 +4827,29 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Create a computed column with name '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set code to computed column with name '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1"
 msgstr ""
