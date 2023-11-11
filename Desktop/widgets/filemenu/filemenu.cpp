@@ -24,6 +24,7 @@
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
+#include "utilities/appdirs.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
@@ -255,11 +256,12 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			//  don't add examples to the recent list
-			if (!event->isReadOnly())
+			//  don't add database to the recent list
+			if (!event->isDatabase())
 			{
 				_recentFiles->pushRecentFilePath(event->path());
-				_computer->addRecentFolder(event->path());
+				if (!event->path().startsWith(AppDirs::examples()))
+					_computer->addRecentFolder(event->path());
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
