@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-11 03:01+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.2-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -461,11 +467,11 @@ msgstr "通过拖放公式定义列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "定距"
+msgstr "连续"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "定序"
+msgstr "有序"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
@@ -708,7 +714,7 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"在将变量分类为“定距”之前的唯一整数阈值。\n"
+"在将变量分类为“连续”之前的唯一整数阈值。\n"
 "必须重新加载数据才能生效。 有关详细信息，请参阅帮助。"
 
 msgctxt "PrefsMissingValues|"
@@ -1779,11 +1785,11 @@ msgstr "调整图大小时出错"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "定距"
+msgstr "连续"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "定序"
+msgstr "有序"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
@@ -2615,7 +2621,7 @@ msgstr "标题"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr "指定序列"
+msgstr "指有序列"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -2663,7 +2669,7 @@ msgstr "转换列类型时出了点问题，但不清楚是什么。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr "无法将列转换为定序变量：值包含小数。"
+msgstr "无法将列转换为有序变量：值包含小数。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
@@ -2671,7 +2677,7 @@ msgstr "未能将列转换为连续变量：值包含文本。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
-msgstr "未能将列转换为定序变量：值包含文本或小数。"
+msgstr "未能将列转换为有序变量：值包含文本或小数。"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -4794,11 +4800,11 @@ msgstr "由分析模块添加的列"
 
 msgctxt "QObject|"
 msgid "Scale"
-msgstr "定距"
+msgstr "连续"
 
 msgctxt "QObject|"
 msgid "Ordinal"
-msgstr "定序"
+msgstr "有序"
 
 msgctxt "QObject|"
 msgid "Nominal"
