@@ -4227,7 +4227,7 @@ msgstr "插入列 %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr "刪除行 “%1”"
+msgstr "刪除列 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
