@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-13 11:11+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.2-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4833,51 +4839,50 @@ msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
 msgstr "将工作空间描述从“%1”更改为“%2”"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr "对列“%1'”使用自定义空值"
+msgstr "对列“%1”使用自定义空值"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "对列 “%1” 使用默认空值"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "为列 “%1”设置空值"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
 msgstr "设置工作空间空值"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
 msgstr "显示此工作空间的缺失值"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "打开此工作空间缺失值设置项"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "插入网络视频"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "不支持此视频"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP 只允许以下网络视频服务商："
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
-msgstr ""
+msgstr "如需添加对其他视频服务商的支持请联络 JASP 团队。"
 
 msgctxt "VariablesWindow|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "显示父级分析"
