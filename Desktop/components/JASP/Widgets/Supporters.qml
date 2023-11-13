@@ -77,7 +77,7 @@ Item
 
 		Text
 		{
-			text:					qsTr("Suggest your institution joins the JASP Cooperative").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
+			text:					qsTr("Suggest your institution joins the JASP Community").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
 			font.family:			jaspTheme.font
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler
@@ -88,15 +88,16 @@ Item
 			textFormat:				Text.StyledText
 			horizontalAlignment:	Text.AlignHCenter
 			Layout.fillWidth:		true
-		}
-	}
 
-	MouseArea
-	{
-		cursorShape:			Qt.PointingHandCursor
-		acceptedButtons:		Qt.LeftButton
-		anchors.fill:			parent
-		onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
-		z:						-8
+
+			MouseArea
+			{
+				cursorShape:			Qt.PointingHandCursor
+				acceptedButtons:		Qt.LeftButton
+				anchors.fill:			parent
+				onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
+				z:						-8
+			}
+		}
 	}
 }

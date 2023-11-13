@@ -111,7 +111,7 @@ signals:
 	void dummyChangedNotifier();
 	void showAbout();
 	void showContact();
-	void showCooperative();
+	void showCommunity();
 	void modeChanged(FileEvent::FileMode mode);
 
 public slots:

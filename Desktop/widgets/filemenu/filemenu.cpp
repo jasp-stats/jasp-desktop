@@ -55,7 +55,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
 	_actionButtons->setEnabled(ActionButtons::Contact,			true);
-	_actionButtons->setEnabled(ActionButtons::Cooperative,		true);
+	_actionButtons->setEnabled(ActionButtons::Community,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);
@@ -420,9 +420,9 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		break;
 
 
-	case ActionButtons::FileOperation::Cooperative:
+	case ActionButtons::FileOperation::Community:
 		setVisible(false);
-		showCooperative();
+		showCommunity();
 		break;
 
 	default:
