@@ -24,6 +24,7 @@
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
+#include "utilities/appdirs.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
@@ -55,7 +56,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
 	_actionButtons->setEnabled(ActionButtons::Contact,			true);
-	_actionButtons->setEnabled(ActionButtons::Cooperative,		true);
+	_actionButtons->setEnabled(ActionButtons::Community,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);
@@ -255,11 +256,12 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			//  don't add examples to the recent list
-			if (!event->isReadOnly())
+			//  don't add database to the recent list
+			if (!event->isDatabase())
 			{
 				_recentFiles->pushRecentFilePath(event->path());
-				_computer->addRecentFolder(event->path());
+				if (!event->path().startsWith(AppDirs::examples()))
+					_computer->addRecentFolder(event->path());
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
@@ -420,9 +422,9 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		break;
 
 
-	case ActionButtons::FileOperation::Cooperative:
+	case ActionButtons::FileOperation::Community:
 		setVisible(false);
-		showCooperative();
+		showCommunity();
 		break;
 
 	default:

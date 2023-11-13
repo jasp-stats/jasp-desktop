@@ -4,6 +4,7 @@
 #include <QTimer>
 #include "log.h"
 #include "jasptheme.h"
+#include "utilities/appdirs.h"
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {
@@ -41,12 +42,15 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case IconSourceRole:			return JaspTheme::currentIconPath() + FileSystemEntry::sourcesIcons()[item.entryType];
 	case DataIconSourceRole:		return JaspTheme::currentIconPath() + FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
 	case DirRole:
+	case DisplayedPathRole:
 	{
 		if (QFileInfo(item.path).path().toLower().startsWith("http:") || QFileInfo(item.path).path().toLower().startsWith("https:"))
 			return QFileInfo (item.path).path();
 		else
 		{
 			QString location = QDir::toNativeSeparators(QFileInfo (item.path).path()) ;
+			if (role == DisplayedPathRole && location.startsWith(AppDirs::examples()))
+				location = location.mid(AppDirs::examples().length() + 1);
 			while (location.endsWith(QDir::separator())) location.chop(1);
 			return location + QDir::separator();
 		}
@@ -76,6 +80,7 @@ bool FileMenuBasicListModel::setData(const QModelIndex &index, const QVariant &v
 		case AssociatedDataFileRole:	item.associatedDataFile	= value.toString();									break;
 		case IconSourceRole:			//Do nothing
 		case DataIconSourceRole:
+		case DisplayedPathRole:
 		case DirRole:					break;
 		}
 
