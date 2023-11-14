@@ -69,27 +69,29 @@ FocusScope
 			}
 		}
 
-		FocusScope
+		Rectangle
+		{
+			z:				3
+			color:			jaspTheme.fileMenuColorBackground
+			border.width:	1
+			border.color:	jaspTheme.uiBorder
+			anchors.fill:	actionMenu
+		}
+
+		Flickable
 		{
 			id:				actionMenu
 			anchors.left:	parent.left
 			width:			fileMenu.colWidths * preferencesModel.uiScale
 			height:			parent.height
-			z:				2
+			z:				4
+			contentWidth:	width
+			contentHeight:	fileAction.implicitHeight
 
 			ALTNavigation.enabled:		true
 			ALTNavigation.parent:		ribbon.fileMenuButton
 			ALTNavigation.scopeOnly:	true
 			ALTNavigation.foreground:	fileMenuModel.visible
-
-			Rectangle
-			{
-				z:				-1
-				color:			jaspTheme.fileMenuColorBackground
-				border.width:	1
-				border.color:	jaspTheme.uiBorder
-				anchors.fill:	parent
-			}
 
 			Column
 			{
@@ -176,7 +178,17 @@ FocusScope
 			}
 		}
 
-		FocusScope
+		Rectangle
+		{
+			z:				1
+			color:			jaspTheme.fileMenuColorBackground
+			border.width:	1
+			border.color:	jaspTheme.uiBorder
+			anchors.fill:	resourceMenu
+		}
+
+
+		Flickable
 		{
 			id:					resourceMenu
 
@@ -184,7 +196,9 @@ FocusScope
 			height:				parent.height
 			anchors.left:		actionMenu.right
 			anchors.leftMargin: hasButtons ? 0 : - fileMenu.colWidths * preferencesModel.uiScale
-			z:					1
+			z:					2
+			contentWidth:		width
+			contentHeight:		resourceLocation.implicitHeight
 
 			onFocusChanged:		if(focus) fileMenuModel.resourceButtons.selectFirstButtonIfNoneSelected();
 
@@ -203,14 +217,7 @@ FocusScope
 				}
 			}
 
-			Rectangle
-			{
-				color:			jaspTheme.fileMenuColorBackground
-				border.width:	1
-				border.color:	jaspTheme.uiBorder
-				z:				-1
-				anchors.fill:	parent
-			}
+
 
 			property bool hasButtons: resourceRepeaterId.count > 0
 

@@ -386,8 +386,7 @@ Item
 		visible:	!loggedin && !processing
 		focus:		visible
 
-		anchors.horizontalCenter	: parent.horizontalCenter
-		anchors.top					: firstSeparator.bottom
-		anchors.topMargin			: 40 * preferencesModel.uiScale
+		anchors.fill:		parent
+		anchors.topMargin:	menuHeader.height
 	}
 }

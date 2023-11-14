@@ -31,7 +31,7 @@ Window
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
-	minimumHeight:		640 * jaspTheme.uiScale
+	minimumHeight:		400 * jaspTheme.uiScale
 
 	onVisibleChanged:
 		if(!visible)
