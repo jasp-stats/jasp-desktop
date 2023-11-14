@@ -46,7 +46,7 @@ QString VariableInfo::getIconFile(columnType colType, VariableInfo::IconType typ
 		case columnType::scale:			return path + "variable-scale-disabled.png";
 		case columnType::ordinal:		return path + "variable-ordinal-disabled.png";
 		case columnType::nominal:		return path + "variable-nominal-disabled.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
+		case columnType::nominalText:	return path + "variable-nominal-text-inactive.png";
 		default:						return "";
 		}
 	case VariableInfo::InactiveIconType:
@@ -55,7 +55,7 @@ QString VariableInfo::getIconFile(columnType colType, VariableInfo::IconType typ
 		case columnType::scale:			return path + "variable-scale-inactive.png";
 		case columnType::ordinal:		return path + "variable-ordinal-inactive.png";
 		case columnType::nominal:		return path + "variable-nominal-inactive.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
+		case columnType::nominalText:	return path + "variable-nominal-text-inactive.png";
 		default:						return "";
 		}
 	}
