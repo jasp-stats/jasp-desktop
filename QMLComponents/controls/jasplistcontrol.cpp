@@ -241,6 +241,18 @@ QString JASPListControl::getSourceType(QString name)
 	return model() ? model()->getItemType(name) : "";
 }
 
+bool JASPListControl::areTypesAllowed(QStringList types)
+{
+	bool result = true;
+
+	if (!_variableTypesAllowed.empty())
+		for (const QString& type : types)
+			if (!_variableTypesAllowed.contains(columnTypeFromQString(type)))
+				result = false;
+
+	return result;
+}
+
 int JASPListControl::count()
 {
 	return model() ? model()->rowCount() : 0;

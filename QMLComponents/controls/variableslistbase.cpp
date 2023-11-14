@@ -364,7 +364,6 @@ void VariablesListBase::_setAllowedVariables()
 			implicitAllowedTypes.insert("nominalText");
 			implicitAllowedTypes.insert("ordinal");
 		}
-		setAllowedColumns(implicitAllowedTypes.values());
 	}
 
 	_variableTypesAllowed.clear();
@@ -374,7 +373,7 @@ void VariablesListBase::_setAllowedVariables()
 	// The suggectedColumnsIcons indicates which columns are allowed in the VariableList view.
 	// It shows per default the suggested columns list, but if empty, it shows the alloaed columns list.
 	QStringList iconTypeList,
-				columnTypes = suggestedColumns().isEmpty() ?  allowedColumns() : suggestedColumns();
+				columnTypes = allowedColumns().isEmpty() ? suggestedColumns() : allowedColumns();
 	for (const QString& columnTypeStr : columnTypes)
 	{
 		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
