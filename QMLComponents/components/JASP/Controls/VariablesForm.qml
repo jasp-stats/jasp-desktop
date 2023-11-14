@@ -96,16 +96,10 @@ VariablesFormBase
 	
 	function init()
 	{
-		var first = true
-		var anchorTop = variablesForm.top;
 		for (var i in allJASPControls)
 		{
 			var control					= allJASPControls[i]
-			control.anchors.top			= anchorTop;
-			control.anchors.topMargin	= first ? 0 : marginBetweenVariablesLists;
 			control.anchors.right		= variablesForm.right;
-			anchorTop					= control.bottom;
-			first = false
 			control.visibleChanged.connect(setControlsSize)
 
 			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
@@ -160,6 +154,7 @@ VariablesFormBase
 		var firstControl				= true;
 		var minHeightOfAssignedControls = 0;
 		var	changeableHeightControls	= [];
+		var anchorTop					= variablesForm.top
 		
 		for (var key in allJASPControls)
 		{
@@ -170,6 +165,10 @@ VariablesFormBase
 				control.height = 0
 			else
 			{
+				control.anchors.top			= anchorTop;
+				control.anchors.topMargin	= firstControl ? 0 : marginBetweenVariablesLists;
+				anchorTop					= control.bottom;
+
 				if (removeInvisibles && control.visible && control.height == 0) // Reset the height of the control when it bocomes visible again
 					control.height = control.maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 
