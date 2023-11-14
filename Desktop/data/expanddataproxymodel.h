@@ -32,7 +32,7 @@ public:
 	void				removeColumns(int start, int count);
 	void				insertRow(int row);
 	void				insertColumn(int col, bool computed, bool R);
-	void				pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells);
+	void				pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, const QStringList& colNames = {});
 	int					setColumnType(int columnIndex, int columnType);
 	void				copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns);
 	Json::Value			serializedColumn(int col);

@@ -2083,7 +2083,7 @@ void DataSetPackage::setWorkspaceEmptyValues(const stringset &emptyValues, bool 
 	emit workspaceEmptyValuesChanged();
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, intvec coltypes)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, const intvec & coltypes, const QStringList & colNames)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
 
@@ -2096,8 +2096,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	
 	if(colCountChanged || rowCountChanged)	
 		setDataSetSize(std::max(size_t(dataColumnCount()), colMax + col), std::max(size_t(dataRowCount()), rowMax + row));
-
-	stringvec colNames = getColumnNames();
 	
 	stringvec changed;
 
@@ -2106,6 +2104,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 		int			dataCol		= c + col;
 		stringvec	colVals		= getColumnDataStrs(dataCol);
 		columnType	desiredType	= coltypes.size() > c ? columnType(coltypes[c]) : columnType::unknown;
+		std::string colName		= (colNames.size() > c && !colNames[c].isEmpty()) ? fq(colNames[c]) : getColumnName(dataCol);
 
 		for(int r=0; r<rowMax; r++)
 		{
@@ -2119,7 +2118,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colVals[r + row] = cellVal == ColumnUtils::emptyValue ? "" : cellVal;
 		}
 
-		std::string colName = getColumnName(dataCol);
 		initColumnWithStrings(dataCol, colName, colVals, "", desiredType);
 
 		changed.push_back(colName);

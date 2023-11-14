@@ -333,7 +333,8 @@ protected:
 	long		_selectScrollMs			= 0;
 	QPoint		_selectionStart			= QPoint(-1, -1),
 				_selectionEnd			= QPoint(-1, -1);
-	std::vector<Json::Value> _copiedColumns;
+	std::vector<Json::Value>	_copiedColumns;
+	QString						_lastJaspCopyIntoClipboard;
 
 
 };

@@ -1150,8 +1150,12 @@ void DataSetView::_copy(QPoint where, bool clear)
 		previousRow = selectee.row();
 	}
 
-	int rowsSelected = rows.size();
+	if(rows.size() == 0)
+		return; //Nothing to copy
+
 	_copiedColumns.clear();
+
+	int rowsSelected = rows.size();
 
 	if(isColumnHeader(where))
 	{
@@ -1163,17 +1167,13 @@ void DataSetView::_copy(QPoint where, bool clear)
 		}
 	}
 
-	if(rows.size() == 0)
-		return; //Nothing to copy
-
 	QStringList	all;
 	for(const auto & row : rows)
 		all.append(row.join("\t"));
 	QString copyThis = all.join("\n");
 
-	//Log::log() << "copying:\n" << copyThis << "\nThats it" << std::endl;
-
 	QGuiApplication::clipboard()->setText(copyThis);
+	_lastJaspCopyIntoClipboard = copyThis;
 
 	if(clear)
 	{
@@ -1203,22 +1203,36 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 void DataSetView::paste(QPoint where)
 {
+	if (where.isNull())
+		where = selectionTopLeft();
+
+	QString clipboardStr = QGuiApplication::clipboard()->text();
+
+	if (_lastJaspCopyIntoClipboard != clipboardStr)
+		// The text in the clipboard does not come from a JASP copy. So clear the reference to the copied columns, so that they are not used for the paste action.
+		_copiedColumns.clear();
+
 	if (isColumnHeader(where) && where.x() >= 0 && _copiedColumns.size() > 0)
 		_model->copyColumns(where.x(), _copiedColumns);
 	else
 	{
-		QPoint topLeft = isCell(where) ? where : selectionTopLeft();
-
-		QClipboard * clipboard = QGuiApplication::clipboard();
-		//Log::log() << "Clipboard: " << clipboard->text(); //We should not log clipboard for privacy/data anonimity reasons
-
 		std::vector<std::vector<QString>> newData;
+		QStringList colNames,
+					rows = clipboardStr.contains("\r\n") ? clipboardStr.split("\r\n") : clipboardStr.split("\n");
+
+		if (rows.isEmpty()) return;
+
+		if (isColumnHeader(where))
+		{
+			colNames = rows[0].split("\t");
+			rows.removeFirst();
+		}
 
 		size_t row = 0, col = 0;
-		for(const QString & rowStr : clipboard->text().split("\n"))
+		for(const QString & rowStr : rows)
 		{
 			col = 0;
-			if (rowStr.isEmpty()) continue; // Some editors might throw an empty line onto the end of the clipboard. Should at least have one value on the row
+			if (rowStr.isEmpty() && row == rows.length() - 1) continue; // Some editors might throw an empty line onto the end of the clipboard. Should at least have one value on the row
 			for(const QString & cellStr : rowStr.split("\t"))
 			{
 				if(newData.size()		<= col) newData.	 resize(col+1);
@@ -1232,9 +1246,7 @@ void DataSetView::paste(QPoint where)
 		for(auto& column : newData)
 			column.resize(row); // Make sure that all columns have the same number of rows
 
-		Log::log() << "DataSetView about to paste data (" << col << " columns and " << row << " rows) at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
-
-		_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), newData);
+		_model->pasteSpreadsheet(isColumnHeader(where) ? 0 : where.y(), where.x(), newData, colNames);
 	}
 }
 

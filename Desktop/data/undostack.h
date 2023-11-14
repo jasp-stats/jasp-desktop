@@ -201,7 +201,7 @@ private:
 class PasteSpreadsheetCommand : public UndoModelCommand
 {
 public:
-	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& cells);
+	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& cells, const QStringList & colNames);
 
 	void undo()					override;
 	void redo()					override;
@@ -209,6 +209,8 @@ public:
 private:
 	std::vector<std::vector<QString>>	_newCells,
 										_oldCells;
+	QStringList							_newColNames,
+										_oldColNames;
 	int									_row = -1,
 										_col = -1;
 };

@@ -74,10 +74,10 @@ bool DataSetTableModel::columnUsedInEasyFilter(int column) const
 			).toBool();
 }
 
-void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, std::vector<int> colTypes)
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, const std::vector<int> & colTypes, const QStringList & colNames)
 {
 	QModelIndex idx = mapToSource(index(row, col));
-	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes);
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes, colNames);
 }
 
 QString DataSetTableModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
