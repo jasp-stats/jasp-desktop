@@ -179,8 +179,8 @@ void RemoveRowsCommand::redo()
 	_model->removeRows(_start, _count);
 }
 
-PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > &cells)
-	: UndoModelCommand(model), _row{row}, _col{col}, _newCells{cells}
+PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > &cells, const QStringList& colNames)
+	: UndoModelCommand(model), _row{row}, _col{col}, _newCells{cells}, _newColNames{colNames}
 {
 	setText(QObject::tr("Paste values at row %1 column '%2'").arg(rowName(_row)).arg(columnName(_col)));
 }
@@ -190,7 +190,7 @@ void PasteSpreadsheetCommand::undo()
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _oldCells);
+		dataSetTable->pasteSpreadsheet(_row, _col, _oldCells, {}, _oldColNames);
 }
 
 void PasteSpreadsheetCommand::redo()
@@ -199,6 +199,7 @@ void PasteSpreadsheetCommand::redo()
 	for (int c = 0; c < _newCells.size(); c++)
 	{
 		_oldCells.push_back(std::vector<QString>());
+		_oldColNames.push_back(_model->headerData(_col + c, Qt::Horizontal).toString());
 		for (int r = 0; r < _newCells[c].size(); r++)
 			_oldCells[c].push_back(_model->data(_model->index(_row + r, _col + c)).toString());
 	}
@@ -206,7 +207,7 @@ void PasteSpreadsheetCommand::redo()
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _newCells);
+		dataSetTable->pasteSpreadsheet(_row, _col, _newCells, {}, _newColNames);
 }
 
 

@@ -200,7 +200,7 @@ public:
 				void						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values,	const std::string & title = "", columnType desiredType = columnType::unknown);
 				void						initializeComputedColumns();
 				
-				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, intvec colTypes = intvec());
+				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, const intvec & colTypes = intvec(), const QStringList & colNames = {});
 
 				void						storeMissingData(		const std::string	& columnName, const intstrmap & missingData);
 

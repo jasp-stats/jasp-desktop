@@ -505,7 +505,6 @@ FocusScope
 													dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
 											}
 					}
-
 				}
 
 			columnHeaderDelegate: Rectangle
@@ -516,6 +515,30 @@ FocusScope
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
+				Keys.onPressed: (event) =>
+				{
+					var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
+
+					if (controlPressed)
+					{
+						switch(event.key)
+						{
+						case Qt.Key_C:
+							theView.copy(Qt.point(columnIndex, -1));
+							event.accepted = true;
+							break;
+						case Qt.Key_X:
+							theView.cut(Qt.point(columnIndex, -1));
+							event.accepted = true;
+							break;
+						case Qt.Key_V:
+							theView.paste(Qt.point(columnIndex, -1));
+							event.accepted = true;
+							break;
+						}
+					}
+				}
+
 				Image
 				{
 					id:						colIcon
@@ -525,7 +548,7 @@ FocusScope
 
 
 					source: String(dataSetModel.getColumnTypesWithIcons()[columnType]) === "" ? "" : jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[columnType]
-					width:	headerRoot.__iconDim
+					width:	source == "" ? 0 : headerRoot.__iconDim
 					height: headerRoot.__iconDim
 
 					sourceSize {	width:	width * 2
@@ -696,6 +719,8 @@ FocusScope
 					{
 						if(columnIndex >= 0)
 						{
+							headerRoot.forceActiveFocus()
+
 							if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 								dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
 
