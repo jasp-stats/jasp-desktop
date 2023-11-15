@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-11-14 11:24+0000\n"
+"PO-Revision-Date: 2023-11-15 07:47+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -4272,7 +4272,7 @@ msgstr "将 列'%2' 的'%1' 标签从 '%3' 设置为 '%4'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr "筛选行在列'%2'中含有标签 '%1'"
+msgstr "筛选列'%2'中含有标签 '%1' 的行"
 
 #, qt-format
 msgctxt "QObject|"
