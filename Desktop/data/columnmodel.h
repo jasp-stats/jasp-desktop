@@ -36,6 +36,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(QStringList	emptyValues					READ emptyValues				WRITE setCustomEmptyValues		NOTIFY emptyValuesChanged				)
 	Q_PROPERTY(QVariantList	tabs						READ tabs														NOTIFY tabsChanged						)
 	Q_PROPERTY(bool 		isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
+	Q_PROPERTY(bool			compactMode					READ compactMode				WRITE setCompactMode			NOTIFY compactModeChanged				)
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -94,7 +95,9 @@ public:
 
 	bool columnIsFiltered() const;
 	bool isVirtual()		const	{ return _virtual; }
-
+	bool compactMode()		const;
+	
+	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -111,7 +114,7 @@ public slots:
 	void checkRemovedColumns(int columnIndex, int count);
 	void openComputedColumn(const QString & name);
 	void checkCurrentColumn( QStringList changedColumns, QStringList missingColumns, QMap<QString, QString>	changeNameColumns, bool rowCountChanged, bool hasNewColumns);
-
+	void setCompactMode(bool newCompactMode);
 
 signals:
 	void visibleChanged(bool visible);
@@ -136,7 +139,8 @@ signals:
 	void useCustomEmptyValuesChanged();
 	void emptyValuesChanged();
 	void isVirtualChanged();
-
+	void compactModeChanged();
+	
 private:
 	std::vector<size_t> getSortedSelection()					const;
 	void				setValueMaxWidth();
@@ -151,7 +155,8 @@ private:
 
 	bool					_visible			= false,
 							_editing			= false,
-							_virtual			= false;
+							_virtual			= false,
+							_compactMode		= false;
 	int						_currentColIndex	= -1;
 	double					_valueMaxWidth		= 10,
 							_labelMaxWidth		= 10,

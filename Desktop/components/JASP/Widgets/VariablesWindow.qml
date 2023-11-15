@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2023 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,11 +31,11 @@ FocusScope
 	id:			variablesContainer
 	visible:	columnModel.visible
 
-	property real calculatedBaseHeight:			common.height + jaspTheme.generalAnchorMargin
-	property real calculatedMinimumHeight:		calculatedBaseHeight + (tabView.visible ?  0.28 * parent.height : 0)
-	property real calculatedPreferredHeight:	calculatedBaseHeight + (tabView.visible ?  0.40 * parent.height : 0)
-	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.70 * parent.height
-
+	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:		calculatedBaseHeight * 2
+	property real calculatedPreferredHeight:	calculatedBaseHeight * 3
+	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.90 * parent.height
+	
 	Connections
 	{
 		target: columnModel
@@ -56,7 +56,7 @@ FocusScope
 		{
 			if(columnModel.chosenColumn > -1 && columnModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
-				common.focus = true //So we just put it somewhere
+				columnInfoTop.focus = true //So we just put it somewhere
 		}
 	}
 
@@ -65,7 +65,9 @@ FocusScope
 		id:		minWidthVariables
 
 		property int minWidth: 500 * preferencesModel.uiScale
-
+		
+		onHeightChanged:		columnModel.setCompactMode(height < variablesContainer.calculatedPreferredHeight)
+		
 		anchors
 		{
 			fill:			parent
@@ -81,193 +83,35 @@ FocusScope
 			z:					-1
 		}
 
-		Item
+		ColumnBasicInfo
 		{
-			id:					common
-			anchors.top:		parent.top
-			anchors.left:		parent.left
-			anchors.leftMargin: 0
-			anchors.margins:	jaspTheme.generalAnchorMargin
-			width:			    parent.width
-			height:				Math.max(leftColumn.childrenRect.height, rightColumn.childrenRect.height) + 2 * jaspTheme.generalAnchorMargin
-
-			Column
+			id:					columnInfoTop
+			anchors
 			{
-				id:			leftColumn
-				width:		Math.max(columnTypeVariableWindow.implicitWidth, computedTypeVariableWindow.implicitWidth, columnNameVariablesWindow.implicitWidth)
-				spacing:	jaspTheme.rowGroupSpacing
-
-				anchors
-				{
-					top:		common.top
-					left:		common.left
-					bottom:		common.bottom
-					margins:	jaspTheme.generalAnchorMargin
-				}
-
-				property int labelWidth:	Math.max(columnTypeVariableWindow.controlLabel.implicitWidth, computedTypeVariableWindow.controlLabel.implicitWidth, columnNameVariablesWindow.controlLabel.implicitWidth)
-
-				RowLayout
-				{
-					height:				longNameRow.height
-
-					TextField
-					{
-						id:					columnNameVariablesWindow
-						placeholderText:	qsTr("<Fill in the name of the column>")
-						value:				columnModel.columnName
-						onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
-						undoModel:			columnModel
-						editable:           columnModel.nameEditable
-						label:				qsTr("Name: ")
-						controlLabel.width:	leftColumn.labelWidth
-
-					}
-				}
-
-
-				DropDown
-				{
-					id: columnTypeVariableWindow
-
-					label:				qsTr("Column type: ")
-					isBound:			false
-					showVariableTypeIcon: true
-					values:				columnModel.columnTypeValues
-					currentValue:		columnModel.currentColumnType
-					onValueChanged:		columnModel.currentColumnType = currentValue
-					controlMinWidth:	200 * jaspTheme.uiScale
-					controlLabel.width:	leftColumn.labelWidth
-				}
-
-				DropDown
-				{
-					id: computedTypeVariableWindow
-
-					label:				qsTr("Computed type: ")
-					values:				columnModel.computedTypeValues
-					currentValue:		columnModel.computedType
-					onValueChanged:		columnModel.computedType = currentValue
-					visible:			columnModel.computedTypeEditable
-					controlMinWidth:	200 * jaspTheme.uiScale
-
-					controlLabel.width:	leftColumn.labelWidth
-				}
-
-				Item
-				{
-					implicitWidth:			parent.width
-					implicitHeight:			showAnalysisButton.height
-					visible:				columnModel.computedType === "analysisNotComputed" || columnModel.computedType === "analysisNotComputed"
-
-					RoundedButton
-					{
-						id:					showAnalysisButton
-						text:				qsTr("Show parent analysis")
-						width:				parent.width - x
-						x:					leftColumn.labelWidth
-						onClicked:			computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
-					}
-				}
+				top:			parent.top
+				left:			parent.left
+				right:			parent.right
+				margins:		jaspTheme.generalAnchorMargin
 			}
-
-			Column
-			{
-				id:			rightColumn
-				spacing:	jaspTheme.rowGroupSpacing
-
-				anchors
-				{
-					top:		common.top
-					left:		leftColumn.right
-					right:		common.right
-					bottom:		common.bottom
-					margins:	jaspTheme.generalAnchorMargin
-				}
-
-				property int labelWidth:	Math.max(columnTitleVariablesWindow.controlLabel.implicitWidth, descriptionLabel.implicitWidth)
-
-				RowLayout
-				{
-					id:					longNameRow
-					width:				parent.width
-
-
-					TextField
-					{
-						id:					columnTitleVariablesWindow
-						label:				qsTr("Long name: ");
-						placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-						fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
-						value:				columnModel.columnTitle
-						onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
-						undoModel:			columnModel
-						controlLabel.width:	rightColumn.labelWidth
-
-					}
-
-					MenuButton
-					{
-						id:					closeButton
-						height:				33 * jaspTheme.uiScale
-						width:				height
-						iconSource:			jaspTheme.iconPath + "close-button.png"
-						onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
-						toolTip:			qsTr("Close variable window")
-						radius:				height
-					}
-				}
-
-				Item
-				{
-					id:					descriptionRow
-					width:				parent.width
-					height:				Math.max(descriptionLabel.height, columnDescriptionVariablesWindow.height)
-
-					Label
-					{
-						id:				descriptionLabel
-						text:			qsTr("Description: ")
-						width:			rightColumn.labelWidth
-					}
-
-					TextArea
-					{
-						id:					columnDescriptionVariablesWindow
-						height:				implicitHeight
-						width:				implicitWidth
-						x:					rightColumn.labelWidth + jaspTheme.labelSpacing //Cause that happens inside TextField between labelRect and actual control
-						implicitHeight:		columnTypeVariableWindow.height + computedTypeVariableWindow.height + rightColumn.spacing
-						implicitWidth:		descriptionRow.width - x
-						control.padding:	3 * jaspTheme.uiScale
-
-						text:				columnModel.columnDescription
-						onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
-						applyScriptInfo:	""
-						placeholderText:	"..."
-						undoModel:			columnModel
-						useTabAsSpaces:		false
-
-
-
-					}
-				}
-			}
-
-
+			
+			visible:			!columnModel.compactMode
 		}
-
+		
+		
 		Rectangle
 		{
 			id: tabView
 
 			visible:				columnModel.tabs.length > 0
 
-			anchors.top:			common.bottom
-			anchors.left:			parent.left
-			anchors.right:			parent.right
-			anchors.bottom:			parent.bottom
-			anchors.margins:		jaspTheme.generalAnchorMargin
+			anchors
+			{
+				top:			columnModel.compactMode ? parent.top : columnInfoTop.bottom
+				left:			parent.left
+				right:			parent.right
+				bottom:			parent.bottom
+				margins:		jaspTheme.generalAnchorMargin
+			}
 
 			color: jaspTheme.uiBackground
 
@@ -277,10 +121,10 @@ FocusScope
 
 			QTC.TabBar
 			{
-				id: tabbar
-				contentHeight:	tabBarHeight + tabButtonRadius
-				width:			parent.width
-				background: Rectangle { color: jaspTheme.uiBackground }
+				id:						tabbar
+				contentHeight:			tabBarHeight + tabButtonRadius
+				width:					parent.width - closeButton.width
+				background:				Rectangle { color: jaspTheme.uiBackground }
 
 				property real	tabBarHeight:		28 * preferencesModel.uiScale
 				property real	tabButtonRadius:	5 * preferencesModel.uiScale
@@ -329,13 +173,30 @@ FocusScope
 					}
 				}
 			}
+			
+			MenuButton
+			{
+				id:					closeButton
+				height:				33 * jaspTheme.uiScale
+				width:				columnModel.compactMode ? height : 0
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+				toolTip:			qsTr("Close variable window")
+				radius:				height
+				visible:			columnModel.compactMode
+				
+				anchors.top:		tabView.top
+				anchors.topMargin:	jaspTheme.generalAnchorMargin * -0.5
+				anchors.left:		tabbar.right
+				
+			}
 
 			Rectangle
 			{
 				// This hides the bottom border of the buttons (with their radius)
-				id		: roundingHider
-				width	: tabbar.contentWidth
-				height	: tabbar.tabButtonRadius + 1
+				id:			roundingHider
+				width: tabbar.contentWidth
+				height: tabbar.tabButtonRadius + 1
 				anchors
 				{
 					left:		parent.left
@@ -387,9 +248,10 @@ FocusScope
 				id: stack
 				property var componentIndex:
 				{
-					"computed": 0,
-					"label" : 1,
-					"missingValues" : 2
+					"computed":			0,
+					"label" :			1,
+					"missingValues" :	2,
+					"basicInfo":		3
 				}
 				currentIndex:		tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
 
@@ -440,7 +302,14 @@ FocusScope
 						showTitle:			false
 						model:				columnModel
 						resetButtonTooltip: qsTr("Reset missing values with the ones set in your workspace")
+						splitMe:			true
 					}
+				}
+			
+				ColumnBasicInfo
+				{
+					id:				tabInfo
+					closeIcon:		false
 				}
 			}
 		}
