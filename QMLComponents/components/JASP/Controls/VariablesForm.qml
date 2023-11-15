@@ -46,6 +46,7 @@ VariablesFormBase
 	default property alias	content				: items.children
 			property int	listWidth			: width * 2 / 5
 			property alias	contentItems		: items
+			property bool	removeInvisibles	: false
 
 			property double	_lastListWidth		: 0
 
@@ -67,7 +68,8 @@ VariablesFormBase
 
 	onListWidthChanged: if (initialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
 
-	onHeightChanged:	if (initialized )	setControlsSize();
+	onHeightChanged:			if (initialized)	setControlsSize()
+	onRemoveInvisiblesChanged:	if (initialized)	setControlsSize()
 
 	Repeater
 	{
@@ -94,15 +96,23 @@ VariablesFormBase
 	
 	function init()
 	{
-		var first = true
-		var anchorTop = variablesForm.top;
 		for (var i in allJASPControls)
 		{
-			allJASPControls[i].anchors.top			= anchorTop;
-			allJASPControls[i].anchors.topMargin	= first ? 0 : marginBetweenVariablesLists;
-			allJASPControls[i].anchors.right		= variablesForm.right;
-			anchorTop								= allJASPControls[i].bottom;
-			first = false
+			var control					= allJASPControls[i]
+			control.anchors.right		= variablesForm.right;
+			control.visibleChanged.connect(setControlsSize)
+
+			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
+			var isControlComboBox	= (control instanceof ComboBox)
+
+			if (isControlList && widthSetByForm(control))
+				// Change the width of the VariablesList only if was not set explicitely
+				control.width = Qt.binding(function() {return variablesForm.listWidth; })
+			else if (isControlComboBox && widthSetByForm(control))
+			{
+				control.setLabelAbove	= true
+				control.controlMinWidth = Qt.binding(function() {return variablesForm.listWidth; })
+			}
 		}
 
 		var countAssignedList = 0
@@ -130,49 +140,56 @@ VariablesFormBase
 		setControlsSize()
 		assignButtonRepeater.model = countAssignedList;
 		setTabOrder();
-	}
 
-	function setControlsSize()
-	{
 		availableVariablesList.height = Qt.binding(function() { return variablesForm.height; })
 		// Set the width of the VariablesList to listWidth only if it is not set explicitely
 		// Implicitely, the width is set to the parent width.
 		if (widthSetByForm(availableVariablesList))
 			availableVariablesList.width = Qt.binding(function() { return variablesForm.listWidth; })
-		
+
+	}
+
+	function setControlsSize()
+	{
 		var firstControl				= true;
 		var minHeightOfAssignedControls = 0;
 		var	changeableHeightControls	= [];
+		var anchorTop					= variablesForm.top
 		
 		for (var key in allJASPControls)
 		{
 			var control				= allJASPControls[key]
 			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
-			var isControlComboBox	= (control instanceof ComboBox)
 
-			if (isControlList && widthSetByForm(control))
-				// Change the width of the VariablesList only if was not set explicitely
-				control.width = Qt.binding(function() {return variablesForm.listWidth; })
-			else if (isControlComboBox && widthSetByForm(control))
-			{
-				control.setLabelAbove	= true
-				control.controlMinWidth = Qt.binding(function() {return variablesForm.listWidth; })
-			}
-
-			if (!firstControl)
-				minHeightOfAssignedControls += marginBetweenVariablesLists;
-
-			firstControl = false;
-
-			if (!isControlList)
-				minHeightOfAssignedControls += control.height;
-			else if (control.maxRows === 1 || !heightSetByForm(control))
-				minHeightOfAssignedControls += control.height;
+			if (removeInvisibles && !control.visible)
+				control.height = 0
 			else
 			{
-				changeableHeightControls.push(control);
-				if (control.title)
-					minHeightOfAssignedControls += jaspTheme.variablesListTitle;
+				control.anchors.top			= anchorTop;
+				control.anchors.topMargin	= firstControl ? 0 : marginBetweenVariablesLists;
+				anchorTop					= control.bottom;
+
+				if (removeInvisibles && control.visible && control.height == 0) // Reset the height of the control when it bocomes visible again
+					control.height = control.maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
+
+				if (!firstControl)
+					minHeightOfAssignedControls += marginBetweenVariablesLists;
+
+				firstControl = false;
+
+				if (!isControlList)
+					minHeightOfAssignedControls += control.height;
+				else if (control.maxRows === 1 || !heightSetByForm(control))
+				{
+					console.log("Control " + control.name + " has height " + control.height)
+					minHeightOfAssignedControls += control.height;
+				}
+				else
+				{
+					changeableHeightControls.push(control);
+					if (control.title)
+						minHeightOfAssignedControls += jaspTheme.variablesListTitle;
+				}
 			}
 		}
 		
@@ -187,8 +204,7 @@ VariablesFormBase
 
 			for (var i = 0; i < changeableHeightControls.length; i++)
                 changeableHeightControls[i].height = changeableHeightControls[i].title ? (jaspTheme.variablesListTitle + controlHeight) : controlHeight;
-        }
-		
+		}
 	}
 
 	function setTabOrder()
