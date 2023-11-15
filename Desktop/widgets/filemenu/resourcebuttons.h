@@ -12,6 +12,7 @@ class ResourceButtons : public QAbstractListModel
 	Q_OBJECT
 	Q_PROPERTY(QString		currentQML		READ currentQML		WRITE setCurrentQML		NOTIFY currentQMLChanged	)
 	Q_PROPERTY(ButtonType	selectedButton	READ selectedButton WRITE setSelectedButton	NOTIFY selectedButtonChanged)
+	Q_PROPERTY(int			width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
@@ -42,22 +43,29 @@ public:
 	Q_INVOKABLE	void		selectButtonUp();
 	Q_INVOKABLE	void		selectButtonDown();
 	void refresh();
-
+	
+	int width() const;
+	void setWidth(int newWidth);
+	
 signals:
 	void currentQMLChanged(QString currentQML);
 	void selectedButtonChanged(ResourceButtons::ButtonType selectedButton);
-
+	
+	void widthChanged();
+	
 public slots:
 	void setVisible(ResourceButtons::ButtonType button, bool visibility);
 	void setCurrentQML(QString currentQML);
 	void setSelectedButton(ResourceButtons::ButtonType selectedButton);
 
 private:
-	void loadButtonData(std::vector<DataRow> & data);
+	void loadButtonData();
+	
 	std::vector<DataRow>			_data;
 	std::map<ButtonType, size_t>	_buttonToIndex;
 	QString							_currentQML;
 	ButtonType						_selectedButton = None;
+	int								_width;
 };
 
 #endif // ResourceButtons_H

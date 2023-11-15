@@ -197,19 +197,17 @@ QVariantList ColumnModel::tabs() const
 {
 	QVariantList tabs;
 	Column* col = column();
+	
+	if(_compactMode)
+		tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "basicInfo"), std::make_pair("title", tr("Column definition"))}));
+	
 	if(col)
 	{
 		if (col->isComputed() && (col->codeType() == computedColumnType::rCode || col->codeType() == computedColumnType::constructorCode))
-		{
-			QMap<QString, QVariant> computed =	{  std::make_pair("name", "computed"), std::make_pair("title", tr("Computed column definition"))};
-			tabs.push_back(computed);
-		}
+			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "computed"), std::make_pair("title", tr("Computed column definition"))}));
 
 		if (col->type() != columnType::scale && rowCount() > 0)
-		{
-			QMap<QString, QVariant> label =	{  std::make_pair("name", "label"), std::make_pair("title", tr("Label editor"))};
-			tabs.push_back(label);
-		}
+			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "label"), std::make_pair("title", tr("Label editor"))}));
 	}
 
 	QMap<QString, QVariant> misingValues =	{  std::make_pair("name", "missingValues"), std::make_pair("title", tr("Missing Values"))};
@@ -704,4 +702,19 @@ void ColumnModel::clearVirtual()
 
 	_dummyColumn.type			= columnType::scale;
 	_dummyColumn.computedType	= computedColumnType::notComputed;
+}
+
+bool ColumnModel::compactMode() const
+{
+	return _compactMode;
+}
+
+void ColumnModel::setCompactMode(bool newCompactMode)
+{
+	if (_compactMode == newCompactMode)
+		return;
+	_compactMode = newCompactMode;
+	emit compactModeChanged();
+	
+	emit tabsChanged();
 }

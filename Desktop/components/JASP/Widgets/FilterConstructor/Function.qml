@@ -356,10 +356,10 @@ Item
 
 	Text
 	{
-		id: haakjesRechts
-		anchors.top: meanBar.top
+		id:				haakjesRechts
+		anchors.top:	meanBar.top
 		anchors.bottom: parent.bottom
-		x: dropRow.x + dropRow.width
+		x:				dropRow.x + dropRow.width
 
 		verticalAlignment: Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
