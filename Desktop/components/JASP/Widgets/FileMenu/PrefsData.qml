@@ -133,13 +133,13 @@ ScrollView
 
 			Item  //Scale threshold
 			{
-				height:		customThreshold.height
-				width:		customThreshold.width + thresholdScale.width
+				height:		customThreshold.height + thresholdScale.height
+				width:		customThreshold.width 
 
 				CheckBox
 				{
 					id:					customThreshold
-					label:				qsTr("Import threshold between Categorical or Scale")
+					label:				qsTr("Import threshold between Categorical or Scale") + ":"
 					checked:			preferencesModel.customThresholdScale
 					onCheckedChanged:	preferencesModel.customThresholdScale = checked
 					ToolTip.delay:		500
@@ -161,9 +161,9 @@ ScrollView
 
 					anchors
 					{
-						left:			customThreshold.right
-						leftMargin:		jaspTheme.generalAnchorMargin
-						verticalCenter:	parent.verticalCenter
+						top:			customThreshold.bottom
+						left:			customThreshold.left
+						leftMargin:		jaspTheme.subOptionOffset
 					}
 				}
 			}
