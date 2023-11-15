@@ -1751,6 +1751,7 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 	if(resetModel)
 		endResetModel();
 
+	setManualEdits(true);
 	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
 }
 
@@ -2674,7 +2675,8 @@ bool DataSetPackage::manualEdits() const
 
 void DataSetPackage::setManualEdits(bool newManualEdits)
 {
-	if (_manualEdits == newManualEdits)
+	// During synchronization, even if some data are changed, manualEdits should not be set to true
+	if ((_synchingData && newManualEdits) || _manualEdits == newManualEdits)
 		return;
 
 	_manualEdits = newManualEdits;
