@@ -198,11 +198,11 @@ QVariantList ColumnModel::tabs() const
 	QVariantList tabs;
 	Column* col = column();
 	
+	if(_compactMode)
+		tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "basicInfo"), std::make_pair("title", tr("Column definition"))}));
+	
 	if(col)
 	{
-		if(_compactMode)
-			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "basicInfo"), std::make_pair("title", tr("Column definition"))}));
-		
 		if (col->isComputed() && (col->codeType() == computedColumnType::rCode || col->codeType() == computedColumnType::constructorCode))
 			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "computed"), std::make_pair("title", tr("Computed column definition"))}));
 
