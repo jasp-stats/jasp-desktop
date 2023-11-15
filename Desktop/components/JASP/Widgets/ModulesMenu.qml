@@ -91,8 +91,8 @@ FocusScope
 		{
 			id:						modulesFlick
 			flickableDirection:		Flickable.VerticalFlick
-			contentHeight:			modules.height
-			contentWidth:			modules.width
+			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
+			contentWidth:			width
 
 			anchors
 			{
