@@ -108,6 +108,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
 			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
+	DataSetPackage::pkg()->setManualEdits(false);
 	delete importDataSet;
 }
 
