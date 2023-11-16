@@ -51,9 +51,12 @@ set(AVAILABLE_R_VERSIONS
     "R-4.3.0"
     "R-4.3.0-arm64"
     "R-4.3.0-win"
-    "R-4.3.1"
-    "R-4.3.1-arm64"
-    "R-4.3.1-win"
+	"R-4.3.1"
+	"R-4.3.1-arm64"
+	"R-4.3.1-win"
+	"R-4.3.2"
+	"R-4.3.2-arm64"
+	"R-4.3.2-win"
 )
 set(R_BINARY_HASHES
     # sha1sums
@@ -81,12 +84,16 @@ set(R_BINARY_HASHES
     "1af8f055a601d5de5dfefdb3956ecc8f745c2401"
     "14c018ff54f7f5bb37c1d96b33207343b83e9345"
     "302489ab7ffc3f45a127688fe0d7c567a7f1200d"
+	# 4.3.2
+	"3d68ea6698add258bd7a4a5950152f4072eee8b2"
+	"763be9944ad00ed405972c73e9960ce4e55399d4"
+	"7965f49cc3ba08d5aaeb7d853f470cf30cc03915"
 )
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
-set(R_VERSION "4.3.1")
+set(R_VERSION "4.3.2")
 set(R_VERSION_MAJOR_MINOR "4.3")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
