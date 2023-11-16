@@ -244,7 +244,7 @@ FocusScope
 			id:						linksBox
 	
 			Layout.fillWidth:		true
-			implicitHeight:			40 * preferencesModel.uiScale
+			implicitHeight:			Math.max(linkOSF.height, linkRegister.height) + noteText.height + jaspTheme.generalAnchorMargin
 	
 			Text 
 			{
@@ -257,9 +257,13 @@ FocusScope
 				font.underline	: true
 				color			: jaspTheme.blueDarker
 	
-				anchors.left    : parent.left
-				anchors.top	    : parent.top
-				anchors.leftMargin: 5 * preferencesModel.uiScale
+				anchors
+				{
+					bottomMargin:	jaspTheme.generalAnchorMargin
+					bottom:			noteText.top
+					right:			parent.horizontalCenter
+					left:			parent.left
+				}
 	
 				MouseArea
 				{
@@ -274,17 +278,22 @@ FocusScope
 			{
 				id: linkRegister
 	
-				text			: qsTr("Register")
-				textFormat		: Text.StyledText
-				font.pointSize	: 11 * preferencesModel.uiScale
-				font.family		: jaspTheme.font.family
-				font.underline	: true
-				color			: jaspTheme.blueDarker
+				text:					qsTr("Register")
+				textFormat:				Text.StyledText
+				font.pointSize:			11 * preferencesModel.uiScale
+				font.family:			jaspTheme.font.family
+				font.underline:			true
+				color:					jaspTheme.blueDarker
+				horizontalAlignment:	Text.AlignRight
 	
-				anchors.top        : parent.top
-				anchors.right      : parent.right
-				anchors.rightMargin: 5 * preferencesModel.uiScale
-	
+				anchors
+				{
+					bottomMargin:	jaspTheme.generalAnchorMargin
+					bottom:			noteText.top
+					right:			parent.right
+					left:			parent.horizontalCenter
+				}
+
 				MouseArea
 				{
 					anchors.fill: parent
@@ -296,6 +305,7 @@ FocusScope
 	
 			Text
 			{
+				id:					noteText
 				text			: qsTr("<sup>*</sup>OSF account login only, ORCID or institutional login are not supported.")
 				textFormat		: Text.RichText
 				font.pointSize	: 8 * preferencesModel.uiScale
