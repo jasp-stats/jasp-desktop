@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-18 20:24+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.2\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -5052,51 +5058,42 @@ msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "A Comunidade"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
 msgstr "<Completa o nome da columna>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "Nome: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
 msgstr "Tipo de columna: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
 msgstr "Tipo calculado: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
 msgstr "Amosar análise xeratriz"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
 msgstr "Nome longo: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr "<Completa un nome máis descritivo da columna>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
 msgstr "Pechar a xanela de variables"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "Descrición: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Definición da columna"
