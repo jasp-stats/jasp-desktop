@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-18 02:53+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.2\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -407,7 +413,7 @@ msgstr "Dodaj kolumnę obliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr "Kolumna wynikowa"
+msgstr "Kolumna obliczona"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
@@ -415,7 +421,7 @@ msgstr "Kliknij, aby dodać kolumnę obliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
-msgstr "Kolumna wynikowa, która ma zostać utworzona"
+msgstr "Kolumna obliczona, która ma zostać utworzona"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
@@ -464,7 +470,7 @@ msgstr "Zmodyfikuj dla %1"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "Wstaw kolumnę"
+msgstr "Wstaw kolumnę obliczoną"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
@@ -509,15 +515,15 @@ msgstr "Utwórz kolumnę"
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "Kliknij tutaj, aby utworzyć nową kolumnę '%1'"
+msgstr "Kliknij tutaj, aby utworzyć nową kolumnę obliczoną '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "Podaj prawidłową (nieużywaną) nazwę kolumny wynikowej"
+msgstr "Podaj prawidłową (nieużywaną) nazwę kolumny obliczonej"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr "Zamknij bez tworzenia kolumny wynikowej"
+msgstr "Zamknij bez tworzenia kolumny obliczonej"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -541,7 +547,7 @@ msgstr "Pokaż filtr"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "Wstaw kolumnę"
+msgstr "Wstaw kolumnę obliczoną"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
@@ -909,11 +915,11 @@ msgstr "Ostatnio używane pliki"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr "Kod kolumn wynikowych został usunięty"
+msgstr "Kod kolumn obliczonych został usunięty"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr "Zastosowano kod kolumn wynikowych"
+msgstr "Zastosowano kod kolumn obliczonych"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
@@ -925,7 +931,7 @@ msgstr "Dozwolona jest tylko jedna formuła dla danej kolumny."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "Witamy w kreatorze kolumn wynikowych!"
+msgstr "Witamy w kreatorze kolumn obliczonych!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
@@ -2618,7 +2624,7 @@ msgstr "Wstaw pole kolumny"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr "Wstaw pole kolumny wynikowej"
+msgstr "Wstaw pole kolumny obliczonej"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
@@ -4100,7 +4106,7 @@ msgstr "Ukryj składnię języka R"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
-msgstr "Czy chcesz zapisać zmiany w kolumnie wyliczonej?"
+msgstr "Czy chcesz zapisać zmiany w kolumnie obliczonej?"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
@@ -4399,7 +4405,7 @@ msgstr "Ustaw wartość na '%1' w wierszu %2 kolumny '%3'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr "Wstaw kolumnę wyliczoną '%1'"
+msgstr "Wstaw kolumnę obliczoną '%1'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4482,12 +4488,12 @@ msgstr "Zmień filtr R"
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr "Stwórz kolumnę wyliczoną z nazwą '%1'"
+msgstr "Stwórz kolumnę obliczoną o nazwie '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr "Wprowadź kod do kolumny wyliczonej o nazwie '%1'"
+msgstr "Wprowadź kod do kolumny obliczonej o nazwie '%1'"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -4803,88 +4809,80 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Add column"
-msgstr ""
+msgstr "Wstaw kolumnę"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Wstaw wartości domyślne"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "Zastąp braki danych standardowymi brakami danych aplikacji JASP"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Wstaw brak danych"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Ustaw bieżącą przestrzeń roboczą z tymi wartościami"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr ""
+"Ustaw bieżącą przestrzeń roboczą, uzupełniając braki danych tymi wartościami"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr ""
-"Edytuj etykiety tutaj lub wybierz, które wartości mają zostać odfiltrowane."
+"Zmodyfikuj etykiety tutaj lub wybierz, które wartości mają zostać "
+"odfiltrowane."
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "Filtr"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "Wartość"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "Etykieta"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "Przenieś wybrane etykiety w górę"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "Przenieś wybrane etykiety w dół"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
 msgstr "Odwróć kolejność wszystkich etykiet"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla tej kolumny"
+msgstr "Wyczyść wszystkie zaznaczenia filtrów dla tej kolumny"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr "Wyczyść wszystkie znaczniki wyboru filtrów dla wszystkich kolumn"
+msgstr "Wyczyść wszystkie zaznaczenia filtrów dla wszystkich kolumn"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Obraz"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Ustawienia przestrzeni roboczej"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Nazwa: %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "Opis: "
@@ -4892,154 +4890,154 @@ msgstr "Opis: "
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
 msgstr ""
+"Ustaw braki danych na te, które zostały zdefiniowane w Ustawieniach Danych"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Pokaż ustawienia przestrzeni roboczej"
 
 msgctxt "VariablesWindow|"
 msgid "<Fill in the name of the column>"
-msgstr ""
+msgstr "<Wprowadź nazwę kolumny>"
 
 msgctxt "VariablesWindow|"
 msgid "Column type: "
-msgstr ""
+msgstr "Typ kolumny: "
 
 msgctxt "VariablesWindow|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Typ operacji: "
 
 msgctxt "VariablesWindow|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Wprowadź bardziej opisową nazwę kolumny>"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Użyj niestandardowych wartości"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
+"Zastąp braki danych tymi, które zostały ustawione w twojej przestrzeni "
+"roboczej"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "Nieobliczone"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "Obliczone przy użyciu kodu R"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "Obliczone przy użyciu kreatora graficznego"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Kolumna wygenerowana przez analizę"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Kolumna wstawiona przez analizę"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Skala"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Ordinal"
 msgstr "Porządkowa"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Nominal"
 msgstr "Nominalna"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Definicja kolumny obliczonej"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Edytor etykiet"
 
 msgctxt "ColumnModel|"
 msgid "Missing Values"
-msgstr ""
+msgstr "Braki danych"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień nazwę kolumny '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień tytuł kolumny '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień opis kolumny '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień typ obliczenia '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Zmień opis przestrzeni roboczej z '%1' na '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "Użyj niestandardowych pustych wartości dla kolumny '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "Użyj domyślnych pustych wartości dla kolumny '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Ustaw puste wartości dla kolumny '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Ustaw puste wartości dla przestrzeni roboczej"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Pokaż braki danych przestrzeni roboczej"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Otwórz ustawienia dla braków danych przestrzeni roboczej"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Osadź plik wideo"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Nieobsługiwane serwisy wideo"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP dopuszcza jedynie następujące serwisy wideo:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
-msgstr ""
+msgstr "Skontaktuj się z zespołem JASP, aby dodać inny serwis do listy."
 
 msgctxt "VariablesWindow|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "Pokaż nadrzędną analizę"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -5062,3 +5060,20 @@ msgid ""
 "<i><b>Supporter Institutions:</b></i>\n"
 "%4"
 msgstr ""
+"<h3>Społeczność</h3>\n"
+"Instytucje szkolnictwa wyższego uczestniczące w społeczności JASP wspólnie "
+"wspierają utrzymanie i dalszy rozwój JASP, co stanowi nieocenioną pomoc "
+"edukacyjną zarówno dla ich studentów, jak i dla studentów innych instytucji "
+"na całym świecie.\n"
+"\n"
+"Jeśli Twoja instytucja nie jest jeszcze częścią społeczności JASP, możesz <a "
+"href=\"%1\">zaprosić ją do uczestnictwa</a>.\n"
+"\n"
+"<i><b>Instytucje edukacyjne:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Instytucje sponsorujące:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Instytucje wspierające:</b></i>\n"
+"%4"
