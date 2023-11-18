@@ -4054,18 +4054,6 @@ msgid "Close without renaming column"
 msgstr ""
 
 msgctxt "VariablesWindow|"
-msgid "Name: "
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "Long name: "
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "Description: "
-msgstr ""
-
-msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr ""
 
@@ -4517,22 +4505,6 @@ msgid "Show workspace settings"
 msgstr ""
 
 msgctxt "VariablesWindow|"
-msgid "<Fill in the name of the column>"
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "Column type: "
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "Computed type: "
-msgstr ""
-
-msgctxt "VariablesWindow|"
-msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
-
-msgctxt "VariablesWindow|"
 msgid "Use custom values"
 msgstr ""
 
@@ -4653,10 +4625,6 @@ msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
 
-msgctxt "VariablesWindow|"
-msgid "Show parent analysis"
-msgstr ""
-
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
 msgstr ""
@@ -4711,4 +4679,44 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Community"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in the name of the column>"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Name: "
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Column type: "
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Computed type: "
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Show parent analysis"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Long name: "
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Close variable window"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "Description: "
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Column definition"
 msgstr ""

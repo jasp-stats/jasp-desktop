@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-11-18 02:53+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hans/>\n"
-"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4196,18 +4190,6 @@ msgid "Close without renaming column"
 msgstr "关闭而不重命名列"
 
 msgctxt "VariablesWindow|"
-msgid "Name: "
-msgstr "名称： "
-
-msgctxt "VariablesWindow|"
-msgid "Long name: "
-msgstr "长名称： "
-
-msgctxt "VariablesWindow|"
-msgid "Description: "
-msgstr "说 明： "
-
-msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "关闭变量窗口"
 
@@ -4663,22 +4645,6 @@ msgid "Show workspace settings"
 msgstr "显示工作空间设置"
 
 msgctxt "VariablesWindow|"
-msgid "<Fill in the name of the column>"
-msgstr "<输入变量名称>"
-
-msgctxt "VariablesWindow|"
-msgid "Column type: "
-msgstr "变量类型： "
-
-msgctxt "VariablesWindow|"
-msgid "Computed type: "
-msgstr "计算方式： "
-
-msgctxt "VariablesWindow|"
-msgid "<Fill in a more descriptive name of the column>"
-msgstr "<为变量添加更多描述内容>"
-
-msgctxt "VariablesWindow|"
 msgid "Use custom values"
 msgstr "使用自定义值"
 
@@ -4799,10 +4765,6 @@ msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr "如需添加对其他视频服务商的支持请联络 JASP 团队。"
 
-msgctxt "VariablesWindow|"
-msgid "Show parent analysis"
-msgstr "显示父级分析"
-
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
 msgstr "JASP 社区"
@@ -4832,8 +4794,8 @@ msgstr ""
 "参与 JASP 社区的高等教育机构共同支持 JASP 的开发和长期维护，从而为自己的学生"
 "和世界各地其他机构的学生提供宝贵的教育服务。\n"
 "\n"
-"如果您的机构还不是 JASP 社区成员，您可以建议您的机构<a href=\"%1\""
-">加入JASP社区</a>。\n"
+"如果您的机构还不是 JASP 社区成员，您可以建议您的机构<a href=\"%1\">加入JASP社"
+"区</a>。\n"
 "\n"
 "<i><b>教育者级别机构：</b></i>\n"
 "%2\n"
@@ -4876,8 +4838,8 @@ msgstr ""
 "\n"
 "对于统计相关的话题：请在 <a href=\"%4\"> JASP 论坛</a>上发表议题。\n"
 "\n"
-"如需了解有关　JASP　社区相关信息：请阅读 <a href=\"%5\">　JASP "
-"网站</a>上的相关内容。\n"
+"如需了解有关　JASP　社区相关信息：请阅读 <a href=\"%5\">　JASP 网站</a>上的相"
+"关内容。\n"
 "\n"
 "如果您想建议我们将您所在的机构用户添加到 <a href=\"%6\">JASP　用户世界地图</"
 "a> 请发送邮件至 <a href=\"%7\">communications@jasp-stats.org</a>.\n"
@@ -4887,3 +4849,51 @@ msgstr ""
 msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "社区"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in the name of the column>"
+msgstr "<输入变量名称>"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Name: "
+msgstr "名称： "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Column type: "
+msgstr "变量类型： "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Computed type: "
+msgstr "计算方式： "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Show parent analysis"
+msgstr "显示父级分析"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Long name: "
+msgstr "长名称： "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr "<为变量添加更多描述内容>"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Close variable window"
+msgstr "关闭变量窗口"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Description: "
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Column definition"
+msgstr ""

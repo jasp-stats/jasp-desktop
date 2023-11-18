@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-11-18 02:53+0000\n"
-"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4401,18 +4395,6 @@ msgid "Close without renaming column"
 msgstr "Schließen, ohne Spalte umzubenennen"
 
 msgctxt "VariablesWindow|"
-msgid "Name: "
-msgstr "Name: "
-
-msgctxt "VariablesWindow|"
-msgid "Long name: "
-msgstr "Langer Name: "
-
-msgctxt "VariablesWindow|"
-msgid "Description: "
-msgstr "Beschreibung: "
-
-msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "Variablenfenster schließen"
 
@@ -4872,22 +4854,6 @@ msgid "Show workspace settings"
 msgstr "Arbeitsbereich-Einstellungen anzeigen"
 
 msgctxt "VariablesWindow|"
-msgid "<Fill in the name of the column>"
-msgstr "<Tragen Sie den Spaltennamen ein>"
-
-msgctxt "VariablesWindow|"
-msgid "Column type: "
-msgstr "Spaltentyp: "
-
-msgctxt "VariablesWindow|"
-msgid "Computed type: "
-msgstr "Berechneter Typ: "
-
-msgctxt "VariablesWindow|"
-msgid "<Fill in a more descriptive name of the column>"
-msgstr "<Geben Sie einen noch beschreibenderen Spaltennamen ein>"
-
-msgctxt "VariablesWindow|"
 msgid "Use custom values"
 msgstr "Benutzerdefinierte Werte verwenden"
 
@@ -5015,11 +4981,6 @@ msgstr ""
 "Kontaktieren Sie das JASP-Team, um einen weiteren Videodienst zur Liste "
 "hinzuzufügen."
 
-#, fuzzy
-msgctxt "VariablesWindow|"
-msgid "Show parent analysis"
-msgstr "Elternanalyse anzeigen"
-
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
 msgstr "JASP-Gemeinschaft"
@@ -5090,9 +5051,9 @@ msgid ""
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
 "<h3>Kontakt</h3>\n"
-"Für <a href=\"%1\">Verbesserungsvorschläge</a> und <a href=\"%2\""
-">Fehlerberichte</a>: Bitte öffnen Sie ein Ticket auf unserer GitHub-Seite, "
-"<a href=\"%3\">wie hier erläutert.</a>\n"
+"Für <a href=\"%1\">Verbesserungsvorschläge</a> und <a "
+"href=\"%2\">Fehlerberichte</a>: Bitte öffnen Sie ein Ticket auf unserer "
+"GitHub-Seite, <a href=\"%3\">wie hier erläutert.</a>\n"
 "Dies bringt Sie in direkten Kontakt mit den JASP-Softwareentwicklern.\n"
 "\n"
 "Für statistische Fragen: Schreiben Sie bitte einen Beitrag <a href=\"%4\">im "
@@ -5102,8 +5063,8 @@ msgstr ""
 "Informationen auf der JASP-Website</a>\n"
 "\n"
 "Um vorzuschlagen, dass wir Ihre Einrichtung zur <a href=\"%6\">JASP-"
-"Weltkarte</a> hinzufügen, senden Sie bitte eine E-Mail an <a href=\"%7\""
-">communications@jasp-stats.org</a>.\n"
+"Weltkarte</a> hinzufügen, senden Sie bitte eine E-Mail an <a "
+"href=\"%7\">communications@jasp-stats.org</a>.\n"
 "\n"
 "Für individuelle Spenden: Besuchen Sie bitte die <a href=\"%8\">JASP-"
 "Webseite</a>.\n"
@@ -5111,3 +5072,52 @@ msgstr ""
 msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "Gemeinschaft"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in the name of the column>"
+msgstr "<Tragen Sie den Spaltennamen ein>"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Name: "
+msgstr "Name: "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Column type: "
+msgstr "Spaltentyp: "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Computed type: "
+msgstr "Berechneter Typ: "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Show parent analysis"
+msgstr "Elternanalyse anzeigen"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Long name: "
+msgstr "Langer Name: "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr "<Geben Sie einen noch beschreibenderen Spaltennamen ein>"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Close variable window"
+msgstr "Variablenfenster schließen"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Description: "
+msgstr "Beschreibung: "
+
+msgctxt "ColumnModel|"
+msgid "Column definition"
+msgstr ""
