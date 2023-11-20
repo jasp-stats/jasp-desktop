@@ -300,6 +300,7 @@ Item
 				else if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 				{
 					Qt.openUrlExternally(request.url);
+					request.reject();
 				}
 				else if(isURLInWhitelist(requestedURL.hostname))
 				{
