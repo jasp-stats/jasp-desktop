@@ -18,15 +18,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_COMMON_MODULES
-  "jaspDescriptives"
-	"jaspTTests"
-	"jaspAnova"
-	"jaspMixedModels"
-	"jaspRegression"
-	"jaspFrequencies"
-	"jaspFactor"
-)
+set(JASP_TEST_BUILD OFF CACHE BOOL "Do a quick build with just descriptives and testmodule")
 
 if(NOT JASP_TEST_BUILD)
 	set(JASP_COMMON_MODULES
@@ -70,7 +62,6 @@ else() #it IS a test build
 	message(STATUS "JASP_TEST_BUILD is enabled, building with minimal modules")
 	set(JASP_COMMON_MODULES
 		"jaspDescriptives"
-		"jaspDistributions"
 		"jaspTestModule"
 	)
 endif()
