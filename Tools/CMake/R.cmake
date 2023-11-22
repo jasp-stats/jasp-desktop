@@ -1,4 +1,4 @@
-# R.cmake handles the process of downloading, patching, locating and pathing the R
+	# R.cmake handles the process of downloading, patching, locating and pathing the R
 # instance in different platforms. There is a lot that is going on here, so, if you
 # don't know what you are doing, you might very well start breaking things!
 #
@@ -33,7 +33,22 @@
 #       a CMake module. I leave this for later cleanup
 #
 
-set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development/")
+set(JASP_STATIC_IS_DOWN_AGAIN OFF CACHE BOOL "Turn ON to try to get R from CRAN instead")
+
+if(NOT JASP_STATIC_IS_DOWN_AGAIN)
+	set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development/")
+else()
+	if(APPLE)
+		if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+			set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/")
+		else()
+			set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-x86_64/base/")
+		endif()
+	elseif(WINDOWS)
+		set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/windows/base/")
+	endif()
+endif()
+
 
 set(AVAILABLE_R_VERSIONS
     "R-4.1.2"
@@ -55,6 +70,7 @@ set(AVAILABLE_R_VERSIONS
 	"R-4.3.1-arm64"
 	"R-4.3.1-win"
 	"R-4.3.2"
+	"R-4.3.2-x86_64"
 	"R-4.3.2-arm64"
 	"R-4.3.2-win"
 )
@@ -85,6 +101,7 @@ set(R_BINARY_HASHES
     "14c018ff54f7f5bb37c1d96b33207343b83e9345"
     "302489ab7ffc3f45a127688fe0d7c567a7f1200d"
 	# 4.3.2
+	"3d68ea6698add258bd7a4a5950152f4072eee8b2"
 	"3d68ea6698add258bd7a4a5950152f4072eee8b2"
 	"763be9944ad00ed405972c73e9960ce4e55399d4"
 	"7965f49cc3ba08d5aaeb7d853f470cf30cc03915"
@@ -185,20 +202,17 @@ if(APPLE)
 
     else()
 
-      set(R_VERSION_NAME "R-${R_VERSION}")
-      set(R_PACKAGE_NAME "${R_VERSION_NAME}.pkg")
-      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
-
-      list(
-        FIND
-        AVAILABLE_R_VERSIONS
-        ${R_VERSION_NAME}
-        HASH_INDEX)
-      list(
-        GET
-        R_BINARY_HASHES
-        ${HASH_INDEX}
-        R_PACKAGE_HASH)
+		if(JASP_STATIC_IS_DOWN_AGAIN)
+			set(R_VERSION_NAME "R-${R_VERSION}-x86_64")
+		else()
+			set(R_VERSION_NAME "R-${R_VERSION}")
+		endif()
+		
+		set(R_PACKAGE_NAME "${R_VERSION_NAME}.pkg")
+		set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+		
+		list(FIND AVAILABLE_R_VERSIONS	${R_VERSION_NAME} HASH_INDEX)
+		list(GET R_BINARY_HASHES ${HASH_INDEX} R_PACKAGE_HASH)
 
     endif()
 
