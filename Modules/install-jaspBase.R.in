@@ -50,7 +50,12 @@ if (md5SumsChanged(modulePkg, moduleLibrary)) {
 #This is necessary because of conflicts with Matrix dep of base R lib.
 #Can be removed when a new version of R updates its Matrix
 if (!@IS_FLATPAK_USED@) {
-  renv::install("Matrix", library = moduleLibrary, prompt = prompt)
+	
+  if (Sys.info()["sysname"] == "Darwin") { 
+    options(pkgType = "source")
+  }  
+
+	renv::install("Matrix", library = moduleLibrary, prompt = prompt)
 }
 
 # Converting the absolute symlinks to relative symlinks on macOS
