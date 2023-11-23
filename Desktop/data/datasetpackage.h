@@ -249,7 +249,8 @@ public:
 				void						setColumnName(						size_t				columnIndex, const std::string	& newName,			bool resetModel = true);
 				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
 				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
-				void						setColumnAsComputed(				size_t				columnIndex, computedColumnType	  type);
+				void						setColumnComputedType(				size_t				columnIndex, computedColumnType	type);
+				void						setColumnComputedType(				const std::string &	columnName,	computedColumnType	type);
 				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
 				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
 				void						setColumnDataInts(					size_t				columnIndex, const intvec		& ints);

@@ -1779,7 +1779,7 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 	column->setDescription(newDescription);
 }
 
-void DataSetPackage::setColumnAsComputed(size_t columnIndex, computedColumnType type)
+void DataSetPackage::setColumnComputedType(size_t columnIndex, computedColumnType type)
 {
 	if(!_dataSet)
 		return;
@@ -1795,6 +1795,11 @@ void DataSetPackage::setColumnAsComputed(size_t columnIndex, computedColumnType 
 
 	refresh();
 
+}
+
+void DataSetPackage::setColumnComputedType(const std::string & columnName, computedColumnType type)
+{
+	setColumnComputedType(getColumnIndex(columnName), type);
 }
 
 void DataSetPackage::setColumnHasCustomEmptyValues(size_t columnIndex, bool hasCustomEmptyValue)
