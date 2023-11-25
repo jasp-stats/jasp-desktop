@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-11-18 20:24+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.2\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5078,17 +5084,14 @@ msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
 msgstr "<Tragen Sie den Spaltennamen ein>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "Name: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
 msgstr "Spaltentyp: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
 msgstr "Berechneter Typ: "
@@ -5098,26 +5101,22 @@ msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
 msgstr "Elternanalyse anzeigen"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
 msgstr "Langer Name: "
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr "<Geben Sie einen noch beschreibenderen Spaltennamen ein>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
 msgstr "Variablenfenster schließen"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "Beschreibung: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Spaltendefinition"
