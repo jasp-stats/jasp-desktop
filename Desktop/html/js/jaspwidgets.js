@@ -390,10 +390,10 @@ JASPWidgets.Exporter = {
 	},
 
 	getNoteStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
+		// if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
-		else
-			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
+		// else
+		// 	return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {

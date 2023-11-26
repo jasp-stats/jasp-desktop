@@ -557,10 +557,8 @@ var wrapHTML = function (html, exportParams, doctype = false) {
     const mjxAssistReg = /\<mjx-assistive-mml[^>]*\>[\s\S]*?\<\/mjx-assistive-mml\>/g;
 	html = html.replace(mjxAssistReg, "");
 
-    const iframeReg = /<iframe[^>]*src="([^"]*)"[^>]*>/g;
-    html = html.replace(iframeReg, function(match, url) {
-      return `<div>${url}</div>`;
-    });
+	const iframeReg = /<iframe[^>]*src="([^"]*)"[^>]*>/g;
+	html = html.replace(iframeReg, function(match, url) {return `<a href="${url}">${url}</a>`; });
 
 	completehtml += html
 
