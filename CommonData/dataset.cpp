@@ -381,8 +381,13 @@ const Columns & DataSet::computedColumns() const
 
 void DataSet::loadOldComputedColumnsJson(const Json::Value &json)
 {
+	if (!json.isArray()) return;
+
 	for(const Json::Value & colJson : json)
 	{
+		Log::log() << "Old computed column: " << colJson.toStyledString() << std::endl;
+		if (!colJson.isObject() || colJson["error"].asString().rfind("The engine crashed", 0) == 0) continue;
+
 		const std::string name = colJson["name"].asString();
 
 		Column * col = column(name);
