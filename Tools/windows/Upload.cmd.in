@@ -4,7 +4,8 @@ setlocal EnableDelayedExpansion
 
 echo "Copying MSI & ZIP to jasp-static with filename : JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@"
 
-scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.msi
-scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip nachtjapon@static.jasp-stats.org:~/Nightlies/WindowsZip/JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.zip
+rem scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.msi
+rem scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip nachtjapon@static.jasp-stats.org:~/Nightlies/WindowsZip/JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.zip
+scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.msix nachtjapon@static.jasp-stats.org:~/Nightlies/WindowsMSIX/JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.msix
 
 endlocal
