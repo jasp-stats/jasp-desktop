@@ -9,9 +9,13 @@ WavyWindow
 	title:					qsTr("Contact JASP")
 	visible:				mainWindow.contactVisible
 	onVisibleChanged:		mainWindow.contactVisible = visible
-	onCloseModel:			{ mainWindow.contactVisible = false }
 	width:					800 * jaspTheme.uiScale
 	height:					600 * jaspTheme.uiScale
+	onCloseModel:
+	{
+		mainWindow.contactVisible = false
+		contactWindow.close()
+	}
 
 
 	Text

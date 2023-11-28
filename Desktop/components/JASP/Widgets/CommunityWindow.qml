@@ -12,7 +12,11 @@ WavyWindow
 
 	visible:				mainWindow.communityVisible
 	onVisibleChanged:		mainWindow.communityVisible = visible
-	onCloseModel:			{ mainWindow.communityVisible = false }
+	onCloseModel:
+	{
+		mainWindow.communityVisible = false
+		communityWindow.close()
+	}
 	
 	
 

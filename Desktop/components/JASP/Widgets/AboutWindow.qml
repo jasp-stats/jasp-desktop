@@ -9,7 +9,11 @@ WavyWindow
 
 	visible:				aboutModel.visible
 	onVisibleChanged:		aboutModel.visible = visible
-	onCloseModel:			{ aboutModel.visible = false }
+	onCloseModel:
+	{
+		aboutModel.visible = false
+		aboutWindow.close()
+	}
 
 	title:					qsTr("About JASP")
 	width:					600 * jaspTheme.uiScale
