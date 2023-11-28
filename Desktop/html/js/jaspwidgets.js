@@ -715,15 +715,18 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				};
 			});
 
-			let $imgBlot = this.$el.find('.ql-editor p img');
-			let $formulaImage = this.$el.find('mjx-container img')
 			let $blotResizer = this.$el.find('.blot-formatter__overlay');
-			let $resizeHandles = this.$el.find('[class^="blot-formatter"], [class^="blot-formatter"] *');
+			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
 
 			// auto show/hide resizer handles while hover/leave.
-			$blotResizer.on("mouseenter", ()=> { $resizeHandles.show() }).on("mouseleave", ()=> { $resizeHandles.hide() });
-			$imgBlot.on("mouseenter",     ()=> { $resizeHandles.show() }).on("mouseleave", ()=> { $resizeHandles.hide() });
-			$formulaImage.on("mouseenter", "click", ()=> { $resizeHandles.hide() });
+			$blotResizer.on("mouseenter", (event) => {
+				if (event.relatedTarget.parentNode.tagName === "SPAN") //do not use resizer for formula 'mjx-container -> span -> img'
+					$resizeHandles.hide()
+				else
+					$resizeHandles.show()
+			}).on("mouseleave", () => {
+				$resizeHandles.hide()
+			});
 
 		});
 
