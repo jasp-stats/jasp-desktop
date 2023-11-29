@@ -60,6 +60,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
+	env.insert("TZDIR",				TZDIR);
 
 	//Lets set LC_ALL to utf8 before the process starts.
 	//env.insert("LC_ALL", ".UTF8");			  
@@ -81,6 +82,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	//env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
 
 	env.insert("LC_CTYPE",			"UTF-8"); //This isn't really a locale but seems necessary to get proper output from gettext on mac
+	env.insert("TZDIR",				TZDIR);
 
 #else  // linux
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
@@ -88,7 +90,6 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 #endif
 
-	env.insert("TZDIR",				TZDIR);
 	env.insert("R_LIBS_SITE",		"");
 	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
