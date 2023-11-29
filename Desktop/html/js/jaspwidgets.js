@@ -131,60 +131,46 @@ if (insideJASP) {
 
 }
 
-JASPWidgets.Encodings = {
-	getBase64: function (arrayBuffer) {
-		var base64 = ''
-		var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+class SvgToPng {
+	constructor() { }
 
-		var bytes = new Uint8Array(arrayBuffer)
-		var byteLength = bytes.byteLength
-		var byteRemainder = byteLength % 3
-		var mainLength = byteLength - byteRemainder
-
-		var a, b, c, d
-		var chunk
-
-		// Main loop deals with bytes in chunks of 3
-		for (var i = 0; i < mainLength; i = i + 3) {
-			// Combine the three bytes into a single integer
-			chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
-
-			// Use bitmasks to extract 6-bit segments from the triplet
-			a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-			b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
-			c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
-			d = chunk & 63               // 63       = 2^6 - 1
-
-			// Convert the raw binary segments to the appropriate ASCII encoding
-			base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+	/**
+	 * Convert all SVG inside the specified element to PNG format and replace the original SVG elements with PNG
+	 * @method convert
+	 * @param {HTMLElement} element
+	 * @returns {HTMLElement} 
+	 */
+	convert(element) {
+		const svgs = element.querySelectorAll("svg");
+		if (svgs.length > 0) {
+			svgs.forEach(svg => {
+				const canvas = document.createElement('canvas');
+				const svgWidth = svg.width ? svg.width.baseVal.value : svg.getAttribute("width")
+				const svgHeight = svg.height ? svg.height.baseVal.value : svg.getAttribute("Height")
+				canvas.width = parseFloat(svgWidth) * 1.5;
+				canvas.height = parseFloat(svgHeight) * 1.5;
+				const img = new Image();
+				img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg.outerHTML)));
+				img.onload = ()=> {
+					canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+					const pngDataUrl = canvas.toDataURL('image/png', 1);
+					const newImg = new Image();
+					newImg.src = pngDataUrl;
+					newImg.width = svgWidth;
+					newImg.height = svgHeight;
+					if (svg.parentNode)
+						svg.parentNode.replaceChild(newImg, svg);
+				};
+			});
+			return element;
 		}
+		return element;
+	}
 
-		// Deal with the remaining bytes and padding
-		if (byteRemainder == 1) {
-			chunk = bytes[mainLength]
-
-			a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
-
-			// Set the 4 least significant bits to zero
-			b = (chunk & 3) << 4 // 3   = 2^2 - 1
-
-			base64 += encodings[a] + encodings[b] + '=='
-		} else if (byteRemainder == 2) {
-			chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
-
-			a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-			b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
-
-			// Set the 2 least significant bits to zero
-			c = (chunk & 15) << 2 // 15    = 2^4 - 1
-
-			base64 += encodings[a] + encodings[b] + encodings[c] + '='
-		}
-
-		return base64
-	},
-
-
+	static convert(element) {
+		const svgToPng = new SvgToPng();
+		return svgToPng.convert(element);
+	}
 }
 
 JASPWidgets.ExportProperties = {
@@ -404,10 +390,10 @@ JASPWidgets.Exporter = {
 	},
 
 	getNoteStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
+		// if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
-		else
-			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
+		// else
+		// 	return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {
@@ -729,14 +715,18 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				};
 			});
 
-			//// Image resizer
-			let $imgBlot = this.$el.find('.ql-editor p img');
-            let $blotResizer = this.$el.find('.blot-formatter__overlay');
+			let $blotResizer = this.$el.find('.blot-formatter__overlay');
 			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
 
 			// auto show/hide resizer handles while hover/leave.
-            $blotResizer.on( "mouseenter", ()=> { $resizeHandles.show()} ).on( "mouseleave", ()=> { $resizeHandles.hide()} );
-            $imgBlot.on(     "mouseenter", ()=> { $resizeHandles.show()} ).on( "mouseleave", ()=> { $resizeHandles.hide()} );
+			$blotResizer.on("mouseenter", (event) => {
+				if (event.relatedTarget.parentNode.tagName === "SPAN") //do not use resizer for formula 'mjx-container -> span -> img'
+					$resizeHandles.hide()
+				else
+					$resizeHandles.show()
+			}).on("mouseleave", () => {
+				$resizeHandles.hide()
+			});
 
 		});
 
@@ -764,7 +754,26 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
 
 		this.$quill.on('text-change', function(delta, oldDelta, source) {
-			self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
+			let _quillRootHTML = self.$quill.root
+
+			function hasFormula(obj) {
+				for (let key in obj) {
+					if (typeof obj[key] === 'object') {
+						if (hasFormula(obj[key])) {
+							return true;
+						}
+					} else if (key === 'formula') {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			if (hasFormula(delta)) {
+				const svgToPng = new SvgToPng();
+				svgToPng.convert(self.$quill.root);
+			}
+			self.onNoteChanged(_quillRootHTML.innerHTML, self.$quill.getContents());
 		});
 
 		this.setQuillToolbarVisibility('none');
