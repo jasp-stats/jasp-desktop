@@ -280,7 +280,7 @@ void SetColumnPropertyCommand::undo()
 		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_oldValue.toString()));
 		break;
 	case ColumnProperty::ComputedColumn:
-		DataSetPackage::pkg()->setColumnAsComputed(_colId, computedColumnType(_oldValue.toInt()));
+		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_oldValue.toInt()));
 		break;
 	}
 }
@@ -299,7 +299,7 @@ void SetColumnPropertyCommand::redo()
 		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_newValue.toString()));
 		break;
 	case ColumnProperty::ComputedColumn:
-		DataSetPackage::pkg()->setColumnAsComputed(_colId, computedColumnType(_newValue.toInt()));
+		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_newValue.toInt()));
 		break;
 	}
 

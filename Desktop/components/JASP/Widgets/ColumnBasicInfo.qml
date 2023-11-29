@@ -28,6 +28,11 @@ Item
 	implicitHeight:				Math.max(leftColumn.childrenRect.height, rightColumn.childrenRect.height) + 2 * jaspTheme.generalAnchorMargin
 	height:						implicitHeight
 	property bool closeIcon:	true
+	property alias columnNameValue:			columnNameVariablesWindow.value
+	property alias columnTitleValue:		columnTitleVariablesWindow.value
+	property alias columnDescriptionValue:	columnDescriptionVariablesWindow.text
+	property alias columnComputedTypeValue:	computedTypeVariableWindow.value
+	property alias columnTypeValue:			columnTypeVariableWindow.value
 
 	Column
 	{
