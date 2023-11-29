@@ -107,11 +107,13 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 
 				// Know prefixes to be replaced
 				const std::map<std::string, std::string> prefixes_map = {
-					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", framework_resources + "lib"},
-					// {"/opt/R/arm64/lib",		framework_resources + "opt/R/arm64/lib"},
-					{"/usr/local/lib/libjags",	framework_resources + "opt/jags/lib/libjags"},
-					{"/usr/local/lib/libjrmath",	framework_resources + "opt/jags/lib/libjrmath"},
-					{"/usr/local/lib",			framework_resources + "opt/local/lib"},
+					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib",	framework_resources + "lib"},
+                    // {"/opt/R/arm64/lib",											framework_resources + "opt/R/arm64/lib"},
+                    {"/usr/local/lib/libjags",										framework_resources + "opt/jags/lib/libjags"},
+                    {"/usr/local/lib/libjrmath",									framework_resources + "opt/jags/lib/libjrmath"},
+                    {"/usr/local/lib", 												framework_resources + "opt/local/lib"},
+                    {"/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/12.2.0",		framework_resources + "lib"},
+                    {"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/12.2.0",		framework_resources + "opt/R/arm64/gfortran/lib"},
 				};
 
 				// Known fix library id's and paths 
