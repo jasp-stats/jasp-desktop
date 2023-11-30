@@ -62,6 +62,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 	engine.setWorkingDirectory(workDir);
 	engine.setProgram("JASPEngine.exe");
 
+	//remove any leftover ModuleDir 
 	QDir modulesDir(AppDirs::bundledModulesDir());
 	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive))
 	{
