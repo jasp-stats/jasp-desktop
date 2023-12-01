@@ -1050,8 +1050,23 @@
       "debug": false
     },
     {
-      "name": "19. Miscellaneous",
-      "path": "19. Miscellaneous",
+      "name": "19. Survival",
+      "path": "19. Survival",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Leukemia",
+          "path": "Leukemia.jasp",
+          "description": "Überlebenszeiten bei Patienten mit akuter myeloischer Leukämie. Die JASP-Beispieldatei reproduziert mehrere Ausgaben aus `Chapter 4: Non-parametric methods: the Kaplan-Meier estimator` in Melinda Mills (2011) `Introducing Survival and Event History Analysis`. <br><br> <i>Der Datensatz wurde aus dem R-Paket survival abgerufen.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Leukemia.csv"
+        }
+      ]
+    },
+    {
+      "name": "20. Miscellaneous",
+      "path": "20. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
