@@ -54,6 +54,7 @@ if(NOT JASP_TEST_BUILD)
 		"jaspReliability"
 		"jaspRobustTTests"
 		"jaspSem"
+		"jaspSurvival"
 		"jaspSummaryStatistics"
 		"jaspTimeSeries"
 		"jaspVisualModeling"
