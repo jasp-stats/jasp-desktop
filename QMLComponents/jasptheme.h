@@ -161,6 +161,7 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_timeType     toolTipTimeout                  READ toolTipTimeout                  WRITE setToolTipTimeout                  NOTIFY toolTipTimeoutChanged                  )
 
 	Q_PROPERTY(QFont              font                            READ font                            WRITE setFont                            NOTIFY fontChanged                            )
+	Q_PROPERTY(QFont              fontLink						  READ fontLink                        WRITE setFontLink                        NOTIFY fontLinkChanged                        )
 	Q_PROPERTY(QFont              fontLabel                       READ fontLabel                       WRITE setFontLabel                       NOTIFY fontLabelChanged                       )
 	Q_PROPERTY(QFont              fontRibbon                      READ fontRibbon                      WRITE setFontRibbon                      NOTIFY fontRibbonChanged                      )
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
@@ -308,6 +309,7 @@ public:
 	int					toolTipDelay()						const	{ return _toolTipDelay;					}
 	int					toolTipTimeout()					const	{ return _toolTipTimeout;				}
 	QFont				font()								const	{ return _font;							}
+	QFont				fontLink()							const	{ return _fontLink;						}
 	QFont				fontLabel()							const	{ return _fontLabel;					}
 	QFont				fontRibbon()						const	{ return _fontRibbon;					}
 	QFont				fontGroupTitle()					const	{ return _fontGroupTitle;				}
@@ -442,6 +444,7 @@ signals:
 	void toolTipDelayChanged(theme_timeType toolTipDelay);
 	void toolTipTimeoutChanged(theme_timeType toolTipTimeout);
 	void fontChanged(QFont font);
+	void fontLinkChanged(QFont fontLink);
 	void fontLabelChanged(QFont fontLabel);
 	void fontRibbonChanged(QFont fontRibbon);
 	void fontGroupTitleChanged(QFont fontGroupTitle);
@@ -572,6 +575,7 @@ public slots:
 	void setToolTipDelay(theme_timeType toolTipDelay);
 	void setToolTipTimeout(theme_timeType toolTipTimeout);
 	void setFont(QFont font);
+	void setFontLink(QFont fontLink);
 	void setFontLabel(QFont fontLabel);
 	void setFontRibbon(QFont fontRibbon);
 	void setFontGroupTitle(QFont fontGroupTitle);
@@ -720,6 +724,7 @@ private:
 						_toolTipTimeout						=60000;
 
 	QFont				_font,
+						_fontLink,
 						_fontLabel,
 						_fontRibbon,
 						_fontRCode,

@@ -23,11 +23,14 @@
 #include <string>
 #include <vector>
 #include <json/json.h>
+#include <functional>
 
 namespace Modules
 {
 class DynamicModule;
 class EntryBase;
+class AnalysisEntry;
+typedef std::vector<AnalysisEntry*> AnalysisEntries;
 
 
 /// All information required to show an analysis/separator/grouptitle in a module-menu
@@ -36,7 +39,10 @@ class AnalysisEntry
 {
 	friend EntryBase;
 public:
-	AnalysisEntry() {}
+	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
+	AnalysisEntry(std::string menuTitle, std::string icon = "", bool small=false);											///< AnalysisEntry grouptitle
+	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
+	AnalysisEntry();																										///< AnalysisEntry separator
 
 	std::string		menu()					const { return _menu;									}
 	std::string		title()					const { return _title;									}
@@ -48,6 +54,7 @@ public:
 	bool			isAnalysis()			const { return _isAnalysis;			}
 	bool			isEnabled()				const { return _isEnabled;			}
 	bool			hasWrapper()			const { return _hasWrapper;			}
+	bool			smallIcon()				const { return _smallIcon;			}
 	bool			requiresData()			const { return _requiresData;		}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
@@ -60,22 +67,29 @@ public:
 	std::string		codedReference()		const;
 	std::string		buttonMenuString()		const;
 
-private:
-	std::string		_title			= "???",
-					_function		= "???",
-					_qml			= "???",
-					_menu			= "???";
-	DynamicModule*	_dynamicModule	= nullptr;
-	bool			_isSeparator	= true,
-					_isGroupTitle	= false,
-					_isAnalysis		= false,
-					_isEnabled		= true,
-					_requiresData	= true;
-	std::string		_icon			= "";
-	bool			_hasWrapper		= false;
-};
+	void			runSpecialFunc()		const { _specialFunc(); }
 
-typedef std::vector<AnalysisEntry*> AnalysisEntries;
+	void			setMenu(const std::string& menu)	{ _menu = menu;			}
+	void			setEnabled(bool enabled)			{ _isEnabled = enabled;	}
+
+	static bool		requiresDataEntries(const AnalysisEntries & entries);
+
+private:
+	std::string				_title			= "???"		,
+							_function		= "???"		,
+							_qml			= "???"		,
+							_menu			= "???"		,
+							_icon			= ""		;
+	DynamicModule*			_dynamicModule	= nullptr	;
+	bool					_isSeparator	= true		,
+							_isGroupTitle	= false		,
+							_isAnalysis		= false		,
+							_isEnabled		= true		,
+							_requiresData	= true		,
+							_hasWrapper		= false		,
+							_smallIcon		= false		;
+	std::function<void()>	_specialFunc	= nullptr	;
+};
 
 }
 

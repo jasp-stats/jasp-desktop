@@ -21,7 +21,7 @@ Popup
 	onVisibleChanged:	plotEditorModel.visible = visible
 	focus:				true
 
-	Shortcut { onActivated: cancel(); sequence: StandardKey.Cancel; autoRepeat: false; enabled: visible }
+	Shortcut { onActivated: cancel(); sequences: [StandardKey.Cancel]; autoRepeat: false; enabled: visible }
 
 	function cancel()
 	{
@@ -486,7 +486,7 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				text:				qsTr("Cancel")
-				buttonPadding:		20 * preferencesModel.uiScale
+				buttonWidthPadding:	20 * preferencesModel.uiScale
 				on_PressedChanged:	cancel()
 			}
 

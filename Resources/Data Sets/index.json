@@ -942,16 +942,16 @@
           "associated_datafile": "GaugerRWideFormat.csv"
         },
         {
-          "name": "Nested Gauge r & R Study (Long Format)",
+          "name": "Gauge r & R Study for Non-Replicable Measurement Systems (Long Format)",
           "path": "GaugerRNestedLongFormat.jasp",
-          "description": "A dataset containing measurements of 30 different parts in the long format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing measurements of 15 different parts that represent the whole actual (or expected) range of variation from the manufacturing process. The measurements are done by destructive testing; hence each part can be measured only once. It is possible to identify a batch of parts enough alike that it is reasonable to consider them as if it is the same part. This means the measurement characteristic of interest is identical for each part in the batch is homogenous. This is important because the observed within-batch variation is used to estimate the repeatability of the measurement system. Each operator measures two parts from each batch.  The parts were randomised before measuring. The data are organised with all measurements in a single column. <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) with long format data.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "GaugerRNestedLongFormat.csv"
         },
         {
-          "name": "Nested Gauge r & R Study (Wide Format)",
+          "name": "Gauge r & R Study for Non-Replicable Measurement Systems  (Wide Format)",
           "path": "GaugerRNestedWideFormat.jasp",
-          "description": "A dataset containing measurements of 30 different parts in the wide format. Three different operators measured 10 parts three times each.  <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) Study with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing measurements of 15 different parts that represent the whole actual (or expected) range of variation from the manufacturing process. The measurements are done by destructive testing; hence each part can be measured only once. It is possible to identify a batch of parts enough alike that it is reasonable to consider them as if it is the same part. This means the measurement characteristic of interest is identical for each part in the batch is homogenous. This is important because the observed within-batch variation is used to estimate the repeatability of the measurement system. Each operator measures two parts from each batch.  The parts were randomised before measuring. The data are organised across rows. <br><br> The example JASP file demonstrates the use of the Gauge r & R (non replicable) with wide format data.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "GaugerRNestedWideFormat.csv"
         },
@@ -1007,14 +1007,14 @@
         {
           "name": "Attributes Chart (P Chart)",
           "path": "PAttributesChart.jasp",
-          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (variable) sample sizes.  <br><br> The example JASP file demonstrates the use of the P chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing the number of detected defects over 20 months and the corresponding (variable) sample sizes.  <br><br> The example JASP file demonstrates the use of the P chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "PAttributesChart.csv"
         },
         {
           "name": "Attributes Chart (NP Chart)",
           "path": "NPAttributesChart.jasp",
-          "description": "A dataset containing the number of detected defects over 20 months and the corrosponding (fixed) sample sizes.  <br><br> The example JASP file demonstrates the use of the NP chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing the number of detected defects over 20 months and the corresponding (fixed) sample sizes.  <br><br> The example JASP file demonstrates the use of the NP chart of the Attributes Charts.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "NPAttributesChart.csv"
         },
@@ -1033,16 +1033,16 @@
           "associated_datafile": "ProcessCapabilityStudyWideFormat.csv"
         },
         {
-          "name": "Factorial Design Analysis",
+          "name": "Analyze Design - Factorial Design",
           "path": "FactorialDesignAnalysis.jasp",
           "description": "A dataset containing the yield of a machine operated under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Factorial Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "FactorialDesignAnalysis.csv"
         },
         {
-          "name": "Response Surface Design Analysis",
+          "name": "Analyze Design - Response Surface Design",
           "path": "ResponseSurfaceDesignAnalysis.jasp",
-          "description": "A dataset containing the measurements of the parts produced under combinations of different settings.  <br><br> The example JASP file demonstrates the use of the Response Surface Design Analysis.<br><br> <i>Synthetic data from SKF.<\/i>",
+          "description": "A dataset containing the measurements of ovality of the heat treated parts which were investigated with a statistically designed experiment with the objective of improving the yield.  <br><br> The example JASP file demonstrates the analysis of a response surface design.<br><br> <i>Real data from SKF.<\/i>",
           "kind": "file",
           "associated_datafile": "ResponseSurfaceDesignAnalysis.csv"
         }

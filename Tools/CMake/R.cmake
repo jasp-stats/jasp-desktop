@@ -33,7 +33,8 @@
 #       a CMake module. I leave this for later cleanup
 #
 
-set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development")
+set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development/")
+
 set(AVAILABLE_R_VERSIONS
     "R-4.1.2"
     "R-4.1.2-arm64"
@@ -47,8 +48,18 @@ set(AVAILABLE_R_VERSIONS
     "R-4.2.2"
     "R-4.2.2-arm64"
     "R-4.2.2-win"
+    "R-4.3.0"
+    "R-4.3.0-arm64"
+    "R-4.3.0-win"
+	"R-4.3.1"
+	"R-4.3.1-arm64"
+	"R-4.3.1-win"
+	"R-4.3.2"
+	"R-4.3.2-arm64"
+	"R-4.3.2-win"
 )
 set(R_BINARY_HASHES
+    # sha1sums
     # 4.1.2
     "61d3909bc070f7fb86c5a2bd67209fda9408faaa"
     "69e8845ffa134c822d4bdcf458220e841a9eeaa5"
@@ -65,19 +76,31 @@ set(R_BINARY_HASHES
     "99b8d184f855e630ac950ca4e62cb7fc9a1f7b2e"
     "c3bb657ca6912b9b98e254f63434a365da26848f"
     "f6ddcf0591d0d47034cce8dacf9b9f3ef6547fae"
+    # 4.3.0
+    "d28e528c8e3ee761aa4b871a8d444a1bfbee9bd3"
+    "8ee0276daa9841993f218ebd2a8a7aa86c00d470"
+    "6054e6909d3f92015252f3bcee379d7f7e808bf3"
+	# 4.3.1
+    "1af8f055a601d5de5dfefdb3956ecc8f745c2401"
+    "14c018ff54f7f5bb37c1d96b33207343b83e9345"
+    "302489ab7ffc3f45a127688fe0d7c567a7f1200d"
+	# 4.3.2
+	"3d68ea6698add258bd7a4a5950152f4072eee8b2"
+	"763be9944ad00ed405972c73e9960ce4e55399d4"
+	"7965f49cc3ba08d5aaeb7d853f470cf30cc03915"
 )
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
-set(R_VERSION "4.2.2")
-set(R_VERSION_MAJOR_MINOR "4.2")
+set(R_VERSION "4.3.2")
+set(R_VERSION_MAJOR_MINOR "4.3")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
 else()
-  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
+  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-x86_64")
 endif()
 
 if(WIN32)
@@ -362,15 +385,15 @@ if(APPLE)
 	  execute_process(
 		#COMMAND_ECHO STDOUT
 		#ERROR_QUIET 
-    OUTPUT_QUIET
+		OUTPUT_QUIET
 		WORKING_DIRECTORY ${R_HOME_PATH}
 		COMMAND
 		  ${CMAKE_COMMAND} -D
 		  NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-		  -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-		  R_DIR_NAME=${R_DIR_NAME} -D
-		  SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
-		  CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+		  -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH}
+		  -D R_DIR_NAME=${R_DIR_NAME}
+		  -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1
+		  -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
 		  ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
@@ -391,21 +414,36 @@ if(APPLE)
       message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
 
       set(SIGNING_RESULT "timeout")
-      while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
-                                                      "1"))
-        execute_process(
-          #COMMAND_ECHO STDOUT
-          #ERROR_QUIET 
-          OUTPUT_QUIET
-          TIMEOUT 30
-          WORKING_DIRECTORY ${R_HOME_PATH}
-          COMMAND
-            codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-            ${APPLE_CODESIGN_IDENTITY} --options runtime
-            "${R_HOME_PATH}/bin/exec/R"
-          RESULT_VARIABLE SIGNING_RESULT
-          OUTPUT_VARIABLE SIGNING_OUTPUT
-          ERROR_VARIABLE SIGNING_ERROR)
+      while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL "1"))
+          if(RUNTIMEHARDENING)
+            execute_process(
+                COMMAND_ECHO STDOUT
+                #ERROR_QUIET
+                #OUTPUT_QUIET
+                TIMEOUT 30
+                WORKING_DIRECTORY ${R_HOME_PATH}
+                COMMAND
+                  codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+                  ${APPLE_CODESIGN_IDENTITY} --options runtime
+                  "${R_HOME_PATH}/bin/exec/R"
+                RESULT_VARIABLE SIGNING_RESULT
+                OUTPUT_VARIABLE SIGNING_OUTPUT
+                ERROR_VARIABLE SIGNING_ERROR)
+          else()
+            execute_process(
+              COMMAND_ECHO STDOUT
+              #ERROR_QUIET
+              #OUTPUT_QUIET
+              TIMEOUT 30
+              WORKING_DIRECTORY ${R_HOME_PATH}
+              COMMAND
+                codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+                ${APPLE_CODESIGN_IDENTITY}
+                "${R_HOME_PATH}/bin/exec/R"
+              RESULT_VARIABLE SIGNING_RESULT
+              OUTPUT_VARIABLE SIGNING_OUTPUT
+              ERROR_VARIABLE SIGNING_ERROR)
+          endif()
       endwhile()
 
       if(NOT (SIGNING_RESULT MATCHES "timeout"))
@@ -484,42 +522,6 @@ if(APPLE)
     message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
   endif()
 
-  if(NOT EXISTS ${RENV_PATH})
-    message(STATUS "renv is not installed!")
-    message(CHECK_START "Installing 'renv'")
-
-    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
-		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
-
-    set(ENV{JASP_R_HOME} ${R_HOME_PATH})
-
-    execute_process(
-	  COMMAND_ECHO STDERR
-	  #ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
-
-    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
-      message(CHECK_FAIL "unsuccessful.")
-      message(FATAL_ERROR "'renv' installation has failed!")
-    endif()
-
-    message(CHECK_PASS "successful.")
-
-    message(CHECK_START "Patching Frameworks/.../library")
-    execute_process(
-	  COMMAND_ECHO STDOUT
-	  #ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND
-        ${CMAKE_COMMAND} -D
-        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
-        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
-  endif()
-
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
@@ -545,17 +547,55 @@ if(APPLE)
     # Patching RInside and RCpp
     message(CHECK_START "Patching Frameworks/.../library")
     execute_process(
-	  COMMAND_ECHO STDOUT
-	  #ERROR_QUIET OUTPUT_QUIET
+	  #COMMAND_ECHO STDOUT
+	  #ERROR_QUIET 
+    OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
         -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
+  endif()
+
+  if(NOT EXISTS ${RENV_PATH})
+    message(STATUS "renv is not installed!")
+    message(CHECK_START "Installing 'renv'")
+
+    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
+		           ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
+
+    set(ENV{JASP_R_HOME} ${R_HOME_PATH})
+
+    execute_process(
+	  COMMAND_ECHO STDERR
+	  #ERROR_QUIET OUTPUT_QUIET
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'renv' installation has failed!")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
+    message(CHECK_START "Patching Frameworks/.../library")
+    execute_process(
+	  #COMMAND_ECHO STDOUT
+	  #ERROR_QUIET 
+    OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
   endif()
 
   message(CHECK_START "Checking for 'libRInside'")
@@ -724,12 +764,18 @@ elseif(LINUX)
 
     set(R_HOME_PATH $ENV{R_HOME})
 
-    if(R_HOME_PATH STREQUAL "")
+    if("${R_HOME_PATH}" STREQUAL "")
 
-      message(CHECK_FAIL "unsuccessful")
-      message(
-        FATAL_ERROR
-          "R is not installed in your system. Please install R and try again.")
+        if(NOT EXISTS "/usr/lib/R/bin/R")
+          message(CHECK_FAIL "unsuccessful.")
+          message(FATAL_ERROR "R is not installed in your system. Please install R and try again, or set R_HOME properly.")
+        else()
+            set($ENV{R_HOME} /usr/lib/R)
+            set(R_HOME_PATH /usr/lib/R)
+
+            message(CHECK_PASS "successful")
+            message(STATUS "R_HOME is ${R_HOME_PATH}")
+        endif()
 
     else()
 
@@ -860,7 +906,6 @@ elseif(LINUX)
 
     execute_process(
       COMMAND_ECHO STDOUT
-      #ERROR_QUIET OUTPUT_QUIET
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
 	          --file=${SCRIPT_DIRECTORY}/install-RInside.R)
 

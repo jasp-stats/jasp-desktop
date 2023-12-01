@@ -136,6 +136,14 @@ void JASPListControl::setContainsInteractions()
 	}
 }
 
+void JASPListControl::_termsChangedHandler() 
+{
+	termsChangedHandler();
+	
+	if (containsVariables() && isBound() && model())
+		emit usedVariablesChanged();
+}
+
 void JASPListControl::setUp()
 {
 	if (!model())	setUpModel();
@@ -148,7 +156,7 @@ void JASPListControl::setUp()
 	_setupSources();
 
 	connect(this,								&JASPListControl::sourceChanged,			this,	&JASPListControl::sourceChangedHandler);
-	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::termsChangedHandler);
+	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::_termsChangedHandler);
 	connect(listModel,							&ListModel::termsChanged,					this,	[this]() { emit countChanged(); });
 	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::maxTermsWidthChanged);
 	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,		this,	&JASPListControl::maxTermsWidthChanged);
@@ -231,6 +239,18 @@ JASPControl *JASPListControl::getRowControl(const QString &key, const QString &n
 QString JASPListControl::getSourceType(QString name)
 {
 	return model() ? model()->getItemType(name) : "";
+}
+
+bool JASPListControl::areTypesAllowed(QStringList types)
+{
+	bool result = true;
+
+	if (!_variableTypesAllowed.empty())
+		for (const QString& type : types)
+			if (!_variableTypesAllowed.contains(columnTypeFromQString(type)))
+				result = false;
+
+	return result;
 }
 
 int JASPListControl::count()

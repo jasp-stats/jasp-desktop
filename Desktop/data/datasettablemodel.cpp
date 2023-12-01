@@ -17,7 +17,8 @@
 //
 
 #include "datasettablemodel.h"
-
+#include "utilities/qutils.h"
+#include "log.h"
 
 DataSetTableModel::DataSetTableModel(bool showInactive) 
 : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel()), _showInactive(showInactive)
@@ -50,22 +51,45 @@ bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex & sou
 	return (_showInactive || DataSetPackage::pkg()->getRowFilter(source_row));
 }
 
-QStringList DataSetTableModel::getColumnLabelsAsStringList(int col) const
+QString DataSetTableModel::columnName(int column) const
 {
-	QStringList labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(col);
-	QStringList notUsedLabels = labels;
-	int max = rowCount();
-
-	for (int i = 0; i < max; i++)
-	{
-		QString value = data(index(i, col)).toString();
-		notUsedLabels.removeAll(value);
-		if (notUsedLabels.count() == 0) break;
-	}
-
-	// The order of the labels must be kept.
-	for (const QString& notUsedLabel : notUsedLabels)
-		labels.removeAll(notUsedLabel);
-
-	return labels;
+	int pkgColIndex = data(index(0, column), int(DataSetPackage::specialRoles::columnPkgIndex)).toInt();
+	return	DataSetPackage::pkg()->data(
+				DataSetPackage::pkg()->index(0, pkgColIndex, DataSetPackage::pkg()->indexForSubNode(node())),
+				int(DataSetPackage::specialRoles::name)
+			).toString();
 }
+
+void DataSetTableModel::setColumnName(int col, QString name)
+{
+	setData(index(0, col), name, int(DataSetPackage::specialRoles::name));
+}
+
+bool DataSetTableModel::columnUsedInEasyFilter(int column) const
+{
+	int pkgColIndex = data(index(0, column), int(DataSetPackage::specialRoles::columnPkgIndex)).toInt();
+	return	DataSetPackage::pkg()->data(
+				DataSetPackage::pkg()->index(0, pkgColIndex, DataSetPackage::pkg()->indexForSubNode(node())),
+				int(DataSetPackage::specialRoles::inEasyFilter)
+			).toBool();
+}
+
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, const std::vector<int> & colTypes, const QStringList & colNames)
+{
+	QModelIndex idx = mapToSource(index(row, col));
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes, colNames);
+}
+
+QString DataSetTableModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
+{
+	if(column >= columnCount())
+		return subNodeModel()->appendColumnSpecial(props);
+
+	int sourceColumn = column > columnCount() ? columnCount() : column;
+	sourceColumn = mapToSource(index(0, sourceColumn)).column();
+
+	return subNodeModel()->insertColumnSpecial(sourceColumn == -1 ? sourceModel()->columnCount() : sourceColumn, props);
+}
+
+
+

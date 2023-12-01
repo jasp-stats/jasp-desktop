@@ -15,10 +15,17 @@ message(CHECK_START "Signing 'R.framework'")
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
                 COMMAND bash @PARALLEL_SIGNER@ R.framework)
 
-execute_process(
-  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
-  COMMAND codesign --force --deep --verbose --timestamp --strict --sign
-          "@APPLE_CODESIGN_IDENTITY@" --options runtime R.framework)
+if(RUNTIMEHARDENING)
+    execute_process(
+      WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+      COMMAND codesign --force --deep --verbose --timestamp --strict --sign
+              "@APPLE_CODESIGN_IDENTITY@" --options runtime R.framework)
+else()
+    execute_process(
+      WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+      COMMAND codesign --force --deep --verbose --timestamp --strict --sign
+              "@APPLE_CODESIGN_IDENTITY@" R.framework)
+endif()
 
 message(CHECK_FAIL "successful.")
 
@@ -29,11 +36,19 @@ message(CHECK_START "Siging 'JASP.app'")
 
 execute_process(COMMAND bash @PARALLEL_SIGNER@ @JASP_INSTALL_PREFIX@)
 
-execute_process(
-  COMMAND
-    codesign --force --deep --verbose --timestamp --strict --entitlements
-    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-    --options runtime "@JASP_INSTALL_PREFIX@")
+if(RUNTIMEHARDENING)
+    execute_process(
+      COMMAND
+        codesign --force --deep --verbose --timestamp --strict --entitlements
+        "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+        --options runtime "@JASP_INSTALL_PREFIX@")
+else()
+    execute_process(
+      COMMAND
+        codesign --force --deep --verbose --timestamp --strict --entitlements
+        "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+        "@JASP_INSTALL_PREFIX@")
+endif()
 message(CHECK_FAIL "successful.")
 
 # execute_process(COMMAND codesign --verify --verbose --display
@@ -45,11 +60,19 @@ message(CHECK_FAIL "successful.")
 # execute_process(COMMAND codesign --verify --verbose --display
 #                         "@JASP_INSTALL_PREFIX@")
 
-execute_process(
-  COMMAND
-    codesign --verbose --timestamp --deep --force --entitlements
-    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-    --options runtime "@JASP_INSTALL_PREFIX@")
+if(RUNTIMEHARDENING)
+    execute_process(
+      COMMAND
+        codesign --verbose --timestamp --deep --force --entitlements
+        "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+        --options runtime "@JASP_INSTALL_PREFIX@")
+else()
+    execute_process(
+      COMMAND
+        codesign --verbose --timestamp --deep --force --entitlements
+        "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+        "@JASP_INSTALL_PREFIX@")
+endif()
 
 execute_process(COMMAND codesign --verify --verbose --display
                         "@JASP_INSTALL_PREFIX@")

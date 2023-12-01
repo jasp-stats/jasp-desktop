@@ -79,7 +79,7 @@ public:
 	void									disconnectModels();
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
 	static QList<QVariant>					getListVariant(QVariant var);
-	static Terms							filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {});
+	static Terms							filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {}, const QMap<QString, QStringList> &termsMap = {});
 
 
 private:

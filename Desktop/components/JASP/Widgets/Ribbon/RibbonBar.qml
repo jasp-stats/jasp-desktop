@@ -132,14 +132,14 @@ FocusScope
 
 	function showModulesMenuPressed()
 	{
-		modulesPlusButton.focus       = true;
+		modulesPlusButton.forceActiveFocus()
 		modulesPlusButton.showPressed = true;
 	}
 
 	function showFileMenuPressed()
 	{
 		isFileMenuPressed        = true;
-		fileMenuOpenButton.focus = true;
+		fileMenuOpenButton.forceActiveFocus();
 	}
 
 	Rectangle
@@ -205,8 +205,8 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: modulesPlusButton
-		toolTip		: qsTr("Show modules menu")
-		buttonType	: MenuArrowButton.ButtonType.Plus
+		toolTip		: ribbonModel.dataMode ? qsTr("Show workspace settings") : qsTr("Show modules menu")
+		buttonType	: ribbonModel.dataMode ? MenuArrowButton.ButtonType.Tools : MenuArrowButton.ButtonType.Plus
 		width		: 0.75 * height
 		showPressed	: modulesMenu.opened
 		z			: 2

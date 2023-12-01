@@ -27,15 +27,27 @@ if(APPLE)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "armv8")
   else()
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
+  
+  
+  if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx" OR "${CMAKE_OSX_SYSROOT}" STREQUAL "")
+	  execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
+		OUTPUT_VARIABLE SDKROOT
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set(CMAKE_OSX_SYSROOT ${SDKROOT})
+	message(STATUS "Got CMAKE_OSX_SYSROOT from xcrun as '${SDKROOT}'")
+  else()
+	message(STATUS "CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}")
+  endif()
+ 
 
 endif()
 
 project(
   JASP
-  VERSION 0.17.3.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
+  VERSION 0.18.2.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
@@ -133,6 +145,7 @@ else()
       "-DCMAKE_MAKE_PROGRAM:PATH=${RTOOLS_MAKE_PROGRAM}"
       "-DJASP_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+      "-DR_VERSION:STRING=${R_VERSION}"
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
     USES_TERMINAL
     COMMENT "------ Configuring and Building the libR-Interface")

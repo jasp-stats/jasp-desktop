@@ -24,6 +24,7 @@
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
+#include "utilities/appdirs.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
@@ -54,6 +55,8 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
+	_actionButtons->setEnabled(ActionButtons::Contact,			true);
+	_actionButtons->setEnabled(ActionButtons::Community,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);
@@ -108,13 +111,18 @@ FileEvent *FileMenu::open(const Json::Value & dbJson)
 	return event;
 }
 
+FileEvent *FileMenu::saveAs()
+{
+	return _computer->browseSave();
+}
+
 FileEvent *FileMenu::save()
 {
 	FileEvent *event = nullptr;
 
-	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentFileIsExample())
 	{
-		event = _computer->browseSave();
+		event = saveAs();
 		if (event->isCompleted())
 			return event;
 	}
@@ -182,7 +190,7 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	{
 		if (checkSyncFileExists(path))
 		{
-			bool sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+			bool sync = DataSetPackage::pkg()->synchingExternally();
 			if (sync)
 				_watcher.addPath(path);
 		}
@@ -200,8 +208,12 @@ void FileMenu::setDataFileWatcher(bool watch)
 	if (path.isEmpty())
 		return;
 
-	if (watch && !_currentDataFile->isOnlineFile(path))	_watcher.addPath(path);
-	else												_watcher.removePath(path);
+	if (!(watch && !_currentDataFile->isOnlineFile(path)))
+		_watcher.removePath(path);
+
+	else if(_watcher.addPath(path))
+		dataFileModifiedHandler(path);
+
 }
 
 
@@ -228,17 +240,28 @@ QString FileMenu::getDefaultOutFileName()
 	return DefaultOutFileName;	
 }
 
+void FileMenu::enableButtonsForOpenedWorkspace(bool enableSaveButton)
+{
+	_actionButtons->setEnabled(ActionButtons::Save,				enableSaveButton);
+	_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
+	_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
+	_actionButtons->setEnabled(ActionButtons::ExportData,		true);
+	_actionButtons->setEnabled(ActionButtons::SyncData,			true);
+	_actionButtons->setEnabled(ActionButtons::Close,			true);
+}
+
 void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
 		if (event->isSuccessful())
 		{
-			//  don't add examples to the recent list
-			if (!event->isReadOnly())
+			//  don't add database to the recent list
+			if (!event->isDatabase())
 			{
 				_recentFiles->pushRecentFilePath(event->path());
-				_computer->addRecentFolder(event->path());
+				if (!event->path().startsWith(AppDirs::examples()))
+					_computer->addRecentFolder(event->path());
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
@@ -247,6 +270,14 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				if (datafile.isEmpty())
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
+
+				if	(	event->operation() == FileEvent::FileOpen
+					&& !event->isReadOnly()
+					&& event->type() == FileTypeBase::jasp
+					&& !DataSetPackage::pkg()->dataFileReadOnly()
+					&& DataSetPackage::pkg()->dataSet()->dataFileSynch()
+				)
+					DataSetPackage::pkg()->setSynchingExternally(true);
 			}
 			
 			// all this stuff is a hack
@@ -255,7 +286,6 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 			_currentFilePath		= event->path();
 			_currentFileType		= event->type();
-			_currentFileReadOnly	= event->isReadOnly();
 			_OSF->setProcessing(false);
 		}
 	}
@@ -270,24 +300,18 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		_computer->clearFileName();
 		_currentFilePath		= "";
 		_currentFileType		= Utils::FileType::unknown;
-		_currentFileReadOnly	= false;
 		clearSyncData();
 	}
 
 	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_currentDataFile->getCurrentFilePath().isEmpty());
-		
+
 	if (event->isSuccessful())
 	{
 		switch(event->operation())
 		{
 		case FileEvent::FileOpen:
 		case FileEvent::FileSave:
-			_actionButtons->setEnabled(ActionButtons::Save,				event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
-			_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
-			_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
-			_actionButtons->setEnabled(ActionButtons::ExportData,		true);
-			_actionButtons->setEnabled(ActionButtons::SyncData,			true);
-			_actionButtons->setEnabled(ActionButtons::Close,			true);
+			enableButtonsForOpenedWorkspace((!event->isReadOnly() && event->type() == Utils::FileType::jasp) || event->operation() == FileEvent::FileSave);
 			break;
 
 		case FileEvent::FileClose:
@@ -309,7 +333,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 void FileMenu::syncDataFile(const QString& path, bool waitForExistence)
 {
-	bool autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+	bool autoSync = DataSetPackage::pkg()->synchingExternally();
 	if (autoSync)
 		setSyncRequest(path, waitForExistence);
 }
@@ -381,7 +405,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
+		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->currentFileIsExample())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
@@ -391,6 +415,18 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		setVisible(false);
 		showAboutRequest();
 		break;
+
+	case ActionButtons::FileOperation::Contact:
+		setVisible(false);
+		showContactRequest();
+		break;
+
+
+	case ActionButtons::FileOperation::Community:
+		setVisible(false);
+		showCommunity();
+		break;
+
 	default:
 		break;
 	}
@@ -405,6 +441,11 @@ void FileMenu::resourceButtonClicked(const int buttonType)
 void FileMenu::showAboutRequest()
 {
 	emit showAbout();
+}
+
+void FileMenu::showContactRequest()
+{
+	emit showContact();
 }
 
 void FileMenu::setSyncRequest(const QString& path, bool waitForExistence)

@@ -33,8 +33,6 @@ FocusScope
 
 	property int  actionButtionHeight:		35 * preferencesModel.uiScale
 	property int  resourceButtonHeight:		1.5 * actionButtionHeight
-	property int  nbColumns:				1 + (resourceRepeaterId.count > 0 ? 1 : 0 )
-	property int  colWidths:				190
 
 
 	Connections
@@ -54,7 +52,7 @@ FocusScope
 		property real desiredX: !fileMenuModel.visible ? -(resourceScreen.otherColumnsWidth + resourceScreen.width) : 0
 
 		x:		desiredX
-		width:	(fileMenu.nbColumns * fileMenu.colWidths * preferencesModel.uiScale) + (resourceScreen.aButtonVisible ? resourceScreen.width : 0)
+		width:	(actionMenu.width + resourceMenu.width ) + (resourceScreen.aButtonVisible ? resourceScreen.width : 0)
 		height: fileMenu.height
 
 		Behavior on x
@@ -69,39 +67,40 @@ FocusScope
 			}
 		}
 
-		FocusScope
+		Rectangle
+		{
+			z:				3
+			color:			jaspTheme.fileMenuColorBackground
+			border.width:	1
+			border.color:	jaspTheme.uiBorder
+			anchors.fill:	actionMenu
+		}
+
+		Flickable
 		{
 			id:				actionMenu
 			anchors.left:	parent.left
-			width:			fileMenu.colWidths * preferencesModel.uiScale
+			width:			fileMenuModel.actionButtons.width + jaspTheme.subMenuIconHeight + jaspTheme.generalAnchorMargin * 5
 			height:			parent.height
-			z:				2
+			z:				4
+			contentWidth:	width
+			contentHeight:	fileAction.implicitHeight
 
 			ALTNavigation.enabled:		true
 			ALTNavigation.parent:		ribbon.fileMenuButton
 			ALTNavigation.scopeOnly:	true
 			ALTNavigation.foreground:	fileMenuModel.visible
 
-			Rectangle
-			{
-				z:				-1
-				color:			jaspTheme.fileMenuColorBackground
-				border.width:	1
-				border.color:	jaspTheme.uiBorder
-				anchors.fill:	parent
-			}
-
 			Column
 			{
-				id: fileAction
-				spacing: 4
-				width: parent.width - jaspTheme.generalAnchorMargin
+				id:			fileAction
+				spacing:	jaspTheme.menuSpacing
+				width:		parent.width
 
 				anchors
 				{
-					top: parent.top
-					topMargin: 5
-					horizontalCenter: parent.horizontalCenter
+					fill:		parent
+					margins:	jaspTheme.generalAnchorMargin
 				}
 
 				Repeater
@@ -112,7 +111,7 @@ FocusScope
 					Item
 					{
 						id:				itemActionMenu
-						width:			parent.width - (6 * preferencesModel.uiScale)
+						width:			parent.width
 						anchors.left:	parent.left
 						height:			actionButtionHeight + actionToolSeperator.height
 						enabled:		enabledRole
@@ -121,17 +120,11 @@ FocusScope
 						{
 							id:					actionMenuButton
 							hasSubMenu:			hasSubMenuRole
-							width:				itemActionMenu.width
+							width:				parent.width
 							height:				actionButtionHeight
 							text:				nameRole
 							selected:			selectedRole
 							focus:				selectedRole
-
-							anchors
-							{
-								leftMargin: 3  * preferencesModel.uiScale
-								left:		itemActionMenu.left
-							}
 
 							ALTNavigation.enabled:		true
 							ALTNavigation.x:			width * 0.9
@@ -163,10 +156,15 @@ FocusScope
 						ToolSeparator
 						{
 							id:					actionToolSeperator
-							anchors.top:		actionMenuButton.bottom
-							width:				actionMenuButton.width
-							anchors.topMargin:	(showToolSeperator(typeRole) ? 3 : 0)  * preferencesModel.uiScale
-							anchors.left:		actionMenuButton.left
+							anchors
+							{
+								top:			actionMenuButton.bottom
+								topMargin:		(showToolSeperator(typeRole) ? 3 : 0)  * preferencesModel.uiScale
+								left:			parent.left
+								right:			parent.right
+								leftMargin:		-jaspTheme.generalAnchorMargin
+								rightMargin:	-jaspTheme.generalAnchorMargin
+							}
 
 							orientation:		Qt.Horizontal
 							visible:			showToolSeperator(typeRole)
@@ -176,20 +174,38 @@ FocusScope
 			}
 		}
 
-		FocusScope
+		Rectangle
+		{
+			z:				1
+			color:			jaspTheme.fileMenuColorBackground
+			border.width:	1
+			border.color:	jaspTheme.uiBorder
+			anchors.fill:	resourceMenu
+		}
+
+
+		Flickable
 		{
 			id:					resourceMenu
 
-			width:				fileMenu.colWidths * preferencesModel.uiScale
+			width:				!hasButtons ? 0 : fileMenuModel.resourceButtons.width + jaspTheme.subMenuIconHeight + jaspTheme.generalAnchorMargin * 5
 			height:				parent.height
 			anchors.left:		actionMenu.right
-			anchors.leftMargin: hasButtons ? 0 : - fileMenu.colWidths * preferencesModel.uiScale
-			z:					1
+			anchors.leftMargin: hasButtons ? 0 : -width
+			z:					2
+			contentWidth:		width
+			contentHeight:		resourceLocation.implicitHeight
 
 			onFocusChanged:		if(focus) fileMenuModel.resourceButtons.selectFirstButtonIfNoneSelected();
 
 			Keys.onLeftPressed:		actionMenu.forceActiveFocus();
 			Keys.onEscapePressed:	actionMenu.forceActiveFocus();
+			
+			
+			
+			property bool hasButtons: resourceRepeaterId.count > 0
+
+			visible: hasButtons
 
 			Behavior on anchors.leftMargin
 			{
@@ -203,27 +219,16 @@ FocusScope
 				}
 			}
 
-			Rectangle
-			{
-				color:			jaspTheme.fileMenuColorBackground
-				border.width:	1
-				border.color:	jaspTheme.uiBorder
-				z:				-1
-				anchors.fill:	parent
-			}
-
-			property bool hasButtons: resourceRepeaterId.count > 0
-
-			visible: hasButtons
-
 			Column
 			{
 				id:							resourceLocation
 
-				anchors.top:				parent.top
-				anchors.topMargin:			5 * preferencesModel.uiScale
-				anchors.horizontalCenter:	parent.horizontalCenter
-				width:						parent.width - jaspTheme.generalAnchorMargin
+				anchors
+				{
+					fill:		parent
+					margins:	jaspTheme.generalAnchorMargin
+				}
+				
 
 				spacing:					6 * preferencesModel.uiScale
 
@@ -236,10 +241,8 @@ FocusScope
 					{
 
 						id:					itemResourceMenu
-						width:				parent.width - (6 * preferencesModel.uiScale)
+						width:				parent.width
 						height:				resourceButtonHeight
-						anchors.leftMargin: 3 * preferencesModel.uiScale
-						anchors.left:		parent.left
 						enabled:			enabledRole
 
 						MenuButton
@@ -303,7 +306,7 @@ FocusScope
 
 		Rectangle
 		{
-			property real otherColumnsWidth:	fileMenu.colWidths * fileMenu.nbColumns * preferencesModel.uiScale
+			property real otherColumnsWidth:	actionMenu.width + resourceMenu.width
 			property bool aButtonVisible:		resourceRepeaterId.count > 0 && fileMenuModel.resourceButtons.currentQML !== ''
 
 			property real desiredWidth:			Math.min(mainWindowRoot.width - otherColumnsWidth, 600 * preferencesModel.uiScale)

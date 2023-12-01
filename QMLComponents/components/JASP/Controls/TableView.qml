@@ -69,6 +69,7 @@ TableViewBase
 	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 	function getDefaultValue(columnIndex, rowIndex)				{ return defaultValue;	}
 	function getValidator(columnIndex, rowIndex)				{ return validator;	}
+	function getEditable(columnIndex, rowIndex)					{ return true;	}
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -309,7 +310,7 @@ TableViewBase
 					FormulaField
 					{
 						id:						formlaInput
-						inputType:				itemInputType
+						inputType:				itemInputType === undefined ? "string" : itemInputType
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
@@ -324,14 +325,14 @@ TableViewBase
 						parseDefaultValue:		tableView.parseDefaultValue
 						defaultValue:			tableView.getDefaultValue(columnIndex, rowIndex)
 						selectValueOnFocus:		true
-						validator:				getValidator(columnIndex, rowIndex)
+						validator:				tableView.getValidator(columnIndex, rowIndex)
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:
 						{
 							tableView.itemChanged(columnIndex, rowIndex, displayValue, inputType)
 							tableView.setButtons()
 						}
-						editable:				itemEditable
+						editable:				itemEditable && tableView.getEditable(columnIndex, rowIndex)
 						multiple:				itemInputType === "formulaArray"
 					}
 				}

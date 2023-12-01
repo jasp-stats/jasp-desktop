@@ -126,7 +126,12 @@ void TableViewBase::removeRow(int row)
 void TableViewBase::setSize(int rows, int columns)
 {
 	if (_tableModel)
+	{
 		_tableModel->setSize(rows, columns);
+	
+		if(_tableModel->areColumnNamesVariables())
+			emit usedVariablesChanged(); //Well, they might have
+	}
 }
 
 void TableViewBase::reset()

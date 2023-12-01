@@ -22,9 +22,26 @@
 #include <vector>
 #include <limits>
 #include <filesystem>
+#include <set>
+#include <map>
 #include "timers.h"
 
 enum class FileTypeBase;
+
+typedef std::vector<double>						doublevec;
+typedef std::vector<bool>						boolvec;
+typedef std::vector<int>						intvec;
+typedef std::vector<size_t>						sizetvec;
+typedef std::set<int>							intset;
+typedef std::set<size_t>						sizetset;
+typedef std::set<double>						doubleset;
+typedef std::map<int,			std::string>	intstrmap;
+typedef std::map<std::string,	std::string>	strstrmap;
+typedef std::map<std::string,	int>			strintmap;
+typedef std::map<int, int>						intintmap;
+typedef std::set<std::string>					stringset;
+typedef std::vector<std::string>				stringvec;
+typedef std::vector<stringvec>					stringvecvec;
 
 /// One of the utility classes
 /// This is for the sort of functions that you might want to use in either Desktop or Engine. Should not be used in R-Interface or jaspResults.
@@ -44,14 +61,11 @@ public:
 	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
 	static bool removeFile(				const std::string &path);
 
-	static std::string	doubleToString(double dbl, int precision = 10);
-
 	static std::filesystem::path osPath(const std::string &path);
 	static std::string osPath(const std::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
-
 
 	static bool isEqual(const float a, const float b);
 	static bool isEqual(const double a, const double b);
@@ -59,6 +73,7 @@ public:
 #ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
 	static std::string  wstringToString(const std::wstring & wstr);
+	static std::wstring stringToWString(const std::string & str);
 #endif
 	
 

@@ -21,6 +21,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	ReadStatImportDataSet * data			= static_cast<ReadStatImportDataSet*>(ctx);
 	int 					var_index		= readstat_variable_get_index(variable);
 	std::string				name			= readstat_variable_get_name(variable),
+							title			= readstat_variable_get_label(variable) ? readstat_variable_get_label(variable) : "",
 							labelsID		= val_labels != NULL ? val_labels : "";
 	readstat_measure_t		colMeasure		= readstat_variable_get_measure(variable);
 	columnType				colType;
@@ -33,7 +34,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;	break;
 	}
 
-	data->addColumn(var_index, new ReadStatImportColumn(variable, data, name, labelsID, colType));
+	data->addColumn(var_index, new ReadStatImportColumn(variable, data, name, title, labelsID, colType));
 
 	return READSTAT_HANDLER_OK;
 }
@@ -63,11 +64,11 @@ int handle_value_label(const char *val_labels, readstat_value_t value, const cha
 bool ReadStatImporter::extSupported(const std::string & ext)
 {
 	static std::set<std::string> supportedExts({"dta", "por", "sav", "zsav", "sas7bdat", "sas7bcat", "xpt", ".dta", ".por", ".sav", ".zsav", ".sas7bdat", ".sas7bcat", ".xpt"});
-	return supportedExts.count(ext) > 0;
+	return supportedExts.count(stringUtils::toLower(ext)) > 0;
 }
 
 
-ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::function<void(int)> progressCallback)
+ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	Log::log() << "ReadStatImporter loads " << locator << std::endl;
 	
@@ -123,6 +124,8 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 
 void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 {
+	JASPTIMER_SCOPE(ReadStatImporter::initColumn);
+	
 	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
 
 	col->tryNominalMinusText(); //If we converted some doubles to strings as value because spss has weird datatypes then maybe they are ints anyway. so try to convert it back to nominal in that case.
@@ -140,7 +143,7 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 		break;
 
 	case columnType::nominalText:
-		DataSetPackage::pkg()->storeInEmptyValues(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
+		DataSetPackage::pkg()->storeMissingData(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
 		break;
 
 	default:

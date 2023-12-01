@@ -2,12 +2,11 @@
 #include <QObject>
 #include <QtQml>
 #include "log.h"
+#include "jasptheme.h"
 
-ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
-  _data()
-
+ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent)
 {
-	loadButtonData(_data);
+	loadButtonData();
 
 	for(size_t i=0; i<_data.size(); i++)
 		_opToIndex[_data[i].operation] = i;
@@ -17,20 +16,36 @@ ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 	connect(this, &ActionButtons::buttonClicked, this, &ActionButtons::setSelectedAction);
 }
 
-void ActionButtons::loadButtonData(std::vector<ActionButtons::DataRow> &data)
+void ActionButtons::loadButtonData()
 {
-	_data =
+	_width = 0;
+	
+	_data = 
 	{
 		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::RecentFiles,	ResourceButtons::DataLibrary }		},
 		{FileOperation::Save,			tr("Save"),				false,	{}																																				},
 		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
-		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}																	},
+		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}										},
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
 		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}							},
+		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
+		{FileOperation::Community,		tr("Community"),		true,	{}																																				},
 		{FileOperation::About,			tr("About"),			true,	{}																																				}
 	  };
+	
+	
+	if(JaspTheme::currentTheme())
+	{
+		
+		QFontMetricsF ribbonMetrics(JaspTheme::currentTheme()->fontRibbon());
+		
+		for(const auto & action : _data)
+			_width = std::max(_width, int(ribbonMetrics.boundingRect(action.name).width()));
+		
+		emit widthChanged();
+	}
 }
 
 QVariant ActionButtons::data(const QModelIndex &index, int role)	const
@@ -111,7 +126,7 @@ void ActionButtons::refresh()
 
 	std::vector<DataRow> savedata = _data;
 
-	loadButtonData(_data);
+	loadButtonData();
 
 	for(int i=0 ; i < savedata.size() ; i++)
 		_data[i].enabled = savedata[i].enabled;
@@ -155,4 +170,17 @@ void ActionButtons::selectButtonDown()
 			return;
 		}
 	}
+}
+
+int ActionButtons::width() const
+{
+	return _width;
+}
+
+void ActionButtons::setWidth(int newWidth)
+{
+	if (_width == newWidth)
+		return;
+	_width = newWidth;
+	emit widthChanged();
 }

@@ -11,7 +11,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - Conan: Installed via Homebrew
 - Third-party Libraries
 	- R.framework, installed automatically
-	- GNU Fortran, installed automatically
+	- GNU Fortran, installed automatically (but you still need to install it!)
 	- ReadStat, installed automatically
 	- JAGS, installed automatically
 
@@ -43,6 +43,11 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] CMake
 			- [x] Ninja
 
+#### Fortran
+Install the latest `gfortran` for macOs from https://cran.r-project.org/bin/macosx/tools/
+As of writing this is: https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
+This is only required to run this workaround: https://github.com/jasp-stats/jasp-desktop/blob/77ac6e148532aa3eb62620035a5a741387e184d7/Modules/install-jaspBase.R.in#L54-L58
+
 #### Homebrew and Homebrew Packages (Conan, CMake, etc.)
 
 You can download and install Homebrew using the following command, which might prompt you to install Xcode Command Line Tools. If that's the case, please do so. 
@@ -61,6 +66,12 @@ brew install conan cmake bison flex pkg-config automake autoconf create-dmg para
 
 > 💡 Optionally, you can install the Qt from the command line, and build JASP using that, e.g., `brew install qt`.
 
+#### Code signing
+JASP moves a copy of R around in its buildfolder, for which it needs to change things in all executables and binaries within.
+These changes break the cryptographic checks on such files and macOs won't allow you to run it in such cases.
+To get around this you need a sign certificate, at JASP we use an official one from Apple that allows us to distribute it.
+If you just want to build and run JASP locally however you do not need this.
+Instead you can create your own key and use that, [see this guide for more information](self-signing-macos.md)
 
 ### Configuring and Building JASP with Qt
 

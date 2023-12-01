@@ -214,7 +214,7 @@ FocusScope
 			anchors.left:			rectTitleAndDataFile.left
 			anchors.right:			parent.right
 			anchors.leftMargin:		(10 * preferencesModel.uiScale) + associatedDatafileImage.width
-			text:					model.dirpath
+			text:					model.displayedpath
 			color:					jaspTheme.textEnabled
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter

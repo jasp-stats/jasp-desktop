@@ -73,7 +73,7 @@ FocusScope
 		case Qt.Key_Space:
 			if (currentIndex > -1)
 			{
-				menu.props['functionCall'](currentIndex)
+				callMenuAction(currentIndex)
 				menu.currentIndex = -1;
 			}
 			closeMenu();
@@ -95,24 +95,28 @@ FocusScope
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
 	}
 
-	function toggle(item, props, x_offset, y_offset)
+	function toggle(item, props, x_offset = 0, y_offset = 0)
 	{
 		if (item === menu.sourceItem && menu.visible)
 			hide()
 		else
-		{
-			menu.sourceItem     = item;
-			menu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
-			menu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
-			menu.menuMinPos     = item.mapToItem(null, 1, 1);
-			menu.props          = props;
-			menu.menuOffset.x	= x_offset;
-			menu.menuOffset.y	= y_offset;
-			menu.menuScroll		= "0,0";
-			menu.showMe			= true;
-			
-			menu.forceActiveFocus();
-		}
+			show(item, props, x_offset, y_offset);
+	}
+
+	function show(item, props, x_offset = 0, y_offset = 0)
+	{
+		menu.sourceItem     = item;
+		menu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
+		menu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
+		menu.menuMinPos     = item.mapToItem(null, 1, 1);
+		menu.props          = props;
+		menu.menuOffset.x	= x_offset;
+		menu.menuOffset.y	= y_offset;
+		menu.menuScroll		= "0,0";
+		menu.showMe			= true;
+
+		menu.forceActiveFocus();
+
 	}
 
 	function hide()
@@ -157,6 +161,13 @@ FocusScope
 				menu.sourceItem.myMenuOpen = false;
 		}
 		menu.hide();
+	}
+
+	function callMenuAction(index)
+	{
+		if (menu.sourceItem !== null)
+			menu.sourceItem.forceActiveFocus()
+		menu.props['functionCall'](index)
 	}
 
 	Rectangle
@@ -242,6 +253,16 @@ FocusScope
 					{
 						sourceComponent :
 						{
+							if(model.modelData !== undefined)
+							{
+								if(model.modelData.startsWith("---"))
+								{
+									if(model.modelData == "---")	return menuSeparator;
+									else							return menuGroupTitle;
+								}
+								return menuDelegate;
+							}
+
 							if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
 							else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
 
@@ -257,15 +278,17 @@ FocusScope
 								id:		menuItem
 								width:	initWidth
 								height: jaspTheme.menuItemHeight
-								color:	!model.isEnabled
-											? "transparent"
-											: mouseArea.pressed || index == currentIndex
-												? jaspTheme.buttonColorPressed
-												: mouseArea.containsMouse
-													? jaspTheme.buttonColorHovered
-													: "transparent"
+								color:	(model.modelData === undefined) && !menuItem.itemEnabled
+												? "transparent"
+												: mouseArea.pressed || index == currentIndex
+													? jaspTheme.buttonColorPressed
+													: mouseArea.containsMouse
+														? jaspTheme.buttonColorHovered
+														: "transparent"
 
-								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
+								property bool itemEnabled: menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+								property int padding: 4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
+								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
 
 								Image
 								{
@@ -273,7 +296,7 @@ FocusScope
 									height					: menuItem.height - (2 * menu._iconPad)
 									width					: menuItem.height - menu._iconPad
 
-									source					: menuImageSource
+									source					: menu.props.hasOwnProperty("icons") ? menu.props["icons"][index] : (model.modelData !== undefined ? "" : menuImageSource)
 									smooth					: true
 									mipmap					: true
 									fillMode				: Image.PreserveAspectFit
@@ -286,26 +309,37 @@ FocusScope
 								Text
 								{
 									id					: menuItemText
-									text				: displayText
+									text				: model.modelData !== undefined ? model.modelData : displayText
 									font				: jaspTheme.font
-									color				: isEnabled ? jaspTheme.black : jaspTheme.gray
+									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
 									anchors
 									{
 										left			: menu.hasIcons ? menuItemImage.right : parent.left
 										leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
+										verticalCenter	: parent.verticalCenter
+									}
+								}
+
+								Text
+								{
+									id					: menuItemShortcut
+									text				: menu.props.hasOwnProperty("shortcut") ? menu.props["shortcut"][index] : ""
+									font				: jaspTheme.font
+									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
+									anchors
+									{
+										right			: parent.right
 										rightMargin		: menu._iconPad * 2
 										verticalCenter	: parent.verticalCenter
 									}
-
 								}
-
 								MouseArea
 								{
 									id				: mouseArea
 									hoverEnabled	: true
 									anchors.fill	: parent
-									onClicked		: menu.props['functionCall'](index)
-									enabled			: isEnabled
+									onClicked		: callMenuAction(index)
+									enabled			: menuItem.itemEnabled
 								}
 							}
 						}
@@ -318,7 +352,7 @@ FocusScope
 							{
 								id		: menuItem
 								width	: initWidth
-								height	: jaspTheme.menuGroupTitleHeight
+								height	: (isSmall ? 0.5 : 1) * jaspTheme.menuGroupTitleHeight
 
 								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
@@ -328,7 +362,7 @@ FocusScope
 									height				: parent.height - (menu._iconPad * 2)
 									width				: height
 
-									source				: menuImageSource
+									source				: model.modelData !== undefined ? "" : menuImageSource
 									smooth				: true
 									mipmap				: true
 									fillMode			: Image.PreserveAspectFit
@@ -346,7 +380,7 @@ FocusScope
 								Text
 								{
 									id					: menuItemText
-									text				: displayText
+									text				: model.modelData !== undefined ? model.modelData.substring(3) : displayText
 									font				: jaspTheme.fontGroupTitle
 									color				: jaspTheme.textEnabled
 									anchors

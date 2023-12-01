@@ -583,7 +583,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	overwriteUserData: function(userdata) {
 		this.userdata = userdata;
-		console.log("New userdata: %o", this.userdata);
 		var firstNote = this.viewNotes.firstNoteNoteBox
 		var lastNote = this.viewNotes.lastNoteNoteBox
 		var newList = []
@@ -649,7 +648,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes.firstNoteNoteBox.render();
 		$innerElement.prepend(this.viewNotes.firstNoteNoteBox.$el);
 
-		this.rSyntaxView.render();
+		// this.rSyntaxView.render(); //in fact only need to push the view without rendering it again
 		$innerElement.prepend(this.rSyntaxView.$el);
 
 		this.toolbar.setStatus(this.model.get("status"));

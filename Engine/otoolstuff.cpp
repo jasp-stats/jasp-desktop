@@ -102,13 +102,18 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				stringUtils::trim(line);
 				line = stringUtils::replaceBy(line, " ", "\\ ");
 
+				if(printStuff)
+					std::cout << "OTOOL: " << line << std::endl;
+
 				// Know prefixes to be replaced
 				const std::map<std::string, std::string> prefixes_map = {
-					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", framework_resources + "lib"},
-					// {"/opt/R/arm64/lib",		framework_resources + "opt/R/arm64/lib"},
-					{"/usr/local/lib/libjags",	framework_resources + "opt/jags/lib/libjags"},
-					{"/usr/local/lib/libjrmath",	framework_resources + "opt/jags/lib/libjrmath"},
-					{"/usr/local/lib",			framework_resources + "opt/local/lib"},
+					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib",	framework_resources + "lib"},
+                    // {"/opt/R/arm64/lib",											framework_resources + "opt/R/arm64/lib"},
+                    {"/usr/local/lib/libjags",										framework_resources + "opt/jags/lib/libjags"},
+                    {"/usr/local/lib/libjrmath",									framework_resources + "opt/jags/lib/libjrmath"},
+                    {"/usr/local/lib", 												framework_resources + "opt/local/lib"},
+                    {"/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/12.2.0",		framework_resources + "lib"},
+                    {"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/12.2.0",		framework_resources + "opt/R/arm64/gfortran/lib"},
 				};
 
 				// Known fix library id's and paths 
@@ -117,6 +122,10 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
 					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
 					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+#ifndef __aarch64__
+					,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+#endif
 				};
 
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)

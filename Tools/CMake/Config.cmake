@@ -292,10 +292,17 @@ endif()
 # ------ Code signing
 
 if(APPLE)
+	set(LOCAL_CODESIGN_IDENTITY $ENV{LOCAL_CODESIGN_IDENTITY})
+	if("${LOCAL_CODESIGN_IDENTITY}" STREQUAL "")
+		message(STATUS "Did not find LOCAL_CODESIGN_IDENTITY in the environment, using defaults")
+		set(APPLE_CODESIGN_IDENTITY "AWJJ3YVK9B")
+		set(RUNTIMEHARDENING 1)
+	else()
+		message(STATUS "Found LOCAL_CODESIGN_IDENTITY '${LOCAL_CODESIGN_IDENTITY}', disabling runtime hardening")
+		set(RUNTIMEHARDENING 0)
+		set(APPLE_CODESIGN_IDENTITY ${LOCAL_CODESIGN_IDENTITY})
+	endif()
 
-  set(APPLE_CODESIGN_IDENTITY
-      "AWJJ3YVK9B"
-      CACHE STRING "Code signing identity")
   set(APPLE_CODESIGN_ENTITLEMENTS
       "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 

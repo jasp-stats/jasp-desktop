@@ -20,7 +20,7 @@
 #define ENGINESYNC_H
 
 #include <QAbstractListModel>
-
+/*
 #ifdef __APPLE__
 #include <semaphore.h>
 #else
@@ -28,6 +28,8 @@
 #endif
 
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
+*/
+
 
 #include "enginerepresentation.h"
 
@@ -54,12 +56,11 @@ public:
 	EngineRepresentation *	createNewEngine(bool addToEngines = true, int overrideChannel = -1);
 	EngineRepresentation *	createRCmdEngine();
 
-	std::string	currentStateForDebug() const;
-
 	int						rowCount(const QModelIndex & = QModelIndex())				const override;
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
 
+	std::string	currentStateForDebug() const;
 
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
@@ -77,7 +78,7 @@ public slots:
 	void		refreshAllPlots();
 	void		logCfgRequest();
 	void		logToFileChanged(bool) { logCfgRequest(); }
-	void		cleanUpAfterClose(bool forgetAnalyses = false);
+	void		cleanRestart();
 	void		filterDone(int requestID);
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); resumeEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	void		killModuleEngine(Modules::DynamicModule * mod);
@@ -85,9 +86,11 @@ public slots:
 	void		enginesPrepareForData();
 	void		enginesReceiveNewData();
 	bool		isModuleInstallRequestActive(const QString & moduleName);
+	void		dataModeChanged(bool dataMode);
+	
 
 signals:
-	void		processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
+	void		processNewFilterResult(int requestId);
 	void		processFilterErrorMsg(const QString & error, int requestID);
 	void		engineTerminated();
 	void		filterUpdated(int requestID);
@@ -107,6 +110,7 @@ signals:
 	void		plotEditorRefresh();
 	void		settingsChanged();
 	void		reloadData();
+	void		checkDataSetForUpdates();
 
 private:
 	//These process functions can request a new engine to be started:
@@ -167,14 +171,17 @@ private:
 
 private:
 	static EngineSync				*	_singleton;
+	QTimer							*	_filterRunningResetTimer		= nullptr;
 	RFilterStore					*	_waitingFilter					= nullptr;
-	bool								_filterRunning					= false,
-										_stopProcessing					= false;
+	bool								_stopProcessing					= false,
+										_dataMode						= false,
+										_filterRunning					= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
 
 	std::queue<RScriptStore*>			_waitingScripts;
+	std::queue<RComputeColumnStore*>	_waitingCompCols;
 	std::map<std::string,
 		EngineRepresentation * >		_moduleEngines;					///< An engine per module active. Engines will be started and closed as needed.
 	std::set<EngineRepresentation*>		_engines,						///< All analysis/utility/module engines, excepting _rCmder

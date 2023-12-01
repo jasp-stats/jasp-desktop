@@ -9,13 +9,14 @@ ScrollView
 {
 	id:                     scrollPrefs
 	focus:                  true
-	onActiveFocusChanged:	if(activeFocus) synchronizeDataSave.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) useDefaultEditor.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	Column {
+	Column
+	{
 
-		width: scrollPrefs.width
-		spacing: jaspTheme.rowSpacing
+		width:		scrollPrefs.width
+		spacing:	jaspTheme.rowSpacing
 
 		MenuHeader
 		{
@@ -31,16 +32,6 @@ ScrollView
 		{
 			spacing:		jaspTheme.rowSpacing
 			implicitWidth:	scrollPrefs.width - (jaspTheme.generalAnchorMargin * 2)
-
-			CheckBox  //Synchronize automatically
-			{
-				id:					synchronizeDataSave
-				label:				qsTr("Synchronize automatically on data file save")
-				checked:			preferencesModel.dataAutoSynchronization
-				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-
-				KeyNavigation.tab:      useDefaultEditor
-			}
 
 			Item //Use default spreadsheet editor
 			{
@@ -142,13 +133,13 @@ ScrollView
 
 			Item  //Scale threshold
 			{
-				height:		customThreshold.height
-				width:		customThreshold.width + thresholdScale.width
+				height:		customThreshold.height + thresholdScale.height
+				width:		customThreshold.width 
 
 				CheckBox
 				{
 					id:					customThreshold
-					label:				qsTr("Import threshold between Categorical or Scale")
+					label:				qsTr("Import threshold between Categorical or Scale") + ":"
 					checked:			preferencesModel.customThresholdScale
 					onCheckedChanged:	preferencesModel.customThresholdScale = checked
 					ToolTip.delay:		500
@@ -170,9 +161,9 @@ ScrollView
 
 					anchors
 					{
-						left:			customThreshold.right
-						leftMargin:		jaspTheme.generalAnchorMargin
-						verticalCenter:	parent.verticalCenter
+						top:			customThreshold.bottom
+						left:			customThreshold.left
+						leftMargin:		jaspTheme.subOptionOffset
 					}
 				}
 			}
@@ -206,7 +197,7 @@ ScrollView
 
 					text:				preferencesModel.dataLabelNA
 					onEditingFinished:	preferencesModel.dataLabelNA = text
-					nextEl:				missingValuesList.firstComponent
+					nextEl:				missingValuesList
 
 					anchors
 					{
@@ -216,13 +207,21 @@ ScrollView
 				}
 			}
 
-			PrefsMissingValues
+			Item
 			{
-				id: 			missingValuesList
-				navigateFrom:   missingValueDataLabelInput
-				navigateTo:     noBomNative
+				width:	parent.width
+				height: missingValuesList.height
+
+				PrefsMissingValues
+				{
+					id:							missingValuesList
+					model:						preferencesModel
+					showResetWorkspaceButton:	true
+					resetButtonLabel:			qsTr("Reset with standard values")
+					resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
+					KeyNavigation.tab:			noBomNative
+				}
 			}
-			
 
 			PrefsGroupRect
 			{
@@ -260,7 +259,7 @@ ScrollView
 					startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
 					onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
 
-					KeyNavigation.tab:		synchronizeDataSave
+					KeyNavigation.tab:		useDefaultEditor
 				}
 			}
 		}

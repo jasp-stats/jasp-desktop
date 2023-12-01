@@ -44,36 +44,47 @@ if(APPLE)
   fetchcontent_makeavailable(readstat)
 
   if(USE_CONAN)
-    set(Iconv_FLAGS_FOR_READSTAT --with-libiconv-prefix=${Iconv_LIB_DIRS}/..
-                                 --without-libiconv-prefix)
+	  #If we are using conan we want to avoid readstat using the system libiconv and zlib
+	  #using the configure options seems to be ignored for some reason, so instead here we just get the information from conan
+	  #We then make sure that readstat finds zlib and iconv headers and libs instead of macosx sdk ones
+	  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(Iconv_DIR ${libiconv_PACKAGE_FOLDER_DEBUG})
+		set(Zlib_DIR ${zlib_PACKAGE_FOLDER_DEBUG})
+		set(zlib_LIB_DIRS ${zlib_LIB_DIRS_DEBUG})
+	else()
+		set(Iconv_DIR ${libiconv_PACKAGE_FOLDER_RELEASE})
+		set(Zlib_DIR ${zlib_PACKAGE_FOLDER_RELEASE})
+	endif()
+	set(EXTRA_INCLUDE "-I${Iconv_DIR}/include -I${Zlib_DIR}/include")
+	set(EXTRA_LIBS_LINK "-L${Iconv_DIR}/lib -liconv -L${Zlib_DIR}/lib -lz")
+
+	#message(STATUS "Using EXTRA_LIBS_LINK: '${EXTRA_LIBS_LINK}'")
+  else()
+	set(EXTRA_INCLUDE "")
+	set(EXTRA_LIBS_LINK "")
   endif()
 
   if(readstat_POPULATED)
 
     message(CHECK_PASS "successful.")
 
-    set(READSTAT_CFLAGS
-		"-g -O2 -Wno-strict-prototypes -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
-    )
-    set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
-    set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
-    set(READSTAT_CXXFLAGS "${READSTAT_CFLAGS}")
+	set(READSTAT_CFLAGS "${EXTRA_INCLUDE} -g -O2 -Wno-strict-prototypes -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+	set(READSTAT_CXXFLAGS "${READSTAT_CFLAGS}")
 
     add_custom_command(
       WORKING_DIRECTORY ${readstat_SOURCE_DIR}
       OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
              ${readstat_BINARY_DIR}/lib/libreadstat.a
       COMMAND
-        export CFLAGS=${READSTAT_CFLAGS} && export CXXFLAGS=${READSTAT_CXXFLAGS}
-        && ./configure --enable-static --prefix=${readstat_BINARY_DIR}
-        ${Iconv_FLAGS_FOR_READSTAT} ${READSTAT_EXTRA_FLAGS_1}
-        ${READSTAT_EXTRA_FLAGS_2}
-      COMMAND ${MAKE}
+	    export CFLAGS=${READSTAT_CFLAGS} && export CXXFLAGS=${READSTAT_CXXFLAGS}
+		&& export LIBS=${EXTRA_LIBS_LINK}
+		&& ./configure --enable-shared=no --enable-static --prefix=${readstat_BINARY_DIR}
+		COMMAND ${MAKE}
       COMMAND ${MAKE} install
-      COMMENT "----- Preparing 'readstat'")
+	  COMMENT "----- Preparing 'readstat'"
+	  USES_TERMINAL)
 
-    add_custom_target(readstat
-                      DEPENDS ${readstat_BINARY_DIR}/include/readstat.h)
+    add_custom_target(readstat DEPENDS ${readstat_BINARY_DIR}/include/readstat.h)
 
     set(LIBREADSTAT_INCLUDE_DIRS ${readstat_BINARY_DIR}/include)
     set(LIBREADSTAT_LIBRARY_DIRS ${readstat_BINARY_DIR}/lib)

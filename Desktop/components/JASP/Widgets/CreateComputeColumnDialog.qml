@@ -32,15 +32,16 @@ Popup
 		Rectangle
 		{
 			id:				rootCreateComputedColumn
-			height:			childrenRect.height + 20
-			width:			Math.max(computeColumnIconRow.width, title.width) + 20
+			height:			childrenRect.height + (20 * jaspTheme.uiScale)
+			width:			Math.max(computeColumnIconRow.width, title.width) + (20 * jaspTheme.uiScale)
 			color:			jaspTheme.uiBackground
 			border.color:	jaspTheme.uiBorder
 			border.width:	1
+			radius:			rCodeSelectah.radius
 
 			Component.onCompleted:
 			{
-				labelModel.visible = false;
+				columnModel.visible = false;
 				nameEdit.forceActiveFocus();
 			}
 
@@ -51,7 +52,7 @@ Popup
 
 				if(computedColumnsInterface.isColumnNameFree(nameEdit.text))
 				{
-					computedColumnsInterface.createComputedColumn(nameEdit.text, rootCreateComputedColumn.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
+					computedColumnsInterface.createComputedColumn(nameEdit.text, computeColumnIconFocusScope.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
 					focus = true
 					popupCreateComputedColumn.close()
 				}
@@ -109,6 +110,7 @@ Popup
 					color:				jaspTheme.white
 					border.color:		jaspTheme.black
 					border.width:		1
+					radius:				rCodeSelectah.radius
 
 					anchors
 					{
@@ -148,7 +150,11 @@ Popup
 							ToolTip.visible:		columnNameInUse
 							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
 	
-							Keys.onReturnPressed: (event)=>	rootCreateComputedColumn.createComputedColumn()
+							Keys.onReturnPressed:	(event)=>	rootCreateComputedColumn.createComputedColumn()
+								
+							KeyNavigation.priority: KeyNavigation.BeforeItem //otherwise tab is captured
+							KeyNavigation.tab:		computeTypeSelector
+							KeyNavigation.down:		computeTypeSelector
 		
 							onActiveFocusChanged:
 							{
@@ -172,14 +178,19 @@ Popup
 
 
 
-			Item
+			FocusScope
 			{
-				id: computeTypeSelector
+				id:							computeTypeSelector
 
 				anchors.top:				nameItem.bottom
 				anchors.topMargin:			10
 				anchors.horizontalCenter:	parent.horizontalCenter
 				height:						45 * preferencesModel.uiScale
+				KeyNavigation.tab:			computeColumnIconFocusScope
+				KeyNavigation.down:			computeColumnIconFocusScope
+				Keys.onLeftPressed:			popupCreateComputedColumn.computeTypeIsJson = false;
+				Keys.onRightPressed:		popupCreateComputedColumn.computeTypeIsJson = true;
+				
 
 				JaspControls.RoundedButton
 				{
@@ -192,9 +203,10 @@ Popup
 					anchors.rightMargin:	5
 
 					iconSource:				jaspTheme.iconPath + "/R.png"
-					onClicked:				popupCreateComputedColumn.computeTypeIsJson = false
 					selected:				!popupCreateComputedColumn.computeTypeIsJson
-
+					onSelectedChanged:		if(selected) focus = true;
+					onClicked:				popupCreateComputedColumn.computeTypeIsJson = false
+					
 					width:					height
 
 					toolTip:				qsTr("Define column through R code")
@@ -206,14 +218,15 @@ Popup
 
 					anchors.top:		parent.top
 					anchors.left:		parent.horizontalCenter
-					//anchors.right:	parent.right
 					anchors.bottom:		parent.bottom
 					anchors.leftMargin:	5
 
-					iconSource:			jaspTheme.iconPath + "/NotR.png"
-					onClicked:			popupCreateComputedColumn.computeTypeIsJson = true
-					selected:			popupCreateComputedColumn.computeTypeIsJson
 
+					iconSource:			jaspTheme.iconPath + "/NotR.png"
+					selected:			popupCreateComputedColumn.computeTypeIsJson
+					onSelectedChanged:	if(selected) focus = true;
+					onClicked:			popupCreateComputedColumn.computeTypeIsJson = true
+						
 					width:				height
 
 					toolTip:			qsTr("Define column through drag and drop formulas")
@@ -221,84 +234,99 @@ Popup
 
 			}
 
-			property int selectedColumnType: columnTypeScale
-			Row
+
+			FocusScope
 			{
-				id:			computeColumnIconRow
-				height:		25 * preferencesModel.uiScale
-				spacing:	jaspTheme.generalAnchorMargin
-
-				anchors.top:				computeTypeSelector.bottom
-				anchors.topMargin:			10
-				anchors.horizontalCenter:	parent.horizontalCenter
-
-				Repeater
+				id:									computeColumnIconFocusScope
+				width:								computeColumnIconRow.width
+				height:								computeColumnIconRow.height
+				anchors.top:						computeTypeSelector.bottom
+				anchors.topMargin:					10
+				anchors.horizontalCenter:			parent.horizontalCenter
+				
+				KeyNavigation.tab:					createButton
+				Keys.onLeftPressed:					selectedIdx = (selectedIdx - 1 + iconRepeater.model.length) % iconRepeater.model.length
+				Keys.onRightPressed:				selectedIdx = (selectedIdx + 1)								% iconRepeater.model.length
+				property int selectedIdx:			0
+				property int selectedColumnType:	iconRepeater.model[computeColumnIconFocusScope.selectedIdx]
+				
+				Row
 				{
-					id:		iconRepeater
-					model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
-
-					Rectangle
+					id:			computeColumnIconRow
+					height:		25 * preferencesModel.uiScale
+					spacing:	jaspTheme.generalAnchorMargin
+		
+					Repeater
 					{
-						id:				columnTypeChangeIcon
-						width:			iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
-						height:			computeColumnIconRow.height
-						color:			iAmSelected ? jaspTheme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
-						border.color:	iAmSelected ? jaspTheme.buttonBorderColorHovered : jaspTheme.buttonBorderColor
-						border.width:	1
-						radius:			jaspTheme.borderRadius
-
-						property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
-
-						Item
+						id:		iconRepeater
+						model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
+	
+						Rectangle
 						{
-							id:					iconAndTextCreateComputeColumn
-							width:				(popupIconComputeImage.width + popupText.width)
-							height:				computeColumnIconRow.height * 0.5
-							anchors
+							id:				columnTypeChangeIcon
+							width:			iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
+							height:			computeColumnIconRow.height
+							color:			iAmSelected && activeFocus ?	jaspTheme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
+							border.color:	iAmSelected ?					jaspTheme.buttonBorderColorHovered : jaspTheme.buttonBorderColor
+							border.width:	1
+							radius:			jaspTheme.borderRadius
+							
+	
+							property bool iAmSelected:	computeColumnIconFocusScope.selectedIdx === index
+							onIAmSelectedChanged:		if(iAmSelected)	focus = true;
+	
+							Item
 							{
-								verticalCenter:	parent.verticalCenter
-								left:			parent.left
-								leftMargin:		4
+								id:					iconAndTextCreateComputeColumn
+								width:				(popupIconComputeImage.width + popupText.width)
+								height:				computeColumnIconRow.height * 0.5
+								anchors
+								{
+									verticalCenter:	parent.verticalCenter
+									left:			parent.left
+									leftMargin:		4
+								}
+	
+								Image
+								{
+									id:						popupIconComputeImage
+	
+									anchors.verticalCenter: parent.verticalCenter
+	
+									source:					jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[iconRepeater.model[index]]
+									width:					height
+									height:					parent.height
+									sourceSize.width:		width
+									sourceSize.height:		height
+								}
+	
+								Text
+								{
+									id:						popupText
+									text:					iconRepeater.model[index] === columnTypeScale ? qsTr("Scale") : ( iconRepeater.model[index] === columnTypeOrdinal ? qsTr("Ordinal") :  iconRepeater.model[index] === columnTypeNominal ? qsTr("Nominal") : qsTr("Text"))
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									anchors.left:			popupIconComputeImage.right
+									anchors.verticalCenter: parent.verticalCenter
+									anchors.leftMargin:		4
+								}
 							}
-
-							Image
+	
+							MouseArea
 							{
-								id:						popupIconComputeImage
-
-								anchors.verticalCenter: parent.verticalCenter
-
-								source:					jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-								width:					height
-								height:					parent.height
-								sourceSize.width:		width
-								sourceSize.height:		height
-							}
-
-							Text
-							{
-								id:						popupText
-								text:					iconRepeater.model[index] === columnTypeScale ? qsTr("Scale") : ( iconRepeater.model[index] === columnTypeOrdinal ? qsTr("Ordinal") :  iconRepeater.model[index] === columnTypeNominal ? qsTr("Nominal") : qsTr("Text"))
-								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
-								anchors.left:			popupIconComputeImage.right
-								anchors.verticalCenter: parent.verticalCenter
-								anchors.leftMargin:		4
-							}
-						}
-
-						MouseArea
-						{
-							id:				popupIconComputeMouseArea
-							anchors.fill:	parent
-							hoverEnabled:	true
-							cursorShape:	Qt.PointingHandCursor
-
-							property color useThisColor: containsMouse ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
-
-							onClicked:
-							{
-								focus = true
-								rootCreateComputedColumn.selectedColumnType = iconRepeater.model[index]
+								id:				popupIconComputeMouseArea
+								anchors.fill:	parent
+								hoverEnabled:	true
+								cursorShape:	Qt.PointingHandCursor
+	
+								property color useThisColor: containsMouse ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
+	
+								onClicked:
+								{
+									computeColumnIconFocusScope.forceActiveFocus();
+									computeColumnIconFocusScope.selectedIdx = index;
+									
+								}
 							}
 						}
 					}
@@ -307,30 +335,33 @@ Popup
 
 			JaspControls.RoundedButton
 			{
-				id:				helpButton
-				iconSource:		jaspTheme.iconPath + "info-button.png"
-				width:			height
-				height:			createButton.height
-				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
-				toolTip:		qsTr("Open Documentation")
+				id:						helpButton
+				iconSource:				jaspTheme.iconPath + "info-button.png"
+				width:					height
+				height:					createButton.height
+				onClicked:				helpModel.showOrTogglePage("other/ComputedColumns");
+				toolTip:				qsTr("Open Documentation")
+				KeyNavigation.right:	createButton
 				anchors
 				{
-					left:		parent.left
-					top:		computeColumnIconRow.bottom
-					margins:	jaspTheme.generalAnchorMargin
+					left:			parent.left
+					top:			computeColumnIconFocusScope.bottom
+					margins:		jaspTheme.generalAnchorMargin
 				}
 			}
 
 			JaspControls.RoundedButton
 			{
-				id:			createButton
-				text:		qsTr("Create Column")
-				enabled:	nameEdit.validEntry
-				toolTip:	nameEdit.validEntry ? qsTr("Click here to create your new computed column '%1'").arg(nameEdit.text) : qsTr("Enter a valid (unused) name for computed column")
-				onClicked:	rootCreateComputedColumn.createComputedColumn()
+				id:						createButton
+				text:					qsTr("Create Column")
+				enabled:				nameEdit.validEntry
+				toolTip:				nameEdit.validEntry ? qsTr("Click here to create your new computed column '%1'").arg(nameEdit.text) : qsTr("Enter a valid (unused) name for computed column")
+				onClicked:				rootCreateComputedColumn.createComputedColumn()
+				KeyNavigation.tab:		closeButtonCross
+				KeyNavigation.right:	closeButtonCross
 				anchors
 				{
-					top:		computeColumnIconRow.bottom
+					top:		computeColumnIconFocusScope.bottom
 					margins:	jaspTheme.generalAnchorMargin
 					left:		helpButton.right
 					right:		closeButtonCross.left
@@ -339,16 +370,18 @@ Popup
 
 			JaspControls.RoundedButton
 			{
-				id:				closeButtonCross
-				iconSource:		jaspTheme.iconPath + "cross.png"
-				width:			height
-				height:			createButton.height
-				onClicked:		popupCreateComputedColumn.close()
-				toolTip:		qsTr("Close without creating a computed column")
+				id:						closeButtonCross
+				iconSource:				jaspTheme.iconPath + "cross.png"
+				width:					height
+				height:					createButton.height
+				onClicked:				popupCreateComputedColumn.close()
+				toolTip:				qsTr("Close without creating a computed column")
+				KeyNavigation.right:	helpButton
+				KeyNavigation.tab:		helpButton
 				anchors
 				{
 					right:		parent.right
-					top:		computeColumnIconRow.bottom
+					top:		computeColumnIconFocusScope.bottom
 					margins:	jaspTheme.generalAnchorMargin
 				}
 			}

@@ -24,8 +24,8 @@
 #include <QDir>
 
 
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
+//#include <boost/interprocess/shared_memory_object.hpp>
+//#include <boost/interprocess/mapped_region.hpp>
 
 #include <json/json.h>
 #include "processinfo.h"
@@ -50,6 +50,12 @@ EngineSync::EngineSync(QObject *parent)
 {
 	assert(!_singleton);
 	_singleton = this;
+	
+	_filterRunningResetTimer = new QTimer(this);
+	_filterRunningResetTimer->setInterval(1000);
+	_filterRunningResetTimer->setSingleShot(true);
+	
+	connect(_filterRunningResetTimer, &QTimer::timeout, this, [&](){ _filterRunning = false; });
 	
 	using namespace Modules;
 
@@ -84,12 +90,15 @@ EngineSync::EngineSync(QObject *parent)
 
 EngineSync::~EngineSync()
 {
-	try			{ stopEngines(); }
-	catch(...)	{ /* Whatever! */ }
-
-	for(EngineRepresentation * engine : _engines)
-		if(!engine->stopped())
-			engine->killEngine();
+	if(!_stopProcessing)
+	{
+		for(EngineRepresentation * engine : _engines)
+		{
+			if(!engine->stopped())
+				engine->killEngine();
+			delete engine;
+		}
+	}
 
 	_moduleEngines.clear();
 	_engines.clear();
@@ -258,6 +267,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::registerForModule,				this,					&EngineSync::registerEngineForModule									);
 		connect(engine,						&EngineRepresentation::unregisterForModule,				this,					&EngineSync::unregisterEngineForModule									);
 		connect(engine,						&EngineRepresentation::moduleHasEngine,					this,					&EngineSync::moduleHasEngine											);
+		connect(engine,						&EngineRepresentation::checkDataSetForUpdates,			this,					&EngineSync::checkDataSetForUpdates										);
 		connect(engine,						&EngineRepresentation::channelSignal,					this,					&EngineSync::channel,							Qt::DirectConnection	);
 		connect(engine,						&EngineRepresentation::stopAndDestroyEngine,			this,					&EngineSync::stopAndDestroyEngine,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::stopModuleEngine,				this,					&EngineSync::stopModuleEngine											);
@@ -322,6 +332,8 @@ void EngineSync::restartEngines()
 		}
 
 	logCfgRequest();
+	
+	_stopProcessing = false;
 }
 
 void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
@@ -384,8 +396,9 @@ void EngineSync::shutdownBoredEngines()
  */
 void EngineSync::process()
 {
-	if(_stopProcessing)	return;
-
+	if(_stopProcessing && !_dataMode)
+		return;
+		
 	if(_rCmder)
 	{
 		restartAKilledOrStoppedEngine(_rCmder);
@@ -405,12 +418,25 @@ void EngineSync::process()
 	if(moduleInstallRunning()) return; //First finish any module install running.
 
 	processReloadData();
-	processSettingsChanged();
-	processFilterScript();
 
-	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
+	//If we are waiting for an engine to load data, this might take a while, so lets not kill it for for instance a filterscript or something
+	bool anEngineIsLoadingData = false;
+	for(const EngineRepresentation * e : _engines)
+		if(e->reloadingData())
+			anEngineIsLoadingData = true;
+
+	processSettingsChanged();
 	
+	if(!anEngineIsLoadingData)
+		processFilterScript();
+		
 	processLogCfgRequests();
+
+	if(_stopProcessing || _dataMode || _filterRunning)
+	{
+		processComputedColumnQueue();
+		return;
+	}
 
 	if(_engines.size() == 0)
 		startExtraEngines();
@@ -470,10 +496,21 @@ void EngineSync::process()
 	//We might still want some engines and if we can kill some idle ones to make space it ain't bad
 	if(wantThisManyEngines)
 		startExtraEngines(wantThisManyEngines);
+
+
+	/*//So, in the end all the code above here is a bit complicated and does many things. but...
+	// We probably want to have as many engines loaded as allowed. Especially if the dataset is large
+	// This will make it seem smoother to the user, because they will have to wait less for data loading
+	if(enginesStartableCount() > 0)
+		startExtraEngines();*/
 }
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
+	JASPTIMER_SCOPE(EngineSync::sendFilter);
+
+	delete _waitingFilter;
+
 	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
 	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
@@ -488,36 +525,35 @@ void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListe
 void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
 {
 	//first we remove the previously sent requests for this same column!
-	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
-	_waitingScripts = std::queue<RScriptStore*>() ;
+	std::queue<RComputeColumnStore*> copiedWaiting(_waitingCompCols);
+	_waitingCompCols = std::queue<RComputeColumnStore*>() ;
 
 	while(copiedWaiting.size() > 0)
 	{
-		RScriptStore * cur = copiedWaiting.front();
+		RComputeColumnStore * cur = copiedWaiting.front();
 		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->_columnName != columnName)
-			_waitingScripts.push(cur);
+			_waitingCompCols.push(cur);
 		copiedWaiting.pop();
 	}
 
-	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, colType));
+	_waitingCompCols.push(new RComputeColumnStore(columnName, computeCode, colType));
 }
 
 void EngineSync::processFilterScript()
 {
-
 	if (!_waitingFilter)
 		return;
 
-	//First we make sure nothing else is running before we ask the engine to run the filter
-	if(!_filterRunning)
-	{
-		Log::log() << "Pausing and resuming engines to make sure nothing else is running when we start the filter." << std::endl;
+	JASPTIMER_SCOPE(EngineSync::processFilterScript);
 
-		pauseEngines(); //Make sure engines pause/stop
-		_filterRunning = true;
+	//First we make sure nothing else is running before we ask the engine to run the filter
+	if(!_dataMode && !_filterRunning)
+	{
+		pauseEngines();
+		_filterRunning = true;	
 		resumeEngines();
 	}
-	else //So previous loop we made sure nothing else is running, and maybe we had to kill an engine to make it understand, followed by a restart. Now we are ready to run the filter
+	else //So previous loop we made sure nothing else is running by switching to data editing mode or not having analyses
 	{
 		try
 		{
@@ -538,7 +574,9 @@ void EngineSync::filterDone(int requestID)
 	if(requestID != _filterCurrentRequestID)
 		return;
 
-	_filterRunning = false; //Allow other stuff to happen
+	Log::log() << "Filter with request " << requestID << " done! Starting timer for allowing analyses to run later" << std::endl;
+	
+	_filterRunningResetTimer->start();
 }
 
 
@@ -636,31 +674,39 @@ bool EngineSync::processComputedColumnQueue()
 	bool needEngine = false;
 	try
 	{
-		if(_waitingScripts.size() > 0)
+		std::queue<RComputeColumnStore*>	newWaiting;
+		
+		while(_waitingCompCols.size() > 0)
 		{
-			RScriptStore * waiting = _waitingScripts.front();
+			RComputeColumnStore * waiting = _waitingCompCols.front();
 								
-			if(waiting->typeScript == engineState::computeColumn)	
-			{
-				needEngine = true;
+			needEngine = true;
+			bool foundOne = false;
+			
+			for(auto * engine : _engines)
+				if(engine->idle()  && engine->runsUtility())
+				{
+					engine->runScriptOnProcess(waiting);
 				
-				for(auto * engine : _engines)
-					if(engine->idle()  && engine->runsUtility())
-					{
-						engine->runScriptOnProcess((RComputeColumnStore*)waiting);
-					
-						delete waiting;
-						_waitingScripts.pop();
-						
-						needEngine = false;
-						break;
-					}
+					delete waiting;
+					_waitingCompCols.pop();
+					foundOne = true;
+					needEngine = false;
+					break;
+				}
+		
+			if(!foundOne)
+			{
+				newWaiting.push(waiting);
+				_waitingCompCols.pop();
 			}
 		}
+		
+		_waitingCompCols = newWaiting;
 	}
 	catch(...)
 	{
-		Log::log() << "Exception thrown in processScriptQueue" << std::endl;
+		Log::log() << "Exception thrown in processComputedColumnQueue" << std::endl;
 	}
 	
 	return needEngine;
@@ -903,9 +949,11 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
-	
-#ifdef _WIN32 
+
+#ifndef JASP_DEBUG
+#ifdef _WIN32
 	fixPATHForWindows(env);
+#endif
 #endif
 	
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
@@ -967,10 +1015,10 @@ void EngineSync::heartbeatTempFiles()
 }
 
 void EngineSync::stopEngines()
-{
-	_stopProcessing = true; 
-	
+{	
 	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
+	
+	_stopProcessing = true;
 
 	for(EngineRepresentation * e : _engines)
 		e->stopEngine();
@@ -995,6 +1043,10 @@ void EngineSync::stopEngines()
 void EngineSync::pauseEngines(bool unloadData)
 {
 	JASPTIMER_SCOPE(EngineSync::pauseEngines);
+
+	_stopProcessing = true;
+
+	Log::log() << "EngineSync::pauseEngines()" << std::endl;
 
 	//make sure we process any received messages first.
 	for(auto * engine : _engines)
@@ -1024,13 +1076,18 @@ void EngineSync::startStoppedEngine(EngineRepresentation * engine)
 
 void EngineSync::resumeEngines()
 {
-	JASPTIMER_SCOPE(EngineSync::resumeEngines);
+	if(_dataMode)
+		return;
 	
+	JASPTIMER_SCOPE(EngineSync::resumeEngines);
+
+	Log::log() << "EngineSync::resumeEngines()" << std::endl;
+
 	for(EngineRepresentation * engine : _engines)
 		startStoppedEngine(engine);
-	
-	_stopProcessing = false;
 
+	_stopProcessing = false;
+	
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->processReplies();
@@ -1068,10 +1125,27 @@ bool EngineSync::allEnginesInitializing(std::set<EngineRepresentation *> these)
 	return true;
 }
 
+void EngineSync::dataModeChanged(bool dataMode)
+{
+	_dataMode = dataMode;
+	/*if(!dataMode)
+	{
+		Log::log() << "Data mode turned off, resuming engines." << std::endl;
+
+		resumeEngines();
+	}
+	else
+	{
+		Log::log() << "Data mode turned on,  pausing engines." << std::endl;
+		pauseEngines();
+	}*/
+}
+
 void EngineSync::enginesPrepareForData()
 {
 	JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
 
+	/*
 	//make sure we process any received messages first.
 	for(auto * engine : _engines)
 		engine->processReplies();
@@ -1093,28 +1167,11 @@ void EngineSync::enginesPrepareForData()
 
 	for (auto * engine : pauseOrKillThese)
 		if(!engine->paused())
-			engine->killEngine();
+			engine->killEngine();*/
 }
 
 void EngineSync::enginesReceiveNewData()
 {
-	if(_stopProcessing)
-		return;
-	
-	JASPTIMER_SCOPE(EngineSync::enginesReceiveNewData);
-
-	//make sure we process any received messages first.
-	for(auto * engine : _engines)
-		engine->processReplies();
-
-	for(auto * engine : _engines)
-		if(engine->paused())
-			engine->resumeEngine();
-
-	for(auto * engine : _engines)
-		if(!engine->jaspEngineStillRunning())
-			engine->restartEngine(startSlaveProcess(engine->channelNumber()));
-
 	emit reloadData();
 }
 
@@ -1230,10 +1287,11 @@ void EngineSync::processLogCfgRequests()
 	}
 }
 
-void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
+void EngineSync::cleanRestart()
 {
-	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
-	try {	pauseEngines(true); }
+	Log::log() << "EngineSync::cleanUpAfterClose() )" << std::endl;
+	try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
+	//try {	pauseEngines(true); }
 	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
 
 	while(_waitingScripts.size() > 0)
@@ -1242,14 +1300,19 @@ void EngineSync::cleanUpAfterClose(bool forgetAnalyses)
 		_waitingScripts.pop();
 	}
 
-	if(_waitingFilter)
-		delete _waitingFilter;
+	while(_waitingCompCols.size() > 0)
+	{
+		delete _waitingCompCols.front();
+		_waitingCompCols.pop();
+	}
+
+	delete _waitingFilter;
 	_waitingFilter = nullptr;
 
 	TempFiles::clearSessionDir();
 
 	for(EngineRepresentation * e : _engines)
-		e->cleanUpAfterClose(forgetAnalyses);
+		e->cleanUpAfterClose(true);
 
 	try { resumeEngines(); }
 	//try { restartEngines(); }

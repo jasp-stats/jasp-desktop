@@ -286,6 +286,7 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	emit countChanged();
 	emit analysisRemoved(analysis);
+	emit somethingModified();
 
 	delete analysis;
 }
@@ -769,7 +770,9 @@ void Analyses::prepareForLanguageChange()
 	{ 
 		a->setBeingTranslated(true);
 		a->setRefreshBlocked(true); 
-		a->abort();
+		
+		if(!a->isFinished())
+			a->abort();
 	});
 }
 
@@ -783,6 +786,15 @@ void Analyses::languageChangedHandler()
 	});
 	refreshAllAnalyses();
 	emit setResultsMeta(tq(_resultsMeta.toStyledString()));
+}
+
+void Analyses::dataModeChanged(bool dataMode)
+{
+	applyToAll([&](Analysis * a) 
+	{
+		if(dataMode && !a->isFinished())
+			a->refresh();
+	});
 }
 
 void Analyses::resultsMetaChanged(QString json)

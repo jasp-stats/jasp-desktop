@@ -6,79 +6,61 @@
 
 Importer::~Importer() {}
 
-void Importer::loadDataSet(const std::string &locator, boost::function<void(int)> progressCallback)
+void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	DataSetPackage::pkg()->beginLoadingData();
 
+	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
-
+	JASPTIMER_STOP(Importer::loadDataSet loadFile);
+	
+	JASPTIMER_RESUME(Importer::loadDataSet createDataSetAndLoad);
 	int columnCount = importDataSet->columnCount();
-	DataSetPackage::pkg()->createDataSet(); // this is required in case the loading of the data fails so that the created dataset can later be freed
 
 	if (columnCount > 0)
 	{
 		int rowCount = importDataSet->rowCount();
 
+		DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
 		DataSetPackage::pkg()->setDataSetSize(columnCount, rowCount);
 
+
 		int colNo = 0;
-		for (ImportColumn *importColumn : *importDataSet)
+		for (ImportColumn *& importColumn : *importDataSet)
 		{
-			progressCallback(50 + 50 * colNo / columnCount);
+			progressCallback(50 + 25 * colNo / columnCount);
 			initColumn(colNo, importColumn);
+			delete importColumn;
+			importColumn = nullptr;
 			colNo++;
 		}
-	}
 
+		DataSetPackage::pkg()->dataSet()->endBatchedToDB([&](float f){ progressCallback(75 + f * 25); });
+	}
+	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
+	
+	importDataSet->clearColumns();
 	delete importDataSet;
 	DataSetPackage::pkg()->endLoadingData();
 }
 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 {
+	JASPTIMER_SCOPE(Importer::initColumn);
 	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings());
 }
 
-void Importer::initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values)
+void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
-	// interpret the column as a datatype
-	std::set<int>				uniqueValues;
-	std::vector<int>			intValues;
-	std::vector<double>			doubleValues;
-	std::map<int, std::string>	emptyValuesMap;
-
-	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
-	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
-	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
-
-	bool valuesAreIntegers		= ImportColumn::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
-	
-	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
-
-	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
-	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
-	auto isScalar				= [&](){ return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
-
-	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
-	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
-	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues	);
-	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values			);
-
-	storeInEmptyValues(newName, emptyValuesMap);
-}
-
-void Importer::syncDataSet(const std::string &locator, boost::function<void(int)> progress)
-{
-	ImportDataSet *importDataSet	= loadFile(locator, progress);
-	bool rowCountChanged			= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
+	ImportDataSet *	importDataSet	= loadFile(locator, progress);
+	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
+	int				syncColNo		= 0;
 
 	std::vector<std::pair<std::string, int> >	newColumns;
 	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
-	std::map<std::string, std::string>			changeNameColumns; //origname -> newname
-	std::vector<std::string>					orgColumnNames(DataSetPackage::pkg()->getColumnNames(false)); //Non-computed
-	std::set<std::string>						missingColumns(orgColumnNames.begin(), orgColumnNames.end());
-
-	int syncColNo		= 0;
+	strstrmap									changeNameColumns; //origname -> newname
+	stringvec									orgColumnNames(DataSetPackage::pkg()->getColumnNames());
+	stringset									missingColumns(orgColumnNames.begin(), orgColumnNames.end());
 
 	//If the following gives errors trhen it probably should be somewhere else:
 	for (const std::string & colName : orgColumnNames)
@@ -120,12 +102,13 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(int)
 				}
 			}
 
-	for (auto changeNameColumnIt : changeNameColumns)
+	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
 			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
+	DataSetPackage::pkg()->setManualEdits(false);
 	delete importDataSet;
 }
 
@@ -138,7 +121,7 @@ void Importer::_syncPackage(
 		bool											rowCountChanged)
 
 {
-	if(!DataSetPackage::pkg()->checkDoSync())
+	if( ! emit DataSetPackage::pkg()->checkDoSync())
 		return;
 
 	DataSetPackage::pkg()->beginSynchingData();
@@ -147,7 +130,7 @@ void Importer::_syncPackage(
 	std::vector<std::string>			_missingColumns;
 	std::map<std::string, std::string>	_changeNameColumns;
 
-	for (auto changeNameColumnIt : changeNameColumns)
+	for (const auto & changeNameColumnIt : changeNameColumns)
 	{
 		std::string oldColName = changeNameColumnIt.first,
 					newColName = changeNameColumnIt.second;
@@ -162,7 +145,7 @@ void Importer::_syncPackage(
 	int colNo = DataSetPackage::pkg()->columnCount();
 	DataSetPackage::pkg()->setDataSetRowCount(syncDataSet->rowCount());
 
-	for (auto indexColChanged : changedColumns)
+	for (const auto & indexColChanged : changedColumns)
 	{
 		Log::log() << "Column changed " << indexColChanged.first << std::endl;
 

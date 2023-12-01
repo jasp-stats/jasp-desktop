@@ -56,8 +56,6 @@ inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tq
 		Json::Value							fqj(const QJSValue							 & jsVal);
 		QJSValue							tqj(const Json::Value						 & json,	const QQuickItem * qItem);
 
-		std::vector<std::string>			fromQstringToStdVector(const QString &input, const QString &delimeter);
-
 template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
 template<typename T> inline		QVector<T>		tq(std::vector<T>	in) { return QVector<T>::fromStdVector(in); }
 

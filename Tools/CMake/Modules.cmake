@@ -18,40 +18,54 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_COMMON_MODULES
-    "jaspDescriptives"
-	"jaspTTests"
-	"jaspAnova"
-	"jaspMixedModels"
-	"jaspRegression"
-	"jaspFrequencies"
-	"jaspFactor"
-    )
+set(JASP_TEST_BUILD OFF CACHE BOOL "Do a quick build with just descriptives and testmodule")
 
-set(JASP_EXTRA_MODULES
-    "jaspAcceptanceSampling"
-    "jaspAudit"
-    "jaspBain"
-    "jaspBsts"
-    "jaspCircular"
-    "jaspCochrane"
-    "jaspDistributions"
-    "jaspEquivalenceTTests"
-    "jaspJags"
-    "jaspLearnBayes"
-    "jaspMachineLearning"
-    "jaspMetaAnalysis"
-    "jaspNetwork"
-    "jaspPower"
-    "jaspPredictiveAnalytics"
-    "jaspProphet"
-    "jaspQualityControl"
-    "jaspReliability"
-    "jaspSem"
-    "jaspSummaryStatistics"
-    "jaspTimeSeries"
-    "jaspVisualModeling"
-    )
+if(NOT JASP_TEST_BUILD)
+	set(JASP_COMMON_MODULES
+		"jaspDescriptives"
+		"jaspTTests"
+		"jaspAnova"
+		"jaspMixedModels"
+		"jaspRegression"
+		"jaspFrequencies"
+		"jaspFactor"
+	)
+	
+	set(JASP_EXTRA_MODULES
+		"jaspAcceptanceSampling"
+		"jaspAudit"
+		"jaspBain"
+		"jaspBsts"
+		"jaspCircular"
+		"jaspCochrane"
+		"jaspDistributions"
+		"jaspEquivalenceTTests"
+		"jaspJags"
+		"jaspLearnBayes"
+		"jaspLearnStats"
+		"jaspMachineLearning"
+		"jaspMetaAnalysis"
+		"jaspNetwork"
+		"jaspPower"
+		"jaspPredictiveAnalytics"
+		"jaspProcess"
+		"jaspProphet"
+		"jaspQualityControl"
+		"jaspReliability"
+		"jaspRobustTTests"
+		"jaspSem"
+		"jaspSurvival"
+		"jaspSummaryStatistics"
+		"jaspTimeSeries"
+		"jaspVisualModeling"
+        )
+else() #it IS a test build
+	message(STATUS "JASP_TEST_BUILD is enabled, building with minimal modules")
+	set(JASP_COMMON_MODULES
+		"jaspDescriptives"
+		"jaspTestModule"
+	)
+endif()
 
 list(
   JOIN
@@ -69,8 +83,7 @@ configure_file(${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h.in
                ${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h @ONLY)
 message(STATUS "activemodules.h is successfully generated...")
 
-if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
-                                                       JASP_EXTRA_MODULES))
+if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST JASP_EXTRA_MODULES))
   if(LINUX)
 
     if(LINUX_LOCAL_BUILD)
@@ -82,15 +95,16 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
     endif()
 
     message(CHECK_START "Looking for libjags.so")
-    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib REQUIRED)
+
+    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib)
     if(EXISTS ${LIBJAGS})
       message(CHECK_PASS "found")
       message(STATUS "  ${LIBJAGS}")
     else()
       message(CHECK_FAIL "not found")
       message(
-        FATAL_ERROR
-          "JAGS is required for building on Windows, please follow the build instruction before you continue."
+        WARNING
+          "JAGS is required for building on Linux but wasnt found, perhaps JASP builds, otherwise follow the build instruction before you continue."
       )
     endif()
 
@@ -395,7 +409,7 @@ endif()
 
           fetchcontent_declare(
             jags
-            URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.1.tar.gz"
+            URL "http://static.jasp-stats.org/JAGS-4.3.1.tar.gz"
             URL_HASH
               SHA256=f9258355b5e9eb13bd33c5fa720f0cbebacea7d0a4a42b71b0fb14501ee14229
           )

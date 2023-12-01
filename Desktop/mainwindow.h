@@ -26,7 +26,6 @@
 
 #include "analysis/analyses.h"
 #include "analysisform.h"
-#include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
@@ -34,7 +33,7 @@
 #include "data/datasettablemodel.h"
 #include "data/fileevent.h"
 #include "data/filtermodel.h"
-#include "data/labelmodel.h"
+#include "data/columnmodel.h"
 #include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"
@@ -55,6 +54,7 @@
 #include "utilities/reporter.h"
 #include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
+#include "data/workspacemodel.h"
 
 #include "utilities/languagemodel.h"
 #include <vector>
@@ -72,39 +72,57 @@ using Modules::Upgrader;
 class MainWindow : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
-	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
-	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
-	Q_PROPERTY(QString	windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
-	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
-	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
-	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
-	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
-	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
+	Q_PROPERTY(int			progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
+	Q_PROPERTY(QString		progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
+	Q_PROPERTY(QString		windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
+	Q_PROPERTY(int			screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
+	Q_PROPERTY(bool			dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
+	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
+	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
+	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
+	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
+	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT							)
+	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT							)
+	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT							)
+	Q_PROPERTY(QString		coopSupporters		READ coopSupporters											CONSTANT							)
+	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT							)
+	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT							)
+	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 
 
 	friend class FileMenu;
 public:
 	explicit MainWindow(QApplication *application);
-	void open(QString filepath);
-	void open(const Json::Value & dbJson);
-	void testLoadedJaspFile(int timeOut, bool save);
-	void reportHere(QString dir);
-
-	~MainWindow() override;
-
-	bool	progressBarVisible()	const	{ return _progressBarVisible;	}
-	int		progressBarProgress()	const	{ return _progressBarProgress;	}
-	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
-	QString	windowTitle()			const;
-	int		screenPPI()				const	{ return _screenPPI;			}
-	bool	dataAvailable()			const	{ return _dataAvailable;		}
-	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
-	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
-	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
-	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
+			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
+
+	void				open(QString filepath);
+	void				open(const Json::Value & dbJson);
+	void				testLoadedJaspFile(int timeOut, bool save);
+	void				reportHere(QString dir);
+
+	bool				progressBarVisible()	const	{ return _progressBarVisible;	}
+	int					progressBarProgress()	const	{ return _progressBarProgress;	}
+	const QString &		progressBarStatus()		const	{ return _progressBarStatus;	}
+	QString				windowTitle()			const;
+	int					screenPPI()				const	{ return _screenPPI;			}
+	bool				dataAvailable()			const	{ return _dataAvailable;		}
+	bool				analysesAvailable()		const	{ return _analysesAvailable;	}
+	bool				welcomePageVisible()	const	{ return _welcomePageVisible;	}
+	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
+	bool				contactVisible()		const;
+	bool				communityVisible()	const;
+	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
+	const QStringList & coopThankYou()			const;
+	const QString &		coopEducators()			const;
+	const QString &		coopSponsors()			const;
+	const QString &		coopSupporters()		const;
+	const QString &		coopHowToSupport()		const;
+	const QString &		coopUrl()				const;
+	const QString 		contactText()			const;
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -116,22 +134,30 @@ public slots:
 	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
+	void setContactVisible(bool newContactVisible);
+	void setCommunityVisible(bool newCommunityVisible);
+	void setDefaultWorkspaceEmptyValues();
 
 	void showRCommander();
 
 	bool checkPackageModifiedBeforeClosing();
-	void startDataEditorHandler();
+	bool startDataEditorHandler();
 	void clearModulesFoldersUser();
 
 	void showAbout();
+	void showContact();
+	void showCommunity();
 
 	void saveKeyPressed();
+	void saveAsKeyPressed();
 	void openKeyPressed();
 	void syncKeyPressed();
 	void refreshKeyPressed();
 	void zoomInKeyPressed();
 	void zoomOutKeyPressed();
 	void zoomResetKeyPressed();	
+	void undo();
+	void redo();
 
 	QObject * loadQmlData(QString data, QUrl url);
 
@@ -150,6 +176,7 @@ public slots:
 	void	reloadResults() const;
 
 private:
+	
 	void makeConnections();
 	void initLog();
 	void initQWidgetGUIParts();
@@ -166,14 +193,14 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 
-	void		removeAnalysis(Analysis *analysis);
-	void		analysesCountChangedHandler();
-	void		analysisChangedDownstreamHandler(int id, QString options);
-	void		analysisSaveImageHandler(int id, QString options);
-	void		analysisEditImageHandler(int id, QString options);
-	void		removeAnalysisRequestHandler(int id);
-	void		matchComputedColumnsToAnalyses();
-	Json::Value getResultsMeta();
+	void			removeAnalysis(Analysis *analysis);
+	void			analysesCountChangedHandler();
+	void			analysisChangedDownstreamHandler(int id, QString options);
+	void			analysisSaveImageHandler(int id, QString options);
+	void			analysisEditImageHandler(int id, QString options);
+	void			removeAnalysisRequestHandler(int id);
+	Json::Value		getResultsMeta();
+	const QString	coopConcatter(QStringList listIn, const QString & name) const;
 
 	void startComparingResults();
 	void analysesForComparingDoneAlready();
@@ -188,6 +215,7 @@ private:
 	void _openDbJson();
 	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
+	void checkEmptyWorkspace();
 
 signals:
 	void saveJaspFile();
@@ -208,6 +236,10 @@ signals:
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 	void closeWindows();
 	void hideDataPanel();
+	void exitSignal(				int			returnCode = 0) const;
+	void contactVisibleChanged();
+	void communityVisibleChanged();
+	void contactTextChanged();
 
 private slots:
 	void resultsPageLoaded();
@@ -227,7 +259,7 @@ private slots:
 	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
-	void showAnalysis() { emit hideDataPanel(); _analyses->setVisible(true); }
+	void showAnalysis();
 
 	bool checkDoSync();
 	void unitTestTimeOut();
@@ -237,6 +269,7 @@ private slots:
 
 	void resetQmlCache();
 	void setCurrentJaspTheme();
+	void onDataModeChanged(bool dataMode);
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
 
@@ -255,6 +288,7 @@ private:
 	QQmlApplicationEngine		*	_qml					= nullptr;
 	Analyses					*	_analyses				= nullptr;
 	ResultsJsInterface			*	_resultsJsInterface		= nullptr;
+	MessageForwarder			*	_msgForwarder			= nullptr;
 	DataSetPackage				*	_package				= nullptr;
 	DataSetTableModel			*	_datasetTableModel		= nullptr,
 								*	_dataSetModelVarInfo	= nullptr;
@@ -275,12 +309,13 @@ private:
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 	LanguageModel				*	_languageModel			= nullptr;
 	ColumnTypesModel			*	_columnTypesModel		= nullptr;
-	LabelModel					*	_labelModel				= nullptr;
+	ColumnModel					*	_columnModel			= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
+	WorkspaceModel				*	_workspaceModel			= nullptr;
 
 	QSettings						_settings;
 
@@ -306,7 +341,9 @@ private:
 									_analysesAvailable		= false,
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
-									_checkAutomaticSync		= false;
+									_checkAutomaticSync		= false,
+									_contactVisible			= false,
+									_communityVisible		= false;
 									
 	QFont							_defaultFont;
 };

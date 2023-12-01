@@ -40,6 +40,7 @@ endif()
 
 find_package(ZLIB 1.2 REQUIRED)
 find_package(Iconv 1.16 REQUIRED)
+find_package(SQLite3 3.37.0 REQUIRED)
 
 #if(USE_CONAN)
 #  find_package(jsoncpp 1.9 REQUIRED)
@@ -178,7 +179,9 @@ if(LINUX)
     set(LIBREADSTAT_LIBRARY_DIRS /app/lib)
   else()
     set(LIBREADSTAT_INCLUDE_DIRS /usr/local/include /usr/include)
-    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib)
+    # The last two library paths handle the two most common multiarch cases.
+    # Other multiarch-compliant paths may come up but should be rare.
+    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
   endif()
 
   message(CHECK_START "Looking for libreadstat.so")
@@ -206,24 +209,6 @@ if(APPLE)
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
   find_package(Brotli 1.0.9 REQUIRED)
-
-  set(_LIB_BROTLICOMMON
-      ${Brotli_LIB_DIRS}/libbrotlicommon.1.0.9.dylib
-  )
-
-  if(EXISTS "${_LIB_BROTLICOMMON}")
-    message(CHECK_PASS "found")
-    message(STATUS "  Copying the 'libbrotlicommon' to the local build folder")
-    execute_process(
-      WORKING_DIRECTORY ${Brotli_LIB_DIRS}
-      COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_BROTLICOMMON}
-              ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
-    set(_LIB_BROTLICOMMON ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
-    message(STATUS "  ${_LIB_BROTLICOMMON}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "libbrotli is required for creating the DMG file. ")
-  endif()
 
 endif()
 

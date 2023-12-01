@@ -25,12 +25,12 @@
 #include "tempfiles.h"
 #include "utils.h"
 #include "columnutils.h"
-#include "sharedmemory.h"
 #include <csignal>
 
 #include "rbridge.h"
 #include "timers.h"
 #include "log.h"
+#include "databaseinterface.h"
 
 
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
@@ -76,7 +76,10 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	TempFiles::attach(parentPID);
 	JASPTIMER_STOP(TempFiles Attach);
 
-	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
+	if(parentPID != 0) //Otherwise we are just running to fix R packages
+		_db = new DatabaseInterface();
+
+	rbridge_setDataSetSource(			boost::bind(&Engine::provideAndUpdateDataSet,		this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
 	rbridge_setSpecificFileNameSource(	boost::bind(&Engine::provideSpecificFileName,		this, _1, _2, _3));
 
@@ -84,15 +87,16 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
 
 	rbridge_setColumnFunctionSources(	boost::bind(&Engine::getColumnType,					this, _1),
+										boost::bind(&Engine::getColumnAnalysisId,			this, _1),
 										boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2),
 										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
 										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
-										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
+										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2),
+										boost::bind(&Engine::createColumn,					this, _1));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 	
 	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
-
 }
 
 void Engine::initialize()
@@ -108,17 +112,19 @@ void Engine::initialize()
 
 		Log::log() << "rbridge_init completed" << std::endl;
 	
+		sendEngineLoadingData();
+
 		//Is there maybe already some data? Like, if we just killed and restarted the engine
 		std::vector<std::string> columns;
-		if(provideDataSet())
+                if(provideAndUpdateDataSet())
 		{
-			columns = provideDataSet()->getColumnNames();
+                    columns = provideAndUpdateDataSet()->getColumnNames();
 			Log::log() << "There is a dataset and got " << columns.size() << " columns in it, loading them into encoder now." << std::endl;
 		}
 		else
 			Log::log() << "No dataset available so resetting columnnames in encoder." << std::endl;
 
-		ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+                ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
 
 
 
@@ -294,7 +300,15 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 		std::vector<bool> filterResult	= rbridge_applyFilter(strippedFilter, generatedFilter);
 		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
-		sendFilterResult(filterRequestId, filterResult, RPossibleWarning);
+		_dataSet->db().transactionWriteBegin();
+		_dataSet->filter()->setRFilter(filter);
+		_dataSet->filter()->setFilterVector(filterResult);
+		_dataSet->filter()->setErrorMsg(RPossibleWarning);
+		_dataSet->filter()->incRevision();
+		_dataSet->db().transactionWriteEnd();
+
+
+		sendFilterResult(filterRequestId);
 
 	}
 	catch(filterException & e)
@@ -305,16 +319,15 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 	_engineState = engineState::idle;
 }
 
-void Engine::sendFilterResult(int filterRequestId, const std::vector<bool> & filterResult, const std::string & warning)
+void Engine::sendFilterResult(int filterRequestId)
 {
 	Json::Value filterResponse(Json::objectValue);
 
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
-	filterResponse["filterResult"]	= Json::arrayValue;
 	filterResponse["requestId"]		= filterRequestId;
 
-	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
-	if(warning != "")			filterResponse["filterError"] = warning;
+//	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
+//	if(warning != "")			filterResponse["filterError"] = warning;
 
 	sendString(filterResponse.toStyledString());
 }
@@ -323,8 +336,9 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 {
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
+        provideAndUpdateDataSet()->filter()->setErrorMsg(errorMessage);
+
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
-	filterResponse["filterError"]	= errorMessage;
 	filterResponse["requestId"]		= filterRequestId;
 
 	sendString(filterResponse.toStyledString());
@@ -360,7 +374,7 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 
 void Engine::runRCodeCommander(std::string rCode)
 {
-	bool thereIsSomeData = provideDataSet();
+    bool thereIsSomeData = provideAndUpdateDataSet();
 
 
 	static const std::string rCmdDataName = "data", rCmdFiltered = "filteredData";
@@ -428,8 +442,6 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-	computeColumnName = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
 
@@ -443,14 +455,27 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 		{columnType::nominal,		".setColumnDataAsNominal"		},
 		{columnType::nominalText,	".setColumnDataAsNominalText"	}};
 
-	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals)));})";
-	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
-
 	Json::Value computeColumnResponse		= Json::objectValue;
 	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
-	computeColumnResponse["result"]			= computeColumnResultStr;
-	computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
 	computeColumnResponse["columnName"]		= computeColumnName;
+
+
+    if(provideAndUpdateDataSet())
+	{
+		std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
+		computeColumnResponse["columnName"]		= computeColumnNameEnc;
+
+		std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
+		std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
+
+		computeColumnResponse["result"]			= computeColumnResultStr;
+		computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+	}
+	else
+	{
+		computeColumnResponse["result"]			= "fail";
+		computeColumnResponse["error"]			= "No DataSet loaded in engine!";
+	}
 
 	sendString(computeColumnResponse.toStyledString());
 
@@ -550,7 +575,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_resultFont			= jsonRequest.get("resultFont",		"").asString();
+		_resultFont				= jsonRequest.get("resultFont",			"").asString();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -559,10 +584,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		
 		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
 		
-		ColumnEncoder::encodeColumnNamesinOptions(optionsEnc);
-		_analysisOptions		= optionsEnc.toStyledString();
-
-        //Debug encoded stuff? -> Log::log() << "Options encoded: " << _analysisOptions << std::endl;
+		_analysisOptions		= optionsEnc; //store unencoded
 	}
 	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pass that msg on by itself.
 }
@@ -610,10 +632,16 @@ void Engine::runAnalysis()
 	default:	break;
 	}
 
+        provideAndUpdateDataSet();
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey,
-												   _analysisId, _analysisRevision, _developerMode);
+	Json::Value encodedAnalysisOptions = _analysisOptions;
+
+	ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions);
+
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
+								encodedAnalysisOptions.toStyledString(),
+								_analysisStateKey, _analysisId, _analysisRevision, _developerMode);
 
 	switch(_analysisStatus)
 	{
@@ -726,6 +754,68 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 	}
 }
 
+int Engine::getColumnType(const std::string &columnName)
+{
+	return int(!isColumnNameOk(columnName) ? columnType::unknown : provideAndUpdateDataSet()->column(columnName)->type());
+}
+
+int Engine::getColumnAnalysisId(const std::string &columnName)
+{
+	return	!isColumnNameOk(columnName)
+		? -1
+		: provideAndUpdateDataSet()->column(columnName)->analysisId();
+}
+
+std::string Engine::createColumn(const std::string &columnName)
+{
+	if(isColumnNameOk(columnName)) 
+		return "";
+
+	DataSet * data = provideAndUpdateDataSet();
+	Column  * col  = data->newColumn(columnName);
+
+	col->setAnalysisId(_analysisId);
+	col->setCodeType(computedColumnType::analysisNotComputed);
+	data->db().columnSetIndex(col->id(), data->columnCount() - 1);
+
+	reloadColumnNames();
+
+	return rbridge_encodeColumnName(columnName.c_str());
+	
+}
+
+bool Engine::setColumnDataAsScale(const std::string &columnName, const std::vector<double> &scalarData)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);
+}
+
+bool Engine::setColumnDataAsOrdinal(const std::string &columnName, std::vector<int> &ordinalData, const std::map<int, std::string> &levels)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);
+}
+
+bool Engine::setColumnDataAsNominal(const std::string &columnName, std::vector<int> &nominalData, const std::map<int, std::string> &levels)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);
+}
+
+bool Engine::setColumnDataAsNominalText(const std::string &columnName, const std::vector<std::string> &nominalData)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+
+	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);
+}
+
 void Engine::sendAnalysisResults()
 {
 	Json::Value response			= Json::Value(Json::objectValue);
@@ -761,24 +851,37 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 		}
 	}
 	else if (filesToKeepValue.isString())
-	{
 		filesToKeep.push_back(filesToKeepValue.asString());
-	}
 
-	std::vector<std::string> tempFilesFromLastTime = TempFiles::retrieveList(_analysisId);
+	stringvec tempFilesFromLastTime = TempFiles::retrieveList(_analysisId);
 
 	Utils::remove(tempFilesFromLastTime, filesToKeep);
 
 	TempFiles::deleteList(tempFilesFromLastTime);
 }
 
-DataSet * Engine::provideDataSet()
+DataSet * Engine::provideAndUpdateDataSet()
 {
 	JASPTIMER_RESUME(Engine::provideDataSet());
-	DataSet * dataset = SharedMemory::retrieveDataSet(_parentPID);
+
+	if(_dataSet)
+	{
+		Log::log() << "There is a dataset, ";
+		if(_dataSet->checkForUpdates())
+		{
+			Log::log(false) << "updates found, loading them.";
+			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
+		}
+		else
+			Log::log(false) << "no updates found.";
+
+		Log::log(false) << std::endl;
+	}
+	else if(_db->dataSetGetId() != -1)	_dataSet = new DataSet(_db->dataSetGetId());
+
 	JASPTIMER_STOP(Engine::provideDataSet());
 
-	return dataset;
+	return _dataSet;
 }
 
 void Engine::provideStateFileName(std::string & root, std::string & relativePath)
@@ -803,29 +906,22 @@ void Engine::provideTempFileName(const std::string & extension, std::string & ro
 
 bool Engine::isColumnNameOk(std::string columnName)
 {
-	if(columnName == "" || !provideDataSet())
+    if(columnName == "" || !provideAndUpdateDataSet())
 		return false;
 
-	try
-	{
-		provideDataSet()->columns().findIndexByName(columnName);
-		return true;
-	}
-	catch(columnNotFound &)
-	{
-		return false;
-	}
+    return provideAndUpdateDataSet()->column(columnName);
 }
 
 bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels)
 {
 	std::map<int, int> uniqueInts;
 
-	for(auto keyval : levels)
+	for(auto & keyval : levels)
 	{
 		size_t convertedChars;
 
-		try {
+		try
+		{
 			int asInt = std::stoi(keyval.second, &convertedChars);
 
 			if(convertedChars == keyval.second.size()) //It was a number!
@@ -840,13 +936,13 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string &
 			if(dat != std::numeric_limits<int>::lowest())
 				dat = uniqueInts[dat];
 
-		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data);
-		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data);
+                if(isOrdinal)	return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithOrdinal(data);
+                else			return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(data);
 	}
 	else
 	{
-		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data, levels);
-		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data, levels);
+            if(isOrdinal)	return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithOrdinal(data, levels);
+            else			return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(data, levels);
 	}
 }
 
@@ -865,7 +961,6 @@ void Engine::stopEngine()
 	_engineState = engineState::stopped;
 
 	freeRBridgeColumns();
-	SharedMemory::unloadDataSet();
 	sendEngineStopped();
 }
 
@@ -891,13 +986,19 @@ void Engine::pauseEngine(const Json::Value & json)
 	_engineState = engineState::paused;
 
 	freeRBridgeColumns();
-	if(json.get("unloadData", false).asBool()) //Don't do it too often or otherwise the sharedmemfile might get lost. See https://github.com/jasp-stats/jasp-issues/issues/1302
-		SharedMemory::unloadDataSet();
+	if(json.get("unloadData", false).asBool())
+	{
+		delete _dataSet;
+		_dataSet = nullptr;
+	}
+
 	sendEnginePaused();
 }
 
 void Engine::receiveReloadData()
 {
+	Log::log() << "Engine::receiveReloadData()" << std::endl;
+
 	//Im doing the following switch as a copy from Engine::pauseEngine, but probably the engine is always going to be idle anyway.
 	switch(_engineState)
 	{
@@ -909,14 +1010,14 @@ void Engine::receiveReloadData()
 
 	_engineState = engineState::idle;
 
-	Log::log() << "Engine reloadData, unloading dataset now" << std::endl;
-	SharedMemory::unloadDataSet();
-	provideDataSet();
+	//First send state, then load data
+	sendEngineLoadingData();
+
+        provideAndUpdateDataSet(); //Also triggers loading from DB
+
 	reloadColumnNames();
 
-	Json::Value rCodeResponse		= Json::objectValue;
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::reloadData);
-	sendString(rCodeResponse.toStyledString());
+	sendEngineResumed();
 }
 
 void Engine::sendEnginePaused()
@@ -930,13 +1031,12 @@ void Engine::sendEnginePaused()
 void Engine::reloadColumnNames()
 {
 	Log::log() << "Engine rescanning columnNames for en/decoding" << std::endl;
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
 }
 
 void Engine::resumeEngine(const Json::Value & jsonRequest)
 {
 	Log::log() << "Engine resuming and absorbing settings from request." << std::endl;
-	reloadColumnNames();
 
 	absorbSettings(jsonRequest);
 
@@ -944,13 +1044,25 @@ void Engine::resumeEngine(const Json::Value & jsonRequest)
 	sendEngineResumed();
 }
 
-void Engine::sendEngineResumed()
+void Engine::sendEngineResumed(bool justReloadedData)
 {
+	Log::log() << "Engine::sendEngineResumed()" << std::endl;
+	
+	Json::Value response			= Json::objectValue;
+	response["typeRequest"]			= engineStateToString(engineState::resuming);
+	response["justReloadedData"]	= justReloadedData;
 
-	Json::Value rCodeResponse		= Json::objectValue;
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::resuming);
+	sendString(response.toStyledString());
+}
 
-	sendString(rCodeResponse.toStyledString());	
+void Engine::sendEngineLoadingData()
+{
+	Log::log() << "Engine::sendEngineLoadingData()" << std::endl;
+	
+	Json::Value response	= Json::objectValue;
+	response["typeRequest"]	= engineStateToString(engineState::reloadData);
+
+	sendString(response.toStyledString());
 }
 
 void Engine::receiveLogCfg(const Json::Value & jsonRequest)

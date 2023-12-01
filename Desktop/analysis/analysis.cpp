@@ -100,7 +100,10 @@ Analysis::~Analysis()
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 		for(const std::string & col : computedColumns())
-			emit requestComputedColumnDestruction(col);
+			if(DataSetPackage::pkg()->isColumnAnalysisNotComputed(col))
+				DataSetPackage::pkg()->setColumnComputedType(col, computedColumnType::notComputed);
+			else
+				emit requestComputedColumnDestruction(col);
 }
 
 bool Analysis::checkAnalysisEntry()
@@ -479,10 +482,17 @@ void Analysis::boundValueChangedHandler()
 
 void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
-	ComputedColumn *result = requestComputedColumnCreation(columnName, this);
+	Column *result = requestComputedColumnCreation(columnName, this);
 
 	if (result)
 		addOwnComputedColumn(columnName);
+}
+
+void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
+{
+	emit requestColumnCreation(columnName, this, colType);
+
+	addOwnComputedColumn(columnName);
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
@@ -1022,6 +1032,11 @@ void Analysis::setRSyntaxTextInResult()
 
 	bool generateRSyntax = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
 	ResultsJsInterface::singleton()->setRSyntax(id(), generateRSyntax ? form()->generateRSyntax(true) : "");
+}
+
+void Analysis::onUsedVariablesChanged()
+{
+	DataSetPackage::pkg()->checkComputedColumnDependenciesForAnalysis(this);
 }
 
 void Analysis::checkForRSources()

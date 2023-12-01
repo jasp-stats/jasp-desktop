@@ -35,8 +35,7 @@
 #include <QFileSystemWatcher>
 #include <QQuickItem>
 
-class ComputedColumn;
-class DataSet;
+class Column;
 class AnalysisForm;
 
 ///
@@ -114,10 +113,9 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				utilityRunAllowed() const				{ return  isSaveImg() || isEditImg() || isRewriteImgs();							}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && form();	}
-			bool				beingTranslated()                        { return _beingTranslated; };
-			void				setBeingTranslated(bool value)           { _beingTranslated = value; };
+			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form();	}
+			bool				beingTranslated()						{ return _beingTranslated; };
+			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -174,9 +172,9 @@ signals:
 	void					rSourceChanged(QString optionName);
 	void					optionsChanged();
 
-	ComputedColumn		*	requestComputedColumnCreation(		const std::string& columnName, Analysis * analysis);
-	void					requestColumnCreation(				const std::string& columnName, Analysis *source, columnType type);
-	void					requestComputedColumnDestruction(	const std::string& columnName);
+	Column				*	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
+	void					requestColumnCreation(				const std::string & columnName, Analysis * source, columnType type);
+	void					requestComputedColumnDestruction(	const std::string & columnName);
 
 	void					refreshTableViewModels();
 	Q_INVOKABLE void		expandAnalysis();
@@ -191,10 +189,11 @@ public slots:
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 	void					boundValueChangedHandler()																	override;
 	void					requestComputedColumnCreationHandler(	const std::string & columnName)						override;
-	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override	{ emit requestColumnCreation(columnName, this, colType); }
+	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override;
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
 	void					setRSyntaxTextInResult();
+	void					onUsedVariablesChanged()																	override;
 
 protected:
 	void					abort();

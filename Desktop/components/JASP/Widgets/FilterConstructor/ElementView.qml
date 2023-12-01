@@ -4,29 +4,21 @@ import QtQuick 2.0
 ListView
 {
 	id:						listOfStuff
-	width:					0
+    implicitWidth:          130 * jaspTheme.uiScale
 	spacing:				4
 	maximumFlickVelocity:	jaspTheme.maximumFlickVelocity
 	boundsBehavior:			Flickable.StopAtBounds
 
 
 	property string	__debugName:	"ElementView"
-	property real	maxWidth:		300 * preferencesModel.uiScale
+	property real	maxWidth:		180 * preferencesModel.uiScale
 	property real	widthMargin:	10
-
-	property int	_recalculateWidth: 0 //To trigger a recalculation of the width from the delegates
-
-	onMaxWidthChanged:
-	{
-		listOfStuff.width = 0;
-		_recalculateWidth++;
-	}
 
 	delegate: MouseArea
 	{
 
-		width:  orientation === ListView.Horizontal ? elementLoader.width	: ListView.view.width
-		height: orientation === ListView.Horizontal ? ListView.view.height	: elementLoader.height
+		implicitWidth:  orientation === ListView.Horizontal ? elementLoader.item.width	: ListView.view.width
+		implicitHeight: orientation === ListView.Horizontal ? ListView.view.height	: elementLoader.item.height
 
 		z: 5
 
@@ -101,24 +93,6 @@ ListView
 															 separatorComp :
 															 defaultComp
 
-			function calcWidth()
-			{
-				if(listOfStuff.orientation !== ListView.Horizontal && listOfStuff.width < width + listOfStuff.widthMargin)
-					listOfStuff.width = width + listOfStuff.widthMargin
-
-			}
-
-			property int _recalculateWidth: 0
-
-			onLoaded:
-			{
-				_recalculateWidth = Qt.binding(function() { return listOfStuff._recalculateWidth; } )
-
-				calcWidth()
-			}
-
-			on_RecalculateWidthChanged: calcWidth()
-			onWidthChanged: calcWidth()
 		}
 
 		onDoubleClicked: alternativeDropFunctionDef()
@@ -130,7 +104,7 @@ ListView
 		Component { id: stringComp;			StringDrag				{ toolTipText: listToolTip; text: listText;										alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth - listOfStuff.widthMargin; Rectangle { height: 1; color: jaspTheme.black; width: parent.width ; anchors.centerIn: parent }  } }
 		Component { id: defaultComp;		Text					{ text: "Something wrong!"; color: jaspTheme.red }  }
-		Component {	id: columnComp;			ColumnDrag				{ toolTipText: listToolTip; columnName: listColName; columnIcon: listColIcon;		alternativeDropFunction: alternativeDropFunctionDef } }
+        Component {	id: columnComp;			ColumnDrag				{ toolTipText: listToolTip; columnName: listColName; columnIcon: listColIcon;		alternativeDropFunction: alternativeDropFunctionDef; maxSize: listOfStuff.maxWidth } }
 	}
 
 

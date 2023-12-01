@@ -125,15 +125,11 @@ msgstr "全选"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "复制所选"
+msgstr "拷贝所选"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
 msgstr "BibTeX"
-
-msgctxt "AboutWindow|"
-msgid "Close"
-msgstr "关闭"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
@@ -210,14 +206,6 @@ msgstr "删除列"
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "重置"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column: "
-msgstr "计算列： "
-
-msgctxt "ComputeColumnWindow|"
-msgid "Select a column"
-msgstr "选择列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
@@ -387,10 +375,6 @@ msgid ""
 msgstr "从具有指定形状参数和尺度的韦布尔 Weibull 分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
-msgid "Remove computed column"
-msgstr "移除计算列"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "显示生成的 R 代码"
 
@@ -413,10 +397,6 @@ msgstr "(以行为单位)计算的列"
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
 msgstr "打开文档"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Close computed column window"
-msgstr "关闭计算列窗口"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -481,11 +461,11 @@ msgstr "通过拖放公式定义列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "定距"
+msgstr "连续"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "定序"
+msgstr "有序"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
@@ -543,18 +523,6 @@ msgstr "添加计算列"
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
 msgstr "单击此处更改列类型"
-
-msgctxt "DataTableView|"
-msgid "Click here to change the columns formulas"
-msgstr "单击此处更改列公式"
-
-msgctxt "DataTableView|"
-msgid "Click here to change labels"
-msgstr "单击此处更改标签"
-
-msgctxt "DataTableView|"
-msgid " or inspect filter"
-msgstr " 或检查筛选器"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
@@ -723,10 +691,6 @@ msgid "Data Preferences"
 msgstr "数据首选项"
 
 msgctxt "PrefsData|"
-msgid "Synchronize automatically on data file save"
-msgstr "在数据文件保存时自动同步"
-
-msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
 msgstr "使用默认的电子表格编辑器"
 
@@ -744,7 +708,7 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"在将变量分类为“定距”之前的唯一整数阈值。\n"
+"在将变量分类为“连续”之前的唯一整数阈值。\n"
 "必须重新加载数据才能生效。 有关详细信息，请参阅帮助。"
 
 msgctxt "PrefsMissingValues|"
@@ -1484,42 +1448,6 @@ msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "半正态"
 
-msgctxt "VariablesWindow|"
-msgid "Filter"
-msgstr "筛选"
-
-msgctxt "VariablesWindow|"
-msgid "Value"
-msgstr "值"
-
-msgctxt "VariablesWindow|"
-msgid "Label"
-msgstr "标签"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels up"
-msgstr "上移所选标签"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels down"
-msgstr "下移所选标签"
-
-msgctxt "VariablesWindow|"
-msgid "Reverse order of all labels"
-msgstr "倒置所有标签的顺序"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for this column"
-msgstr "重置此列的所有过滤器复选标记"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for all columns"
-msgstr "重置所有列的所有筛选器复选标记"
-
-msgctxt "VariablesWindow|"
-msgid "Close this view"
-msgstr "关闭此视图"
-
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
 msgstr "欢迎使用 JASP"
@@ -1564,18 +1492,6 @@ msgstr "现在，打开一个数据文件并尝试使用 JASP 吧！"
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
 msgstr "点击获取最新版本"
-
-msgctxt "WelcomePage|"
-msgid ""
-"Please keep in mind that this is a preview release and a number of features "
-"are still missing.\n"
-"\n"
-"If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
-"being developed at break-neck speed!"
-msgstr ""
-"请注意，这是一个预览版本，仍然缺少许多功能。\n"
-"\n"
-"如果 JASP 今天不能满足您的需求，那么明天再来看看：JASP 正在以惊人的速度开发！"
 
 #, qt-format
 msgctxt "Analysis|"
@@ -1863,11 +1779,11 @@ msgstr "调整图大小时出错"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "定距"
+msgstr "连续"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "定序"
+msgstr "有序"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
@@ -2699,7 +2615,7 @@ msgstr "标题"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr "指定序列"
+msgstr "指有序列"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -2741,17 +2657,13 @@ msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "y 轴"
 
-msgctxt "VariablesWindow|"
-msgid "Edit the labels here or choose which values should be filtered out."
-msgstr "在此处编辑标签或选择应过滤掉哪些值。"
-
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
 msgstr "转换列类型时出了点问题，但不清楚是什么。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr "无法将列转换为定序变量：值包含小数。"
+msgstr "无法将列转换为有序变量：值包含小数。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
@@ -2759,15 +2671,7 @@ msgstr "未能将列转换为连续变量：值包含文本。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
-msgstr "未能将列转换为定序变量：值包含文本或小数。"
-
-msgctxt "LabelModel|"
-msgid "Value"
-msgstr "值"
-
-msgctxt "LabelModel|"
-msgid "Label"
-msgstr "标签"
+msgstr "未能将列转换为有序变量：值包含文本或小数。"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3954,18 +3858,13 @@ msgctxt "Form|"
 msgid "Generate Wrapper"
 msgstr "生成封装类"
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Waiting for initialization of module: %1"
-msgstr "正在初始化模块：%1"
-
 msgctxt "Computer|"
 msgid "Save"
 msgstr "保存"
 
 msgctxt "Computer|"
-msgid "JASP Files (*.jasp)"
-msgstr "JASP 文件 (*.jasp)"
+msgid "JASP Files"
+msgstr "JASP 文件"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
@@ -3976,34 +3875,24 @@ msgid "HTML Files"
 msgstr "HTML 文件"
 
 msgctxt "Computer|"
-msgid "Portable Document Format (*.pdf)"
-msgstr "PDF 文档 (*.pdf)"
+msgid "Portable Document Format"
+msgstr "PDF 文档"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
 msgstr "将数据导出为 CSV"
 
 msgctxt "Computer|"
-msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr "CSV 文件 (*.csv *.txt *.tsv)"
+msgid "CSV Files"
+msgstr "CSV 文件"
 
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "同步数据"
 
 msgctxt "Computer|"
-msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr "数据文件 (*.csv *.txt *.tsv *.sav *.ods)"
-
-msgctxt "AboutModel|"
-msgid ""
-"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
-"<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
-"PARTICULAR PURPOSE."
-msgstr ""
-"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
-"<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
-"PARTICULAR PURPOSE."
+msgid "Data Files"
+msgstr "数据文件"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
@@ -4077,7 +3966,7 @@ msgstr "ALT 键导航模式"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr "是否激活 ALT 键盘导航模式"
+msgstr "是否激活 ALT 键盘导航模式."
 
 msgctxt "MainPage|"
 msgid "Bold"
@@ -4174,3 +4063,829 @@ msgstr "导言："
 msgctxt "MainPage|"
 msgid "Conclusion:"
 msgstr "结论："
+
+msgctxt "DataTableView|"
+msgid "Change to data editing mode"
+msgstr "切换到数据编辑模式"
+
+msgctxt "DataTableView|"
+msgid "Cmd"
+msgstr "Cmd"
+
+msgctxt "DataTableView|"
+msgid "Ctrl"
+msgstr "Ctrl"
+
+msgctxt "DataTableView|"
+msgid "Select All"
+msgstr "全选"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+A"
+msgstr "%1+A"
+
+msgctxt "DataTableView|"
+msgid "Cut"
+msgstr "剪切"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+X"
+msgstr "%1+X"
+
+msgctxt "DataTableView|"
+msgid "Copy"
+msgstr "拷贝"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+C"
+msgstr "%1+C"
+
+msgctxt "DataTableView|"
+msgid "Paste"
+msgstr "粘贴"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+V"
+msgstr "%1+V"
+
+msgctxt "DataTableView|"
+msgid "Clear cells"
+msgstr "清空单元格"
+
+msgctxt "DataTableView|"
+msgid "Del"
+msgstr "Del"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "Undo: %1"
+msgstr "撤销： %1"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+Z"
+msgstr "%1+Z"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "Redo: %1"
+msgstr "重做：%1"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+Shift+Z"
+msgstr "%1+Shift+Z"
+
+msgctxt "DataTableView|"
+msgid "Select column"
+msgstr "选择列"
+
+msgctxt "DataTableView|"
+msgid "Insert column before"
+msgstr "在前方插入列"
+
+msgctxt "DataTableView|"
+msgid "Insert column after"
+msgstr "在后方插入列"
+
+msgctxt "DataTableView|"
+msgid "Delete column"
+msgstr "删除列"
+
+msgctxt "DataTableView|"
+msgid "Select row"
+msgstr "选择行"
+
+msgctxt "DataTableView|"
+msgid "Delete row"
+msgstr "删除行"
+
+msgctxt "DataTableView|"
+msgid "Click here to select the row, hold shift for selecting multiple."
+msgstr "单击此处选择行，按住 Shift 键可多选。"
+
+msgctxt "FilterWindow|"
+msgid "Close filter window"
+msgstr "关闭筛选器窗口"
+
+msgctxt "RenameColumnDialog|"
+msgid "Rename column"
+msgstr "重命名列"
+
+msgctxt "RenameColumnDialog|"
+msgid "Rename"
+msgstr "重命名"
+
+#, qt-format
+msgctxt "RenameColumnDialog|"
+msgid "Rename column %1 to %2"
+msgstr "将列 %1 重命名为 %2"
+
+msgctxt "RenameColumnDialog|"
+msgid "Close without renaming column"
+msgstr "关闭而不重命名列"
+
+msgctxt "VariablesWindow|"
+msgid "Close variable window"
+msgstr "关闭变量窗口"
+
+msgctxt "ColumnModel|"
+msgid "Value"
+msgstr "值"
+
+msgctxt "ColumnModel|"
+msgid "Label"
+msgstr "标签"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Column %1"
+msgstr "列 %1"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set value to '%1' at row %2 column '%3'"
+msgstr "将行 “%2” 列“%3”中的值设置为“%1”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert computed column '%1'"
+msgstr "插入计算列 “%1”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert column '%1'"
+msgstr "插入列 “%1”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert row %1"
+msgstr "插入行 %1"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove column '%1'"
+msgstr "移除列 “%1”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove row %1"
+msgstr "移除行 %1"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Paste values at row %1 column '%2'"
+msgstr "将值粘贴到行 %1 列“%2”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set type '%1' to column '%2'"
+msgstr "将列 “%2” 类型设置为 “%1”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
+msgstr "将 列'%2' 的'%1' 标签从 '%3' 设置为 '%4'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Filter rows having label '%1' in column '%2'"
+msgstr "筛选列'%2'中含有标签 '%1' 的行"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove filter for rows having label '%1' in column '%2'"
+msgstr "删除在列 '%2' 中含有标签'%1'的行的筛选器"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move up label '%1' of column '%2'"
+msgstr "上移列 '%2' 中的标签 '%1'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move down label '%1' of column '%2'"
+msgstr "下移列 '%2' 中的标签 '%1'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move up labels of column '%1'"
+msgstr "上移列 '%1'的标签"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move down labels of column '%1'"
+msgstr "下移列 '%1' 的标签"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Reverse labels of column '%2'"
+msgstr "倒置列“%2”的标签顺序"
+
+msgctxt "QObject|"
+msgid "Change drag and drop filter"
+msgstr "更改拖放式筛选器"
+
+msgctxt "QObject|"
+msgid "Change R filter"
+msgstr "更改 R 筛选器"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Create a computed column with name '%1'"
+msgstr "创建名为 “%1” 的计算列"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set code to computed column with name '%1'"
+msgstr "将代码设置为名为 “%1” 的计算列"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP has an associated data file, but you edited it. Would you like to "
+"reload from the associated data or generate a new file?"
+msgstr ""
+"JASP 有一个已关联的数据文件，但您对其进行了编辑。 您想从此数据集中重新加载或"
+"生成新文件吗？"
+
+msgctxt "MainWindow|"
+msgid "Reload Data File"
+msgstr "重新加载数据文件"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Waiting for initialization (of the engine) of module: %1"
+msgstr "正在等待模块 %1 引擎初始化"
+
+msgctxt "RibbonModel|"
+msgid "Insert column before"
+msgstr "在前方插入列"
+
+msgctxt "RibbonModel|"
+msgid "Insert column after"
+msgstr "在后方插入列"
+
+msgctxt "RibbonModel|"
+msgid "Delete column"
+msgstr "删除列"
+
+msgctxt "RibbonModel|"
+msgid "Delete row"
+msgstr "删除行"
+
+msgctxt "RibbonModel|"
+msgid "Clear cells"
+msgstr "清空单元格"
+
+msgctxt "RibbonModel|"
+msgid "Undo"
+msgstr "撤消"
+
+msgctxt "RibbonModel|"
+msgid "Redo"
+msgstr "重做"
+
+msgctxt "RibbonModel|"
+msgid "Analyses"
+msgstr "分析视图"
+
+msgctxt "RibbonModel|"
+msgid "Switch JASP to analyses mode"
+msgstr "切换到 JASP 分析视图"
+
+msgctxt "RibbonModel|"
+msgid "Edit Data"
+msgstr "数据编辑"
+
+msgctxt "RibbonModel|"
+msgid "Switch JASP to data editing mode"
+msgstr "切换到 JASP 数据编辑视图"
+
+msgctxt "RibbonModel|"
+msgid "New Data"
+msgstr "新建数据"
+
+msgctxt "RibbonModel|"
+msgid "Open a workspace without data"
+msgstr "打开空的数据工作区"
+
+msgctxt "RibbonModel|"
+msgid "Insert"
+msgstr "插入"
+
+msgctxt "RibbonModel|"
+msgid "Insert empty columns or rows"
+msgstr "插入空白的行或列"
+
+msgctxt "RibbonModel|"
+msgid "Remove"
+msgstr "移除"
+
+msgctxt "RibbonModel|"
+msgid "Remove columns or rows"
+msgstr "移除行或列"
+
+msgctxt "RibbonModel|"
+msgid "Synchronisation"
+msgstr "数据同步"
+
+msgctxt "RibbonModel|"
+msgid "Turn external data synchronisation on"
+msgstr "打开外部数据同步"
+
+msgctxt "RibbonModel|"
+msgid "Turn external data synchronisation off"
+msgstr "关闭外部数据同步"
+
+msgctxt "DataTableView|"
+msgid "Insert row above"
+msgstr "在上方插入行"
+
+msgctxt "DataTableView|"
+msgid "Insert row below"
+msgstr "在下方插入行"
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change variable settings"
+msgstr "双击此处以设置变量属性"
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to close variable window"
+msgstr "双击此处以关闭变量窗口"
+
+msgctxt "ColorPalette|"
+msgid "Color palette"
+msgstr "调色板"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind"
+msgstr "色盲"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #2"
+msgstr "色盲 #2"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #3"
+msgstr "色盲 #3"
+
+msgctxt "ColorPalette|"
+msgid "Viridis"
+msgstr "Viridis 色板"
+
+msgctxt "ColorPalette|"
+msgid "ggplot2"
+msgstr "ggplot2 风格"
+
+msgctxt "ColorPalette|"
+msgid "Gray"
+msgstr "灰度"
+
+msgctxt "ColorPalette|"
+msgid "Blue"
+msgstr "蓝色"
+
+msgctxt "ColorPalette|"
+msgid "Sports teams: NBA"
+msgstr "NBA 风格"
+
+msgctxt "ColorPalette|"
+msgid "Grand Budapest"
+msgstr "Budapest 风格"
+
+msgctxt "RibbonModel|"
+msgid "Insert row above"
+msgstr "在上方插入行"
+
+msgctxt "RibbonModel|"
+msgid "Insert row below"
+msgstr "在下方插入行"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo changes, %1+Z"
+msgstr "撤销更改, %1+Z"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo changes, %1+shift+Z or %1+Y"
+msgstr "重做更改, %1+shift+Z 或 %1+Y"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo %2 (%1+Z)"
+msgstr "撤销 %2 (%1+Z)"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo %2 (%1+shift+Z or %1+Y)"
+msgstr "重做 %2 (%1+shift+Z 或 %1+Y)"
+
+msgctxt "DataTableView|"
+msgid "Computed by an analysis"
+msgstr "由一个分析计算"
+
+msgctxt "DataTableView|"
+msgid "Click here to change selected variable"
+msgstr "点击此处更改所选变量"
+
+msgctxt "DataSetPackage|"
+msgid "This column is generated by an analysis and its type is fixed."
+msgstr "此列由一个分析生成并且它的类型是固定的。"
+
+msgctxt "RibbonModel|"
+msgid "Open datafile with default spreadsheet editor"
+msgstr "使用默认的电子表格编辑器打开数据文件"
+
+msgctxt "RibbonModel|"
+msgid "No Data"
+msgstr "无数据"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr "从 %2 中删除 %1 列"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr "移除 %1 至 %2 行"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr "拷贝列 '%1' 至 '%2'"
+
+msgctxt "ContactWindow|"
+msgid "Contact JASP"
+msgstr "联系 JASP"
+
+msgctxt "Supporters|"
+msgid "JASP is supported by the following institutions:"
+msgstr "JASP 由以下机构提供支持："
+
+msgctxt "WavyWindow|"
+msgid "About JASP"
+msgstr "关于 JASP"
+
+msgctxt "WavyWindow|"
+msgid "Close"
+msgstr "关闭"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1' into column number '%2'"
+msgstr "拷贝列 '%1' 至列 '%2'"
+
+msgctxt "ActionButtons|"
+msgid "Contact"
+msgstr "联系"
+
+msgctxt "AboutModel|"
+msgid ""
+"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
+"WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+msgstr ""
+"本程序不提供任何形式的担保，包括设计、适销性和特定用途适用性的承诺。This "
+"program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
+"WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "and %1"
+msgstr "和 %1"
+
+msgctxt "DataTableView|"
+msgid "Add column"
+msgstr "添加列"
+
+msgctxt "PrefsData|"
+msgid "Reset with standard values"
+msgstr "重置为标准值"
+
+msgctxt "PrefsData|"
+msgid "Reset missing values with the standard JASP missing values"
+msgstr "重置缺失值为 JASP 标准缺失值"
+
+msgctxt "PrefsMissingValues|"
+msgid "Add a missing value"
+msgstr "添加缺失值"
+
+msgctxt "PrefsMissingValues|"
+msgid "Set current workspace with these values"
+msgstr "将这些值设置到当前工作空间"
+
+msgctxt "PrefsMissingValues|"
+msgid "Set the current workspace missing values with these values"
+msgstr "将这些值设置为当前工作空间的缺失值"
+
+msgctxt "LabelEditorWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr "在此处编辑标签或选择应过滤掉哪些值。"
+
+msgctxt "LabelEditorWindow|"
+msgid "Filter"
+msgstr "筛选"
+
+msgctxt "LabelEditorWindow|"
+msgid "Value"
+msgstr "值"
+
+msgctxt "LabelEditorWindow|"
+msgid "Label"
+msgstr "标签"
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels up"
+msgstr "上移所选标签"
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels down"
+msgstr "下移所选标签"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reverse order of all labels"
+msgstr "倒置所有标签的顺序"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for this column"
+msgstr "重置此列的所有过滤器复选标记"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for all columns"
+msgstr "重置所有列的所有筛选器复选标记"
+
+msgctxt "MainPage|"
+msgid "Image"
+msgstr "插入图片"
+
+msgctxt "ModulesMenu|"
+msgid "Workspace settings"
+msgstr "工作空间设置"
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Name: %1"
+msgstr "名称： %1"
+
+msgctxt "ModulesMenu|"
+msgid "Description: "
+msgstr "说明： "
+
+msgctxt "ModulesMenu|"
+msgid "Reset missing values with the ones set in Data Preferences"
+msgstr "将缺失值设置为“首选项-数据”中的某一项"
+
+msgctxt "RibbonBar|"
+msgid "Show workspace settings"
+msgstr "显示工作空间设置"
+
+msgctxt "VariablesWindow|"
+msgid "Use custom values"
+msgstr "使用自定义值"
+
+msgctxt "VariablesWindow|"
+msgid "Reset missing values with the ones set in your workspace"
+msgstr "重置缺失值为工作空间中的某一项"
+
+msgctxt "QObject|"
+msgid "Not computed"
+msgstr "不计算"
+
+msgctxt "QObject|"
+msgid "Computed with R code"
+msgstr "由 R 代码计算"
+
+msgctxt "QObject|"
+msgid "Computed with drag-and-drop"
+msgstr "由拖放式计算器计算"
+
+msgctxt "QObject|"
+msgid "Column generated by analysis"
+msgstr "由分析模块生成的变量"
+
+msgctxt "QObject|"
+msgid "Column added by analysis"
+msgstr "由分析模块添加的列"
+
+msgctxt "QObject|"
+msgid "Scale"
+msgstr "连续"
+
+msgctxt "QObject|"
+msgid "Ordinal"
+msgstr "有序"
+
+msgctxt "QObject|"
+msgid "Nominal"
+msgstr "名义"
+
+msgctxt "ColumnModel|"
+msgid "Computed column definition"
+msgstr "计算列定义"
+
+msgctxt "ColumnModel|"
+msgid "Label editor"
+msgstr "标签编辑器"
+
+msgctxt "ColumnModel|"
+msgid "Missing Values"
+msgstr "缺失值"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column name of '%1' from '%2' to '%3'"
+msgstr "将列名称“%1”从“%2”更改为“%3”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column title of '%1' from '%2' to '%3'"
+msgstr "将列标题“%1”从“%2”更改为“%3”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column description of '%1' from '%2' to '%3'"
+msgstr "将列描述“%1”从“%2”更改为“%3”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set computed type of '%1' from '%2' to '%3'"
+msgstr "将计算类型“%1”从“%2”设置为“%3”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change workspace description from '%1' to '%2'"
+msgstr "将工作空间描述从“%1”更改为“%2”"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1'"
+msgstr "对列“%1”使用自定义空值"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1'"
+msgstr "对列 “%1” 使用默认空值"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1'"
+msgstr "为列 “%1”设置空值"
+
+msgctxt "QObject|"
+msgid "Set workspace empty values"
+msgstr "设置工作空间空值"
+
+msgctxt "PrefsMissingValues|"
+msgid "Show workspace missing values"
+msgstr "显示此工作空间的缺失值"
+
+msgctxt "PrefsMissingValues|"
+msgid "Opens the settings for workspace missing values"
+msgstr "打开此工作空间缺失值设置项"
+
+msgctxt "MainPage|"
+msgid "Embed web video"
+msgstr "插入网络视频"
+
+msgctxt "MainPage|"
+msgid "Unsupported video services"
+msgstr "不支持此视频"
+
+msgctxt "MainPage|"
+msgid "JASP only allows the following videoservices:"
+msgstr "JASP 只允许以下网络视频服务商："
+
+msgctxt "MainPage|"
+msgid ""
+"Contact the JASP team to request adding another videoservice to the list."
+msgstr "如需添加对其他视频服务商的支持请联络 JASP 团队。"
+
+msgctxt "CommunityWindow|"
+msgid "JASP Community"
+msgstr "JASP 社区"
+
+#, qt-format
+msgctxt "CommunityWindow|"
+msgid ""
+"<h3>Community</h3>\n"
+"The institutions of higher learning that participate in the JASP community "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the JASP community, you can <a "
+"href=\"%1\">suggest that they join</a>.\n"
+"\n"
+"<i><b>Educator Institutions:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Sponsor Institutions:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Supporter Institutions:</b></i>\n"
+"%4"
+msgstr ""
+"<h3>JASP 社区</h3>\n"
+"参与 JASP 社区的高等教育机构共同支持 JASP 的开发和长期维护，从而为自己的学生"
+"和世界各地其他机构的学生提供宝贵的教育服务。\n"
+"\n"
+"如果您的机构还不是 JASP 社区成员，您可以建议您的机构<a href=\"%1\">加入JASP社"
+"区</a>。\n"
+"\n"
+"<i><b>教育者级别机构：</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>赞助者级别机构：</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>支持者级别机构：</b></i>\n"
+"%4"
+
+msgctxt "Supporters|"
+msgid "Suggest your institution joins the JASP Community"
+msgstr "建议您所在的机构加入　JASP　社区"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"<h3>Contact</h3>\n"
+"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: "
+"please post an issue on our GitHub page, <a href=\"%3\">as explained here.</"
+"a>\n"
+"This will bring you in direct contact with the JASP software developers.\n"
+"\n"
+"For statistical questions: please post an issue <a href=\"%4\">on the JASP "
+"Forum.</a>\n"
+"\n"
+"For information on the JASP Community: please read <a href=\"%5\">the "
+"information on the JASP website</a>\n"
+"\n"
+"For suggesting we add your institution to the <a href=\"%6\">JASP World Map</"
+"a> please send an email to <a href=\"%7\">communications@jasp-stats.org</"
+"a>.\n"
+"\n"
+"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
+msgstr ""
+"<h3>联系　JASP</h3>\n"
+"对于 <a href=\"%1\">功能请求</a> 以及<a href=\"%2\">bug 反馈</a>：请按照 <a "
+"href=\"%3\">此处</a>的说明在　GitHub　页面上打开问题。\n"
+"这将会让您与　JASP　软件开发者直接取得联系。\n"
+"\n"
+"对于统计相关的话题：请在 <a href=\"%4\"> JASP 论坛</a>上发表议题。\n"
+"\n"
+"如需了解有关　JASP　社区相关信息：请阅读 <a href=\"%5\">　JASP 网站</a>上的相"
+"关内容。\n"
+"\n"
+"如果您想建议我们将您所在的机构用户添加到 <a href=\"%6\">JASP　用户世界地图</"
+"a> 请发送邮件至 <a href=\"%7\">communications@jasp-stats.org</a>.\n"
+"\n"
+"对于个人捐赠者：请访问 <a href=\"%8\">JASP 捐赠页面</a>.\n"
+
+msgctxt "ActionButtons|"
+msgid "Community"
+msgstr "社区"
+
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in the name of the column>"
+msgstr "<输入变量名称>"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Name: "
+msgstr "名 称： "
+
+msgctxt "ColumnBasicInfo|"
+msgid "Column type: "
+msgstr "变量类型： "
+
+msgctxt "ColumnBasicInfo|"
+msgid "Computed type: "
+msgstr "计算方式： "
+
+msgctxt "ColumnBasicInfo|"
+msgid "Show parent analysis"
+msgstr "显示父级分析"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Long name: "
+msgstr "长名称： "
+
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr "<为变量添加更多描述内容>"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Close variable window"
+msgstr "关闭变量窗口"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Description: "
+msgstr "描 述： "
+
+msgctxt "ColumnModel|"
+msgid "Column definition"
+msgstr "变量定义"

@@ -82,6 +82,7 @@ public:
 	bool			killed()				const { return _engineState == engineState::killed;										}
 	bool			idle()					const { return _engineState == engineState::idle;										}
 	bool			installingModule()		const { return _engineState == engineState::moduleInstallRequest;						}
+	bool			reloadingData()			const { return _engineState == engineState::reloadData;						}
 	bool			moduleLoading()			const { return _engineState == engineState::moduleLoadRequest;							}
 	bool			idleSoon()				const;
 	bool			shouldSendSettings()	const { return idle() && _settingsChanged;												}
@@ -118,14 +119,14 @@ public:
 
 protected:
 	void			processRCodeReply(			Json::Value & json);
-	void			processFilterReply(		Json::Value & json);
+	void			processFilterReply(			Json::Value & json);
 	void			processAnalysisReply(		Json::Value & json);
 	void			processComputeColumnReply(	Json::Value & json);
 	void			processModuleRequestReply(	Json::Value & json);
-	void			processReloadDataReply()							{ _reloadData = false; setState(engineState::idle); }
+	void			processReloadDataReply();
 	void			processEnginePausedReply();
 	void			processEngineStoppedReply();
-	void			processEngineResumedReply();
+	void			processEngineResumedReply(	Json::Value & json);
 	void			processLogCfgReply();
 	void			processSettingsReply();
 
@@ -144,9 +145,10 @@ public slots:
 
 signals:
 	void			engineTerminated();
-	void			filterDone(															int requestID);
+	void			checkDataSetForUpdates();
+	void			filterDone(																int requestID);
 	void			processFilterErrorMsg(			const QString & error,					int requestId = -1);
-	void			processNewFilterResult(			const std::vector<bool> & filterResult, int requestId);
+	void			processNewFilterResult(			int requestId);
 	void			computeColumnErrorTextChanged(	const QString & error);
 
 	void			rCodeReturned(					const QString & result, int requestId, bool hasError	);
@@ -171,7 +173,7 @@ signals:
 	void			stopAndDestroyEngine(			EngineRepresentation * e);
 	void			plotEditorRefresh();
 	void			runsAnalysisChanged(	bool runsAnalysis);
-	void			runsUtilityChanged(	bool runsUtility);
+	void			runsUtilityChanged(		bool runsUtility);
 	void			runsRCmdChanged(		bool runsRCmd);
 
 	bool			moduleHasEngine(const std::string & name);

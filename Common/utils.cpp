@@ -36,14 +36,6 @@
 
 using namespace std;
 
-std::string Utils::doubleToString(double dbl, int precision)
-{
-	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
-	conv << std::setprecision(precision);
-	conv << dbl;
-	return conv.str();
-}
-
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
 
@@ -229,16 +221,15 @@ void Utils::sleep(int ms)
 #endif
 }
 
-
 bool Utils::isEqual(const double a, const double b)
 {
-	if (isnan(a) || isnan(b)) return false;
+	if (isnan(a) || isnan(b)) return (isnan(a) && isnan(b));
 
 	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<double>::epsilon()));
 }
 bool Utils::isEqual(const float a, const float b)
 {
-	if (isnan(a) || isnan(b)) return false;
+	if (isnan(a) || isnan(b)) return (isnan(a) && isnan(b));
 
 	return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }
@@ -265,7 +256,10 @@ std::wstring Utils::getShortPathWin(const std::wstring & longPath)
 
 	length = GetShortPathName(longPath.c_str(), buffer, length);
 	if (length == 0)
+	{
+		delete[] buffer;
 		return longPath;
+	}
 
 	std::wstring shortPath(buffer, length);
 	
@@ -288,5 +282,20 @@ string Utils::wstringToString(const std::wstring & wstr)
 
 	return str;
 
+}
+
+wstring Utils::stringToWString(const std::string &str)
+{
+	std::wstring wstr;
+
+	//get size of buffer we need
+	int requiredSize = MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, NULL, 0);
+	wstr.resize(requiredSize);
+
+	//convert it
+	MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, wstr.data(), wstr.size());
+	wstr.resize(requiredSize-1);//drop /nul
+
+	return wstr;
 }
 #endif

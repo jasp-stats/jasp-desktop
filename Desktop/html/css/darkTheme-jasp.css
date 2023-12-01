@@ -188,6 +188,16 @@ div.jasp-image-image.no-data.error {
   filter:			invert(1);
 }
 
+
+/* not use color invert for img in annotations */
+.ql-editor p img,
+iframe.ql-video:not(:fullscreen),
+.ql-editor mjx-container svg,
+mjx-container {
+    filter:  invert(1);
+}
+
+
 .jasp-notes-border {
   border-top:     1px solid #5c5c5c;
 }

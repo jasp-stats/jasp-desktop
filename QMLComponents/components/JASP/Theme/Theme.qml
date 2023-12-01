@@ -30,6 +30,10 @@ JaspTheme
 	font.family:										preferencesModel.interfaceFont		//If you change the property .family the font won't respond to the UI anymore unless you use jaspFont in it somewhere...
 	font.weight:										Font.Normal
 
+	fontLink.pixelSize:									Math.round(12 * uiScale)
+	fontLink.family:									preferencesModel.interfaceFont
+	fontLink.weight:									Font.Normal
+	fontLink.underline:									true
 
 	fontLabel.bold:										true
 	fontLabel.pixelSize:								Math.round(18 * uiScale)
@@ -61,7 +65,7 @@ JaspTheme
 	fontRCode.weight:									Font.Normal
 
 	fontCode.family:									preferencesModel.codeFont
-	fontCode.pixelSize:									Math.round(10 * uiScale)
+	fontCode.pixelSize:									Math.round(11 * uiScale)
 	fontCode.weight:									Font.Normal
 
 	//Scales:
@@ -121,7 +125,7 @@ JaspTheme
 	itemSelectedColor:					blueDarker
 	itemSelectedNoFocusColor:			grayLighter
 
-	altNavTagColor:						"#565756"
+	altNavTagColor:						black
 
 	//JASPControl colors mostly:
 	borderColor:						gray

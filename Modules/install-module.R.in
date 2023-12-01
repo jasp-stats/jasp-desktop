@@ -11,6 +11,8 @@ Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY="Yes, do it")
 
+options(renv.config.install.verbose = TRUE)
+
 if (@IS_LINUX_LOCAL_BUILD@) {
 	# Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
 	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
@@ -30,6 +32,12 @@ options(
   configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
 )
 
+if (jaspBase::getOS() == "osx") {
+  options(pkgType = "mac.binary")
+} else if (jaspBase::getOS() == "windows") {
+  options(pkgType = "win.binary")
+}
+
 # Related to the comment above, there is variable here called, 
 # `libPathsToUse` but it is not connected to anything. If this works,
 # then, I don't need to set the libPaths() anymore perhaps.
@@ -37,21 +45,8 @@ result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@",
 	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE,
+	libPathsToUse='',
 	frameworkLibrary="@R_LIBRARY_PATH@")
-
-# hack for jaspAudit / jfa -- remove after release
-if ("@MODULE@" == "jaspAudit") {
-  options(renv.config.install.verbose = TRUE)
-  options(install.opts = "--no-multiarch --no-docs --no-test-load");
-  jaspBase::addRenvBeforeAfterDispatch()
-  renv::install("koenderks/jfa", library = "@MODULES_BINARY_PATH@/@MODULE@")
-  if (identical(.Platform$OS.type, "windows")) {
-    # Ridiculous....
-    unlink("@MODULES_RENV_CACHE_PATH@/../jaspAudit/jfa" , recursive = TRUE)
-    Sys.junction(to="@MODULES_RENV_CACHE_PATH@/../jaspAudit/jfa", from="@MODULES_RENV_CACHE_PATH@/v5/jfa/0.6.7/16e6a194ac82f4a7faa56f7425afbede/jfa")
-  }
-}
-
 
 if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")

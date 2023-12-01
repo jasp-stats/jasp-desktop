@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <stdlib.h>
+#include <functional>
 
 #include <archive.h>
 
@@ -34,7 +35,9 @@
 class ArchiveReader
 {
 public:
+	ArchiveReader(){}
 	ArchiveReader(const std::string &archivePath, const std::string &entryPath);
+	ArchiveReader(ArchiveReader && other) = default;
 
 	~ArchiveReader();
 
@@ -75,6 +78,8 @@ public:
 	 */
 	std::string readAllData(int blockSize, int &errorCode);
 
+	void openEntry(const std::string &archivePath, const std::string &entryPath);
+
 	/**
 	 * @brief close Closes archive/file.
 	 */
@@ -111,6 +116,11 @@ public:
 	 */
 	std::string fileName() const;
 
+    /**
+     * @brief Saves the loaded entry as a file in tempfiles folder, progressCallback gets values from 0...1
+     */
+    void writeEntryToTempFiles(std::function<void(float)> progressCallback = std::function<void(float)>());
+
 	/**
 	 * @brief extension The file extension of the last archive entry.
 	 * @return Extension suffice of entryPath as passed to Ctor(). Zero length if simple file.
@@ -131,7 +141,7 @@ private:
 	std::string					_archivePath,
 								_entryPath;
 
-	void openEntry(const std::string &archivePath, const std::string &entryPath);
+
 };
 
 #endif // ARCHIVEREADER_H

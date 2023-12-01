@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-10-06 13:45+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 5.1-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -3808,7 +3814,7 @@ msgid "Save"
 msgstr ""
 
 msgctxt "Computer|"
-msgid "JASP Files (*.jasp)"
+msgid "JASP Files"
 msgstr ""
 
 msgctxt "Computer|"
@@ -3820,7 +3826,7 @@ msgid "HTML Files"
 msgstr ""
 
 msgctxt "Computer|"
-msgid "Portable Document Format (*.pdf)"
+msgid "Portable Document Format"
 msgstr ""
 
 msgctxt "Computer|"
@@ -3828,7 +3834,7 @@ msgid "Export Data as CSV"
 msgstr ""
 
 msgctxt "Computer|"
-msgid "CSV Files (*.csv *.txt *.tsv)"
+msgid "CSV Files"
 msgstr ""
 
 msgctxt "Computer|"
@@ -3836,7 +3842,7 @@ msgid "Sync Data"
 msgstr ""
 
 msgctxt "Computer|"
-msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
+msgid "Data Files"
 msgstr ""
 
 msgctxt "AboutModel|"

@@ -74,6 +74,7 @@ public:
 	FileEvent *	open(const QString &filepath);
 	FileEvent * open(const Json::Value & databaseInfo);
 	FileEvent *	save();
+	FileEvent *	saveAs();
 	void		sync();
 
 	void			setCurrentDataFile(const QString		& path);
@@ -83,7 +84,6 @@ public:
 	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
 	QString			getCurrentFilePath()	const { return _currentFilePath; }
 	QString			getDefaultOutFileName();
-	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
 	void			showPreferences();
 	void			syncDataFile(const QString& path, bool waitForExistence = false);
@@ -110,6 +110,8 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
+	void showContact();
+	void showCommunity();
 	void modeChanged(FileEvent::FileMode mode);
 
 public slots:
@@ -124,10 +126,12 @@ public slots:
 	void showFileOpenMenu();
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
+	void showContactRequest();
 	void dataColumnAdded(QString columnName);
 	void analysesExportResults();
 	void refresh();
 	void close();
+	void enableButtonsForOpenedWorkspace(bool enableSaveButton = false);
 
 
 
@@ -147,7 +151,7 @@ private:
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
-	DatabaseFileMenu					*	_database					= nullptr;
+	DatabaseFileMenu			*	_database					= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;
@@ -157,8 +161,7 @@ private:
 	FileEvent::FileMode				_mode						= FileEvent::FileOpen;
 	QString							_currentFilePath;
 	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
-	bool							_currentFileReadOnly		= false,
-									_visible					= false;
+	bool							_visible					= false;
 	FileOperation					_fileoperation				= ActionButtons::None;
 	MainWindow*						_mainWindow					= nullptr;
 };

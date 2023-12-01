@@ -3,7 +3,6 @@
 
 #include <QTransposeProxyModel>
 #include "datasettablemodel.h"
-#include "common.h"
 #include "variableinfo.h"
 
 /// 
@@ -17,6 +16,7 @@ public:
 		NameRole = Qt::UserRole + 1,
 		TypeRole,
 		ColumnTypeRole,
+		ComputedColumnTypeRole,
 		IconSourceRole,
 		ToolTipRole
 	 };
@@ -26,12 +26,17 @@ public:
 	QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>		roleNames()																			const	override;
 	int							columnCount(const QModelIndex & = QModelIndex())									const	override	{ return 1;	}
-	int							getColumnIndex(const std::string& col)												const				{ return _tableModel->getColumnIndex(col);	}
+	int							rowCount(	const QModelIndex & = QModelIndex())									const	override;
+	int							getColumnIndex(const std::string & col)												const				{ return _tableModel->getColumnIndex(col);	}
 	QStringList					getColumnNames()																	const;
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
 	QAbstractItemModel		*	providerModel()																				override	{ return this;	}
+	QQmlContext				*	providerQMLContext()																const	override;
 	static ColumnsModel		*	singleton()	{ return _singleton; }
+
+public slots:
+	void datasetChanged(QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 
 signals:
 	void namesChanged(		QMap<QString, QString>	changedNames);
@@ -40,19 +45,11 @@ signals:
 	void labelsChanged(		QString					columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(	QString					columnName);
 
-public slots:
-	void datasetChanged(	QStringList				changedColumns,
-							QStringList				missingColumns,
-							QMap<QString, QString>	changeNameColumns,
-							bool					rowCountChanged,
-							bool					hasNewColumns);
-
-	void refresh();
 private:
+	QVariant				_getLabels(int colId) const;
 
-	DataSetTableModel	* _tableModel	= nullptr;
-
-	static ColumnsModel	* _singleton;
+	DataSetTableModel		* _tableModel	= nullptr;
+	static ColumnsModel		* _singleton;
 };
 
 

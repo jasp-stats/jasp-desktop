@@ -22,83 +22,155 @@ function i18n(str) {
 	}
 }
 
-if(insideJASP)
-{
+var videoUrlList = [];
+
+window.sendUrlWhitelist = function (RequestedURL) {
+	videoUrlList = RequestedURL; // to get from MainPage.qml
+}
+
+function isURLInWhitelist(hostname) {
+	for (let i = 0; i < videoUrlList.length; i++) {
+		let pattern = videoUrlList[i];
+		if (pattern === hostname) {
+			return true;
+		} else if (pattern.indexOf('*') !== -1) {
+			const regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
+			if (regex.test(hostname)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+if (insideJASP) {
 	var Parchment = Quill.import('parchment');
 
 	var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
-	scope: Parchment.Scope.BLOCK
+		scope: Parchment.Scope.BLOCK
 	});
 
+	Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 	Quill.register('formats/linebreak', LineBreakClass);
-	
+
 	// See https://github.com/quilljs/quill/issues/262
 	var Link = Quill.import('formats/link');
-	Link.sanitize = function(url) {
-        // Check if the url contains the protocol, otherwise add it automatically
-        var checkUrl = url.match(/^(http|https):\/\//i); 
-        if (!checkUrl) {
-            url = "https://" + url;
-          }
-        return url;
+	Link.sanitize = function (url) {
+		// Check if the url contains the protocol, otherwise add it automatically
+		var checkUrl = url.match(/^(http|https):\/\//i);
+		if (!checkUrl) {
+			url = "https://" + url;
+		}
+		return url;
 	}
+
+	function customVideoUrl(url) {
+		if (!/^(http|https):\/\//i.test(url)) {
+			url = 'https://' + url;
+		} else if (/^(http):\/\//i.test(url)) {
+			url = url.replace(/^http:/i, 'https:');
+		}
+		
+		let matchs = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) ||
+			url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/) ||
+			url.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/);
+		if (matchs && matchs[2].length === 11) {
+			return ('https') + '://www.youtube.com/embed/' + matchs[2] + '?showinfo=0';
+		}
+		// enable it once h.264 encoding is available on qtwebengine
+		// if (matchs = url.match(/^(?:(https?):\/\/)?(?:www\.)?vimeo\.com\/(\d+)/)) {
+		// 	return (match[1] || 'https') + '://player.vimeo.com/video/' + matchs[2] + '/';
+		// }
+		// if (matchs = url.match(/(?:www\.|\/\/)bilibili\.com\/video\/(\w+)/)) {
+		// 	return 'https://player.bilibili.com/player.html?bvid=' + matchs[1]
+
+		// }
+		// if (matchs = url.match(/\/\/v\.qq\.com\/x\/cover\/.*\/([^\/]+)\.html\??.*/)) {
+		// 	return 'https://v.qq.com/txp/iframe/player.html?vid=' + matchs[1]
+		// }
+		
+		return url
+	}
+
+	const BlockEmbed = Quill.import("blots/block/embed");
+
+	class EmbendVideo extends BlockEmbed {
+		static create(value) {
+			value = customVideoUrl(value)
+			let node = super.create(value);
+			let div = document.createElement('div');
+				div.setAttribute("title", i18n("Unsupported video services"));
+			$(div).append(`${i18n('JASP only allows the following videoservices:')}<br><br> <i>"Youtube video"</i> <br><br>${i18n('Contact the JASP team to request adding another videoservice to the list.')}`)	
+			node.setAttribute('frameborder', '0');
+			node.setAttribute('allowfullscreen', true);
+			node.setAttribute('src', value);
+			if (!isURLInWhitelist((new URL(value).hostname))) {
+				node.innerHTML = $(div).dialog({ // give a warnning for unsupported urls and then remove from node.
+					modal: true, buttons: {
+						Ok: function () {
+							$(node).remove();
+							$(this).dialog("close");
+						}
+					}
+				})
+			}
+			return node;
+		}
+		
+		static value(node){
+			return node.getAttribute('src');
+		}
+	}
+
+	EmbendVideo.blotName = 'video';
+	EmbendVideo.className = 'ql-video';
+	EmbendVideo.tagName = 'IFRAME';
+
+	Quill.register(EmbendVideo, true);
+
 }
 
-JASPWidgets.Encodings = {
-	getBase64: function (arrayBuffer) {
-		var base64 = ''
-		var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+class SvgToPng {
+	constructor() { }
 
-		var bytes = new Uint8Array(arrayBuffer)
-		var byteLength = bytes.byteLength
-		var byteRemainder = byteLength % 3
-		var mainLength = byteLength - byteRemainder
-
-		var a, b, c, d
-		var chunk
-
-		// Main loop deals with bytes in chunks of 3
-		for (var i = 0; i < mainLength; i = i + 3) {
-			// Combine the three bytes into a single integer
-			chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
-
-			// Use bitmasks to extract 6-bit segments from the triplet
-			a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-			b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
-			c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
-			d = chunk & 63               // 63       = 2^6 - 1
-
-			// Convert the raw binary segments to the appropriate ASCII encoding
-			base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+	/**
+	 * Convert all SVG inside the specified element to PNG format and replace the original SVG elements with PNG
+	 * @method convert
+	 * @param {HTMLElement} element
+	 * @returns {HTMLElement} 
+	 */
+	convert(element) {
+		const svgs = element.querySelectorAll("svg");
+		if (svgs.length > 0) {
+			svgs.forEach(svg => {
+				const canvas = document.createElement('canvas');
+				const svgWidth = svg.width ? svg.width.baseVal.value : svg.getAttribute("width")
+				const svgHeight = svg.height ? svg.height.baseVal.value : svg.getAttribute("Height")
+				canvas.width = parseFloat(svgWidth) * 1.5;
+				canvas.height = parseFloat(svgHeight) * 1.5;
+				const img = new Image();
+				img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg.outerHTML)));
+				img.onload = ()=> {
+					canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+					const pngDataUrl = canvas.toDataURL('image/png', 1);
+					const newImg = new Image();
+					newImg.src = pngDataUrl;
+					newImg.width = svgWidth;
+					newImg.height = svgHeight;
+					if (svg.parentNode)
+						svg.parentNode.replaceChild(newImg, svg);
+				};
+			});
+			return element;
 		}
+		return element;
+	}
 
-		// Deal with the remaining bytes and padding
-		if (byteRemainder == 1) {
-			chunk = bytes[mainLength]
-
-			a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
-
-			// Set the 4 least significant bits to zero
-			b = (chunk & 3) << 4 // 3   = 2^2 - 1
-
-			base64 += encodings[a] + encodings[b] + '=='
-		} else if (byteRemainder == 2) {
-			chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
-
-			a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-			b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
-
-			// Set the 2 least significant bits to zero
-			c = (chunk & 15) << 2 // 15    = 2^4 - 1
-
-			base64 += encodings[a] + encodings[b] + encodings[c] + '='
-		}
-
-		return base64
-	},
-
-
+	static convert(element) {
+		const svgToPng = new SvgToPng();
+		return svgToPng.convert(element);
+	}
 }
 
 JASPWidgets.ExportProperties = {
@@ -175,8 +247,10 @@ JASPWidgets.Exporter = {
 			var viewList = [];
 			for (var i = 0; i < exportObj.views.length; i++) {
 				var view = exportObj.views[i];
-				if (exportParams.includeNotes || view.$el.hasClass('jasp-notes') === false)
-					viewList.push(view);
+				if (exportParams.includeNotes || view.$el.hasClass('jasp-notes') === false) {
+					if (view.$el.hasClass('removed') === false)
+						viewList.push(view);
+				}
 			}
 
 			if (viewList.length === 0)
@@ -203,7 +277,7 @@ JASPWidgets.Exporter = {
 		var self = parent;
 		var index = i;
 		var callback = completedCallback;
-		var trackerView = view;
+
 		var cc = function (exParams, exContent) {
 			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
@@ -211,8 +285,8 @@ JASPWidgets.Exporter = {
 				var completeText = "";
 				var raw = null;
 				if (!exportParams.error) {
-					completeText = "<div " + self.getStyleAttr() + ">\n";
-					completeText += '<div style="display:inline-block; ' + innerStyle + '">\n';
+					completeText = `<div class="${self.className}" ${self.getStyleAttr()} >\n`;
+					completeText += `<div style="display:inline-block; ${innerStyle}">\n`;
 					if (!self.disableTitleExport && self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
@@ -316,10 +390,10 @@ JASPWidgets.Exporter = {
 	},
 
 	getNoteStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
+		// if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
-		else
-			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
+		// else
+		// 	return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {
@@ -496,7 +570,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block'],
+			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -521,6 +595,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			modules: {
 				syntax: true,
 				toolbar: toolbarOptions,
+				blotFormatter: {
+					specs: [QuillBlotFormatter.ImageSpec]
+				  },
 				keyboard: {
 					bindings: {
 						smartbreak: {
@@ -566,11 +643,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 		
 		this.$quillTooltip     = this.$el.find(".ql-tooltip");
-		var quillTooltipTheme  = this.$quill.theme.tooltip;
+		var quillThemeTooltip  = this.$quill.theme.tooltip;
 
 		// Change example link from quilljs.com to a sample link
-		var linkInput = quillTooltipTheme.root.querySelector('input[data-link]');
-		linkInput.dataset.link = 'https://jasp-stats.org';
+		var linkInput = quillThemeTooltip.root.querySelector('input[data-link]');
+			linkInput.dataset.link = 'https://jasp-stats.org';
 
 		// Add tooltips to the toolbar buttons
 		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
@@ -585,6 +662,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
 		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
+		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
+		this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
@@ -606,28 +685,57 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
 		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
 
-		// Customized quill editor syntax to fix code-block
-  		// FIXME: Fix css styles on export html when refactoring
-		let codeBlockCss = {
-			'background-color': '#ebebeb',
-			'display': 'block',
-			'color': '#555555'
-		};
-		this.$quillToolbar.querySelector('button.ql-code-block').addEventListener('click', function() {
-			$('pre.ql-syntax').css(codeBlockCss);
-		});
-
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
 			event.preventDefault();
 		});
 
+		quillEditorElement.addEventListener('click', (event) => {
+			this.setQuillToolbarVisibility('block') //set toobar visiable;
+
+			//// LaTex editor
+			let $formulaNode = this.$el.find('.ql-editor mjx-container')
+			 $formulaNode.on('click', (e) => {
+				let currentFormula = e.currentTarget
+				let formulaBlot = Quill.find(currentFormula);
+
+				let index = formulaBlot.offset(this.$quill.scroll);
+				let line = this.$quill.getIndex(formulaBlot)
+
+				this.oldBlot = formulaBlot // Get legacy formula range to remove while save
+
+				quillThemeTooltip.edit('formula', currentFormula.getAttribute('data-value'));
+
+				let saveFunction = quillThemeTooltip.save;
+				quillThemeTooltip.save = () => {
+ 					if (this.oldBlot)
+						this.oldBlot.remove();
+					saveFunction.call(quillThemeTooltip);
+					this.oldBlot = null;
+				};
+			});
+
+			let $blotResizer = this.$el.find('.blot-formatter__overlay');
+			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
+
+			// auto show/hide resizer handles while hover/leave.
+			$blotResizer.on("mouseenter", (event) => {
+				if (event.relatedTarget.parentNode.tagName === "SPAN") //do not use resizer for formula 'mjx-container -> span -> img'
+					$resizeHandles.hide()
+				else
+					$resizeHandles.show()
+			}).on("mouseleave", () => {
+				$resizeHandles.hide()
+			});
+
+		});
+
 		quillEditorElement.addEventListener('focusout', (event) => {
 		    // Always keep editor available while a tooltip editor show
 		    if (this.$quillTooltip.is(':visible')) {
-			return;
+				return;
 		    } else {
-			self.setQuillToolbarVisibility('none');
+				self.setQuillToolbarVisibility('none');
 		    }
 		});
 
@@ -646,7 +754,26 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
 
 		this.$quill.on('text-change', function(delta, oldDelta, source) {
-			self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
+			let _quillRootHTML = self.$quill.root
+
+			function hasFormula(obj) {
+				for (let key in obj) {
+					if (typeof obj[key] === 'object') {
+						if (hasFormula(obj[key])) {
+							return true;
+						}
+					} else if (key === 'formula') {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			if (hasFormula(delta)) {
+				const svgToPng = new SvgToPng();
+				svgToPng.convert(self.$quill.root);
+			}
+			self.onNoteChanged(_quillRootHTML.innerHTML, self.$quill.getContents());
 		});
 
 		this.setQuillToolbarVisibility('none');

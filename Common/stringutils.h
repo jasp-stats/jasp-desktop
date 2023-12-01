@@ -9,10 +9,7 @@
 #include <locale>
 #include <cctype>
 #include <iostream>
-
-typedef std::set<std::string>		stringset;
-typedef std::vector<std::string>	stringvec;
-typedef std::vector<stringvec>		stringvecvec;
+#include "utils.h"
 
 /// This class groups a variety of string related utility functions for use throughout JASP
 /// All functions are inline and here to avoid problems through the mixing of MSVC and GCC on Windows. 
@@ -75,11 +72,11 @@ public:
 		return out.str();
 	}
 
-	inline static std::vector<std::string> splitString(const std::string & str, const char sep = ',')
-	{
-		std::vector<std::string>	vecString;
-		std::string					item;
-		std::stringstream			stringStream(str);
+    inline static std::vector<std::string> splitString(const std::string & str, const char sep = ',')
+    {
+        stringvec			vecString;
+        std::string			item;
+        std::stringstream	stringStream(str);
 
 		while (std::getline(stringStream, item, sep))
 			vecString.push_back(item);
@@ -145,23 +142,26 @@ public:
 	// Blatantly taken from https://stackoverflow.com/a/217605
 
 	// trim from start (in place)
-	static inline void ltrim(std::string &s) {
+	static inline std::string ltrim(std::string &s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
 			return !std::isspace(ch);
 		}));
+		return s;
 	}
 
 	// trim from end (in place)
-	static inline void rtrim(std::string &s) {
+	static inline std::string rtrim(std::string &s) {
 		s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
 			return !std::isspace(ch);
 		}).base(), s.end());
+		return s;
 	}
 
 	// trim from both ends (in place)
-	static inline void trim(std::string &s) {
+	static inline std::string trim(std::string &s) {
 		ltrim(s);
 		rtrim(s);
+		return s;
 	}
 
 	// trim from start (copying)

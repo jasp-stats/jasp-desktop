@@ -1,257 +1,217 @@
-//
-// Copyright (C) 2013-2018 University of Amsterdam
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 #ifndef COLUMN_H
 #define COLUMN_H
 
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/range.hpp>
-
-#include <boost/container/map.hpp>
-#include <boost/container/string.hpp>
-#include <boost/container/vector.hpp>
-
-#include "datablock.h"
-#include "labels.h"
-
+#include "datasetbasenode.h"
+#include "label.h"
 #include "columntype.h"
+#include "utils.h"
+#include <list>
 
+class DataSet;
+class Analysis;
+typedef std::vector<Label*> Labels;
 
-///
-/// This class contains the actual data for a column, stored as either as int (IntsStruct) or double (DoublesStruct)
-/// It allocates the memory for that through the use of DataBlock (see datablock.h) and Column::append()/Column::truncate()
-/// If there are stringlabels these are stored in Labels
-/// It is part of Columns, which is part of DataSet.
-class Column
+/// A column of data
+/// 
+/// Stores the integers or doubles of the current column (both might be stored in the DB but only the relevant one is loaded)
+/// It can also have its own labels which are in the child _labels that mirrors the relevant entries from table Labels.
+/// Relevant being that they have a link to this column.
+/// 
+/// It has a variety of utility functions to modify, reorder or init values in the column.
+/// As well as UI support functions for modifying the labels and such.
+/// 
+/// It also handles storing the information of computed columns (those used to be split off)
+class Column : public DataSetBaseNode
 {
-	friend class DataSet;
-	friend class Columns;
-	friend class ComputedColumn;
-	friend class ComputedColumns;
-	friend class DataSetLoader;
-	friend class boost::iterator_core_access;
-
-	typedef unsigned long long ull;
-	typedef boost::interprocess::allocator<boost::interprocess::offset_ptr<DataBlock>, boost::interprocess::managed_shared_memory::segment_manager> BlockAllocator;
-	typedef boost::container::map<ull, boost::interprocess::offset_ptr<DataBlock>, BlockAllocator>::value_type BlockEntry;
-	typedef boost::interprocess::allocator<BlockEntry, boost::interprocess::managed_shared_memory::segment_manager> BlockEntryAllocator;
-	typedef boost::container::map<ull, boost::interprocess::offset_ptr<DataBlock>, std::less<ull>, BlockEntryAllocator> BlockMap;
-
-	typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
-	typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
-	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
-
 public:
-	///ColumnType is set up to be used as bitflags in places such as assignedVariablesModel and such
-	//enum ColumnType { unknown = 0, nominal = 1, nominalText = 2, ordinal = 4, scale = 8 };
+									Column(DataSet * data, int id = -1);
+									
+				DatabaseInterface & db();
+		const	DatabaseInterface & db() const;
 
-	bool resetEmptyValues(std::map<int, std::string>& emptyValuesMap);
+			void					dbCreate(	int index);
+			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
+			void					dbLoadIndex(int index, bool getValues = true);
+			void					dbUpdateComputedColumnStuff();
+			void					dbDelete(bool cleanUpRest = true);
+																														
+			
+			void					setName(			const std::string & name			);
+			void					setTitle(			const std::string & title			);
+			bool					setRCode(			const std::string & rCode			);
+			bool					setError(			const std::string & error			);
+			void					setType(			columnType			colType			);
+			columnTypeChangeResult	changeType(			columnType			colType			);
+			void					setCodeType(		computedColumnType	codeType		);
+			void					setDescription(		const std::string & description		);
+			bool					setConstructorJson(	const Json::Value & constructorJson	);
+			bool					setConstructorJson(	const std::string & constructorJson	);
+			void					setAnalysisId(		int					analysisId		);
+			void					setInvalidated(		bool				invalidated		);
+			void					setCompColStuff(bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
+			void					setDefaultValues(enum columnType columnType = columnType::unknown);
+
+			bool					initAsScale(			size_t colNo, std::string newName, const doublevec	& values);
+			intstrmap				initAsNominalText(		size_t colNo, std::string newName, const stringvec	& values, const strstrmap & labels);
+			bool					initAsNominalOrOrdinal(	size_t colNo, std::string newName, const intvec		& values,									bool is_ordinal = false);
+			bool					initAsNominalOrOrdinal(	size_t colNo, std::string newName, const intvec		& values, const intstrmap &uniqueValues,	bool is_ordinal = false);
+
+			bool					setAsScale(				const doublevec & values);
+			intstrmap				setAsNominalText(		const stringvec	& values, const strstrmap & labels,			bool *	changedSomething = nullptr);
+			intstrmap				setAsNominalText(		const stringvec & values,									bool *	changedSomething = nullptr) {	return setAsNominalText(values, {}, changedSomething); }
+			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
+			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
+			
+			bool					resetMissingData(intstrmap &emptyValuesMap);
+
+			bool					overwriteDataWithScale(	 doublevec	scalarData);
+			bool					overwriteDataWithOrdinal(intvec		ordinalData, intstrmap levels);
+			bool					overwriteDataWithNominal(intvec		nominalData, intstrmap levels);
+			bool					overwriteDataWithOrdinal(intvec		ordinalData);
+			bool					overwriteDataWithNominal(intvec		nominalData);
+			bool					overwriteDataWithNominal(stringvec	nominalData);
+			
+			bool					allLabelsPassFilter()	const;
+			bool					hasFilter()				const;
+			void					resetFilter();
+			void					incRevision();
+			bool					checkForUpdates();
+
+			bool					isColumnDifferentFromStringValues(const stringvec & strVals) const;
+
+			columnType				type()					const	{ return _type;				}
+			int						id()					const	{ return _id;				}
+			int						analysisId()			const	{ return _analysisId;		}
+			bool					isComputed()			const	{ return _isComputed;		}
+			bool					invalidated()			const	{ return _invalidated;		}
+			computedColumnType		codeType()				const	{ return _codeType;			}
+			const std::string	&	name()					const	{ return _name;				}
+			const std::string	&	title()					const	{ return _title;			}
+			const std::string	&	description()			const	{ return _description;		}
+			const std::string	&	error()					const	{ return _error;			}
+			const std::string	&	rCode()					const	{ return _rCode;			}
+				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
+				  std::string		constructorJsonStr()	const	{ return _constructorJson.toStyledString();	}
+			const Json::Value	&	constructorJson()		const	{ return _constructorJson;	}
+			size_t					rowCount()				const	{ return _type == columnType::scale ? _dbls.size() : _ints.size(); }
+			const intvec		&	ints()					const	{ return _ints; }
+			const doublevec		&	dbls()					const	{ return _dbls; }
+
+			void					labelsClear();
+			int						labelsAdd(			int display);
+			int						labelsAdd(			const std::string & display);
+			int						labelsAdd(			int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
+			void					labelsRemoveValues(	intset valuesToRemove);
+			strintmap				labelsResetValues(	int & maxValue);
+			void					labelsRemoveBeyond( size_t indexToStartRemoving);
+
+			bool					labelsSyncInts(		const intset	& dataValues);
+			bool					labelsSyncIntsMap(	const intstrmap	& dataValues);
+			strintmap				labelsSyncStrings(	const stringvec	& new_values, const strstrmap &new_labels, bool * changedSomething = nullptr);
+
+			std::set<size_t>		labelsMoveRows(std::vector<size_t> rows, bool up);
+			void					labelsReverse();
+
+			std::string				operator[](size_t row); ///< Display value/label for row
+			std::string				getValue(size_t row,	bool fancyEmptyValue = false) const;
+			
+			bool					setStringValueToRowIfItFits(size_t row, const std::string & value, bool & changed, bool & typeChanged);
+			bool					setValue(					size_t row, int					value, bool writeToDB = true);
+			bool					setValue(					size_t row, double				value, bool writeToDB = true);
+			void					setValues(								const intvec	&	values);
+			void					setValues(								const doublevec	&	values);
+			void					rowInsertEmptyVal(size_t row);
+			void					rowDelete(size_t row);
+			void					setRowCount(size_t row);
+
+			Labels				&	labels()												{ return _labels; }
+			const Labels		&	labels()										const	{ return _labels; }
+			Label				*	labelByValue(	int					value)		const; ///< Might be nullptr for missing value
+			Label				*	labelByDisplay(	const std::string & display)	const; ///< Might be nullptr for missing display
+			Label				*	labelByRow(		int					row)		const; ///< Might be nullptr for missing
+			int						labelIndex(		const Label * label)			const;
 
 
-	bool overwriteDataWithScale(std::vector<double> scalarData);
-	bool overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int, std::string> levels);
-	bool overwriteDataWithNominal(std::vector<int> nominalData, std::map<int, std::string> levels);
-	bool overwriteDataWithOrdinal(std::vector<int> ordinalData);
-	bool overwriteDataWithNominal(std::vector<int> nominalData);
-	bool overwriteDataWithNominal(std::vector<std::string> nominalData);
-	void setDefaultValues(columnType columnType = columnType::unknown);
 
-	typedef struct IntsStruct
-	{
-		friend class Column;
 
-		class iterator : public boost::iterator_facade<
-				iterator, int, boost::forward_traversal_tag>
-		{
-			friend class boost::iterator_core_access;
+			bool					isValueEqual(size_t row, double value)				 const;
+			bool					isValueEqual(size_t row, int value)					 const;
+			bool					isValueEqual(size_t row, const std::string &value)	 const;
 
-		public:
+			intset					getUniqueLabelValues() const;
+			
+			void					beginBatchedLabelsDB();
+			void					endBatchedLabelsDB(bool wasWritingBatch = true);
+			bool					batchedLabel()	{ return _batchedLabel; }
 
-			explicit iterator(BlockMap::iterator blockItr, int currentPos);
+			void					rememberOriginalColumnType();
+			
+			DataSet				*	data() const { return _data; }
 
-		private:
+			void					loadComputedColumnJsonBackwardsCompatibly(const Json::Value & fromJaspFile);
+			void					invalidate()																			{ setInvalidated(true);		}
+			void					validate()																				{ setInvalidated(false);	}
+			void					invalidateDependents();
+			bool					hasError()																	const		{ return !error().empty();	}
+			void					findDependencies();
+			void					setDependsOn(const stringset & columns);
+			bool					dependsOn(const std::string & columnName, bool refresh = true);
+			bool					iShouldBeSentAgain();
+			bool					isComputedByAnalysis(size_t analysisID);
 
-			void increment();
-			bool equal(iterator const& other) const;
-			int& dereference() const;
+			void					checkForLoopInDependencies(std::string code);
+			const	stringset	 &	dependsOnColumns(bool refresh = true);
+			Json::Value				serialize()																const;
+			void					deserialize(const Json::Value& info);
+			std::string				getUniqueName(const std::string& name)									const;
+			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true)		const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
+			bool					hasCustomEmptyValues()													const;
+			const stringset		&	emptyValues()															const;
+			const doubleset		&	doubleEmptyValues()														const;
+			void					setHasCustomEmptyValues(		bool hasCustom);
+			void					setCustomEmptyValues(			const stringset		& customEmptyValues);
+			bool					isEmptyValue(					const std::string	& val)				const;
+			bool					isEmptyValue(					const double		  val)				const;
+			bool					convertValueToDoubleForImport(	const std::string	& strValue, double	& doubleValue)	const;
+			bool					convertValueToIntForImport(		const std::string	& strValue, int		& intValue)		const;
 
-			BlockMap::iterator _blockItr;
-			int _currentPos;
-		};
-
-		int& operator[](int index);
-
-		iterator begin();
-		iterator end();
-
-		IntsStruct();
-
-	private:
-
-		Column *getParent() const;
-
-	} Ints;
-
-	typedef struct DoublesStruct
-	{
-		friend class Column;
-
-		class iterator : public boost::iterator_facade<
-				iterator, double, boost::forward_traversal_tag>
-		{
-
-			friend class boost::iterator_core_access;
-
-		public:
-
-			explicit iterator(BlockMap::iterator blockItr, int currentPos);
-
-		private:
-
-			void increment();
-			bool equal(iterator const& other) const;
-			double& dereference() const;
-
-			BlockMap::iterator _blockItr;
-			int _currentPos;
-
-		};
-
-		double& operator[](int index);
-
-		iterator begin();
-		iterator end();
-
-	private:
-		DoublesStruct() {}
-
-		Column *getParent() const;
-
-	} Doubles;
-
-	Column(boost::interprocess::managed_shared_memory *mem)  : _mem(mem), _name(mem->get_segment_manager()), _columnType(columnType::nominal), _rowCount(0), _blocks(std::less<ull>(), mem->get_segment_manager()), _labels(mem)
-	{
-		_id = ++count;
-	}
-
-	Column(const Column& col) : _mem(col._mem), _name(col._name), _columnType(col._columnType), _rowCount(col._rowCount), _blocks(col._blocks), _labels(col._labels)
-	{
-		_id = ++count;
-	}
-
-	~Column() {}
-
-	std::string name() const;
-	int id() const;
-	void setName(std::string name);
-
-	void setValue(int row, int value);
-	void setValue(int row, double value);
-
-	bool isValueEqual(int row, int value);
-	bool isValueEqual(int row, double value);
-	bool isValueEqual(int row, const std::string &value);
-
-	std::string operator[](int row);
-	std::string getOriginalValue(int row);
-
-	void append(int rows);
-	void truncate(int rows);
-
-	// If the column is a scale, it uses the AsDoubles which is a mapping between the row numbers and the double values.
-	// Scale columns do not have labels.
-	// It the column is Nominal. NominalText or Ordinal, it uses the AsInts structure
-	// For Nominal & Ordinal, the values of the column are integers, so the AsInts get directly these values:
-	// it is a mapping between the row number and the value. The Labels is then a mapping of the unique integer values
-	// and the label strings (this string represents first the integer value, but can be later on modified)
-	// For NominalText, the values are strings, so the values are stored in the labels with some keys (this time the keys have no meaning).
-	// The AsInts is then a mapping between the row numbers and these keys. In this case, if the label of one value
-	// is modified, the new value is in the label object, and the original string value is kept in another mapping
-	// structure (cf. labels.h).
-	// Both AsDoubles & AsInts get their space from the BlockMap _blocks which is a mapping of DataBlock.
-	Doubles AsDoubles;
-	Ints AsInts;
-
-	void setColumnType(enum columnType columnType);
-	enum columnType getColumnType() const;
-
-	columnTypeChangeResult changeColumnType(enum columnType newColumnType);
-
-	size_t rowCount() const { return _rowCount; }
-
-			Labels & labels();
-	const	Labels & labels() const;
-
-	Column &operator=(const Column &columns);
-
-	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
-
-	bool						setColumnAsScale(const std::vector<double> &values);
-
-	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values,	const std::map<std::string, std::string> &labels, bool * changedSomething = NULL);
-	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values, bool * changedSomething = NULL);
-
-	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		std::map<int, std::string> uniqueValues,	bool is_ordinal = false);
-	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false);
-
-	bool allLabelsPassFilter() const;
-
-	bool hasFilter() const;
-
-	void resetFilter();
-
-	bool isColumnDifferentFromStringValues(std::vector<std::string> strVals);
-
-private:	
-
-	bool		_setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
-
-	void		_setRowCount(int rowCount);
-	std::string	_getLabelFromKey(int key) const;
-	std::string	_getScaleValue(int row, bool forDisplay);
-
-	void		_convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
-
-	bool		_resetEmptyValuesForNominal(std::map<int, std::string> &emptyValuesMap);
-	bool		_resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
-	bool		_resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
-
-	columnTypeChangeResult	_changeColumnToNominalOrOrdinal(enum columnType newColumnType);
-	columnTypeChangeResult	_changeColumnToScale();
+protected:
+			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
+			bool					_setAsNominalOrOrdinal(const intvec & values, bool is_ordinal);
+			void					_dbUpdateLabelOrder();		///< Sets the order of the _labels to label.order and in DB
+			void					_sortLabelsByOrder();		///< Sorts the labels by label.order
+			std::string				_getLabelDisplayStringByValue(int key) const;
+			columnTypeChangeResult	_changeColumnToNominalOrOrdinal(enum columnType newColumnType);
+			columnTypeChangeResult	_changeColumnToScale();
+			
+			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
+			bool					_resetMissingDataForNominal(	intstrmap & missingDataMap);
+			bool					_resetMissingDataForScale(		intstrmap & missingDataMap);
+			bool					_resetMissingDataForNominalText(intstrmap & missingDataMap, bool tryToConvert = true);
+			
+			void					_resetLabelValueMap();
 
 private:
-	boost::interprocess::managed_shared_memory * _mem = nullptr;
-
-	String			_name;
-	enum columnType _columnType;
-	size_t			_rowCount;
-
-	BlockMap		_blocks;
-	Labels			_labels;
-
-	int				_id;
-	static int		count;
+			DataSet		*			_data				= nullptr;
+			Labels					_labels;
+			columnType				_type				= columnType::unknown,
+									_preEditType		= columnType::unknown;
+			int						_id					= -1,
+									_analysisId			= -1;		// Actually initialized in DatabaseInterface::columnInsert
+			bool					_isComputed			= false,	// Actually initialized in DatabaseInterface::columnInsert
+									_invalidated		= false,
+									_batchedLabel		= false;
+			computedColumnType		_codeType			= computedColumnType::notComputed;
+			std::string				_name,
+									_title,
+									_description,
+									_error,
+									_rCode;
+			Json::Value				_constructorJson	= Json::objectValue;
+			doublevec				_dbls;
+			intvec					_ints;
+			stringset				_dependsOnColumns;
+			std::map<int, Label*>	_labelByValueMap;			
 };
-
-namespace boost
-{
-	template <> struct range_const_iterator< Column::Ints >		{ typedef Column::Ints::iterator type;		};
-	template <> struct range_const_iterator< Column::Doubles >	{ typedef Column::Doubles::iterator type;	};
-}
-
 
 #endif // COLUMN_H

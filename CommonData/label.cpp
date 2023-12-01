@@ -1,96 +1,221 @@
-//
-// Copyright (C) 2013-2018 University of Amsterdam
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 #include "label.h"
-
+#include "column.h"
 #include <sstream>
-#include <cstring>
+#include "databaseinterface.h"
+#include "columnutils.h"
 
-void Label::_setLabel(const std::string &label) {
-    _stringLength = label.length();
-    if (sizeof(_stringValue) < label.length())
-        _stringLength = sizeof(_stringValue);
 
-    std::memcpy(_stringValue, label.c_str(), _stringLength);
-}
-
-Label::Label(const std::string &label, int value, bool filterAllows, bool isText)
+Label::Label(Column * column)
+: DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
-    _setLabel(label);
-	_hasIntValue = !isText;
-	_intValue = value;
-	_filterAllow = filterAllows;
+	_value = std::numeric_limits<int>::lowest();
 }
 
-Label::Label(int value)
+Label::Label(Column * column, int value)
+: DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
 	setValue(value);
+	setOriginalValue(value);
+	setLabel(originalValueAsString());
 }
 
-Label::Label()
+Label::Label(Column * column, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
+: DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
-	_hasIntValue = false;
-	_intValue = -1;
-	_stringLength = 0;
+	_label			= label;
+	_value			= value;
+	_filterAllows	= filterAllows;
+	_description	= description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
+	_originalValue	= originalValue;
+	_order			= order;
+
+	if(id == -1)	dbCreate();
+	else			_id = id;
 }
 
-std::string Label::text() const
+void Label::dbDelete()
 {
-	return std::string(_stringValue, _stringLength);
+	if(_column->batchedLabel())
+		return;
+	
+	assert(_id != -1);
+	db().labelDelete(_id);
+	_id = -1;
 }
 
-bool Label::hasIntValue() const
+void Label::dbCreate()
 {
-	return _hasIntValue;
+	JASPTIMER_SCOPE(Label::dbCreate);
+
+	if(_column->batchedLabel())
+		return;
+		
+	assert(_id == -1);
+	_id = db().labelAdd(_column->id(), _value, _label, _filterAllows, _description, _originalValue.toStyledString());
 }
 
-int Label::value() const
+void Label::dbLoad(int labelId)
 {
-	return _intValue;
+	if(_column->batchedLabel())
+		return;
+	
+	assert(_id != -1 || labelId != -1);
+
+	if(labelId != -1)
+		_id = labelId;
+
+	int columnId;
+
+	std::string origValJsonStr;
+	db().labelLoad(labelId, columnId, _value, _label, _filterAllows, _description, origValJsonStr, _order);
+
+	_originalValue = Json::nullValue;
+
+	Json::Reader().parse(origValJsonStr, _originalValue);
 }
 
-void Label::setLabel(const std::string &label) {
-	_setLabel(label);
-}
-
-void Label::setValue(int value, bool labelIsInt)
+void Label::dbUpdate()
 {
-	if (labelIsInt)
+	JASPTIMER_SCOPE(Label::dbUpdate);
+
+	if(_column->batchedLabel())
+		return;
+	
+	if(_id == -1)
+		dbCreate();
+	else
 	{
-		std::stringstream ss;
-		ss << value;
-		std::string asString = ss.str();
-
-		std::memcpy(_stringValue, asString.c_str(), asString.length());
-		_stringLength = asString.length();
-
-		_hasIntValue = true;
+		db().labelSet(_id, _column->id(), _value, _label, _filterAllows, _description, _originalValue.toStyledString());
+		_column->incRevision();
 	}
-	_intValue = value;
+}
+
+void Label::setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
+{
+	_id				= id;
+	_order			= order;
+	_label			= label;
+	_value			= value;	
+	_filterAllows	= filterAllows;
+	_description	= description;
+	_originalValue	= originalValue;
+}
+
+Json::Value Label::serialize() const
+{
+	Json::Value json(Json::objectValue);
+
+	json["id"]				= _id;
+	json["order"]			= _order;
+	json["label"]			= _label;
+	json["value"]			= _value;
+	json["filterAllows"]	= _filterAllows;
+	json["description"]		= _description;
+	json["originalValue"]	= _originalValue;
+
+	return json;
+}
+
+void Label::setValue(int value)
+{
+	_value = value;
+
+	dbUpdate();
+}
+
+void Label::setOrder(int order)
+{
+	_order = order;
+
+	//We'll let Column handle the order changes
+}
+
+void Label::setOriginalValue(const Json::Value & originalLabel)
+{
+	if(_originalValue != originalLabel)
+	{
+		_originalValue = originalLabel;
+		dbUpdate();
+	}
+}
+
+void Label::setDescription(const std::string &description)
+{
+	if(_description != description)
+	{
+		_description = description;
+		dbUpdate();
+	}
+}
+
+void Label::setFilterAllows(bool allowFilter)
+{
+	JASPTIMER_SCOPE(Label::setFilterAllows);
+
+	if(_filterAllows != allowFilter)
+	{
+		_filterAllows = allowFilter;
+		dbUpdate();
+	}
+}
+
+DatabaseInterface & Label::db()
+{
+	return _column->db();
+}
+
+const DatabaseInterface & Label::db() const
+{
+	return _column->db();
 }
 
 Label &Label::operator=(const Label &label)
 {
-	this->_hasIntValue	= label._hasIntValue;
-	this->_intValue		= label._intValue;
-	this->_filterAllow	= label._filterAllow;
+	this->_originalValue	= label._originalValue;
+	this->_filterAllows		= label._filterAllows;
+	this->_description		= label._description;
+	this->_value			= label._value;
+	this->_label			= label._label;
+	this->_order			= label._order;
+	this->_id				= label._id;
 
-	std::memcpy(_stringValue, label._stringValue, label._stringLength);
-	_stringLength = label._stringLength;
+	//this->_column			= label._column; // ???
 
 	return *this;
+}
+
+std::string Label::originalValueAsString(bool fancyEmptyValue) const
+{
+	switch(_originalValue.type())
+	{
+	default:
+		return fancyEmptyValue ? ColumnUtils::emptyValue : "";
+
+	case Json::intValue:
+		return std::to_string(_originalValue.asInt());
+
+	case Json::realValue:
+		return _column->doubleToDisplayString(_originalValue.asDouble(), fancyEmptyValue);
+
+	case Json::stringValue:
+		return _originalValue.asString();
+	}
+}
+
+std::string Label::str() const
+{
+	return "Label of column '" + _column->name() + "' has display: '" + label() + "' for value " + std::to_string(value()) + " and order " + std::to_string(order());
+}
+
+bool Label::setLabel(const std::string & label)
+{
+	if(_label != label)
+	{
+		_label = label.empty() ? originalValueAsString() : label;
+
+		dbUpdate();
+		return true;
+	}
+	
+	return false;
 }

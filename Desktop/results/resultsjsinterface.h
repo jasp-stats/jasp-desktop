@@ -87,7 +87,7 @@ signals:
 	Q_INVOKABLE void removeAllAnalyses();
 	Q_INVOKABLE void pdfPrintingFinished(	QString pdfPath);
 	Q_INVOKABLE void exportToPDF(			QString pdfPath);
-	void prepForExport();
+				void prepForExport();
 	Q_INVOKABLE void exportPrepFinished();
 	Q_INVOKABLE void showRSyntaxInResults(	bool show);
 

@@ -9,10 +9,11 @@ class ActionButtons : public QAbstractListModel
 {
 	Q_OBJECT
 
-	Q_PROPERTY(FileOperation selectedAction READ selectedAction WRITE setSelectedAction NOTIFY selectedActionChanged)
+	Q_PROPERTY(FileOperation	selectedAction	READ selectedAction WRITE setSelectedAction NOTIFY selectedActionChanged)
+	Q_PROPERTY(int				width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 
 public:
-	enum FileOperation {None = 0, Open, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, About};
+	enum FileOperation {None = 0, Open, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, Contact, Community, About};
 	Q_ENUM(FileOperation)
 
 	struct DataRow { FileOperation operation; QString name; bool enabled; std::set<ResourceButtons::ButtonType> resourceButtons; };
@@ -34,22 +35,27 @@ public:
 
 	std::set<ResourceButtons::ButtonType> resourceButtonsForButton(FileOperation button);
 	void refresh();
-
+	
+	int width() const;
+	void setWidth(int newWidth);
+	
 signals:
 	void selectedActionChanged(	ActionButtons::FileOperation selectedAction);
 	void buttonClicked(			ActionButtons::FileOperation selectedAction);
-
+	
+	void widthChanged();
+	
 public slots:
 	void setEnabled(			ActionButtons::FileOperation operation, bool enabledState);
 	void setSelectedAction(		ActionButtons::FileOperation selectedAction);
 
-
 private:
-	void loadButtonData(std::vector<DataRow> & data);
+	void loadButtonData();
 
 	std::vector<DataRow>				_data;
 	std::map<FileOperation, size_t>		_opToIndex;
 	FileOperation						_selected = None;
+	int									_width = 0;
 };
 
 #endif // ACTIONBUTTONS_H

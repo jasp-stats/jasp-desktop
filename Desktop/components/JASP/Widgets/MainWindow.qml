@@ -26,12 +26,12 @@ Window
 	id:					mainWindowRoot
 	title:				mainWindow.windowTitle
 	visible:			true
-	width:				1248
-	height:				768
+	width:				1280
+	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
-	minimumHeight:		600 * jaspTheme.uiScale
+	minimumHeight:		400 * jaspTheme.uiScale
 
 	onVisibleChanged:
 		if(!visible)
@@ -63,6 +63,13 @@ Window
  		ribbon.focusOnRibbonMenu();
 	}
 
+	function showWorkspaceMenu()
+	{
+		ribbonModel.showData()
+		fileMenuModel.visible = false
+		modulesMenu.opened	= true
+	}
+
 	function changeFocusToModulesMenu()
 	{
 		ribbon.showModulesMenuPressed();
@@ -70,13 +77,13 @@ Window
 
 	function changeFocusToFileMenu()
 	{
-		ribbon.focus = true;
+		ribbon.forceActiveFocus();
 		ribbon.showFileMenuPressed();
 	}
 
 	function mod (a, n)
 	{
-		return ((a % n) + n) % n;
+		return (a + n) % n;
 	}
 
 	Item
@@ -85,9 +92,10 @@ Window
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.saveAsKeyPressed();					sequences: ["Ctrl+Shift+S", Qt.Key_SaveAs];						context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: { ribbon.showFileMenuPressed(); mainWindow.openKeyPressed();}
 																				sequences: ["Ctrl+O"];											context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							context: Qt.ApplicationShortcut; }
+		//This is now redo! Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								context: Qt.ApplicationShortcut; }
@@ -98,6 +106,9 @@ Window
 		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
 		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.setLanguage(1);						sequences: ["Ctrl+2"];											context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.undo();								sequences: ["Ctrl+Z", Qt.Key_Undo];								enabled: ribbonModel.dataMode;	}
+		Shortcut { onActivated: mainWindow.redo();								sequences: ["Ctrl+Shift+Z", "Ctrl-Y", Qt.Key_Redo];				enabled: ribbonModel.dataMode;	}
+
 
 		RibbonBar
 		{
@@ -226,12 +237,8 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
-		
-		PlotEditor
-		{
-			id:					plotEditingDialog
-			visible:			plotEditorModel.visible
-		}
+		RenameColumnDialog			{ id: renameColumnDialog	}
+		PlotEditor					{ id: plotEditingDialog		}
 
 		/*MessageBox
 		{

@@ -65,7 +65,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
 	QString caption = tr("Save");
-	QString filter  = tr("JASP Files (*.jasp)");
+	QString filter  = tr("JASP Files") += " (*.jasp)";
 
 	QString browsePath = path;
 	if (path == "")
@@ -78,18 +78,18 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 	{
 	case FileEvent::FileExportResults:
 		caption = tr("Export Result as HTML or PDF");
-		filter = tr("HTML Files") += " (*.html);;" + tr("Portable Document Format (*.pdf)");
+		filter = tr("HTML Files") += " (*.html);;" + tr("Portable Document Format") + " (*.pdf)";
 		break;
 
 	case FileEvent::FileGenerateData:
 	case FileEvent::FileExportData:
 		caption	= tr("Export Data as CSV");
-		filter	= tr("CSV Files (*.csv *.txt *.tsv)");
+		filter	= tr("CSV Files") += " (*.csv *.txt *.tsv)";
 		break;
 
 	case FileEvent::FileSyncData:
 		caption = tr("Sync Data");
-		filter  = tr("Data Files (*.csv *.txt *.tsv *.sav *.ods)");
+		filter  = tr("Data Files") += " (*.csv *.txt *.tsv *.sav *.ods)";
 		break;
 
 	case FileEvent::FileSave:

@@ -2,8 +2,8 @@
 #define READSTATIMPORTER_H
 
 #include "importer.h"
+#include "stringutils.h"
 #include <string>
-#include "column.h"
 
 ///
 /// Uses ReadStat to import SPSS/SAS/STATA files and perhaps others.
@@ -11,9 +11,9 @@ class ReadStatImporter : public Importer
 {
 
 public:
-	ReadStatImporter(std::string ext) : Importer(), _ext(ext)
+	ReadStatImporter(std::string ext) : Importer(), _ext(stringUtils::toLower(ext))
 	{
-		DataSetPackage::pkg()->setIsArchive(false);
+            DataSetPackage::pkg()->setIsJaspFile(false);
 
 		if(_ext.size() == 0)	throw std::runtime_error("ReadStatImporter NEEDS to know the extension!");
 		if(_ext[0] == '.')		_ext = _ext.substr(1);
@@ -24,7 +24,7 @@ public:
 	void initColumn(QVariant colId, ImportColumn * importColumn) override;
 
 protected:
-	ImportDataSet *	loadFile(const std::string &locator, boost::function<void(int)> progressCallback)	override;
+	ImportDataSet *	loadFile(const std::string &locator, std::function<void(int)> progressCallback)	override;
 
 	std::string		_ext;
 

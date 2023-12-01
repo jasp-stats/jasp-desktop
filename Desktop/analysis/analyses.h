@@ -47,7 +47,6 @@ class Analyses : public QAbstractListModel
 
 
 	friend class EngineSync;
-	friend class boost::iterator_core_access;
 
 	typedef QMap<int, Analysis *> ById;
 public:
@@ -137,6 +136,7 @@ public slots:
 	void allUserDataChanged(QString json);
 	void moveAnalysesResults(Analysis* fromAnalysis, int index);
 	void showRSyntaxInResults(bool show);
+	void dataModeChanged(bool dataMode);
 
 signals:
 	void analysesUnselected();
@@ -159,16 +159,15 @@ signals:
 	void visibleChanged(				bool		visible);
 	void movingChanged(					bool		moving);
 	void emptyQMLCache();
-	void dataSetChanged();
 	void somethingModified();
     void analysesExportResults();
 	bool developerMode();
 	void setResultsMeta(QString json);
 	void moveAnalyses(quint64 fromId, quint64 toId);
 
-	ComputedColumn *	requestComputedColumnCreation(const std::string& columnName, Analysis *source);
-	void				requestColumnCreation(const std::string& columnName, Analysis *source, columnType type);
-	void				requestComputedColumnDestruction(const std::string& columnName);
+	Column *			requestComputedColumnCreation(		const std::string & columnName, Analysis *source);
+	void				requestColumnCreation(				const std::string & columnName, Analysis *source, columnType type);
+	void				requestComputedColumnDestruction(	const std::string & columnName);
 
 	void currentFormPrevHChanged(double currentFormPrevH);
 

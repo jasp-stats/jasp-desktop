@@ -47,7 +47,7 @@ FocusScope
 
 	function applyAndSendFilter(newFilter)
 	{
-		filterModel.rFilter = newFilter //Triggers send in FilterModel
+		filterModel.applyRFilter(newFilter) //Triggers send in FilterModel
 		absorbModelRFilter()
 	}
 
@@ -76,7 +76,7 @@ FocusScope
 	{
 		id:				minWidthCollector
 
-		property int minWidth: 400 * preferencesModel.uiScale
+		property int minWidth: 500 * preferencesModel.uiScale
 
 		anchors
 		{
@@ -102,7 +102,7 @@ FocusScope
 
 				anchors
 				{
-					bottom:	closeEasyRectangularButton.top
+					bottom:	applyEasyFilter.top
 					right:	parent.right
 					left:	parent.left
 					top:	parent.top
@@ -155,6 +155,38 @@ FocusScope
 				}
 			}
 
+			JaspControls.MenuButton
+			{
+				id:					helpEasyRectangularButton
+				height:				33 * jaspTheme.uiScale
+				width:				height
+				radius:				height
+				iconSource:			jaspTheme.iconPath + "info-button.png"
+				onClicked:			helpModel.showOrTogglePage("other/EasyFilterConstructor");
+				toolTip:			qsTr("Open Documentation")
+				anchors
+				{
+					right:			closeButton.left
+					top:			parent.top
+				}
+			}
+			JaspControls.MenuButton
+			{
+				id:					closeButton
+				height:				33 * jaspTheme.uiScale
+				width:				height
+				radius:				height
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				onClicked:			easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
+				toolTip:			qsTr("Close filter window")
+				anchors
+				{
+					top:			parent.top
+					right:			parent.right
+					rightMargin:	jaspTheme.generalAnchorMargin
+				}
+			}
+
 			JaspControls.RectangularButton
 			{
 				id:			rRectangularButton
@@ -166,7 +198,6 @@ FocusScope
 				{
 					left:	parent.left
 					bottom:	parent.bottom
-					top:	closeEasyRectangularButton.top
 				}
 			}
 
@@ -181,7 +212,7 @@ FocusScope
 				{
 					left:	rRectangularButton.right
 					bottom:	parent.bottom
-					top:	closeEasyRectangularButton.top
+					top:	rRectangularButton.top
 				}
 			}
 
@@ -197,37 +228,11 @@ FocusScope
 				anchors
 				{
 					left:	showInactiveFilteredButtonEasy.right
-					right:	helpEasyRectangularButton.left
+					right:	parent.right
 					bottom: parent.bottom
-					top:	closeEasyRectangularButton.top
+					top:	rRectangularButton.top
 				}
 
-			}
-
-			JaspControls.RectangularButton
-			{
-				id:				helpEasyRectangularButton
-				iconSource:		jaspTheme.iconPath + "info-button.png"
-
-				onClicked:		helpModel.showOrTogglePage("other/EasyFilterConstructor");
-				toolTip:		qsTr("Open Documentation")
-				anchors
-				{
-					right:	closeEasyRectangularButton.left
-					bottom:	parent.bottom
-					top:	closeEasyRectangularButton.top
-				}
-			}
-
-			JaspControls.RectangularButton
-			{
-				id:				closeEasyRectangularButton
-				iconSource:		jaspTheme.iconPath + "cross.png"
-				anchors.right:	parent.right
-				anchors.bottom: parent.bottom
-
-				onClicked:		easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
-				toolTip:		qsTr("Hide filter")
 			}
 		}
 

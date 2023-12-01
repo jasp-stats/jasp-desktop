@@ -35,7 +35,58 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.17.3" date="2023-07-04">
+	    <release version="0.18.1" date="2023-09-26">
+                <description>
+**New Features and Improvements**
+
+*   New module: Learn Stats
+
+**Bug fixes**
+
+*   Data Editing:
+    *   Beter undo/redo shortcut handling ([#5262](https://github.com/jasp-stats/jasp-desktop/pull/5262))
+    *   Add copy/cut/paste with header ([#5249](https://github.com/jasp-stats/jasp-desktop/pull/5249))
+    *   Make remove columns/rows quicker([#5242](https://github.com/jasp-stats/jasp-desktop/pull/5242))
+*   Descriptives:
+    *   Incorrect confidence interval in descriptive statistics ([#2288](https://github.com/jasp-stats/jasp-issues/issues/2288))
+    *   Likert plot long data ([#2251](https://github.com/jasp-stats/jasp-issues/issues/2251))
+    *   Use ColorPalette ([#216](https://github.com/jasp-stats/jaspDescriptives/pull/216))
+*   LearnBayes: Use ColorPalette ([#167](https://github.com/jasp-stats/jaspLearnBayes/pull/167))
+*   SEM:
+    *   Use ColorPalette ([#177](https://github.com/jasp-stats/jaspSem/pull/177))
+    *   fix disattenuation bug and handle resampling options better ([#2260](https://github.com/jasp-stats/jasp-issues/issues/2260))
+    *   Merged notes additional fit measures ([#147](https://github.com/jasp-stats/jaspSem/pull/147))
+*   Meta Analysis, hot fixes for RoBMA ([#196](https://github.com/jasp-stats/jaspMetaAnalysis/pull/196) and [#197](https://github.com/jasp-stats/jaspMetaAnalysis/pull/197)):
+    *   fix output ordering
+    *   fix diagnostics plots
+    *   fix effect size output option
+    *   fix 'plotsIndividualModelsOrder'
+    *   plot prior distributions under custom models
+    *   incorrectly disabled prior scale menu on custom
+*   Predictive Analytics: [#11](https://github.com/jasp-stats/jaspPredictiveAnalytics/pull/11)
+                </description>
+        </release>
+        <release version="0.18.0" date="2023-08-31">
+                <description>
+Main New Feature:
+	• Data Editing
+New Features and Improvements:
+	• New module: Robust TTests
+	• Show color palettes https://github.com/jasp-stats/jasp-issues/issues/2122
+	• Make LaTeX formula editable: https://github.com/jasp-stats/jasp-desktop/pull/5186
+Bug fixes:
+	• ANOVA: Refreshing old jasp file engine crash https://github.com/jasp-stats/jasp-test-release/issues/2347
+	• T-Test: cannot render Bayesian sequential analysis with robustness check https://github.com/jasp-stats/jasp-issues/issues/2252
+	• CFA error with grouping variable: https://github.com/jasp-stats/jasp-issues/issues/2182
+	• Improve Quality Control: https://github.com/jasp-stats/jaspQualityControl/pull/263
+	• Fix variance components plot failing for i18n: https://github.com/jasp-stats/jaspQualityControl/pull/270
+	• Add more translatable strings: https://github.com/jasp-stats/jasp-desktop/pull/5144
+	• Application stops responding when filtering data: https://github.com/jasp-stats/jasp-issues/issues/1644
+	• JASP files can be send via E-Mails, there are not blocked by E-Mail servers.
+	• Learn Bayes: Buffons Needle problems when tosses = 0: https://github.com/jasp-stats/jaspLearnBayes/pull/169
+                </description>
+        </release>
+        <release version="0.17.3" date="2023-07-04">
 		<description>
 JASP Release Notes 0.17.3:
 
@@ -53,8 +104,8 @@ Bug fixes:
 * Fix Bayesian descriptives Credible Interval (https://github.com/jasp-stats/jasp-issues/issues/2153, https://github.com/jasp-stats/jasp-issues/issues/2190)
 * Allow Ordinal data and fix citations (https://github.com/jasp-stats/jasp-issues/issues/1723)
 * Bug Report in PROPHET Module (https://github.com/jasp-stats/jasp-issues/issues/2201)
-		</description>
-	</release>
+                </description>
+        </release>
 	<release version="0.17.2.1" date="2023-05-22">
 		<description>
 JASP Release Notes 0.17.2.1

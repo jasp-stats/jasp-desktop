@@ -28,10 +28,17 @@ EngineRepresentation::~EngineRepresentation()
 	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
 
 
-	if(_slaveProcess != nullptr)
+	if(_slaveProcess && _slaveProcess->state() == QProcess::ProcessState::Running)
 	{
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
+	}
+	
+	if(_slaveProcess)
+	{
+		_slaveProcess->setParent(nullptr);
+		_slaveProcess->deleteLater();
+		_slaveProcess = nullptr;
 	}
 }
 
@@ -288,7 +295,7 @@ void EngineRepresentation::processReplies()
 			case engineState::analysis:				processAnalysisReply(json);			break;
 			case engineState::computeColumn:		processComputeColumnReply(json);	break;
 			case engineState::paused:				processEnginePausedReply();			break;
-			case engineState::resuming:				processEngineResumedReply();		break;
+			case engineState::resuming:				processEngineResumedReply(json);	break;
 			case engineState::stopped:				processEngineStoppedReply();		break;
 			case engineState::moduleInstallRequest:
 			case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
@@ -345,19 +352,8 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 
 	emit filterDone(requestId);
 
-	if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
-	{
-		std::vector<bool> filterResult;
-		for(Json::Value & jsonResult : json.get("filterResult", Json::Value(Json::arrayValue)))
-			filterResult.push_back(jsonResult.asBool());
-
-		emit processNewFilterResult(filterResult, requestId);
-
-		if(json.get("filterError", "").asString() != "")
-			emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "there was a warning").asString()), requestId);
-	}
-	else
-		emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "something went wrong").asString()), requestId);
+	if(requestId == _lastRequestId)
+		emit processNewFilterResult(requestId);
 }
 
 void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
@@ -585,9 +581,9 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	case analysisResultStatus::complete:
 		analysis->setResults(results, status);
 		clearAnalysisInProgress();
+		checkForComputedColumns(results);
+		emit checkDataSetForUpdates(); //Maybe the analysis wrote some stuff?
 
-		if(analysis->computedColumns().size() > 0)
-			checkForComputedColumns(results);
 		break;
 
 	case analysisResultStatus::running:
@@ -730,6 +726,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 
 		_slaveProcess->kill();
 		_slaveProcess->deleteLater();
+		_slaveProcess = nullptr;
 
 		if(_engineState != engineState::killed && _engineState != engineState::stopped)
 			Log::log() << "EngineRepresentation::restartEngine says: Engine already had jaspEngine process that is now replaced!" << std::endl;
@@ -817,14 +814,15 @@ void EngineRepresentation::processEnginePausedReply()
 	setState(engineState::paused);
 }
 
-void EngineRepresentation::processEngineResumedReply()
+void EngineRepresentation::processEngineResumedReply(Json::Value & json)
 {
 	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
 
-	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
+	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::reloadData)
 		throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply!");
-
-	//_settingsChanged = true; //Make sure we send the settings at least once. We now do this be also sending the settings in the resume request
+	
+	if(json.get("justReloadedData", false))
+		_reloadData = false;
 
 	setState(engineState::idle);
 }
@@ -838,6 +836,16 @@ void EngineRepresentation::processEngineStoppedReply()
 
 	disconnect(_slaveFinishedConnection);
 }
+
+
+void EngineRepresentation::processReloadDataReply()
+{
+	Log::log() << "EngineRepresentation::processReloadDataReply() for engine #" << channelNumber() << std::endl;
+
+	_reloadData = false;
+	setState(engineState::reloadData); //Its probably already in this state
+}
+
 
 void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
 {
@@ -1064,10 +1072,7 @@ bool EngineRepresentation::willProcessAnalysis(Analysis * analysis)
 	if(_stopRequested || !channel() || !analysis || !idle() || !analysis->shouldRun())
 		return false;
 
-	const std::string modName = analysis->dynamicModule()->name();
-
-	return	(	runsAnalysis()					&& _dynModName == modName && _moduleLoaded)
-			|| (analysis->utilityRunAllowed()	&& runsUtility()		 );
+	return runsAnalysis() && _dynModName == analysis->dynamicModule()->name() && _moduleLoaded;
 }
 
 void canIRegisterModule(const std::string & name);

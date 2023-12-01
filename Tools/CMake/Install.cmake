@@ -47,7 +47,7 @@ set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
-    ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
+	".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
@@ -122,13 +122,35 @@ if(APPLE)
     DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/bin/exec/
   )
 
-    
+
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+	  install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgfortran.5.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgfortran.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libquadmath.0.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libquadmath.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+      install(
+		  FILES ${_R_Framework}/Resources/opt/R/arm64/gfortran/lib/libgcc_s.1.1.dylib
+		  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}/R.Framework/Resources/opt/R/arm64/gfortran/lib/
+	  )
+  endif()
 
   # I had to do this manually, since `macdeployqt` misses it.
   # See here: https://bugreports.qt.io/browse/QTBUG-100686
   #
   # Feel free to remove it when the bug is fixed
-  install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
+  #install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
 
   install(
     DIRECTORY ${MODULES_BINARY_PATH}/
@@ -200,9 +222,7 @@ endif()
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.desktop
           DESTINATION ${JASP_INSTALL_PREFIX}/share/applications)
 
-  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
-          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
-
+  # install app icons
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
           DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
 
@@ -212,8 +232,24 @@ endif()
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
           DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/apps)
 
+  # mime type .jasp icon
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/mimetypes
+          RENAME application-x-jaspstats-jasp.svg)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/64/org.jaspstats.JASP.png
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/64x64/mimetypes
+          RENAME application-x-jaspstats-jasp.png)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/mimetypes
+          RENAME application-x-jaspstats-jasp.png)
+
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.appdata.xml
           DESTINATION ${JASP_INSTALL_PREFIX}/share/metainfo)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.mime.xml
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/mime/packages)
 
 endif()
 

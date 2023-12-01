@@ -1169,6 +1169,16 @@ void JaspTheme::setFont(QFont font)
 	emit fontChanged(_font);
 }
 
+void JaspTheme::setFontLink(QFont fontLink)
+{
+	if (_fontLink == fontLink)
+		return;
+
+	_fontLink = fontLink;
+	emit fontLinkChanged(_fontLink);
+}
+
+
 void JaspTheme::setFontLabel(QFont fontLabel)
 {
 	if (_fontLabel == fontLabel)

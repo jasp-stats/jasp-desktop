@@ -24,9 +24,9 @@ import JASP.Widgets			1.0
 Rectangle
 {
 	id				: ribbonButton
-	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
+	width			: separator ? 2 * jaspTheme.ribbonButtonPadding : (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
 	height			: jaspTheme.ribbonButtonHeight
-	color			: showPressed ? jaspTheme.grayLighter : "transparent"
+	color			: separator || !showPressed ? "transparent" : jaspTheme.grayLighter
 	z				: 1
 	objectName		: "ribbonButton"
 
@@ -34,6 +34,7 @@ Rectangle
 	property int	listIndex   : -1
 	property string	source		: ""
 	property bool	enabled		: true
+	property bool	separator	: false
 	property bool	ready		: false
 	property string moduleName	: "???"
 	property string toolTip		: ""
@@ -88,7 +89,9 @@ Rectangle
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
 			customMenu.hide()
+            messages.log("startOrShowMenu() for " + ribbonButton.moduleName)
 			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
+
 		}
 		else if (ribbonButton.menu.rowCount() === 1)
 		{
@@ -110,6 +113,8 @@ Rectangle
 			var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
+            
+			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
 
 			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
 			customMenu.hide();
@@ -150,6 +155,7 @@ Rectangle
 		var props =
 		{
 			"model"					: ribbonButton.menu,
+
 			"functionCall"			: functionCall,
 			"hasIcons"				: ribbonButton.menu.hasIcons(),
 			"navigateFunc"			: navigateFunc,
@@ -158,20 +164,36 @@ Rectangle
 
 		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
 
-		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
 	}
 
 	Rectangle
 	{
-		id		: borderLeft
-		width   : showPressed ? 1 : 0
-		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		id:			separatorLine
+		visible:	separator
+		color:		jaspTheme.gray
+		width:		2 * jaspTheme.uiScale
+		radius:		width
+		height:		parent.height * 0.6
 		anchors
 		{
-			left	: parent.left
-			top		: parent.top
-			bottom	: parent.bottom
+			horizontalCenter:	parent.horizontalCenter
+			top:				parent.top
+			topMargin:			parent.height * 0.2
+		}
+	}
+
+	Rectangle
+	{
+		id		: borderLeft
+		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		width   : showPressed ? 1 : 0
+		anchors
+		{
+			left:				parent.left
+			top:				parent.top
+			bottom:				parent.bottom
 		}
 	}
 
@@ -194,6 +216,7 @@ Rectangle
 		width				: parent.width
 		height				: parent.height
 		scale				: mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1
+		visible				: !separator
 
 		Image
 		{

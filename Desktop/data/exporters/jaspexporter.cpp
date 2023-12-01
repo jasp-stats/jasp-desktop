@@ -19,26 +19,21 @@
 
 #include <sys/stat.h>
 
-#include "dataset.h"
 #include <ios>
 #include <archive.h>
 #include <archive_entry.h>
 #include <json/json.h>
 #include <fstream>
-#include "archivereader.h"
 #include "version.h"
 #include "tempfiles.h"
-#include "appinfo.h"
 #include "log.h"
 #include "utilenums.h"
 #include "utilities/qutils.h"
-#include "data/databaseconnectioninfo.h"
 #include <fstream>
-#include "columnutils.h"
+#include "appinfo.h"
 
-const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
-const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
-
+const Version JASPExporter::jaspArchiveVersion = Version("4.0.0");
+time_t JASPExporter::_now;
 
 JASPExporter::JASPExporter()
 {
@@ -46,293 +41,127 @@ JASPExporter::JASPExporter()
 	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }
 
-void JASPExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
+void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	struct archive *a;
 
+	_now = time(nullptr); //Give all files same timestamp
+
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
+	archive_write_set_compression_gzip(a);
 
-    int errorCode =
 #ifdef _WIN32
-            archive_write_open_filename_w(a, tq(path).toStdWString().c_str());
+	if (archive_write_open_filename_w(a, tq(path).toStdWString().c_str()) != ARCHIVE_OK)
 #else
-            archive_write_open_filename(a, path.c_str());
+	if (archive_write_open_filename(a, path.c_str()) != ARCHIVE_OK)
 #endif
+		throw std::runtime_error(std::string("File could not be opened because of ") + archive_error_string(a));
 
-	if (errorCode != ARCHIVE_OK)
-		throw std::runtime_error("File could not be opened.");
+	saveManifest(a);    progressCallback(10);
+	saveAnalyses(a);    progressCallback(30);
+	saveResults(a);     progressCallback(70);
+	saveDatabase(a);    progressCallback(100);
 
-	saveDataArchive(a, progressCallback);
-	saveJASPArchive(a, progressCallback);
-
-	errorCode = archive_write_close(a);
-	if (errorCode != ARCHIVE_OK)
+	if (archive_write_close(a) != ARCHIVE_OK)
 		throw std::runtime_error("File could not be closed.");
 
-	errorCode = archive_write_free(a);
+	archive_write_free(a);
 
-	progressCallback(100);
+	//Make sure it is now always considered "loading" in DataSetPackage
+	DataSetPackage::pkg()->setLoaded(true);
 }
 
-
-void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progressCallback)
+void JASPExporter::saveManifest(archive * a)
 {
-	DataSetPackage * package = DataSetPackage::pkg();
+    Json::Value manifest = Json::objectValue;
 
-	createJARContents(a);
+	manifest["jaspArchiveVersion"]	= jaspArchiveVersion.asString();
+	manifest["jaspVersion"]			= AppInfo::version.asString();
 
-	struct archive_entry *entry;
+    makeEntry(a, "manifest.json", manifest.toStyledString());
+}
 
-	int progress,
-		lastProgress = -1;
-
-	Json::Value labelsData	= Json::objectValue,
-				metaData	= Json::objectValue,
-				db			= package->databaseJson();
-
-	Json::Value &dataSet			= metaData["dataSet"];
-	metaData["dataFilePath"]		= package->dataFilePath();
-	metaData["dataFileReadOnly"]	= package->dataFileReadOnly();
-	metaData["dataFileTimestamp"]	= package->dataFileTimestamp();
-	metaData["database"]			= db.isNull() ? db : DatabaseConnectionInfo(db).toJson(true); //Convert again to drop password if not remembering "me"
-	Json::Value emptyValuesJson		= Json::arrayValue;
-
-	const std::vector<std::string>& emptyValuesVector = ColumnUtils::getEmptyValues();
-	for (const auto & emptyVal : emptyValuesVector)
-		emptyValuesJson.append(emptyVal);
-
-	metaData["emptyValues"]				= emptyValuesJson;
-	metaData["filterData"]				= package->dataFilter();
-	metaData["filterConstructorJSON"]	= package->filterConstructorJson();
-	metaData["computedColumns"]			= ComputedColumns::singleton()->convertToJson();
-	dataSet["rowCount"]					= package->rowCount();
-	dataSet["columnCount"]				= package->columnCount();
-
-	dataSet["filterVector"]				= Json::arrayValue;
-
-	for (bool filteredRow : package->filterVector())
-		dataSet["filterVector"].append(filteredRow);
-
-	dataSet["emptyValuesMap"]			= Json::objectValue;
-
-	for (const auto & it : package->emptyValuesMap())
-	{
-		std::string colName		= it.first;
-		auto		map			= it.second;
-		Json::Value mapJson		= Json::objectValue;
-
-		for (const auto & it2 : map)
-			mapJson[std::to_string(it2.first)] = it2.second;
-
-		dataSet["emptyValuesMap"][colName] = mapJson;
-	}
-
-
-	Json::Value columnsData = Json::arrayValue;
-
-	//Calculate size of data file that'll be added to the archive
-	size_t	dataSize	= 0,
-			columnCount	= package->columnCount();
-
-	for (size_t i = 0; i < columnCount; i++)
-	{
-		columnsData.append(package->columnToJsonForJASPFile(i, labelsData, dataSize));
-
-		progress = 49 * int(i / columnCount);
-		if (progress != lastProgress)
-		{
-			progressCallback(progress);
-			lastProgress = progress;
-		}
-	}
-	dataSet["fields"]		= columnsData;
-
-	//Create new entry for archive
-	std::string metaDataString	= metaData.toStyledString();
-	size_t sizeOfMetaData		= metaDataString.size();
-	entry						= archive_entry_new();
-	std::string dd2				= std::string("metadata.json");
-
-	archive_entry_set_pathname(entry, dd2.c_str());
-	archive_entry_set_size(entry, int(sizeOfMetaData));
-	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644);  //basically chmod
-	archive_write_header(a, entry);
-
-	archive_write_data(a, metaDataString.c_str(), sizeOfMetaData);
-
-	archive_entry_free(entry);
-
-
-	//Create new entry for archive
-	std::string labelDataString = labelsData.toStyledString();
-	size_t		sizeOflabelData = labelDataString.size();
-
-	entry = archive_entry_new();
-	std::string dd9 = std::string("xdata.json");
-	archive_entry_set_pathname(entry, dd9.c_str());
-	archive_entry_set_size(entry, int(sizeOflabelData));
-	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644); //basically chmod
-	archive_write_header(a, entry);
-
-	archive_write_data(a, labelDataString.c_str(), sizeOflabelData);
-
-	archive_entry_free(entry);
-
-
-	//Create new entry for archive NOTE: must be done before data is added
-	entry = archive_entry_new();
-	std::string dd = std::string("data.bin");
-	archive_entry_set_pathname(entry, dd.c_str());
-	archive_entry_set_size(entry, int(dataSize));
-	archive_entry_set_filetype(entry, AE_IFREG);
-	archive_entry_set_perm(entry, 0644);  //basically chmod
-	archive_write_header(a, entry);
-
-	//Data data to archive
-
-	for (size_t i = 0; i < columnCount; i++)
-	{
-		if (package->getColumnType(i) != columnType::scale)
-			for (const int & value : package->getColumnDataInts(i))
-				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(int));
-		else
-			for (const double & value : package->getColumnDataDbls(i))
-				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(double));
-
-		progress = 49 + 50 * int(i / columnCount);
-		if (progress != lastProgress)
-		{
-			progressCallback(progress);
-			lastProgress = progress;
-		}
-	}
-
-	archive_entry_free(entry);
-	
+void JASPExporter::saveResults(archive * a)
+{
 	DataSetPackage::pkg()->waitForExportResultsReady();
 
-	//Create new entry for archive: HTML results
-	QByteArray	html		= package->analysesHTML().toUtf8();
-	size_t		htmlSize	= html.size();
-				entry		= archive_entry_new();
-	
-	archive_entry_set_pathname(	entry,	"index.html");
-	archive_entry_set_size(		entry,	int(htmlSize));
-	archive_entry_set_filetype(	entry,	AE_IFREG);
-	archive_entry_set_perm(		entry,	0644);  //basically chmod
-
-				archive_write_header(   a,  entry);
-	size_t ws = archive_write_data(		a, html.data(), htmlSize);
-
-	if (ws != size_t(htmlSize))
-		throw std::runtime_error("Can't save jasp archive writing ERROR");
-
-	archive_entry_free(entry);
-
+	makeEntry(a, "index.html", fq(DataSetPackage::pkg()->analysesHTML()));
 }
 
-void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
+void JASPExporter::saveTempFile(archive *a, const std::string & filePath)
 {
-	if (DataSetPackage::pkg()->hasAnalyses())
+	// std::ios::ate seeks to the end of stream immediately after open
+	std::ifstream   readTempFile(TempFiles::sessionDirName() + "/" + filePath, std::ios::ate | std::ios::binary);
+	char            fileBuff[8192];
+
+	if (readTempFile.is_open())
 	{
-		struct archive_entry *entry;
+		archive_entry * entry       = archive_entry_new();
 
-		const Json::Value &analysesJson = DataSetPackage::pkg()->analysesData();
-
-		//Create new entry for archive NOTE: must be done before data is added
-		std::string analysesString			= analysesJson.toStyledString();
-		size_t		sizeOfAnalysesString	= analysesString.size();
-					entry					= archive_entry_new();
-					
-		archive_entry_set_pathname(	entry,	"analyses.json");
-		archive_entry_set_size(		entry,	int(sizeOfAnalysesString));
+		archive_entry_set_pathname( entry,  filePath.c_str());
+		archive_entry_set_size(		entry,	readTempFile.tellg()); // get size from curpos after ios::ate seek
 		archive_entry_set_filetype(	entry,	AE_IFREG);
-		archive_entry_set_perm(		entry,	0644);  //basically chmod
+		archive_entry_set_birthtime(entry,  _now, 0);
+		archive_entry_set_ctime(    entry,  _now, 0);
+		archive_entry_set_mtime(    entry,  _now, 0);
+		archive_entry_set_atime(    entry,  _now, 0);
+		archive_entry_set_perm(		entry,	0644); //set some read write permissions
+
 		archive_write_header(		a,		entry);
 
-		archive_write_data(a, analysesString.c_str(), sizeOfAnalysesString);
+		readTempFile.seekg(0, std::ios::beg);	// move back to begin
+		while (!readTempFile.eof())
+		{
+			readTempFile.read(fileBuff, sizeof(fileBuff));
+			archive_write_data(a, fileBuff, readTempFile.gcount());
+		}
 
 		archive_entry_free(entry);
-
-		char imagebuff[8192];
-
-		Json::Value analysesDataList = analysesJson;
-		if (!analysesDataList.isArray())
-			analysesDataList = analysesJson["analyses"];
-
-		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
-		{
-			Json::Value &analysisJson = *iter;
-			std::vector<std::string> paths = TempFiles::retrieveList(analysisJson["id"].asInt());
-			for (size_t j = 0; j < paths.size(); j++)
-			{
-				// std::ios::ate seeks to the end of stream immediately after open
-				std::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::ate | std::ios::binary);
-
-				if (readTempFile.is_open())
-				{
-					int imageSize = readTempFile.tellg();		// get size from curpos
-
-					entry = archive_entry_new();
-					archive_entry_set_pathname(entry, paths[j].c_str());
-					
-					archive_entry_set_size(		entry,	imageSize);
-					archive_entry_set_filetype(	entry,	AE_IFREG);
-					archive_entry_set_perm(		entry,	0644); // Not sure what this does
-					archive_write_header(		a,		entry);
-
-					int	bytes = 0;
-					readTempFile.seekg(0, std::ios::beg);		// move back to begin
-
-					while (!readTempFile.eof())
-					{
-						readTempFile.read(imagebuff, sizeof(imagebuff));
-						bytes = readTempFile.gcount();
-
-						archive_write_data(a, imagebuff, size_t(bytes));
-					}
-
-					archive_entry_free(entry);
-
-				}
-				else
-					Log::log() << "JASP Export: cannot find/open file " << (TempFiles::sessionDirName() + "/" + paths[j]);
-
-				readTempFile.close();
-			}
-		}
 	}
+	else
+		Log::log() << "JASP Export: cannot find/open file " << filePath << std::endl;;
+
+	readTempFile.close();
 }
 
-void JASPExporter::createJARContents(archive *a)
+void JASPExporter::makeEntry(archive * a, const std::string & filename, const std::string & data)
 {
-	struct archive_entry *entry = archive_entry_new();
+	archive_entry *entry = archive_entry_new();
 
-	std::stringstream manifestStream;
-	manifestStream << "Manifest-Version: 1.0" << "\n";
-	manifestStream << "Created-By: " << AppInfo::getShortDesc() << "\n";
-	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString() << "\n";
-	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString() << "\n";
-
-	manifestStream.flush();
-
-	const std::string& tmp	= manifestStream.str();
-	size_t manifestSize		= tmp.size();
-	const char* manifest	= tmp.c_str();
-
-	archive_entry_set_pathname(	entry,	"META-INF/MANIFEST.MF");
-	archive_entry_set_size(		entry,	int(manifestSize));
+	archive_entry_set_pathname(	entry,	filename.c_str());
+	archive_entry_set_size(		entry,	int(data.size()));
+	archive_entry_set_birthtime(entry,  _now, 0);
+	archive_entry_set_ctime(    entry,  _now, 0);
+	archive_entry_set_mtime(    entry,  _now, 0);
+	archive_entry_set_atime(    entry,  _now, 0);
 	archive_entry_set_filetype(	entry,	AE_IFREG);
-	archive_entry_set_perm(		entry,	0644); // Not sure what this does
-	archive_write_header(		a,		entry);
+	archive_entry_set_perm(		entry,	0644);
 
-	archive_write_data(a, manifest, manifestSize);
+	archive_write_header(               a,	entry);
+	size_t written = archive_write_data(a,  data.c_str(), data.size());
+
+	if(written != data.size())
+		throw std::runtime_error("Saving file " + filename + " to jaspFile did not write properly, only " +
+			std::to_string(written) + " bytes written while " + std::to_string(data.size()) + " were expected...");
 
 	archive_entry_free(entry);
 }
 
+void JASPExporter::saveAnalyses(archive *a)
+{
+	const Json::Value & analysesJson = DataSetPackage::pkg()->analysesData();
 
+	makeEntry(a, "analyses.json", analysesJson.toStyledString());
 
+	const Json::Value & analysesDataList = analysesJson.isArray() ? analysesJson : analysesJson["analyses"];
+
+	for (const Json::Value & analysisJson : analysesDataList)
+		for (const std::string & path : TempFiles::retrieveList(analysisJson["id"].asInt()))
+			saveTempFile(a, path);
+}
+
+void JASPExporter::saveDatabase(archive * a)
+{
+	saveTempFile(a, DatabaseInterface::singleton()->dbFile(true));
+}

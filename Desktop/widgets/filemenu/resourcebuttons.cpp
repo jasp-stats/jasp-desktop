@@ -1,15 +1,16 @@
 #include "resourcebuttons.h"
+#include "jasptheme.h"
 
 ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 	_data()
 {
-	loadButtonData(_data);
+	loadButtonData();
 
 	for(size_t i=0; i<_data.size(); i++)
 		_buttonToIndex[_data[i].button] = i;
 }
 
-void ResourceButtons::loadButtonData(std::vector<ResourceButtons::DataRow> &data)
+void ResourceButtons::loadButtonData()
 {
 	_data = {
 		{ButtonType::RecentFiles,	tr("Recent Files"),	false,	"./RecentFiles.qml"		, true},
@@ -23,7 +24,6 @@ void ResourceButtons::loadButtonData(std::vector<ResourceButtons::DataRow> &data
 		{ButtonType::PrefsUI,		tr("Interface"),	false,	"./PrefsUI.qml"			, true},
 		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true}
 	};
-
 }
 
 QVariant ResourceButtons::data(const QModelIndex &index, int role)	const
@@ -197,14 +197,37 @@ void ResourceButtons::refresh()
 
 	std::vector<DataRow> savedata = _data;
 
-	loadButtonData(_data);
+	loadButtonData();
 
 	for(int i=0 ; i < savedata.size() ; i++)
 	{
 		_data[i].enabled = savedata[i].enabled;
 		_data[i].visible = savedata[i].visible;
 	}
+	
+	if(JaspTheme::currentTheme())
+	{
+		_width = 0;
+		QFontMetricsF ribbonMetrics(JaspTheme::currentTheme()->fontRibbon());
+		
+		for(const auto & resource : _data)
+			_width = std::max(_width, int(ribbonMetrics.boundingRect(resource.name).width()));
+		
+		emit widthChanged();
+	}
 
 	endResetModel();
+}
 
+int ResourceButtons::width() const
+{
+	return _width;
+}
+
+void ResourceButtons::setWidth(int newWidth)
+{
+	if (_width == newWidth)
+		return;
+	_width = newWidth;
+	emit widthChanged();
 }

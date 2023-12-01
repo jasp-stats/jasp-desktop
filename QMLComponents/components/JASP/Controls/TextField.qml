@@ -17,7 +17,7 @@
 //
 
 import QtQuick
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.4 as QTC
 import QtQuick.Layouts	1.3
 import JASP				1.0
 
@@ -48,6 +48,7 @@ TextInputBase
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
 	property bool	editable:			true
+	property var	undoModel
 
 	property double controlXOffset:		0
 
@@ -62,6 +63,24 @@ TextInputBase
 			displayValue = defaultValue;
 		lastValidValue = displayValue
 		editingFinished();
+	}
+
+	function undo() {
+		if (undoModel) {
+			undoModel.undo()
+			return true
+		}
+		else
+			return false
+	}
+	function redo()
+	{
+		if (undoModel) {
+			undoModel.redo()
+			return true
+		}
+		else
+			return false
 	}
 	
 	Component.onCompleted:
@@ -117,10 +136,11 @@ TextInputBase
 	Rectangle
 	{
 		id:					beforeLabelRect
-		width:				beforeLabel.implicitWidth + beforeLabel.x
+		width:				beforeLabel.width
 		height:				control.height
 		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
 		visible:			beforeLabel.text && textField.visible
+
 		Label
 		{
 			id:						beforeLabel
@@ -128,10 +148,11 @@ TextInputBase
 			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			text:					textField.label
+			width:					implicitWidth
 		}
 	}
 
-	TextField
+	QTC.TextField
 	{
 		id:						control
 		anchors.left:			beforeLabelRect.visible ? beforeLabelRect.right : parent.left
@@ -139,7 +160,7 @@ TextInputBase
 		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
 		font:					jaspTheme.font
 		activeFocusOnPress:		textField.editable
-		color:					enabled || !textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		color:					enabled && textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 		padding:				jaspTheme.jaspControlPadding
 		leftPadding:			jaspTheme.labelSpacing
@@ -150,10 +171,10 @@ TextInputBase
 		enabled:				textField.editable
 		// text property is set by TextInpoutBase
 
-		ToolTip.text		: control.text
-		ToolTip.timeout		: jaspTheme.toolTipTimeout
-		ToolTip.delay		: !hovered ? 0 : jaspTheme.toolTipDelay
-		ToolTip.visible		: contentWidth > width - leftPadding - rightPadding && (hovered || control.activeFocus)
+		QTC.ToolTip.text		: control.text
+		QTC.ToolTip.timeout		: jaspTheme.toolTipTimeout
+		QTC.ToolTip.delay		: !hovered ? 0 : jaspTheme.toolTipDelay
+		QTC.ToolTip.visible		: contentWidth > width - leftPadding - rightPadding && (hovered || control.activeFocus)
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
@@ -207,6 +228,23 @@ TextInputBase
 				event.accepted = false;
 			}
 		}
+
+		Keys.onPressed: (event) =>
+		{
+			var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
+
+			if (event.key === Qt.Key_Z && controlPressed)
+			{
+				if (shiftPressed)
+				{
+						if (textField.redo())
+							event.accepted = true;
+				}
+				else if (textField.undo())
+						event.accepted = true;
+			}
+		}
 	}
 
 	Binding
@@ -221,20 +259,21 @@ TextInputBase
 
 	Rectangle
 	{
-		id:				afterLabelRect
-		width:			afterLabel.implicitWidth
-		height:			control.height
-		color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
-		visible:		afterLabel.text && textField.visible
-		anchors.left:	control.right
+		id:					afterLabelRect
+		width:				afterLabel.implicitWidth
+		height:				control.height
+		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
+		visible:			afterLabel.text && textField.visible
+		anchors.left:		control.right
 		anchors.leftMargin: jaspTheme.labelSpacing
+		
 		Label
 		{
-			id:			afterLabel
-			font:		jaspTheme.font
+			id:						afterLabel
+			font:					jaspTheme.font
 			anchors.verticalCenter: parent.verticalCenter
-			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-			text:		textField.afterLabel
+			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			text:					textField.afterLabel
 		}
 	}
 }

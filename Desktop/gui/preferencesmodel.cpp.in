@@ -1,15 +1,11 @@
 #include "preferencesmodel.h"
-#include "utils.h"
 #include "utilities/qutils.h"
-
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
 #include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
-#include "utilities/appdirs.h"
-#include "enginedefinitions.h"
 #include "columnutils.h"
 #include "preferencesmodelbase.h"
 #include <QQuickWindow>
@@ -20,8 +16,6 @@ using namespace std;
 PreferencesModel::PreferencesModel(QObject *parent) :
 	PreferencesModelBase(parent)
 {	
-	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
-
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
 	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
 	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
@@ -96,7 +90,6 @@ GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
 GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
 GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
 GET_PREF_FUNC_BOOL(	normalizedNotation,			Settings::NORMALIZED_NOTATION						)
-GET_PREF_FUNC_BOOL(	dataAutoSynchronization,	Settings::DATA_AUTO_SYNCHRONIZATION					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
 GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
@@ -153,11 +146,9 @@ double PreferencesModel::uiScale()
 	return _uiScale;
 }
 
-QStringList PreferencesModel::missingValues()		const
+QStringList PreferencesModel::emptyValues()		const
 {
-	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
-
-	return items;
+	return _splitValues(Settings::value(Settings::EMPTY_VALUES_LIST).toString());
 }
 
 QStringList PreferencesModel::modulesRemembered()	const
@@ -280,7 +271,6 @@ void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 
 SET_PREF_FUNCTION(				bool,		setExactPValues,			exactPValues,				exactPValuesChanged,			Settings::EXACT_PVALUES								)
 SET_PREF_FUNCTION(				bool,		setNormalizedNotation,		normalizedNotation,			normalizedNotationChanged,		Settings::NORMALIZED_NOTATION						)
-SET_PREF_FUNCTION(				bool,		setDataAutoSynchronization, dataAutoSynchronization,	dataAutoSynchronizationChanged, Settings::DATA_AUTO_SYNCHRONIZATION					)
 SET_PREF_FUNCTION(				bool,		setUseDefaultEditor,		useDefaultEditor,			useDefaultEditorChanged,		Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 SET_PREF_FUNCTION(				QString,	setCustomEditor,			customEditor,				customEditorChanged,			Settings::SPREADSHEET_EDITOR_NAME					)
 SET_PREF_FUNCTION(				bool,		setUseDefaultPPI,			useDefaultPPI,				useDefaultPPIChanged,			Settings::PPI_USE_DEFAULT							)
@@ -391,37 +381,30 @@ void PreferencesModel::zoomReset()
 	setUiScale(1.0);
 }
 
-void PreferencesModel::removeMissingValue(QString value)
+void PreferencesModel::removeEmptyValue(QString value)
 {
-	QStringList currentValues = missingValues();
+	QStringList currentValues = emptyValues();
 	if(currentValues.contains(value))
 	{
 		currentValues.removeAll(value);
-		Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
-		emit missingValuesChanged();
+		_setEmptyValues(currentValues);
 	}
 }
 
-void PreferencesModel::addMissingValue(QString value)
+void PreferencesModel::addEmptyValue(QString value)
 {
+	QStringList currentValues = emptyValues();
+	if(!currentValues.contains(value))
 	{
-		QStringList currentValues = missingValues();
-		if(!currentValues.contains(value))
-		{
-			currentValues.append(value);
-			Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
-			emit missingValuesChanged();
-		}
+		currentValues.append(value);
+		_setEmptyValues(currentValues);
 	}
 }
 
-void PreferencesModel::resetMissingValues()
+void PreferencesModel::resetEmptyValues()
 {
-	QStringList currentValues = missingValues();
-	Settings::setValue(Settings::MISSING_VALUES_LIST, Settings::defaultMissingValues);
-
-	if(missingValues() != currentValues)
-		emit missingValuesChanged();
+	QStringList defaultValues = _splitValues(Settings::defaultEmptyValues);
+	_setEmptyValues(defaultValues);
 }
 
 void PreferencesModel::setCustomThresholdScale(bool newCustomThresholdScale)
@@ -441,12 +424,6 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
 	emit thresholdScaleChanged(newThresholdScale);
 
-}
-
-void PreferencesModel::updateUtilsMissingValues()
-{
-	ColumnUtils::_currentEmptyValues = fq(missingValues());
-	ColumnUtils::processEmptyValues();
 }
 
 void PreferencesModel::_loadDatabaseFont()
@@ -550,4 +527,24 @@ void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 void PreferencesModel::currentThemeNameHandler()
 {
 	setCurrentThemeName(JaspTheme::currentTheme()->themeName());
+}
+
+void PreferencesModel::_setEmptyValues(const QStringList& values)
+{
+	if (values != emptyValues())
+	{
+		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
+		emit emptyValuesChanged();
+	}
+}
+
+QStringList PreferencesModel::_splitValues(const QString &values) const
+{
+	QStringList items = values.split("|");
+	std::set<QString> orderedValues; // use std::set to order the items
+	for (const QString& item : items)
+		orderedValues.insert(stripFirstAndLastChar(item,"\""));
+
+	return QStringList(orderedValues.begin(), orderedValues.end());
+
 }

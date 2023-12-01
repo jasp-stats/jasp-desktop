@@ -14,10 +14,9 @@ public:
 		NUM_DECIMALS = 0,
 		EXACT_PVALUES,
 		NORMALIZED_NOTATION,
-		DATA_AUTO_SYNCHRONIZATION,
 		USE_DEFAULT_SPREADSHEET_EDITOR,
 		SPREADSHEET_EDITOR_NAME,
-		MISSING_VALUES_LIST,
+		EMPTY_VALUES_LIST,
 		INSTRUCTIONS_SHOWN,
 		RECENT_FOLDERS,
 		RECENT_ITEMS,
@@ -83,7 +82,7 @@ public:
 	static void sync();
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();
-	static const char *	defaultMissingValues;
+	static const char *	defaultEmptyValues;
 	
 private:
 	struct Setting {

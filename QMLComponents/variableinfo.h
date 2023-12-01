@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QIcon>
 #include <QAbstractItemModel>
+#include <QQmlContext>
 #include "columntype.h"
 
 class VariableInfoProvider;
@@ -36,16 +37,22 @@ class VariableInfo : public QObject
 {
 	Q_OBJECT
 public:
-	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, VariableNames, RowCount, Labels, StringValues, DoubleValues, NameRole, Value, MaxWidth, SignalsBlocked };
+	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, MaxWidth, SignalsBlocked, DataAvailable };
 	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType };
 
 public:
 	VariableInfo(VariableInfoProvider* provider);
 
+	Q_PROPERTY(int	rowCount		READ rowCount		NOTIFY rowCountChanged		)
+	Q_PROPERTY(bool	dataAvailable	READ dataAvailable	NOTIFY dataAvailableChanged	)
+
 	static VariableInfo*		info();
 	static QString				getIconFile(columnType colType, IconType type);
 
 	VariableInfoProvider*		provider()	{ return _provider; }
+
+	int rowCount();
+	bool dataAvailable();
 
 signals:
 	void namesChanged(QMap<QString, QString> changedNames);
@@ -53,8 +60,12 @@ signals:
 	void columnTypeChanged(QString colName);
 	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(QString columnName);
+	void rowCountChanged();
+	void dataAvailableChanged();
 
-private:
+private:	
+	void _setDataSetInfoInContext();
+
 	VariableInfoProvider *	_provider	= nullptr;
 
 	static VariableInfo *_singleton;
@@ -65,6 +76,7 @@ class VariableInfoProvider
 public:
 	virtual QVariant				provideInfo(VariableInfo::InfoType info, const QString& name = "", int row = 0)	const	= 0;
 	virtual QAbstractItemModel*		providerModel()																			{ return nullptr;			}
+	virtual QQmlContext*			providerQMLContext()															const	= 0;
 };
 
 class VariableInfoConsumer

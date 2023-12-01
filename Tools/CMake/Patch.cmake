@@ -137,7 +137,7 @@ else()
         string(
           REPLACE
             "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/"
-            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib/"
+			"${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib/"
             NEW_ID
             ${FILE})
 
@@ -147,6 +147,15 @@ else()
           REPLACE
             "${R_HOME_PATH}/opt/R/arm64/lib/"
             "${FRAMEWORK_RESOURCES}/opt/R/arm64/lib/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/opt/R/x86_64/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/R/x86_64/lib/"
+            "${FRAMEWORK_RESOURCES}/opt/R/x86_64/lib/"
             NEW_ID
             ${FILE})
 
@@ -320,7 +329,7 @@ else()
 
       endif()
 
-      # Changing the `/opt/R/arm64/lib` prefix
+      # Changing the `/opt/R/<architecture>/lib` prefix
       # These are additional libraries needed for arm64.
       # @todo, at some point, we might need to have a case for them, but for now they are fine
       if(NOT (FILE MATCHES ".*(runjags|rjags|RoBMA|metaBMA).*"))
@@ -332,6 +341,15 @@ else()
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
             "${FRAMEWORK_RESOURCES}/opt/R/arm64/lib"
+        )
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/x86_64/lib"
+            "${FRAMEWORK_RESOURCES}/opt/R/x86_64/lib"
         )
 
       else()
@@ -362,22 +380,31 @@ else()
 
       if(${SIGNING})
         set(APPLE_CODESIGN_IDENTITY "${SIGNING_IDENTITY}")
-
+        
         set(SIGNING_RESULT "timeout")
 
         message(CHECK_START "--- Signing  ${FILE_SHORT_PATH}")
 
         while(${SIGNING_RESULT} MATCHES "timeout")
-
-          execute_process(
-            # COMMAND_ECHO STDOUT
-            ERROR_QUIET OUTPUT_QUIET
-            TIMEOUT 30
-            WORKING_DIRECTORY ${PATH}
-            COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign
-                    ${APPLE_CODESIGN_IDENTITY} --options runtime "${FILE}"
-            RESULT_VARIABLE SIGNING_RESULT
-            OUTPUT_VARIABLE SIGNING_OUTPUT)
+          if(RUNTIMEHARDENING)
+            execute_process(
+              COMMAND_ECHO STDOUT
+              #ERROR_QUIET OUTPUT_QUIET
+              TIMEOUT 30
+              WORKING_DIRECTORY ${PATH}
+              COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign ${APPLE_CODESIGN_IDENTITY} --options runtime "${FILE}"
+              RESULT_VARIABLE SIGNING_RESULT
+              OUTPUT_VARIABLE SIGNING_OUTPUT)
+          else()
+            execute_process(
+              COMMAND_ECHO STDOUT
+              #ERROR_QUIET OUTPUT_QUIET
+              TIMEOUT 30
+              WORKING_DIRECTORY ${PATH}
+              COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign ${APPLE_CODESIGN_IDENTITY}   "${FILE}"
+              RESULT_VARIABLE SIGNING_RESULT
+              OUTPUT_VARIABLE SIGNING_OUTPUT)
+          endif()
         endwhile()
 
         if(SIGNING_RESULT STREQUAL "0")

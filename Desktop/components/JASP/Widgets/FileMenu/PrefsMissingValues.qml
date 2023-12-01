@@ -1,171 +1,205 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Controls
+import QtQuick.Layouts
 
-
-
-Rectangle
+FocusScope
 {
-	width:			valuesRectangle.width + (valuesRectangle.anchors.margins * 2)
-	height:			resetButton.y + resetButton.height + missingValuesTitle.anchors.margins
+	id:		missingValuesWidget
+	property var	model:						preferencesModel
+	property bool	showTitle:					true
+	property bool	splitMe:					splitHeight > height
+	property bool	showResetWorkspaceButton:	false
+	property bool	showWorkspaceMissingValues:	true
 
-	border.color:	jaspTheme.grayLighter
-	border.width:	1
-	color:			jaspTheme.uiBackground
+	property string resetButtonLabel:			qsTr("Reset")
+	property string resetButtonTooltip
+	property int	splitHeight:				200 * preferencesModel.uiScale
 
-	property alias firstComponent:	missingValuesList
-	property var   navigateFrom:	undefined
-	property var   navigateTo:		undefined
+	implicitWidth:		(splitMe ? 600 : 300) * preferencesModel.uiScale
+	implicitHeight: 	300 * preferencesModel.uiScale
 
-	Text
-	{
-		id:		missingValuesTitle
-		text:	qsTr("Missing Value List")
-		color:	jaspTheme.textEnabled
-		font:	jaspTheme.font
-
-		anchors
-		{
-			top:		parent.top
-			left:		parent.left
-			right:		parent.right
-			margins:	jaspTheme.generalAnchorMargin
-		}
-	}
 
 	Rectangle
 	{
-		id:				valuesRectangle
-		color:			jaspTheme.white
+
 		border.color:	jaspTheme.grayLighter
-		height:			200 * preferencesModel.uiScale
-		width:			200 * preferencesModel.uiScale
-		clip:			true
-		anchors
+		border.width:	1
+		color:			jaspTheme.uiBackground
+		anchors.fill:	parent
+
+		Text
 		{
-			top:		missingValuesTitle.bottom
-			left:		parent.left
-			margins:	jaspTheme.generalAnchorMargin
-		}
+			id:			missingValuesTitle
+			text:		qsTr("Missing Value List")
+			color:		jaspTheme.textEnabled
+			font:		jaspTheme.font
+			visible:	showTitle
 
-		ListView
-		{
-			id:					missingValuesList
-			focus:				true
-			boundsBehavior:		Flickable.StopAtBounds
-			anchors.fill:		parent
-			anchors.margins:	jaspTheme.generalAnchorMargin
-			model:				preferencesModel.missingValues
-			
-
-			delegate:			MenuButton
-				{
-					id:					hoverphonic
-					width:				missingValuesList.width
-					text:				modelData
-					centerText:			false
-					toolTip:			qsTr("Remove missing value")
-					onClicked:			preferencesModel.removeMissingValue(modelData)
-
-					Image
-					{
-						height:				parent.height
-						width:				height
-						anchors.right:		parent.right
-						anchors.top:		parent.top
-						source:				jaspTheme.iconPath + "/subtraction-sign-small.svg"
-						sourceSize.width:	width * 2
-						sourceSize.height:	height * 2
-						visible:			parent.hovered
-					}
-
-					KeyNavigation.backtab:	navigateFrom
-					KeyNavigation.tab:		missingValueToAddText
-				}
-		}
-	}
-
-	Item
-	{
-		id:				addValueItem
-		height:			addButton.height
-		anchors
-		{
-			top:		valuesRectangle.bottom
-			left:		parent.left
-			right:		parent.right
-			margins:	jaspTheme.generalAnchorMargin
+			anchors
+			{
+				top:		parent.top
+				left:		parent.left
+				right:		parent.right
+				margins:	jaspTheme.generalAnchorMargin
+			}
 		}
 
 		Rectangle
 		{
+			id:				valuesRectangle
+			color:			jaspTheme.white
+			border.color:	jaspTheme.grayLighter
+			clip:			true
 			anchors
 			{
-				left:			parent.left
-				right:			addButton.left
-				rightMargin:	jaspTheme.generalAnchorMargin
-				top:			parent.top
-				bottom:			parent.bottom
+				top:		showTitle ? missingValuesTitle.bottom : parent.top
+				bottom:		splitMe ? parent.bottom : buttons.top
+				left:		parent.left
+				right:		splitMe ? parent.horizontalCenter : parent.right
+				margins:	jaspTheme.generalAnchorMargin
 			}
 
-			color:				jaspTheme.white
-			border.color:		jaspTheme.buttonBorderColor
-			border.width:		1
-
-			TextInput
+			ListView
 			{
-				id:					missingValueToAddText
-				text:				""
-				clip:				true
-				font:				jaspTheme.font
-				color:				jaspTheme.textEnabled
-				onAccepted:			addButton.clicked();
+				id:					missingValuesList
+				boundsBehavior:		Flickable.StopAtBounds
+				anchors.fill:		parent
+				anchors.margins:	jaspTheme.generalAnchorMargin
+				model:				missingValuesWidget.model.emptyValues
 
-				KeyNavigation.tab:		addButton
-
-				anchors
+				delegate:			Rectangle
 				{
-					left:			parent.left
-					right:			parent.right
-					verticalCenter:	parent.verticalCenter
-					margins:		jaspTheme.generalAnchorMargin
+					width:				missingValuesList.width
+					height:				20  * jaspTheme.uiScale
+					color:				enabled && hoverphonic.containsMouse ? jaspTheme.itemHoverColor : "transparent"
+
+					MouseArea
+					{
+						id:				hoverphonic
+						anchors.fill:	parent
+						hoverEnabled:	true
+
+						Text
+						{
+							anchors.left:			parent.left
+							anchors.leftMargin:		jaspTheme.generalAnchorMargin
+							anchors.verticalCenter:	parent.verticalCenter
+							text:					modelData
+						}
+
+						MouseArea
+						{
+							height:				parent.height
+							width:				height
+							anchors.right:		parent.right
+							anchors.top:		parent.top
+							onClicked:			missingValuesWidget.model.removeEmptyValue(modelData)
+							cursorShape:		Qt.PointingHandCursor
+							hoverEnabled:		true
+
+							QTC.ToolTip.text:		qsTr("Remove missing value")
+							QTC.ToolTip.visible:	containsMouse
+
+							Image
+							{
+								anchors.fill:		parent
+								source:				jaspTheme.iconPath + "/subtraction-sign-small.svg"
+								visible:			enabled && hoverphonic.containsMouse
+							}
+						}
+					}
 				}
 			}
 		}
 
-
-		RoundedButton
+		ColumnLayout
 		{
-			id:					addButton
-			iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
-			anchors.top:		parent.top
-			anchors.right:		parent.right
+			id:		buttons
 
-			KeyNavigation.tab:		resetButton
-
-			onClicked:
+			anchors
 			{
-				preferencesModel.addMissingValue(missingValueToAddText.text)
-				missingValueToAddText.text = ""
+				left:		splitMe ? parent.horizontalCenter : parent.left
+				right:		parent.right
+				bottom:		parent.bottom
+				margins:	jaspTheme.generalAnchorMargin
 			}
-		}
-	}
 
-	RoundedButton
-	{
-		id:					resetButton
-		text:				qsTr("Reset")
-		onClicked:			preferencesModel.resetMissingValues()
+			Item
+			{
+				id:					addValueItem
+				height:				addButton.height
+				Layout.fillWidth:	true
 
-		KeyNavigation.tab:		navigateTo
 
-		anchors
-		{
-			top:			addValueItem.bottom
-			left:			parent.left
-			right:			parent.right
-			margins:		jaspTheme.generalAnchorMargin
+				TextField
+				{
+					id:					missingValueToAddText
+					control.onAccepted:	addButton.clicked();
+					focus:				true
+					anchors
+					{
+						right:			addButton.left
+						rightMargin:	jaspTheme.generalAnchorMargin
+					}
+					fieldWidth:			parent.width - addButton.width - jaspTheme.generalAnchorMargin
+					KeyNavigation.tab:	addButton
+				}
+
+				RoundedButton
+				{
+					id:					addButton
+					iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
+					height:				missingValueToAddText.height + 2
+					width:				height
+					anchors.top:		parent.top
+					anchors.topMargin:	-1
+					anchors.right:		parent.right
+					toolTip:			qsTr("Add a missing value")
+
+					KeyNavigation.tab:	resetButton
+
+					onClicked:
+					{
+						if (missingValueToAddText.control.text)
+						{
+							missingValuesWidget.model.addEmptyValue(missingValueToAddText.control.text)
+							missingValueToAddText.control.text = ""
+						}
+					}
+				}
+			}
+
+			RoundedButton
+			{
+				Layout.fillWidth:	true
+				id:					setWorkspaceButton
+				text:				qsTr("Set current workspace with these values")
+				toolTip:			qsTr("Set the current workspace missing values with these values")
+				onClicked:			mainWindow.setDefaultWorkspaceEmptyValues()
+				visible:			mainWindow.dataAvailable && showResetWorkspaceButton
+
+			}
+
+			RoundedButton
+			{
+				Layout.fillWidth:	true
+				id:					resetButton
+				text:				resetButtonLabel
+				toolTip:			resetButtonTooltip
+				onClicked:			missingValuesWidget.model.resetEmptyValues()
+			}
+
+			RoundedButton
+			{
+				Layout.fillWidth:	true
+				id:					workspaceMissingValuesButton
+				text:				qsTr("Show workspace missing values")
+				toolTip:			qsTr("Opens the settings for workspace missing values")
+				onClicked:			mainWindowRoot.showWorkspaceMenu()
+				visible:			showWorkspaceMissingValues && mainWindow.dataAvailable
+				isLink:				true
+			}
 		}
 	}
 }

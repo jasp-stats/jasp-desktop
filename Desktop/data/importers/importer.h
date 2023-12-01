@@ -20,16 +20,16 @@ class Importer
 public:
 	Importer() {}
 	virtual ~Importer();
-	void loadDataSet(const std::string &locator, boost::function<void (int)> progressCallback);
-	void syncDataSet(const std::string &locator, boost::function<void (int)> progressCallback);
+    void loadDataSet(const std::string &locator, std::function<void (int)> progressCallback);
+    void syncDataSet(const std::string &locator, std::function<void (int)> progressCallback);
 
 protected:
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(int)> progressCallback) = 0;
+    virtual ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;
 
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	virtual void initColumn(QVariant colId, ImportColumn *importColumn);
 
-	void initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values);
+	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values) { DataSetPackage::pkg()->initColumnWithStrings(colId, newName, values); }
 
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	bool						initColumnAsNominalOrOrdinal(	QVariant colID,			std::string newName, const std::vector<int>			& values, bool is_ordinal = false)	{ return DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colID, newName, values, is_ordinal);				}
@@ -40,8 +40,7 @@ protected:
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	bool						initColumnAsScale(				QVariant colID,			std::string newName, const std::vector<double>		& values)							{ return DataSetPackage::pkg()->initColumnAsScale(colID, newName, values);										}
 
-	void						storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)																{ DataSetPackage::pkg()->storeInEmptyValues(columnName, emptyValues);											}
-	void						resetEmptyValues()																																{ DataSetPackage::pkg()->resetEmptyValues();																		}
+	void						storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)																{ DataSetPackage::pkg()->storeMissingData(columnName, emptyValues);											}
 
 private:
 	void _syncPackage(

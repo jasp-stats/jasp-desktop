@@ -23,7 +23,7 @@ Window
 	Connections
 	{
 		target:			mainWindow
-		function onCloseWindows() { enginesWindow.close(); }
+		function		onCloseWindows() { enginesWindow.close(); }
 	}
 
 

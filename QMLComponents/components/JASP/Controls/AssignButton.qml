@@ -27,27 +27,27 @@ Button
 				property var	rightSource
 				property bool	leftToRight:	true
 
-				property var	source:			leftToRight ? leftSource : rightSource
-				property var	target:			leftToRight ? rightSource : leftSource
+				property var	sourceM:		leftToRight ? leftSource : rightSource
+				property var	targetM:		leftToRight ? rightSource : leftSource
 
 	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
 
 	Connections
 	{
-		target: source.model
+		target: sourceM && sourceM.model? sourceM.model : null
 		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
 	}
 
 	Connections
 	{
-		target: target.model
+		target: targetM && targetM.model ? targetM.model : null
 		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
 	}
 	
 	text:			""
 	enabled:		false
-	visible:		source.visible && target.visible
+	visible:		sourceM.visible && targetM.visible
 
 	iconSource:		leftToRight ? iconToRight : iconToLeft
 
@@ -55,29 +55,13 @@ Button
 	control.implicitWidth:	40 * preferencesModel.uiScale
 	control.implicitHeight: 20 * preferencesModel.uiScale
 
-	onClicked:			source.moveSelectedItems(target)
+	onClicked:			sourceM.moveSelectedItems(targetM)
 
 	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true; setState(); }
 	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false; setState(); }
 	function setState()
 	{
-		var isEnabled = source.enabled && target.enabled && source.model && source.model.selectedItems().length > 0;
-		if (isEnabled)
-		{
-			if (target.allowedColumns.length > 0)
-			{
-				isEnabled = false;
-				var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
-				for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
-				{
-					var itemType = sourceSelectedItemsTypes[i];
-					if (target.allowedColumns.includes(itemType))
-						isEnabled = true;
-				}
-			}
-		}
-		
-		enabled = isEnabled
+		enabled = sourceM.enabled && targetM.enabled && sourceM.model && sourceM.model.selectedItems().length > 0 && targetM.areTypesAllowed(sourceM.model.selectedItemsTypes());
 	}
 
 

@@ -1,28 +1,34 @@
 #include "labelfiltergenerator.h"
 
-labelFilterGenerator::labelFilterGenerator(LabelModel *labelModel, QObject *parent)
-	: QObject(parent), _labelModel(labelModel)
+labelFilterGenerator::labelFilterGenerator(ColumnModel *columnModel, QObject *parent)
+	: QObject(parent), _columnModel(columnModel)
 {
-	connect(_labelModel,	&LabelModel::labelFilterChanged,	this,	&labelFilterGenerator::labelFilterChanged	);
-	connect(_labelModel,	&LabelModel::allFiltersReset,		this,	&labelFilterGenerator::labelFilterChanged	);
+	connect(_columnModel,	&ColumnModel::labelFilterChanged,	this,	&labelFilterGenerator::labelFilterChanged	);
+	connect(_columnModel,	&ColumnModel::allFiltersReset,		this,	&labelFilterGenerator::labelFilterChanged	);
 }
 
 std::string labelFilterGenerator::generateFilter()
 {
-	int neededFilters = 0;
+	JASPTIMER_SCOPE(labelFilterGenerator::generateFilter);
 
-	for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
-		if(_labelModel->labelNeedsFilter(col))
+	int neededFilters = 0;
+	
+	DataSetPackage * pkg = DataSetPackage::pkg();
+	
+	for(size_t col=0; col<pkg->dataColumnCount(); col++)
+		if(pkg->labelNeedsFilter(col))
 			neededFilters++;
 
 	std::stringstream newGeneratedFilter;
+	Filter* filter = DataSetPackage::pkg()->filter();
+	std::string filterRScript = filter ? filter->constructorR() : "";
 
 	newGeneratedFilter << "generatedFilter <- ";
 
 	if(neededFilters == 0)
 	{
-		if(easyFilterConstructorRScript == "")	return DEFAULT_FILTER_GEN;
-		else									newGeneratedFilter << "("<< easyFilterConstructorRScript <<")";
+		if(filterRScript == "")	return DEFAULT_FILTER_GEN;
+		else					newGeneratedFilter << "("<< filterRScript <<")";
 	}
 	else
 	{
@@ -30,10 +36,10 @@ std::string labelFilterGenerator::generateFilter()
 
 		if(moreThanOne)
 			newGeneratedFilter << "(";
-
-
-		for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
-			if(_labelModel->labelNeedsFilter(col))
+		
+		
+		for(size_t col=0; col<pkg->dataColumnCount(); col++)
+			if(pkg->labelNeedsFilter(col))
 			{
 				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);
 				first = false;
@@ -42,8 +48,8 @@ std::string labelFilterGenerator::generateFilter()
 		if(moreThanOne)
 			newGeneratedFilter << ")";
 
-		if(easyFilterConstructorRScript != "")
-				newGeneratedFilter << " & \n("<<easyFilterConstructorRScript<<")";
+		if(filterRScript != "")
+				newGeneratedFilter << " & \n("<<filterRScript<<")";
 	}
 
 	return newGeneratedFilter.str();
@@ -51,41 +57,26 @@ std::string labelFilterGenerator::generateFilter()
 
 void labelFilterGenerator::labelFilterChanged()
 {
+	JASPTIMER_SCOPE(labelFilterGenerator::labelFilterChanged);
 	emit setGeneratedFilter(QString::fromStdString(generateFilter()));
 }
 
 std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 {
-	std::string columnName = _labelModel->columnName(col);
-	std::stringstream out;
-	int pos = 0, neg = 0;
-	bool first = true;
-
-	std::vector<bool> filterAllows = _labelModel->filterAllows(col);
-	for(bool allow : filterAllows)
-		(allow ? pos : neg)++;
-
-	bool bePositive = pos <= neg;
-
-	out << "(";
-
-	std::vector<std::string> labels = _labelModel->labels(col);
+	JASPTIMER_SCOPE(labelFilterGenerator::generateLabelFilter);
+	
+	DataSetPackage	*	pkg				= DataSetPackage::pkg();
+	std::string			columnName		= pkg->getColumnName(col);
+	boolvec				filterAllows	= pkg->getColumnFilterAllows(col);
+	stringvec			labels			= pkg->getColumnLabelsAsStrVec(col);
+	int					pos				= std::count_if(filterAllows.begin(), filterAllows.end(), [](bool f){ return f; }), 
+						cnt				= 0;
+	bool				bePositive		= pos <= filterAllows.size() - pos;
+	std::stringstream	out;
+	
 	for(size_t row=0; row<filterAllows.size(); row++)
 		if(filterAllows[row] == bePositive)
-		{
-			out << (!first ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
-			first = false;
-		}
-	out << ")";
-
-	return out.str();
-}
-
-void labelFilterGenerator::easyFilterConstructorRCodeChanged(QString newRScript)
-{
-	if(easyFilterConstructorRScript != newRScript.toStdString())
-	{
-		easyFilterConstructorRScript = newRScript.toStdString();
-		emit setGeneratedFilter(QString::fromStdString(generateFilter()));
-	}
+			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
+	
+	return "(" + out.str() + ")";
 }

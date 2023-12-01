@@ -136,10 +136,6 @@ msgctxt "AboutWindow|"
 msgid "BibTeX"
 msgstr "BibTeX"
 
-msgctxt "AboutWindow|"
-msgid "Close"
-msgstr "Schließen"
-
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
 msgstr "Ziehen, um Analysen anzuordnen"
@@ -219,14 +215,6 @@ msgstr "Spalte löschen"
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Zurücksetzen"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Computed Column: "
-msgstr "Berechnete Spalte: "
-
-msgctxt "ComputeColumnWindow|"
-msgid "Select a column"
-msgstr "Eine Spalte auswählen"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
@@ -419,10 +407,6 @@ msgstr ""
 "Skalenparametern"
 
 msgctxt "ComputeColumnWindow|"
-msgid "Remove computed column"
-msgstr "Berechnete Spalte löschen"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "Erzeugten R-Code anzeigen"
 
@@ -445,10 +429,6 @@ msgstr "Spalte (ausgewählt) berechnet"
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Close computed column window"
-msgstr "Fenster zum Spaltenberechnen schließen"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -575,18 +555,6 @@ msgstr "Berechnete Spalte hinzufügen"
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
 msgstr "Klicke hier, um Spaltentyp zu ändern"
-
-msgctxt "DataTableView|"
-msgid "Click here to change the columns formulas"
-msgstr "Klicke hier, um Spaltenformel zu ändern"
-
-msgctxt "DataTableView|"
-msgid "Click here to change labels"
-msgstr "Klicke hier, um die Beschriftungen zu ändern"
-
-msgctxt "DataTableView|"
-msgid " or inspect filter"
-msgstr " oder inspiziere Filter"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
@@ -758,10 +726,6 @@ msgstr "Engine-Optionen"
 msgctxt "PrefsData|"
 msgid "Data Preferences"
 msgstr "Dateneinstellungen"
-
-msgctxt "PrefsData|"
-msgid "Synchronize automatically on data file save"
-msgstr "Automatisches Synchronisieren beim Speichern von Datendateien"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
@@ -1544,42 +1508,6 @@ msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "Halb-Normal"
 
-msgctxt "VariablesWindow|"
-msgid "Filter"
-msgstr "Filter"
-
-msgctxt "VariablesWindow|"
-msgid "Value"
-msgstr "Wert"
-
-msgctxt "VariablesWindow|"
-msgid "Label"
-msgstr "Bezeichnung"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels up"
-msgstr "Ausgewählte Bezeichnungen nach oben verschieben"
-
-msgctxt "VariablesWindow|"
-msgid "Move selected labels down"
-msgstr "Ausgewählte Bezeichnungen nach unten verschieben"
-
-msgctxt "VariablesWindow|"
-msgid "Reverse order of all labels"
-msgstr "Reihenfolge aller Bezeichnungen invertieren"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for this column"
-msgstr "Alle Filter-Häkchen dieser Spalte zurücksetzen"
-
-msgctxt "VariablesWindow|"
-msgid "Reset all filter checkmarks for all columns"
-msgstr "Alle Filter-Häkchen aller Spalten zurücksetzen"
-
-msgctxt "VariablesWindow|"
-msgid "Close this view"
-msgstr "Diese Ansicht schließen"
-
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
 msgstr "Willkommen bei JASP"
@@ -1628,20 +1556,6 @@ msgstr "Öffne eine Datendatei und entdecke die Vorteile von JASP!"
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
 msgstr "Klicke hier, um die neueste Version zu bekommen"
-
-msgctxt "WelcomePage|"
-msgid ""
-"Please keep in mind that this is a preview release and a number of features "
-"are still missing.\n"
-"\n"
-"If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
-"being developed at break-neck speed!"
-msgstr ""
-"Bitte behalten Sie im Hinterkopf, dass dies eine Vorschau-Version ist, bei "
-"der noch einige Funktionen fehlen.\n"
-"\n"
-"Falls JASP heute noch nicht alles tut, was Sie möchten, schauen Sie morgen "
-"wieder vorbei: JASP wird mit halsbrecherischem Tempo weiterentwickelt!"
 
 #, qt-format
 msgctxt "Analysis|"
@@ -2857,12 +2771,6 @@ msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "y-Achse"
 
-msgctxt "VariablesWindow|"
-msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
-"Bearbeite hier die Beschriftungen oder wähle, welche Werte herausgefiltert "
-"werden sollen."
-
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
 msgstr ""
@@ -2886,14 +2794,6 @@ msgid "Failed to convert column to ordinal: values contain text or decimals."
 msgstr ""
 "Fehler beim Konvertieren der Spalte in Ordinal: Werte enthalten Text oder "
 "Dezimalstellen."
-
-msgctxt "LabelModel|"
-msgid "Value"
-msgstr "Wert"
-
-msgctxt "LabelModel|"
-msgid "Label"
-msgstr "Bezeichnung"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -4161,18 +4061,13 @@ msgctxt "Form|"
 msgid "Generate Wrapper"
 msgstr "Wrapper generieren"
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Waiting for initialization of module: %1"
-msgstr "Warten auf Initialisierung des Moduls: %1"
-
 msgctxt "Computer|"
 msgid "Save"
 msgstr "Speichern"
 
 msgctxt "Computer|"
-msgid "JASP Files (*.jasp)"
-msgstr "JASP-Dateien (*.jasp)"
+msgid "JASP Files"
+msgstr "JASP-Dateien"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
@@ -4183,34 +4078,24 @@ msgid "HTML Files"
 msgstr "HTML-Dateien"
 
 msgctxt "Computer|"
-msgid "Portable Document Format (*.pdf)"
-msgstr "Portable Document Format (*.pdf)"
+msgid "Portable Document Format"
+msgstr "Portable Document Format"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
 msgstr "Daten als CSV exportieren"
 
 msgctxt "Computer|"
-msgid "CSV Files (*.csv *.txt *.tsv)"
-msgstr "CSV-Dateien (*.csv *.txt *.tsv)"
+msgid "CSV Files"
+msgstr "CSV-Dateien"
 
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "Daten synchronisieren"
 
 msgctxt "Computer|"
-msgid "Data Files (*.csv *.txt *.tsv *.sav *.ods)"
-msgstr "Daten-Dateien (*.csv *.txt *.tsv *.sav *.ods)"
-
-msgctxt "AboutModel|"
-msgid ""
-"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING "
-"<br>THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A <br> "
-"PARTICULAR PURPOSE."
-msgstr ""
-"Dieses Programm wird WIE ES IST bereitgestellt, OHNE JEGLICHE GARANTIE, "
-"EINSCHLIESSLICH <br>GARANTIEN VON DESIGN, MARKTGÄNGIGKEIT UND EIGNUNG FÜR "
-"EINEN <br> BESTIMMTEN ZWECK."
+msgid "Data Files"
+msgstr "Daten-Dateien"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
@@ -4381,3 +4266,851 @@ msgstr "Einleitung:"
 msgctxt "MainPage|"
 msgid "Conclusion:"
 msgstr "Fazit:"
+
+msgctxt "DataTableView|"
+msgid "Change to data editing mode"
+msgstr "Zum Datenbearbeitungsmodus wechseln"
+
+msgctxt "DataTableView|"
+msgid "Cmd"
+msgstr "Befehlstaste"
+
+msgctxt "DataTableView|"
+msgid "Ctrl"
+msgstr "Strg"
+
+msgctxt "DataTableView|"
+msgid "Select All"
+msgstr "Alle auswählen"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+A"
+msgstr "%1+A"
+
+msgctxt "DataTableView|"
+msgid "Cut"
+msgstr "Ausschneiden"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+X"
+msgstr "%1+X"
+
+msgctxt "DataTableView|"
+msgid "Copy"
+msgstr "Kopieren"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+C"
+msgstr "%1+C"
+
+msgctxt "DataTableView|"
+msgid "Paste"
+msgstr "Einfügen"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+V"
+msgstr "%1+V"
+
+msgctxt "DataTableView|"
+msgid "Clear cells"
+msgstr "Zellen löschen"
+
+msgctxt "DataTableView|"
+msgid "Del"
+msgstr "Entf"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "Undo: %1"
+msgstr "Rückgängig machen: %1"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+Z"
+msgstr "%1+Z"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "Redo: %1"
+msgstr "Wiederholen: %1"
+
+#, qt-format
+msgctxt "DataTableView|"
+msgid "%1+Shift+Z"
+msgstr "%1+Umschalttaste+Z"
+
+msgctxt "DataTableView|"
+msgid "Select column"
+msgstr "Spalte auswählen"
+
+msgctxt "DataTableView|"
+msgid "Insert column before"
+msgstr "Spalte davor einfügen"
+
+msgctxt "DataTableView|"
+msgid "Insert column after"
+msgstr "Spalte danach einfügen"
+
+msgctxt "DataTableView|"
+msgid "Delete column"
+msgstr "Spalte löschen"
+
+msgctxt "DataTableView|"
+msgid "Select row"
+msgstr "Zeile auswählen"
+
+msgctxt "DataTableView|"
+msgid "Delete row"
+msgstr "Zeile löschen"
+
+msgctxt "DataTableView|"
+msgid "Click here to select the row, hold shift for selecting multiple."
+msgstr ""
+"Hier klicken um die Zeile auszuwählen; Umschalttaste gedrückt halten, um "
+"mehrere auszuwählen."
+
+msgctxt "FilterWindow|"
+msgid "Close filter window"
+msgstr "Filterfenster schließen"
+
+msgctxt "RenameColumnDialog|"
+msgid "Rename column"
+msgstr "Spalte umbenennen"
+
+msgctxt "RenameColumnDialog|"
+msgid "Rename"
+msgstr "Umbenennen"
+
+#, qt-format
+msgctxt "RenameColumnDialog|"
+msgid "Rename column %1 to %2"
+msgstr "Spalte %1 in %2 umbenennen"
+
+msgctxt "RenameColumnDialog|"
+msgid "Close without renaming column"
+msgstr "Schließen, ohne Spalte umzubenennen"
+
+msgctxt "VariablesWindow|"
+msgid "Close variable window"
+msgstr "Variablenfenster schließen"
+
+msgctxt "ColumnModel|"
+msgid "Value"
+msgstr "Wert"
+
+msgctxt "ColumnModel|"
+msgid "Label"
+msgstr "Bezeichnung"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Column %1"
+msgstr "Spalte %1"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set value to '%1' at row %2 column '%3'"
+msgstr "Wert auf '%1' setzen in Zeile %2 Spalte '%3'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert computed column '%1'"
+msgstr "Berechnete Spalte '%1' einfügen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert column '%1'"
+msgstr "Spalte '%1' einfügen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert row %1"
+msgstr "Zeile %1 einfügen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove column '%1'"
+msgstr "Spalte '%1' entfernen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove row %1"
+msgstr "Zeile %1 entfernen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Paste values at row %1 column '%2'"
+msgstr "Werte einfügen in Zeile %1 Spalte '%2'"
+
+#, fuzzy, qt-format
+msgctxt "QObject|"
+msgid "Set type '%1' to column '%2'"
+msgstr "Typ '%1' auf Spalte '%2' setzen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
+msgstr "Bezeichnung setzen für Wert '%1' der Spalte '%2' von '%3' auf '%4'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Filter rows having label '%1' in column '%2'"
+msgstr "Zeilen filtern mit Bezeichnung '%1' in der Spalte '%2'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove filter for rows having label '%1' in column '%2'"
+msgstr "Filter entfernen für Zeilen mit Bezeichnung '%1' in Spalte '%2'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move up label '%1' of column '%2'"
+msgstr "Bezeichnung '%1' von Spalte '%2' nach oben verschieben"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move down label '%1' of column '%2'"
+msgstr "Bezeichnung '%1' von Spalte '%2' nach unten verschieben"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move up labels of column '%1'"
+msgstr "Bezeichnungen von Spalte '%1' nach oben verschieben"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Move down labels of column '%1'"
+msgstr "Bezeichnungen von Spalte '%1' nach unten verschieben"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Reverse labels of column '%2'"
+msgstr "Bezeichnungen von Spalte '%2' umkehren"
+
+msgctxt "QObject|"
+msgid "Change drag and drop filter"
+msgstr "Drag-&-Drop-Filter ändern"
+
+msgctxt "QObject|"
+msgid "Change R filter"
+msgstr "R-Filter ändern"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Create a computed column with name '%1'"
+msgstr "Berechnete Spalte erstellen mit Namen '%1'"
+
+#, fuzzy, qt-format
+msgctxt "QObject|"
+msgid "Set code to computed column with name '%1'"
+msgstr "Code setzen auf berechnete Spalte mit Namen '%1'"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP has an associated data file, but you edited it. Would you like to "
+"reload from the associated data or generate a new file?"
+msgstr ""
+"JASP hat eine zugehörige Datendatei, aber Sie haben sie bearbeitet. Möchten "
+"Sie die zugehörigen Daten neu laden oder eine neue Datei erstellen?"
+
+msgctxt "MainWindow|"
+msgid "Reload Data File"
+msgstr "Datendatei neu laden"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Waiting for initialization (of the engine) of module: %1"
+msgstr "Warten auf Initialisierung (der Engine) des Moduls: %1"
+
+msgctxt "RibbonModel|"
+msgid "Insert column before"
+msgstr "Spalte davor einfügen"
+
+msgctxt "RibbonModel|"
+msgid "Insert column after"
+msgstr "Spalte danach einfügen"
+
+msgctxt "RibbonModel|"
+msgid "Delete column"
+msgstr "Spalte löschen"
+
+msgctxt "RibbonModel|"
+msgid "Delete row"
+msgstr "Zeile löschen"
+
+msgctxt "RibbonModel|"
+msgid "Clear cells"
+msgstr "Zellen löschen"
+
+msgctxt "RibbonModel|"
+msgid "Undo"
+msgstr "Rückgängig machen"
+
+msgctxt "RibbonModel|"
+msgid "Redo"
+msgstr "Wiederholen"
+
+msgctxt "RibbonModel|"
+msgid "Analyses"
+msgstr "Analysen"
+
+msgctxt "RibbonModel|"
+msgid "Switch JASP to analyses mode"
+msgstr "JASP in Analysemodus schalten"
+
+msgctxt "RibbonModel|"
+msgid "Edit Data"
+msgstr "Daten bearbeiten"
+
+msgctxt "RibbonModel|"
+msgid "Switch JASP to data editing mode"
+msgstr "JASP in Datenbearbeitungsmodus schalten"
+
+msgctxt "RibbonModel|"
+msgid "New Data"
+msgstr "Neue Daten"
+
+msgctxt "RibbonModel|"
+msgid "Open a workspace without data"
+msgstr "Einen Arbeitsbereich ohne Daten öffnen"
+
+msgctxt "RibbonModel|"
+msgid "Insert"
+msgstr "Einfügen"
+
+msgctxt "RibbonModel|"
+msgid "Insert empty columns or rows"
+msgstr "Leere Spalten oder Zeilen einfügen"
+
+msgctxt "RibbonModel|"
+msgid "Remove"
+msgstr "Löschen"
+
+msgctxt "RibbonModel|"
+msgid "Remove columns or rows"
+msgstr "Spalten oder Zeilen entfernen"
+
+msgctxt "RibbonModel|"
+msgid "Synchronisation"
+msgstr "Synchronisierung"
+
+msgctxt "RibbonModel|"
+msgid "Turn external data synchronisation on"
+msgstr "Externe Datensynchronisation aktivieren"
+
+msgctxt "RibbonModel|"
+msgid "Turn external data synchronisation off"
+msgstr "Externe Datensynchronisation ausschalten"
+
+msgctxt "DataTableView|"
+msgid "Insert row above"
+msgstr "Zeile darüber einfügen"
+
+msgctxt "DataTableView|"
+msgid "Insert row below"
+msgstr "Zeile darunter einfügen"
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to change variable settings"
+msgstr "Hier doppelklicken, um Variableneinstellungen zu ändern"
+
+msgctxt "DataTableView|"
+msgid "Doubleclick here to close variable window"
+msgstr "Hier doppelklicken, um das Variablenfenster zu schließen"
+
+msgctxt "ColorPalette|"
+msgid "Color palette"
+msgstr "Farbpalette"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind"
+msgstr "Farbenblind"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #2"
+msgstr "Farbenblind #2"
+
+msgctxt "ColorPalette|"
+msgid "Colorblind #3"
+msgstr "Farbenblind #3"
+
+msgctxt "ColorPalette|"
+msgid "Viridis"
+msgstr "Viridis"
+
+msgctxt "ColorPalette|"
+msgid "ggplot2"
+msgstr "ggplot2"
+
+msgctxt "ColorPalette|"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "ColorPalette|"
+msgid "Blue"
+msgstr "Blau"
+
+msgctxt "ColorPalette|"
+msgid "Sports teams: NBA"
+msgstr "Sportteams: NBA"
+
+msgctxt "ColorPalette|"
+msgid "Grand Budapest"
+msgstr "Grand Budapest"
+
+msgctxt "RibbonModel|"
+msgid "Insert row above"
+msgstr "Zeile darüber einfügen"
+
+msgctxt "RibbonModel|"
+msgid "Insert row below"
+msgstr "Zeile darunter einfügen"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo changes, %1+Z"
+msgstr "Änderungen rückgängig machen, %1+Z"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo changes, %1+shift+Z or %1+Y"
+msgstr "Änderungen wiederherstellen, %1+Umschalttaste+Z oder %1+Y"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Undo %2 (%1+Z)"
+msgstr "%2 rückgängig machen (%1+Z)"
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid "Redo %2 (%1+shift+Z or %1+Y)"
+msgstr "%2 wiederherstellen (%1+Umschalttaste+Z oder %1+Y)"
+
+msgctxt "DataTableView|"
+msgid "Computed by an analysis"
+msgstr "Berechnet durch eine Analyse"
+
+msgctxt "DataTableView|"
+msgid "Click here to change selected variable"
+msgstr "Hier klicken, um ausgewählte Variable zu ändern"
+
+msgctxt "DataSetPackage|"
+msgid "This column is generated by an analysis and its type is fixed."
+msgstr "Diese Spalte ist durch eine Analyse erzeugt und der Typ ist fixiert."
+
+msgctxt "RibbonModel|"
+msgid "Open datafile with default spreadsheet editor"
+msgstr "Datendatei öffnen mit Standard-Tabellen-Editor"
+
+msgctxt "RibbonModel|"
+msgid "No Data"
+msgstr "Keine Daten"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove %1 columns from '%2'"
+msgstr "%1 Spalten von '%2' entfernen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Remove rows %1 to %2"
+msgstr "Zeilen %1 bis %2 entfernen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy columns '%1' to '%2'"
+msgstr "Spalte '%1' nach '%2' kopieren"
+
+msgctxt "ContactWindow|"
+msgid "Contact JASP"
+msgstr "JASP kontaktieren"
+
+msgctxt "Supporters|"
+msgid "JASP is supported by the following institutions:"
+msgstr "JASP wird von folgenden Einrichtungen unterstützt:"
+
+msgctxt "WavyWindow|"
+msgid "About JASP"
+msgstr "Über JASP"
+
+msgctxt "WavyWindow|"
+msgid "Close"
+msgstr "Schließen"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Copy column '%1' into column number '%2'"
+msgstr "Spalte '%1' in Spalte Nummer '%2' kopieren"
+
+msgctxt "ActionButtons|"
+msgid "Contact"
+msgstr "Kontakt"
+
+msgctxt "AboutModel|"
+msgid ""
+"This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
+"WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+msgstr ""
+"Dieses Programm wird WIE ES IST bereitgestellt, OHNE JEGLICHE GARANTIE, "
+"EINSCHLIESSLICH GARANTIEN VON DESIGN, MARKTGÄNGIGKEIT UND EIGNUNG FÜR EINEN "
+"BESTIMMTEN ZWECK."
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "and %1"
+msgstr "und %1"
+
+msgctxt "DataTableView|"
+msgid "Add column"
+msgstr "Spalte einfügen"
+
+msgctxt "PrefsData|"
+msgid "Reset with standard values"
+msgstr "Zurücksetzen mit Standardwerten"
+
+msgctxt "PrefsData|"
+msgid "Reset missing values with the standard JASP missing values"
+msgstr "Fehlende Werte mit den Standard-JASP fehlenden Werten zurücksetzen"
+
+msgctxt "PrefsMissingValues|"
+msgid "Add a missing value"
+msgstr "Einen fehlenden Wert hinzufügen"
+
+msgctxt "PrefsMissingValues|"
+msgid "Set current workspace with these values"
+msgstr "Den aktuellen Arbeitsbereich mit diesen Werten einstellen"
+
+#, fuzzy
+msgctxt "PrefsMissingValues|"
+msgid "Set the current workspace missing values with these values"
+msgstr ""
+"Die fehlenden Werte des aktuellen Arbeitsbereichs auf diese Werten einstellen"
+
+msgctxt "LabelEditorWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr ""
+"Bearbeiten Sie hier die Beschriftungen oder wählen Sie aus, welche Werte "
+"herausgefiltert werden sollen."
+
+msgctxt "LabelEditorWindow|"
+msgid "Filter"
+msgstr "Filter"
+
+msgctxt "LabelEditorWindow|"
+msgid "Value"
+msgstr "Wert"
+
+msgctxt "LabelEditorWindow|"
+msgid "Label"
+msgstr "Beschriftung"
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels up"
+msgstr "Ausgewählte Beschriftungen nach oben verschieben"
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected labels down"
+msgstr "Ausgewählte Beschriftungen nach unten verschieben"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reverse order of all labels"
+msgstr "Reihenfolge aller Beschriftungen umkehren"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for this column"
+msgstr "Alle Filter-Häkchen dieser Spalte zurücksetzen"
+
+msgctxt "LabelEditorWindow|"
+msgid "Reset all filter checkmarks for all columns"
+msgstr "Alle Filter-Häkchen aller Spalten zurücksetzen"
+
+msgctxt "MainPage|"
+msgid "Image"
+msgstr "Abbildung"
+
+msgctxt "ModulesMenu|"
+msgid "Workspace settings"
+msgstr "Arbeitsbereich-Einstellungen"
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid "Name: %1"
+msgstr "Name: %1"
+
+msgctxt "ModulesMenu|"
+msgid "Description: "
+msgstr "Beschreibung: "
+
+msgctxt "ModulesMenu|"
+msgid "Reset missing values with the ones set in Data Preferences"
+msgstr "Fehlende Werte zurücksetzen auf die in den Dateneinstellungen"
+
+msgctxt "RibbonBar|"
+msgid "Show workspace settings"
+msgstr "Arbeitsbereich-Einstellungen anzeigen"
+
+msgctxt "VariablesWindow|"
+msgid "Use custom values"
+msgstr "Benutzerdefinierte Werte verwenden"
+
+#, fuzzy
+msgctxt "VariablesWindow|"
+msgid "Reset missing values with the ones set in your workspace"
+msgstr ""
+"Fehlende Werte zurücksetzen, auf die Einstellungen Ihres Arbeitsbereichs"
+
+msgctxt "QObject|"
+msgid "Not computed"
+msgstr "Nicht berechnet"
+
+msgctxt "QObject|"
+msgid "Computed with R code"
+msgstr "Berechnet mit R-Code"
+
+msgctxt "QObject|"
+msgid "Computed with drag-and-drop"
+msgstr "Berechnet mit Ziehen-und-Ablegen"
+
+msgctxt "QObject|"
+msgid "Column generated by analysis"
+msgstr "Spalte durch Analyse generiert"
+
+msgctxt "QObject|"
+msgid "Column added by analysis"
+msgstr "Spalte durch Analyse hinzugefügt"
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "Scale"
+msgstr "Metrisch"
+
+msgctxt "QObject|"
+msgid "Ordinal"
+msgstr "Ordinal"
+
+msgctxt "QObject|"
+msgid "Nominal"
+msgstr "Nominal"
+
+msgctxt "ColumnModel|"
+msgid "Computed column definition"
+msgstr "Definition berechneter Spalte"
+
+msgctxt "ColumnModel|"
+msgid "Label editor"
+msgstr "Beschriftungs-Editor"
+
+msgctxt "ColumnModel|"
+msgid "Missing Values"
+msgstr "Fehlende Werte"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column name of '%1' from '%2' to '%3'"
+msgstr "Spaltenname von '%1' ändern von '%2' auf '%3'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column title of '%1' from '%2' to '%3'"
+msgstr "Spaltentitel von '%1' ändern von '%2' auf '%3'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column description of '%1' from '%2' to '%3'"
+msgstr "Spaltenbeschreibung von '%1' ändern von '%2' auf %3'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set computed type of '%1' from '%2' to '%3'"
+msgstr "Berechneten Typ von '%1' setzen von '%2' auf '%3'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change workspace description from '%1' to '%2'"
+msgstr "Arbeitsbereichsbeschreibung ändern von '%1' auf '%2'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use custom empty values for column '%1'"
+msgstr "Benutzerdefinierte leere Werte für Spalte '%1'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Use default empty values for column '%1'"
+msgstr "Standardmäßige leere Werte für Spalte '%1'"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Set empty values for column '%1'"
+msgstr "Leere Werte für Spalte '%1 einstellen"
+
+msgctxt "QObject|"
+msgid "Set workspace empty values"
+msgstr "Leere Werte des Arbeitsbereichs einstellen"
+
+#, fuzzy
+msgctxt "PrefsMissingValues|"
+msgid "Show workspace missing values"
+msgstr "Fehlende Werte des Arbeitsbereichs anzeigen"
+
+#, fuzzy
+msgctxt "PrefsMissingValues|"
+msgid "Opens the settings for workspace missing values"
+msgstr "Öffnet die Einstellungen für fehlende Werte des Arbeitsbereichs"
+
+msgctxt "MainPage|"
+msgid "Embed web video"
+msgstr "Web-Video einbetten"
+
+msgctxt "MainPage|"
+msgid "Unsupported video services"
+msgstr "Nicht unterstützte Videodienste"
+
+msgctxt "MainPage|"
+msgid "JASP only allows the following videoservices:"
+msgstr "JASP erlaubt nur die folgenden Videodienste:"
+
+msgctxt "MainPage|"
+msgid ""
+"Contact the JASP team to request adding another videoservice to the list."
+msgstr ""
+"Kontaktieren Sie das JASP-Team, um einen weiteren Videodienst zur Liste "
+"hinzuzufügen."
+
+msgctxt "CommunityWindow|"
+msgid "JASP Community"
+msgstr "JASP-Gemeinschaft"
+
+#, qt-format
+msgctxt "CommunityWindow|"
+msgid ""
+"<h3>Community</h3>\n"
+"The institutions of higher learning that participate in the JASP community "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the JASP community, you can <a "
+"href=\"%1\">suggest that they join</a>.\n"
+"\n"
+"<i><b>Educator Institutions:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Sponsor Institutions:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Supporter Institutions:</b></i>\n"
+"%4"
+msgstr ""
+"<h3>Gemeinschaft</h3>\n"
+"Die Institutionen der höheren Bildung, die an der JASP-Gemeinschaft "
+"teilnehmen, unterstützen gemeinsam die Aufrechterhaltung und "
+"Weiterentwicklung von JASP und leisten daher einen unschätzbaren "
+"Bildungsdienst für ihre eigenen Studierenden und für die von anderen "
+"Institutionen weltweit.\n"
+"\n"
+"Wenn Ihre Institution noch nicht Teil der JASP-Gemeinschaft ist, können Sie "
+"<a href=\"%1\">vorschlagen, dass sie beitreten</a>.\n"
+"\n"
+"<i><b>Educator Institutes:</b></i>\n"
+"%2\n"
+"\n"
+"<i><b>Sponsor Institute:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Supporter Institutions:</b></i>\n"
+"%4"
+
+msgctxt "Supporters|"
+msgid "Suggest your institution joins the JASP Community"
+msgstr "Schlagen Sie Ihrer Einrichtung vor, der JASP-Gemeinschaft beizutreten"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"<h3>Contact</h3>\n"
+"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: "
+"please post an issue on our GitHub page, <a href=\"%3\">as explained here.</"
+"a>\n"
+"This will bring you in direct contact with the JASP software developers.\n"
+"\n"
+"For statistical questions: please post an issue <a href=\"%4\">on the JASP "
+"Forum.</a>\n"
+"\n"
+"For information on the JASP Community: please read <a href=\"%5\">the "
+"information on the JASP website</a>\n"
+"\n"
+"For suggesting we add your institution to the <a href=\"%6\">JASP World Map</"
+"a> please send an email to <a href=\"%7\">communications@jasp-stats.org</"
+"a>.\n"
+"\n"
+"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
+msgstr ""
+"<h3>Kontakt</h3>\n"
+"Für <a href=\"%1\">Verbesserungsvorschläge</a> und <a "
+"href=\"%2\">Fehlerberichte</a>: Bitte öffnen Sie ein Ticket auf unserer "
+"GitHub-Seite, <a href=\"%3\">wie hier erläutert.</a>\n"
+"Dies bringt Sie in direkten Kontakt mit den JASP-Softwareentwicklern.\n"
+"\n"
+"Für statistische Fragen: Schreiben Sie bitte einen Beitrag <a href=\"%4\">im "
+"JASP-Forum.</a>\n"
+"\n"
+"Für Informationen zur JASP-Gemeinschaft: Lesen Sie bitte <a href=\"%5\">die "
+"Informationen auf der JASP-Website</a>\n"
+"\n"
+"Um vorzuschlagen, dass wir Ihre Einrichtung zur <a href=\"%6\">JASP-"
+"Weltkarte</a> hinzufügen, senden Sie bitte eine E-Mail an <a "
+"href=\"%7\">communications@jasp-stats.org</a>.\n"
+"\n"
+"Für individuelle Spenden: Besuchen Sie bitte die <a href=\"%8\">JASP-"
+"Webseite</a>.\n"
+
+msgctxt "ActionButtons|"
+msgid "Community"
+msgstr "Gemeinschaft"
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in the name of the column>"
+msgstr "<Tragen Sie den Spaltennamen ein>"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Name: "
+msgstr "Name: "
+
+msgctxt "ColumnBasicInfo|"
+msgid "Column type: "
+msgstr "Spaltentyp: "
+
+msgctxt "ColumnBasicInfo|"
+msgid "Computed type: "
+msgstr "Berechneter Typ: "
+
+#, fuzzy
+msgctxt "ColumnBasicInfo|"
+msgid "Show parent analysis"
+msgstr "Elternanalyse anzeigen"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Long name: "
+msgstr "Langer Name: "
+
+msgctxt "ColumnBasicInfo|"
+msgid "<Fill in a more descriptive name of the column>"
+msgstr "<Geben Sie einen noch beschreibenderen Spaltennamen ein>"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Close variable window"
+msgstr "Variablenfenster schließen"
+
+msgctxt "ColumnBasicInfo|"
+msgid "Description: "
+msgstr "Beschreibung: "
+
+msgctxt "ColumnModel|"
+msgid "Column definition"
+msgstr "Spaltendefinition"
