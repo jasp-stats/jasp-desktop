@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-12-02 02:53+0000\n"
+"PO-Revision-Date: 2023-12-02 02:54+0000\n"
 "Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/ja/>\n"
@@ -4522,15 +4522,15 @@ msgstr "カラーブラインド"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "カラーブラインド #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "カラーブラインド #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Viridis"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
