@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-12-02 02:53+0000\n"
+"Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.3-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -3439,11 +3445,11 @@ msgstr "インストールするJASPモジュールの選択"
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "再び表示しない"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "データベース"
 
 msgctxt "Database|"
 msgid ""
@@ -3466,160 +3472,160 @@ msgstr ""
 
 msgctxt "Database|"
 msgid "Hostname"
-msgstr ""
+msgstr "ホスト名"
 
 msgctxt "Database|"
 msgid "Port"
-msgstr ""
+msgstr "ポート"
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Browse"
 msgstr "参照"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "ユーザーネーム"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
 msgstr "ログイン情報を記憶する"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "データベースに接続"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "クエリ"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "実行"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "データをプレビュー"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "JASPに読み込む"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr ""
+msgstr "同期間隔: "
 
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
-msgstr ""
+msgstr "0 は自動同期を意味しませんが、Ctrl/Cmd + Y を押すことで手動で同期できます"
 
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
-msgstr ""
+msgstr "JASPはデータベースに接続していると思われますが、QSqlDatabaseはオープンしてい"
+"ません..."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "失敗したクエリ: '%1'"
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
-msgstr ""
+msgstr "Query は SELECT のようなステートメントではなく、何も返さなかった."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr ""
+msgstr "アクティブな結果が見つかりません、クエリに問題はありませんか?"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "データベースのパスワード"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
-msgstr ""
+msgstr "ユーザー '%1' のデータベース接続のパスワードが必要です"
 
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password"
-msgstr ""
+msgstr "データベース接続にはパスワードが必要です"
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "接続できませんでした"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
-msgstr ""
+msgstr "'%1'のためデータベースに接続できませんでした。異なるパスワードを試すことはで"
+"きますか?"
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr ""
+msgstr "データベースに接続できないため、同期が無効になります."
 
 #, qt-format
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
-msgstr ""
+msgstr "%2 にユーザ %3 でデータベース %1 に接続できなかった、最後のエラーは: %4"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
-msgstr ""
+msgstr "データベースドライバを選択します..."
 
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
-msgstr ""
+msgstr "IBM DB2"
 
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
-msgstr ""
+msgstr "MySQL Driver"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
-msgstr ""
+msgstr "Oracle Call Interface Driver"
 
 msgctxt "DatabaseFileMenu|"
 msgid "ODBC Driver (includes Microsoft SQL Server)"
-msgstr ""
+msgstr "ODBC Driver (Microsoft SQL Server を含む)"
 
 msgctxt "DatabaseFileMenu|"
 msgid "PostgreSQL Driver"
-msgstr ""
+msgstr "PostgreSQL Driver"
 
 msgctxt "DatabaseFileMenu|"
 msgid "SQLite version 3 or above"
-msgstr ""
+msgstr "SQLite version 3 以上"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "データベースに接続されていない!"
 
 msgctxt "ResourceButtons|"
 msgid "Database"
-msgstr ""
+msgstr "データベース"
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
-msgstr ""
+msgstr "指数表記を使う"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
-msgstr ""
+msgstr "数値比較や数学的な操作で使用できる."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3639,7 +3645,8 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
 "odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
+msgstr "ロジット変換(すなわち、標準ロジット関数の逆、または対数オッズ変換)は、0と1の"
+"間の数字を実数直線上に変換します."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3835,162 +3842,158 @@ msgstr "2つのコントロールは同じ名前です：%1"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "制御と式が同じ名前 '%1'です"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "式の名前 '%1' は二度定義されています"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "制御と式が同じ名前 '%1'です"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "分析が見つかりません"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "分析関数がありません: <module name>::<analysis name>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "Rは(再)起動中です"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "Rがモジュール%1をインストール中、またはローディング中です"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "Rが停止しました"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "Rがコマンドを待っています"
 
 msgctxt "AnalysisForm|"
 msgid "Options"
-msgstr ""
+msgstr "オプション"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "変数リスト"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "ドロップダウン"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "タブビュー"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "変数フォーム"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "すべてのオプションを表示"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "Rコンソール"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " と "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "選択されていないモジュールがあります"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "選択したモジュールがあります "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "下のファイルをクリックして同期または使用 "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "この変数は許可されていないため削除されました。%1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "これらの変数は、許可されていないため削除されました: %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "CSV は、BOM が指定されていない場合、選択されたコードページです."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "ここでコードページを選択"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "%1のコピー"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "R シンタックスを隠す"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "ラッパーの生成"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Save"
 msgstr "保存"
 
 msgctxt "Computer|"
 msgid "JASP Files"
-msgstr ""
+msgstr "JASPファイル"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "HTMLやPDFとして結果を書き出し"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTMLファイル"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
-msgstr ""
+msgstr "ポータブルドキュメントフォーマット"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "CSVとしてデータを書き出す"
 
 msgctxt "Computer|"
 msgid "CSV Files"
-msgstr ""
+msgstr "CSVファイル"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
 msgstr "データの同期"
 
 msgctxt "Computer|"
 msgid "Data Files"
-msgstr ""
+msgstr "データファイル"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<選択なし>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "新しい値"
@@ -3998,179 +4001,177 @@ msgstr "新しい値"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "行 %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
 msgstr "その他のオプション"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "R シンタックスを表示する"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "各解析に R シンタックスを追加"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "R シンタックスを表示する"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "R シンタックスを隠す"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
-msgstr ""
+msgstr "計算された列に変更を保存しますか?"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "保存しないと変更が失われます."
 
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
-msgstr ""
+msgstr "フィルターの変更を保存しますか?"
 
 msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "保存しないと変更が失われます."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
-msgstr ""
+msgstr "%1 ファイルに変更を保存しますか?"
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "保存しないと変更が失われます."
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
-msgstr ""
+msgstr "Qtのテキストレンダリングを使用する"
 
 msgctxt "PrefsUI|"
 msgid "Accessibility options"
-msgstr ""
+msgstr "アクセシビリティオプション"
 
 msgctxt "PrefsUI|"
 msgid "ALT-Navigation mode"
-msgstr ""
+msgstr "ALT-Navigationモード"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr ""
+msgstr "ALT-Navigationモードがアクティブか否か."
 
 msgctxt "MainPage|"
 msgid "Bold"
-msgstr ""
+msgstr "ボールド"
 
 msgctxt "MainPage|"
 msgid "Italic"
-msgstr ""
+msgstr "イタリック"
 
 msgctxt "MainPage|"
 msgid "Underline"
-msgstr ""
+msgstr "アンダーライン"
 
 msgctxt "MainPage|"
 msgid "Link"
-msgstr ""
+msgstr "リンク"
 
 msgctxt "MainPage|"
 msgid "Formula"
-msgstr ""
+msgstr "式"
 
 msgctxt "MainPage|"
 msgid "Code Block"
-msgstr ""
+msgstr "コードブロック"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "ヘッダー"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "箇条書き（順序）"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "箇条書き（非順序）"
 
 msgctxt "MainPage|"
 msgid "Color Picker"
-msgstr ""
+msgstr "カラーピッカー"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "背景色"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "サブスクリプト"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "スーパースクリプト"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "ブロッククォート"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr ""
+msgstr "インデントを追加"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
-msgstr ""
+msgstr "インデントを削除"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "文字サイズ"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "明確なフォーマット"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "テキストを追加するにはここをクリック"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "クリップボードにコピー"
 
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr ""
+msgstr "引用をクリップボードにコピー"
 
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "LaTexコードをクリップコードにコピー"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "導入:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "結論:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "データ編集モードの変更"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "すべて選択"
@@ -4178,18 +4179,17 @@ msgstr "すべて選択"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "切り取り"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "コピー"
@@ -4197,104 +4197,102 @@ msgstr "コピー"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "貼り付け"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "セルをクリア"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "消去"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "戻る: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "やり直し: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "列を選択"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "前に列を挿入"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "後ろに列を挿入"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "列を削除"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "行を選択"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "行を削除"
 
 msgctxt "DataTableView|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "ここで行を選択し、シフトを押すことで複数の行を選択することができます."
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "フィルターウィンドウを閉じる"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "列名を変更"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "名前変更"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "%1 を %2 に変更"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "列の名前を変更することなく閉じる"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "変数ウィンドウを閉じる"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "値"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "ラベル"
@@ -4302,225 +4300,225 @@ msgstr "ラベル"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "列 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "行 %2 列 '%3' の値を'%1'に設定"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "計算された列 '%1' を挿入"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "列 '%1' を挿入"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert row %1"
-msgstr ""
+msgstr "行 %1 を挿入"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "列 '%1' を削除"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "行 '%1' を削除"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "行 %1 列 '%2'に値を貼り付け"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr ""
+msgstr "列 '%2' をタイプ '%1'に設定"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "列 '%2' の値 '%1' を '%3' から '%4' に設定"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "列 '%2' でラベル '%1' を持つ行をフィルターする"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "列 '%2' でラベル '%1' を持つ行を削除する"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "列 '%2' のラベル '%1' を繰り上げる"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "列 '%2'のラベル '%1' を繰り下げる"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "列のラベル '%1' を繰り上げる"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "列のラベル '%1' を繰りさげる"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%2'"
-msgstr ""
+msgstr "列 '%2' のラベルを逆転"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "ドラッグ&ドロップフィルタの変更"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Rフィルターの変更"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr ""
+msgstr "名前 '%1 という計算列を作成"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr ""
+msgstr "名前 '%1 という計算列をコードに設定します"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
-msgstr ""
+msgstr "JASPは関連するデータファイルを持っていますが、編集されています。関連するデー"
+"タを再読み込みするか、新しいファイルを作成してもらえますか?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "データファイルの再読み込み"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "モジュールの(エンジンの)初期化を待機:%1"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "前に列を挿入"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "後ろに列を挿入"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "列を削除"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "行を削除"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "セルをクリア"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "戻る"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "やり直す"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "分析"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "JASPを分析モードに変える"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "データの編集"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "JASPをデータ編集モードに切り替える"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "新しいデータ"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "データなしでワークスペースを開く"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "挿入"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "空の列や行を挿入"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "削除"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "列や行を削除"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "同期"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "外部データの同期をオンにする"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "外部データの同期をオフにする"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "上に行を挿入"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "下に行を挿入"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "変数設定を変更するには、ここをダブルクリック"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "変数ウィンドウを閉じるにはここをダブルクリック"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "カラーパレット"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "カラーブラインド"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
