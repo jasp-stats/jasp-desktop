@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-12-02 02:54+0000\n"
-"Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/ja/>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -3526,13 +3520,15 @@ msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
-msgstr "0 は自動同期を意味しませんが、Ctrl/Cmd + Y を押すことで手動で同期できます"
+msgstr ""
+"0 は自動同期を意味しませんが、Ctrl/Cmd + Y を押すことで手動で同期できます"
 
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
-msgstr "JASPはデータベースに接続していると思われますが、QSqlDatabaseはオープンしてい"
+msgstr ""
+"JASPはデータベースに接続していると思われますが、QSqlDatabaseはオープンしてい"
 "ません..."
 
 #, qt-format
@@ -3570,7 +3566,8 @@ msgctxt "DataSetPackage|"
 msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
-msgstr "'%1'のためデータベースに接続できませんでした。異なるパスワードを試すことはで"
+msgstr ""
+"'%1'のためデータベースに接続できませんでした。異なるパスワードを試すことはで"
 "きますか?"
 
 msgctxt "DataSetPackage|"
@@ -3581,7 +3578,8 @@ msgstr "データベースに接続できないため、同期が無効になり
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
-msgstr "%2 にユーザ %3 でデータベース %1 に接続できなかった、最後のエラーは: %4"
+msgstr ""
+"%2 にユーザ %3 でデータベース %1 に接続できなかった、最後のエラーは: %4"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
@@ -3645,7 +3643,8 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
 "odds transform) converts numbers between 0 and 1 to the real line."
-msgstr "ロジット変換(すなわち、標準ロジット関数の逆、または対数オッズ変換)は、0と1の"
+msgstr ""
+"ロジット変換(すなわち、標準ロジット関数の逆、または対数オッズ変換)は、0と1の"
 "間の数字を実数直線上に変換します."
 
 msgctxt "ComputeColumnWindow|"
@@ -3720,9 +3719,10 @@ msgid ""
 "selected '$1' but it doesn't exist."
 msgstr ""
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "R シンタックスを表示する"
 
 #, fuzzy
 msgctxt "MainPage|"
@@ -4404,7 +4404,8 @@ msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
-msgstr "JASPは関連するデータファイルを持っていますが、編集されています。関連するデー"
+msgstr ""
+"JASPは関連するデータファイルを持っていますが、編集されています。関連するデー"
 "タを再読み込みするか、新しいファイルを作成してもらえますか?"
 
 msgctxt "MainWindow|"
@@ -4552,13 +4553,15 @@ msgctxt "ColorPalette|"
 msgid "Grand Budapest"
 msgstr ""
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "上に行を挿入"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "下に行を挿入"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -4955,9 +4958,10 @@ msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr ""
+msgstr "変数ウィンドウを閉じる"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
