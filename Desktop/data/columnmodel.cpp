@@ -90,6 +90,7 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &ColumnModel::columnDataTypeChanged		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &ColumnModel::refresh						);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsBeingRemoved,			this, &ColumnModel::checkRemovedColumns			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsInserted,				this, &ColumnModel::checkInsertedColumns		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::datasetChanged,				this, &ColumnModel::checkCurrentColumn			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &ColumnModel::emptyValuesChanged			);
 
@@ -558,6 +559,15 @@ void ColumnModel::changeSelectedColumn(QPoint selectionStart)
 {
 	if (selectionStart.x() != chosenColumn() && visible())
 		setChosenColumn(selectionStart.x());
+}
+
+void ColumnModel::checkInsertedColumns(const QModelIndex &, int first, int)
+{
+	if (_currentColIndex >= first)
+	{
+		_currentColIndex = -1; // Force the setting of new column.
+		setChosenColumn(first);
+	}
 }
 
 void ColumnModel::checkRemovedColumns(int columnIndex, int count)

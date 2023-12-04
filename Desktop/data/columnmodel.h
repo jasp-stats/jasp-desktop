@@ -112,6 +112,7 @@ public slots:
 	void refresh();
 	void changeSelectedColumn(QPoint selectionStart);
 	void checkRemovedColumns(int columnIndex, int count);
+	void checkInsertedColumns(const QModelIndex & parent, int first, int last);
 	void openComputedColumn(const QString & name);
 	void checkCurrentColumn( QStringList changedColumns, QStringList missingColumns, QMap<QString, QString>	changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 	void setCompactMode(bool newCompactMode);
