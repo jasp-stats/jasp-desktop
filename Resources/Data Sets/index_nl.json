@@ -1050,8 +1050,23 @@
       "debug": false
     },
     {
-      "name": "19. Overig",
-      "path": "19. Miscellaneous",
+      "name": "19. Survival",
+      "path": "19. Survival",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Leukemia",
+          "path": "Leukemia.jasp",
+          "description": "Overlevingstijden bij patiënten met acute myeloïde leukemie.  <br><br> Het voorbeeld JASP-bestand reproduceert verschillende outputs uit `Chapter 4: Non-parametric methods: the Kaplan-Meier estimator` in het leerboek `Introducing Survival and Event History Analysis` van Melinda Mill (2011).  <br><br> <i>Dataset opgehaald uit het R-pakket survival.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Leukemia.csv"
+        }
+      ]
+    },
+    {
+      "name": "20. Overig",
+      "path": "20. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
