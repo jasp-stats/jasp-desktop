@@ -9,7 +9,7 @@
 [requires]
 boost/[>=1.82.0 <2.0.0]
 zlib/1.3
-libarchive/3.6.2
+libarchive/3.7.2
 zstd/1.5.2
 jsoncpp/1.9.5
 openssl/3.0.10
