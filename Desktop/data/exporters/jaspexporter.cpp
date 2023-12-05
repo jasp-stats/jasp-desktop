@@ -49,7 +49,6 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
-	archive_write_set_compression_gzip(a);
 
 #ifdef _WIN32
 	if (archive_write_open_filename_w(a, tq(path).toStdWString().c_str()) != ARCHIVE_OK)
