@@ -554,10 +554,10 @@ var wrapHTML = function (html, exportParams, doctype = false) {
 	//const result = $(htmlObj).prop('outerHTML');
 
 	//Dont convert to DOM because it replace <img.../> with <img...> which breaks unitTest(Recursive)
-    const mjxAssistReg = /\<mjx-assistive-mml[^>]*\>[\s\S]*?\<\/mjx-assistive-mml\>/g;
+    	const mjxAssistReg = /\<mjx-assistive-mml[^>]*\>[\s\S]*?\<\/mjx-assistive-mml\>/g;
 	html = html.replace(mjxAssistReg, "");
 
-	const iframeReg = /<iframe[^>]*src="([^"]*)"[^>]*>/g;
+	const iframeReg = /<iframe[^>]*src="([^"]*)"[^>]*>[\s\S]*?<\/iframe>/g;
 	html = html.replace(iframeReg, function(match, url) {return `<a href="${url}">${url}</a>`; });
 
 	completehtml += html
