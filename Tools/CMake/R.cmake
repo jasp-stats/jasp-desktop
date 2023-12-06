@@ -415,7 +415,6 @@ if(APPLE)
 
       set(SIGNING_RESULT "timeout")
       while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL "1"))
-          if(RUNTIMEHARDENING)
             execute_process(
                 COMMAND_ECHO STDOUT
                 #ERROR_QUIET
@@ -424,26 +423,11 @@ if(APPLE)
                 WORKING_DIRECTORY ${R_HOME_PATH}
                 COMMAND
                   codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-                  ${APPLE_CODESIGN_IDENTITY} --options runtime
+				  ${APPLE_CODESIGN_IDENTITY} ${OPTIONS_RUNTIME}
                   "${R_HOME_PATH}/bin/exec/R"
                 RESULT_VARIABLE SIGNING_RESULT
                 OUTPUT_VARIABLE SIGNING_OUTPUT
                 ERROR_VARIABLE SIGNING_ERROR)
-          else()
-            execute_process(
-              COMMAND_ECHO STDOUT
-              #ERROR_QUIET
-              #OUTPUT_QUIET
-              TIMEOUT 30
-              WORKING_DIRECTORY ${R_HOME_PATH}
-              COMMAND
-                codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-                ${APPLE_CODESIGN_IDENTITY}
-                "${R_HOME_PATH}/bin/exec/R"
-              RESULT_VARIABLE SIGNING_RESULT
-              OUTPUT_VARIABLE SIGNING_OUTPUT
-              ERROR_VARIABLE SIGNING_ERROR)
-          endif()
       endwhile()
 
       if(NOT (SIGNING_RESULT MATCHES "timeout"))

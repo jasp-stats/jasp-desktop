@@ -106,8 +106,7 @@ if(WIN32)
 endif()
 
 if(APPLE)
-  set(CPACK_PACKAGE_FILE_NAME
-      "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-macOS-${CPACK_ARCH_SUFFIX}"
+  set(CPACK_PACKAGE_FILE_NAME		"${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-macOS-${CPACK_ARCH_SUFFIX}"
   )
   set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_FILE_NAME}.dmg")
   set(CPACK_DMG_BACKGROUND_IMAGE
@@ -116,12 +115,6 @@ if(APPLE)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Upload.sh.in
                  ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
-
-  if(RUNTIMEHARDENING)
-      set(OPTIONS_RUNTIME "runtime")
-  else()
-      set(OPTIONS_RUNTIME "0")
-  endif()
 
   add_custom_target(
     dmg
@@ -140,7 +133,7 @@ if(APPLE)
             ${CMAKE_BINARY_DIR}/JASP/
     COMMAND
       codesign --verbose --verify --deep --force --sign
-          "${APPLE_CODESIGN_IDENTITY}" --options ${OPTIONS_RUNTIME}
+	      "${APPLE_CODESIGN_IDENTITY}" ${OPTIONS_RUNTIME}
       "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "------ Creating the ${CPACK_DMG_VOLUME_NAME}")
 
