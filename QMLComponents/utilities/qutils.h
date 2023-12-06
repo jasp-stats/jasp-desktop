@@ -44,6 +44,9 @@ typedef std::vector<QString>				qstringvec;
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
+typedef std::set<QString>					qstringset;
+typedef std::vector<QString>				qstringvec;
+
 //fq -> fromQt, tq -> toQt
 //tql -> toQtList (the tql is reasonable for going from a set to a vector because Qt no doubt has a QSet or something as well, which would then be reached through tq if we ever need it)
 //fqj and tqj are for from/to QtJson

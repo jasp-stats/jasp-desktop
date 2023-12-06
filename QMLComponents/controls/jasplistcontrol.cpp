@@ -235,7 +235,7 @@ bool JASPListControl::hasRowComponent() const
 	return rowComponent() != nullptr;
 }
 
-JASPControl *JASPListControl::getChildControl(QString key, QString name)
+JASPControl *JASPListControl::getChildControl(const QString & key, const QString & name)
 {
 	return getRowControl(key, name);
 }

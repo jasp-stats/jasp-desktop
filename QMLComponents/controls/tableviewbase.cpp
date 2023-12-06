@@ -179,6 +179,12 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 		_tableModel->rScriptDoneHandler(result);
 }
 
+void TableViewBase::filterDoneHandler(const QString &name, const QString & error)
+{
+	if(_tableModel)
+		_tableModel->filterDoneHandler(name, error);
+}
+
 JASPControl::ItemType TableViewBase::itemTypePerItem(int col, int row) const
 {
 	if (col >= 0 && _itemTypePerColumn.length() > col)	return _itemTypePerColumn[col];

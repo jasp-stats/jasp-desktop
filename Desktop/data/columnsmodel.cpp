@@ -25,6 +25,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged		);
 	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered	);
 	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged		);
+	connect(this, &ColumnsModel::dataSetChanged,						info, &VariableInfo::dataSetChanged		);
 	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged	);
@@ -157,6 +158,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::NameRole:					return	data(qColIndex, ColumnsModel::NameRole);
 		case VariableInfo::DataSetRowCount:				return  QTransposeProxyModel::columnCount();
 		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::data(qValIndex,						int(DataSetPackage::specialRoles::value));
+		case VariableInfo::DataSetValues:				return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::valuesStrList));
 		case VariableInfo::MaxWidth:					return	QTransposeProxyModel::headerData(colIndex, Qt::Vertical,	int(DataSetPackage::specialRoles::maxColString)).toInt();
 		case VariableInfo::SignalsBlocked:				return	_tableModel->synchingData();
 		case VariableInfo::VariableNames:				return	getColumnNames();
@@ -164,6 +166,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::PreviewScale:				return	QTransposeProxyModel::headerData(colIndex, Qt::Vertical,	int(DataSetPackage::specialRoles::previewScale));
 		case VariableInfo::PreviewOrdinal:				return	QTransposeProxyModel::headerData(colIndex, Qt::Vertical,	int(DataSetPackage::specialRoles::previewOrdinal));
 		case VariableInfo::PreviewNominal:				return	QTransposeProxyModel::headerData(colIndex, Qt::Vertical,	int(DataSetPackage::specialRoles::previewNominal));
+		case VariableInfo::DataSetPointer:				return	QVariant::fromValue<void*>(DataSetPackage::pkg()->dataSet());
 		}
 	}
 	catch(std::exception & e)
@@ -173,6 +176,43 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 	}
 
 	return QVariant();
+}
+
+bool ColumnsModel::absorbInfo(VariableInfo::InfoType info, const QString &colName, int row, QVariant value)
+{
+	ColumnsModel* colModel = ColumnsModel::singleton();
+
+	if (!colModel)
+		return false;
+
+	try
+	{
+		int colIndex = colModel->getColumnIndex(fq(colName));
+
+		if (colIndex < 0)
+			return false;
+
+		//remember, the model is transposed:
+		QModelIndex qColIndex = index(colIndex, 0),
+					qValIndex = index(colIndex, row);
+
+		int			colTypeInt	= data(qColIndex, ColumnsModel::ColumnTypeRole).toInt();
+		//columnType	colTypeHere	= static_cast<columnType>(colTypeInt);
+
+		switch(info)
+		{
+		default:										return	false;
+		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::setData(qValIndex, value, int(DataSetPackage::specialRoles::value));
+		case VariableInfo::DataSetValues:				return	QTransposeProxyModel::setData(qColIndex, value,	int(DataSetPackage::specialRoles::valuesStrList));
+		}
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
+		throw e;
+	}
+
+	return false;
 }
 
 QHash<int, QByteArray> ColumnsModel::roleNames() const
@@ -232,6 +272,8 @@ void ColumnsModel::datasetChanged(  QStringList                             chan
 					   emit columnsChanged(changedColumns);
 			   }
 	   }
+	   
+	emit dataSetChanged(); //For VariableInfoProvider and listeners
 }
 
 QVariant ColumnsModel::_getLabels(int colId) const

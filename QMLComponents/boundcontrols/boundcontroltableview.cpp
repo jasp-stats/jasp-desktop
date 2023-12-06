@@ -23,6 +23,9 @@
 BoundControlTableView::BoundControlTableView(TableViewBase* tableView)
 	: BoundControlBase(tableView), _tableView(tableView)
 {
+	QObject::connect(qobject_cast<ListModelTableViewBase*>(_tableView->model()), &ListModelTableViewBase::requestComputedColumnCreation,		control(), &JASPControl::requestComputedColumnCreation);
+	QObject::connect(qobject_cast<ListModelTableViewBase*>(_tableView->model()), &ListModelTableViewBase::requestComputedColumnDestruction,		control(), &JASPControl::requestComputedColumnDestruction);
+	
 }
 
 bool BoundControlTableView::isJsonValid(const Json::Value &value) const
@@ -94,7 +97,7 @@ void BoundControlTableView::bindTo(const Json::Value &value)
 {
 	BoundControlBase::bindTo(value);
 
-	ListModelTableViewBase::TableTerms tableTerms;
+	ListModelTableViewBase::TableTerms tableTerms(_tableView->tableModel());
 	QMap<QString, QString> extra;
 
 	fillTableTerms(value, tableTerms);

@@ -58,10 +58,10 @@ bool RCommander::runCode(const QString & code)
 		QFileInfo currentFile(DataSetPackage::pkg()->currentFile());
 		
 		QString path = !currentFile.isFile() ? "~" : currentFile.dir().absolutePath();
-		_engine->runScriptOnCommanderProcess("setwd('"+path+"');\n" + code);
+		_engine->runScriptOnProcess("setwd('"+path+"');\n" + code);
 	}
 	else
-		_engine->runScriptOnCommanderProcess(code);
+		_engine->runScriptOnProcess(code);
 
 	setLastCmd(code);
 

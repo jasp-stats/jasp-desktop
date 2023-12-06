@@ -60,6 +60,7 @@ EngineSync::EngineSync(QObject *parent)
 	using namespace Modules;
 
 	connect(Analyses::analyses(),		&Analyses::sendRScript,								this,						&EngineSync::sendRCode							);
+	connect(Analyses::analyses(),		&Analyses::sendFilterByName,						this,						&EngineSync::sendFilterByName					);
 	connect(this,						&EngineSync::moduleInstallationFailed,				this,						&EngineSync::moduleInstallationFailedHandler	);
 	connect(this,						&EngineSync::moduleInstallationFailed,				DynamicModules::dynMods(),	&DynamicModules::installationPackagesFailed,	Qt::DirectConnection);
 	connect(this,						&EngineSync::moduleInstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::installationPackagesSucceeded,	Qt::DirectConnection);
@@ -95,7 +96,7 @@ EngineSync::~EngineSync()
 		for(EngineRepresentation * engine : _engines)
 		{
 			if(!engine->stopped())
-				engine->killEngine();
+				engine->killEngine(false);
 			delete engine;
 		}
 	}
@@ -249,6 +250,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 			_engines.insert(engine);
 
 		connect(engine,						&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
+		connect(engine,						&EngineRepresentation::filterByNameDone,				Analyses::analyses(),	&Analyses::filterByNameDone,					Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated											);
 		connect(engine,						&EngineRepresentation::processNewFilterResult,			this,					&EngineSync::processNewFilterResult										);
 		connect(engine,						&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone													);
@@ -528,6 +530,22 @@ int EngineSync::sendFilter(const QString & generatedFilter, const QString & filt
 	return _filterCurrentRequestID;
 }
 
+void EngineSync::sendFilterByName(const QString & name, const QString & module)
+{
+	std::queue<RScriptStore *> copyQueue = _waitingScripts;
+	
+	if(copyQueue.size() > 0)
+		for(RScriptStore * script = copyQueue.front(); copyQueue.size() > 0; script = copyQueue.front(), copyQueue.pop())
+		{
+			auto * waiting = static_cast<RFilterByNameStore*>(script);
+			
+			if(waiting && waiting->name == name && waiting->module == module)
+				return;
+		}
+					
+	_waitingScripts.push(new RFilterByNameStore(name, module));
+}
+
 void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion, QString module)
 {
 	_waitingScripts.push(new RScriptStore(requestId, rCode, module, engineState::rCode, whiteListedVersion));
@@ -631,7 +649,7 @@ stringset EngineSync::processRCodeQueue()
 		{
 			RScriptStore * waiting = _waitingScripts.front();
 			
-			if(waiting->typeScript == engineState::rCode)
+			if(waiting->typeScript == engineState::rCode || waiting->typeScript == engineState::filterByName)
 			{
 				const std::string mod = fq(waiting->module);
 			
@@ -651,8 +669,8 @@ stringset EngineSync::processRCodeQueue()
 				else 
 				{
 					foundEngine = true;
-					if(_moduleEngines[mod]->idle())		_moduleEngines[mod]->runScriptOnProcess(waiting);
-					else								engineNotIdle = true;
+					if(!_moduleEngines[mod]->idle())	engineNotIdle = true;
+					else								_moduleEngines[mod]->runScriptOnProcess(waiting);
 				}
 			
 				

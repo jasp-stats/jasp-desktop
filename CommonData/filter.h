@@ -22,9 +22,11 @@ class Filter : public DataSetBaseNode
 {
 public:
 	Filter(DataSet * data);
+	Filter(DataSet * data, const std::string & name, bool createIfMissing = true);
 
 	DataSet					*	data()				const { return _data;					}
 	int							id()				const { return _id;						}
+	const std::string		&	name()				const { return _name;					}
 	const std::string		&	rFilter()			const { return _rFilter;				}
 	const std::string		&	generatedFilter()	const { return _generatedFilter;		}
 	const std::string		&	constructorJson()	const { return _constructorJson;		}
@@ -38,6 +40,7 @@ public:
 	void				setConstructorJson(	const std::string	& constructorJson)	{ _constructorJson	= constructorJson;	dbUpdate(); }
 	void				setConstructorR(	const std::string	& constructorR)		{ _constructorR		= constructorR;		dbUpdate(); }
 	void				setErrorMsg(		const std::string	& errorMsg)			{ _errorMsg			= errorMsg;			dbUpdateErrorMsg(); }
+	void				setName(			const std::string	& name)				{ _name				= name;				dbUpdate(); }
 	bool				setFilterVector(	const boolvec		& filterResult);
 	void				setFilterValueNoDB(	size_t	row, bool val);
 	void				setRowCount(		size_t	rows);
@@ -51,6 +54,8 @@ public:
 	void				dbDelete();
 	void				incRevision() override;
 	bool				checkForUpdates();
+	
+	static bool			filterNameIsFree(const std::string & filterName);
 
 	void				reset();
 
@@ -61,11 +66,12 @@ private:
 	DataSet				*	_data				= nullptr;
 	int						_id					= -1,
 							_filteredRowCount	= 0;
-	std::string				_rFilter			= "generatedFilter",
-							_generatedFilter	= DEFAULT_FILTER_GEN,
-							_constructorJson	= DEFAULT_FILTER_JSON,
+	std::string				_rFilter			= "",
+							_generatedFilter	= "",
+							_constructorJson	= "",
 							_constructorR		= "",
-							_errorMsg			= "";
+							_errorMsg			= "",
+							_name				= "";
 	std::vector<bool>		_filtered;
 };
 

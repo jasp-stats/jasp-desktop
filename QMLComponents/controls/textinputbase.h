@@ -33,7 +33,7 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType, FormulaArrayType};
 
 	TextInputBase(QQuickItem* parent = nullptr);
 
@@ -53,6 +53,8 @@ public:
 	const QString	&label()								const	{ return _label;				}
 	const QString	&afterLabel()							const	{ return _afterLabel;			}
 	bool			infoAddControlType()					const	override		{ return true;	}
+	
+	void			checkIfColumnIsFreeOrMine();
 
 signals:
 	void		formulaCheckSucceeded();

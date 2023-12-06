@@ -22,6 +22,7 @@
 
 #include "listmodeltableviewbase.h"
 
+class Filter;
 class ListModelFilteredDataEntry : public ListModelTableViewBase
 {
 	Q_OBJECT
@@ -31,54 +32,61 @@ class ListModelFilteredDataEntry : public ListModelTableViewBase
 
 public:
 	explicit ListModelFilteredDataEntry(TableViewBase * parent);
+	~ListModelFilteredDataEntry();
 
-	QVariant		data(	const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
-	Qt::ItemFlags	flags(	const QModelIndex &index)								const	override;
-	void			rScriptDoneHandler(const QString & result)								override;
-	const QString&	filter()														const				{ return _tableTerms.filter;	}
-	const QString&	colName()														const				{ return _tableTerms.colName;	}
-	const QString	extraCol()														const				{ return _tableTerms.extraCol;	}
-	const std::vector<size_t>& filteredRowToData()									const				{ return _filteredRowToData;	}
-	const QStringList& dataColumns()												const				{ return _dataColumns;			}
-	void			initTableTerms(const TableTerms& terms)									override;
-	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
-	bool			isEditable(const QModelIndex& index)							const	override	{ return index.column() >= columnCount(); }
-	void			itemChanged(int column, int row, QVariant value, QString type)			override;
+	QVariant					data(	const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
+	Qt::ItemFlags				flags(	const QModelIndex &index)								const	override;
+	void						filterDoneHandler(const QString & name, const QString & error)			override;
+	const QString		&		filter()														const				{ return _tableTerms.filter;	}
+	const std::string	&		filterName()													const				{ return _filterName;			}
+	const QString		&		colName()														const				{ return _tableTerms.colName;	}
+	const QString				extraCol()														const				{ return _tableTerms.extraCol;	}
+	const sizetvec		&		filteredRowToData()												const				{ return _filteredRowToData;	}
+	const QStringList	&		dataColumns()													const				{ return _dataColumns;			}
+	void						initTableTerms(const TableTerms& terms)									override;
+	int							getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
+	bool						isEditable(const QModelIndex& index)							const	override	{ return index.column() >= columnCount(); }
+	void						itemChanged(int column, int row, QVariant value, QString type)			override;
 
-	void			refreshModel()															override;
+	void						refreshModel()															override;
 
-	bool			areColumnNamesVariables()										const	override	{ return true; }
+	bool						areColumnNamesVariables()										const	override	{ return true; }
+	void						informDataSetOfInitialValues();
 
 public slots:
-	void	sourceTermsReset()															override;
-	void	initialValuesChanged()														override;
-	void	setFilter(QString filter);
-	void	setColName(QString colName);
-	void	setExtraCol(QString extraCol);
+	void						sourceTermsReset()															override;
+	void						initialValuesChanged()														override;
+	void						setFilter(	QString filter);
+	void						setColName(	QString colName);
+	void						setExtraCol(QString extraCol);
 
 signals:
-	void	filterChanged(QString filter);
-	void	acceptedRowsChanged();
-	void	colNameChanged(QString colName);
-	void	extraColChanged(QString extraCol);
+	void						filterChanged(	QString filter);
+	void						colNameChanged(	QString colName);
+	void						extraColChanged(QString extraCol);
+	void						acceptedRowsChanged();
 
 private slots:
-	void	dataSetChangedHandler();
-	void	runFilter(QString filter);
+	void						dataSetChangedHandler();
+	void						runFilter();
 
 private:
-	void	setAcceptedRows(std::vector<bool> newRows);
-	void	setAcceptedRowsTrue()		{ setAcceptedRows(std::vector<bool>(getDataSetRowCount(), true)); }
-	size_t	getDataSetRowCount()	const;
-	void	fillTable();
+	void						setAcceptedRows(boolvec newRows);
+	size_t						getDataSetRowCount()	const;
+	void						fillTable();
 
-	std::vector<bool>			_acceptedRows;
-	std::vector<size_t>			_filteredRowToData;
+	
+private:
+	boolvec						_acceptedRows;
+	sizetvec					_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;
-	std::vector<double>			_initialValues;
+	doublevec					_initialValues;
 	int							_editableColumn = 0;
 	QStringList					_dataColumns,
 								_extraColsStr;
+	std::string					_filterName;
+	Filter					*	_filter			= nullptr;
+	bool						_informOnce		= false;
 };
 
 #endif // LISTMODELFILTEREDDATAENTRY_H

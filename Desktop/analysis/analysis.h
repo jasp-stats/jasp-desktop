@@ -81,6 +81,7 @@ public:
 	void				imageEdited(		const Json::Value & results);
 	void				imagesRewritten(	const Json::Value & results);
 	void				rewriteImages();
+	bool				isColumnFreeOrMine(const QString & columnName)				const override;
 
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);
@@ -174,8 +175,8 @@ signals:
 	void					optionsChanged();
 
 	Column				*	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
-	void					requestColumnCreation(				const std::string & columnName, Analysis * source, columnType type);
-	void					requestComputedColumnDestruction(	const std::string & columnName);
+	bool					requestColumnCreation(				const std::string & columnName, Analysis * source, columnType type);
+	bool					requestComputedColumnDestruction(	const std::string & columnName, Analysis * analysis);
 
 	void					refreshTableViewModels();
 	void					expandAnalysis();
@@ -183,6 +184,7 @@ signals:
 
 	void					createFormWhenYouHaveAMoment(QQuickItem* parent = nullptr);
 	void					analysisInitialized();
+	
 
 public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);
@@ -194,6 +196,7 @@ public slots:
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
 	void					setRSyntaxTextInResult();
+	void					filterByNameDone(const QString &name, const QString &error);
 	void					onUsedVariablesChanged()																	override;
 
 protected:

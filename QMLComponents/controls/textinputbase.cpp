@@ -130,6 +130,13 @@ void TextInputBase::bindTo(const Json::Value& value)
 	{
 		if (value.isString())	_value = tq(value.asString());
 		setIsColumn(true);
+		checkIfColumnIsFreeOrMine();
+		break;
+	}
+	case TextInputType::CheckColumnFreeOrMineType:
+	{
+		if (value.isString())	_value = tq(value.asString());
+		checkIfColumnIsFreeOrMine();
 		break;
 	}
 	case TextInputType::AddColumnType:
@@ -137,6 +144,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (value.isString())	_value = tq(value.asString());
 		columnType	colType		= static_cast<columnType>(property("columnType").toInt());
 		setIsColumn(false, colType);
+		checkIfColumnIsFreeOrMine();
 		break;
 	}
 	default:
@@ -183,6 +191,7 @@ void TextInputBase::setUp()
 	else if (type == "integerArray")	_inputType = TextInputType::IntegerArrayInputType;
 	else if (type == "doubleArray")		_inputType = TextInputType::DoubleArrayInputType;
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
+	else if (type == "checkColumn")		_inputType = TextInputType::CheckColumnFreeOrMineType;
 	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
 	else if (type == "formula")			_inputType = TextInputType::FormulaType;
 	else if (type == "formulaArray")	_inputType = TextInputType::FormulaArrayType;
@@ -254,23 +263,41 @@ QString TextInputBase::friendlyName() const
 {
 	switch (_inputType)
 	{
-	case TextInputType::IntegerInputType:		return tr("Integer Field");
-	case TextInputType::NumberInputType:		return tr("Double Field");
-	case TextInputType::PercentIntputType:		return tr("Percentage Field");
-	case TextInputType::IntegerArrayInputType:	return tr("Integers Field");
-	case TextInputType::DoubleArrayInputType:	return tr("Doubles Field");
-	case TextInputType::AddColumnType:			return tr("Add Column Field");
-	case TextInputType::ComputedColumnType:		return tr("Add Computed Column Field");
-	case TextInputType::FormulaType:			return tr("Formula Field");
-	case TextInputType::FormulaArrayType:		return tr("Formulas Field");
+	case TextInputType::IntegerInputType:			return tr("Integer Field");
+	case TextInputType::NumberInputType:			return tr("Double Field");
+	case TextInputType::PercentIntputType:			return tr("Percentage Field");
+	case TextInputType::IntegerArrayInputType:		return tr("Integers Field");
+	case TextInputType::DoubleArrayInputType:		return tr("Doubles Field");
+	case TextInputType::AddColumnType:				return tr("Add Column Field");
+	case TextInputType::ComputedColumnType:			return tr("Add Computed Column Field");
+	case TextInputType::CheckColumnFreeOrMineType:	return tr("Column-name-is-free field");
+	case TextInputType::FormulaType:				return tr("Formula Field");
+	case TextInputType::FormulaArrayType:			return tr("Formulas Field");
 	case TextInputType::StringInputType:
-	default:									return tr("Text Field");
+	default:										return tr("Text Field");
 	}
+}
+
+void TextInputBase::checkIfColumnIsFreeOrMine()
+{
+	QString val = _value.toString();
+	
+	if(val.isEmpty())
+		return;
+	
+	if(form() && !form()->isColumnFreeOrMine(val))
+	{
+		setHasScriptError(true);
+		control()->addControlError(tr("Column '%1' already exists and is not created by this analysis.").arg(val));
+	}
+	else
+		setHasScriptError(false);
+		
 }
 
 bool TextInputBase::encodeValue() const
 {
-	return _inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType;
+	return _inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType;
 }
 
 bool TextInputBase::_formulaResultInBounds(double result)
@@ -278,12 +305,11 @@ bool TextInputBase::_formulaResultInBounds(double result)
 	double min			= property("min").toDouble();
 	double max			= property("max").toDouble();
 	JASPControl::Inclusive inclusive = JASPControl::Inclusive(property("inclusive").toInt());
-	bool includeMin = (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MinOnly);
-	bool includeMax = (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MaxOnly);
-
-	bool tooSmall = includeMin ? result < min : result <= min;
-	bool tooLarge = includeMax ? result > max : result >= max;
-	bool inBounds = !(tooSmall || tooLarge);
+	bool	includeMin	= (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MinOnly),
+			includeMax	= (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MaxOnly),
+			tooSmall	= includeMin ? result < min : result <= min,
+			tooLarge	= includeMax ? result > max : result >= max,
+			inBounds	= !(tooSmall || tooLarge);
 
 	if (!inBounds)
 	{
@@ -346,6 +372,9 @@ void TextInputBase::setValue(const QVariant &value)
 {
 	bool hasChanged = _value != value;
 	_value = value;
+	
+	if(_inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType)
+		checkIfColumnIsFreeOrMine();
 
 	setDisplayValue();
 

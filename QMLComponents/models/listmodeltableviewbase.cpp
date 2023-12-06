@@ -19,9 +19,8 @@
 #include "log.h"
 #include <QSize>
 #include <fstream>
-#include "listmodeltableviewbase.h"
 #include "analysisform.h"
-#include "utilities/qutils.h"
+#include "listmodeltableviewbase.h"
 #include "controls/tableviewbase.h"
 #include "controls/textinputbase.h"
 #include "utilities/desktopcommunicator.h"
@@ -29,7 +28,7 @@
 using namespace std;
 
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
-	: ListModel(tableView), _tableView(tableView)
+	: ListModel(tableView), _tableView(tableView), _tableTerms(TableTerms(this))
 {
 	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
@@ -432,6 +431,11 @@ Qt::ItemFlags ListModelTableViewBase::flags(const QModelIndex &index) const
 void ListModelTableViewBase::runRScript(const QString & script)
 {
 	_tableView->runRScript(script);
+}
+
+void ListModelTableViewBase::runFilterByName(const QString &name)
+{
+	_tableView->runFilter(name);
 }
 
 bool ListModelTableViewBase::valueOk(QVariant value, int col, int row)

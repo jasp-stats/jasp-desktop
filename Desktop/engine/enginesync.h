@@ -65,9 +65,10 @@ public:
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
-	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
-	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
-	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
+	int			sendFilter(			const QString & generatedFilter,	const QString & filter);
+	void		sendFilterByName(	const QString & name,				const QString & module);
+	void		sendRCode(			const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
+	void		computeColumn(		const QString & columnName,			const QString & computeCode,	columnType columnType);
 	void		pauseEngines(bool  unloadData = false);
 	void		stopEngines();
 	void		resumeEngines();

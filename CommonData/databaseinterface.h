@@ -93,16 +93,18 @@ public:
 	void		dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Filters
-	std::string filterName(				int filterIndex) const;
+	std::string filterTableName(		int filterIndex) const;
 	int			filterGetId(			int dataSetId);
+	int			filterGetId(			const std::string & name);
 	bool		filterSelect(			int filterIndex,			boolvec & bools);																	///< Loads result and errorMsg and returns whether there was a change in either of those.
 	void		filterWrite(			int filterIndex,	const	boolvec & values);																	///< Overwrites the current filter values, no checks are done on the size. If too few the rest is TRUE nd superfluous bools are ignored.
-	int			filterInsert(			int dataSetId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "");		///< Inserts a new Filter row into Filters and creates an empty FilterValues_#id. It returns id
-	void		filterUpdate(			int filterIndex,	const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "");		///< Updates an existing Filter row in Filters
-	void		filterLoad(				int filterIndex,		  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision);			///< Loads an existing Filter row into arguments
+	int			filterInsert(			int dataSetId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Inserts a new Filter row into Filters and creates an empty FilterValues_#id. It returns id
+	void		filterUpdate(			int filterIndex,	const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Updates an existing Filter row in Filters
+	void		filterLoad(				int filterIndex,		  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision, std::string & name);			///< Loads an existing Filter row into arguments
 	void		filterClear(			int filterIndex);																					///< Clears all values in Filter
 	void		filterDelete(			int filterIndex);
 	int			filterGetDataSetId(		int filterIndex);
+	std::string	filterGetName(			int filterIndex);
 	std::string	filterLoadErrorMsg(		int filterIndex);
 	void		filterUpdateErrorMsg(	int filterIndex, const	std::string & errorMsg);
 	int			filterIncRevision(		int filterIndex);

@@ -756,9 +756,20 @@ void JASPControl::runRScript(const QString &script, bool whiteListedVersion)
 	form()->runRScript(script, id, whiteListedVersion);
 }
 
+void JASPControl::runFilter(const QString & name)
+{
+	form()->runFilter(name);
+}
+
 void JASPControl::rScriptDoneHandler(const QString &)
 {
-	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
+	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for rScriptDoneHandler\n");
+}
+
+void JASPControl::filterDoneHandler(const QString &name, const QString & error)
+{
+	//throw std::runtime_error("runFilter done but handler not implemented!\nImplement an override for filterDoneHandler\n");
+	//No need to be annoying about it, each control that cares about a particular filter can just check it and the default does nothing.
 }
 
 void JASPControl::_setFocus()

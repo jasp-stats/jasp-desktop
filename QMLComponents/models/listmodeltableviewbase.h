@@ -20,7 +20,6 @@
 #define LISTMODELTABLEVIEWBASE_H
 
 #include "listmodel.h"
-#include "common.h"
 
 class TableViewBase;
 
@@ -32,16 +31,18 @@ class ListModelTableViewBase : public ListModel
 public:
 	struct TableTerms
 	{
-		QVector<QVector<QVariant> >	values;
-		QStringList					rowNames,
-									colNames;
-		Terms						variables;
-		QString						colName,
-									extraCol,
-									filter;
-		QVector<int>				rowIndices;
+		QVector<QVector<QVariant> >		values;
+		QStringList						rowNames,
+										colNames;
+		Terms							variables;
+		QString							colName,
+										extraCol,
+										filter,
+										filterName;
+		QVector<int>					rowIndices;
+		ListModelTableViewBase *		_listModel;
 
-		TableTerms() {}
+		TableTerms(ListModelTableViewBase * list) : _listModel(list) {}
 
 		void clear()
 		{
@@ -93,8 +94,10 @@ public:
 				Terms				filterTerms(const Terms& terms, const QStringList& filters)					override;
 
 
-				void				runRScript(		const QString & script);
-	virtual		void				rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
+				void				runRScript(			const QString & script);
+				void				runFilterByName(	const QString & name);
+	virtual		void				rScriptDoneHandler(	const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
+	virtual		void				filterDoneHandler(	const QString & name, const QString & error)	{ /* do nothing */ }
 
 				bool				valueOk(QVariant value, int col = -1, int row = -1);
 	virtual		bool				isRCodeColumn(int)													const				{ return false; }
@@ -109,6 +112,10 @@ signals:
 	void rowCountChanged();
 	void variableCountChanged();
 	void itemChangedSignal(int column, int row, double value);
+
+	void requestComputedColumnCreation(		std::string columnName);
+	void requestComputedColumnDestruction(	std::string columnName);
+
 
 public slots:
 	virtual void initialValuesChanged() {}

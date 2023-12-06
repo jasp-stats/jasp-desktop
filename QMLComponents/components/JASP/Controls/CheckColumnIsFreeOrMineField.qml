@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2021 University of Amsterdam
+// Copyright (C) 2013-2024 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,21 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDCONTROLFILTEREDTABLEVIEW_H
-#define BOUNDCONTROLFILTEREDTABLEVIEW_H
+import QtQuick 2.11
+import JASP.Controls 1.0
+import JASP 1.0
 
-#include "boundcontroltableview.h"
-
-class BoundControlFilteredTableView : public BoundControlTableView
+TextField
 {
-public:
-	BoundControlFilteredTableView(TableViewBase* tableView);
-
-	Json::Value		createJson()																		const	override;
-	Json::Value		createMeta()																		const	override;
-
-	void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms)	override;
-	void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)	override;
-};
-
-#endif // BOUNDCONTROLFILTEREDTABLEVIEW_H
+	inputType:			"checkColumn"
+}

@@ -291,6 +291,7 @@ void EngineRepresentation::processReplies()
 			switch(typeRequest)
 			{
 			case engineState::filter:				processFilterReply(json);			break;
+			case engineState::filterByName:			processFilterByNameReply(json);		break;
 			case engineState::rCode:				processRCodeReply(json);			break;
 			case engineState::analysis:				processAnalysisReply(json);			break;
 			case engineState::computeColumn:		processComputeColumnReply(json);	break;
@@ -338,6 +339,18 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	sendString(json.toStyledString());
 }
 
+void EngineRepresentation::runScriptOnProcess(RFilterByNameStore *filterStore)
+{
+	Json::Value json = Json::Value(Json::objectValue);
+
+	setState(engineState::filterByName);
+
+	json["typeRequest"]		= engineStateToString(_engineState);
+	json["name"]			= filterStore->name.toStdString();
+
+	sendString(json.toStyledString());
+}
+
 void EngineRepresentation::processFilterReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::filter);
@@ -362,7 +375,23 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 	}
 }
 
-void EngineRepresentation::runScriptOnCommanderProcess(const QString & rCmdCode)
+void EngineRepresentation::processFilterByNameReply(Json::Value &json)
+{
+	checkIfExpectedReplyType(engineState::filterByName);
+
+	setState(engineState::idle);
+
+#ifdef PRINT_ENGINE_MESSAGES
+	Log::log() << "msg is filter by name reply" << std::endl;
+#endif
+
+	std::string name	= json.get("name",			"???").asString(),
+				error	= json.get("errorMessage", "").asString();
+
+	emit filterByNameDone(tq(name), tq(error));
+}
+
+void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
 {
 	RScriptStore * script = new RScriptStore(-1, rCmdCode, "", engineState::rCode, false, true);
 
@@ -373,19 +402,31 @@ void EngineRepresentation::runScriptOnCommanderProcess(const QString & rCmdCode)
 
 void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 {
-	Json::Value json = Json::Value(Json::objectValue);
+	switch(scriptStore->typeScript)
+	{
+	default:
+	{
+		Json::Value json = Json::Value(Json::objectValue);
 
-	setState(engineState::rCode);
+		setState(engineState::rCode);
 
-	json["typeRequest"]		= engineStateToString(_engineState);
-	json["rCode"]			= scriptStore->script.toStdString();
-	json["requestId"]		= scriptStore->requestId;
-	json["whiteListed"]		= scriptStore->whiteListedVersion;
-	json["returnLog"]		= scriptStore->returnLog;
+		json["typeRequest"]		= engineStateToString(_engineState);
+		json["rCode"]			= scriptStore->script.toStdString();
+		json["requestId"]		= scriptStore->requestId;
+		json["whiteListed"]		= scriptStore->whiteListedVersion;
+		json["returnLog"]		= scriptStore->returnLog;
 
-	_lastRequestId			= scriptStore->requestId;
+		_lastRequestId			= scriptStore->requestId;
 
-	sendString(json.toStyledString());
+		sendString(json.toStyledString());
+
+		return;
+	}
+
+	case engineState::filter:			runScriptOnProcess(static_cast<RFilterStore*>(scriptStore));			return;
+	case engineState::filterByName:		runScriptOnProcess(static_cast<RFilterByNameStore*>(scriptStore));		return;
+	case engineState::computeColumn:	runScriptOnProcess(static_cast<RComputeColumnStore*>(scriptStore));		return;
+	}
 }
 
 
@@ -651,11 +692,11 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 		abortAnalysisInProgress(_analysisInProgress->isEmpty());
 }
 
-void EngineRepresentation::killEngine()
+void EngineRepresentation::killEngine(bool beCareful)
 {
 	Log::log() << "Killing Engine #" << channelNumber() << std::endl; //" and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
 
-	if(_analysisInProgress)
+	if(beCareful && _analysisInProgress)
 		abortAnalysisInProgress(true);
 
 	setState(engineState::killed);
