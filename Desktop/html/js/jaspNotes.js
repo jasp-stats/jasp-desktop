@@ -70,9 +70,11 @@ if (insideJASP) {
 		return url
 	}
 
-	const BlockEmbed = Quill.import("blots/block/embed");
+	//// Video Blot modified from quill.js ////
+	
+	const VideoEmbed = Quill.import("blots/block/embed");
 
-	class EmbendVideo extends BlockEmbed {
+	class EmbendVideo extends VideoEmbed {
 		static create(value) {
 			value = customVideoUrl(value)
 			let node = super.create(value);
@@ -105,6 +107,32 @@ if (insideJASP) {
 	EmbendVideo.tagName = 'IFRAME';
 
 	Quill.register(EmbendVideo, true);
+
+	//// Formula Blots modified from quill.js////
+
+	const FormulaEmbed = Quill.import('blots/embed');
+
+	class FormulaBlot extends FormulaEmbed {
+		static create(value) {
+			let node = super.create(value);
+			if (typeof value === 'string') {
+				// Hack to replaces Katex with MathJax
+				node = MathJax.tex2svg(value, {display: false})
+				node.setAttribute('data-value', value);
+			}
+			return node;
+		}
+
+		static value(domNode) {
+			return domNode.getAttribute('data-value');
+		}
+
+	}
+	FormulaBlot.blotName = 'formula';
+	FormulaBlot.className = 'ql-formula';
+	FormulaBlot.tagName = 'SPAN';
+
+	Quill.register(FormulaBlot, true);
 
 }
 
