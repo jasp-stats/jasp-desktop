@@ -249,10 +249,10 @@ JASPWidgets.Exporter = {
 	},
 
 	getHeaderStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color"]);
-		else
-			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
+		//if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color", "font-style", "text-transform"]);
+		// else
+		// 	return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
 	},
 
 	getTableStyles: function (element, exportParams) {
