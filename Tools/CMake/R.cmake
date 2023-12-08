@@ -34,19 +34,30 @@
 #
 
 set(JASP_STATIC_IS_DOWN_AGAIN OFF CACHE BOOL "Turn ON to try to get R from CRAN instead")
+set(STATIC_DEVELOPMENT_REPOSITORY "https://static.jasp-stats.org/development/")
+
+if(APPLE)
+    set(XQUARTZ_VERSION "2.8.5")
+endif()
 
 if(NOT JASP_STATIC_IS_DOWN_AGAIN)
-	set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development/")
+    set(R_BINARY_REPOSITORY "${STATIC_DEVELOPMENT_REPOSITORY}")
+    set(XQUARTZ_REPOSITORY "${STATIC_DEVELOPMENT_REPOSITORY}")
+    set(GFORTRAN_REPOSITORY "${STATIC_DEVELOPMENT_REPOSITORY}")
 else()
-	if(APPLE)
-		if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-			set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/")
-		else()
-			set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-x86_64/base/")
-		endif()
-	elseif(WINDOWS)
-		set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/windows/base/")
-	endif()
+    # TODO: GFORTRAN_REPOSITORY should be set somewhere else...
+    set(GFORTRAN_REPOSITORY "${STATIC_DEVELOPMENT_REPOSITORY}")
+
+    if(APPLE)
+            if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+                    set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/")
+            else()
+                    set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-x86_64/base/")
+            endif()
+            set(XQUARTZ_REPOSITORY "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-${XQUARTZ_VERSION}/")
+    elseif(WINDOWS)
+            set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/windows/base/")
+    endif()
 endif()
 
 
@@ -183,6 +194,8 @@ if(APPLE)
   if(INSTALL_R_FRAMEWORK AND (NOT EXISTS
                               ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
 
+    set(XQUARTZ_URL "${XQUARTZ_REPOSITORY}XQuartz-${XQUARTZ_VERSION}.pkg")
+
     if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
 
       set(R_VERSION_NAME "R-${R_VERSION}-${CMAKE_OSX_ARCHITECTURES}")
@@ -260,7 +273,7 @@ if(APPLE)
 
           fetchcontent_declare(
             gfortran_tar_gz
-            URL "https://static.jasp-stats.org/development/gfortran-12.0.1-20220312-is-darwin20-arm64.tar.xz"
+            URL "${GFORTRAN_REPOSITORY}gfortran-12.0.1-20220312-is-darwin20-arm64.tar.xz"
             URL_HASH
               SHA256=a2ab8be30a7d92a24f53e1509c8c0804f8502f0bc35469750e3f1e233d1c64b8
             DOWNLOAD_NO_EXTRACT ON
@@ -302,7 +315,7 @@ if(APPLE)
           # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
           fetchcontent_declare(
             gfortran_dmg
-            URL "https://static.jasp-stats.org/development/gfortran-8.2-Mojave.dmg"
+            URL "{GFORTRAN_REPOSITORY}gfortran-8.2-Mojave.dmg"
             URL_HASH
               SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
             DOWNLOAD_NO_EXTRACT ON
@@ -353,6 +366,40 @@ if(APPLE)
         execute_process(
           WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
           COMMAND cp -Rpf R.framework ${CMAKE_BINARY_DIR}/Frameworks)
+
+        message(CHECK_PASS "done.")
+      else()
+        message(CHECK_FAIL "failed.")
+      endif()
+
+      fetchcontent_declare(
+        xquartz_pkg
+        URL ${XQUARTZ_URL}
+        URL_HASH
+            SHA256=e89538a134738dfa71d5b80f8e4658cb812e0803115a760629380b851b608782
+        DOWNLOAD_NO_EXTRACT ON
+        DOWNLOAD_NAME XQuartz.pkg)
+
+      message(CHECK_START "Downloading XQuartz.pkg")
+
+      fetchcontent_makeavailable(xquartz_pkg)
+
+      if(xquartz_pkg_POPULATED)
+        message(CHECK_START "Unpacking XQuartz.pkg")
+        execute_process(WORKING_DIRECTORY ${xquartz_pkg_SOURCE_DIR}
+                          COMMAND xar -xf XQuartz.pkg)
+        message(CHECK_PASS "done.")
+
+        message(CHECK_START "Unpacking XQuartzComponent.pkg/Payload")
+        execute_process(WORKING_DIRECTORY ${xquartz_pkg_SOURCE_DIR}
+                          COMMAND tar -xf XQuartzComponent.pkg/Payload)
+        message(CHECK_PASS "done.")
+
+        set(XQUARTZ_LIB ${CMAKE_BINARY_DIR}/Frameworks/R.framework/Resources/opt/X11/lib)
+        make_directory(${XQUARTZ_LIB})
+        execute_process(
+          WORKING_DIRECTORY ${xquartz_pkg_SOURCE_DIR}
+          COMMAND sh -c "cp -pf opt/X11/lib/{libSM.6.dylib,libICE.6.dylib,libX11.6.dylib,libXext.6.dylib,libXrender.1.dylib,libXt.6.dylib,libXmu.6.dylib,libxcb.1.dylib,libXau.6.dylib} ${XQUARTZ_LIB}")
 
         message(CHECK_PASS "done.")
       else()

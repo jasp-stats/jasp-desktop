@@ -94,7 +94,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 
 			std::string libName 	= path.stem().string() + path.extension().string();
-	
+
 			for(size_t i = 1; i < otoolLines.size(); i++)
 			{
 				std::string line = otoolLines[i];
@@ -113,7 +113,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
                     {"/usr/local/lib/libjrmath",									framework_resources + "opt/jags/lib/libjrmath"},
                     {"/usr/local/lib", 												framework_resources + "opt/local/lib"},
                     {"/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/12.2.0",		framework_resources + "lib"},
-                    {"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/12.2.0",		framework_resources + "opt/R/arm64/gfortran/lib"},
+					{"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/12.2.0",		framework_resources + "opt/R/arm64/gfortran/lib"},
+					{"/opt/X11/lib",												framework_resources + "opt/X11/lib"},
 				};
 
 				// Known fix library id's and paths 

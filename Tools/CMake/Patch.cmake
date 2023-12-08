@@ -92,6 +92,84 @@ else()
       # Later on, after we are sure that everything works as expected, we can
       # make it nicer.
 
+       if((FILE MATCHES "R_X11.so")
+             OR (FILE MATCHES "R_de.so")
+             OR (FILE MATCHES "opt/X11"))
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libSM.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libSM.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libICE.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libICE.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libX11.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libX11.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libXext.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXext.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libXrender.1.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXrender.1.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libXt.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXt.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libXmu.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXmu.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libXau.6.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXau.6.dylib"
+                "${FILE}")
+
+        endif()
+
+
       if((FILE MATCHES "prophet.so")
          OR (FILE MATCHES "metaBMA.so")
          OR (FILE MATCHES "rstanarm.so")
@@ -131,6 +209,7 @@ else()
                   "@executable_path/../Modules/${MODULE}"
                   NEW_ID
                   ${FILE})
+
 
       elseif(FILE MATCHES "/opt/R/arm64/gfortran/lib/")
 
@@ -182,6 +261,15 @@ else()
           REPLACE
             "${R_HOME_PATH}/modules/"
             "${FRAMEWORK_RESOURCES}/modules/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/opt/X11/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/X11/"
+            "${FRAMEWORK_RESOURCES}/opt/X11/"
             NEW_ID
             ${FILE})
 
