@@ -315,7 +315,7 @@ if(APPLE)
           # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
           fetchcontent_declare(
             gfortran_dmg
-            URL "{GFORTRAN_REPOSITORY}gfortran-8.2-Mojave.dmg"
+            URL "${GFORTRAN_REPOSITORY}gfortran-8.2-Mojave.dmg"
             URL_HASH
               SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
             DOWNLOAD_NO_EXTRACT ON

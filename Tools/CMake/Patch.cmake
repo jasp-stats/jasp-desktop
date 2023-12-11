@@ -94,7 +94,8 @@ else()
 
        if((FILE MATCHES "R_X11.so")
              OR (FILE MATCHES "R_de.so")
-             OR (FILE MATCHES "opt/X11"))
+             OR (FILE MATCHES "opt/X11")
+             OR (FILE MATCHES "grDevices"))
             execute_process(
               # COMMAND_ECHO STDOUT
               ERROR_QUIET OUTPUT_QUIET
@@ -165,6 +166,15 @@ else()
               COMMAND
                 install_name_tool -change "/opt/X11/lib/libXau.6.dylib"
                 "${FRAMEWORK_RESOURCES}/opt/X11/lib/libXau.6.dylib"
+                "${FILE}")
+
+            execute_process(
+              # COMMAND_ECHO STDOUT
+              ERROR_QUIET OUTPUT_QUIET
+              WORKING_DIRECTORY ${PATH}
+              COMMAND
+                install_name_tool -change "/opt/X11/lib/libxcb.1.dylib"
+                "${FRAMEWORK_RESOURCES}/opt/X11/lib/libxcb.1.dylib"
                 "${FILE}")
 
         endif()
