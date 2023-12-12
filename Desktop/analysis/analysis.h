@@ -146,6 +146,7 @@ public:
 	performType				desiredPerformTypeFromAnalysisStatus()										const;
 
 	stringset				usedVariables();
+	stringset				createdVariables();
 	void					runScriptRequestDone(const QString & result, const QString & controlName, bool hasError);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);

@@ -281,7 +281,8 @@ public:
 				void						databaseStartSynching(bool syncImmediately);
 				void						databaseStopSynching();
 				bool						synchingExternally() const;
-				void						checkComputedColumnDependenciesForAnalysis(Analysis * analysis);
+				void						checkComputedColumnDependenciesForAnalysis(	Analysis * analysis);
+				stringset					columnsCreatedByAnalysis(					Analysis * analysis);
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
 
