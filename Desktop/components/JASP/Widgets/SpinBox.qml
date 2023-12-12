@@ -169,12 +169,12 @@ Item
 		visible:			root.activeFocus
 	}
 
-     MouseArea
-     {
-        id:					hoverMe
-        anchors.fill:		valueField
-        hoverEnabled:		true
-        acceptedButtons:	Qt.NoButton
-        onWheel:			if(wheel.angleDelta > 0) plus.clicked(); else minus.clicked();
-     }
+	MouseArea
+	{
+		id:					hoverMe
+		anchors.fill:		valueField
+		hoverEnabled:		true
+		acceptedButtons:	Qt.NoButton
+		onWheel: 			(wheel)=> { if(wheel.angleDelta.y > 0) plus.clicked(); else minus.clicked(); }
+    }
 }
