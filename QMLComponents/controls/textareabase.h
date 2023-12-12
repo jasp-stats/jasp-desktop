@@ -75,6 +75,8 @@ public slots:
 signals:
 	void	textTypeChanged();
 	void	hasScriptErrorChanged();
+	void	applyRequest();
+	void	editingFinished();
 
 protected slots:
 	void	termsChangedHandler()		override;

@@ -70,7 +70,12 @@ void TextAreaBase::setUp()
 			_separators.push_back(separator.toString());
 	}
 
-	connect(this, SIGNAL(applyRequest()), this, SLOT(checkSyntaxHandler()));
+	//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
+	//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
+	connect(VariableInfo::info(),	&VariableInfo::rowCountChanged,		this,		&TextAreaBase::checkSyntaxHandler);
+
+	//Also do it on request of course ;)
+	connect(this,					&TextAreaBase::applyRequest,		this,		&TextAreaBase::checkSyntaxHandler);
 }
 
 void TextAreaBase::rScriptDoneHandler(const QString & result)
