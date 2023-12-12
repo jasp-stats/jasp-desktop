@@ -57,8 +57,8 @@ protected:
 	strintmap					_roleNameToRole;
 	UndoStack*					_undoStack				= nullptr;
 
-	const int	EXTRA_COLS				= 5;
-	const int	EXTRA_ROWS				= 10;
+	const int	EXTRA_COLS				= 7;
+	const int	EXTRA_ROWS				= 20;
 };
 
 #endif // EXPANDDATAPROXYMODEL_H
