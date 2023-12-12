@@ -2179,6 +2179,8 @@ QString DataSetPackage::insertColumnSpecial(int column, const QMap<QString, QVar
 
 	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
+	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+
 	return QString::fromStdString(name);
 }
 
@@ -2222,6 +2224,8 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 
 	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
 
+	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+
 	return true;
 }
 
@@ -2254,6 +2258,8 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 	endRemoveColumns();
 #endif
 	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
+
+	ColumnEncoder::setCurrentColumnNames(getColumnNames());
 
 	return true;
 }
