@@ -99,11 +99,13 @@ Analysis::~Analysis()
 		destroyForm();
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
+	{
 		for(const std::string & col : computedColumns())
 			if(DataSetPackage::pkg()->isColumnAnalysisNotComputed(col))
 				DataSetPackage::pkg()->setColumnComputedType(col, computedColumnType::notComputed);
 			else
 				emit requestComputedColumnDestruction(col);
+	}
 }
 
 bool Analysis::checkAnalysisEntry()
