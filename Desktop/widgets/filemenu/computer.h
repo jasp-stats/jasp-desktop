@@ -53,9 +53,7 @@ signals:
 	void browseSaveSignal(const QString & path = "", FileEvent::FileMode mode = FileEvent::FileSave);
 
 private:
-	// these two variables are a hack!
-	bool	_hasFileName;
-	QString _fileName;	
+	QString _fileName; ///< Used to show right filename in save-as JASP file dialog
 	
 	ComputerListModel *_computerListModel = nullptr;
 };

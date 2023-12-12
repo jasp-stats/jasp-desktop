@@ -65,14 +65,14 @@ FileEvent *Computer::browseOpen(const QString &path)
 FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
 	QString caption = tr("Save");
-	QString filter  = tr("JASP Files") += " (*.jasp)";
+	QString filter  = tr("JASP Files") + " (*.jasp)";
 
 	QString browsePath = path;
 	if (path == "")
 		browsePath = _computerListModel->getMostRecent();
 
-	if (_hasFileName)
-		browsePath += QDir::separator() + _fileName;
+	if (!_fileName.isEmpty())
+		browsePath += QDir::separator() + _fileName + ".jasp";
 
 	switch(mode)
 	{
@@ -138,13 +138,11 @@ void Computer::analysesExportResults()
 void Computer::setFileName(const QString &filename)
 {
 	_fileName = filename;
-	_hasFileName = true;
 }
 
 void Computer::clearFileName()
 {
 	_fileName = "";
-	_hasFileName = false;
 }
 
 void Computer::browsePath(QString path)
