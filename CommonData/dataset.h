@@ -35,7 +35,7 @@ public:
 
 			void			dbCreate();
 			void			dbUpdate();
-			void			dbLoad(int index = -1, const Version& loadedJaspVersion = Version(), std::function<void(float)> progressCallback = [](float){});
+			void			dbLoad(int index = -1, std::function<void(float)> progressCallback = [](float){});
 			void			dbDelete();
 
 			void			beginBatchedToDB();

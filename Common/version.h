@@ -30,15 +30,17 @@ class Version
 public:
 	struct encodingError  : public std::runtime_error
 	{
-		encodingError(std::string versionStr) : std::runtime_error("Module version not understood: " + versionStr) {}
+		encodingError(const std::string & versionStr) : std::runtime_error("Module version not understood: " + versionStr) {}
 		const char* what() const noexcept override;
 	};
 
-	Version(std::string version);
+	Version(const char * version);
+	Version(const std::string & version);
 	Version(unsigned int major = 0, unsigned int minor = 0, unsigned int release = 0, unsigned int fourth = 0) : _major(major), _minor(minor), _release(release), _fourth(fourth) {}
 
 	///By default this tries to minimize the string, so all trailing zeroes + dots are removed. Unless versionNumbersToInclude is set to something >1. If 2 then major and minor are always shown, etc.
 	std::string asString(size_t versionNumbersToInclude = 0) const;
+	
 
 
 	unsigned int major()	const { return _major; }
@@ -56,6 +58,9 @@ public:
 	bool		operator >	(const Version & other) const;
 	bool		operator ==	(const Version & other) const;
 	bool		operator !=	(const Version & other) const;
+
+protected:
+	void		fromString(const std::string &  version);
 
 
 private:

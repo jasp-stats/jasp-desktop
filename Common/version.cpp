@@ -25,7 +25,17 @@ const char * Version::encodingError::what() const noexcept
 }
 
 
-Version::Version(std::string version)
+Version::Version(const char * version)
+{
+	fromString(version);
+}
+
+Version::Version(const std::string & version)
+{
+	fromString(version);
+}
+
+void Version::fromString(const std::string & version)
 {
 	const static std::regex parseIt("(\\d+)(\\.(\\d+))?(\\.(\\d+))?(\\.(\\d+))?"); //(sub)groups: 1 3 5 7//0 is whole match/line
 

@@ -1282,8 +1282,12 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	if(_dataSet)
 		deleteDataSet(); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 
+	_db->close();
+	_db->load();
+	_db->upgradeDBFromVersion(_jaspVersion);
+
 	_dataSet = new DataSet(0);
-	_dataSet->dbLoad(1, jaspVersion(), progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple
+	_dataSet->dbLoad(1, progressCallback); //Right now there can only be a dataSet with ID==1 so lets keep it simple
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 

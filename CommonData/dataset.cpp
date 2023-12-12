@@ -221,7 +221,7 @@ void DataSet::dbUpdate()
 	incRevision();
 }
 
-void DataSet::dbLoad(int index, const Version& loadedJaspVersion, std::function<void(float)> progressCallback)
+void DataSet::dbLoad(int index, std::function<void(float)> progressCallback)
 {
 	//Log::log() << "loadDataSet(index=" << index << "), _dataSetID="<< _dataSetID <<";" << std::endl;
 
@@ -417,6 +417,7 @@ std::map<std::string, intstrmap> DataSet::resetMissingData(const std::vector<Col
 			colChanged[col->name()] = missingDataMap;
 	}
 
+	dbUpdate();
 	incRevision();
 
 	return colChanged;
