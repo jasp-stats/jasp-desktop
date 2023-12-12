@@ -518,11 +518,16 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	}
 }
 
-std::set<std::string> Analysis::usedVariables()
+stringset Analysis::usedVariables()
 {
 	if (form())	return form()->usedVariables();
 
 	return {};
+}
+
+stringset Analysis::createdVariables()
+{
+	return DataSetPackage::pkg()->columnsCreatedByAnalysis(this);
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName, bool hasError)

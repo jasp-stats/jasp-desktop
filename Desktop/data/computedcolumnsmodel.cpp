@@ -268,9 +268,11 @@ void ComputedColumnsModel::checkForDependentAnalyses(const std::string & columnN
 {
 	Analyses::analyses()->applyToAll([&](Analysis * analysis)
 		{
-			std::set<std::string> usedCols = analysis->usedVariables();
+			stringset	usedCols	= analysis->usedVariables(),
+						createdCols = analysis->createdVariables();
 
-			if(usedCols.count(columnName) > 0)
+			//Dont create an infinite loop please
+			if(usedCols.count(columnName) && !createdCols.count(columnName))
 			{
 				bool allColsValidated = true;
 

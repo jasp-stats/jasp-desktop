@@ -2602,11 +2602,25 @@ void DataSetPackage::checkComputedColumnDependenciesForAnalysis(Analysis * analy
 {
 	if(!_dataSet)
 		return;
-	
+
 	for(Column * col : _dataSet->columns())
 		if(col->isComputedByAnalysis(analysis->id()))
 			col->setDependsOn(analysis->usedVariables());
-		
+
+}
+
+stringset DataSetPackage::columnsCreatedByAnalysis(Analysis * analysis)
+{
+	if(!_dataSet)
+		return {};
+
+	stringset cols;
+
+	for(Column * col : _dataSet->columns())
+		if(col->analysisId() == analysis->id())
+			cols.insert(col->name());
+
+	return cols;
 }
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
