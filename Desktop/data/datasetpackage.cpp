@@ -158,8 +158,8 @@ void DataSetPackage::generateEmptyData()
 		return;
 	}
 
-	const int INIT_COL = 3;
-	const int INIT_ROW = 10;
+	const int INIT_COL = 1;
+	const int INIT_ROW = 1;
 
 	beginLoadingData();
 
@@ -168,8 +168,6 @@ void DataSetPackage::generateEmptyData()
 	setDataSetSize(INIT_COL, INIT_ROW);
 	doublevec emptyValues(INIT_ROW, NAN);
 	initColumnAsScale(0, freeNewColumnName(0), emptyValues);
-	initColumnAsScale(1, freeNewColumnName(1), emptyValues);
-	initColumnAsScale(2, freeNewColumnName(2), emptyValues);
 
 	endLoadingData();
 	emit newDataLoaded();
