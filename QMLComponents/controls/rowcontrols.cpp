@@ -48,6 +48,7 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	context->setContextProperty("rowValue", key.asQString());
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
+	_rowObject->setParent(_parentModel);
 	_context = context;
 
 	if (_rowObject)	_setupControls();
