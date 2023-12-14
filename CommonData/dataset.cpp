@@ -3,6 +3,8 @@
 #include <regex>
 #include "databaseinterface.h"
 
+stringset DataSet::_defaultEmptyvalues;
+
 DataSet::DataSet(int index)
 	: DataSetBaseNode(dataSetBaseNodeType::dataSet, nullptr)
 {

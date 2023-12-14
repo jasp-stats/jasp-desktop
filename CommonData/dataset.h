@@ -101,7 +101,7 @@ private:
 	EmptyValues					_emptyValues;
 	bool						_writeBatchedToDB		= false,
 								_dataFileSynch			= false;
-	stringset					_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
+	static stringset			_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
 	std::string					_description;
 };
 
