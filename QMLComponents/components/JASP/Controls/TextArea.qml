@@ -29,9 +29,6 @@ TextAreaBase
 	property bool	useTabAsSpaces		: true
 	property var	nextTabItem
     
-    signal applyRequest()
-	signal editingFinished()
-
 	Component.onCompleted: control.editingFinished.connect(editingFinished)
     
 	function userEnteredInput() {

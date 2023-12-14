@@ -178,6 +178,9 @@ void JASPListControl::cleanUp()
 					control->cleanUp();
 		}
 
+		for (auto source : _sourceItems)
+			source->disconnectModels();
+
 		JASPControl::cleanUp();
 	}
 	catch (...) {}
