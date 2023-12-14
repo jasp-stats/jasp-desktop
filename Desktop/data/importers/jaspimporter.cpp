@@ -107,9 +107,6 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 
 void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(int)> progressCallback)
 {
-	if (DataSetPackage::pkg()->archiveVersion().major() != 4)
-		throw std::runtime_error("The file version is not supported (too new).\nPlease update to the latest version of JASP to view this file.");
-
 	JASPTIMER_SCOPE(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
@@ -127,35 +124,6 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 
 			resourceEntry.writeEntryToTempFiles(); //this one doesnt really need to give feedback as the files are pretty tiny
 
-			/* This is double, since writeEntryToTempFiles do that already...
-			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream);
-			std::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
-
-			static char streamBuff[8192 * 32];
-			file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
-	
-			static char copyBuff[8192 * 4];
-			int			bytes		= 0,
-						errorCode	= 0;
-
-			do
-			{
-				bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode);
-
-                if(bytes > 0 && errorCode == 0)		file.write(copyBuff, bytes);
-                else                                break;
-			}
-			while (true);
-
-			file.flush();
-			file.close();
-			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream);
-	
-			if (errorCode != 0)
-				throw std::runtime_error("Could not read resource files.");
-
-			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
-			*/
             progressCallback( 66.666 + int((33.333 / double(resources.size())) * ++resourceCounter));// "Loading Analyses",
 		}
 	}

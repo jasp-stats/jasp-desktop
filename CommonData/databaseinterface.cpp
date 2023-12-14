@@ -16,9 +16,21 @@ const std::string DatabaseInterface::_dbConstructionSql =
 "CREATE TABLE Filters		( id INTEGER PRIMARY KEY, dataSet INT, rFilter TEXT, generatedFilter TEXT, constructorJson TEXT, constructorR TEXT, errorMsg TEXT"
 							", revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Columns		( id INTEGER PRIMARY KEY, dataSet INT, name TEXT, title TEXT, description TEXT, columnType TEXT, colIdx INT, isComputed INT, invalidated INT NULL, "
-							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL, emptyValuesJson TEXT, "
+							"codeType TEXT NULL, rCode TEXT NULL, error TEXT NULL, constructorJson TEXT NULL"
 							"analysisId INT NULL, revision INT DEFAULT 0, FOREIGN KEY(dataSet) REFERENCES DataSets(id));\n"
 "CREATE TABLE Labels		( id INTEGER PRIMARY KEY, columnId INT, value INT, ordering INT, filterAllows INT, label TEXT, originalValueJson TEXT, description TEXT, FOREIGN KEY(columnId) REFERENCES Columns(id));\n";
+
+void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
+{
+	   transactionWriteBegin();
+
+	   if(originalVersion < "0.18.2")
+			   runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;"                 "\n");
+
+	   //Later versions can add new originalVersion < blabla blocks at the end of this "list"
+
+		transactionWriteEnd();
+}
 
 DatabaseInterface::DatabaseInterface(bool createDb)
 {
@@ -99,7 +111,6 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, s
 		Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
 	};
 
-	ensureCorrectDb();
 	runStatements("SELECT dataFilePath, description, databaseJson, emptyValuesJson, revision, dataFileSynch FROM DataSets WHERE id = ?;", prepare, processRow);
 }
 
@@ -1609,7 +1620,6 @@ void DatabaseInterface::load()
 	else
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
 
-	ensureCorrectDb();
 }
 
 void DatabaseInterface::close()
@@ -1620,19 +1630,6 @@ void DatabaseInterface::close()
 		sqlite3_close(_db);
 		_db = nullptr;
 	}
-}
-
-void DatabaseInterface::ensureCorrectDb()
-{
-	transactionWriteBegin();
-
-	// Check whether the description column exists in DataSets table
-	int count = runStatementsId("SELECT COUNT(*) AS CNTREC FROM pragma_table_info('DataSets') WHERE name='description'");
-	if (count == 0)
-		runStatements("ALTER TABLE DataSets ADD COLUMN description TEXT");
-
-	transactionWriteEnd();
-
 }
 
 void DatabaseInterface::transactionWriteBegin()
