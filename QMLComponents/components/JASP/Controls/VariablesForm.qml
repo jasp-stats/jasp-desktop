@@ -181,7 +181,7 @@ VariablesFormBase
 					minHeightOfAssignedControls += control.height;
 				else if (control.maxRows === 1 || !heightSetByForm(control))
 				{
-					console.log("Control " + control.name + " has height " + control.height)
+					// console.log("Control " + control.name + " has height " + control.height)
 					minHeightOfAssignedControls += control.height;
 				}
 				else
