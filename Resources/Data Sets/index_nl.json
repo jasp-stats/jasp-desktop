@@ -780,6 +780,20 @@
           "description": "Toetsstatistiek van studies die de effectiviteit van het BCG-Vaccin onderzochten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een vast-effect en willekeurig-effect meta-analyse kan worden toegepast. <br><br> <i>Data aangeboden door Raoul Grasman.<\/i>",
           "kind": "file",
           "associated_datafile": "BCG Vaccine.csv"
+        },
+        {
+          "name": "EuroSCORE II",
+          "path": "EuroSCORE II.jasp",
+          "description": "Resultaten van onderzoeken naar de discriminatie- en kalibratieprestaties van EuroSCORE II bij patiënten die een coronaire bypass-operatie ondergaan. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een meta-analyse van voorspellingsmodel prestaties met concordantie (C-) statistieken. <br><br> <i> Gegevensset opgehaald uit het R-pakket metamisc. <\/i>",
+          "kind": "file",
+          "associated_datafile": "EuroSCORE II.csv"
+        },
+        {
+          "name": "Precognition",
+          "path": "Precognition.jasp",
+          "description": "Summary of estimates from the infamous 2011 article `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' door Daryl J. Bem. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een PET-PEESE publication bias adjustment. <br><br> <i> Dataset opgehaald uit het R-pakket RoBMA. <\/i>",
+          "kind": "file",
+          "associated_datafile": "Precognition.csv"
         }
       ],
       "debug": false

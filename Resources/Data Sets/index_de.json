@@ -780,6 +780,20 @@
           "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effects and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
           "kind": "file",
           "associated_datafile": "BCG Vaccine.csv"
+        },
+        {
+          "name": "EuroSCORE II",
+          "path": "EuroSCORE II.jasp",
+          "description": "Ergebnisse von Studien zur Bewertung der Diskriminierungs- und Kalibrierungsleistung des EuroSCORE II bei Patienten, die sich einer koronaren Bypass-Operation unterziehen. <br><br> Die JASP-Beispieldatei veranschaulicht die Verwendung einer Meta-Analyse der Vorhersagemodellleistung mit Konkordanz (C-) Statistiken. <br><br> <i> Der Datensatz wurde aus dem R-Paket metamisc abgerufen. <\/i>",
+          "kind": "file",
+          "associated_datafile": "EuroSCORE II.csv"
+        },
+        {
+          "name": "Precognition",
+          "path": "Precognition.jasp",
+          "description": "Zusammenfassung der Schätzungen aus dem berüchtigten Artikel von 2011 `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' von Daryl J. Bem. <br><br> Die JASP-Beispieldatei demonstriert die Verwendung einer PET-PEESE-Publikationsverzerrungsanpassung. <br><br> <i> Der Datensatz wurde aus dem R-Paket RoBMA abgerufen. <\/i>",
+          "kind": "file",
+          "associated_datafile": "Precognition.csv"
         }
       ],
       "debug": false
