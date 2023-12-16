@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-12-12 17:06+0000\n"
-"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"fr/>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -5112,9 +5106,10 @@ msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Fermer la fenêtre variable"
 
 #, fuzzy
 msgctxt "ColumnBasicInfo|"
