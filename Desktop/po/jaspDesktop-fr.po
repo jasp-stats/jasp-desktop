@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2023-12-12 17:06+0000\n"
+"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.3-dev\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4296,11 +4302,11 @@ msgstr "Introduction:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "Conclusion :"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Modification du mode d ' édition des données"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
@@ -4322,14 +4328,13 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Couper"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Copier"
@@ -4429,9 +4434,8 @@ msgstr "Fermer sans renommer la colonne"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Fermer la fenêtre variable"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Valeur"
@@ -4479,7 +4483,7 @@ msgstr "Supprimer la ligne %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
-msgstr ""
+msgstr "Coller valeurs de la ligne %1 colonne '%2'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5100,10 +5104,9 @@ msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
 msgstr ""
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
-msgstr "Nom au long: "
+msgstr "Nom long: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
