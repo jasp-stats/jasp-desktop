@@ -42,6 +42,10 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 set(JASP_VERSION ${CMAKE_PROJECT_VERSION})
 set(JASP_SHORT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
+set(JASP_VERSION_MSIX_PATCH_POSTFIX
+    "000"
+    CACHE STRING "Microsoft does not allow packages of same version to be uploaded to store and forces TWEAK 0, so we add a large version postfix to PATCH in the appmanifest in case we publish a broken version and wish to switch it out. Nobody sees it anyway")
+
 message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
 # TODO:

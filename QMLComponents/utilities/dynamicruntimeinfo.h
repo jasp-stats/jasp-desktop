@@ -33,6 +33,7 @@ public:
     std::string bundledModulesInitializedByCommit();
 	std::string bundledModulesInitializedByBuildDate();
     std::string bundledModulesInitializedRVersion();
+	std::string bundledModulesInitializedJaspVersion();
 
     static bool writeDynamicRuntimeInfoFile();
 
@@ -55,6 +56,7 @@ private:
     std::string _initializedByCommit = "build";
     std::string _initializedForRVersion = "build";
 	std::string _initializedByBuildDate = "build";
+	std::string _initializedForJaspVersion = "build";
     uint64_t _initializedOn = 0;
 
     static DynamicRuntimeInfo* _instance;

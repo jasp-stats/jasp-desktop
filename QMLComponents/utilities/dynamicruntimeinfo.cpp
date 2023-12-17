@@ -28,7 +28,8 @@ bool DynamicRuntimeInfo::bundledModulesInitialized()
 		res = _bundledModulesInitializedSet
 			  && _initializedByCommit == AppInfo::gitCommit
 			  && _initializedByBuildDate == AppInfo::builddate
-			  && _initializedForRVersion == AppInfo::getRVersion();
+			  && _initializedForRVersion == AppInfo::getRVersion()
+			  && _initializedForJaspVersion == AppInfo::version.asString(4);
 
 	return res;
 }
@@ -100,6 +101,7 @@ bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
     _initializedByCommit = root.get("commit", "").asString();
 	_initializedByBuildDate = root.get("buildDate", "").asString();
     _initializedForRVersion = root.get("RVersion", "").asString();
+	_initializedForJaspVersion = root.get("jaspVersion", "").asString();
 	_initializedOn = root.get("initTimestamp", 0).asUInt64();
 
     return true;
@@ -117,6 +119,7 @@ bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()
     }
 
     Json::Value root;
+	root["jaspVersion"] = AppInfo::version.asString(4);
     root["initialized"] = true;
 	root["commit"] = AppInfo::gitCommit;
 	root["buildDate"] = AppInfo::builddate;
@@ -157,4 +160,9 @@ std::string DynamicRuntimeInfo::bundledModulesInitializedByBuildDate()
 std::string DynamicRuntimeInfo::bundledModulesInitializedRVersion()
 {
 	return _initializedForRVersion;
+}
+
+std::string DynamicRuntimeInfo::bundledModulesInitializedJaspVersion()
+{
+	return _initializedForJaspVersion;
 }

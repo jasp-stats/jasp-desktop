@@ -8,7 +8,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
 
 <Identity Name="45842JASP.JASP"
-        Version="@JASP_VERSION@"
+        Version="@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@"
         Publisher="CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
     ProcessorArchitecture="x64"/>
 
