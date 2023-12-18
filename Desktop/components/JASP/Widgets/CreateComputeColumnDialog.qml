@@ -339,7 +339,7 @@ Popup
 				iconSource:				jaspTheme.iconPath + "info-button.png"
 				width:					height
 				height:					createButton.height
-				onClicked:				helpModel.showOrTogglePage("other/ComputedColumns");
+				onClicked:				helpModel.showOrTogglePage("other/computedcolumns");
 				toolTip:				qsTr("Open Documentation")
 				KeyNavigation.right:	createButton
 				anchors
