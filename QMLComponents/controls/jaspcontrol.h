@@ -48,6 +48,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								hovered					READ hovered												NOTIFY hoveredChanged				)
 	Q_PROPERTY( int									alignment				READ alignment				WRITE setAlignment													)
 	Q_PROPERTY( Qt::FocusReason						focusReason				READ getFocusReason																				)
+	Q_PROPERTY( QVariant							depends					READ explicitDepends		WRITE setExplicitDepends		NOTIFY explicitDependsChanged		)
 
 protected:
 	typedef std::set<JASPControl*>			Set;
@@ -147,6 +148,7 @@ public:
 	int					alignment()					const	{ return _alignment;				}
 	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;				}
 	bool				dependsOnDynamicComponents() const	{ return _dependsOnDynamicComponents; }
+	const QVariant&		explicitDepends()			const	{ return _explicitDepends;			}
 
 	QString				humanFriendlyLabel()		const;
 	void				setInitialized(bool byFile = false);
@@ -169,7 +171,7 @@ public:
 	virtual void					rScriptDoneHandler(const QString& result);
 
 	virtual QString					friendlyName() const;
-
+	void							addExplicitDependency();
 protected:
 	Set								_depends;
 
@@ -207,6 +209,7 @@ public slots:
 	GENERIC_SET_FUNCTION(ShouldStealHover		, _shouldStealHover		, shouldStealHoverChanged		, bool			)
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
+	GENERIC_SET_FUNCTION(ExplicitDepends		, _explicitDepends		, explicitDependsChanged		, QVariant		)
 
 private slots:
 	void	_setFocusBorder();
@@ -248,6 +251,7 @@ signals:
 	void	controlTypeChanged();			// Not used, defined only to suppress warning in QML
 	void	boundValueChanged(JASPControl* control);
 	void	usedVariablesChanged();
+	void	explicitDependsChanged();
 
 	void				requestColumnCreation(std::string columnName, columnType columnType);
 	void				requestComputedColumnCreation(std::string columnName);
@@ -261,6 +265,7 @@ protected:
 	void				focusInEvent(QFocusEvent* event) override;
 	bool				eventFilter(QObject *watched, QEvent *event) override;
 	bool				checkOptionName(const QString& name);
+	void				_addExplicitDependency(const QVariant& depends);
 
 protected:
 	ControlType				_controlType;
@@ -304,6 +309,7 @@ protected:
 	int						_alignment					= Qt::AlignTop | Qt::AlignLeft;
 	Qt::FocusReason			_focusReason				= Qt::FocusReason::NoFocusReason;
 	bool					_dependsOnDynamicComponents = false;
+	QVariant				_explicitDepends;
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
