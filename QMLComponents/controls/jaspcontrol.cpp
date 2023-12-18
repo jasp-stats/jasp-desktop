@@ -799,3 +799,25 @@ void JASPControl::_notifyFormOfActiveFocus()
 	if (_form && _focusReason >= Qt::MouseFocusReason && _focusReason <= Qt::OtherFocusReason)
 		_form->setActiveJASPControl(this, hasActiveFocus());
 }
+
+void JASPControl::_addExplicitDependency(const QVariant& depends)
+{
+	if (!depends.isValid() || depends.isNull()) return;
+
+	JASPControl* control = depends.value<JASPControl*>();
+	if (control)
+		_depends.insert(control);
+	else if (depends.canConvert<QString>())
+		_depends.insert(form()->getControl(depends.toString()));
+	else if (depends.canConvert<QVariantList>())
+	{
+		QVariantList varDeps = depends.toList();
+		for (const QVariant& varDep : varDeps)
+			_addExplicitDependency(varDep);
+	}
+}
+
+void JASPControl::addExplicitDependency()
+{
+	_addExplicitDependency(_explicitDepends);
+}
