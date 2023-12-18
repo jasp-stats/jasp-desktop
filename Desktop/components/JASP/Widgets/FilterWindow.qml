@@ -162,7 +162,7 @@ FocusScope
 				width:				height
 				radius:				height
 				iconSource:			jaspTheme.iconPath + "info-button.png"
-				onClicked:			helpModel.showOrTogglePage("other/EasyFilterConstructor");
+				onClicked:			helpModel.showOrTogglePage("other/easyfilterconstructor");
 				toolTip:			qsTr("Open Documentation")
 				anchors
 				{
@@ -519,7 +519,7 @@ FocusScope
 					anchors.bottom: parent.bottom
 					anchors.top:	closeRectangularButton.top
 
-					onClicked:		helpModel.showOrTogglePage("other/RFilterConstructor");
+					onClicked:		helpModel.showOrTogglePage("other/rfilterconstructor");
 					toolTip:		qsTr("Open Documentation")
 				}
 

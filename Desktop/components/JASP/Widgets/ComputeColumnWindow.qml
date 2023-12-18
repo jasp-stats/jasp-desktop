@@ -295,7 +295,7 @@ FocusScope
 				iconSource:		jaspTheme.iconPath + "info-button.png"
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
-				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
+				onClicked:		helpModel.showOrTogglePage("other/computedcolumns");
 				toolTip:		qsTr("Open Documentation")
 			}
 		}
