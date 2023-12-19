@@ -144,7 +144,7 @@ Where `.binomReadData()` looks like
 Take note that the column titles in the data.frame returned by `.readDataSetToEnd()` will look a bit jumbled, e.g., the first column is titled `JaspColumn_.1._Encoded`, the second column is titled `JaspColumn_.2._Encoded`. This is due to the encoding we perform on the column titles, which allows us to handle foreign characters. The values in `options$variables` are NOT encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `decodeColNames()` to decode column names and `encodeColNames` to encode column names. To exemplify this, the following would return `TRUE`:
 
 - `"firstColumnTitle" == decodeColNames("JaspColumn_.1._Encoded")`
-- encodeColNames("firstColumnTitle") == "JaspColumn_.1._Encoded"
+- `encodeColNames("firstColumnTitle") == "JaspColumn_.1._Encoded"`
 
 Hence, whenever you wish to match an option to a data.frame column you must encode or decode one of the two. It is quite possible that an analysis crashes when it encounters uncommon characters. Such an error can be caused by the code in the analysis itself, but it can also be caused by a dependency that cannot handle these characters. To play it safe, we recommend only decoding column names at the very last moment before presenting output in a table of plot. To subset in a data set we recommend *encoding* the names in `options$variables`. For example,
 
@@ -376,7 +376,7 @@ We'll also have to specify what columns our table will have. Some columns are al
   - `format`: format specifiers for `type` is `number` (multiple can be specified, separated by semicolons), default value is `sf:4;dp:3`:
       - `dp:X` - format to X decimal places
       - `sf:X` - format to X significant figures
-      - `p:X`  - if the value is less than X, substitute `< X` in it's place (`p:.001` is common)
+      - `p:X`  - if the value is less than X, substitute `< X` in its place (`p:.001` is common)
       - `pc`   - format the number as a percentage (multiply it by 100, and add a % sign) (does not work in conjunction with sf)
   - `combine`: boolean specifying if cells in the column should be merged if they contain the same value
   - `overtitle`: adds a title which is positioned above all columns that specify the same overtitle (often used for confidence intervals, where the lower and upper bound are in separate columns, but the added overtitle groups them together)
@@ -960,7 +960,7 @@ It is possible to create visually and functionally distinct groupings in your an
 
 ![Image Visual Grouping](/Docs/development/img/r-guide/example_visual_grouping.png)
 
-What we mean by functional grouping is a set of tables and plots that all rely on the same dependencies and/or computed results. You may not wish to create a visual grouping, but you might still want to make use of the shared properties of the different output elements. Whether you wish to create a visual and/or functional grouping does not matter terribly much, they both make use of the same mechanic: JASP containers. For all intends and purposes a container can be thought of as a normal list in R, you can add objects to it and then retrieve them again at a later point.
+What we mean by functional grouping is a set of tables and plots that all rely on the same dependencies and/or computed results. You may not wish to create a visual grouping, but you might still want to make use of the shared properties of the different output elements. Whether you wish to create a visual and/or functional grouping does not matter terribly much, they both make use of the same mechanic: JASP containers. For all intents and purposes a container can be thought of as a normal list in R, you can add objects to it and then retrieve them again at a later point.
 
 ### Creating a JASP Container
 It's simple to create a container through `createJaspContainer()`:
@@ -1156,7 +1156,7 @@ In a JASP state we may store any R object and all the stored R objects will be a
   .binomComputeResults <- function(jaspResults, dataset, options) {
 
     binomResults <- createJaspState()
-    jaspResults[["binomResults]] <- binomResults
+    jaspResults[["binomResults"]] <- binomResults
   ```
 
 </details>
@@ -1171,7 +1171,7 @@ Now we need to specify the analysis options on which the state object will depen
   .binomComputeResults <- function(jaspResults, dataset, options) {
 
     binomResults <- createJaspState()
-    jaspResults[["binomResults]] <- binomResults
+    jaspResults[["binomResults"]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
   ```
 
@@ -1187,7 +1187,7 @@ Time to compute results that we will be able to store in the state:
   .binomComputeResults <- function(jaspResults, dataset, options) {
 
     binomResults <- createJaspState()
-    jaspResults[["binomResults]] <- binomResults
+    jaspResults[["binomResults"]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
 
     results <- list()
@@ -1218,7 +1218,7 @@ We computed our results and are ready to use them to fill any table and plot tha
   .binomComputeResults <- function(jaspResults, dataset, options) {
 
     binomResults <- createJaspState()
-    jaspResults[["binomResults]] <- binomResults
+    jaspResults[["binomResults"]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
 
     results <- list()
