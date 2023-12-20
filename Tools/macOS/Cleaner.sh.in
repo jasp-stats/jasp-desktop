@@ -11,7 +11,7 @@ find @JASP_INSTALL_PREFIX@/Contents/ -type f -name "*.entitlements" -exec rm -rf
 
 # For some reason, `-path` doesn't work with the full path
 cd @JASP_INSTALL_PREFIX@/Contents/Modules/
-find renv-cache -path "*help*" -not -path "*/jasp*/help*" -exec rm -rf {} \;
+find renv-cache -path "*help*" -not -path "*/jasp*/help*" -not -path "*broom.helpers*" -exec rm -rf {} \;
 # find renv-cache -path "*po*" -not -path "*/jasp*/po*" -exec rm -rf {} \;
 cd ../../../
 
