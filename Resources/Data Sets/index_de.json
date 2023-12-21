@@ -1064,9 +1064,38 @@
         }
       ]
     },
+	{
+		"name": "20. Process",
+		"path": "20. Process",
+		"description": "",
+		"kind": "folder",
+		"children": [
+		  {
+			"name": "Age and Fatigue",
+			"path": "Age and Fatigue.jasp",
+			"description": "Der Einfluss des Alters auf hörbedingte Fatigue. <br><br> Die JASP-Beispieldatei demonstriert die Verwendung klassischer konditionaler Prozessmodelle mit kausalen Implikationstests. <br><br> <i>Daten aus McGarrigle et al. (2022).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Age and Fatigue.csv"
+		  },
+		  {
+			"name": "Climate Change Disasters",
+			"path": "Climate Change Disasters.jasp",
+			"description": "Die Auswirkungen davon Katastrophen als vom Klimawandel verursacht darzustellen. <br><br> Die JASP-Beispieldatei demonstriert den Einsatz von Moderations- und moderierten Mediationsanalysen. <br><br> <i>Daten aus Chapman & Lickel (2016).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Climate Change Disasters.csv"
+		  },
+		  {
+			"name": "Presumed Media Influence",
+			"path": "Presumed Media Influence.jasp",
+			"description": "Der Einfluss von Nachrichtenplatzierungen auf die (vermutete) Intentionsbildung. <br><br> Die JASP-Beispieldatei veranschaulicht die Verwendung einer einfachen Mediationsanalyse. <br><br> <i>Daten aus Tal-Or et al. (2010).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Presumed Media Influence.csv"
+		  }
+		]
+	},
     {
-      "name": "20. Miscellaneous",
-      "path": "20. Miscellaneous",
+      "name": "21. Miscellaneous",
+      "path": "21. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
