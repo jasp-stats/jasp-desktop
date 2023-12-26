@@ -184,11 +184,14 @@ TextInputBase
 
 		background: Rectangle
 		{
-			id:				controlBackground
-			color:			jaspTheme.controlBackgroundColor
-			border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
-			border.color:	jaspTheme.borderColor //If the border width is zero the color is inconsequential
-			radius:			jaspTheme.borderRadius
+			id:					controlBackground
+			color:				jaspTheme.controlBackgroundColor
+			border.width:		textField.showBorder && !control.activeFocus	? 1					: 0
+			border.color:		jaspTheme.borderColor //If the border width is zero the color is inconsequential
+			radius:				jaspTheme.borderRadius
+			width:				parent.width   - 2 // (parent+self) border width
+			height:				parent.height  - 2
+			anchors.centerIn:	parent
 		}
 
 		Rectangle
