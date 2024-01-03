@@ -88,7 +88,7 @@ bool ColumnUtils::isDoubleValue(const string &value)
 }
 
 
-void ColumnUtils::deEuropeaniseForImport(std::string & value)
+std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 {
 	int dots	= 0,
 		commas	= 0;
@@ -102,7 +102,7 @@ void ColumnUtils::deEuropeaniseForImport(std::string & value)
 			if(k == ',')
 			{
 				k = '.';
-				return;
+				return value;
 			}
 	
 	if (commas > 0)
@@ -133,6 +133,8 @@ void ColumnUtils::deEuropeaniseForImport(std::string & value)
 
 		value = uneurope;
 	}
+	
+	return value;
 }
 
 bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &intValue)
@@ -152,8 +154,7 @@ bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &i
 
 bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue)
 {
-	std::string v = strValue;
-	deEuropeaniseForImport(v);
+	std::string v = deEuropeaniseForImport(strValue);
 
 	if(isEmptyValue(v, EmptyValues::singleton()->workspaceEmptyValues()))
 		doubleValue = NAN;
