@@ -22,8 +22,7 @@
 #include "exporters/jaspexporter.h"
 
 #include <QTimer>
-#include "utilities/qutils.h"
-#include "log.h"
+#include "utilities/appdirs.h"
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)
@@ -51,8 +50,6 @@ void FileEvent::setDataFilePath(const QString & path)
 
 void FileEvent::setDatabase(const Json::Value & dbInfo)
 {
-	setReadOnly();
-	
 	_database = dbInfo;
 }
 
@@ -108,6 +105,11 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+}
+
+bool FileEvent::isExample() const
+{
+	return path().startsWith(AppDirs::examples());
 }
 
 const std::string FileEvent::databaseStr() const 
