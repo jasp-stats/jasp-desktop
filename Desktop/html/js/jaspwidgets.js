@@ -249,6 +249,7 @@ JASPWidgets.Exporter = {
 	},
 
 	getHeaderStyles: function (element, exportParams) {
+		// I commented isFormatted out because nonw of us knew the intention...
 		//if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color", "font-style", "text-transform"]);
 		// else

@@ -94,7 +94,6 @@ th {
 
 th .in-toolbar {
 	font-style: italic;
-	text-transform: capitalize;
 }
 
 th[colspan="2"] {
