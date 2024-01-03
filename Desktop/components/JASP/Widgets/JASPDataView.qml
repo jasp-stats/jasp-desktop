@@ -175,52 +175,78 @@ FocusScope
 		property real	lastTimeClicked:	-1
 		property real	doubleClickTime:	400
 
-		onPressed: (mouse)=>
+		MouseArea
 		{
-			//console.log("doubleclick workaround pressed")
-			if(!__JASPDataViewRoot.doubleClickWorkaround)
+			id: 			myMouseShape
+			anchors.fill: 	parent
+			cursorShape: 	Qt.BlankCursor // set BlankCursor to hide system cursor
+			hoverEnabled: 	true
+
+			onPositionChanged: (mouse)=>
 			{
-				mouse.accepted = false;
-				return;
+				coustomCusor.x = mouse.x
+				coustomCusor.y = mouse.y
 			}
 
-			var curTime = new Date().getTime()
+			onPressed: (mouse)=>
+			{
+				//console.log("doubleclick workaround pressed")
+				if(!__JASPDataViewRoot.doubleClickWorkaround)
+				{
+					mouse.accepted = false;
+					return;
+				}
 
-			if(lastTimeClicked === -1 || curTime - lastTimeClicked > doubleClickTime)
-			{
-			//	console.log("doubleclick workaround pressed set time")
-				lastTimeClicked = curTime
-				mouse.accepted = false
+				var curTime = new Date().getTime()
+
+				if(wheelCatcher.lastTimeClicked === -1 || curTime - wheelCatcher.lastTimeClicked > wheelCatcher.doubleClickTime)
+				{
+				//	console.log("doubleclick workaround pressed set time")
+					wheelCatcher.lastTimeClicked = curTime
+					mouse.accepted = false
+				}
+				else
+				{
+				//	console.log("doubleclick workaround activated")
+					wheelCatcher.lastTimeClicked = -1
+					__JASPDataViewRoot.doubleClicked()
+				}
 			}
-			else
+
+			onWheel: (wheel)=>
 			{
-			//	console.log("doubleclick workaround activated")
-				lastTimeClicked = -1
-				__JASPDataViewRoot.doubleClicked()
+				if(wheel.angleDelta.y == 120)
+				{
+					if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollUp()
+					else									vertiScroller.scrollUp()
+				}
+				else if(wheel.angleDelta.y == -120)
+				{
+					if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollDown()
+					else									vertiScroller.scrollDown()
+				}
+				/* Might be needed to have scrolling when flickable is !interactive. But something else seems to be stealing the wheel.
+				else if(!flickableInteractive)
+				{
+					horiScroller.scroll( -wheel.pixelDelta.x);
+					vertiScroller.scroll(-wheel.pixelDelta.y);
+				}*/
+				else
+					wheel.accepted = false;
+			}
+
+			Image
+			{
+				id: 				coustomCusor
+				mipmap: 			false
+				sourceSize.width: 	16
+				sourceSize.height: 	16
+				visible: 			myMouseShape.containsMouse
+
+				source: 			jaspTheme.iconPath + "/cell-cursor.png"
 			}
 		}
 
-		onWheel: (wheel)=>
-		{
-			if(wheel.angleDelta.y == 120)
-			{
-				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollUp()
-				else									vertiScroller.scrollUp()
-			}
-			else if(wheel.angleDelta.y == -120)
-			{
-				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollDown()
-				else									vertiScroller.scrollDown()
-			}
-			/* Might be needed to have scrolling when flickable is !interactive. But something else seems to be stealing the wheel.
-			else if(!flickableInteractive)
-			{
-				horiScroller.scroll( -wheel.pixelDelta.x);
-				vertiScroller.scroll(-wheel.pixelDelta.y);
-			}*/
-			else
-				wheel.accepted = false;
-		}
 	}
 
 
