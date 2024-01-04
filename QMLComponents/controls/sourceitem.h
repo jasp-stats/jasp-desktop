@@ -48,13 +48,13 @@ public:
 	};
 
 	SourceItem(
-			  JASPListControl* _listControl
+			  JASPListControl* targetListControl
 			, QMap<QString, QVariant>& map
-			, const JASPListControl::LabelValueMap& _values
-			, const QVector<SourceItem*> _rSources
-			, QAbstractItemModel* _nativeModel = nullptr
-			, const QVector<SourceItem*>& _discardSources = QVector<SourceItem*>()
-			, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
+			, const JASPListControl::LabelValueMap& values
+			, const QVector<SourceItem*> rSources
+			, QAbstractItemModel* nativeModel = nullptr
+			, const QVector<SourceItem*>& discardSources = QVector<SourceItem*>()
+			, const QVector<QMap<QString, QVariant> >& conditionVariables = QVector<QMap<QString, QVariant> >()
 			);
 
 	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
@@ -63,14 +63,14 @@ public:
 
 	SourceItem(JASPListControl* _listControl = nullptr);
 
-	ListModel*				listModel()							{ return _listModel;				}
-	const QString&			controlName()				const	{ return _controlName;				}
-	const QStringList&		modelUse()					const	{ return _modelUse;					}
+	ListModel*				sourceListModel()					{ return _sourceListModel;			}
+	const QString&			rowControlName()			const	{ return _rowControlName;			}
+	const QStringList&		sourceFilter()				const	{ return _sourceFilter;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
 	bool					generateInteractions()		const	{ return _combineWithOtherModels || (_combineTerms != JASPControl::CombinationType::NoCombination); }
-	bool					isColumnsModel()			const	{ return _isVariableInfoModel;			}
-	bool					isNativeModel()				const	{ return _nativeModel != nullptr;	}
-	QAbstractItemModel*		nativeModel()						{ return _nativeModel;				}
+	bool					isAnalysisDataSet()			const	{ return _isDataSetVariables;		}
+	bool					isNativeModel()				const	{ return _sourceNativeModel != nullptr;	}
+	QAbstractItemModel*		nativeModel()						{ return _sourceNativeModel;				}
 	Terms					getTerms();
 	QSet<QString>			usedControls()				const;
 
@@ -98,19 +98,19 @@ private slots:
 	void									_rSourceChanged(const QString& name);
 
 private:
-	JASPListControl		*			_listControl				= nullptr;
-	QString							_name,
-									_controlName;
-	QStringList						_modelUse;
+	JASPListControl		*			_targetListControl			= nullptr;
+	QString							_sourceName,
+									_rowControlName;
+	QStringList						_sourceFilter;
 	QVector<SourceItem*>			_discardSources;
 	QVector<SourceItem*>			_rSources;
 	JASPListControl::LabelValueMap	_values;
 	bool							_isValuesSource				= false;
 	bool							_isRSource					= false;
-	ListModel			*			_listModel					= nullptr;
-	QAbstractItemModel	*			_nativeModel				= nullptr;
+	ListModel			*			_sourceListModel			= nullptr;
+	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
 	int								_nativeModelRole			= Qt::DisplayRole;
-	bool							_isVariableInfoModel		= false;
+	bool							_isDataSetVariables			= false;
 	bool							_combineWithOtherModels		= false;
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;

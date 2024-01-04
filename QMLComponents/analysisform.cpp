@@ -275,8 +275,6 @@ void AnalysisForm::_setUp()
 
 	for (JASPControl* control : controls)
 	{
-		BoundControl* boundControl = control->boundControl();
-		if (boundControl) boundControl->setDefaultBoundValue(boundControl->createJson()); // The default value is known only when all controls are setup
 		_dependsOrderedCtrls.push_back(control);
 		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
@@ -363,7 +361,6 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
-		bool hasOption = false;
 		BoundControl* boundControl = control->boundControl();
 		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 
@@ -385,10 +382,12 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 			}
 		}
 
+		Json::Value optionValue = Json::nullValue;
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
-			Json::Value optionValue =  defaultOptions.size() != 0 ? defaultOptions[name] : Json::nullValue;
+			if (defaultOptions.isMember(name))
+				optionValue = defaultOptions[name];
 
 			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 			{
@@ -396,16 +395,9 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 				control->setHasWarning(true);
 				controlsJsonWrong.insert(name);
 			}
-
-			if (optionValue == Json::nullValue)
-				optionValue = boundControl->createJson();
-			else
-				hasOption = true;
-
-			boundControl->bindTo(optionValue);
 		}
 
-		control->setInitialized(hasOption);
+		control->setInitialized(optionValue);
 	}
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)

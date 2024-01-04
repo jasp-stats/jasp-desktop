@@ -38,7 +38,7 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		ListModel* sourceModel = sourceItem->listModel();
+		ListModel* sourceModel = sourceItem->sourceListModel();
 		for (const Term& term : terms)
 		{
 			QString itemType = sourceModel ? sourceModel->getItemType(term) : "";

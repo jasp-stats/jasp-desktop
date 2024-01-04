@@ -120,7 +120,7 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->listModel());
+		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->sourceListModel());
 		for (const Term& term : terms)
 		{
 			QString label = term.asQString();
@@ -153,7 +153,7 @@ void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
 			QString newValue = oldValue;
 			listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 			{
-				ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->listModel());
+				ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->sourceListModel());
 				if (terms.contains(newName) && labelValueSourceModel)
 					newValue = labelValueSourceModel->getValue(newName);
 			});

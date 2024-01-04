@@ -52,7 +52,7 @@ void VariablesListBase::setUp()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->listModel());
+			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->sourceListModel());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 			else

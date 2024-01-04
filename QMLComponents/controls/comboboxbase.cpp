@@ -30,7 +30,7 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 
 void ComboBoxBase::bindTo(const Json::Value& value)
 {
-	// Do not call BoundControlBase::bindTo now because the value might be changed to the default value.
+	_model->resetTermsFromSources();
 
 	std::vector<std::string> values = _model->getValues();
 	std::string selectedValue = value.asString();
