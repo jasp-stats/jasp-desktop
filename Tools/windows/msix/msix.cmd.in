@@ -11,11 +11,31 @@ rem -------- Temporary fix to transfer modules to cache --------
 echo Transfering module folders to renv-cache (we should get rid of this in the future)
 
 pushd .
+
+rem Nightly Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
+cp -Force @JASP_BINARY_DIR_NATIVE@/AppxManifest-nightly.xml ./AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
-MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.msix"
+MakeAppx pack /o /d .\Install\ /p "JASP-nightly.msix"
+
+rem Store Pack MSIX
+cd "@JASP_INSTALL_DIR_NATIVE@"
+cp -Force @JASP_BINARY_DIR_NATIVE@/AppxManifest-store.xml ./AppxManifest.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
+cd "@JASP_BINARY_DIR_NATIVE@"
+MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
+
+rem Store Pack MSIX
+cd "@JASP_INSTALL_DIR_NATIVE@"
+cp -Force @JASP_BINARY_DIR_NATIVE@/AppxManifest-sideload.xml ./AppxManifest.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
+cd "@JASP_BINARY_DIR_NATIVE@"
+MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Sideload-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
+
 
 rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"  
 popd

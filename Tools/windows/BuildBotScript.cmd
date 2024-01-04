@@ -39,9 +39,9 @@ cmake --build build --target collect-junctions
 
 robocopy .\build\Install .\build\InstallClean /e
 
-@REM cmake --build build --target wix
+cmake --build build --target wix
 
-@REM cmake --build build --target zip
+cmake --build build --target zip
 
 rmdir .\build\Install /s /q
 robocopy .\build\InstallClean .\build\Install /e

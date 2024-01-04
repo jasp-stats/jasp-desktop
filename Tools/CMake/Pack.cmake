@@ -103,12 +103,11 @@ if(WIN32)
   add_custom_target(
     msix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.msix"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_SOURCE_DIR}/Tools/windows/msix/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
+            "${CMAKE_SOURCE_DIR}/Tools/windows/msix/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C msix.cmd)
 
   add_custom_target(
