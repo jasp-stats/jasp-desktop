@@ -340,13 +340,16 @@ if(WIN32)
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
   #msix stuff
-    configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest.xml.in
-                  ${CMAKE_BINARY_DIR}/AppxManifest.xml @ONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/msix.cmd.in
-                  ${CMAKE_BINARY_DIR}/msix.cmd @ONLY)
-    install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
-    install(FILES ${CMAKE_BINARY_DIR}/AppxManifest.xml DESTINATION .)
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/windows/msix/Assets DESTINATION .)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store.xml.in
+                ${CMAKE_BINARY_DIR}/AppxManifest-store.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-sideload.xml.in
+                ${CMAKE_BINARY_DIR}/AppxManifest-sideload.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-nightly.xml.in
+                ${CMAKE_BINARY_DIR}/AppxManifest-nightly.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/msix.cmd.in
+                ${CMAKE_BINARY_DIR}/msix.cmd @ONLY)
+  install(EXCLUDE_FROM_ALL DIRECTORY COMPONENT MSIX FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
+  install(EXCLUDE_FROM_ALL DIRECTORY COMPONENT MSIX DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/windows/msix/Assets DESTINATION .)
 
 
   execute_process(
