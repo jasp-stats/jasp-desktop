@@ -42,11 +42,11 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 set(JASP_VERSION ${CMAKE_PROJECT_VERSION})
 set(JASP_SHORT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
+message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
+
 set(JASP_VERSION_MSIX_PATCH_POSTFIX
     "000"
     CACHE STRING "Microsoft does not allow packages of same version to be uploaded to store and forces TWEAK 0, so we add a large version postfix to PATCH in the appmanifest in case we publish a broken version and wish to switch it out. Nobody sees it anyway")
-
-message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
 set(MSIX_STORE_PUBLISHER
     "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
@@ -59,6 +59,14 @@ set(MSIX_SIDELOAD_PUBLISHER
 set(MSIX_NIGHTLY_PUBLISHER
     "CN=JASP, O=JASP, L=Amsterdam, S=Noord-Holland, C=NL"
     CACHE STRING "Publisher set for nightly msix package")
+
+set(MSIX_SIGN_CERT_PATH
+  "..\\JASPSelfSign.pfx"
+  CACHE STRING "Path to selfsign cert for Nightlies")
+
+set(MSIX_SIGN_CERT_PASSWORD
+  "0000"
+  CACHE STRING "Password selfsign cert for Nightlies")
 
 
 # TODO:

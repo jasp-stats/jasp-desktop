@@ -39,12 +39,14 @@ cmake --build build --target collect-junctions
 
 robocopy .\build\Install .\build\InstallClean /e
 
-cmake --build build --target wix
+@REM cmake --build build --target wix
 
-cmake --build build --target zip
+@REM cmake --build build --target zip
 
 rmdir .\build\Install /s /q
 robocopy .\build\InstallClean .\build\Install /e
+
+cmake --install build --component MSIX
 
 cmake --build build --target msix
 
