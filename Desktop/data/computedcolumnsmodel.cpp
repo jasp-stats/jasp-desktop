@@ -271,8 +271,8 @@ void ComputedColumnsModel::checkForDependentAnalyses(const std::string & columnN
 			stringset	usedCols	= analysis->usedVariables(),
 						createdCols = analysis->createdVariables();
 
-			//Dont create an infinite loop please
-			if(usedCols.count(columnName) && !createdCols.count(columnName))
+			//Dont create an infinite loop please, but do this only for non-computed columns created by an analysis (aka distributions, because otherwise it breaks things like planning from audit)
+			if(usedCols.count(columnName) && (!createdCols.count(columnName) || !DataSetPackage::pkg()->isColumnAnalysisNotComputed(columnName)))
 			{
 				bool allColsValidated = true;
 
