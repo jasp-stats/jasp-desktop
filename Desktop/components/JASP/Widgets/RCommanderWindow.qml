@@ -135,7 +135,7 @@ Window
 					z:					-1
 					acceptedButtons:	Qt.NoButton
 					anchors.fill:		parent
-					onWheel:			vertScroll.scrollWheel(wheel)
+					onWheel:			(wheel)=> { vertScroll.scrollWheel(wheel); }
 				}
 			}
 
@@ -170,7 +170,7 @@ Window
 				z:					-1
 				acceptedButtons:	Qt.NoButton
 				anchors.fill:		parent
-				onWheel:			codeEntryScrollbar.scrollWheel(wheel)
+				onWheel:			(wheel)=> { codeEntryScrollbar.scrollWheel(wheel); }
 			}
 
 			Rectangle

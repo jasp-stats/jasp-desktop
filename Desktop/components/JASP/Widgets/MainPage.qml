@@ -318,7 +318,8 @@ Item
 			{
 				resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineView.LoadSucceededStatus;
 				setTranslatedResultsString();
-				runJavaScript(`window.sendUrlWhitelist(${JSON.stringify(urlWhitelist)})`); //sent urlWhitelist to js side
+				if(resultsJsInterface.resultsLoaded)
+					runJavaScript(`window.sendUrlWhitelist(${JSON.stringify(urlWhitelist)})`); //sent urlWhitelist to js side
 			}
 
 
