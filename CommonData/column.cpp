@@ -1622,10 +1622,10 @@ bool Column::convertValueToIntForImport(const std::string &strValue, int &intVal
 	return ColumnUtils::getIntValue(strValue, intValue);
 }
 
+/// There is a ColumnUtils::convertValueToDoubleForImport that is used during import from readstat and which only looks at workspace empty values
 bool Column::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue) const
 {
-	std::string v = strValue;
-	ColumnUtils::deEuropeaniseForImport(v);
+	std::string v = ColumnUtils::deEuropeaniseForImport(strValue);
 
 	if(isEmptyValue(v))
 	{
@@ -1633,7 +1633,7 @@ bool Column::convertValueToDoubleForImport(const std::string & strValue, double 
 			return true;
 	}
 
-	return ColumnUtils::getDoubleValue(strValue, doubleValue);
+	return ColumnUtils::getDoubleValue(v, doubleValue);
 }
 
 

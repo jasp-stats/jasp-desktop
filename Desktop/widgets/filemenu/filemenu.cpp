@@ -260,7 +260,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			if (!event->isDatabase())
 			{
 				_recentFiles->pushRecentFilePath(event->path());
-				if (!event->path().startsWith(AppDirs::examples()))
+				if (!event->isExample())
 					_computer->addRecentFolder(event->path());
 			}
 

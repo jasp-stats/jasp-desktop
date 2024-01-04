@@ -47,11 +47,10 @@ public:
 	void				setComplete(bool success = true, const QString &message = "");
 	void				chain(FileEvent *event);
 
-	void				setReadOnly()		  { _readOnly = true;		}
-
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
 	bool				isOnlineNode()	const { return _path.startsWith("http");		}
-	bool				isReadOnly()	const { return _readOnly;						}
+	bool				isExample()		const;
+	bool				isReadOnly()	const { return isExample() || isDatabase();		}
 	bool				isCompleted()	const { return _completed;						}
 	bool				isSuccessful()	const { return _success;						}
 
@@ -83,8 +82,7 @@ private:
 						_dataFilePath,
 						_last_error		= "Unknown error",
 						_message;
-	bool				_readOnly		= false,
-						_completed		= false,
+	bool				_completed		= false,
 						_success		= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;

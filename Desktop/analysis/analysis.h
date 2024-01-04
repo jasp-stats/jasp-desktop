@@ -178,7 +178,7 @@ signals:
 	void					requestComputedColumnDestruction(	const std::string & columnName);
 
 	void					refreshTableViewModels();
-	Q_INVOKABLE void		expandAnalysis();
+	void					expandAnalysis();
 	void					emptyQMLCache();
 
 	void					createFormWhenYouHaveAMoment(QQuickItem* parent = nullptr);

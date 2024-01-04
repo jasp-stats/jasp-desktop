@@ -52,7 +52,6 @@ void DataLibraryListModel::openFile(const QString &path)
 {
 	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileOpen);
 	event->setPath(path);
-	event->setReadOnly(); // A file from the Data Library should be read only, also csv file so that its path is not added in the recent list
 
 	emit openFileEvent(event);
 	
