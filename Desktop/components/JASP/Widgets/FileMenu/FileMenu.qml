@@ -367,7 +367,7 @@ FocusScope
 			id:					gottaCatchEmAll //Clicks that is
 			anchors.fill:		parent
 			z:					-6
-			onWheel:			function(wheel) { wheel.accepted = true; }
+			onWheel:			(wheel)=>{ wheel.accepted = true; }
 		}
 	}
 }

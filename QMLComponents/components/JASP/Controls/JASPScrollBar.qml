@@ -147,7 +147,7 @@ Item
 			anchors.fill:	parent;
 			cursorShape:	Qt.PointingHandCursor
 
-			onWheel:		scrollbar.scrollWheel(wheel)
+			onWheel:		(wheel)=> { scrollbar.scrollWheel(wheel); }
 
 			drag
 			{

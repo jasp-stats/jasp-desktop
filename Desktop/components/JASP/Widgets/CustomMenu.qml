@@ -183,7 +183,7 @@ FocusScope
 		{
 			anchors.fill	: parent
 			acceptedButtons	: Qt.NoButton
-			onWheel			: wheel.accepted = true
+			onWheel			: (wheel)=> { wheel.accepted = true; }
 		}
 
 		JASPControl.JASPScrollBar
