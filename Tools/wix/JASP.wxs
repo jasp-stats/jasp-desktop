@@ -93,6 +93,15 @@
 		</Directory>
 	</Directory>
 
+	<!-- Disable ms-gaming overlay pop while JASP starting -->
+	<Component Id="RegistryEntryHacky">
+		<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
+			<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" />
+		</RegistryKey>
+		<RegistryKey Root="HKCU" Key="System\GameConfigStore">
+			<RegistryValue Name="GameDVR_Enabled" Value="0" Type="integer" />
+		</RegistryKey>
+	</Component>
 
 	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_SOURCE_DIR)\Desktop\icon.ico" />
 	<Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" />
