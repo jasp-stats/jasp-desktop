@@ -355,33 +355,11 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
-	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
-
 	std::set<std::string> controlsJsonWrong;
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = control->boundControl();
-		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
-
-		if (listControl && listControl->hasSource())
-		{
-			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
-			// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
-			// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
-			// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
-			// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
-			// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
-			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
-			if (availableModel)
-			{
-				if (defaultOptions.size() != 0 || _analysis->isDuplicate())
-					availableModel->resetTermsFromSources(false);
-				else
-					availableModelsToBeReset.push_back(availableModel);
-			}
-		}
-
 		Json::Value optionValue = Json::nullValue;
 		if (boundControl)
 		{
@@ -399,9 +377,6 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 
 		control->setInitialized(optionValue);
 	}
-
-	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
-		availableModel->resetTermsFromSources(true);
 
 	_addLoadingError(tql(controlsJsonWrong));
 

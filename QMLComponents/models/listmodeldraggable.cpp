@@ -24,8 +24,6 @@ ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
 	, _copyTermsWhenDropped(false)	
 {
-	_allowAnalysisOwnComputedColumns = listView->property("allowAnalysisOwnComputedColumns").toBool();
-	_addNewAvailableTermsToAssignedModel = listView->property("addAvailableVariablesToAssigned").toBool();
 }
 
 ListModelDraggable::~ListModelDraggable()
@@ -115,7 +113,7 @@ Terms ListModelDraggable::canAddTerms(const Terms& terms) const
 
 bool ListModelDraggable::isAllowed(const Term &term) const
 {
-	if (!_allowAnalysisOwnComputedColumns)
+	if (!listView()->allowAnalysisOwnComputedColumns())
 	{
 		if (listView()->form()->isOwnComputedColumn(term.asString()))
 			return false;

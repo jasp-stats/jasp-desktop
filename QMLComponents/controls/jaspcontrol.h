@@ -151,7 +151,6 @@ public:
 	const QVariant&		explicitDepends()			const	{ return _explicitDepends;			}
 
 	QString				humanFriendlyLabel()		const;
-	void				setInitialized(const Json::Value& value = Json::nullValue);
 
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
@@ -159,6 +158,7 @@ public:
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
 
 	virtual void					setUp()										{}
+	void							setInitialized(const Json::Value& value = Json::nullValue);
 	virtual void					cleanUp()									{ disconnect(); }
 	virtual BoundControl		*	boundControl();
 	virtual bool					encodeValue()						const	{ return false; }
@@ -265,7 +265,7 @@ protected:
 	bool				checkOptionName(const QString& name);
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
-	void				_setInitialized(const Json::Value &value);
+	virtual void		_setInitialized(const Json::Value &value);
 
 protected:
 	Set						_depends;

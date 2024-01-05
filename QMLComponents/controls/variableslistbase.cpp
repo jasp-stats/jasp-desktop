@@ -89,6 +89,22 @@ void VariablesListBase::setUp()
 	connect(this,	&VariablesListBase::suggestedColumnsChanged,					this, &VariablesListBase::_setAllowedVariables);
 }
 
+void VariablesListBase::_setInitialized(const Json::Value &value)
+{
+	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
+	if (availableModel)
+		availableModel->resetTermsFromSources(false);
+	else if (value == Json::nullValue && addAvailableVariablesToAssigned())
+	{
+		// If addAvailableVariablesToAssigned is true and this is initialized without value,
+		// maybe the availableAssignedList has some default values that must be assigned to this VariablesList
+		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
+		if (assignedModel)
+			assignedModel->initTerms(assignedModel->availableModel()->terms());
+	}
+
+	JASPListControl::_setInitialized(value);
+}
 
 
 ListModel *VariablesListBase::model() const
