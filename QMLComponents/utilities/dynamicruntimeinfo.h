@@ -1,6 +1,14 @@
 #ifndef DYNRUNTIMEINFO_H
 #define DYNRUNTIMEINFO_H
 
+/*! 
+ *  Simple class that parses Runtime information from staticRuntimeInfo.json located in the install folder
+ *  and dynamicRuntimeInfo.json located in a user directory defined by Appdirs. 
+ *  staticRuntimeInfo.json containts information on install type. 
+ * 	dynamicRuntimeInfo.json is used to log various information regarding the initialization of the environment. e.g. at first run
+ * 	This class is used to query runtime information and to determine if there has been proper initialization for this JASP version.
+*/
+
 #include <cstdint>
 #include <string>
 #include <map>
