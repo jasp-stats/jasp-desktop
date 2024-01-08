@@ -23,7 +23,7 @@
 		<Merge Id="VCRedist" SourceFile="$(var.RedistMergeModule)" DiskId="1" Language="0"/>
 	</DirectoryRef>
 
-        <Condition Message="JASP is only supported on Windows 10 version 1809 or newer!">
+        <Condition Message="JASP is only supported on Windows 10 version 1903 or newer!">
                 <![CDATA[Installed OR (VersionNT >= 603 OR VersionNT >= 1000)]]>
         </Condition>
         
