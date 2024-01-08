@@ -27,8 +27,8 @@ void Column::dbLoad(int id, bool getValues)
 
 	db().transactionReadBegin();
 	
-					db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision);
-	_isComputed =   db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
+	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision);
+	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
 
 	db().labelsLoad(this);
 	
@@ -65,22 +65,12 @@ void Column::loadComputedColumnJsonBackwardsCompatibly(const Json::Value & json)
 	//Columnname is used to find this:
 	//_column = DataSetPackage::pkg()->dataSet()->column(json["name"].asString());
 	
-	const std::string & rCode = json["rCode"].asString(),
-					  & codeTypeStr = json["codeType"].asString();
-
-	computedColumnType codeType = computedColumnType::notComputed;
-	if (!codeTypeStr.empty())
-	{
-		try { codeType = computedColumnTypeFromString(codeTypeStr); }
-		catch(...) {}
-	}
-
-	try { codeType = computedColumnTypeFromString(codeTypeStr); } catch(...) {}
+	const std::string & rCode = json["rCode"].asString();
 
 	setCompColStuff
 	(
 		json["invalidated"].asBool(),
-		codeType,
+		computedColumnTypeFromString(json["codeType"].asString()),
 		rCode,
 		json["error"].asString(),
 		json["constructorCode"]
@@ -188,7 +178,7 @@ void Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 	incRevision();
 }
 
@@ -221,7 +211,6 @@ void Column::setCodeType(computedColumnType codeType)
 		_analysisId = -1;
 
 	_codeType	= codeType;
-	_isComputed = _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;
 	
 	dbUpdateComputedColumnStuff();
 }
@@ -309,7 +298,6 @@ void Column::setCompColStuff(bool invalidated, computedColumnType codeType, cons
 {
 	JASPTIMER_SCOPE(Column::setCompColStuff);
 
-	_isComputed			= true;
 	_invalidated		= invalidated;
 	_codeType			= codeType;
 	_rCode				= rCode;
@@ -2131,7 +2119,6 @@ Json::Value Column::serialize() const
 	json["rCode"]			= _rCode;
 	json["type"]			= int(_type);
 	json["analysisId"]		= _analysisId;
-	json["isComputed"]		= _isComputed;
 	json["invalidated"]		= _invalidated;
 	json["codeType"]		= int(_codeType);
 	json["error"]			= _error;
@@ -2191,10 +2178,9 @@ void Column::deserialize(const Json::Value &json)
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
 	_constructorJson	= json["constructorJson"];
-	_isComputed			= json["isComputed"].asBool();
 	_analysisId			= json["analysisId"].asInt();
 
-	db().columnSetComputedInfo(_id, _analysisId, _isComputed, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
 
 
 	_dbls.clear();

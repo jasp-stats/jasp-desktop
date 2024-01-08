@@ -1015,9 +1015,13 @@ void DatabaseInterface::columnSetDescription(int columnId, const std::string & d
 	});
 }
 
-void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool isComputed, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
+void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
+
+	// The isComputed is not longer needed in the database (this can be deduced by codeType), but for downgrade purpose, the isComputed is still needed.
+	// In 0.19 we can remove it from the database.
+	bool isComputed = codeType != computedColumnType::notComputed && codeType != computedColumnType::analysisNotComputed;
 
 	runStatements("UPDATE Columns SET isComputed=?, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
 	{
@@ -1068,10 +1072,9 @@ std::string DatabaseInterface::_wrap_sqlite3_column_text(sqlite3_stmt * stmt, in
 	return !col ? "" : std::string(reinterpret_cast<const char*>(col));	
 }
 
-bool DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson)
+void DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetComputedInfo);
-	bool isComputed = false;
 
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
@@ -1082,15 +1085,14 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, boo
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 7);
+		assert(colCount == 6);
 
-					isComputed			= sqlite3_column_int(		stmt,	0);
-					invalidated			= sqlite3_column_int(		stmt,	1);
-		std::string codeTypeStr			= _wrap_sqlite3_column_text(stmt,	2);
-					rCode				= _wrap_sqlite3_column_text(stmt,	3);
-					error				= _wrap_sqlite3_column_text(stmt,	4);
-		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	5);
-					analysisId			= sqlite3_column_int(		stmt,	6);
+					invalidated			= sqlite3_column_int(		stmt,	0);
+		std::string codeTypeStr			= _wrap_sqlite3_column_text(stmt,	1);
+					rCode				= _wrap_sqlite3_column_text(stmt,	2);
+					error				= _wrap_sqlite3_column_text(stmt,	3);
+		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	4);
+					analysisId			= sqlite3_column_int(		stmt,	5);
 
 		codeType = computedColumnType::notComputed;
 		if (!codeTypeStr.empty())
@@ -1103,9 +1105,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, boo
 		Json::Reader().parse(constructorJsonStr, constructorJson);
 	};
 
-	runStatements("SELECT isComputed, invalidated, codeType, rCode, error, constructorJson, analysisId FROM Columns WHERE id = ?;", prepare, processRow);
-
-	return isComputed;
+	runStatements("SELECT invalidated, codeType, rCode, error, constructorJson, analysisId FROM Columns WHERE id = ?;", prepare, processRow);
 }
 
 void DatabaseInterface::labelsClear(int columnId)
