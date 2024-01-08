@@ -6,7 +6,7 @@
 #include <vector>
 #include "utils.h"
 
-#define DEFAULT_FILTER		"# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
+#define DEFAULT_FILTER		"# Add filters using R syntax here, see info button for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
 #define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
 #define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
 
