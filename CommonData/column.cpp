@@ -67,11 +67,20 @@ void Column::loadComputedColumnJsonBackwardsCompatibly(const Json::Value & json)
 	
 	const std::string & rCode = json["rCode"].asString(),
 					  & codeTypeStr = json["codeType"].asString();
-	
+
+	computedColumnType codeType = computedColumnType::notComputed;
+	if (!codeTypeStr.empty())
+	{
+		try { codeType = computedColumnTypeFromString(codeTypeStr); }
+		catch(...) {}
+	}
+
+	try { codeType = computedColumnTypeFromString(codeTypeStr); } catch(...) {}
+
 	setCompColStuff
 	(
 		json["invalidated"].asBool(),
-		(codeTypeStr.empty() || codeTypeStr == "unknown") ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr),
+		codeType,
 		rCode,
 		json["error"].asString(),
 		json["constructorCode"]
