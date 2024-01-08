@@ -65,12 +65,13 @@ void Column::loadComputedColumnJsonBackwardsCompatibly(const Json::Value & json)
 	//Columnname is used to find this:
 	//_column = DataSetPackage::pkg()->dataSet()->column(json["name"].asString());
 	
-	const std::string & rCode = json["rCode"].asString();
+	const std::string & rCode = json["rCode"].asString(),
+					  & codeTypeStr = json["codeType"].asString();
 	
 	setCompColStuff
 	(
 		json["invalidated"].asBool(),
-		computedColumnTypeFromString(json["codeType"].asString()),
+		(codeTypeStr.empty() || codeTypeStr == "unknown") ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr),
 		rCode,
 		json["error"].asString(),
 		json["constructorCode"]

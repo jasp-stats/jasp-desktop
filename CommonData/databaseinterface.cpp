@@ -1092,7 +1092,7 @@ bool DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, boo
 		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	5);
 					analysisId			= sqlite3_column_int(		stmt,	6);
 
-		codeType = codeTypeStr.empty() ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr);
+		codeType = (codeTypeStr.empty() || codeTypeStr == "unknown") ? computedColumnType::notComputed : computedColumnTypeFromString(codeTypeStr);
 
 		constructorJson = Json::objectValue;
 		Json::Reader().parse(constructorJsonStr, constructorJson);
