@@ -1064,9 +1064,38 @@
         }
       ]
     },
+	{
+		"name": "20. Process",
+		"path": "20. Process",
+		"description": "",
+		"kind": "folder",
+		"children": [
+		  {
+			"name": "Age and Fatigue",
+			"path": "Age and Fatigue.jasp",
+			"description": "Het effect van leeftijd op luistergerelateerde fatigue. <br><br> Het voorbeeld van het JASP-bestand demonstreert het gebruik van klassieke conditioneele procesmodellen met causale implicatietests. <br><br> <i>Data van McGarrigle et al. (2022).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Age and Fatigue.csv"
+		  },
+		  {
+			"name": "Climate Change Disasters",
+			"path": "Climate Change Disasters.jasp",
+			"description": "De effecten van het framen van een ramp als veroorzaakt door klimaatverandering. <br><br> Het voorbeeld van een JASP-bestand demonstreert het gebruik van moderatie en gemodereerde mediatieanalyses. <br><br> <i>Data van Chapman & Lickel (2016).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Climate Change Disasters.csv"
+		  },
+		  {
+			"name": "Presumed Media Influence",
+			"path": "Presumed Media Influence.jasp",
+			"description": "Het effect van nieuwsplaatsing op (veronderstelde) intentievorming. <br><br> Het voorbeeld van een JASP-bestand demonstreert het gebruik van een eenvoudige mediatieanalyse. <br><br> <i>Data van Tal-Or et al. (2010).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Presumed Media Influence.csv"
+		  }
+		]
+	},
     {
-      "name": "20. Overig",
-      "path": "20. Miscellaneous",
+      "name": "21. Overig",
+      "path": "21. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [

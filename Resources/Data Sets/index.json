@@ -1064,6 +1064,35 @@
         }
       ]
     },
+	{
+		"name": "20. Process",
+		"path": "20. Process",
+		"description": "",
+		"kind": "folder",
+		"children": [
+		  {
+			"name": "Age and Fatigue",
+			"path": "Age and Fatigue.jasp",
+			"description": "The effect of age on listening-related fatigue. <br><br> The example JASP file demonstrates the use of classical conditional process models with causal implication tests. <br><br> <i>Data from McGarrigle et al. (2022).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Age and Fatigue.csv"
+		  },
+		  {
+			"name": "Climate Change Disasters",
+			"path": "Climate Change Disasters.jasp",
+			"description": "The effects of framing a disasters as being caused by climate change. <br><br> The example JASP file demonstrates the use of moderation and moderated mediation analyses. <br><br> <i>Data from Chapman & Lickel (2016).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Climate Change Disasters.csv"
+		  },
+		  {
+			"name": "Presumed Media Influence",
+			"path": "Presumed Media Influence.jasp",
+			"description": "The effect of news placement on (presumed) intention formation. <br><br> The example JASP file demonstrates the use of simple mediation analysis. <br><br> <i>Data from Tal-Or et al. (2010).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Presumed Media Influence.csv"
+		  }
+		]
+	},
     {
       "name": "20. Miscellaneous",
       "path": "20. Miscellaneous",
