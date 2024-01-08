@@ -121,6 +121,17 @@ FocusScope
 					property bool changed:	text != computedColumnsInterface.computeColumnRCode
 					
 					KeyNavigation.tab:		applyComputedColumnButton
+
+
+					Keys.onReturnPressed:	(keyEvent) => {
+												if(keyEvent.modifiers & Qt.ControlModifier)
+												{
+													if(changedSinceLastApply)
+														computedColumnContainer.applyComputedColumn()
+												}
+												else
+													keyEvent.accepted = false
+											}
 				}
 
 
@@ -190,6 +201,7 @@ FocusScope
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "replaceNA";		functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";              toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "ifElse";			functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "hasSubstring";	functionParameters: "string,substring";		functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "is.na";			functionParameters: "y";					functionParamTypes: "string:number:boolean";									toolTip: qsTr("returns a boolean vector with TRUE for each missing value in y") }
 
 					ListElement	{ type: "separator" }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Gaussian distribution with specified mean and standard deviation sd") }

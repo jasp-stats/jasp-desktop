@@ -6,9 +6,9 @@
 #include <vector>
 #include "utils.h"
 
-#define DEFAULT_FILTER		"# Add filters using R syntax here, see info button for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
 #define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
 #define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
+
 
 class DataSet;
 class DatabaseInterface;
@@ -61,7 +61,7 @@ private:
 	DataSet				*	_data				= nullptr;
 	int						_id					= -1,
 							_filteredRowCount	= 0;
-	std::string				_rFilter			= DEFAULT_FILTER,
+	std::string				_rFilter			= "",
 							_generatedFilter	= DEFAULT_FILTER_GEN,
 							_constructorJson	= DEFAULT_FILTER_JSON,
 							_constructorR		= "",

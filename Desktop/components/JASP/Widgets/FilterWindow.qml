@@ -128,6 +128,7 @@ FocusScope
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "median";			functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "ifelse";			functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "hasSubstring";	functionParameters: "string,substring";	functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
+					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "is.na";			functionParameters: "y";				functionParamTypes: "string:number:boolean";									toolTip: qsTr("Combine with not-operator to filter out rows with missing values (NA) for a column.") }
 				}
 
 				function askIfChanged(closeFunc)
@@ -357,6 +358,16 @@ FocusScope
 							color:					jaspTheme.textEnabled
 
 							property bool changedSinceLastApply: text !== filterModel.rFilter
+
+							Keys.onReturnPressed:	(keyEvent) => {
+														if(keyEvent.modifiers & Qt.ControlModifier)
+														{
+															if(filterEdit.changedSinceLastApply)
+																filterWindow.applyAndSendFilter(filterEdit.text)
+														}
+														else
+															keyEvent.accepted = false
+													}
 
 							anchors
 							{

@@ -242,7 +242,7 @@ Item
 				MouseArea
 				{
 					anchors.fill: parent
-					onPressed: { scriptColumn.focus = true; mouse.accepted = false; }
+					onPressed: (mouse) => { scriptColumn.focus = true; mouse.accepted = false; }
 				}
 
 				DropTrash
