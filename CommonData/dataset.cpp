@@ -8,6 +8,8 @@ stringset DataSet::_defaultEmptyvalues;
 DataSet::DataSet(int index)
 	: DataSetBaseNode(dataSetBaseNodeType::dataSet, nullptr)
 {
+	Log::log() << "DataSet::DataSet(index=" << index << ")" << std::endl;
+
 	_dataNode		= new DataSetBaseNode(dataSetBaseNodeType::data,	this);
 	_filtersNode	= new DataSetBaseNode(dataSetBaseNodeType::filters, this);
 	
