@@ -82,7 +82,7 @@ public:
 			columnType				type()					const	{ return _type;				}
 			int						id()					const	{ return _id;				}
 			int						analysisId()			const	{ return _analysisId;		}
-			bool					isComputed()			const	{ return _isComputed;		}
+			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
 			bool					invalidated()			const	{ return _invalidated;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
@@ -198,8 +198,7 @@ private:
 									_preEditType		= columnType::unknown;
 			int						_id					= -1,
 									_analysisId			= -1;		// Actually initialized in DatabaseInterface::columnInsert
-			bool					_isComputed			= false,	// Actually initialized in DatabaseInterface::columnInsert
-									_invalidated		= false,
+			bool					_invalidated		= false,
 									_batchedLabel		= false;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
