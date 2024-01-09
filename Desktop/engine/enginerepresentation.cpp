@@ -342,6 +342,7 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::filter);
 
+
 	setState(engineState::idle);
 
 #ifdef PRINT_ENGINE_MESSAGES
@@ -350,10 +351,15 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 
 	int requestId = json.get("requestId", -1).asInt();
 
-	emit filterDone(requestId);
-
 	if(requestId == _lastRequestId)
-		emit processNewFilterResult(requestId);
+	{
+		emit filterDone(requestId);
+
+		if(json.isMember("error"))
+			emit processFilterErrorMsg(tq(json["error"].asString()), requestId);
+		else
+			emit processNewFilterResult(requestId);
+	}
 }
 
 void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)

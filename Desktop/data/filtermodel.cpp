@@ -19,11 +19,22 @@ QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ?
 QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->generatedFilter());			}
 QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson());			}
 
+const char * FilterModel::defaultRFilter()
+{
+	static std::string defaultFilter;
+	defaultFilter = tr(	"# Add filters using R syntax here. By default the non-R filter(s) are passed with generatedFilter."		"\n"
+						"# To include generated filters, append clauses with \"&\": generatedFilter & ..."									"\n"
+						"# Click the (i) icon in the lower right corner for further help."													"\n\n"
+						"generatedFilter"	).toStdString();
+
+	return defaultFilter.c_str();
+}
+
 void FilterModel::reset()
 {
 	_setGeneratedFilter(DEFAULT_FILTER_GEN	);
 	setConstructorJson(	DEFAULT_FILTER_JSON	);
-	_setRFilter(		DEFAULT_FILTER		);
+	_setRFilter(		defaultRFilter()		);
 
 	if(DataSetPackage::pkg()->rowCount() > 0)
 		sendGeneratedAndRFilter();
@@ -191,19 +202,16 @@ void FilterModel::updateStatusBar()
 {
 	if(!DataSetPackage::pkg()->hasDataSet())
 	{
-		setStatusBarText("No data loaded!");
+		setStatusBarText(tr("No data loaded!"));
 		return;
 	}
 
-	int     TotalCount			= DataSetPackage::pkg()->rowCount(),
+	int     TotalCount			= DataSetPackage::pkg()->dataRowCount(),
 	        TotalThroughFilter	= DataSetPackage::pkg()->filteredRowCount();
-	double	PercentageThrough	= 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
+	int		PercentageThrough	= (int)round(100.0 * ((double)TotalThroughFilter) / ((double)TotalCount));
+	bool	Approximate			= PercentageThrough != TotalThroughFilter;
 
-	std::stringstream ss;
-	if(hasFilter())
-		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
-
-	setStatusBarText(tq(ss.str()));
+	setStatusBarText(tr("Data has %1 rows, %2 (%3%4%) passed through filter").arg(TotalCount).arg(TotalThroughFilter).arg(Approximate ? "~" : "").arg(PercentageThrough));
 }
 
 void FilterModel::rescanRFilterForColumns()

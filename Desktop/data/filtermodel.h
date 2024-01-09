@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "utilities/qutils.h"
-#include "datasetpackage.h"
 #include "labelfiltergenerator.h"
 
 ///
@@ -22,27 +21,27 @@ class FilterModel : public QObject
 	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
 
 public:
-	explicit FilterModel(labelFilterGenerator * labelfilterGenerator);
+	explicit					FilterModel(labelFilterGenerator * labelfilterGenerator);
 
-	void init();
+				void			init();
 
-	QString rFilter()				const;
-	QString constructorR()			const;
-	QString statusBarText()			const	{ return _statusBarText;			}
-	QString filterErrorMsg()		const;
-	QString generatedFilter()		const;
-	QString constructorJson()		const;
-	QString defaultRFilter()		const	{ return DEFAULT_FILTER;			}
+				QString			rFilter()				const;
+				QString			constructorR()			const;
+				QString			statusBarText()			const	{ return _statusBarText;			}
+				QString			filterErrorMsg()		const;
+				QString			generatedFilter()		const;
+				QString			constructorJson()		const;
+	static		const char *	defaultRFilter();
 
-	bool	hasFilter()				const	{ return rFilter() != DEFAULT_FILTER || constructorJson() != DEFAULT_FILTER_JSON; }
+				bool			hasFilter()				const	{ return rFilter() != defaultRFilter() || constructorJson() != DEFAULT_FILTER_JSON; }
 
 
-	Q_INVOKABLE void resetRFilter()				{ applyRFilter(DEFAULT_FILTER); }
-	void		sendGeneratedAndRFilter();
+	Q_INVOKABLE void			resetRFilter()				{ applyRFilter(defaultRFilter()); }
+				void			sendGeneratedAndRFilter();
 
-	void updateStatusBar();
-	void reset();
-	void modelInit();
+				void			updateStatusBar();
+				void			reset();
+				void			modelInit();
 
 public slots:
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)

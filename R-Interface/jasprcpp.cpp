@@ -345,7 +345,7 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 {
 	jaspRCPP_logString("jaspRCPP_runFilter runs: \n\"" + std::string(filterCode) + "\"\n" );
 
-	lastErrorMessage = "";
+	jaspRCPP_resetErrorMsg();
 	rinside->instance()[".filterCode"] = filterCode;
 
 	const std::string filterTryCatch(

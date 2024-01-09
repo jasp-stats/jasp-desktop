@@ -56,7 +56,7 @@ DropArea {
 		return false
 	}
 
-	onEntered:
+	onEntered: (drag)=>
 	{
 		//console.log(__debugName," onEntered DROPSPOT")
 
