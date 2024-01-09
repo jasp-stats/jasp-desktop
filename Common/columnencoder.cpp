@@ -128,7 +128,7 @@ std::string ColumnEncoder::decode(const std::string &in)
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names)
 {
-	Log::log() << "ColumnEncoder::setCurrentNames(#"<< names.size() << ")" << std::endl;
+	LOGGER << "ColumnEncoder::setCurrentNames(#"<< names.size() << ")" << std::endl;
 
 	_encodingMap.clear();
 	_decodingMap.clear();
