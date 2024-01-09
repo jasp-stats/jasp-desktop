@@ -862,33 +862,18 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 
 DataSet * Engine::provideAndUpdateDataSet()
 {
-	JASPTIMER_RESUME(Engine::provideDataSet());
+	JASPTIMER_RESUME(Engine::provideAndUpdateDataSet());
+
+	bool setColumnNames = !_dataSet;
+
+	if(!_dataSet && _db->dataSetGetId() != -1)
+		_dataSet = new DataSet(_db->dataSetGetId());
 
 	if(_dataSet)
-	{
-		Log::log() << "There is a dataset, ";
-		if(_dataSet->checkForUpdates())
-		{
-			Log::log(false) << "updates found, loading them.";
-			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
-		}
-		else
-			Log::log(false) << "no updates found.";
+		setColumnNames |= _dataSet->checkForUpdates();
 
-		Log::log(false) << std::endl;
-	}
-	else
-	{
-		Log::log() << "No dataset, ";
-		if(_db->dataSetGetId() != -1)
-		{
-			Log::log() << "create a new dataset" << std::endl;
-			_dataSet = new DataSet(_db->dataSetGetId());
-			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
-		}
-		else
-			Log::log() << "No database" << std::endl;
-	}
+	if(_dataSet && setColumnNames)
+		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
 
 	JASPTIMER_STOP(Engine::provideDataSet());
 
