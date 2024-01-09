@@ -94,14 +94,16 @@
 	</Directory>
 
 	<!-- Disable ms-gaming overlay pop while JASP starting -->
-	<Component Id="RegistryEntryHacky" Guid="8732b02f-3fb4-47e0-878c-192d41502a6e">
-		<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
-			<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" />
-		</RegistryKey>
-		<RegistryKey Root="HKCU" Key="System\GameConfigStore">
-			<RegistryValue Name="GameDVR_Enabled" Value="0" Type="integer" />
-		</RegistryKey>
-	</Component>
+	<DirectoryRef Id="TARGETDIR">
+		<Component Id="RegistryEntryHacky" Guid="8732b02f-3fb4-47e0-878c-192d41502a6e">
+			<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
+				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" />
+			</RegistryKey>
+			<RegistryKey Root="HKCU" Key="System\GameConfigStore">
+				<RegistryValue Name="GameDVR_Enabled" Value="0" Type="integer" />
+			</RegistryKey>
+		</Component>
+	</DirectoryRef>
 
 	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_SOURCE_DIR)\Desktop\icon.ico" />
 	<Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" />
@@ -169,9 +171,10 @@
 
 	<!-- Set the components defined in our fragment files that will be used for our feature  -->
 	<Feature Id="JASPFeature" Title="JASP" Level="1">
-		<ComponentGroupRef Id="JASPFiles" 							/>
-		<ComponentRef Id="ApplicationShortcut"				 		/>
-		<ComponentRef Id="FileTypeRegistration"					 	/>
+		<ComponentGroupRef Id="JASPFiles" 		/>
+		<ComponentRef Id="ApplicationShortcut"		/>
+		<ComponentRef Id="FileTypeRegistration"		/>
+		<ComponentRef Id="RegistryEntryHacky" 		/>
 	</Feature>
 
 	<Feature Id="VCRedist" Title="Visual C++ 14.0 Runtime" AllowAdvertise="no" Display="collapse" Level="10">
