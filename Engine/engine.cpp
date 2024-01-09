@@ -877,7 +877,18 @@ DataSet * Engine::provideAndUpdateDataSet()
 
 		Log::log(false) << std::endl;
 	}
-	else if(_db->dataSetGetId() != -1)	_dataSet = new DataSet(_db->dataSetGetId());
+	else
+	{
+		Log::log() << "No dataset, ";
+		if(_db->dataSetGetId() != -1)
+		{
+			Log::log() << "create a new dataset" << std::endl;
+			_dataSet = new DataSet(_db->dataSetGetId());
+			ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
+		}
+		else
+			Log::log() << "No database" << std::endl;
+	}
 
 	JASPTIMER_STOP(Engine::provideDataSet());
 
