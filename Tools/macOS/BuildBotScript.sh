@@ -21,5 +21,5 @@ cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$QT_D
 cmake --build build --target all
 cmake --build build --target install
 cmake --build build --target dmg
-# cmake --build build --target notarise
+cmake --build build --target notarise
 cmake --build build --target upload
