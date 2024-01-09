@@ -35,6 +35,17 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+          <release version="0.18.3" date="2024-01-10">
+                <description>
+Bug fixes:
+	• Some older JASP files did not open correctly in 0.18.2 (https://github.com/jasp-stats/jasp-issues/issues/2517)
+  • Filter errors and improve clarity (https://github.com/jasp-stats/jasp-issues/issues/2515)
+  • Incorrect handling of decimal separators in CSVs (https://github.com/jasp-stats/jasp-issues/issues/2518)
+  • Audit Sampling workflow getting stuck (https://github.com/jasp-stats/jasp-issues/issues/2503)
+  • Problem with Windows Zip version (https://github.com/jasp-stats/jasp-issues/issues/2502)
+  • Update flexplot (https://github.com/jasp-stats/jasp-issues/issues/2494)
+                </description>
+        </release>
 		<release version="0.18.2" date="2024-01-02">
             <description>
 **New Features and Improvements**

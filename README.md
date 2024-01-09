@@ -22,7 +22,7 @@ One of the best ways that you can support the JASP project is by citing it (give
 
     @MISC{JASP2024,
       AUTHOR = {{JASP Team}},
-      TITLE  = {{JASP (Version 0.18.2)[Computer software]}},
+      TITLE  = {{JASP (Version 0.18.3)[Computer software]}},
       YEAR   = {2024},
       URL    = {https://jasp-stats.org/}
     }
@@ -59,4 +59,3 @@ Citations are an important measure of how widely the software is used, and an im
   - [New translations of JASP](Docs/development/translate.md)
   - [Prepare source files for translation](Docs/development/jasp-translation-rules.md)
   - [Guideline for translating JASP](Docs/development/jasp-guideline-translators.md)
-
