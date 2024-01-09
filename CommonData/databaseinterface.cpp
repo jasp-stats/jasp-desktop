@@ -4,7 +4,6 @@
 #include "log.h"
 #include "dataset.h"
 #include "columntype.h"
-#include "version"
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
 
@@ -26,6 +25,8 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 
 	   if(originalVersion < "0.18.2")
 			   runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;"                 "\n");
+
+	   //Are you going to 0.19 or higher? Maybe drop isComputed from Columns as its not needed anymore
 
 	   //Later versions can add new originalVersion < blabla blocks at the end of this "list"
 
