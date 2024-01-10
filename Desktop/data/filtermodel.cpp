@@ -22,10 +22,14 @@ QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() 
 const char * FilterModel::defaultRFilter()
 {
 	static std::string defaultFilter;
-	defaultFilter = tr(	"# Add filters using R syntax here. By default the non-R filter(s) are passed with generatedFilter."		"\n"
-						"# To include generated filters, append clauses with \"&\": generatedFilter & ..."									"\n"
-						"# Click the (i) icon in the lower right corner for further help."													"\n\n"
-						"generatedFilter"	).toStdString();
+	defaultFilter = tr(
+			"# Above you see the code that JASP generates for both value filtering and the drag&drop filter."					"\n"
+			"# This default result is stored in 'generatedFilter' and can be replaced or combined with a custom filter."		"\n"
+			"# To combine you can append clauses using '&': 'generatedFilter & customFilter & perhapsAnotherFilter'"			"\n"
+			"# Click the (i) icon in the lower right corner for further help."													"\n"
+																																"\n"
+			"generatedFilter"																									"\n"
+				).toStdString();
 
 	return defaultFilter.c_str();
 }

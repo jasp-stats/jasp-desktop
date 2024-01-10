@@ -309,12 +309,11 @@ FocusScope
 							text:					filterModel.generatedFilter +"\n"
 							height:					contentHeight
 							readOnly:				true
-							color:					jaspTheme.gray
+							color:					jaspTheme.grayDarker
 							selectByMouse:			true
 							onActiveFocusChanged:	if(!activeFocus) deselect()
-
-							font.family:			"Courier"
-							font.pixelSize:			baseFontSize * preferencesModel.uiScale
+							font.pixelSize:         baseFontSize * preferencesModel.uiScale
+							font.family:			jaspTheme.fontCode.family
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 
 						}
@@ -352,8 +351,8 @@ FocusScope
 							height:					contentHeight + 30
 							selectByMouse:			true
 							onActiveFocusChanged:	if(!activeFocus) deselect()
-							font.family:			"Courier"
-							font.pixelSize:			baseFontSize * preferencesModel.uiScale
+							font.family:			jaspTheme.fontCode.family
+							font.pixelSize:         baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 							color:					jaspTheme.textEnabled
 
