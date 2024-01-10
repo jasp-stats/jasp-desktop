@@ -61,7 +61,7 @@ private:
 	DataSet				*	_data				= nullptr;
 	int						_id					= -1,
 							_filteredRowCount	= 0;
-	std::string				_rFilter			= "",
+	std::string				_rFilter			= "generatedFilter",
 							_generatedFilter	= DEFAULT_FILTER_GEN,
 							_constructorJson	= DEFAULT_FILTER_JSON,
 							_constructorR		= "",
