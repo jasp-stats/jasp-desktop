@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "resultstesting/compareresults.h"
 
 QSettings* Settings::_settings = nullptr;
 
@@ -93,7 +94,10 @@ const Settings::Setting Settings::Values[] = {
 
 QVariant Settings::value(Settings::Type key)
 {
-	return getSettings()->value(Settings::Values[key].type, Settings::Values[key].defaultValue);
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+		return defaultValue(key);
+	
+	return getSettings()->value(Settings::Values[key].type, defaultValue(key));
 }
 
 QVariant Settings::defaultValue(Settings::Type key)
