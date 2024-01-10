@@ -1770,6 +1770,9 @@ void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newT
 		return;
 
 	column->setTitle(newTitle);
+	
+	beginResetModel();
+	endResetModel();
 }
 
 void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription)
