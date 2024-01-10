@@ -13,11 +13,11 @@ FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
 }
 
-QString FilterModel::rFilter()			const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->rFilter());					}
-QString FilterModel::constructorR()		const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorR());				}
-QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->errorMsg());					}
-QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->generatedFilter());			}
-QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson());			}
+QString FilterModel::rFilter()			const	{ return !DataSetPackage::filter() ? defaultRFilter()		: tq(DataSetPackage::filter()->rFilter());					}
+QString FilterModel::constructorR()		const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->constructorR());				}
+QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->errorMsg());					}
+QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? DEFAULT_FILTER_GEN		: tq(DataSetPackage::filter()->generatedFilter());			}
+QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() ? DEFAULT_FILTER_JSON	: tq(DataSetPackage::filter()->constructorJson());			}
 
 const char * FilterModel::defaultRFilter()
 {
@@ -36,7 +36,7 @@ void FilterModel::reset()
 	setConstructorJson(	DEFAULT_FILTER_JSON	);
 	_setRFilter(		defaultRFilter()		);
 
-	if(DataSetPackage::pkg()->rowCount() > 0)
+	if(DataSetPackage::pkg()->dataRowCount() > 0)
 		sendGeneratedAndRFilter();
 }
 
@@ -216,7 +216,7 @@ void FilterModel::updateStatusBar()
 
 void FilterModel::rescanRFilterForColumns()
 {
-	_columnsUsedInRFilter = DataSetPackage::pkg()->dataSet()->findUsedColumnNames(fq(rFilter()));
+	_columnsUsedInRFilter = DataSetPackage::pkg() && DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->findUsedColumnNames(fq(rFilter())) : stringset();
 }
 
 void FilterModel::computeColumnSucceeded(QString columnName, QString, bool dataChanged)

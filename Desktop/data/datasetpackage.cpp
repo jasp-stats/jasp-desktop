@@ -31,6 +31,7 @@
 #include "databaseconnectioninfo.h"
 #include "utilities/settings.h"
 #include "modules/ribbonmodel.h"
+#include "filtermodel.h"
 
 //Im having problems getting the proxy models to play nicely with beginRemoveRows etc
 //So just reset the whole thing as that is what happens in datasetview
@@ -1271,6 +1272,8 @@ void DataSetPackage::createDataSet()
 	setDefaultWorkspaceEmptyValues();
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
+	
+	_dataSet->filter()->setRFilter(FilterModel::defaultRFilter());
 	
 	_dataSet->setModifiedCallback([&](){ setModified(true); }); //DataSet and co dont use Qt so instead we just use a callback
 }
