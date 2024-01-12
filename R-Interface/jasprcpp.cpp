@@ -217,7 +217,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 }
 
-void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder)
+void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * modulesFolder, const char * linkFolder, const char * junctionsFilePath)
 {
 	rinside = new RInside();
 	RInside &rInside = rinside->instance();
@@ -225,11 +225,12 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
 	
 	rinside->parseEvalQNT("source('Modules/symlinkTools.R')");
+	rInside["modulesFolder"] = modulesFolder;
+	rInside["symFolder"] = linkFolder;
+	rInside["junctionsFilePath"] = junctionsFilePath;
 	
-	rInside["symFolder"] = folder;
-	
-	if(collectNotRestore)	rinside->parseEvalQNT("collectAndStoreJunctions(symFolder)");
-	else					rinside->parseEvalQNT("restoreModulesIfNeeded(  symFolder)");
+	if(collectNotRestore)	rinside->parseEvalQNT("collectAndStoreJunctions(modulesFolder)");
+	else					rinside->parseEvalQNT("restoreModulesIfNeeded( modulesFolder, symFolder, junctionsFilePath)");
 }
 
 void STDCALL jaspRCPP_purgeGlobalEnvironment()

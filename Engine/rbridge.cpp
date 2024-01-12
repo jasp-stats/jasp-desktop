@@ -129,9 +129,9 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 
 }
 
-void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder)
+void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath)
 {
-	jaspRCPP_junctionHelper(collectNotRestore, folder.c_str());	
+	jaspRCPP_junctionHelper(collectNotRestore, modulesFolder.c_str(), linkFolder.c_str(), junctionFilePath.c_str());
 }
 
 void rbridge_setDataSetSource(			std::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }
