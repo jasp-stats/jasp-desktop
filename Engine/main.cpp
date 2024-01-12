@@ -53,6 +53,27 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 #ifdef _WIN32
 int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 {
+	if(argc == 3)
+	{
+		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
+		if(arg1 == "--collectJunctions")
+		{
+			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
+			rbridge_junctionHelper(true, arg2, "", "");
+			exit(0);
+		}
+	}
+	else if(argc == 5)
+	{
+		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2])), arg3(Utils::wstringToString(argv[3])), arg4(Utils::wstringToString(argv[4]));
+		if(arg1 == "--recreateJunctions")
+		{
+			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
+			rbridge_junctionHelper(false, arg2, arg3, arg4);
+			exit(0);
+		}
+	}
+
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= wcstoul(argv[1], NULL, 10),
@@ -127,47 +148,6 @@ int main(int argc, char *argv[])
 
 		exit(0);
 	}
-#ifdef _WIN32
-	else if(argc == 3)
-	{
-		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
-		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions"), junctionRemoveArg("--removeJunctions");
-		
-		if(arg1 == junctionRemoveArg || arg1 == junctionRecreateArg) //Also remove the old modules if it already exists and we are asked to recreate them, because it might be the old ones (previous install)
-		{
-			std::string junctionsCreationLog("junctions-recreated-successfully.log");
-			std::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
-
-			Log::log() << "Before removing junctions" << std::endl;
-			
-			if(exists(junctionsCreationLogPath))
-				remove(junctionsCreationLogPath);
-
-			std::string modulesFolder("Modules");
-			Log::log() << "Engine started to remove the Modules folder" << std::endl;
-			std::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
-			
-			if(exists(modulesPath)) {
-				Log::log() << "Module Path exists" << std::endl;
-				for(const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator(modulesPath))
-					if(entry.path().string().find("\\jasp") != std::string::npos)
-						remove_all(entry);
-				Log::log() << "Modules folder should be clean" << std::endl;
-			}
-			else if(arg1 == junctionRemoveArg)
-				Log::log() << "Error: Could not find the Modules folder" << std::endl;
-			
-		}
-		
-		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
-		{
-			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
-			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
-		}
-		
-		exit(0);
-	}
-#endif
 
 	Log::log() << "Engine started in testing mode because it didn't receive any count of arguments otherwise, (1, 3 or 4), it got " << argc << " instead." << std::endl;
 

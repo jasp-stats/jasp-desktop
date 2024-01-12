@@ -44,6 +44,31 @@ set(JASP_SHORT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
 message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
+set(JASP_VERSION_MSIX_PATCH_POSTFIX
+    "000"
+    CACHE STRING "Microsoft does not allow packages of same version to be uploaded to store and forces TWEAK 0, so we add a large version postfix to PATCH in the appmanifest in case we publish a broken version and wish to switch it out. Nobody sees it anyway")
+
+set(MSIX_STORE_PUBLISHER
+    "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
+    CACHE STRING "Publisher set for store msix package")
+
+set(MSIX_SIDELOAD_PUBLISHER
+    "CN=Universiteit van Amsterdam, O=Universiteit van Amsterdam, L=Amsterdam, S=Noord-Holland, C=NL, OID.2.5.4.15=Government Entity, OID.1.3.6.1.4.1.311.60.2.1.3=NL, SERIALNUMBER=34370207"
+    CACHE STRING "Publisher set for sideloaded msix package")
+
+set(MSIX_NIGHTLY_PUBLISHER
+    "CN=JASP, O=JASP, L=Amsterdam, S=Noord-Holland, C=NL"
+    CACHE STRING "Publisher set for nightly msix package")
+
+set(MSIX_SIGN_CERT_PATH
+  "D:\\JASPSelfSign.pfx"
+  CACHE STRING "Path to selfsign cert for Nightlies")
+
+set(MSIX_SIGN_CERT_PASSWORD
+  "0000"
+  CACHE STRING "Password selfsign cert for Nightlies")
+
+
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
 #       Qt Creator can categorize them nicely in its CMake configurator
