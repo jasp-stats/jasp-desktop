@@ -134,6 +134,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"pmatch",
 	"pmax",
 	"pmin",
+	"poly",
 	"powerTransform",
 	"power.t.test",
 	"predict",
