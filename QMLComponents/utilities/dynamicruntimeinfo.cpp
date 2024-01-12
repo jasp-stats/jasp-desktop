@@ -43,8 +43,8 @@ DynamicRuntimeInfo::DynamicRuntimeInfo()
 #elif linux
 	_environment = RuntimeEnvironment::LINUX_LOCAL;
 #elif _WIN32
-	parseStaticRuntimeInfoFile(fq(AppDirs::programDir().absoluteFilePath(tq(staticInfoFileName)))); //will set runtime env info
-	parseDynamicRuntimeInfoFile(fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName)));
+	parseStaticRuntimeInfoFile(staticRuntimeInfoFilePath()); //will set runtime env info
+	parseDynamicRuntimeInfoFile(dynamicRuntimeInfoFilePath());
 #else
     _environment = RuntimeEnvironment::UNKNOWN;
 #endif
@@ -106,6 +106,23 @@ bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
 
     return true;
 
+}
+
+std::string DynamicRuntimeInfo::staticRuntimeInfoFilePath()
+{
+	return fq(AppDirs::programDir().absoluteFilePath(tq(staticInfoFileName)));
+}
+
+std::string DynamicRuntimeInfo::dynamicRuntimeInfoFilePath()
+{	
+	switch (getRuntimeEnvironment()) {
+	case ZIP:
+		return fq(AppDirs::programDir().absoluteFilePath(tq(dynamicInfoFileName)));
+	case MSIX:
+		return fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName));
+	default:
+		return "";
+	}
 }
 
 bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()

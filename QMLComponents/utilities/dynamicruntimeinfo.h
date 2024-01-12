@@ -57,6 +57,9 @@ protected:
     bool parseDynamicRuntimeInfoFile(const std::string& path);
 
 private:
+	std::string staticRuntimeInfoFilePath();
+	std::string dynamicRuntimeInfoFilePath();
+
     RuntimeEnvironment _environment;
     MicroArch _arch;
 
