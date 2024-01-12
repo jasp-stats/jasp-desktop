@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-01-08 23:06+0000\n"
+"Last-Translator: Michael Cantinotti <michael.cantinotti@uqtr.ca>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4550,7 +4556,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Recharger le fichier de données"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4584,31 +4590,31 @@ msgstr "Effacer les cellules"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Annuler"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Refaire"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Analyses"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Passer en mode analyses"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Éditer les données"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Passer en mode édition des données"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Nouvelles données"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
@@ -4616,11 +4622,11 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Insérer"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Insérer des colonnes ou des lignes vides"
 
 #, fuzzy
 msgctxt "RibbonModel|"
@@ -4629,39 +4635,39 @@ msgstr "Supprimer"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Supprimer des colonnes ou des lignes"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Synchronisation"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "Activer la synchronisation externe des données"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Désactiver la synchronisation externe des données"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Insérer une ligne au-dessus"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Insérer une ligne en-dessous"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "Double-cliquer ici pour changer les paramètres de la variable"
 
 msgctxt "DataTableView|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "Double-cliquer ici pour fermer la fenêtre de la variable"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Palette de couleurs"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
@@ -4685,11 +4691,11 @@ msgstr ""
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Gris"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Bleu"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
@@ -4705,7 +4711,7 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Insérer une colonne en-dessous"
 
 #, qt-format
 msgctxt "RibbonModel|"
