@@ -242,6 +242,7 @@ public:
 				int							getColumnIndex(						const QString	  & name)			const	{ return getColumnIndex(name.toStdString()); }
 				Column*						getColumn(							const std::string & name)					{ return _dataSet->column(name); }
 				enum columnType				getColumnType(						size_t				columnIndex)	const;
+				enum columnType				getColumnType(						const QString	  &	name)			const;
 				std::string					getColumnName(						size_t				columnIndex)	const;
 				intvec						getColumnDataInts(					size_t				columnIndex);
 				doublevec					getColumnDataDbls(					size_t				columnIndex);
@@ -285,6 +286,7 @@ public:
 				stringset					columnsCreatedByAnalysis(					Analysis * analysis);
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
+				void						resetVariableTypes();
 
 
 signals:

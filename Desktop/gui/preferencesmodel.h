@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QFont>
-#include "utilities/qutils.h"
 #include "preferencesmodelbase.h"
 
 class JaspTheme;
@@ -28,7 +27,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
-	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
@@ -91,7 +89,6 @@ public:
 	QString		developerFolder()						const;
 	QString		fixedDecimalsForJS()					const;
 	QStringList	emptyValues()							const;
-	bool		customThresholdScale()					const;
 	int			thresholdScale()						const;
 	bool		logToFile()								const;
 	int			logFilesMax()							const;
@@ -155,7 +152,6 @@ public slots:
 	void removeEmptyValue(				QString		value);
 	void addEmptyValue(					QString		value);
 	void resetEmptyValues();
-	void setCustomThresholdScale(		bool		customThresholdScale);
 	void setThresholdScale(				int			thresholdScale);
 	void setLogToFile(					bool		logToFile);
 	void setLogFilesMax(				int			logFilesMax);
@@ -209,7 +205,6 @@ signals:
 	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
 	void plotBackgroundChanged(			QString		plotBackground);
-	void customThresholdScaleChanged(	bool		customThresholdScale);
 	void thresholdScaleChanged(			int			thresholdScale);
 	void logToFileChanged(				bool		logToFile);
 	void logFilesMaxChanged(			int			logFilesMax);

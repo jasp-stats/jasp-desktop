@@ -54,7 +54,7 @@ public:
 signals:
 	void					columnsFilteredCountChanged();
 	void					showInactiveChanged(bool showInactive);
-	void					columnTypeChanged(QString colName);
+	void					columnTypeChanged(QString colName, int colType);
 	void					labelChanged(QString columnName, QString originalLabel, QString newLabel);
 	void					labelsReordered(QString columnName);
 

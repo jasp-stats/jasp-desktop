@@ -515,6 +515,22 @@ FocusScope
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
+				function getColumnTypeIcon(type)
+				{
+					return String(dataSetModel.getColumnTypesWithIcons()[type]) === "" ? "" : jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[type]
+				}
+
+				Connections
+				{
+					target: dataSetModel
+					function onColumnTypeChanged(colName, colType)
+					{
+						if (headerText === colName)
+							colIcon.source = getColumnTypeIcon(colType)
+					}
+				}
+
+
 				Keys.onPressed: (event) =>
 				{
 					var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
@@ -547,7 +563,7 @@ FocusScope
 					anchors.margins:		4
 
 
-					source: String(dataSetModel.getColumnTypesWithIcons()[columnType]) === "" ? "" : jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[columnType]
+					source: getColumnTypeIcon(columnType)
 					width:	source == "" ? 0 : headerRoot.__iconDim
 					height: headerRoot.__iconDim
 
