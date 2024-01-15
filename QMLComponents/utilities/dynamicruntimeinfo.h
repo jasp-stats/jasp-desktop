@@ -43,7 +43,7 @@ public:
     std::string bundledModulesInitializedRVersion();
 	std::string bundledModulesInitializedJaspVersion();
 
-    static bool writeDynamicRuntimeInfoFile();
+	bool writeDynamicRuntimeInfoFile();
 
     //singleton stuff
     static DynamicRuntimeInfo* getInstance();
