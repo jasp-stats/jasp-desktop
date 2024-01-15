@@ -127,7 +127,7 @@ std::string DynamicRuntimeInfo::dynamicRuntimeInfoFilePath()
 
 bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()
 {
-	std::string path = fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName));
+	std::string path = dynamicRuntimeInfoFilePath();
     std::ofstream out(path, std::ofstream::out);
     if(!out)
     {
