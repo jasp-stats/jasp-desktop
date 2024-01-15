@@ -34,11 +34,11 @@ Pay attention that the strings you want to be translated will be displayed in We
 
 	*  a. In the .cpp files you should use the tr() function for all literal text, e.g.,
 
-	errorMsg = tr("Refreshing the analysis may change the results.");
+		   errorMsg = tr("Refreshing the analysis may change the results.");
 
 	*  b. Similar as mentioned above use the % character for parameters in a string for example:
 
-	errorMsg = tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name())
+		   errorMsg = tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name())
 
 3. R-files
 
@@ -46,42 +46,51 @@ Pay attention that the strings you want to be translated will be displayed in We
 	*  b. A single % character in a gettext must be transformed within a gettextf with a double %%. Please let us know if you have a better solution.
 	*  c. All paste and paste0 functions must be replaced by the gettext or the gettextf functions. For example:
 
-       overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
+		   overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
 	   
 	   should be coded as:
 
-       overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
+		   overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
 
        But it is sometimes also possible to combine the two approaches:
 
-       Paste0(gettext(“This is ok”), gettext(“Not very useful but possible”))
+		   paste0(gettext(“This is ok”), gettext(“Not very useful but possible”))
 
 	*  d. Convert sprintf() into gettextf() directly.
 	*  e. Furthermore, immediately after % the parameters 1$ to 99$ can be used to refer to numbered arguments: this allows arguments to be referenced out of order, and is mainly intended for translators of error messages. If this is done it is best if all formats are numbered: if not the unnumbered ones process the arguments in order in which they appear in the code. See the example. This notation allows arguments to be used more than once, in which case they must be used as the same type (integer, double or character). For example:
 
-       message <- sprintf("Some entries of %s were not understood. These are now grouped under '%s'.", options[["colorNodesBy"]], undefGroup)
+		   message <- sprintf("Some entries of %s were not understood. These are now grouped under '%s'.", options[["colorNodesBy"]], undefGroup)
 
        should be coded as:
 
-       message <- gettextf("Some entries of %1$s were not understood. These are now grouped under '%2$s'.", options[["colorNodesBy"]],undefGroup)
+		   message <- gettextf("Some entries of %1$s were not understood. These are now grouped under '%2$s'.", options[["colorNodesBy"]],undefGroup)
 
-	*  f. Be careful with expressions, they have to be considered one by one. For instance,
+	*  f. Be careful with expressions, they have to be considered one by one. For instance:
 
-       xName<- expression(paste("Population proportion", ~theta))
+		   xName<- expression(paste("Population proportion", ~theta))
 
        should be coded as:
 
-       xName <- bquote(paste(.(gettext("Population proportion")), ~theta))
+		   xName <- bquote(paste(.(gettext("Population proportion")), ~theta))
    
 	*  g. Another important issue is when unicode characters are used with \uxxxx: these characters must be set as arguments of gettextf. For example:
 
-		gettext("Hypothesized rate (\u03BB\u2080)")
+		   gettext("Hypothesized rate (\u03BB\u2080)")
 		
 		should be coded as
 			
-		gettextf("Hypothesized rate (%s)", "\u03BB\u2080")
+		   gettextf("Hypothesized rate (%s)", "\u03BB\u2080")
 		
 		Also, when only unicode characters are used, it is most of the time not needed to translate them: if place of `alpha <- gettext("\u03B1")`, just write  `alpha <- "\u03B1"`
+
+	*  h. Be careful: gettext inside gettext does not work. For example:
+
+	       gettextf("Conditional %s Plots", ifelse(type == "Prior", gettext("Prior"), gettext("Posterior")))
+
+   		should be coded as
+  
+            translatedType <- ifelse(type == "Prior", gettext("Prior"), gettext("Posterior"))
+	        gettextf("Conditional %s Plots", translatedType)
 
 
 ### 3. Definitions and terms.
