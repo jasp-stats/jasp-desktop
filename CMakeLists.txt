@@ -24,10 +24,10 @@ if(APPLE)
   endif()
 
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "armv8")
   else()
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
   
