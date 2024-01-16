@@ -27,7 +27,6 @@ const Settings::Setting Settings::Values[] = {
 	{"fixedDecimals",				false},
 	{"developerMode",				false},
 	{"developerFolder",				""},
-	{"CustomThresholdScale",		false},
 	{"ThresholdScale",				10},
 	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
 	{"logFilesMax",					15},

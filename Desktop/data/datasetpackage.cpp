@@ -734,7 +734,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						if(value.toInt() >= int(columnType::unknown) && value.toInt() <= int(columnType::scale))
 						{
 							columnType converted = static_cast<columnType>(value.toInt());
-							if(setColumnType(index.column(), converted))
+							if(converted != column->type() && setColumnType(index.column(), converted))
 							{
 								aChange = true;
 								emit columnDataTypeChanged(tq(column->name()));
@@ -1129,16 +1129,17 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 	if (_dataSet == nullptr)
 		return true;
 
+	Column *col = _dataSet->column(columnIndex);
+
+	if (col->type() == newColumnType)
+		return true;
+
 	columnTypeChangeResult	feedback;
 
-	feedback = _dataSet->column(columnIndex)->changeType(newColumnType);
+	feedback = col->changeType(newColumnType);
 
 	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
-	{
-		beginResetModel();
-		endResetModel();
 		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex)->name()));
-	}
 	else
 	{
 		QString informUser = tr("Something went wrong converting columntype, but it is unclear what.");
@@ -1260,6 +1261,19 @@ void DataSetPackage::dbDelete()
 	JASPTIMER_SCOPE(DataSetPackage::dbDelete);
 	if(_dataSet && _dataSet->id() != -1)
 		_dataSet->dbDelete();
+}
+
+void DataSetPackage::resetVariableTypes()
+{
+	for (int i = 0; i < _dataSet->columnCount(); i++)
+	{
+		Column* col = _dataSet->column(i);
+		columnType orgType = col->type();
+		stringvec values = getColumnDataStrs(i);
+		initColumnWithStrings(i, col->name(), values);
+		if (col->type() != orgType)
+			emit columnDataTypeChanged(tq(col->name()));
+	}
 }
 
 void DataSetPackage::createDataSet()
@@ -1437,8 +1451,7 @@ void DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 	int			colIndex = getColIndex(colId);
 
 	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
-	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
-	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
+	size_t	thresholdScale		= Settings::value(Settings::THRESHOLD_SCALE).toUInt();
 
 	JASPTIMER_RESUME(DataSetPackage::initColumnWithStrings preamble);
 	bool valuesAreIntegers		= convertVecToInt(colIndex, values, intValues, uniqueValues, emptyValuesMap);
@@ -1903,6 +1916,12 @@ columnType DataSetPackage::getColumnType(size_t columnIndex) const
 {
 	return _dataSet && _dataSet->column(columnIndex) ? _dataSet->column(columnIndex)->type() : columnType::unknown;
 }
+
+columnType DataSetPackage::getColumnType(const QString& name) const
+{
+	return _dataSet ? getColumnType(_dataSet->getColumnIndex(fq(name))) : columnType::unknown;
+}
+
 
 std::string DataSetPackage::getColumnName(size_t columnIndex) const
 {

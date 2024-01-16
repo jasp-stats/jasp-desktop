@@ -487,6 +487,7 @@ void ColumnModel::columnDataTypeChanged(const QString & colName)
 
 	if(colIndex == chosenColumn())
 	{
+		emit columnTypeChanged();
 //		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
 //			setChosenColumn(-1);
 		emit tabsChanged();

@@ -1,11 +1,10 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4
-import JASP.Widgets		1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Widgets
+import JASP.Controls
 
-import JASP.Controls	1.0
 
-
-ScrollView
+QTC.ScrollView
 {
 	id:                     scrollPrefs
 	focus:                  true
@@ -30,14 +29,13 @@ ScrollView
 
 		PrefsGroupRect
 		{
-			spacing:		jaspTheme.rowSpacing
-			implicitWidth:	scrollPrefs.width - (jaspTheme.generalAnchorMargin * 2)
+			id:				spreadSheetEditor
+			title:			qsTr("External spreadsheet editor (for data synchronization)")
 
-			Item //Use default spreadsheet editor
+			Item
 			{
-
-				height:		useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : linuxInfo.visible ? linuxInfo.height : 0)
-				width:		parent.width - jaspTheme.generalAnchorMargin
+				height:		editCustomEditor.y + editCustomEditor.height
+				width:		parent.width
 
 				CheckBox
 				{
@@ -68,7 +66,6 @@ ScrollView
 				Item
 				{
 					id:					editCustomEditor
-					// visible:			!LINUX && !preferencesModel.useDefaultEditor
 					enabled:			!LINUX && !preferencesModel.useDefaultEditor
 					width:				parent.width
 					height:				browseEditorButton.height
@@ -110,7 +107,7 @@ ScrollView
 							onTextChanged:		preferencesModel.customEditor = text
 							color:				jaspTheme.textEnabled
 
-							KeyNavigation.tab:      customThreshold
+							KeyNavigation.tab:      thresholdScale
 
 							anchors
 							{
@@ -129,55 +126,50 @@ ScrollView
 					}
 				}
 			}
+		}
 
+		PrefsGroupRect
+		{
+			id:				thresholdScaleSetting
+			title:			qsTr("Import threshold between Categorical or Scale")
 
-			Item  //Scale threshold
+			SpinBox
 			{
-				height:		customThreshold.height + thresholdScale.height
-				width:		customThreshold.width 
+				id:					thresholdScale
+				value:				preferencesModel.thresholdScale
+				onValueChanged:		preferencesModel.thresholdScale = value
 
-				CheckBox
+				KeyNavigation.tab:	resetDataWithThresholdButton
+
+				toolTip:	qsTr("If a variable has more distinct integer values than this it will be interpreted as scale.")
+
+				Button
 				{
-					id:					customThreshold
-					label:				qsTr("Import threshold between Categorical or Scale") + ":"
-					checked:			preferencesModel.customThresholdScale
-					onCheckedChanged:	preferencesModel.customThresholdScale = checked
-					ToolTip.delay:		500
-					ToolTip.timeout:	6000 //Some longer to read carefully
-					toolTip:			qsTr("Threshold number of unique integers before classifying a variable as 'scale'.\nYou need to reload your data to take effect! Check help for more info.")
-
-					KeyNavigation.tab:      thresholdScale
-
-				}
-
-				SpinBox
-				{
-					id:					thresholdScale
-					value:				preferencesModel.thresholdScale
-					onValueChanged:		preferencesModel.thresholdScale = value
-					enabled:			preferencesModel.customThresholdScale
-
-					KeyNavigation.tab:	missingValueDataLabelInput
-
+					id:				resetDataWithThresholdButton
+					label:			qsTr("Reset types of loaded variables")
+					visible:		mainWindow.dataAvailable
+					onClicked:		mainWindow.resetVariableTypes()
 					anchors
 					{
-						top:			customThreshold.bottom
-						left:			customThreshold.left
-						leftMargin:		jaspTheme.subOptionOffset
+						top: thresholdScale.top
+						left: thresholdScale.right
+						leftMargin: jaspTheme.generalAnchorMargin
 					}
+
+					KeyNavigation.tab:	missingValueDataLabelInput
 				}
 			}
+		}
+
+		PrefsGroupRect
+		{
+			id:				missingValuesSettings
+			title:			qsTr("Missing values setting")
 
 			Item
 			{
 				id:				missingValueDataLabelItem
 				height:			missingValueDataLabelInput.height
-				anchors
-				{
-					left:		parent.left
-					right:		parent.right
-					margins:	jaspTheme.generalAnchorMargin
-				}
 
 				Label
 				{
@@ -219,48 +211,48 @@ ScrollView
 					showResetWorkspaceButton:	true
 					resetButtonLabel:			qsTr("Reset with standard values")
 					resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
-					KeyNavigation.tab:			noBomNative
+					KeyNavigation.tab:			WINDOWS ? noBomNative : useDefaultEditor
 				}
 			}
+		}
 
-			PrefsGroupRect
+		PrefsGroupRect
+		{
+			visible:	WINDOWS
+			enabled:	WINDOWS
+			title:		qsTr("Windows workaround")
+
+			CheckBox
 			{
-				visible:	WINDOWS
-				enabled:	WINDOWS
-				title:		qsTr("Windows workaround")
-				
-				CheckBox
-				{
-					id:					noBomNative
-					label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
-					checked:			preferencesModel.windowsNoBomNative
-					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
-					toolTip:			qsTr("See documentation for more information ")
+				id:					noBomNative
+				label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
+				checked:			preferencesModel.windowsNoBomNative
+				onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
+				toolTip:			qsTr("See documentation for more information ")
 
-					KeyNavigation.tab:		codePageSelection
-				}
-				
-				/*ErrorMessage
-				{
-					text: WINDOWS && windowsCodePagesHelper.error ? qsTr("Some problem occured loading the available codepages...") : ""
-				}*/
+				KeyNavigation.tab:		codePageSelection
+			}
+
+			/*ErrorMessage
+			{
+				text: WINDOWS && windowsCodePagesHelper.error ? qsTr("Some problem occured loading the available codepages...") : ""
+			}*/
 
 
-				DropDown
-				{
-					id:			 			codePageSelection
-					enabled:				preferencesModel.windowsNoBomNative && WINDOWS //&& !windowsCodePagesHelper.error
-					toolTip:				qsTr("See documentation for more information ")
-					values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
-					addEmptyValue:			true
-					showEmptyValueAsNormal:	true
-					addLineAfterEmptyValue:	true
-					placeholderText:		qsTr("Choose codepage here")
-					startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
-					onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
+			DropDown
+			{
+				id:			 			codePageSelection
+				enabled:				preferencesModel.windowsNoBomNative && WINDOWS //&& !windowsCodePagesHelper.error
+				toolTip:				qsTr("See documentation for more information ")
+				values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
+				addEmptyValue:			true
+				showEmptyValueAsNormal:	true
+				addLineAfterEmptyValue:	true
+				placeholderText:		qsTr("Choose codepage here")
+				startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
+				onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
 
-					KeyNavigation.tab:		useDefaultEditor
-				}
+				KeyNavigation.tab:		useDefaultEditor
 			}
 		}
 	}

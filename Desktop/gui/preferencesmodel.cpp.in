@@ -98,7 +98,6 @@ GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
 GET_PREF_FUNC_STR(	plotBackground,				Settings::IMAGE_BACKGROUND							)
 GET_PREF_FUNC_BOOL(	developerMode,				Settings::DEVELOPER_MODE							)
-GET_PREF_FUNC_BOOL(	customThresholdScale,		Settings::USE_CUSTOM_THRESHOLD_SCALE				)
 GET_PREF_FUNC_INT(	thresholdScale,				Settings::THRESHOLD_SCALE							)
 GET_PREF_FUNC_BOOL(	logToFile,					Settings::LOG_TO_FILE								)
 GET_PREF_FUNC_INT(	logFilesMax,				Settings::LOG_FILES_MAX								)
@@ -405,15 +404,6 @@ void PreferencesModel::resetEmptyValues()
 {
 	QStringList defaultValues = _splitValues(Settings::defaultEmptyValues);
 	_setEmptyValues(defaultValues);
-}
-
-void PreferencesModel::setCustomThresholdScale(bool newCustomThresholdScale)
-{
-	if (customThresholdScale() == newCustomThresholdScale)
-		return;
-
-	Settings::setValue(Settings::USE_CUSTOM_THRESHOLD_SCALE, newCustomThresholdScale);
-	emit customThresholdScaleChanged (newCustomThresholdScale);
 }
 
 void PreferencesModel::setThresholdScale(int newThresholdScale)
