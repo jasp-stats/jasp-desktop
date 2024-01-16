@@ -832,7 +832,7 @@ void JASPControl::setInitialized(const Json::Value &value)
 	{
 		for (JASPControl* c : _depends)
 			if (!c->initialized())
-				connect(c, &JASPControl::initializedChanged, [this, value]() { if (dependingControlsAreInitialized()) _setInitialized(value); });
+				connect(c, &JASPControl::initializedChanged, this, [this, value]() { if (dependingControlsAreInitialized()) _setInitialized(value); });
 	}
 }
 
