@@ -141,10 +141,12 @@ QTC.ScrollView
 
 				KeyNavigation.tab:	resetDataWithThresholdButton
 
+				toolTip:	qsTr("If a variable has more distinct integer values than this it will be interpreted as scale.")
+
 				Button
 				{
 					id:				resetDataWithThresholdButton
-					label:			qsTr("Reset variable types")
+					label:			qsTr("Reset types of loaded variables")
 					visible:		mainWindow.dataAvailable
 					onClicked:		mainWindow.resetVariableTypes()
 					anchors
