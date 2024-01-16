@@ -52,7 +52,7 @@ void VariablesListBase::setUp()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->listModel());
+			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->sourceListModel());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 			else
@@ -89,6 +89,22 @@ void VariablesListBase::setUp()
 	connect(this,	&VariablesListBase::suggestedColumnsChanged,					this, &VariablesListBase::_setAllowedVariables);
 }
 
+void VariablesListBase::_setInitialized(const Json::Value &value)
+{
+	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
+	if (availableModel)
+		availableModel->resetTermsFromSources(false);
+	else if (value == Json::nullValue && addAvailableVariablesToAssigned())
+	{
+		// If addAvailableVariablesToAssigned is true and this is initialized without value,
+		// maybe the availableAssignedList has some default values that must be assigned to this VariablesList
+		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
+		if (assignedModel)
+			assignedModel->initTerms(assignedModel->availableModel()->terms());
+	}
+
+	JASPListControl::_setInitialized(value);
+}
 
 
 ListModel *VariablesListBase::model() const

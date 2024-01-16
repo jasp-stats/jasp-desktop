@@ -157,7 +157,7 @@ void JASPControl::_resetBindingValue()
 	// If a control gets a value from a JASP file, this value may differ from its default value sets by a QML binding:
 	// this QML binding may then change the value during the initialization of the form.
 	// In this case, restore the original value.
-	if (isBound() && hasUserInteractiveValue() && initializedFromJaspFile() && form() && !form()->initialized())
+	if (isBound() && hasUserInteractiveValue() && initializedWithValue() && form() && !form()->initialized())
 		boundControl()->resetBoundValue();
 }
 
@@ -742,16 +742,6 @@ QString JASPControl::humanFriendlyLabel() const
 
 	return label;
 
-		}
-
-void JASPControl::setInitialized(bool byFile)
-{
-	if (!_initialized)
-	{
-		_initialized = true;
-		_initializedFromJaspFile = byFile;
-		emit initializedChanged();
-	}
 }
 
 QVector<JASPControl::ParentKey> JASPControl::getParentKeys()
@@ -820,4 +810,42 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 void JASPControl::addExplicitDependency()
 {
 	_addExplicitDependency(_explicitDepends);
+}
+
+bool JASPControl::dependingControlsAreInitialized()
+{
+	bool dependenciesAreInitialized = true;
+
+	for (JASPControl* c : _depends)
+	{
+		if (!c->initialized())
+			dependenciesAreInitialized = false;
+	}
+	return dependenciesAreInitialized;
+}
+
+void JASPControl::setInitialized(const Json::Value &value)
+{
+	if (dependingControlsAreInitialized())
+		_setInitialized(value);
+	else
+	{
+		for (JASPControl* c : _depends)
+			if (!c->initialized())
+				connect(c, &JASPControl::initializedChanged, this, [this, value]() { if (dependingControlsAreInitialized()) _setInitialized(value); });
+	}
+}
+
+void JASPControl::_setInitialized(const Json::Value &value)
+{
+	BoundControl* bControl = boundControl();
+	if (bControl)
+	{
+		bControl->setDefaultBoundValue(bControl->createJson());
+		bControl->bindTo(value == Json::nullValue ? bControl->createJson() : value);
+	}
+
+	_initialized = true;
+	_initializedWithValue = (value != Json::nullValue);
+	emit initializedChanged();
 }

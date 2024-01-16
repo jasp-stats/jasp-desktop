@@ -40,6 +40,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList		dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
 	Q_PROPERTY( QString			interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
 
+
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
@@ -92,8 +93,8 @@ protected:
 	GENERIC_SET_FUNCTION(ColumnsNames,					_columnsNames,					columnsNamesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
 
+	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 	void						setDropKeys(const QStringList& dropKeys);
-
 	ListModel*					getRelatedModel();
 
 	ListModelDraggable*			_draggableModel	= nullptr;

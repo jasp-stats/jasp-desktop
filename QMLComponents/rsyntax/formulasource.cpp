@@ -172,7 +172,7 @@ QStringList FormulaSource::modelSources() const
 		const QVector<SourceItem*>& sourceItems = model->listView()->sourceItems();
 		for (SourceItem* sourceItem : sourceItems)
 		{
-			ListModel* listModel = sourceItem->listModel();
+			ListModel* listModel = sourceItem->sourceListModel();
 			if (listModel) sources.append(listModel->name());
 		}
 	};
@@ -452,7 +452,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 	const QVector<SourceItem*>& sourceItems = model->listView()->sourceItems();
 	for (SourceItem* sourceItem : sourceItems)
 	{
-		ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->listModel());
+		ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->sourceListModel());
 		if (assignedSourceModel)
 		{
 			if (specifiedByUserSources.contains(assignedSourceModel->name()))	specifiedSourceModels.push_back(assignedSourceModel);
@@ -466,7 +466,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 		const QVector<SourceItem*>& sourceItems = availableModel->listView()->sourceItems();
 		for (SourceItem* sourceItem : sourceItems)
 		{
-			ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->listModel());
+			ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->sourceListModel());
 			if (assignedSourceModel)
 			{
 				if (specifiedByUserSources.contains(assignedSourceModel->name()))	specifiedSourceModels.push_back(assignedSourceModel);
@@ -563,7 +563,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 	const QVector<SourceItem*>& sourceItems = _model->listView()->sourceItems();
 	for (SourceItem* sourceItem : sourceItems)
 	{
-		ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->listModel());
+		ListModelAssignedInterface* assignedSourceModel = qobject_cast<ListModelAssignedInterface*>(sourceItem->sourceListModel());
 		if (assignedSourceModel)
 			sourceModels.push_back(assignedSourceModel);
 	}

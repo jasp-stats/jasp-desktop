@@ -47,19 +47,17 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	context->setContextProperty("rowIndex",	row);
 	context->setContextProperty("rowValue", key.asQString());
 
-	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
+	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
 	_rowObject->setParent(_parentModel);
 	_context = context;
 
-	if (_rowObject)	_setupControls();
+	if (_rowObject)	_initializeControls();
 	else			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 }
 
-void RowControls::_setupControls(bool reuseBoundValue)
+void RowControls::_initializeControls(bool useInitialValue)
 {
-	// The controls (when created or reused) may need to be bound with some values:
-	// either with the initial values (in _rowValues) or new values (by calling createJson)
-	// And if a control depends on a source, its values must be refreshed by this source.
+	// The controls (when created or reused) need to be initialized
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	AnalysisForm* form = _parentModel->listView()->form();
 
@@ -71,38 +69,22 @@ void RowControls::_setupControls(bool reuseBoundValue)
 
 	for (JASPControl* control : controls)
 	{
-		bool hasInitialValues = _initialValues.contains(control->name());
+		JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
+		if (listView)
+			for (SourceItem* source : listView->sourceItems())
+				source->connectModels(); // If the source was disconnected, reconnect it.
+
+		Json::Value optionValue = Json::nullValue;
 		BoundControl* boundItem = control->boundControl();
-
-		if (boundItem)
+		if (boundItem && _initialValues.contains(control->name()))
 		{
-			// When a control is created before its parent, it has no bound value yet.
-			// In this case we need to create a bound volue.
-			bool hasNoBoundValue = boundItem->boundValue().isNull();
-			if (!reuseBoundValue || hasNoBoundValue)
-			{
-				boundItem->setDefaultBoundValue(boundItem->createJson());
-				boundItem->bindTo(hasInitialValues ? (_initialValues[control->name()]) : boundItem->createJson());
-				// bindTo does not emit the signal that the bound value is changed.
-				// But (at least) if it did not have any value, it should emit this signal.
-				if (hasNoBoundValue)	emit control->boundValueChanged(control);
-			}
+			// When a control is created before its parent, it has no value yet.
+			// In this case use its initial value.
+			if (useInitialValue || boundItem->boundValue().isNull())
+				optionValue = _initialValues[control->name()];
 		}
 
-		if (!boundItem || !hasInitialValues || reuseBoundValue)
-		{
-			JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
-			// If a ListView depends on a source, it has to be initialized by this source
-			// For this just call the sourceTermsChanged handler.
-			if (listView && listView->hasSource())
-			{
-				for (SourceItem* source : listView->sourceItems())
-					source->connectModels(); // If the source was disconnected, reconnect it.
-				listView->model()->sourceTermsReset();
-			}
-		}
-
-		control->setInitialized();
+		control->setInitialized(optionValue);
 	}
 
 	if (form)
@@ -116,7 +98,7 @@ void RowControls::setContext(int row, const QString &key)
 	_context->setContextProperty("rowValue", key);
 	_context->setContextProperty("isNew", false);
 
-	_setupControls(true);
+	_initializeControls(false);
 }
 
 bool RowControls::addJASPControl(JASPControl *control)

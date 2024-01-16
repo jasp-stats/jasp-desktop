@@ -120,7 +120,7 @@ public:
 	bool				indent()					const	{ return _indent;					}
 	bool				isDependency()				const	{ return _isDependency;				}
 	bool				initialized()				const	{ return _initialized;				}
-	bool				initializedFromJaspFile()	const	{ return _initializedFromJaspFile;	}
+	bool				initializedWithValue()		const	{ return _initializedWithValue;		}
 	bool				shouldShowFocus()			const	{ return _shouldShowFocus;			}
 	bool				shouldStealHover()			const	{ return _shouldStealHover;			}
 	bool				debug()						const	{ return _debug;					}
@@ -151,7 +151,6 @@ public:
 	const QVariant&		explicitDepends()			const	{ return _explicitDepends;			}
 
 	QString				humanFriendlyLabel()		const;
-	void				setInitialized(bool byFile = false);
 
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
@@ -159,6 +158,7 @@ public:
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
 
 	virtual void					setUp()										{}
+	void							setInitialized(const Json::Value& value = Json::nullValue);
 	virtual void					cleanUp()									{ disconnect(); }
 	virtual BoundControl		*	boundControl();
 	virtual bool					encodeValue()						const	{ return false; }
@@ -172,8 +172,6 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
-protected:
-	Set								_depends;
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -266,8 +264,11 @@ protected:
 	bool				eventFilter(QObject *watched, QEvent *event) override;
 	bool				checkOptionName(const QString& name);
 	void				_addExplicitDependency(const QVariant& depends);
+	bool				dependingControlsAreInitialized();
+	virtual void		_setInitialized(const Json::Value &value);
 
 protected:
+	Set						_depends;
 	ControlType				_controlType;
 	AnalysisForm*			_form						= nullptr;
 	QString					_name,
@@ -278,7 +279,7 @@ protected:
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,
-							_initializedFromJaspFile	= false,
+							_initializedWithValue	= false,
 							_debug						= false,
 							_parentDebug				= false,
 							_hasError					= false,

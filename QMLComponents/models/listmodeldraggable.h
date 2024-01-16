@@ -49,8 +49,6 @@ signals:
 
 protected:
 	bool						_copyTermsWhenDropped;
-	bool						_addNewAvailableTermsToAssignedModel	= false;
-	bool						_allowAnalysisOwnComputedColumns		= true;
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;
 		
 	bool						isAllowed(const Term &term) const;

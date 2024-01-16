@@ -48,9 +48,9 @@ void JASPListControl::_setupSources()
 {
 	for (SourceItem* sourceItem : _sourceItems)
 	{
-		if (sourceItem->listModel())
+		if (sourceItem->sourceListModel())
 		{
-			JASPListControl* sourceControl = sourceItem->listModel()->listView();
+			JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
 			disconnect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
 			disconnect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
 		}
@@ -62,9 +62,9 @@ void JASPListControl::_setupSources()
 
 	for (SourceItem* sourceItem : _sourceItems)
 	{
-		if (sourceItem->listModel())
+		if (sourceItem->sourceListModel())
 		{
-			JASPListControl* sourceControl = sourceItem->listModel()->listView();
+			JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
 			connect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
 			connect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
 		}
@@ -86,10 +86,10 @@ void JASPListControl::setContainsVariables()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			if (sourceItem->isColumnsModel())	containsVariables = true;
-			else if (sourceItem->listModel())
+			if (sourceItem->isAnalysisDataSet())	containsVariables = true;
+			else if (sourceItem->sourceListModel())
 			{
-				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && !sourceItem->modelUse().contains("levels"))
+				if (sourceItem->sourceListModel()->listView()->containsVariables() && sourceItem->rowControlName().isEmpty() && !sourceItem->sourceFilter().contains("levels"))
 					containsVariables = true;
 			}
 		}
@@ -120,9 +120,9 @@ void JASPListControl::setContainsInteractions()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			if (sourceItem->listModel())
+			if (sourceItem->sourceListModel())
 			{
-				JASPListControl* sourceControl = sourceItem->listModel()->listView();
+				JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
 				if (sourceControl->containsInteractions() || sourceItem->generateInteractions())
 					containsInteractions = true;
 			}

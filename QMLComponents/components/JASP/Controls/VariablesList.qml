@@ -24,14 +24,16 @@ import JASP				1.0
 
 VariablesListBase
 {
-	id						: variablesList
-	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-	background				: itemRectangle
-	implicitWidth 			: parent.width
-	shouldStealHover		: false
-	innerControl			: itemGridView
-	optionKey				: listViewType === JASP.Interaction ? "components" : "variable"
-	maxRows					: singleVariable ? 1 : -1
+	id								: variablesList
+	implicitHeight					: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
+	background						: itemRectangle
+	implicitWidth					: parent.width
+	shouldStealHover				: false
+	innerControl					: itemGridView
+	optionKey						: listViewType === JASP.Interaction ? "components" : "variable"
+	maxRows							: singleVariable ? 1 : -1
+	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
+	allowAnalysisOwnComputedColumns	: true
 
 	property alias	label							: variablesList.title
 	property alias	itemGridView					: itemGridView
@@ -53,8 +55,6 @@ VariablesListBase
 	property bool	showVariableTypeIcon			: containsVariables
 	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
-	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
-	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1

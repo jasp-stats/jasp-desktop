@@ -53,6 +53,8 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( bool			containsInteractions	READ containsInteractions									NOTIFY containsInteractionsChanged	)
 	Q_PROPERTY( double			maxTermsWidth			READ maxTermsWidth											NOTIFY maxTermsWidthChanged			)
 	Q_PROPERTY( QQmlComponent*	rowComponent			READ rowComponent			WRITE setRowComponent			NOTIFY rowComponentChanged			)
+	Q_PROPERTY( bool			addAvailableVariablesToAssigned	READ addAvailableVariablesToAssigned WRITE setAddAvailableVariablesToAssigned NOTIFY addAvailableVariablesToAssignedChanged )
+	Q_PROPERTY( bool			allowAnalysisOwnComputedColumns	READ allowAnalysisOwnComputedColumns WRITE setAllowAnalysisOwnComputedColumns NOTIFY allowAnalysisOwnComputedColumnsChanged )
 
 
 public:
@@ -100,6 +102,8 @@ public:
 			void				setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
 			double				maxTermsWidth();
 	virtual stringvec			usedVariables()				const;
+			bool				addAvailableVariablesToAssigned()	const	{ return _addAvailableVariablesToAssigned;	}
+			bool				allowAnalysisOwnComputedColumns()	const	{ return _allowAnalysisOwnComputedColumns;	}
 
 signals:
 			void				modelChanged();
@@ -114,6 +118,8 @@ signals:
 			void				containsInteractionsChanged();
 			void				maxTermsWidthChanged();
 			void				rowComponentChanged();
+			void				addAvailableVariablesToAssignedChanged();
+			void				allowAnalysisOwnComputedColumnsChanged();
 
 public slots:
 			void				setContainsVariables();
@@ -135,6 +141,8 @@ protected slots:
 			GENERIC_SET_FUNCTION(ValueRole,				_valueRole,				valueRoleChanged,				QString			)
 			GENERIC_SET_FUNCTION(RowComponent,			_rowComponent,			rowComponentChanged,			QQmlComponent*	)
 			GENERIC_SET_FUNCTION(MaxRows,				_maxRows,				maxRows,						int				)
+			GENERIC_SET_FUNCTION(AddAvailableVariablesToAssigned, _addAvailableVariablesToAssigned,	addAvailableVariablesToAssignedChanged,	bool	)
+			GENERIC_SET_FUNCTION(AllowAnalysisOwnComputedColumns, _allowAnalysisOwnComputedColumns,	allowAnalysisOwnComputedColumnsChanged,	bool	)
 
 protected:
 	QVector<SourceItem*>	_sourceItems;
@@ -147,7 +155,10 @@ protected:
 							_containsVariables		= false,
 							_containsInteractions	= false,
 							_termsAreInteractions	= false,
-							_useSourceLevels		= false;
+							_useSourceLevels		= false,
+							_addAvailableVariablesToAssigned = false,
+							_allowAnalysisOwnComputedColumns = true;
+
 	int						_maxRows				= -1;
 	QString					_placeHolderText		= tr("<no choice>"),
 							_labelRole				= "label",

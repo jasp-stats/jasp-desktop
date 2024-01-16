@@ -44,7 +44,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValu
 
 void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
 {
-	if (termsAdded.size() > 0 && _addNewAvailableTermsToAssignedModel)
+	if (termsAdded.size() > 0 && listView()->addAvailableVariablesToAssigned())
 	{
 		beginResetModel();
 		_addTerms(termsAdded);

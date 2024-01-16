@@ -104,7 +104,7 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 	// Connect option changes from controls in sourceModel that influence the terms of this model:
 	// either the source uses direclty a control in sourceModel (controlName()), or the source uses
 	// a conditional expression.
-	ListModel* sourceModel = sourceItem->listModel();
+	ListModel* sourceModel = sourceItem->sourceListModel();
 	if (!sourceModel) 
 		return;
 
@@ -150,7 +150,7 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
 		if (terms.contains(term))
-			result = sourceItem->listModel();
+			result = sourceItem->sourceListModel();
 	});
 
 	return result;

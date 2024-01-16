@@ -275,8 +275,6 @@ void AnalysisForm::_setUp()
 
 	for (JASPControl* control : controls)
 	{
-		BoundControl* boundControl = control->boundControl();
-		if (boundControl) boundControl->setDefaultBoundValue(boundControl->createJson()); // The default value is known only when all controls are setup
 		_dependsOrderedCtrls.push_back(control);
 		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
@@ -357,38 +355,17 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
-	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
-
 	std::set<std::string> controlsJsonWrong;
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
-		bool hasOption = false;
 		BoundControl* boundControl = control->boundControl();
-		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
-
-		if (listControl && listControl->hasSource())
-		{
-			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
-			// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
-			// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
-			// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
-			// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
-			// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
-			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
-			if (availableModel)
-			{
-				if (defaultOptions.size() != 0 || _analysis->isDuplicate())
-					availableModel->resetTermsFromSources(false);
-				else
-					availableModelsToBeReset.push_back(availableModel);
-			}
-		}
-
+		Json::Value optionValue = Json::nullValue;
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
-			Json::Value optionValue =  defaultOptions.size() != 0 ? defaultOptions[name] : Json::nullValue;
+			if (defaultOptions.isMember(name))
+				optionValue = defaultOptions[name];
 
 			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 			{
@@ -396,20 +373,10 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 				control->setHasWarning(true);
 				controlsJsonWrong.insert(name);
 			}
-
-			if (optionValue == Json::nullValue)
-				optionValue = boundControl->createJson();
-			else
-				hasOption = true;
-
-			boundControl->bindTo(optionValue);
 		}
 
-		control->setInitialized(hasOption);
+		control->setInitialized(optionValue);
 	}
-
-	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
-		availableModel->resetTermsFromSources(true);
 
 	_addLoadingError(tql(controlsJsonWrong));
 

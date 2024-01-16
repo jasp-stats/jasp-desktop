@@ -52,7 +52,7 @@ public:
 
 private:
 
-	void										_setupControls(bool reuseBoundValue = false);
+	void										_initializeControls(bool useInitialValue = true);
 
 	ListModel*								_parentModel;
 	QQmlComponent*							_rowComponent	= nullptr;
