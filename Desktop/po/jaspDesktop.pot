@@ -692,13 +692,6 @@ msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
 msgstr ""
 
-msgctxt "PrefsData|"
-msgid ""
-"Threshold number of unique integers before classifying a variable as "
-"'scale'.\n"
-"You need to reload your data to take effect! Check help for more info."
-msgstr ""
-
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
 msgstr ""
@@ -4702,4 +4695,22 @@ msgstr ""
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "External spreadsheet editor (for data synchronization)"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"If a variable has more distinct integer values than this it will be "
+"interpreted as scale."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Reset types of loaded variables"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Missing values setting"
 msgstr ""
