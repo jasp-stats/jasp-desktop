@@ -20,7 +20,7 @@ bool Upgrades::findClosestVersion(const std::string & function, Version & versio
 			_steps.at(version).count(function)	== 0	||	//Or there is nothing registered for this version + function
 			_steps.at(version).count("*")		== 0	)	//Or there is nothing registered for this version and module (function == "*" which means all functions)
 		for(auto & versionSteps : _steps)
-			if(versionSteps.first > version && (versionSteps.second.count(function) > 0 || versionSteps.second.count("*") > 0)) //This works because _steps is ordered on Version and we can thus assume each version is > than the last
+			if(versionSteps.first >= version && (versionSteps.second.count(function) > 0 || versionSteps.second.count("*") > 0)) //This works because _steps is ordered on Version and we can thus assume each version is > than the last
 			{
 				closestVersion = versionSteps.first;
 				break;
