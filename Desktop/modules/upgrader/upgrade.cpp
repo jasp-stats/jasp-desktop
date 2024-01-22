@@ -38,11 +38,21 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 	for(ChangeBase * change : _changes)
 		try
 		{
+			Log::log() << "Currently options are: " << analysesJson["options"] << std::endl;
 			Log::log() << "Checking if condition for change " << change->toString() << " is satisfied, ";
 			if(change->conditionSatisfied(analysesJson["options"]))
 			{
 				Log::log(false) << "it is and applying the change!" << std::endl;
 				change->applyUpgrade(analysesJson["options"], msgs);
+				
+				try //Also try it on .meta
+				{
+					change->applyUpgrade(analysesJson["options"][".meta"], msgs);
+				}
+				catch(upgradeError & e)
+				{
+					Log::log() << "Applying upgrade to meta had error: " << e.what() << std::endl;
+				}
 			}
 			else
 				Log::log(false) << "it isn't and moving on." << std::endl;
