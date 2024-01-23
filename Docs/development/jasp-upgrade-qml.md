@@ -147,6 +147,40 @@ Upgrade
 {
 	functionName: "SomeAnalysis";	fromVersion: "0.1";		toVersion: "0.2";
 
+	// checkboxDoSomething and checkboxDoSomethingElse do exist in version 0.1
+	ChangeJS
+	{
+		name:			"checkboxDoSomething";
+		jsFunction:		function(options) { return options["radiobuttons"] === "something";	}
+	}
+
+	ChangeJS
+	{
+		name:			"checkboxDoSomethingElse";
+		jsFunction:		function(options) { return options["radiobuttons"] === "somethingElse";	}
+	}
+}
+```
+
+Note that both checkboxes must already exist in `options` for this to work. If the checkboxes are new elements, they must be first added to `options`. This can be done with the `ChangeCopy` item:
+```qml
+Upgrade
+{
+	functionName: "SomeAnalysis";	fromVersion: "0.1";		toVersion: "0.2";
+
+	// checkboxDoSomething and checkboxDoSomethingElse do *not* exist in version 0.1
+	ChangeCopy
+	{
+		from: "radiobuttons"
+		to: "checkboxDoSomething"
+	}
+
+	ChangeCopy
+	{
+		from: "radiobuttons"
+		to: "checkboxDoSomethingElse"
+	}
+
 	ChangeJS
 	{
 		name:			"checkboxDoSomething";
