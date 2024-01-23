@@ -1,9 +1,18 @@
-
-body
+html 
 {
-	font-size: 12px ;
-	color: #333333;
-	background-color: #FAFAFA
+  padding: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+body 
+{
+	font-family: "Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;
+	color: #333;
+	background-color: #FAFAFA;
+	font-size: 14px;
+	line-height: 1.3em;
+	word-break: break-word;
 }
 
 h1
@@ -19,6 +28,14 @@ h2
 h3
 {
 	font-size: 125% ;
+}
+
+body h1,
+body h2,
+body h3 
+{
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 details
@@ -44,7 +61,22 @@ li
   padding: 4px
 }
 
-.code
+body code 
 {
   font-family: "Courier New", Courier, monospace;
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  white-space: break-spaces;
+  background-color: rgba(1, 1, 1, 0.05);
+  border-radius: 5px;
+}
+
+body code::before,
+body code::after 
+{
+  letter-spacing: -0.2em;
+  content: "\00a0";
 }
