@@ -169,5 +169,5 @@ Remember that you need to re-run the CMake configuration every time you change a
 Before attempting to build JASP, configure the CMake again, by pressing the "Run CMake" button, and wait for everything to finish. If you didn't get any errors, you can start building JASP by pressing "Build" button.
 
 
-### Creating an MSIX Installer:
-To turn your JASP build into an installer that may be distributed standalone and on the Microsoft Store see our guide [here](Docs/development/windows-installer.md)
+### Creating an MSIX Installer
+To turn your JASP build into an installer that may be distributed standalone and on the Microsoft Store see our guide [here](windows-installer.md).
