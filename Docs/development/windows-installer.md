@@ -13,7 +13,7 @@ Provide the path to the certificate file by setting the `MSIX_SIGN_CERT_PATH` va
 
 Provide the password in the `MSIX_SIGN_CERT_PASSWORD` variable.
 
-The generated MSIX nightly in will be automatically signed with your certificate.
+The generated MSIX nightly within the JASP folder in your build folder will automatically be signed with your certificate.
 The generated MSIX for the Microsoft Store will be unsigned and must be provided to Microsoft this way.
 
 ## Generating the MSIX
