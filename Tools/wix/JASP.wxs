@@ -95,12 +95,15 @@
 
 	<!-- Disable ms-gaming overlay pop while JASP starting -->
 	<DirectoryRef Id="TARGETDIR">
-		<Component Id="RegistryEntryHacky" Guid="8732b02f-3fb4-47e0-878c-192d41502a6e">
-			<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
-				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" />
+		<Component Id="RegistryEntryHacky" Guid="4a21415f-a538-4cd4-a7d6-338390840bfb">
+			<RegistryKey Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
+				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" KeyPath="yes" />
 			</RegistryKey>
-			<RegistryKey Root="HKCU" Key="System\GameConfigStore">
-				<RegistryValue Name="GameDVR_Enabled" Value="0" Type="integer" />
+			<RegistryKey Root="HKMU" Key="System\GameConfigStore">
+				<RegistryValue Name="GameDVR_Enabled" Value="0"   Type="integer" KeyPath="yes" />
+			</RegistryKey>
+			<RegistryKey Root="HKMU" Key="Software\Policies\Microsoft\Windows\GameDVR">
+				<RegistryValue Name="AllowGameDVR" Value="0"   Type="integer"  />
 			</RegistryKey>
 		</Component>
 	</DirectoryRef>
