@@ -27,4 +27,4 @@ cmake --install . --component MSIX
 cmake --build . --target msix
 ```
 
-This is subject to change, for an up to date sequence take a peak at the [buildbot-script](Tools/windows/BuildBotScript.cmd).
+This is subject to change, for an up to date sequence take a peak at the [buildbot-script](/Tools/windows/BuildBotScript.cmd).
