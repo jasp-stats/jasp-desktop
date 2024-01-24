@@ -10,9 +10,9 @@ This way you can test your own builds, to distribute it you would need to share 
 Impractical to say the least, so we do not use this for releases, but it is very useful for development.
 
 Create a certificate in a powershell:
-'''
+```
 New-SelfSignedCertificate -Type Custom -Subject "CN=JASP, O=CopyPaste JaspDev, C=US" -KeyUsage DigitalSignature -FriendlyName "Jasp by Moi" -CertStoreLocation "Cert:\CurrentUser\My"  -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
-'''
+```
 This will print a thumbprint, you will need it for the next command, where we export the certificate to a pfx file.
 Come up with a password of some kind and run the following:
 ```
@@ -23,6 +23,11 @@ Export-PfxCertificate -cert "Cert:\CurrentUser\My\<Certificate Thumbprint>" -Fil
 
 If you have more questions we refer you to [Microsoft's extensive guide](https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing) on how to create a password protected codesigning certificate for MSIX testing.
 
+## Importing codesigning certificate
+The above key needs to be imported as a "Trusted Root Certificate Authority" to actually install the nightly msix.
+So you or anyone you share the msix with will need to:
+- Right click the pfx file from above
+- follow [these steps](./msix-nightly-testing.md) entering the password youve created above when asked.
 
 ## Configuring CMAKE
 Provide the 'Subject' property of your generated certificate to cmake by setting it in the `MSIX_NIGHTLY_PUBLISHER` variable.
