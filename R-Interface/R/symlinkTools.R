@@ -259,12 +259,11 @@ collectAndStoreJunctions <- function(buildfolder)
   }
 }
 
-restoreJunctions <- function(modulesRoot)
+restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
 {
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
-  junctions <- readRDS(junctionFilename(modulesRoot))
-
+  junctions <- readRDS(junctionRDSPath)
   if(nrow(junctions) == 0)
     print("No absolute symlinks found in file, maybe something went wrong building?")
   else
@@ -279,38 +278,33 @@ restoreJunctions <- function(modulesRoot)
       renv    <- junctions[row, "renv"  ]
       module  <- junctions[row, "module"]
       link    <- junctions[row, "link"  ]
-      modDir  <- pastePath(c(modulesRoot, module))
+      modDir  <- pastePath(c(junctionsFolder, module))
 
       if(!file.exists(modDir))
         dir.create(modDir)
-
       setwd(modDir)
       # print(paste0("Creating junction '", padToMax(link, 1), "' to '", padToMax(renv, 2), "' in '", padToMax(pastePath(c(modulesRoot, module)), 3), "'"))
 
       if(!dir.exists(link) && link != "BH") #It keeps turning up and this is the easiest way of getting rid of it
       {
         # print(paste0("Creating junction '", padToMax(link, 1), "' with one to '", padToMax(renv, 2), "' in '", padToMax(pastePath(c(modulesRoot, module)), 3), "'"))
-        Sys.junction(from=paste0("..\\",renv), to=link)
+        Sys.junction(from=pastePath(c(modulesFolder, renv)), to=link)
       }
     }
-
-    cat(NULL, file=paste0(modulesRoot, "\\..\\junctions-recreated-successfully.log"))
-
   }
 
 }
 
-restoreModulesIfNeeded <- function(jaspFolder)
+restoreModulesIfNeeded <- function(modulesFolder, junctionFolder, junctionRDSPath)
 {
   wd       <- getwd()
   on.exit(setwd(wd))
-  setwd(jaspFolder)
+  setwd(modulesFolder)
 
-  modulesRoot <- pastePath(c(jaspFolder, "Modules"))
-  if(!file.exists(modulesRoot))
-    dir.create(modulesRoot)
+  if(!file.exists(junctionFolder))
+    dir.create(junctionFolder)
   
-  restoreJunctions(pastePath(c(jaspFolder, "Modules")))
+  restoreJunctions(modulesFolder, junctionFolder, junctionRDSPath)
 }
 
 
