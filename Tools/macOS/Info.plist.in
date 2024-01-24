@@ -34,7 +34,7 @@
 		<string>JASP</string>
 
 		<key>CFBundleIdentifier</key>
-		<string>org.jasp-stats.jasp</string>
+		<string>org.jaspstats.jasp</string>
 
 		<key>LSMinimumSystemVersion</key>
 		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
