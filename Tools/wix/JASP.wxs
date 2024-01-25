@@ -97,10 +97,10 @@
 	<DirectoryRef Id="TARGETDIR">
 		<Component Id="RegistryEntryHacky" Guid="4a21415f-a538-4cd4-a7d6-338390840bfb">
 			<RegistryKey Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
-				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer" KeyPath="yes" />
+				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer"  />
 			</RegistryKey>
 			<RegistryKey Root="HKMU" Key="System\GameConfigStore">
-				<RegistryValue Name="GameDVR_Enabled" Value="0"   Type="integer" KeyPath="yes" />
+				<RegistryValue Name="GameDVR_Enabled" Value="0"   Type="integer" />
 			</RegistryKey>
 			<RegistryKey Root="HKMU" Key="Software\Policies\Microsoft\Windows\GameDVR">
 				<RegistryValue Name="AllowGameDVR" Value="0"   Type="integer"  />
