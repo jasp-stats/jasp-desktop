@@ -17,19 +17,18 @@
 //
 
 
-import QtQuick			2.15
-import QtQuick.Controls	2.12 as QTC
-import QtQuick.Layouts	1.3
-import JASP.Controls	1.0
-import QtQuick.Window	2.3
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls	as QTC
+import QtQuick.Layouts
+import JASP.Controls
+import JASP
 
 TableViewBase
 {
 	id:					tableView
 	focusOnTab:			false
-	implicitWidth:		400
-	implicitHeight:		400
+	implicitWidth:		tableWidth
+	implicitHeight:		tableHeight
 	shouldStealHover:	false
 	defaultValue:		modelType === JASP.JAGSDataInputModel	? "..." : (modelType === JASP.CustomContrasts	? "0" : "1")
 	initialColumnCount: modelType === JASP.MultinomialChi2Model ? 1 : 0

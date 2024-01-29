@@ -17,23 +17,23 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick
+import QtQuick.Layouts
+import JASP.Controls
 
 Item
 {
 	id				: basicButtonTableView
-	width			: implicitWidth
-	height			: implicitHeight
-	implicitWidth	: parent.width
-	implicitHeight	: 150 * preferencesModel.uiScale + tableView.y + tableView.anchors.topMargin
+	implicitWidth	: buttonsInRow ? Math.max(tableView.implicitWidth, buttonColumn.width) : (tableView.x + tableView.implicitWidth)
+	implicitHeight	: buttonsInRow ? (tableView.y + tableView.implicitHeight) : Math.max(tableView.implicitHeight, buttonColumn.height)
 
 	property int preferredHeight:	implicitHeight
-	property int preferredWidth:	implicitWidth
+	property int preferredWidth:	parent.width
 
 	Layout.preferredWidth:	preferredWidth
 	Layout.preferredHeight:	preferredHeight
+	Layout.columnSpan: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
+
 
 	property	bool	buttonsInRow		: false
 	property	alias	name				: tableView.name
@@ -92,20 +92,20 @@ Item
 	{
 		id					: buttonColumn
 		columns				: buttonsInRow ? 3 : 1
-		rows				: buttonsInRow ? 1 : 3
 		anchors.top			: parent.top
 		anchors.left		: parent.left
-		anchors.leftMargin	: jaspTheme.generalAnchorMargin
-		width				: basicButtonTableView.showButtons ? (basicButtonTableView.width * (buttonsInRow ? 1 : 1 / 4) - jaspTheme.generalAnchorMargin * 2) : 0
+		width				: basicButtonTableView.showButtons ? (basicButtonTableView.preferredWidth * (buttonsInRow ? 1 : 1 / 4) - jaspTheme.generalAnchorMargin) : 0
 		//height				: showButtons ? (buttonsInRow ? jaspTheme.defaultRectangularButtonHeight : jaspTheme.defaultRectangularButtonHeight * 3 + spacing * 2) : 0
 		spacing				: jaspTheme.columnGroupSpacing
 		visible				: basicButtonTableView.showButtons
+
+		property int buttonWidth: buttonsInRow ? basicButtonTableView.preferredWidth * 1/4 - jaspTheme.generalAnchorMargin : buttonColumn.width
 
 		RoundedButton
 		{
 			id				: addButton
 			text			: qsTr("Add")
-			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
+			width			: buttonColumn.buttonWidth
 			onClicked		: { forceActiveFocus(); basicButtonTableView.addClicked() }
 		}
 
@@ -113,7 +113,7 @@ Item
 		{
 			id				: deleteButton
 			text			: qsTr("Delete")
-			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
+			width			: buttonColumn.buttonWidth
 			onClicked		: { forceActiveFocus(); basicButtonTableView.deleteClicked() }
 		}
 
@@ -121,24 +121,25 @@ Item
 		{
 			id				: resetButton
 			text			: qsTr("Reset")
-			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
+			width			: buttonColumn.buttonWidth
 			onClicked		: { forceActiveFocus(); basicButtonTableView.resetClicked() }
 		}
 	}
 
 	TableView
 	{
-		id				: tableView
+		id					: tableView
+		anchors.top			: buttonsAbove	? buttonColumn.bottom	: parent.top
+		anchors.left		: bottonsLeft	? buttonColumn.right	: parent.left
+		anchors.topMargin	: buttonsAbove	? jaspTheme.generalAnchorMargin : 0
+		anchors.leftMargin	: bottonsLeft	? jaspTheme.generalAnchorMargin : 0
+		width				: Math.min(tableView.tableWidth, maxWidth)
+		height				: Math.min(tableView.tableHeight, maxHeight)
 
-		anchors.top		: buttonColumn.visible && buttonsInRow ? buttonColumn.bottom : parent.top
-		anchors.left	: buttonColumn.visible && !buttonsInRow ? buttonColumn.right : parent.left
-		anchors.leftMargin: jaspTheme.generalAnchorMargin
-		anchors.topMargin: buttonColumn.visible && buttonsInRow ? jaspTheme.generalAnchorMargin : 0
-		width			: tableView.tableWidth  < maxWidth  ? tableView.tableWidth : maxWidth
-		height			: tableView.tableHeight < maxHeight ? tableView.tableHeight : maxHeight
-
-		property int maxWidth	: basicButtonTableView.width * ((basicButtonTableView.showButtons && !buttonsInRow) ? (3 / 4) : 1)
-		property int maxHeight	: basicButtonTableView.height
+		property bool buttonsAbove	: buttonColumn.visible && buttonsInRow
+		property bool bottonsLeft	: buttonColumn.visible && !buttonsInRow
+		property int maxWidth		: basicButtonTableView.preferredWidth * (bottonsLeft ? (3 / 4) : 1)
+		property int maxHeight		: basicButtonTableView.preferredHeight - tableView.y
 
 		function getColHeaderText(defaultName, colIndex)	{ return basicButtonTableView.getColHeaderText(defaultName, colIndex)	}
 		function getRowHeaderText(defaultName, rowIndex)	{ return basicButtonTableView.getRowHeaderText(defaultName, rowIndex)	}
