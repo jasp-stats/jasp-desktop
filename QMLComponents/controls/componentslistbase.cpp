@@ -36,6 +36,7 @@ void ComponentsListBase::setUpModel()
 	connect(this, &ComponentsListBase::addItem,		this, &ComponentsListBase::addItemHandler);
 	connect(this, &ComponentsListBase::removeItem,	this, &ComponentsListBase::removeItemHandler);
 	connect(this, &ComponentsListBase::initializedChanged, this, &ComponentsListBase::resetDefaultValue);
+	connect(this, &ComponentsListBase::headerLabelsChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged);
 }
 
 void ComponentsListBase::bindTo(const Json::Value& value)
@@ -205,7 +206,7 @@ void ComponentsListBase::termsChangedHandler()
 {
 	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 	bindOffsets();
-	emit offsetsChanged();
+	emit controlNameXOffsetMapChanged();
 }
 
 void ComponentsListBase::bindOffsets()
@@ -215,21 +216,82 @@ void ComponentsListBase::bindOffsets()
 		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
-				connect(control, &JASPControl::xChanged, this, &ComponentsListBase::offsetsChanged, Qt::UniqueConnection);
+			{
+				connect(control, &JASPControl::xChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
+				connect(control, &JASPControl::visibleChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
+			}
 	}
 }
 
-QList<int> ComponentsListBase::offsets()
+QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 {
-	QList<int> result;
-	if (_termsModel && _termsModel->rowCount() > 0)
-	{
-		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
-		if (row)
-			for (JASPControl* control : row->getJASPControlsMap().values())
-				result.append(control->x());
+	// The headers should be aligned with the controls of the ComponentsList
+	// The headerLabels property is an array that can contain 2 kind of values:
+	// . if it is just a string, then this is the header label of a ith control.
+	// . if it is a map of a string to string, then this is the header label of a control name.
+	// e.g.:
+	// . headerLabels: ["label 1", "label 2", "label 3"]
+	// . headerLabels: [{name2: "label 2", name1: "label 1"]
+	// The mapping is used when not all the controls should get a header, or when a control can be invisible.
+	// In theory, both kinds can be combined.
+	// The first row of controls is used to determine the place (the x offset) of the headers.
+	QList<QVariant> result;
+	if (!_termsModel || _termsModel->rowCount() == 0)
+		return result;
 
-		std::sort(result.begin(), result.end());
+	std::vector<int> xOffsets;
+	QMap<QString, int> nameXOffsetMap;
+	RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
+	QList<JASPControl*> controls = row->getJASPControlsMap().values();
+
+	// By going through the controls of the first row, 2 structures are set:
+	// . xOffsets: gives which x offset is used by the ith control (sorted by x ascendent). This is used when the headerLabels are strings
+	// . nameXOffsetMap: gives a mapping of control name/x offset. This is used when headerLabels are a name/label mapping.
+	for (JASPControl* control : controls)
+	{
+		if (control->isVisible())
+		{
+			if (!nameXOffsetMap.contains(control->name()))
+			{
+				nameXOffsetMap[control->name()] = control->x();
+				xOffsets.push_back(control->x());
+			}
+		}
+	}
+	if (xOffsets.size() > 0)
+	{
+		std::sort(xOffsets.begin(), xOffsets.end());
+		for (const QVariant& labelVar : _headerLabels)
+		{
+			if (labelVar.typeId() == QMetaType::QString)
+			{
+				QString label = labelVar.toString();
+				if (result.count() < xOffsets.size())
+				{
+					QMap<QString, QVariant> item {{"label", label}, {"x", xOffsets[result.count()]}};
+					result.push_back(item);
+				}
+				else
+					Log::log() << "headerLabels property of ComponentsList " << name() << " has too many items. " << label << " cannot be displayed" << std::endl;
+			}
+			else if (labelVar.canConvert<QMap<QString, QVariant> >())
+			{
+				QMap<QString, QVariant> map = labelVar.toMap();
+				for (const QString& controlName : map.keys())
+				{
+					if (nameXOffsetMap.contains(controlName))
+					{
+						QString label = map[controlName].toString();
+						QMap<QString, QVariant> item {{"label", label}, {"x", nameXOffsetMap[controlName]}};
+						result.push_back(item);
+					}
+					else
+						Log::log() << "headerLabels property of ComponentsList " << name() << " makes reference of unknown control " << controlName << std::endl;
+				}
+			}
+			else
+				Log::log() << "headerLabels property of ComponentsList " << name() << " has wrong format." << std::endl;
+		}
 	}
 
 	return result;

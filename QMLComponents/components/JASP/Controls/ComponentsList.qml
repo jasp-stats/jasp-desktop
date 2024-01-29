@@ -16,29 +16,31 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.0
-import QtQuick.Controls 2.4 as QtControls
-import JASP				1.0
-import QtQuick.Layouts	1.3
+import QtQuick
+import QtQuick.Controls as QtControls
+import JASP
+import QtQuick.Layouts
 
 ComponentsListBase
 {
 	id						: componentsList
 	background				: itemRectangle
-	implicitWidth 			: parent.width
-	implicitHeight			: itemTitles.height + itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
+	implicitWidth 			: itemGrid.width + verticalScrollbar.width
+	implicitHeight			: itemHeaderLabels.height + itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0) + horizontalScrollbar.height
 	shouldStealHover		: false
 	innerControl			: itemGrid
 	addItemManually			: !source && !rSource
+	Layout.columnSpan		: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
+	preferredWidth			: parent.width
+	preferredHeight			: implicitHeight
 
 	property alias	label				: componentsList.title
 	property alias	columns				: itemGrid.columns
 	property alias	rows				: itemGrid.rows
 	property alias	itemGrid			: itemGrid
 	property alias	itemRectangle		: itemRectangle
-	property alias	itemScrollbar		: itemScrollbar
+	property alias	itemScrollbar		: verticalScrollbar
 	property alias	itemTitle			: itemTitle
-	property alias	itemTitles			: itemTitles
 	property alias	rowSpacing			: itemGrid.rowSpacing
 	property alias	columnSpacing		: itemGrid.columnSpacing
 	property alias	addIconItem			: addIconItem
@@ -48,33 +50,6 @@ ComponentsListBase
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
     property bool   addBorder           : true
-	property var	titles
-
-	Item
-	{
-		id				: itemTitles
-		anchors.top		: parent.top
-		anchors.left	: parent.left
-		height			: titles ? jaspTheme.variablesListTitle : 0
-		width			: parent.width
-		visible			: !title && titles
-
-		Repeater
-		{
-			id: rep
-			model: titles
-			Text
-			{
-				property int defaultOffset: index === 0 ? 0 : rep.itemAt(index-1).x + rep.itemAt(index-1).width + jaspTheme.contentMargin
-
-				x		: (addBorder ? jaspTheme.contentMargin : 0) + (componentsList.offsets.length > index ? componentsList.offsets[index] : defaultOffset)
-				text	: titles[index]
-				font	: jaspTheme.font
-				color	: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-
-			}
-		}
-	}
 
 	Text
 	{
@@ -82,7 +57,8 @@ ComponentsListBase
 		anchors.top		: parent.top
 		anchors.left	: parent.left
 		text			: title
-		height			: title ? jaspTheme.variablesListTitle : 0
+		visible			: title !== ""
+		height			: visible ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
@@ -90,9 +66,12 @@ ComponentsListBase
 	Rectangle
 	{
 		id				: itemRectangle
-		anchors.top		: itemTitles.visible ? itemTitles.bottom : itemTitle.bottom
-		anchors.left	: parent.left
-		height			: componentsList.height - itemTitle.height
+		anchors
+		{
+			top			: itemTitle.bottom
+			left		: parent.left
+		}
+		height			: parent.height - itemTitle.y - itemTitle.height
 		width			: parent.width
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.analysisBackgroundColor
         border.width	: addBorder ? 1 : 0
@@ -101,80 +80,132 @@ ComponentsListBase
 
 		JASPScrollBar
 		{
-			id				: itemScrollbar
+			id				: verticalScrollbar
 			flickable		: itemFlickable
 			manualAnchor	: true
 			vertical		: true
-			z				: 1337
+			z				: 2
 
 			anchors
 			{
 				top			: parent.top
 				right		: parent.right
 				bottom		: parent.bottom
-				margins		: 2
+			}
+		}
+
+		JASPScrollBar
+		{
+			id				: horizontalScrollbar
+			flickable		: itemFlickable
+			manualAnchor	: true
+			vertical		: false
+			z				: 2
+
+			anchors
+			{
+				left		: parent.left
+				right		: parent.right
+				bottom		: parent.bottom
 			}
 		}
 
 		Flickable
 		{
 			id						: itemFlickable
-			anchors.fill			: parent
-			anchors.margins			: addBorder ? jaspTheme.contentMargin : 0
-			anchors.rightMargin		: itemScrollbar.width + anchors.margins
+			anchors
+			{
+				top					: parent.top
+				left				: parent.left
+				right				: verticalScrollbar.left
+				bottom				: horizontalScrollbar.top
+				margins				: jaspTheme.contentMargin
+			}
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds
 			contentWidth			: itemGrid.width
-			contentHeight			: itemGrid.height
+			contentHeight			: itemHeaderLabels.height + itemGrid.height + addIconItem.height
 
-			Grid
+			Item
 			{
-				id						: itemGrid
-				width					: itemRectangle.width - 2 * jaspTheme.contentMargin - (itemScrollbar.visible ? itemScrollbar.width + 2 : 0)
-				focus					: true
-				columns					: 1
-				rowSpacing				: 1
-				columnSpacing			: 1
+				id				: itemHeaderLabels
+				height			: visible ? jaspTheme.variablesListTitle : 0
+				width			: parent.width
+				visible			: controlNameXOffsetMap.length > 0
 
 				Repeater
 				{
-					id						: itemRepeater
-					model					: componentsList.model
-					delegate				: components
+					model: controlNameXOffsetMap.length
+					Text
+					{
+						x		: (typeof controlNameXOffsetMap[index] !== "undefined") ? controlNameXOffsetMap[index].x : 0
+						text	: (typeof controlNameXOffsetMap[index] !== "undefined") ? controlNameXOffsetMap[index].label : ""
+						font	: jaspTheme.font
+						color	: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+					}
+				}
+			}
+
+			Grid
+			{
+				id					: itemGrid
+				anchors
+				{
+					top				: itemHeaderLabels.bottom
+					left			: parent.left
+				}
+
+				focus				: true
+				columns				: addItemManually ? 2 : 1
+				rows				: itemRepeater.count
+				rowSpacing			: 1
+				columnSpacing		: jaspTheme.contentMargin
+				flow				: Grid.TopToBottom
+				verticalItemAlignment: Grid.AlignVCenter
+
+				Repeater
+				{
+					id				: itemRepeater
+					model			: componentsList.model
+					delegate		: rowComponent
+				}
+				Repeater
+				{
+					model			: addItemManually ? componentsList.model : 0
+					delegate		: removeIconComponent
+				}
+			}
+
+			MenuButton
+			{
+				id					: addIconItem
+				height				: visible ? width : 0
+				radius				: width
+				visible				: showAddIcon && (maximumItems <= 0 || maximumItems > componentsList.count)
+				iconSource			: jaspTheme.iconPath + addIcon
+				onClicked			: addItem()
+				toolTip				: addTooltip
+				opacity				: enabled ? 1 : .5
+				anchors
+				{
+					top				: itemGrid.bottom
+					horizontalCenter: parent.horizontalCenter
 				}
 			}
 		}
 	}
 
-	MenuButton
-	{
-		id					: addIconItem
-		width				: height
-		radius				: height
-		visible				: showAddIcon && (maximumItems <= 0 || maximumItems > componentsList.count)
-		iconSource			: jaspTheme.iconPath + addIcon
-		onClicked			: addItem()
-		toolTip				: addTooltip
-		opacity				: enabled ? 1 : .5
-		anchors
-		{
-			bottom			: parent.bottom
-			horizontalCenter: parent.horizontalCenter
-		}
-	}
-
 	Component
 	{
-		id: components
+		id: rowComponent
 
 		FocusScope
 		{
 			id		: itemWrapper
 			height	: rowComponentItem ? rowComponentItem.height : 0
-			width	: componentsList.itemGrid.width
+			width	: rowComponentItem.width
 
-			property var	rowComponentItem	: model.rowComponent
-			property bool	isDeletable			: addItemManually && (!model.type || model.type.includes("deletable"))
+			property var rowComponentItem	: model.rowComponent
 
 			Component.onCompleted:
 			{
@@ -185,17 +216,30 @@ ComponentsListBase
 					rowComponentItem.anchors.verticalCenter = itemWrapper.verticalCenter
 				}
 			}
+		}
+	}
+
+
+	Component
+	{
+		id: removeIconComponent
+
+		FocusScope
+		{
+			id		: itemWrapperWithDelete
+			height	: removeIconID.height
+			width	: removeIconID.width			
+
+			property var	rowComponentItem	: model.rowComponent
+			property bool	isDeletable			: addItemManually && (!model.type || model.type.includes("deletable"))
 
 			Image
 			{
 				id						: removeIconID
 				source					: jaspTheme.iconPath + removeIcon
-				anchors.right			: parent.right
-				anchors.verticalCenter	: parent.verticalCenter
-				visible					: rowComponentItem.enabled && itemWrapper.isDeletable && componentsList.count > componentsList.minimumItems
+				visible					: rowComponentItem.enabled && itemWrapperWithDelete.isDeletable && index >= componentsList.minimumItems
 				height					: jaspTheme.iconSize
 				width					: jaspTheme.iconSize
-				z						: 2
 
 				QtControls.ToolTip.text			: removeTooltip
 				QtControls.ToolTip.timeout		: jaspTheme.toolTipTimeout

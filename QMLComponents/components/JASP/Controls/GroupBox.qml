@@ -25,7 +25,7 @@ import JASP				1.0
 JASPControl
 {
 	id						: groupBox
-	implicitWidth			: Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
+	implicitWidth			: Math.max(label.realWidth, contentArea.x + contentArea.implicitWidth)
 	implicitHeight			: label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight
 	L.Layout.leftMargin		: indent ? jaspTheme.indentationLength : 0
 	controlType				: JASPControl.GroupBox
