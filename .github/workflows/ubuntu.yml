@@ -40,6 +40,7 @@ jobs:
             sudo apt install libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev #required by some r packgaes
             sudo apt install libcurl4-openssl-dev #required by curl R packages
             sudo apt install libmpfr-dev #required by rmpfr packages
+            sudo apt install libglpk-dev #required by igraph packages
             sudo apt install jags
             
       - name: Install boost
