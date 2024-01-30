@@ -449,7 +449,7 @@ int ColumnModel::chosenColumn() const
 
 void ColumnModel::setChosenColumn(int chosenColumn)
 {
-	if (chosenColumn == _currentColIndex) return;
+	// Always set the chosen column even if it is the same one: the ColumnModel might be not reset correctly when the dataset is closed.
 
 	//If the user deletes the name the column ought to be removed because we cannot have columns without a name!
 	int deleteMe = column() && column()->name() == "" ? _currentColIndex : -1;
