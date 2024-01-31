@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-01-28 12:01+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4417,10 +4423,10 @@ msgctxt "QObject|"
 msgid "Paste values at row %1 column '%2'"
 msgstr "Werte einfügen in Zeile %1 Spalte '%2'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Set type '%1' to column '%2'"
-msgstr "Typ '%1' auf Spalte '%2' setzen"
+msgstr "Setzen des Typs '%1' für Spalte '%2'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4475,7 +4481,7 @@ msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
 msgstr "Berechnete Spalte erstellen mit Namen '%1'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
 msgstr "Code setzen auf berechnete Spalte mit Namen '%1'"
@@ -4755,11 +4761,10 @@ msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
 msgstr "Den aktuellen Arbeitsbereich mit diesen Werten einstellen"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr ""
-"Die fehlenden Werte des aktuellen Arbeitsbereichs auf diese Werten einstellen"
+"Die fehlenden Werte des aktuellen Arbeitsbereichs auf diese Werte einstellen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
@@ -4828,7 +4833,6 @@ msgctxt "VariablesWindow|"
 msgid "Use custom values"
 msgstr "Benutzerdefinierte Werte verwenden"
 
-#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
@@ -4854,7 +4858,6 @@ msgctxt "QObject|"
 msgid "Column added by analysis"
 msgstr "Spalte durch Analyse hinzugefügt"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Metrisch"
@@ -4923,12 +4926,10 @@ msgctxt "QObject|"
 msgid "Set workspace empty values"
 msgstr "Leere Werte des Arbeitsbereichs einstellen"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
 msgstr "Fehlende Werte des Arbeitsbereichs anzeigen"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
 msgstr "Öffnet die Einstellungen für fehlende Werte des Arbeitsbereichs"
@@ -5044,7 +5045,6 @@ msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "Gemeinschaft"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
 msgstr "<Tragen Sie den Spaltennamen ein>"
@@ -5088,13 +5088,15 @@ msgstr "Spaltendefinition"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
+msgstr "liefert einen booleschen Vektor mit WAHR für jeden fehlenden Wert in y"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"Mit Nicht-Operator kombinieren, um Zeilen mit fehlenden Werten (NA) für eine "
+"Spalte herauszufiltern."
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5108,30 +5110,43 @@ msgid ""
 "\n"
 "generatedFilter\n"
 msgstr ""
+"# Oben sehen Sie den Code, den JASP sowohl für die Wertfilterung als auch "
+"für den Drag-&-Drop-Filter generiert.\n"
+"# Dieses Standardergebnis wird in 'generatedFilter' gespeichert und kann "
+"ersetzt oder mit einem eigenen Filter kombiniert werden.\n"
+"# Zum Kombinieren können Sie Klauseln mit '&' anhängen: 'generatedFilter & "
+"eigenerFilter & ggfNochEinFilter'\n"
+"# Für weitere Hilfe, klicken Sie auf das (i)-Symbol in der unteren rechten "
+"Ecke.\n"
+"\n"
+"generatedFilter\n"
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Keine Daten geladen!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Daten haben %1 Zeilen, %2 (%3%4%) durch Filter gelassen"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "Externer Tabelleneditor (für Datensynchronisation)"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
+"Falls eine Variable mehr eindeutige ganzzahlige Werte als diese hat, wird "
+"sie als Skala interpretiert."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Die Typen geladener Variablen zurücksetzen"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "Einstellung fehlender Werte"
