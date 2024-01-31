@@ -777,9 +777,23 @@
         {
           "name": "BCG Vaccine",
           "path": "BCG Vaccine.jasp",
-          "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effects and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
+          "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effect and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
           "kind": "file",
           "associated_datafile": "BCG Vaccine.csv"
+        },
+        {
+          "name": "EuroSCORE II",
+          "path": "EuroSCORE II.jasp",
+          "description": "Results of studies assessing the discrimination and calibration performance of EuroSCORE II in patients undergoing coronary artery bypass grafting. <br><br> The example JASP file demonstrates the use of a meta-analysis of prediction model performance with concordance (C-) statistics. <br><br> <i> Data set retrieved from the R package metamisc. <\/i>",
+          "kind": "file",
+          "associated_datafile": "EuroSCORE II.csv"
+        },
+        {
+          "name": "Precognition",
+          "path": "Precognition.jasp",
+          "description": "Summary of estimates from the infamous 2011 article `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' by Daryl J. Bem. <br><br> The example JASP file demonstrates the use of a PET-PEESE publication bias adjustment.<br><br> <i> Data set retrieved from the R package RoBMA. <\/i>",
+          "kind": "file",
+          "associated_datafile": "Precognition.csv"
         }
       ],
       "debug": false
