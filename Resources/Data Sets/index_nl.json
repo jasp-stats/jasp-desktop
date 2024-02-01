@@ -781,6 +781,13 @@
           "kind": "file",
           "associated_datafile": "BCG Vaccine.csv"
         }
+        {
+          "name": "Acculturation Mismatch and Intergenerational Cultural Conflict",
+          "path": "Acculturation Mismatch and Intergenerational Cultural Conflict.jasp",
+          "description": "Een meta-analytische dataset over de relatie tussen acculturatiemismatch en intergenerationele culturele conflicten. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik en de rapportage van PET-PEESE, selection models, and Robust Bayesian meta-analysis.<br><br> <i>Gegevens verkregen van Lui (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Acculturation Mismatch and Intergenerational Cultural Conflict.csv"
+        }      
       ],
       "debug": false
     },
