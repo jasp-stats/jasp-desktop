@@ -549,12 +549,8 @@ var wrapHTML = function (html, exportParams, doctype = false) {
 	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
 	completehtml += "	<body " + styles + ">\n";
 	
-	//const htmlObj = $.parseHTML(html);
-	//	$(htmlObj).find('mjx-assistive-mml math').remove();
-	//const result = $(htmlObj).prop('outerHTML');
-
 	//Dont convert to DOM because it replace <img.../> with <img...> which breaks unitTest(Recursive)
-    	const mjxAssistReg = /\<mjx-assistive-mml[^>]*\>[\s\S]*?\<\/mjx-assistive-mml\>/g;
+	const mjxAssistReg = /\<mjx-assistive-mml[^>]*\>[\s\S]*?\<\/mjx-assistive-mml\>/g;
 	html = html.replace(mjxAssistReg, "");
 
 	const iframeReg = /<iframe[^>]*src="([^"]*)"[^>]*>[\s\S]*?<\/iframe>/g;
