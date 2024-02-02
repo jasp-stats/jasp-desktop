@@ -1,4 +1,3 @@
-
 var videoUrlList = [];
 
 window.sendUrlWhitelist = function (RequestedURL) {
@@ -27,10 +26,32 @@ if (insideJASP) {
 		scope: Parchment.Scope.BLOCK
 	});
 
+	///--- Image blots formatter ---///
+
+	// using https://github.com/Fandom-OSS/quill-blot-formatter to format image
 	Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+	class _CustomImageSpec extends QuillBlotFormatter.ImageSpec {
+		constructor(formatter) {
+			super(formatter);
+			this.img = null;
+		}
+
+		onClick = (event) => {
+			const el = event.target;
+
+			if (!(el instanceof HTMLElement) || el.tagName !== 'IMG' || el.parentNode.parentNode.tagName === 'MJX-CONTAINER') {
+				return;
+			}
+
+			this.img = el;
+			this.formatter.show(this);
+		};
+	}
+	var CustomImageSpec = _CustomImageSpec
 
 	Quill.register('formats/linebreak', LineBreakClass);
 
+	///--- Link blot ---///
 	// See https://github.com/quilljs/quill/issues/262
 	var Link = Quill.import('formats/link');
 	Link.sanitize = function (url) {
@@ -41,6 +62,8 @@ if (insideJASP) {
 		}
 		return url;
 	}
+
+    ////--- Video Blots ---////
 
 	function customVideoUrl(url) {
 		if (!/^(http|https):\/\//i.test(url)) {
@@ -70,11 +93,9 @@ if (insideJASP) {
 		return url
 	}
 
-	//// Video Blot modified from quill.js ////
-	
-	const VideoEmbed = Quill.import("blots/block/embed");
+    const VideoEmbed = Quill.import("blots/block/embed");
 
-	class EmbendVideo extends VideoEmbed {
+    class EmbendVideo extends VideoEmbed {
 		static create(value) {
 			value = customVideoUrl(value)
 			let node = super.create(value);
@@ -108,32 +129,30 @@ if (insideJASP) {
 
 	Quill.register(EmbendVideo, true);
 
-	//// Formula Blots modified from quill.js////
+    ////--- Formula Blots ---////
 
-	const FormulaEmbed = Quill.import('blots/embed');
+    const FormulaEmbed = Quill.import('blots/embed');
+    class FormulaBlot extends FormulaEmbed {
+        static create(value) {
+            let node = super.create(value);
+            if (typeof value === 'string') {
+                // Hack to replaces Katex with MathJax
+                node = MathJax.tex2svg(value, {display: false})
+                node.setAttribute('data-value', value);
+            }
+            return node;
+        }
 
-	class FormulaBlot extends FormulaEmbed {
-		static create(value) {
-			let node = super.create(value);
-			if (typeof value === 'string') {
-				// Hack to replaces Katex with MathJax
-				node = MathJax.tex2svg(value, {display: false})
-				node.setAttribute('data-value', value);
-			}
-			return node;
-		}
+        static value(domNode) {
+            return domNode.getAttribute('data-value');
+        }
 
-		static value(domNode) {
-			return domNode.getAttribute('data-value');
-		}
+    }
+    FormulaBlot.blotName = 'formula';
+    FormulaBlot.className = 'ql-formula';
+    FormulaBlot.tagName = 'SPAN';
 
-	}
-	FormulaBlot.blotName = 'formula';
-	FormulaBlot.className = 'ql-formula';
-	FormulaBlot.tagName = 'SPAN';
-
-	Quill.register(FormulaBlot, true);
-
+    Quill.register(FormulaBlot, true);
 }
 
 
@@ -249,20 +268,24 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.closeButton.render();
 
-		this.$el.append('<div class="jasp-hide" data-button-class="jasp-comment"></div>');
-		this.$el.append("<div id=\"editor\"></div>");
+        this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
+        this.$el.append(`<div id="editor"></div>`)
+                .append(`<div class="jasp-latex-container jasp-hide">
+                            <textarea class="jasp-latex-input" placeholder='${i18n("Enter LaTeX here and click the preview box to apply.")}'></textarea>
+                            <div class="jasp-latex-preview"><div></div></div>
+                        </div>`)
 
-		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
-			// [{ 'size': ['small', false, 'large', 'huge'] }],
-			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
-			[{ 'color': [] }, { 'background': [] }],
-			[{ 'script': 'sub'}, { 'script': 'super' }],
-			['blockquote', { 'indent': '+1'}, { 'indent': '-1' }],
-			// [{ 'font': [] }, { 'align': [] }],
-			[{ 'size': [ 'small', false, 'large' ]}],
-			['clean']
-		];
+        var toolbarOptions = [
+                    ['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
+                    // [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    ['blockquote', { 'indent': '+1'}, { 'indent': '-1' }],
+                    // [{ 'font': [] }, { 'align': [] }],
+                    [{ 'size': [ 'small', false, 'large' ]}],
+                    ['clean']
+                ];
 
 		let placeholderText = this.ghostTextDefault
 		if (typeof this.ghostText !== 'undefined')
@@ -277,9 +300,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			theme: 'snow',
 			modules: {
 				syntax: true,
-				toolbar: toolbarOptions,
+                toolbar: toolbarOptions,
 				blotFormatter: {
-					specs: [QuillBlotFormatter.ImageSpec]
+					specs: [CustomImageSpec], 
 				  },
 				keyboard: {
 					bindings: {
@@ -322,7 +345,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = this;
 		var delt;
 
-		this.$quillToolbar     = this.$el.find(".ql-toolbar").get(0);
+        this.$quillToolbar     = this.$el.find(".ql-toolbar").get(0);
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 		
 		this.$quillTooltip     = this.$el.find(".ql-tooltip");
@@ -338,88 +361,166 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		//     Instead, we will use the browser standard "title" attribute as
 		//     mentioned here: https://github.com/quilljs/quill/issues/1271#issuecomment-597928093
 
-		this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', i18n('Bold'));
-		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', i18n('Italic'));
-		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', i18n('Underline'));
-		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', i18n('Link'));
+        this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', i18n('Bold'));
+        this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', i18n('Italic'));
+        this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', i18n('Underline'));
+        this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', i18n('Link'));
 
-		this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
-		this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
-		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
-		this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
+        this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
+        this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
+        this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
+        this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
 
-		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
-		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
-		lists[0].setAttribute('title', i18n('Ordered List'))
-		lists[1].setAttribute('title', i18n('Unordered List'))
+        this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
+        let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
+        lists[0].setAttribute('title', i18n('Ordered List'))
+        lists[1].setAttribute('title', i18n('Unordered List'))
 
-		this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', i18n('Color Picker'));
-		this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', i18n('Background Color'));
+        this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', i18n('Color Picker'));
+        this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', i18n('Background Color'));
 
-		let scripts = this.$quillToolbar.querySelectorAll('button.ql-script')
-		scripts[0].setAttribute('title', i18n('Subscript'))
-		scripts[1].setAttribute('title', i18n('Superscript'))
+        let scripts = this.$quillToolbar.querySelectorAll('button.ql-script')
+        scripts[0].setAttribute('title', i18n('Subscript'))
+        scripts[1].setAttribute('title', i18n('Superscript'))
 
-		this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', i18n('Blockquote'));
-		let indents = this.$quillToolbar.querySelectorAll('button.ql-indent')
-		indents[0].setAttribute('title', i18n('Add Indent'))
-		indents[1].setAttribute('title', i18n('Remove Indent'))
+        this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', i18n('Blockquote'));
+        let indents = this.$quillToolbar.querySelectorAll('button.ql-indent')
+        indents[0].setAttribute('title', i18n('Add Indent'))
+        indents[1].setAttribute('title', i18n('Remove Indent'))
 
-		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
-		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
+        this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
+        this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
 
 		// Custom mouse events for the toolbar
-		this.$quillToolbar.addEventListener('mousedown', (event) => {
-			event.preventDefault();
+        this.$quillToolbar.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+        });
+
+		const latexContainer = this.$el.find('.jasp-latex-container')
+		const latexInputBox = this.$el.find('.jasp-latex-input')
+		const latexPreview = this.$el.find('.jasp-latex-preview')
+
+		self.handleLatexEditor = {
+			onEdit: function (_latexText) {
+				latexContainer.removeClass('jasp-hide');
+				latexInputBox.val(_latexText);
+				latexInputBox.focus();
+				_latexText.length > 0 ? latexPreview.show() : latexPreview.hide();
+				const _latexSvg = MathJax.tex2svg(_latexText)
+				latexPreview.get(0).replaceChildren(_latexSvg)
+			},
+			onClose: function () {
+				latexContainer.addClass('jasp-hide');
+				latexInputBox.val('');
+				latexPreview.empty();
+			}
+		}
+
+		self.$quill.getModule('toolbar').addHandler('formula', () => {
+			self.handleLatexEditor.onEdit('');
+		})
+
+		latexInputBox.on("input", (e) => {
+			self.handleLatexEditor.onEdit(e.target.value)
+		})
+
+		let range = null
+		let lastMouseDownCoords;
+
+		latexPreview.on("mousedown", (e) => {
+			lastMouseDownCoords = { x: e.clientX, y: e.clientY };
 		});
 
-		quillEditorElement.addEventListener('click', (event) => {
-			this.setQuillToolbarVisibility('block') //set toobar visiable;
+		latexInputBox.on("blur", async (e) => {
 
-			//// LaTex editor
+			await new Promise(resolve => setTimeout(resolve, 100));
+			let _clickedElement;
+			if (lastMouseDownCoords) {
+				_clickedElement = document.elementFromPoint(lastMouseDownCoords.x, lastMouseDownCoords.y);
+			}
+			const _hasFormulaClicked = e.relatedTarget && e.relatedTarget.tagName === "MJX-CONTAINER";
+			if (_clickedElement && latexPreview.is(_clickedElement) || _hasFormulaClicked) {
+				if (!range) {
+					range = self.$quill.getSelection(true);
+					index = range.index + range.length
+				}
+
+				self.$quill.insertEmbed(index, 'formula', latexInputBox.val(), 'user');
+				self.$quill.insertText(index + 1, ' ', 'user');
+				self.$quill.setSelection(index + 2, 'user');
+
+				if (self.oldBlot) {
+					self.oldBlot.remove();
+				}
+				self.oldBlot = null
+				range = null
+				self.handleLatexEditor.onClose();
+			} else {
+				self.handleLatexEditor.onClose();
+			}
+		});
+
+		function setContainerPosition() {
+			let _range = self.$quill.getSelection()
+			let _editorBounds = self.$quill.getBounds(_range ? _range.index : 0);
+
+			let containerPosition = {
+				top: _editorBounds.top + 40,
+				left: _editorBounds.left + 20
+			};
+			latexContainer.css({
+				position: 'absolute',
+				top: `${containerPosition.top}px`,
+				left: `${containerPosition.left}px`
+			});
+		}
+
+		self.$quill.on('editor-change', () => {
+
 			let $formulaNode = this.$el.find('.ql-editor mjx-container')
-			 $formulaNode.on('click', (e) => {
+				$formulaNode.attr('title', i18n('Click to edit this formula'))
+
+			$formulaNode.on('click', (e) => {
+				if (this.$quillToolbar.style.display === 'none')
+					self.setQuillToolbarVisibility('block');
+				else
+					e.preventDefault();
 				let currentFormula = e.currentTarget
 				let formulaBlot = Quill.find(currentFormula);
+				if (!range) {
+					range = self.$quill.getSelection(true);
+					index = formulaBlot.offset(self.$quill.scroll);
+				}
+				self.handleLatexEditor.onEdit(formulaBlot.contentNode.innerText)
 
-				let index = formulaBlot.offset(this.$quill.scroll);
-				let line = this.$quill.getIndex(formulaBlot)
-
-				this.oldBlot = formulaBlot // Get legacy formula range to remove while save
-
-				quillThemeTooltip.edit('formula', currentFormula.getAttribute('data-value'));
-
-				let saveFunction = quillThemeTooltip.save;
-				quillThemeTooltip.save = () => {
- 					if (this.oldBlot)
-						this.oldBlot.remove();
-					saveFunction.call(quillThemeTooltip);
-					this.oldBlot = null;
-				};
+				self.oldBlot = formulaBlot // Get legacy formula range to remove while save
 			});
 
+			////--- Image resizer ---////
+			let $imgBlot = this.$el.find('.ql-editor p img');
 			let $blotResizer = this.$el.find('.blot-formatter__overlay');
 			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
 
-			// auto show/hide resizer handles while hover/leave.
-			$blotResizer.on("mouseenter", (event) => {
-				if (event.relatedTarget.parentNode.tagName === "SPAN") //do not use resizer for formula 'mjx-container -> span -> img'
-					$resizeHandles.hide()
-				else
-					$resizeHandles.show()
-			}).on("mouseleave", () => {
-				$resizeHandles.hide()
-			});
+			$blotResizer.on("mouseenter", () => { $resizeHandles.show() }).on("mouseleave", () => { $resizeHandles.hide() });
+			$imgBlot.on(    "mouseenter", () => { $resizeHandles.show() }).on("mouseleave", () => { $resizeHandles.hide() });
 
 		});
 
 		quillEditorElement.addEventListener('focusout', (event) => {
-		    // Always keep editor available while a tooltip editor show
-		    if (this.$quillTooltip.is(':visible')) {
-				return;
-		    } else {
+			let x = event.clientX;
+			let y = event.clientY;
+
+			const quillRect = quillEditorElement.getBoundingClientRect();
+			const toolbarRect = this.$quillToolbar.getBoundingClientRect();
+
+			const isInsideQuill = x >= quillRect.left && x <= quillRect.right && y >= quillRect.top && y <= quillRect.bottom;
+			const isInsideToolbar = x >= toolbarRect.left && x <= toolbarRect.right && y >= toolbarRect.top && y <= toolbarRect.bottom;
+
+			if (isInsideQuill || isInsideToolbar || !latexContainer.hasClass('jasp-hide') || this.$quillTooltip.is(':visible'))
+				self.setQuillToolbarVisibility('block');
+			else
 				self.setQuillToolbarVisibility('none');
-		    }
+
 		});
 
 		if (this.model.get('deltaAvailable')) {
@@ -437,6 +538,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
 
 		this.$quill.on('text-change', function(delta, oldDelta, source) {
+
+			setContainerPosition();
+
 			let _quillRootHTML = self.$quill.root
 
 			function hasFormula(obj) {

@@ -193,6 +193,7 @@ div.jasp-image-image.no-data.error {
 .ql-editor p img,
 iframe.ql-video:not(:fullscreen),
 .ql-editor mjx-container svg,
+.jasp-latex-container .jasp-latex-preview svg,
 mjx-container {
     filter:  invert(1);
 }

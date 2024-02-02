@@ -435,7 +435,8 @@ Item
 				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
 				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video"), "Unsupported video services" : qsTr("Unsupported video services"), 
-				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list.")
+				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list."),
+				"Enter LaTeX here and click the preview box to apply." : qsTr("Enter LaTeX here and click the preview box to apply."), "Click to edit this formula" : qsTr("Click to edit this formula")
 
 			}
 
