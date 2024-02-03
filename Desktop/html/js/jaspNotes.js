@@ -271,8 +271,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
         this.$el.append(`<div id="editor"></div>`)
                 .append(`<div class="jasp-latex-container jasp-hide">
-                            <textarea class="jasp-latex-input" placeholder='${i18n("Enter LaTeX here and click the preview box to apply.")}'></textarea>
-                            <div class="jasp-latex-preview"><div></div></div>
+                            <textarea class="jasp-latex-input" placeholder='${i18n("Enter LaTeX here")}'></textarea>
+                            <div class="jasp-latex-preview" title='${i18n("Click to apply formula")}'><div></div></div>
                         </div>`)
 
         var toolbarOptions = [
@@ -345,7 +345,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = this;
 		var delt;
 
-        this.$quillToolbar     = this.$el.find(".ql-toolbar").get(0);
+		this.$quillToolbar     = this.$el.find(".ql-toolbar")
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 		
 		this.$quillTooltip     = this.$el.find(".ql-tooltip");
@@ -355,46 +355,38 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var linkInput = quillThemeTooltip.root.querySelector('input[data-link]');
 			linkInput.dataset.link = 'https://jasp-stats.org';
 
-		// Add tooltips to the toolbar buttons
-		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
-		//     however, that is not handy for complex buttons such as color picker
-		//     Instead, we will use the browser standard "title" attribute as
-		//     mentioned here: https://github.com/quilljs/quill/issues/1271#issuecomment-597928093
-
-        this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', i18n('Bold'));
-        this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', i18n('Italic'));
-        this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', i18n('Underline'));
-        this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', i18n('Link'));
-
-        this.$quillToolbar.querySelector('button.ql-formula').setAttribute('title', i18n('Formula'));
-        this.$quillToolbar.querySelector('button.ql-code-block').setAttribute('title', i18n('Code Block'));
-        this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', i18n('Image'));
-        this.$quillToolbar.querySelector('button.ql-video').setAttribute('title', i18n('Embed web video'));
-
-        this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', i18n('Header'));
-        let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
-        lists[0].setAttribute('title', i18n('Ordered List'))
-        lists[1].setAttribute('title', i18n('Unordered List'))
-
-        this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', i18n('Color Picker'));
-        this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', i18n('Background Color'));
-
-        let scripts = this.$quillToolbar.querySelectorAll('button.ql-script')
-        scripts[0].setAttribute('title', i18n('Subscript'))
-        scripts[1].setAttribute('title', i18n('Superscript'))
-
-        this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', i18n('Blockquote'));
-        let indents = this.$quillToolbar.querySelectorAll('button.ql-indent')
-        indents[0].setAttribute('title', i18n('Add Indent'))
-        indents[1].setAttribute('title', i18n('Remove Indent'))
-
-        this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', i18n('Font Size'));
-        this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', i18n('Clear Formatting'));
+		let toolbarButtons = [
+			{ className: '.ql-bold', 			title: i18n('Bold') },
+			{ className: '.ql-italic', 			title: i18n('Italic') },
+			{ className: '.ql-underline', 		title: i18n('Underline') },
+			{ className: '.ql-link', 			title: i18n('Link') },
+			{ className: '.ql-formula', 		title: i18n('Formula') },
+			{ className: '.ql-code-block', 		title: i18n('Code Block') },
+			{ className: '.ql-image', 			title: i18n('Image') },
+			{ className: '.ql-video', 			title: i18n('Embed web video') },
+			{ className: '.ql-header.ql-picker', title: i18n('Header') },
+			{ className: '.ql-list', 			title: [i18n('Ordered List'), i18n('Unordered List')] },
+			{ className: '.ql-color.ql-picker.ql-color-picker', title: i18n('Font Color') },
+			{ className: '.ql-background.ql-picker.ql-color-picker', title: i18n('Background Color') },
+			{ className: '.ql-script', 			title: [i18n('Subscript'), i18n('Superscript')] },
+			{ className: '.ql-blockquote', 		title: i18n('Blockquote') },
+			{ className: '.ql-indent', 			title: [i18n('Add Indent'), i18n('Remove Indent')] },
+			{ className: '.ql-size.ql-picker', 	title: i18n('Font Size') },
+			{ className: '.ql-clean', 			title: i18n('Clear Formatting') },
+		   ];
+		   
+		   toolbarButtons.forEach((button) => {
+			let elements = $(this.$quillToolbar).find(`${button.className}`);
+			elements.each((index, element) => {
+				let title = Array.isArray(button.title) ? button.title[index] : button.title;
+				$(element).attr('title', title).tooltip( {position: {my:"center bottom-15", at:"center top"}} );
+			});
+		});
 
 		// Custom mouse events for the toolbar
-        this.$quillToolbar.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-        });
+		this.$quillToolbar.on('mousedown', (event) => {
+			event.preventDefault();
+		});
 
 		const latexContainer = this.$el.find('.jasp-latex-container')
 		const latexInputBox = this.$el.find('.jasp-latex-input')
@@ -405,6 +397,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				latexContainer.removeClass('jasp-hide');
 				latexInputBox.val(_latexText);
 				latexInputBox.focus();
+				latexPreview.tooltip({position: {my:"center bottom-15", at:"center top"}})
 				_latexText.length > 0 ? latexPreview.show() : latexPreview.hide();
 				const _latexSvg = MathJax.tex2svg(_latexText)
 				latexPreview.get(0).replaceChildren(_latexSvg)
@@ -412,7 +405,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			onClose: function () {
 				latexContainer.addClass('jasp-hide');
 				latexInputBox.val('');
-				latexPreview.empty();
+				latexPreview.tooltip("close").empty();
 			}
 		}
 
@@ -469,7 +462,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				left: _editorBounds.left + 20
 			};
 			latexContainer.css({
-				position: 'absolute',
 				top: `${containerPosition.top}px`,
 				left: `${containerPosition.left}px`
 			});
@@ -479,9 +471,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 			let $formulaNode = this.$el.find('.ql-editor mjx-container')
 				$formulaNode.attr('title', i18n('Click to edit this formula'))
+							.tooltip({position: {my:"center bottom-15", at:"center top"}});
 
 			$formulaNode.on('click', (e) => {
-				if (this.$quillToolbar.style.display === 'none')
+				if (this.$quillToolbar.is(':hidden'))
 					self.setQuillToolbarVisibility('block');
 				else
 					e.preventDefault();
@@ -511,7 +504,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			let y = event.clientY;
 
 			const quillRect = quillEditorElement.getBoundingClientRect();
-			const toolbarRect = this.$quillToolbar.getBoundingClientRect();
+			const toolbarRect = this.$quillToolbar.get(0).getBoundingClientRect();
 
 			const isInsideQuill = x >= quillRect.left && x <= quillRect.right && y >= quillRect.top && y <= quillRect.bottom;
 			const isInsideToolbar = x >= toolbarRect.left && x <= toolbarRect.right && y >= toolbarRect.top && y <= toolbarRect.bottom;
@@ -597,7 +590,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		if(!insideJASP) return;
 
-		this.$quillToolbar.style.display = display;
+		this.$quillToolbar.css("display", display);
 
 		if (display === 'block') {
 			this.$el.removeClass('jasp-notes-border')

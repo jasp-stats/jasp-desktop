@@ -618,7 +618,7 @@ iframe.ql-video {
 	background-color: #ffffff;
 	z-index: 1;
 	border-radius: 5px;
-	min-height: 5.5em;
+	min-height: 3.5em;
 	position: absolute;
 	left: 10px;
 }
@@ -632,15 +632,15 @@ iframe.ql-video {
 
 .jasp-latex-input, .jasp-latex-preview {
 	border-radius: 5px;
-	min-height: 5em;
-	min-width: 7em;
+	min-height: 3em;
+	min-width: 5em;
+	padding: 0.5em;
 }
 
 .jasp-latex-preview {
 	display: none;
 	background-color: #eeeeee;
 	border: 2px solid #0099cc;
-	padding: 0.5em;
 	animation: slide-in 0.5s ease-in-out;
 }
 
