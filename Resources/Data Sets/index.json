@@ -794,7 +794,7 @@
           "description": "Summary of estimates from the infamous 2011 article `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' by Daryl J. Bem. <br><br> The example JASP file demonstrates the use of a PET-PEESE publication bias adjustment.<br><br> <i> Data set retrieved from the R package RoBMA. <\/i>",
           "kind": "file",
           "associated_datafile": "Precognition.csv"
-        }
+        },
         {
           "name": "Acculturation Mismatch and Intergenerational Cultural Conflict",
           "path": "Acculturation Mismatch and Intergenerational Cultural Conflict.jasp",
@@ -1154,7 +1154,15 @@
     {
       "name": "Debug Dataset (JASP Team, 2017)",
       "path": "../debug.csv",
-      "description": "For testing. Readme: is.gd/jaspdata",
+      "description": "For testing, also for R unit-tests, comma separated data. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"],
+      "debug": true
+    },
+    {
+      "name": "GUI Debug Dataset (JASP Team, 2024)",
+      "path": "../gui-debug.csv",
+      "description": "For testing csv import of JASP, it has some strange combination of comma and dot in floats, semicolon separated. Readme: is.gd/jaspdata",
       "kind": "file",
       "children": ["NULL"],
       "debug": true

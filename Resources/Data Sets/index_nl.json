@@ -704,7 +704,7 @@
           {
             "name": "Distributions",
             "path": "Normal distribution.jasp",
-            "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\ / I>",
+            "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\/ I>",
             "kind": "file",
             "associated_datafile": "Distributions.csv"
           }
@@ -794,7 +794,7 @@
           "description": "Summary of estimates from the infamous 2011 article `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' door Daryl J. Bem. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een PET-PEESE publication bias adjustment. <br><br> <i> Dataset opgehaald uit het R-pakket RoBMA. <\/i>",
           "kind": "file",
           "associated_datafile": "Precognition.csv"
-        }
+        },
         {
           "name": "Acculturation Mismatch and Intergenerational Cultural Conflict",
           "path": "Acculturation Mismatch and Intergenerational Cultural Conflict.jasp",
@@ -830,7 +830,7 @@
         {
           "name": "Angst voor Statistiek",
           "path": "Fear of Statistics.jasp",
-          "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
+          "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\/i>",
           "kind": "file",
           "associated_datafile": "Fear of Statistics.csv"
         },
