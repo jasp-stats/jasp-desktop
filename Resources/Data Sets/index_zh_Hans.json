@@ -1,0 +1,1164 @@
+{
+    "name": "Categories",
+    "path": "Data Library",
+    "description": "General Examples",
+    "kind": "folder",
+    "children": [
+      {
+        "name": "Books",
+        "path": "Books",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Field - Discovering Statistics",
+            "path": "Field - Discovering Statistics",
+            "description": "此文件夹数据集来源于  A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. 这些数据集由 Andy Field 创建和拥有版权。 Andy Field 慷慨地同意我们可以将这些数据集纳入 JASP 数据库中。这些数据集也可以在 Andy Field 的书随附的网站上公开获取：https://edge.sagepub.com/field5e。 未经 Andy Field 明确同意，不得出于商业目的分发这些数据集，不得编辑这些数据集，并且不得在未确认其来源的情况下呈现这些数据集（即根据 CC 许可证的 BY-NC-ND 的条款许可）<br><br>",
+            "kind": "folder",
+            "children": [
+              {
+                "name": "Album Sales",
+                "path": "../../../Data Library/4. Regression/Album Sales.jasp",
+                "description": "可能影响专辑销量的因素。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/Album Sales.csv"
+              },
+              {
+                "name": "Alcohol Attitudes",
+                "path": "../../../Data Library/3. ANOVA/Alcohol Attitudes.jasp",
+                "description": "在观看了水、葡萄酒和啤酒的积极、中性或消极影像后，参与者对该饮料的态度 - 每个特征都在 3x3 设计的每个单元格中体现。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Alcohol Attitudes.csv"
+              },
+              {
+                "name": "Beer Goggles",
+                "path": "../../../Data Library/3. ANOVA/Beer Goggles.jasp",
+                "description": "饮用不同量的酒精后，对50 张有魅力或无吸引力的面孔的吸引力评分中位数。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Beer Goggles.csv"
+              },
+              {
+                "name": "Bush Tucker Food",
+                "path": "../../../Data Library/3. ANOVA/Bush Tucker Food.jasp",
+                "description": "名人在吃恶心食物时呕吐之前的秒数 - 每个名人吃了四种不同种类的恶心食物。 <br><br> <i>Andy Field创建的虚拟数据。<\/i><\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Bush Tucker Food.csv"
+              },
+              {
+                "name": "Dancing Cats",
+                "path": "../../../Data Library/5. Frequencies/Dancing Cats.jasp",
+                "description": "通过两种条件之一训练后学会跳舞的猫的数量。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats.csv"
+              },
+              {
+                "name": "Dancing Cats and Dogs",
+                "path": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.jasp",
+                "description": "通过两种条件之一训练后学会跳舞的猫和狗的数量。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.csv"
+              },
+              {
+                "name": "Exam Anxiety",
+                "path": "../../../Data Library/4. Regression/Exam Anxiety.jasp",
+                "description": "考试前对学生进行问卷调查（变量包括焦虑、准备情况和性别）。 <br><br> <i>Andy Field创建的虚拟数据。<\/i><\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/Exam Anxiety.csv"
+              },
+              {
+                "name": "Fear of Statistics",
+                "path": "../../../Data Library/1. Descriptives/Fear of Statistics.jasp",
+                "description": "对2571 名学生 SPSS 焦虑情况的问卷调查。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/1. Descriptives/Fear of Statistics.csv"
+              },
+              {
+                "name": "Invisibility Cloak",
+                "path": "../../../Data Library/2. T-Tests/Invisibility Cloak.jasp",
+                "description": "两组人（佩戴和未佩戴蒙面斗篷的人）犯下的恶作剧数量。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/2. T-Tests/Invisibility Cloak.csv"
+              },
+              {
+                "name": "Looks or Personality",
+                "path": "../../../Data Library/3. ANOVA/Looks or Personality.jasp",
+                "description": "十名男性和十名女性对九个快速约会伙伴的偏好评分，这些伴侣的吸引力（高、中、低）和魅力（高、有点、无）各不相同。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Looks or Personality.csv"
+              },
+              {
+                "name": "The Biggest Liar",
+                "path": "../../../Data Library/4. Regression/The Biggest Liar.jasp",
+                "description": "说谎比赛中的创造力测试分数和排名。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/The Biggest Liar.csv"
+              },
+              {
+                "name": "Viagra",
+                "path": "../../../Data Library/3. ANOVA/Viagra.jasp",
+                "description": "服用不同剂量的药物后男性（及其伴侣）的性欲水平。 <br><br> <i>Andy Field创建的虚拟数据。<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Viagra.csv"
+              }
+            ]
+          },
+          {
+            "name": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+            "path": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+            "description": "此文件夹包含来自 Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company。 Moore、McCabe 和 Craig 慷慨地同意我们可以将这些数据集纳入 JASP 数据库中。 这些数据集也可以在他们的书随附的网站上公开获取：whfreeman.com/ips7e。 未经作者明确同意，不得出于商业目的分发这些数据集，不得编辑这些数据集，并且不得在未确认其来源的情况下呈现这些数据集（即根据 CC 许可证的 BY-NC-ND 的条款许可） <br><br>",
+            "kind": "folder",
+            "children": [
+              {
+                "name": "College Success",
+                "path": "../../../Data Library/4. Regression/College Success.jasp",
+                "description": "224 名大学生的高中成绩、SAT 成绩和平均绩点。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/College Success.csv"
+              },
+              {
+                "name": "Directed Reading Activities",
+                "path": "../../../Data Library/2. T-Tests/Directed Reading Activities.jasp",
+                "description": "两组学生的阅读表现：一组为对照组，一组接受阅读行为指导。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/2. T-Tests/Directed Reading Activities.csv"
+              },
+              {
+                "name": "Facebook Friends",
+                "path": "../../../Data Library/3. ANOVA/Facebook Friends.jasp",
+                "description": "Facebook 个人资料的偏好评级 - 五个组对相同的个人资料进行评判，除了被操纵的方面：该个人资料的好友数量。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Facebook Friends.csv"
+              },
+              {
+                "name": "Fidgeting and Fat Gain",
+                "path": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.jasp",
+                "description": "参与者的脂肪增加及其非刻意的锻炼活动。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.csv"
+              },
+              {
+                "name": "Health Habits",
+                "path": "../../../Data Library/5. Frequencies/Health Habits.jasp",
+                "description": "1184名学生的体育活动和水果消费。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/5. Frequencies/Health Habits.csv"
+              },
+              {
+                "name": "Heart Rate",
+                "path": "../../../Data Library/3. ANOVA/Heart Rate.jasp",
+                "description": "男性和女性跑步者以及普通久坐参与者运动 6 分钟后的心率变化。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Heart Rate.csv"
+              },
+              {
+                "name": "Moon and Aggression",
+                "path": "../../../Data Library/2. T-Tests/Moon and Aggression.jasp",
+                "description": "痴呆症患者在月球周期的两个不同阶段的破坏性行为的数量。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/2. T-Tests/Moon and Aggression.csv"
+              },
+              {
+                "name": "Physical Activity and BMI",
+                "path": "../../../Data Library/4. Regression/Physical Activity and BMI.jasp",
+                "description": "参与者的体重指数和平均每日步数。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/4. Regression/Physical Activity and BMI.csv"
+              },
+              {
+                "name": "Response to Eye Color",
+                "path": "../../../Data Library/3. ANOVA/Response to Eye Color.jasp",
+                "description": "四个不同群体表达的广告后对品牌的态度——每个群体都看到相同的广告，除了被操纵的维度：模特的眼睛颜色。  <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/3. ANOVA/Response to Eye Color.csv"
+              },
+              {
+                "name": "Weight Gain",
+                "path": "../../../Data Library/2. T-Tests/Weight Gain.jasp",
+                "description": "16 名参与者在八周的过量卡路里摄入前后的体重。 <br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+                "kind": "file",
+                "associated_datafile": "../../../Data Library/2. T-Tests/Weight Gain.csv"
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "1. Descriptives",
+        "path": "1. Descriptives",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Sleep",
+            "path": "Sleep.jasp",
+            "description": "十名患者在服用两种“催眠药物”（即安眠药）后每人额外睡眠的小时数。 <br><br> 示例 JASP 文件演示了描述性统计的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "Sleep.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "2. T-Tests",
+        "path": "2. T-Tests",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Directed Reading Activities",
+            "path": "Directed Reading Activities.jasp",
+            "description": "两组学生的阅读表现——一组为对照组，一组接受阅读指导。 <br><br> 示例 JASP 文件演示了独立样本 t 检验的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Directed Reading Activities.csv"
+          },
+          {
+            "name": "Eye Movements",
+            "path": "Eye Movements.jasp",
+            "description": "两组参与者正确回忆单词的数量 - 在保留间隔期间，一组被指示关注中心呈现的点 <br><br> 示例 JASP 文件演示了贝叶斯独立样本 t 检验的使用。<br><br> <i>Subset of the data reported in Matzke et al. (2015).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Eye Movements.csv"
+          },
+          {
+            "name": "Invisibility Cloak",
+            "path": "Invisibility Cloak.jasp",
+            "description": "两组人（佩戴和未佩戴蒙面斗篷的人）犯下的恶作剧数量。 <br><br> 示例 JASP 文件演示了独立样本 t 检验的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Invisibility Cloak.csv"
+          },
+          {
+            "name": "Kitchen Rolls",
+            "path": "Kitchen Rolls.jasp",
+            "description": "两组学生的体验开放性得分——在填写性格问卷时，两组学生用手旋转厨房卷纸（一组顺时针，另一组逆时针）。 <br><br> 示例 JASP 文件演示了独立样本 t 检验的贝叶斯和频率学派版本的使用。<br><br> <i>数据来自 Wagenmakers et al. (2015).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Kitchen Rolls.csv"
+          },
+          {
+            "name": "Moon and Aggression",
+            "path": "Moon and Aggression.jasp",
+            "description": "痴呆症患者在月球周期的两个不同阶段的破坏性行为的数量。 <br><br> 示例 JASP 文件演示了配对样本 t 检验的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Moon and Aggression.csv"
+          },
+          {
+            "name": "Stereograms",
+            "path": "Stereograms.jasp",
+            "description": "两组参与者看到隐藏在立体图中的物体所花费的时间——一组收到了有关场景的预先信息，另一组则没有。 <br><br> 示例 JASP 文件演示了贝叶斯独立样本 t 检验的使用。<br><br> <i>数据来自 Frisby & Clatworthy (1975).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Stereograms.csv"
+          },
+          {
+            "name": "Weight Gain",
+            "path": "Weight Gain.jasp",
+            "description": "16 名参与者在为期8周的过量卡路里摄入前后的体重。 <br><br> 示例 JASP 文件演示了单样本 t 检验的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Weight Gain.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "3. ANOVA",
+        "path": "3. ANOVA",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Alcohol Attitudes",
+            "path": "Alcohol Attitudes.jasp",
+            "description": "在观看了水、葡萄酒和啤酒的积极、中性或消极影像后，他们对该饮料的态度 - 每个参与者都在 3x3 设计的每个单元格中都有体现。 <br><br> 示例 JASP 文件演示了重复测量方差分析的使用。<br><br> <i>来自于 Andy Field的虚拟数据<\/i>",
+            "kind": "file",
+            "associated_datafile": "Alcohol Attitudes.csv"
+          },
+          {
+            "name": "Beer Goggles",
+            "path": "Beer Goggles.jasp",
+            "description": "饮用不同量的酒精后，50 张有魅力或无吸引力的面孔的吸引力评分中位数。 <br><br> 示例 JASP 文件演示了 ANOVA 的使用。<br><br> <i>来自于 Andy Field的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Beer Goggles.csv"
+          },
+          {
+            "name": "Bugs",
+            "path": "Bugs.jasp",
+            "description": "人们想要杀死节肢动物的程度不同，其厌恶程度（低、高）和恶心程度（低、高）不同——每个参与者都会评价他们对所有节肢动物的态度。 <br><br> 示例 JASP 文件演示了混合设计方差分析的使用。<br><br> <i>数据来自 Ryan, Wilde, & Crist (2013).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Bugs.csv"
+          },
+          {
+            "name": "Bush Tucker Food",
+            "path": "Bush Tucker Food.jasp",
+            "description": "名人在吃恶心食物时呕吐之前的秒数 - 每个名人吃了四种不同种类的恶心食物。 <br><br> 示例 JASP 文件演示了重复测量方差分析的使用。<br><br> <i>来自于 Andy Field的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Bush Tucker Food.csv"
+          },
+          {
+            "name": "Erotic Pictures and Love",
+            "path": "Erotic Pictures and Love.jasp",
+            "description": "男性和女性在观看色情或艺术图片后对其伴侣的感受。 <br><br> 示例 JASP 文件演示了阶乘 2 x 2 ANOVA 的使用。<br><br> <i>数据来自 Balzarini et al. (2016).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Erotic Pictures and Love.csv"
+          },
+          {
+            "name": "Facebook Friends",
+            "path": "Facebook Friends.jasp",
+            "description": "Facebook 个人资料的偏好评级 - 五个组对相同的个人资料进行评判，除了被操纵的方面：该个人资料的好友数量。 <br><br> 示例 JASP 文件演示了单向方差分析的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Facebook Friends.csv"
+          },
+          {
+            "name": "Heart Rate",
+            "path": "Heart Rate.jasp",
+            "description": "男性和女性跑步者以及长期久坐参与者运动 6 分钟后的心率。 <br><br> 示例 JASP 文件演示了受试者之间 2 x 2 方差分析的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Heart Rate.csv"
+          },
+          {
+            "name": "Looks or Personality",
+            "path": "Looks or Personality.jasp",
+            "description": "十名男性和十名女性对九个快速约会伙伴的偏好评分，这些伴侣的吸引力（高、平均、低）和魅力（高、一些、无）各不相同。 <br><br> 示例 JASP 文件演示了混合设计方差分析的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Looks or Personality.csv"
+          },
+          {
+            "name": "Pain Thresholds",
+            "path": "Pain Thresholds.jasp",
+            "description": "不同发色的人的疼痛阈值。 <br><br> 示例 JASP 文件演示了单因素方差分析的使用。<br><br> <i>Data from McClave & Dietrich (1991).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Pain Thresholds.csv"
+          },
+          {
+            "name": "Response to Eye Color",
+            "path": "Response to Eye Color.jasp",
+            "description": "四个不同群体表达的广告后对品牌的态度——每个群体都看到相同的广告，除了被操纵的方维度：模特的眼睛颜色。 <br><br> 示例 JASP 文件演示了单因素方差分析的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Response to Eye Color.csv"
+          },
+          {
+            "name": "Singers",
+            "path": "Singers.jasp",
+            "description": "“1979 年纽约合唱协会歌手的身高（以英寸为单位）。数据根据声部分组。每个声部的音域按照以下顺序增加音高：低音 2、低音 1、男高音 2 、男高音 1、中音 2、中音 1、女高音 2、女高音 1。” <br><br> 示例 JASP 文件演示了被试内贝叶斯方差分析的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "Singers.csv"
+          },
+          {
+            "name": "Tooth Growth",
+            "path": "Tooth Growth.jasp",
+            "description": "应答是 60 只豚鼠中成牙本质细胞（负责牙齿生长的细胞）的长度。每只动物通过两种给药方法之一接受三种剂量水平的维生素 C（0.5、1和2毫克/天）中的一种， 橙汁或抗坏血酸（维生素C的一种，编码为 VC）。 <br><br> 示例 JASP 文件演示了 2 x 2 ANOVA 的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "Tooth Growth.csv"
+          },
+          {
+            "name": "Viagra",
+            "path": "Viagra.jasp",
+            "description": "服用不同剂量的药物后男性（及其伴侣）的性欲水平。 <br><br> 示例 JASP 文件演示了 ANCOVA 的使用。<br><br> <i>来自 Andy Field 的虚构数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Viagra.csv"
+          },
+          {
+            "name": "Stroop",
+            "path": "Stroop.jasp",
+            "description": "19 名参与者对 Stroop 任务的反应时间。 <br><br> 示例 JASP 文件演示了重复测量方差分析的使用。<br><br> <i>数据来自 Ronen Hershman.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Stroop.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "4. Regression",
+        "path": "4. Regression",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Adam Sandler",
+            "path": "Adam Sandler.jasp",
+            "description": "亚当·桑德勒主演的电影在烂番茄上的收视率和票房成绩。 <br><br> 示例 JASP 文件演示了贝叶斯 Pearson 相关性的使用。<br><br> <i>数据 E.J. Wagenmakers 2015年在烂番茄上收集<\/i>",
+            "kind": "file",
+            "associated_datafile": "Adam Sandler.csv"
+          },
+          {
+            "name": "Album Sales",
+            "path": "Album Sales.jasp",
+            "description": "可能影响专辑销量的因素。 <br><br> 示例 JASP 文件演示了线性回归的使用。<br><br> <i>数据来自 Andy Field.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Album Sales.csv"
+          },
+          {
+            "name": "Auction",
+            "path": "Auction.jasp",
+            "description": "古董钟表的售价和年代，以及拍卖中的竞拍者数量。 <br><br> 示例 JASP 文件演示了线性回归的使用。<br><br> <i>数据来自 Mendenhall & Sincich (1993).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Auction.csv"
+          },
+          {
+            "name": "Big Five Personality Traits",
+            "path": "Big Five Personality Traits.jasp",
+            "description": "500 名参与者的大五人格特征得分。 <br><br> 示例 JASP 文件演示了 Pearson 相关性的使用。<br><br> <i>数据来自 Dolan et al. (2009).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Big Five Personality Traits.csv"
+          },
+          {
+            "name": "College Success",
+            "path": "College Success.jasp",
+            "description": "224 名大学生的高中成绩、SAT 成绩和平均绩点。 <br><br> 示例 JASP 文件演示了线性回归的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "College Success.csv"
+          },
+          {
+            "name": "Exam Anxiety",
+            "path": "Exam Anxiety.jasp",
+            "description": "考试前对学生进行问卷调查（变量包括焦虑、准备情况和成绩）。 <br><br> 示例 JASP 文件演示了 Pearson 相关系数的使用。<br><br> <i>数据来自 Andy Field.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Exam Anxiety.csv"
+          },
+          {
+            "name": "Fidgeting and Fat Gain",
+            "path": "Fidgeting and Fat Gain.jasp",
+            "description": "参与者的脂肪增加及其非刻意的锻炼活动。 <br><br> 示例 JASP 文件演示了线性回归的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Fidgeting and Fat Gain.csv"
+          },
+          {
+            "name": "Glasgow Norms",
+            "path": "Glasgow Norms.jasp",
+            "description": "对 5553 个英语单词在九个心理语言学维度上的一组规范评级。 <br><br> 示例 JASP 文件演示了贝叶斯相关性的使用。<br><br> <i>数据来自 Scott et al. (2017).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Glasgow Norms.csv"
+          },
+          {
+            "name": "Physical Activity and BMI",
+            "path": "Physical Activity and BMI.jasp",
+            "description": "参与者的体重指数和平均每日步数。 <br><br> 示例 JASP 文件演示了线性回归的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Physical Activity and BMI.csv"
+          },
+          {
+            "name": "Presidents' Height",
+            "path": "Presidents' Height.jasp",
+            "description": "美国总统的身高及其普选票的比例。 <br><br> 示例 JASP 文件演示了进行区间零假设的用法。<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Presidents' Height.csv"
+          },
+          {
+            "name": "World Happiness",
+            "path": "World Happiness.jasp",
+            "description": "2017 年报告的 155 个国家的国民幸福指数和各种生活因素。<br><br> 示例 JASP 文件演示了贝叶斯线性回归的使用。<br><br> <i>Data from Helliwell, Layard, & Sachs (2017).<\/i>",
+            "kind": "file",
+            "associated_datafile": "World Happiness.csv"
+          },
+          {
+            "name": "The Biggest Liar",
+            "path": "The Biggest Liar.jasp",
+            "description": "说谎比赛中的创造力测试分数和排名。 <br><br> 示例 JASP 文件演示了 Spearman 和 Kendall 相关性的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "The Biggest Liar.csv"
+          },
+          {
+            "name": "Titanic",
+            "path": "Titanic.jasp",
+            "description": "泰坦尼克号上 1313 名乘客的年龄、舱位等级和生存状况。 <br><br> 示例 JASP 文件演示了logistic 回归的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "Titanic.csv"
+          },
+          {
+            "name": "Turbines",
+            "path": "Turbines.jasp",
+            "description": "在给定的运行时间后出现裂缝的涡轮机叶轮的数量和比例。 <br><br> 示例 JASP 文件演示了二分类logistic 回归的使用。<br><br> <i>Data from Nelsen, W. (1982).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Turbines.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "5. Frequencies",
+        "path": "5. Frequencies",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Dancing Cats and Dogs",
+            "path": "Dancing Cats and Dogs.jasp",
+            "description": "通过两种条件之一训练的学会跳舞的猫和狗的数量。 <br><br> 示例 JASP 文件演示了对数线性分析的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Dancing Cats and Dogs.csv"
+          },
+          {
+            "name": "Dancing Cats",
+            "path": "Dancing Cats.jasp",
+            "description": "过两种条件之一训练的学会跳舞的猫的数量。 <br><br> 示例 JASP 文件演示了卡方独立性检验的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Dancing Cats.csv"
+          },
+          {
+            "name": "Death Penalty",
+            "path": "Death Penalty.jasp",
+            "description": "法院对死刑的判决（即是或否）按被告的种族（即白人或黑人）和受害者的种族（即白人或黑人）划分。 <br><br> 示例 JASP 文件演示了贝叶斯对数线性分析的使用。<br><br> <i>数据来自 Radelet & Pierce (1991).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Death Penalty.csv"
+          },
+          {
+            "name": "Emily Rosa",
+            "path": "Emily Rosa.jasp",
+            "description": "在艾米丽·罗莎著名的实验中，触摸治疗师做出了正确和错误的决定。 “在最初的试验中，受试者在 150 次尝试中的 70 次 (47%) 中说出了研究者手的正确位置。” <br><br> 示例 JASP 文件演示了贝叶斯二项式检验的使用。<br><br> <i>数据来自 the summary information in Rosa et al. (1998).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Emily Rosa.csv"
+          },
+          {
+            "name": "Health Habits",
+            "path": "Health Habits.jasp",
+            "description": "1184名学生的体育活动和水果消费。 <br><br> 示例 JASP 文件演示了卡方独立性检验的使用。<br><br> <i>数据来自 Moore, McCabe, & Craig.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Health Habits.csv"
+          },
+          {
+            "name": "Hungry Zombies",
+            "path": "Hungry Zombies.jasp",
+            "description": "12 个行动不便的人对以下问题的回答：“您的食欲状态如何？” <br><br> 示例 JASP 文件演示了贝叶斯二项式检验的使用。<br><br> <i>数据来自 E.J. Wagenmakers.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Hungry Zombies.csv"
+          },
+          {
+            "name": "Listerism",
+            "path": "Listerism.jasp",
+            "description": "采用李斯特法或普通敷料治疗的患者的恢复状况。 <br><br> 示例 JASP 文件演示了贝叶斯列联表的使用。<br><br> <i>数据来自 summary information by MacAlister (1881) and reported in Jamil et al. (2017).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Listerism.csv"
+          },
+          {
+            "name": "Memory of Life Stresses",
+            "path": "Memory of Life Stresses.jasp",
+            "description": "访谈前特定月份内报告的生活压力数量（参与者的总和）。 <br><br> 示例 JASP 文件演示了多项检验的使用。<br><br> <i>数据来自 Uhleman et al. (1974) provided by Haberman (1978).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Memory of Life Stresses.csv"
+          },
+          {
+            "name": "MOOC Bias",
+            "path": "MOOC Bias.jasp",
+            "description": "MOOC 讲师对八种构建身份 [即性别（男性、女性）x 种族（白人、印度人、黑人、中国人）] 提出的问题的答复率。 <br><br> 示例 JASP 文件演示了卡方独立性检验的使用。<br><br> <i>数据来自 Baker et al. (2018).<\/i>",
+            "kind": "file",
+            "associated_datafile": "MOOC Bias.csv"
+          },
+          {
+            "name": "Sun Block Lotions",
+            "path": "Sun Block Lotions.jasp",
+            "description": "20 名参与者对以下问题的回答：“这两种防晒霜哪一种更好？” <br><br> 示例 JASP 文件演示了二项式检验的使用。<br><br> <i>虚拟数据来自 Moore, McCaib, & Craig (2012).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Sun Block Lotions.csv"
+          },
+          {
+            "name": "Three-Sided Coin",
+            "path": "Three-Sided Coin.jasp",
+            "description": "两枚实验硬币各自落在其边缘的次数（抛掷 1000 次）。 <br><br> 示例 JASP 文件演示了如何使用摘要统计来进行贝叶斯二项式检验。<br><br> <i>Data collected by Matthew Parker.<\/i>",
+            "kind": "file"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "6. Factor",
+        "path": "6. Factor",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "G Factor",
+            "path": "G Factor.jasp",
+            "description": "查尔斯·斯皮尔曼 (Charles Spearman) 的学生学校成绩和感官辨别分数数据。 <br><br> 示例 JASP 文件演示了探索性因子分析的使用。<br><br> <i>数据来自 Spearman (1904).<\/i>",
+            "kind": "file",
+            "associated_datafile": "G Factor.csv"
+          },
+          {
+            "name": "Mental Ability",
+            "path": "Mental Ability.jasp",
+            "description": "经典的 Holzinger 和 Swineford (1939) 数据集提供了来自两所不同学校的七年级和八年级儿童的心理能力测试分数。 <br><br> 示例 JASP 文件演示了验证性因子分析的使用。<br><br> <i>数据由 Holzinger and Swineford (1939) 创建并在R包 lavaan (Rosseel, 2012)中提供。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Mental Ability.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+          "name": "7. Audit",
+          "path": "7. Audit",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+                "name": "Tests of Controls",
+                "path": "controlTestBayesian.jasp",
+                "description": "虚构的 100 个控制系统和相关要求。 <br><br> 示例 JASP 文件演示了贝叶斯审计工作流程的使用。<br><br> <i>数据来自R包 jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "controlTest.csv"
+            },
+            {
+                "name": "Testing for Overstatements",
+                "path": "substantiveTestBayesian.jasp",
+                "description": "由 3500 笔交易组成的虚构人口。 <br><br> 示例 JASP 文件演示了贝叶斯审计工作流程的使用。<br><br> <i>数据来自R包 jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "BuildIt_Monetary.csv"
+            },
+            {
+                "name": "Planning and Selecting a Sample",
+                "path": "planningAndSelectingBayesian.jasp",
+                "description": "由 3500 笔交易组成的虚构人口。 <br><br> 示例 JASP 文件演示了贝叶斯规划和选择分析的使用。<br><br> <i>数据来自R包 jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "BuildIt_Monetary.csv"
+            },
+            {
+                "name": "Evaluating a Sample",
+                "path": "evaluationBayesian.jasp",
+                "description": "由 60 笔交易组成的虚构审计样本。 <br><br> 示例 JASP 文件演示了贝叶斯评估分析的使用。<br><br> <i>数据来自 R package jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "auditSample.csv"
+            },
+            {
+                "name": "Evaluating a Stratified Sample",
+                "path": "stratifiedEvaluation.jasp",
+                "description": "虚拟的审计总体由 1414 个项目组成，分为 3 个层次。 <br><br> 示例 JASP 文件演示了分层贝叶斯评估分析的使用。<br><br> <i>数据来自 R package jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "stratification.csv"
+            },
+            {
+                "name": "Assessing Benford's Law",
+                "path": "sinoForest.jasp",
+                "description": "嘉汉林业股份有限公司 2010 年度财务报表。 <br><br> 示例 JASP 文件演示了 benford 定律分析的使用。<br><br> <i>数据来自R包 benford.analysis<\/i>",
+                "kind": "file",
+                "associated_datafile": "sinoForest.csv"
+            },
+            {
+                "name": "BuildIt Binary",
+                "path": "BuildIt_Binary.jasp",
+                "description": "BuildIt 的审计群体包含 3500 笔交易。 <br><br> 示例 JASP 文件演示了贝叶斯审计工作流程的使用。<br><br> <i>数据来自 R package jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "BuildIt_Monetary.csv"
+            }
+          ],
+          "debug": false
+        },
+        {
+          "name": "8. Bain",
+          "path": "8. Bain",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "One Sample T-Test",
+              "path": "bainOneSample.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据进行的 Bain 单样本 t 检验。 <br><br> <i>bain R 包中包含的数据集。<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "Welch's T-Test",
+              "path": "bainIndependentSamples.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据进行的 Bain Welch t 检验。 <br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "Paired Samples T-Test",
+              "path": "bainPairedSamples.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据进行的 Bain 配对样本 t 检验。 <br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "ANOVA",
+              "path": "bainAnova.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据的 Bain 方差分析。 <br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "ANCOVA",
+              "path": "bainAncova.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据的 Bain ANCOVA。 <br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "Regression",
+              "path": "bainRegression.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据的 Bain 回归。<br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            },
+            {
+              "name": "Structural Equation Modeling",
+              "path": "bainSem.jasp",
+              "description": "此 JASP 文件演示了使用芝麻街数据的 Bain 结构方程模型。 <br><br> <i>数据来自bain R package.<\/i>",
+              "kind": "file",
+              "associated_datafile": "sesame.csv"
+            }
+          ],
+          "debug": false
+        },
+        {
+          "name": "9. Discover Distributions",
+          "path": "9. Discover Distributions",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Distributions",
+              "path": "Normal distribution.jasp",
+              "description": "从各种概率分布生成的变量的综合数据集。 <br><br> 示例 JASP 文件演示了正态分布。<br><br> <i>该数据由 JASP 团队虚构<\/i>",
+              "kind": "file",
+              "associated_datafile": "Distributions.csv"
+            }
+          ]
+        },
+        {
+          "name": "10. Machine Learning",
+          "path": "10. Machine Learning",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Iris Flowers",
+              "path": "iris.jasp",
+              "description": "这个著名的（Fisher 或 Anderson）鸢尾花数据集分别给出了 3 种鸢尾花各 50 朵花的变量萼片长度和宽度以及花瓣长度和宽度（以厘米为单位）的测量值。 该物种包括山鸢尾、云芝和维吉尼亚鸢尾。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "kind": "file",
+              "associated_datafile": "iris.csv"
+            },
+            {
+              "name": "Telco Customer Churn",
+              "path": "telcoCustomerChurn.jasp",
+              "description": "来自电话提供商 7043 名客户的电信数据。 变量范围从个人描述到订阅费，并提供有关客户流失行为的信息。 <br><br> <i>数据公开在 https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+              "kind": "file",
+              "associated_datafile": "telcoCustomerChurn.csv"
+            },
+            {
+              "name": "Student Grades",
+              "path": "studentGrades.jasp",
+              "description": "数据包含葡萄牙357名高中生的信息 (Cortez & Silva, 2008). <br><br> <i>数据公开在 https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+              "kind": "file",
+              "associated_datafile": "studentGrades.csv"
+            },
+            {
+              "name": "Wine Types",
+              "path": "wine.jasp",
+              "description": "对意大利特定地区种植的葡萄酒进行化学分析的结果。 178 个样品代表了三种类型的葡萄酒，每个样品记录了 13 项化学分析结果。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "kind": "file",
+              "associated_datafile": "wine.csv"
+            },
+            {
+              "name": "Spiral",
+              "path": "spiral.jasp",
+              "description": "数据包含二维平面上的螺旋图形。 200 个样本中由两个类别分隔。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "kind": "file",
+              "associated_datafile": "spiral.csv"
+            },
+            {
+              "name": "Penguins",
+              "path": "penguins.jasp",
+              "description": "数据包含企鹅种类、帕尔默群岛岛屿、尺寸（鳍状肢长度、体重、喙尺寸）和性别的测量数据。 <br><br> <i>R 包 palmerpenguins 中包含的数据集。<\/i>",
+              "kind": "file",
+              "associated_datafile": "penguins.csv"
+            },
+            {
+              "name": "Police Cadet Evaluation",
+              "path": "policeCadetEvaluation.jasp",
+              "description": "荷兰 20 世纪 90 年代末收集的警校学员评估的真实数据，用于研究降低入学标准的影响，并根据各种属性预测学员是否会通过标准的五年评估。 <br><br> <i>数据集由荷兰国家警察总队和司法部提供。<\/i>",
+              "kind": "file",
+              "associated_datafile": "policeCadetEvaluation.csv"
+            }
+          ],
+          "debug": false
+        },
+      {
+        "name": "11. Meta-Analysis",
+        "path": "11. Meta-Analysis",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "BCG Vaccine",
+            "path": "BCG Vaccine.jasp",
+            "description": "检查 BCG 疫苗有效性的研究的测试统计数据。 <br><br> 示例 JASP 文件演示了固定效应和随机效应Meta分析的使用。<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
+            "kind": "file",
+            "associated_datafile": "BCG Vaccine.csv"
+          },
+          {
+            "name": "EuroSCORE II",
+            "path": "EuroSCORE II.jasp",
+            "description": "评估 EuroSCORE II 在接受冠状动脉旁路移植术的患者中的辨别和校准性能的研究结果。 <br><br> 示例 JASP 文件演示了如何使用一致性 (C-) 统计数据对预测模型性能进行 Meta 分析。 <br><br> <i> 数据来自于 R package metamisc. <\/i>",
+            "kind": "file",
+            "associated_datafile": "EuroSCORE II.csv"
+          },
+          {
+            "name": "Precognition",
+            "path": "Precognition.jasp",
+            "description": "Daryl J. Bem 于 2011 年发表的臭名昭著的文章“感受未来：对认知和情感的异常追溯影响的实验证据”的估计摘要。 <br><br> 示例 JASP 文件演示了 PET-PEESE 偏倚的使用。<br><br> <i> 数据来自于 R package RoBMA. <\/i>",
+            "kind": "file",
+            "associated_datafile": "Precognition.csv"
+          },
+          {
+            "name": "Acculturation Mismatch and Intergenerational Cultural Conflict",
+            "path": "Acculturation Mismatch and Intergenerational Cultural Conflict.jasp",
+            "description": "关于文化适应不匹配与代际文化冲突之间关系的 Meta 分析数据集。 <br><br> 示例 JASP 文件演示了 PET-PEESE、选择模型和稳健贝叶斯 Meta 分析的使用和报告。<br><br> <i>数据来自 Lui (2015).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Acculturation Mismatch and Intergenerational Cultural Conflict.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "12. Network Analysis",
+        "path": "12. Network Analysis",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "BFI Network",
+            "path": "BFI Network.jasp",
+            "description": "2800 名参与者对 25 个大五库存项目的回复。 <br><br> 示例 JASP 文件演示了网络分析的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "BFI Network.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "13. Reliability",
+        "path": "13. Reliability",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Fear of Statistics",
+            "path": "Fear of Statistics.jasp",
+            "description": "2571 名学生对 SPSS 焦虑问卷的回答。 <br><br> 示例 JASP 文件演示了经典单维可靠性分析的使用。<br><br> <i>Andy Field 制作的虚拟数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Fear of Statistics.csv"
+          },
+          {
+            "name": "ASRM - Mania Scale",
+            "path": "ASRM - Mania Scale.jasp",
+            "description": "78 名参与者对 Nicolai & Moshagen (2018) 的 Altman 自评躁郁症量表 (ASRM) 的反应。 该文件演示了贝叶斯单维可靠性分析的使用",
+            "kind": "file",
+            "associated_datafile": "ASRM - Mania Scale.csv"
+          },
+          {
+            "name": "Interrater Data from Shrout and Fleiss (1979)",
+            "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+            "description": "来自 Shrout 和 Fleiss (1979) 关于 ICC 的论文的假设数据集。 该文件演示了经典类内相关系数的使用",
+            "kind": "file",
+            "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "14. SEM",
+        "path": "14. SEM",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Political Democracy",
+            "path": "Political Democracy.jasp",
+            "description": "1960 年的工业化指标以及 1960 年和 1965 年的政治民主指标。 <br><br> 示例 JSP 文件演示了结构方程建模的使用。<br><br> <i>数据来源于 R 软件<\/i>",
+            "kind": "file",
+            "associated_datafile": "Political Democracy.csv"
+          },
+          {
+            "name": "Grand Point Average",
+            "path": "Grand Point Average.jasp",
+            "description": "Grand Point 6 个学期 200 名大学生的平均分，以及有关性别、高中 GPA 以及他们是否被自己选择的大学录取的信息。 <br><br> JASP 文件当前不包含任何分析。 <br><br> <i>数据来自 Hox, Moerbeek, and Van de Schoot (2017).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Grand Point Average.csv"
+          },
+          {
+            "name": "Social Participation",
+            "path": "Social Participation.jasp",
+            "description": "社会参与的衡量（教会成员资格、志愿组织的成员资格以及见过的朋友数量），以及对社会互动的潜在原因（收入、职业和教育）的衡量。 <br><br> JASP 文件当前不包含任何分析。 <br><br>  <i>模拟数据来自 Hodge and Treiman (1986).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Social Participation.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "15. Prophet",
+        "path": "15. Prophet",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "JASP Webpage Visits",
+            "path": "JASP Webpage Visits.jasp",
+            "description": "2020 年 1 月至 10 月 JASP 网站的访问量。<br><br> <i>数据由 JASP 团队收集<\/i>",
+            "kind": "file",
+            "associated_datafile": "JASP Webpage Visits.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "16. Circular Statistics",
+        "path": "16. Circular Statistics",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "El Nino",
+            "path": "El Nino.jasp",
+            "description": "夏威夷八月、七月和九月的风向测量。 <br><br> 示例 JASP 文件演示了循环描述的使用以及多个循环变量的比较。 <br><br> <i>虚拟数据来自 Aaron Bahde 基于 CC-BY 4.0 许可证。<\/i>",
+            "kind": "file",
+            "associated_datafile": "El Nino.csv"
+          }
+        ]
+      },
+      {
+        "name": "17. Mixed Models",
+        "path": "17. Mixed Models",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Larks and Owls",
+            "path": "Larks and Owls.jasp",
+            "description": "一天中不同时间持续注意力任务中的走神以及通过早晚问卷获得的时间型分类。<br><br> 示例 JASP 文件演示了广义线性混合模型的使用。<br><br> <i>Data from Opstal, Aslanov, and Schnelzer (2021).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Larks and Owls.csv"
+          }
+        ],
+        "debug": false
+      },
+        {
+        "name": "18. Quality Control",
+        "path": "18. Quality Control",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Type 1 Instrument Capability",
+            "path": "Type1InstrumentCapability.jasp",
+            "description": "包含同一主零件的 50 个连续测量值的数据集。 <br><br> 示例 JASP 文件演示了 Type 1 Instrument Capability 的使用。<br><br> <i>来自 SKF 的真实数据<\/i>",
+            "kind": "file",
+            "associated_datafile": "Type1InstrumentCapability.csv"
+          },
+          {
+            "name": "Linearity Study",
+            "path": "LinearityStudy.jasp",
+            "description": "数据集包含五个不同部件的 12 次重复测量以及每个部件的参考值。 <br><br> 示例 JASP 文件演示了线性研究的用法。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "LinearityStudy.csv"
+          },
+          {
+            "name": "Gauge r & R Study (Long Format)",
+            "path": "GaugerRLongFormat.jasp",
+            "description": "包含十个不同部分的长格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与长格式数据的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "GaugerRLongFormat.csv"
+          },
+          {
+            "name": "Gauge r & R Study (Wide Format)",
+            "path": "GaugerRWideFormat.jasp",
+            "description": "包含十个不同部分的宽格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与宽格式数据的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "GaugerRWideFormat.csv"
+          },
+          {
+            "name": "Gauge r & R Study for Non-Replicable Measurement Systems (Long Format)",
+            "path": "GaugerRNestedLongFormat.jasp",
+            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个部分只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个部件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据将所有测量值组织在一个列中。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与长格式数据的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "GaugerRNestedLongFormat.csv"
+          },
+          {
+            "name": "Gauge r & R Study for Non-Replicable Measurement Systems  (Wide Format)",
+            "path": "GaugerRNestedWideFormat.jasp",
+            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个零件只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个零件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据按行组织。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与宽格式数据的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "GaugerRNestedWideFormat.csv"
+          },
+          {
+            "name": "Attribute Agreement Analysis (Long Format)",
+            "path": "AttributesAgreementAnalysisLongFormat.jasp",
+            "description": "包含长格式的 15 个不同零件的二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的属性一致性分析。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "AttributesAgreementAnalysisLongFormat.csv"
+          },
+          {
+            "name": "Attribute Agreement Analysis (Wide Format)",
+            "path": "AttributesAgreementAnalysisWideFormat.jasp",
+            "description": "包含 15 个不同零件的宽格式二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的属性一致性分析。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
+          },
+          {
+            "name": "Range Method Study (Long Format)",
+            "path": "RangeMethodDataLongFormat.jasp",
+            "description": "包含长格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的范围方法研究。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "RangeMethodDataLongFormat.csv"
+          },
+          {
+            "name": "Range Method Study (Wide Format)",
+            "path": "RangeMethodDataWideFormat.jasp",
+            "description": "包含宽格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用范围方法研究来处理宽格式数据。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "RangeMethodDataWideFormat.csv"
+          },
+          {
+            "name": "Variables Charts for Subgroups (Long Format)",
+            "path": "SubgroupChartLongFormat.jasp",
+            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了使用长格式数据的子组变量图表。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "SubgroupChartLongFormat.csv"
+          },
+          {
+            "name": "Variables Charts for Subgroups (Wide Format)",
+            "path": "SubgroupChartWideFormat.jasp",
+            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的子组变量图表。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "SubgroupChartWideFormat.csv"
+          },
+          {
+            "name": "Variables Charts for Individuals",
+            "path": "IndividualChartStages.jasp",
+            "description": "包含一年内每个月产量的数据集。 添加指定每个月阶段的列。 <br><br> 示例 JASP 文件演示了个人变量图表的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "IndividualChartStages.csv"
+          },
+          {
+            "name": "Attributes Chart (P Chart)",
+            "path": "PAttributesChart.jasp",
+            "description": "包含 20 个月内检测到的缺陷数量以及相应（可变）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 P 图表的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "PAttributesChart.csv"
+          },
+          {
+            "name": "Attributes Chart (NP Chart)",
+            "path": "NPAttributesChart.jasp",
+            "description": "包含 20 个月内检测到的缺陷数量以及相应（固定）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 NP 图表的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "NPAttributesChart.csv"
+          },
+          {
+            "name": "Process Capability Study (Long Format)",
+            "path": "ProcessCapabilityStudyLongFormat.jasp",
+            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用长格式数据进行过程能力研究。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "ProcessCapabilityStudyLongFormat.csv"
+          },
+          {
+            "name": "Process Capability Study (Wide Format)",
+            "path": "ProcessCapabilityStudyWideFormat.jasp",
+            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了过程能力研究与宽格式数据的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "ProcessCapabilityStudyWideFormat.csv"
+          },
+          {
+            "name": "Analyze Design - Factorial Design",
+            "path": "FactorialDesignAnalysis.jasp",
+            "description": "包含在不同设置组合下运行的机器的产量的数据集。 <br><br> 示例 JASP 文件演示了因子设计分析的使用。<br><br> <i>来自 SKF 的综合数据。<\/i>",
+            "kind": "file",
+            "associated_datafile": "FactorialDesignAnalysis.csv"
+          },
+          {
+            "name": "Analyze Design - Response Surface Design",
+            "path": "ResponseSurfaceDesignAnalysis.jasp",
+            "description": "包含热处理零件椭圆度测量值的数据集，通过统计设计的实验进行研究，目的是提高产量。 <br><br> 示例 JASP 文件演示了响应面设计的分析。<br><br> <i>Real data from SKF.<\/i>",
+            "kind": "file",
+            "associated_datafile": "ResponseSurfaceDesignAnalysis.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "19. Survival",
+        "path": "19. Survival",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Leukemia",
+            "path": "Leukemia.jasp",
+            "description": "急性髓性白血病患者的生存时间。 <br><br> 示例 JASP 文件重现了 Melinda Mill (2011) “生存和事件历史分析简介”教科书中“第 4 章：非参数方法：Kaplan-Meier 估计器”的多个输出。 <br><br> <i>从 R 包生存中检索的数据集。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Leukemia.csv"
+          }
+        ]
+      },
+      {
+          "name": "20. Process",
+          "path": "20. Process",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Age and Fatigue",
+              "path": "Age and Fatigue.jasp",
+              "description": "年龄对听力相关疲劳的影响。 <br><br> 示例 JASP 文件演示了经典条件过程模型与因果关系检验的使用。 <br><br> <i>数据来自 McGarrigle et al. (2022).<\/i>",
+              "kind": "file",
+              "associated_datafile": "Age and Fatigue.csv"
+            },
+            {
+              "name": "Climate Change Disasters",
+              "path": "Climate Change Disasters.jasp",
+              "description": "将灾难归咎于气候变化的影响。 <br><br> 示例 JASP 文件演示了调节和调节中介分析的使用。 <br><br> <i>Data from Chapman & Lickel (2016).<\/i>",
+              "kind": "file",
+              "associated_datafile": "Climate Change Disasters.csv"
+            },
+            {
+              "name": "Presumed Media Influence",
+              "path": "Presumed Media Influence.jasp",
+              "description": "新闻投放对（假定的）意图形成的影响。 <br><br> 示例 JASP 文件演示了简单中介分析的使用。 <br><br> <i>数据来自 Tal-Or et al. (2010).<\/i>",
+              "kind": "file",
+              "associated_datafile": "Presumed Media Influence.csv"
+            }
+          ]
+      },
+      {
+        "name": "21. Miscellaneous",
+        "path": "21. Miscellaneous",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Anscombe's Quartet",
+            "path": "Anscombe's Quartet.jasp",
+            "description": "这是需要可视化数据的典型示例。 <br><br> 示例 JASP 文件演示了如何使用绘图而不是统计输出彻底检查数据。<br><br> <i>虚拟数据来自 Anscombe (1973).<\/i>",
+            "kind": "file",
+            "associated_datafile": "Anscombe's Quartet.csv"
+          },
+          {
+            "name": "The Datasaurus Dozen (Long)",
+            "path": "The Datasaurus Dozen (Long).jasp",
+            "description": "十二个变量对具有相同的汇总统计数据（即平均值、标准差和 Pearson 相关系数），但分布却截然不同。 <br><br> 示例 JASP 文件演示了数据可视化的使用。 <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+            "kind": "file",
+            "associated_datafile": "The Datasaurus Dozen (Long).csv"
+          },
+          {
+            "name": "The Datasaurus Dozen (Wide)",
+            "path": "The Datasaurus Dozen (Wide).jasp",
+            "description": "十二个变量对具有相同的汇总统计数据（即平均值、标准差和 Pearson 相关系数），但分布却截然不同。 <br><br> 示例 JASP 文件演示了数据可视化的使用。<br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+            "kind": "file",
+            "associated_datafile": "The Datasaurus Dozen (Wide).csv"
+          },
+          {
+            "name": "Missing Data",
+            "path": "Missing Data.jasp",
+            "description": "具有缺失值的合成数据。 <br><br> 示例 JASP 文件演示了缺失值的使用。<br><br> <i>虚构数据来自 Alexander Ly.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Missing Data.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "Debug Dataset (JASP Team, 2017)",
+        "path": "../debug.csv",
+        "description": "用于 JASP 调试，请阅读: is.gd/jaspdata",
+        "kind": "file",
+        "children": ["NULL"],
+        "debug": true
+      }
+    ]
+  }
+  
