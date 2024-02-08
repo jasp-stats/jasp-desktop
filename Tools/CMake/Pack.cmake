@@ -156,7 +156,7 @@ if(APPLE)
       notarise
       USES_TERMINAL
       COMMAND
-        xcrun altool --notarize-app --primary-bundle-id "org.jasp-stats.jasp"
+        xcrun altool --notarize-app --primary-bundle-id "org.jaspstats.jasp"
         --password "@keychain:AC_PASSWORD" --file
         "JASP/${CPACK_DMG_VOLUME_NAME}"
       COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")

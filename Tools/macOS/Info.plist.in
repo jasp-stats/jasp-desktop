@@ -34,7 +34,7 @@
 		<string>JASP</string>
 
 		<key>CFBundleIdentifier</key>
-		<string>org.jasp-stats.jasp</string>
+		<string>org.jaspstats.jasp</string>
 
 		<key>LSMinimumSystemVersion</key>
 		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
@@ -55,7 +55,7 @@
 				<key>UTTypeIconFile</key>
 				<string>Document</string>
 				<key>UTTypeIdentifier</key>
-				<string>org.jasp-stats.jasp.jasp</string>
+				<string>org.jaspstats.jasp.jasp</string>
 				<key>UTTypeTagSpecification</key>
 				<dict>
 					<key>public.filename-extension</key>
