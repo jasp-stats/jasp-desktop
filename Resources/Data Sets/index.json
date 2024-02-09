@@ -1154,7 +1154,15 @@
     {
       "name": "Debug Dataset (JASP Team, 2017)",
       "path": "../debug.csv",
-      "description": "For testing. Readme: is.gd/jaspdata",
+      "description": "For testing, also for R unit-tests, comma separated data. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"],
+      "debug": true
+    },
+    {
+      "name": "GUI Debug Dataset (JASP Team, 2024)",
+      "path": "../gui-debug.csv",
+      "description": "For testing csv import of JASP, it has some strange combination of comma and dot in floats, semicolon separated. Readme: is.gd/jaspdata",
       "kind": "file",
       "children": ["NULL"],
       "debug": true

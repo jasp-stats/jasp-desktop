@@ -214,7 +214,7 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 
 	if (error.error != QJsonParseError::NoError)
 	{
-		Log::log()  << "BackStageForm::loadExamples();  JSON parse error : " << error.errorString().toStdString()  << std::endl;
+		Log::log()  << "BackStageForm::loadExamples(" << index.fileName() << ");  JSON parse error (" << error.offset << ") : " << error.errorString().toStdString()  << std::endl;
 		return nullptr;
 	}
 
