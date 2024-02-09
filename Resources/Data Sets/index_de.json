@@ -794,7 +794,7 @@
           "description": "Zusammenfassung der Schätzungen aus dem berüchtigten Artikel von 2011 `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' von Daryl J. Bem. <br><br> Die JASP-Beispieldatei demonstriert die Verwendung einer PET-PEESE-Publikationsverzerrungsanpassung. <br><br> <i> Der Datensatz wurde aus dem R-Paket RoBMA abgerufen. <\/i>",
           "kind": "file",
           "associated_datafile": "Precognition.csv"
-        }
+        },
         {
           "name": "Acculturation Mismatch and Intergenerational Cultural Conflict",
           "path": "Acculturation Mismatch and Intergenerational Cultural Conflict.jasp",
