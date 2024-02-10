@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-10-06 13:45+0000\n"
-"Last-Translator: Giovanni Schettino <giannischettino00@gmail.com>\n"
+"PO-Revision-Date: 2024-02-11 19:01+0000\n"
+"Last-Translator: Alberto Dessì <websites.onstage058@passinbox.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
 "Language: it\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -156,16 +156,14 @@ msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr "Duplica questa analisi"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "Mostra informazioni su questa analisi"
+msgstr "Mostra informazioni per questa analisi."
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Elimina questa analisi"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
 msgstr "Ridimensiona dati/risultati"
