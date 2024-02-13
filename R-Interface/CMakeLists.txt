@@ -89,16 +89,13 @@ if(WIN32)
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
-  set(RSCRIPT_EXECUTABLE "${R_HOME_PATH}/bin/Rscript")
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
 
   set(RENV_PATH      "${JASP_BINARY_DIR}/_cache/R/renv_library/renv")
 
   set(R_CPP_INCLUDES_LIBRARY      "${JASP_BINARY_DIR}/R/R_cpp_includes_library")
-  set(FIND_PACKAGE_PATH_SCRIPT    "${CMAKE_SOURCE_DIR}/../Tools/find_package_path.R")
-  macro(find_package_path out libPath packageName)
-    execute_process(COMMAND ${RSCRIPT_EXECUTABLE} ${FIND_PACKAGE_PATH_SCRIPT} ${libPath} ${packageName} OUTPUT_VARIABLE ${out})
-  endmacro()
+  include(FindRPackagePath)
+
   find_package_path(RCPP_PATH       ${R_CPP_INCLUDES_LIBRARY} "Rcpp")
   find_package_path(RINSIDE_PATH    ${R_CPP_INCLUDES_LIBRARY} "RInside")
 
