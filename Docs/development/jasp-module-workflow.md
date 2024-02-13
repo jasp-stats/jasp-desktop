@@ -5,7 +5,7 @@ So you want to develop a module for JASP? Great!
 The easiest way to do so is downloading the latest [nightly for your system](http://static.jasp-stats.org/Nightlies/) or (a bit harder) [building jasp yourself](./jasp-building-guide.md). 
 
 ## Linux
-If you are on linux you can add the 'flathub-beta' repository with `flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo`. Then you can install the latest jasp beta as `flatpak install flathub-beta org.jaspstats.JASP` and run it as `flatpak run --branch=beta org.jaspstats.JASP`. It will remember which branch btw, so to go back to the "normal" jasp run `flatpak run --branch=stable org.jaspstats.JASP`.
+To develop on Linux you currently need to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
 
 ## Development Process
 Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats).
