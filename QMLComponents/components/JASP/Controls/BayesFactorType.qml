@@ -23,9 +23,17 @@ import JASP.Controls 1.0
 
 RadioButtonGroup
 {
-    title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"
+	title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"
 
-	RadioButton { label: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true; info: qsTr("Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis.") }
-	RadioButton { label: qsTr("BF\u2080\u2081")      ; name: "BF01"               ; info: qsTr("Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.") }
-	RadioButton { label: qsTr("Log(BF\u2081\u2080)") ; name: "LogBF10"            ; info: qsTr("Natural logarithm of BF10.") }
+	property string correlated:	"twoSided"
+
+	property string _sub0		: "\u2080"
+	property string _sub1		: "\u2081"
+	property string _subMin		: "\u208B"
+	property string _subPlus	: "\u208A"
+	property string _subSign	: correlated == "twoSided" ? _sub1 : (correlated == "greater" ? _subPlus : _subMin)
+
+	RadioButton { label: "BF" + _subSign + _sub0			; name: "BF10"; checked: true; info: qsTr("Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis.") }
+	RadioButton { label: "BF" + _sub0 + _subSign			; name: "BF01"               ; info: qsTr("Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.") }
+	RadioButton { label: "Log(BF" + _subSign + _sub0 + ")"	; name: "LogBF10"            ; info: qsTr("Natural logarithm of BF10.") }
 }
