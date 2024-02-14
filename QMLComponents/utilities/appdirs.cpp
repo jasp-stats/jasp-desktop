@@ -200,7 +200,7 @@ QString AppDirs::renvCacheLocations()
 	
 	QDir(renvRootLocation()).mkpath(renvCacheName); //create it if missing
 	
-	QString dynamicCache = renvRootLocation() + "/" + renvCacheName,
+	QString dynamicCache = renvRootLocation() + "/" + renvCacheName;
 	#ifdef FLATPAK_USED
 		QString staticCache = "/app/lib64/renv-cache/";
 	#else
