@@ -201,7 +201,11 @@ QString AppDirs::renvCacheLocations()
 	QDir(renvRootLocation()).mkpath(renvCacheName); //create it if missing
 	
 	QString dynamicCache = renvRootLocation() + "/" + renvCacheName,
-			staticCache  = processPath(programDir().absoluteFilePath("Modules/renv-cache"));
+	#ifdef FLATPAK_USED
+		QString staticCache = "/app/lib64/renv-cache/";
+	#else
+		QString staticCache = processPath(programDir().absoluteFilePath("Modules/renv-cache"));
+	#endif
 	
 	const QChar separator =
 #ifdef WIN32
