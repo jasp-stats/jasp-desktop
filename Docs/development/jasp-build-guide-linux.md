@@ -5,23 +5,36 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 ## Requirements
 
 - Libraries
-	- `boost (>=1.78)`
-	- `jsoncpp (>=1.9)`
+	- `autoconf`^1
+	- `bison`^1
+	- `boost (>=1.78)`^1
+	- `cmake (>3.21)`^1
+	- `gcc`^1
+	- `gcc-fortran`^1
+	- `git`^1
+	- `glpk`
+	- `flex`^1
+	- `jags`^1,2^
+	- `jsoncpp (>=1.9)`^1
 	- `libarchive (>=3.5)`
-	- `cmake (>3.21)`
-	- `openssl (1.1.1m)`
-	- `autoconf`
-	- `zlib`
-	- `bison`
-	- `flex`
+	- `openssl (1.1.1m)`^1
+	- `patchelf`^1
+	- `readstat`^2
+	- `V8` (for `jaspProcess`)
+	- `zlib`^1
 - Qt (>= 6.2)
 	- Qt Creator 7
+
+*1: make dependencies (i.e., required for building but not for running JASP)*
+
+*2: On Linux JASP's CMake script will download and install ReadStat and JAGS
+for you when necessary.*
 
 ### Installing Dependencies
 
 Based on your system, you can install the mentioned libraries using your package manager.
 
-On Ubuntu, you can use `apt`. 
+On Ubuntu, you can use `apt`.
 
 ```
 sudo apt install boost jsoncpp libarchive autoconf zlib cmake gfortran build-essential r-base
@@ -32,7 +45,11 @@ sudo apt install boost jsoncpp libarchive autoconf zlib cmake gfortran build-ess
 On Manjaro / Arch
 
 ```
-sudo pacman -Syu boost jsoncpp libarchive cmake zlib libarchive make autoconf qt6 gcc gcc-gfortran r
+sudo pacman -Syu autoconf bison boost cmake gcc gcc-fortran git glpk flex jags jsoncpp libarchive openssl patchelf r readstat zlib
+# Google's V8 is only available through the aur consider using an aur helper
+# Note that only jaspProcess requires V8 and V8 takes a lot of time to compile
+# To install it using the `yay` aur helper run:
+yay -Syu v8-r
 ```
 
 ### Qt Framework and Qt Creator
