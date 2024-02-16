@@ -9,3 +9,4 @@ MimeType=application/x-jaspstats-jasp
 StartupWMClass=org.jaspstats.JASP
 StartupNotify=true
 Icon=org.jaspstats.JASP
+Categories=Science;Education;DataVisualization
