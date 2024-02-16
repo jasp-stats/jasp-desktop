@@ -24,7 +24,6 @@
 			Indeed, the primary motivation for JASP is to make it easier for statistical practitioners to conduct Bayesian analyses.
 		</p>
 	</description>
-	<translation/>
 	<screenshots>
 		<screenshot type="default">
 			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
