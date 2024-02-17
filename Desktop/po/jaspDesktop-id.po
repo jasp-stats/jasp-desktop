@@ -170,10 +170,6 @@ msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "Faktor Bayes"
 
-msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "BF₁₀"
-
 #, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
@@ -183,10 +179,6 @@ msgstr ""
 "Faktor Bayes untuk menghitung bukti dari hipotesis alternatif dibandingkan "
 "terhadap hipotesis nol."
 
-msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "BF₀₁"
-
 #, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
@@ -195,10 +187,6 @@ msgid ""
 msgstr ""
 "Faktor Bayes untuk menghitung bukti dari hipotesis alternatif dibandingkan "
 "terhadap hipotesis nol."
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."

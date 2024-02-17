@@ -2161,10 +2161,6 @@ msgid "⌘ + Enter to apply"
 msgstr "⊞ Win + Enter para aplicar"
 
 msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "BF₁₀"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
@@ -2173,20 +2169,12 @@ msgstr ""
 "relação à hipótese nula."
 
 msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "BF₀₁"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
 "Fator Bayes para quantificar a evidência da hipótese nula em relação à "
 "hipótese alternativa."
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."

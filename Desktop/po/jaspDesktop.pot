@@ -166,27 +166,15 @@ msgid "Bayes Factor"
 msgstr ""
 
 msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr ""
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
 
 msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr ""
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
-msgstr ""
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
 msgstr ""
 
 msgctxt "BayesFactorType|"

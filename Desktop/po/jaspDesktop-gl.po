@@ -96,14 +96,6 @@ msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "Factor de Bayes"
 
-msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "FB₀₁"
-
-msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "FB₁₀"
-
 msgctxt "MessageForwarder|"
 msgid "Yes"
 msgstr "Si"
@@ -1540,10 +1532,6 @@ msgid ""
 msgstr ""
 "Factor de Bayes para cuantificar a evidencia da hipótese alternativa en "
 "relación á hipótese nula."
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(FB₁₀)"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"

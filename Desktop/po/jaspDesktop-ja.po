@@ -171,28 +171,16 @@ msgid "Bayes Factor"
 msgstr "ベイズファクター"
 
 msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "BF₁₀"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr "帰無仮説に対する対立仮説の証拠を定量化するためのベイズファクター."
 
 msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "BF₀₁"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr "帰無仮説に対する対立仮説の証拠を定量化するためのベイズファクター"
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."

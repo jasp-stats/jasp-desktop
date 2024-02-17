@@ -173,10 +173,6 @@ msgid "Bayes Factor"
 msgstr "Współczynnik Bayesa"
 
 msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "BF₁₀"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
@@ -185,20 +181,12 @@ msgstr ""
 "alternatywną w stosunku do hipotezy zerowej."
 
 msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "BF₀₁"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
 "Współczynnik Bayesa do ilościowego określenia dowodów na hipotezę zerową w "
 "stosunku do hipotezy alternatywnej."
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."

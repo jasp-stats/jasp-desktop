@@ -173,10 +173,6 @@ msgid "Bayes Factor"
 msgstr "Factor de Bayes"
 
 msgctxt "BayesFactorType|"
-msgid "BF₁₀"
-msgstr "FB₁₀"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
@@ -185,20 +181,12 @@ msgstr ""
 "relación a la hipótesis nula."
 
 msgctxt "BayesFactorType|"
-msgid "BF₀₁"
-msgstr "FB₀₁"
-
-msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
 "Factor de Bayes para cuantificar la evidencia de la hipótesis nula en "
 "relación a la hipótesis alternativa."
-
-msgctxt "BayesFactorType|"
-msgid "Log(BF₁₀)"
-msgstr "Log(FB₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
