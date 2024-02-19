@@ -204,7 +204,12 @@ QString AppDirs::renvCacheLocations()
 	#ifdef FLATPAK_USED
 		QString staticCache = "/app/lib64/renv-cache/";
 	#else
-		QString staticCache = processPath(programDir().absoluteFilePath("Modules/renv-cache"));
+	QString staticCache = processPath(programDir().absoluteFilePath("Modules/renv-cache"));
+	if(!QFile(staticCache).exists()) {
+		Log::log() << "Looks like this is a local build lets try to set the right static renv-cache path" << std::endl;
+		staticCache = processPath(programDir().absoluteFilePath("../Modules/renv-cache"));
+	}
+
 	#endif
 	
 	const QChar separator =
