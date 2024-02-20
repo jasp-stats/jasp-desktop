@@ -197,7 +197,8 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const Row
 		return Terms();
 	
 	Terms dropped;
-	dropped.setSortParent(availableModel()->allTerms());
+	if (availableModel())
+		dropped.setSortParent(availableModel()->allTerms());
 	dropped.set(terms);
 
 	Terms newTerms = dropped.combineTerms(JASPControl::CombinationType::CombinationCross);
