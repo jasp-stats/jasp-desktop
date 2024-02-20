@@ -50,7 +50,7 @@ void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms 
 		_addTerms(termsAdded);
 		endResetModel();
 
-		if (!_copyTermsWhenDropped)
+		if (!_copyTermsWhenDropped && availableModel())
 			availableModel()->removeTermsInAssignedList();
 	}
 
