@@ -170,6 +170,7 @@ QTC.ScrollView
 			{
 				id:				missingValueDataLabelItem
 				height:			missingValueDataLabelInput.height
+				width:			parent.width
 
 				Label
 				{
@@ -201,8 +202,8 @@ QTC.ScrollView
 
 			Item
 			{
-				width:	parent.width
-				height: missingValuesList.height
+				width:			parent.width
+				height:			missingValuesList.height
 
 				PrefsMissingValues
 				{
