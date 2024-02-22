@@ -52,6 +52,18 @@ sudo pacman -Syu autoconf bison boost cmake gcc gcc-fortran git glpk flex jags j
 yay -Syu v8-r
 ```
 
+On Fedora/RHEL
+
+```
+sudo dnf group install "C Development Tools and Libraries"
+sudo dnf install cairo-devel gsl-devel readline-devel readstat-devel gfortran libXt-devel libcurl-devel boost-devel lapack-devel libsqlite3x-devel openssl-devel libarchive-devel mesa-libGL-devel libxkbcommon-devel boost-static harfbuzz-devel fribidi-devel freetype-devel libpng-devel libtiff-devel libjpeg-devel cairo-devel mpfr-devel glpk-devel
+```
+
+We recommend you compile and install R from source to a location in your home folder and set this installation path in the `CUSTOM_R_PATH CMAKE` variable. 
+
+Additionally recommend you install JAGS from [source](https://mcmc-jags.sourceforge.io/) and do not make use of platform binaries which may be provided by your distro. If needed you can add the JAGS path to the `CMAKE_PREFIX_PATH` variable.
+
+
 ### Qt Framework and Qt Creator
 
 You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries and GUI. For this, 
