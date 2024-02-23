@@ -68,7 +68,7 @@ QString AboutModel::systemInfo()
     arguments << "SPSoftwareDataType SPHardwareDataType";
 #elif defined(__linux__)
     command = "bash";
-    arguments = << "-c" << "lshw -short";
+    arguments << "-c" << "lshw -short";
 #endif
 
     if(!AboutModel().visible())
