@@ -52,3 +52,44 @@ void AboutModel::setVisible(bool visible)
 	emit visibleChanged(_visible);
 }
 
+QString AboutModel::systemInfo()
+{
+    QString info;
+    QProcess process;
+    QString command;
+    QStringList arguments;
+
+#ifdef _WIN32
+    command = "powershell";
+    // so Windows use local code page and we change it to 65001 for print(will not available for global)
+    arguments << "-NoProfile" << "-Command" << "Write-Host \"Current code page\" chcp ; chcp 65001 ; systeminfo";
+#elif defined(__APPLE__)
+    command = "system_profiler";
+    arguments << "SPSoftwareDataType SPHardwareDataType";
+#elif defined(__linux__)
+    command = "bash";
+    arguments = << "-c" << "lshw -short";
+#endif
+
+    if(!AboutModel().visible())
+    {
+        info += "-------- Basic Info --------\n\n";
+        info += "Operating System: " + QSysInfo::prettyProductName() + "\n";
+        info += "Product Version: "  + QSysInfo::productVersion() + "\n";
+        info += "Kernel Type: "      + QSysInfo::kernelType() + "\n";
+        info += "Kernel Version: "   + QSysInfo::kernelVersion() + "\n";
+        info += "Architecture: "     + QSysInfo::currentCpuArchitecture() + "\n";
+        info += "Install Path: "     + QCoreApplication::applicationDirPath() + "\n";
+        info += "System Local: "     + QLocale::system().name() + "\n";
+
+        process.start(command, arguments);
+        process.waitForFinished(5000);
+
+        QByteArray outputData = process.readAllStandardOutput();
+        process.close();
+
+        info += "-------- Extra Info --------\n\n" + outputData;
+    }
+
+    return info;
+}
