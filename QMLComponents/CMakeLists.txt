@@ -10,6 +10,12 @@ add_library(QMLComponents ${SOURCE_FILES} ${HEADER_FILES})
 if(LINUX)
   target_link_libraries(QMLComponents PUBLIC ${_LIB_RT})
   target_link_options(QMLComponents PUBLIC -lrt)
+  if(LINUX_LOCAL_BUILD)
+    target_compile_definitions(QMLComponents PUBLIC LINUX_LOCAL_BUILD)
+  endif()
+  if(FLATPAK_USED)
+    target_compile_definitions(QMLComponents PUBLIC FLATPAK_USED)
+  endif()
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
