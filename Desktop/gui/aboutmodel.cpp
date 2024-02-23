@@ -62,13 +62,13 @@ QString AboutModel::systemInfo()
 #ifdef _WIN32
     command = "powershell";
     // so Windows use local code page and we change it to 65001 for print(will not available for global)
-    arguments << "-NoProfile" << "-Command" << "Write-Host \"Current code page\" chcp ; chcp 65001 ; systeminfo";
+    arguments << "-NoProfile" << "-Command" << "Write-Host \"Current code page\"; chcp ; chcp 65001 ; systeminfo";
 #elif defined(__APPLE__)
     command = "system_profiler";
     arguments << "SPSoftwareDataType SPHardwareDataType";
 #elif defined(__linux__)
     command = "bash";
-    arguments = << "-c" << "lshw -short";
+    arguments << "-c" << "lshw -short";
 #endif
 
     if(!AboutModel().visible())
