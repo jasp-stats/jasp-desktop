@@ -768,7 +768,7 @@ elseif(LINUX)
 
   message(CHECK_START "Looking for R.h")
   # ask R where it thinks it's include folder is
-  execute_process(COMMANDCOMMAND -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save -e "cat(R.home(\"include\"))" OUTPUT_VARIABLE R_INCLUDE_PATH)
+  execute_process(COMMAND command -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save -e "cat(R.home(\"include\"))" OUTPUT_VARIABLE R_INCLUDE_PATH)
   # if R returns a nonexisting directory, try some fallback locations
   if(NOT EXISTS ${R_INCLUDE_PATH})
     message(STATUS "R return an invalid include directory, trying fallbacks")
