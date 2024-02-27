@@ -54,6 +54,12 @@
             <uap:FileType>.jasp</uap:FileType>
             <uap:FileType>.csv</uap:FileType>
             <uap:FileType>.sav</uap:FileType>
+            <uap:FileType>.ods</uap:FileType>
+            <uap:FileType>.zsav</uap:FileType>
+            <uap:FileType>.xpt</uap:FileType>
+            <uap:FileType>.por</uap:FileType>
+            <uap:FileType>.dta</uap:FileType>
+            <uap:FileType>.sas7bdat</uap:FileType>
           </uap:SupportedFileTypes>
           <uap:Logo>Assets\Square44x44Logo.png</uap:Logo>
 
