@@ -92,7 +92,8 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
 										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
 										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2),
-										boost::bind(&Engine::createColumn,					this, _1));
+										boost::bind(&Engine::createColumn,					this, _1),
+										boost::bind(&Engine::deleteColumn,					this, _1));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 	
@@ -792,6 +793,22 @@ std::string Engine::createColumn(const std::string &columnName)
 
 	return rbridge_encodeColumnName(columnName.c_str());
 	
+}
+
+bool Engine::deleteColumn(const std::string &columnName)
+{
+	if(!isColumnNameOk(columnName))
+		return false;
+	
+	DataSet * data = provideAndUpdateDataSet();
+	Column  * col  = data->column(columnName);
+	
+	if(col->analysisId() != _analysisId)
+		return false;
+	
+	data->removeColumn(columnName);
+	
+	return true;
 }
 
 bool Engine::setColumnDataAsScale(const std::string &columnName, const std::vector<double> &scalarData)

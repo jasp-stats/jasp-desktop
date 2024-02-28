@@ -50,6 +50,7 @@ public:
 	int  		getColumnType(			const std::string & columnName);
 	int  		getColumnAnalysisId(	const std::string & columnName);
 	std::string createColumn(			const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
+	bool		deleteColumn(			const std::string & columnName);
 
 	//return true if changed:
 	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData);

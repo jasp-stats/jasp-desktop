@@ -63,6 +63,7 @@ extern "C" {
 	int							STDCALL rbridge_getColumnType			(const char * columnName);
 	int							STDCALL rbridge_getColumnAnalysisId		(const char * columnName);
 	const char *				STDCALL rbridge_createColumn			(const char * columnName);
+	bool						STDCALL rbridge_deleteColumn			(const char * columnName);
 	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
 	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
@@ -99,7 +100,8 @@ extern "C" {
 													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> ordinalSource,
 													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
 													std::function<bool			(const std::string &, const	std::vector<std::string>&)										> nominalTextSource,
-													std::function<std::string	(const std::string &)																		> createColumn);
+													std::function<std::string	(const std::string &)																		> createColumn,
+													std::function<bool			(const std::string &)																		> deleteColumn);
 	void rbridge_setGetDataSetRowCountSource(		std::function<int()> source);
 
 	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);

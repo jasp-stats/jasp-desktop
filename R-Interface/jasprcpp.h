@@ -100,6 +100,7 @@ typedef columnType		(*getColumnTypeFuncDef)		(std::string);
 typedef int				(*getColumnAnIdFuncDef)		(std::string);
 typedef bool			(*getColumnExistsFDef)		(std::string);
 typedef std::string		(*createColumnFuncDef)		(std::string);
+typedef bool			(*deleteColumnFuncDef)		(std::string);
 typedef std::string		(*enDecodeFuncDef)			(std::string);
 
 void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
@@ -111,6 +112,7 @@ columnType				jaspRCPP_getColumnType(			std::string columnName);
 bool					jaspRCPP_getColumnExists(		std::string columnName);
 int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
 std::string				jaspRCPP_createColumn(			std::string columnName);
+bool					jaspRCPP_deleteColumn(			std::string columnName);
 void					jaspRCPP_crashPlease();
 void					jaspRCPP_checkForCrashRequest();
 void					jaspRCPP_postProcessLocalPackageInstall(	SEXP moduleLibFileNames);

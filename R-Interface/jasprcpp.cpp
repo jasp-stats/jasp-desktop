@@ -38,6 +38,7 @@ RequestPredefinedFileSourceCB	requestStateFileSourceCB,
 
 DataSetRowCount					dataSetRowCount;
 CreateColumn					dataSetCreateColumn;
+DeleteColumn					dataSetDeleteColumn;
 GetColumnType					dataSetGetColumnType;
 SetColumnAsScale				dataSetColumnAsScale;
 SetColumnAsOrdinal				dataSetColumnAsOrdinal;
@@ -103,6 +104,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	dataSetColumnAsScale						= callbacks->dataSetColumnAsScale;
 	dataSetGetColumnType						= callbacks->dataSetGetColumnType;
 	dataSetCreateColumn							= callbacks->dataSetCreateColumn;
+	dataSetDeleteColumn							= callbacks->dataSetDeleteColumn;
 	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
 	readFullDataSetCB							= callbacks->readFullDataSetCB;
 	dataSetRowCount								= callbacks->dataSetRowCount;
@@ -169,6 +171,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static getColumnTypeFuncDef		_getColumnTypeFuncDef		= jaspRCPP_getColumnType;
 	static getColumnExistsFDef		_getColumnExistsFuncDef		= jaspRCPP_getColumnExists;
 	static createColumnFuncDef		_createColumnFuncDef		= jaspRCPP_createColumn;
+	static deleteColumnFuncDef		_deleteColumnFuncDef		= jaspRCPP_deleteColumn;
 	static getColumnAnIdFuncDef		_getColumnAnIdFuncDef		= jaspRCPP_getColumnAnalysisId;
 	static setColumnDataFuncDef		_setColumnDataAsScale		= jaspRCPP_setColumnDataAsScale;
 	static setColumnDataFuncDef		_setColumnDataAsOrdinal		= jaspRCPP_setColumnDataAsOrdinal;
@@ -182,6 +185,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	rInside[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef);
 	rInside[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef);
+	rInside[".deleteColumn"]					= Rcpp::XPtr<deleteColumnFuncDef>(	& _deleteColumnFuncDef);
 	rInside[".getColumnType"]					= Rcpp::XPtr<getColumnTypeFuncDef>(	& _getColumnTypeFuncDef);
 	rInside[".getColumnExists"]					= Rcpp::XPtr<getColumnExistsFDef>(	& _getColumnExistsFuncDef);
 	rInside[".getColumnAnalysisId"]				= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnAnIdFuncDef);
@@ -208,7 +212,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
 	//Pass a whole bunch of pointers to jaspBase
-	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
+	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .deleteColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setJaspLogFunction(	.logString					)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setSendFunc(			.sendToDesktopFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setPollMessagesFunc(	.pollMessagesFunction)");
@@ -713,6 +717,12 @@ std::string jaspRCPP_createColumn(std::string columnName)
 {
 	return dataSetCreateColumn(columnName.c_str());
 }
+
+bool jaspRCPP_deleteColumn(std::string columnName)
+{
+	return dataSetDeleteColumn(columnName.c_str());
+}
+
 
 bool jaspRCPP_getColumnExists(std::string columnName)
 {
@@ -1342,4 +1352,3 @@ SEXP jaspRCPP_CreateCaptureConnection()
 	UNPROTECT(1);
 	return rc;
 }
-

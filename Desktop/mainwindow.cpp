@@ -393,6 +393,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
+	connect(_engineSync,			&EngineSync::computeColumnRemoved,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnRemoved					);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError,									Qt::QueuedConnection); //To give the process some time to realize it has crashed or something
 	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_columnsModel,			&ColumnsModel::columnTypeChanged							);

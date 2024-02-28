@@ -97,6 +97,7 @@ signals:
 	void		filterErrorTextChanged(const QString & error);
 
 	void		computeColumnSucceeded(			const QString & columnName, const QString & warning, bool dataChanged);
+	void		computeColumnRemoved(			const QString & columnName);
 	void		computeColumnFailed(			const QString & columnName, const QString & error);
 	void		columnDataTypeChanged(			const QString & columnName);
 

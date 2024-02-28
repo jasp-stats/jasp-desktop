@@ -255,6 +255,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
 		connect(engine,						&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::computeColumnRemoved,			this,					&EngineSync::computeColumnRemoved,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
