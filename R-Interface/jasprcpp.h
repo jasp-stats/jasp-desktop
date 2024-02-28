@@ -59,11 +59,15 @@ void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
 void jaspRCPP_setLog(SEXP Message);
 
-Rcpp::String jaspRCPP_encodeColumnName(		const Rcpp::String & in);
-Rcpp::String jaspRCPP_decodeColumnName(		const Rcpp::String & in);
-Rcpp::String jaspRCPP_encodeAllColumnNames(	const Rcpp::String & in);
-Rcpp::String jaspRCPP_decodeAllColumnNames(	const Rcpp::String & in);
-std::string  jaspRCPP_nativeToUtf8(			const Rcpp::String & in);
+Rcpp::String	jaspRCPP_encodeColumnNameRcpp(	const	Rcpp::String & in);
+Rcpp::String	jaspRCPP_decodeColumnNameRcpp(	const	Rcpp::String & in);
+std::string		jaspRCPP_encodeColumnName(				std::string    in);
+std::string		jaspRCPP_decodeColumnName(				std::string    in);
+Rcpp::String	jaspRCPP_encodeAllColumnNames(	const	Rcpp::String & in);
+Rcpp::String	jaspRCPP_decodeAllColumnNames(	const	Rcpp::String & in);
+bool			jaspRCPP_shouldEncodeColumnName(		std::string    in);
+bool			jaspRCPP_shouldDecodeColumnName(		std::string    in);
+std::string		jaspRCPP_nativeToUtf8(			const	Rcpp::String & in);
 
 
 int jaspRCPP_dataSetRowCount();
@@ -90,11 +94,13 @@ typedef void (*sendFuncDef)(const char *);
 
 //Calls from jaspBase
 typedef void			(*logFuncDef)(const std::string &);
-typedef bool			(*setColumnDataFuncDef)	(std::string, Rcpp::RObject);
-typedef columnType		(*getColumnTypeFuncDef)	(std::string);
-typedef bool			(*getColumnExistsFDef)	(std::string);
-typedef int				(*getColumnAnIdFuncDef) (std::string);
-typedef std::string		(*createColumnFuncDef)	(std::string);
+typedef bool			(*shouldEnDecodeFuncDef)	(std::string);
+typedef bool			(*setColumnDataFuncDef)		(std::string, Rcpp::RObject);
+typedef columnType		(*getColumnTypeFuncDef)		(std::string);
+typedef int				(*getColumnAnIdFuncDef)		(std::string);
+typedef bool			(*getColumnExistsFDef)		(std::string);
+typedef std::string		(*createColumnFuncDef)		(std::string);
+typedef std::string		(*enDecodeFuncDef)			(std::string);
 
 void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
 

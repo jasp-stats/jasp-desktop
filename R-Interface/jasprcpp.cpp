@@ -50,6 +50,9 @@ EnDecodeDef						encodeColumnName,
 								encodeAllColumnNames,
 								decodeAllColumnNames;
 
+ShouldEnDecodeDef				shouldEncodeColumnName,
+								shouldDecodeColumnName;
+
 getColNames						getAllColumnNames;
 
 static logFlushDef				_logFlushFunction		= nullptr;
@@ -106,6 +109,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	runCallbackCB								= callbacks->runCallbackCB;
 	readDataSetCB								= callbacks->readDataSetCB;
 	getAllColumnNames							= callbacks->columnNames;
+	shouldEncodeColumnName						= callbacks->shouldEncode;
+	shouldDecodeColumnName						= callbacks->shouldDecode;
 	encodeAllColumnNames						= callbacks->encoderAll;
 	decodeAllColumnNames						= callbacks->decoderAll;
 	encodeColumnName							= callbacks->encoder;
@@ -127,8 +132,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".encodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
 	rInside[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rInside[".columnIsNominalText"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
-	rInside[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
-	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
+	rInside[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnNameRcpp);
+	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnNameRcpp);
 	rInside[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".allColumnNamesDataset"]			= Rcpp::InternalFunction(&jaspRCPP_allColumnNamesDataset);
@@ -160,15 +165,20 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".jaspVersion"]		= version;
 
 	//XPtr doesnt like it if it can't run a finalizer so here are some dummy variables:
-	static logFuncDef			_logFuncDef					= jaspRCPP_logString;
-	static getColumnTypeFuncDef _getColumnTypeFuncDef		= jaspRCPP_getColumnType;
-	static getColumnExistsFDef	_getColumnExistsFuncDef		= jaspRCPP_getColumnExists;
-	static createColumnFuncDef	_createColumnFuncDef		= jaspRCPP_createColumn;
-	static getColumnAnIdFuncDef _getColumnAnIdFuncDef		= jaspRCPP_getColumnAnalysisId;
-	static setColumnDataFuncDef _setColumnDataAsScale		= jaspRCPP_setColumnDataAsScale;
-	static setColumnDataFuncDef _setColumnDataAsOrdinal		= jaspRCPP_setColumnDataAsOrdinal;
-	static setColumnDataFuncDef _setColumnDataAsNominal		= jaspRCPP_setColumnDataAsNominal;
-	static setColumnDataFuncDef _setColumnDataAsNominalText	= jaspRCPP_setColumnDataAsNominalText;
+	static logFuncDef				_logFuncDef					= jaspRCPP_logString;
+	static getColumnTypeFuncDef		_getColumnTypeFuncDef		= jaspRCPP_getColumnType;
+	static getColumnExistsFDef		_getColumnExistsFuncDef		= jaspRCPP_getColumnExists;
+	static createColumnFuncDef		_createColumnFuncDef		= jaspRCPP_createColumn;
+	static getColumnAnIdFuncDef		_getColumnAnIdFuncDef		= jaspRCPP_getColumnAnalysisId;
+	static setColumnDataFuncDef		_setColumnDataAsScale		= jaspRCPP_setColumnDataAsScale;
+	static setColumnDataFuncDef		_setColumnDataAsOrdinal		= jaspRCPP_setColumnDataAsOrdinal;
+	static setColumnDataFuncDef		_setColumnDataAsNominal		= jaspRCPP_setColumnDataAsNominal;
+	static setColumnDataFuncDef		_setColumnDataAsNominalText	= jaspRCPP_setColumnDataAsNominalText;
+	static shouldEnDecodeFuncDef	_shouldEncodeColumnName		= jaspRCPP_shouldEncodeColumnName;
+	static shouldEnDecodeFuncDef	_shouldDecodeColumnName		= jaspRCPP_shouldDecodeColumnName;
+	
+	static enDecodeFuncDef			_encodeColumnName			= jaspRCPP_encodeColumnName;
+	static enDecodeFuncDef			_decodeColumnName			= jaspRCPP_decodeColumnName;
 
 	rInside[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef);
 	rInside[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef);
@@ -181,6 +191,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".setColumnDataAsOrdinalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal);
 	rInside[".setColumnDataAsNominalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal);
 	rInside[".setColumnDataAsNominalTextPtr"]	= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsNominalText);
+	rInside[".shouldEncodeColName"]				= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldEncodeColumnName);
+	rInside[".shouldDecodeColName"]				= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldDecodeColumnName);
+	rInside[".encodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _encodeColumnName);
+	rInside[".decodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _decodeColumnName);
 	rInside[".baseCitation"]					= baseCitation;
 	rInside[".numDecimals"]						= 3;
 	rInside[".fixedDecimals"]					= false;
@@ -194,7 +208,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//jaspRCPP_parseEvalQNT("options(encoding = 'UTF-8')");
 
 	//Pass a whole bunch of pointers to jaspBase
-	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .getColumnExists)");
+	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setJaspLogFunction(	.logString					)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setSendFunc(			.sendToDesktopFunction)");
 	jaspRCPP_parseEvalQNT("jaspBase:::setPollMessagesFunc(	.pollMessagesFunction)");
@@ -704,11 +718,18 @@ bool jaspRCPP_getColumnExists(std::string columnName)
 {
 	
 	size_t			cols;
-	const char **	names = getAllColumnNames(cols, false);
+	const char	**	decoded	= getAllColumnNames(cols, false);
 	
 	for(size_t i=0; i<cols; i++)
-		if(names[i] == columnName)
+		if(decoded[i] == columnName)
 			return true;
+	
+	//Maybe the R author already encoded the name?
+	const char	**	encoded = getAllColumnNames(cols, true); // This also changes `decoded` above, and in fact, `decoded == encoded` probably
+	for(size_t i=0; i<cols; i++)
+		if(encoded[i] == columnName)
+			return true;
+	
 	return false;
 }
 
@@ -1249,12 +1270,12 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
-Rcpp::String jaspRCPP_encodeColumnName(const Rcpp::String & in)
+Rcpp::String jaspRCPP_encodeColumnNameRcpp(const Rcpp::String & in)
 {
 	return encodeColumnName(std::string(in).c_str());
 }
 
-Rcpp::String jaspRCPP_decodeColumnName(const Rcpp::String & in)
+Rcpp::String jaspRCPP_decodeColumnNameRcpp(const Rcpp::String & in)
 {
 	return decodeColumnName(std::string(in).c_str());
 }
@@ -1267,6 +1288,26 @@ Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)
 Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 {
 	return decodeAllColumnNames(std::string(in).c_str());
+}
+
+bool jaspRCPP_shouldEncodeColumnName(std::string in)
+{
+	return shouldEncodeColumnName(in.c_str());
+}
+
+bool jaspRCPP_shouldDecodeColumnName(std::string in)
+{
+	return shouldDecodeColumnName(in.c_str());
+}
+
+std::string jaspRCPP_encodeColumnName(std::string in)
+{
+	return encodeColumnName(in.c_str());
+}
+
+std::string jaspRCPP_decodeColumnName(std::string in)
+{
+	return decodeColumnName(in.c_str());
 }
 
 // ------------------- Below here be dragons -------------------- //

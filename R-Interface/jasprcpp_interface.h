@@ -87,6 +87,7 @@ typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnNam
 typedef bool						(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
 typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
+typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
 typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encoded);
@@ -116,6 +117,8 @@ struct RBridgeCallBacks {
 									decoder,
 									encoderAll,
 									decoderAll;
+	ShouldEnDecodeDef				shouldEncode,
+									shouldDecode;
 	getColNames						columnNames;
 };
 

@@ -105,6 +105,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_decodeColumnName,
 		rbridge_encodeAllColumnNames,
 		rbridge_decodeAllColumnNames,
+		rbridge_shouldEncodeColumnName,
+		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames
 	};
 
@@ -177,6 +179,16 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 	else									out = ColumnEncoder::columnEncoder()->decode(in);
 
 	return out.c_str();
+}
+
+extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
+{
+	return ColumnEncoder::columnEncoder()->shouldEncode(in);
+}
+
+extern "C" bool STDCALL rbridge_shouldDecodeColumnName(const char * in)
+{
+	return ColumnEncoder::columnEncoder()->shouldDecode(in);
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
@@ -647,7 +659,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return int(columnType::unknown);
+		return rbridge_getColumnTypeEngine(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 	return rbridge_getColumnTypeEngine(colName);
@@ -656,7 +668,7 @@ extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return -1;
+		return  rbridge_getColumnAnalysisIdEngine(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 	return rbridge_getColumnAnalysisIdEngine(colName);
