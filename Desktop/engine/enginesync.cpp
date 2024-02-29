@@ -522,7 +522,7 @@ int EngineSync::sendFilter(const QString & generatedFilter, const QString & filt
 	else
 	{
 		_waitingFilter->requestId = ++_filterCurrentRequestID;
-		Log::log() << "waiting filter requestid	increased to " << _filterCurrentRequestID << std::endl;
+		Log::log() << "waiting filter requestid increased to " << _filterCurrentRequestID << std::endl;
 	}
 
 	return _filterCurrentRequestID;
