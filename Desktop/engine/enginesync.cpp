@@ -509,11 +509,21 @@ void EngineSync::process()
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
 	JASPTIMER_SCOPE(EngineSync::sendFilter);
+	
+	bool filterTheSame = _waitingFilter && (_waitingFilter->generatedfilter == generatedFilter && _waitingFilter->script == filter);
 
-	delete _waitingFilter;
-
-	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
-	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	if(!filterTheSame)
+	{
+		delete _waitingFilter;
+	
+		_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
+		Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	}
+	else
+	{
+		_waitingFilter->requestId = ++_filterCurrentRequestID;
+		Log::log() << "waiting filter requestid	increased to " << _filterCurrentRequestID << std::endl;
+	}
 
 	return _filterCurrentRequestID;
 }

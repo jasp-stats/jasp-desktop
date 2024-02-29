@@ -2710,13 +2710,18 @@ void DataSetPackage::checkDataSetForUpdates()
 	if(!_dataSet)
 		return;
 
-	stringvec changedCols;
+	stringvec changedCols, missingCols;
+	bool newCols = false, rowCountChanged = false;
 
-	if(_dataSet->checkForUpdates(&changedCols))
+	if(_dataSet->checkForUpdates(&changedCols, &missingCols, &newCols, &rowCountChanged))
 	{
+		Log::log()	<< "Updates found for DataSet " << _dataSet->id() 
+					<< "| missing cols: '" << tq(missingCols).join(",")
+					<< "' | changed cols: '" << tq(changedCols).join(",")
+					<< "' | " << (newCols ? " has new cols" : "") << (rowCountChanged ? "| rowcount changed |" : "|") << std::endl;
 		refresh();
 
-		emit datasetChanged(tq(changedCols), {}, {}, false, false);
+		emit datasetChanged(tq(changedCols), tq(missingCols), {}, newCols, rowCountChanged);
 	}
 }
 

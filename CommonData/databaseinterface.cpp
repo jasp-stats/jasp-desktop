@@ -83,7 +83,7 @@ void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFil
 		sqlite3_bind_int(stmt,	6, dataSetId);
 	};
 
-	Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
+	//Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
 
 	runStatements("UPDATE DataSets SET dataFilePath=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, revision=revision+1 WHERE id = ?;", prepare);
 }
@@ -109,7 +109,7 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, s
 		revision		= sqlite3_column_int(		stmt, 4);
 		dataSynch		= sqlite3_column_int(		stmt, 5);
 
-		Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
+		//Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
 	};
 
 	runStatements("SELECT dataFilePath, description, databaseJson, emptyValuesJson, revision, dataFileSynch FROM DataSets WHERE id = ?;", prepare, processRow);

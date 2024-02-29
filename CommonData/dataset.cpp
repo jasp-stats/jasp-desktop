@@ -124,10 +124,11 @@ void DataSet::removeColumn(const std::string & name)
 		if((*col)->name() == name)
 		{
 			(*col)->dbDelete();
+			delete *col;
+			
 			_columns.erase(col);
-
+				
 			incRevision();
-
 			return;
 		}
 }
@@ -335,22 +336,43 @@ void DataSet::incRevision()
 	}
 }
 
-bool DataSet::checkForUpdates(stringvec * colsChanged)
+bool DataSet::checkForUpdates(stringvec * colsChanged, stringvec * colsRemoved, bool * newColumns, bool * rowCountChanged)
 {
 	JASPTIMER_SCOPE(DataSet::checkForUpdates);
 
 	if(_dataSetID == -1)
 		return false;
-
+	
+	stringset prevCols;
+	for(Column * col : _columns)
+		prevCols.insert(col->name());
+	
+	size_t rowCountPrev = rowCount();
+	
+		
 	if(_revision != db().dataSetGetRevision(_dataSetID))
 	{
 		dbLoad();
+		
+		if(newColumns)
+			(*newColumns) = prevCols.size() < _columns.size();
+		
+		if(rowCountChanged)
+			(*rowCountChanged) = rowCountPrev != rowCount();
+		
 		if(colsChanged)
 		{
 			colsChanged->clear();
 			for(Column * col : _columns)
+			{
 				colsChanged->push_back(col->name());
+				prevCols.erase(col->name());
+			}
 		}
+		
+		if(colsRemoved)
+			(*colsRemoved) = stringvec(prevCols.begin(), prevCols.end());
+		
 		return true;
 	}
 	else
@@ -365,8 +387,17 @@ bool DataSet::checkForUpdates(stringvec * colsChanged)
 				if(colsChanged)
 					colsChanged->push_back(col->name());
 			}
+		
+		if(colsRemoved)
+			colsRemoved->clear();
+		
+		if(newColumns)
+			(*newColumns) = false;
+		
+		if(rowCountChanged)
+			(*rowCountChanged) = rowCountPrev != rowCount();
 
-		return somethingChanged;
+		return somethingChanged || (rowCountChanged && *rowCountChanged);
 	}
 }
 
