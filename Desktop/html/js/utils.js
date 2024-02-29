@@ -1,4 +1,4 @@
-function formatColumn(column, type, format, alignNumbers, combine, modelFootnotes, html = true) {
+function formatColumn(column, type, format, alignNumbers, combine, modelFootnotes, html = true, errorOnMixed = false) {
 	/**
 	 * Prepares the columns of a table to the required format
 	 * @param column
@@ -8,15 +8,33 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	 * @param combine
 	 * @param modelFootnotes
 	 * @param html           html render or latex code. Default is true
+	 * @param errorOnMixed   internal, used to avoid infinite loops
 	 */
 
 	let columnCells = Array(column.length);
 
-	if (type === "string" || typeof format == "undefined") {
+	if (type === "mixed") {
+
+		if (errorOnMixed) {
+			// or throw an error? But how?
+			return "Error: nested mixed columns are not supported!";
+		}
+
+		// call formatColumn for each row of the mixed column
+		for (let rowNo = 0; rowNo < column.length; rowNo++) {
+			// we need to construct the array [column[rowNo].content.value] because column.length otherwise does not exist.
+			columnCells[rowNo] = formatColumn([{content: column[rowNo].content.value}], column[rowNo].content.type, column[rowNo].content.format, alignNumbers, combine, modelFootnotes, html, true)[0];
+		}
+
+		return columnCells;
+
+	}
+
+	if (type === "string" || typeof format == "undefined" || format === null) {
 
 		for (let rowNo = 0; rowNo < column.length; rowNo++) {
 
-			let clazz = (type == "string") ? "text" : "number";
+			let clazz = (type === "string" && !errorOnMixed) ? "text" : "number";
 			let cell = column[rowNo];
 			let content = cell.content;
 			let formatted;
@@ -453,7 +471,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	}
 	else {
 
-		for (var rowNo = 0; rowNo < column.length; rowNo++) {
+		for (let rowNo = 0; rowNo < column.length; rowNo++) {
 
 			var cell = column[rowNo]
 			var content = cell.content
