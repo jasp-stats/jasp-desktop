@@ -37,7 +37,7 @@ target_include_directories(
   JASPEngine
   PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/CommonData
-         ${PROJECT_SOURCE_DIR}/Common
+         ${PROJECT_SOURCE_DIR}/jaspCommonLib
          # Conan
          #$<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
          #

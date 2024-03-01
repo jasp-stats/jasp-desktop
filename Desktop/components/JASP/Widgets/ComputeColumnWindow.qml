@@ -1,7 +1,7 @@
-import QtQuick			2.7
-import QtQuick.Controls 2.12
-import QtQuick.Layouts	1.3
-import JASP.Controls	1.0 as JaspControls
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import JASP.Controls	as JaspControls
 
 import "FilterConstructor"
 

@@ -16,8 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick
 import JASP
+import JASP.Controls
 
 
 FocusScope

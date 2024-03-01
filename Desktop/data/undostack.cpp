@@ -4,7 +4,7 @@
 #include "columnmodel.h"
 #include "filtermodel.h"
 #include "computedcolumnsmodel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "columnutils.h"
 
 UndoStack* UndoStack::_undoStack = nullptr;

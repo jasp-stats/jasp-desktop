@@ -1,6 +1,7 @@
-import QtQuick			2.12
-import QtQuick.Controls 2.12
-import JASP.Controls	1.0 as JaspControls
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP
+import JASP.Controls
 import "FilterConstructor"
 
 FocusScope
@@ -156,7 +157,7 @@ FocusScope
 				}
 			}
 
-			JaspControls.MenuButton
+			MenuButton
 			{
 				id:					helpEasyRectangularButton
 				height:				33 * jaspTheme.uiScale
@@ -171,7 +172,7 @@ FocusScope
 					top:			parent.top
 				}
 			}
-			JaspControls.MenuButton
+			MenuButton
 			{
 				id:					closeButton
 				height:				33 * jaspTheme.uiScale
@@ -188,7 +189,7 @@ FocusScope
 				}
 			}
 
-			JaspControls.RectangularButton
+			RectangularButton
 			{
 				id:			rRectangularButton
 				iconSource: jaspTheme.iconPath + "/R.png"
@@ -202,7 +203,7 @@ FocusScope
 				}
 			}
 
-			JaspControls.RectangularButton
+			RectangularButton
 			{
 				id:			showInactiveFilteredButtonEasy
 				iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
@@ -217,7 +218,7 @@ FocusScope
 				}
 			}
 
-			JaspControls.RectangularButton
+			RectangularButton
 			{
 				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
 
@@ -276,7 +277,7 @@ FocusScope
 					height:						implicitHeight * ratio
 				}
 
-				ScrollView
+				QTC.ScrollView
 				{
 					id:				filterScroller
 					anchors.fill:	parent
@@ -300,7 +301,7 @@ FocusScope
 						}
 
 
-						TextArea
+						QTC.TextArea
 						{
 							id:						filterGeneratedEdit
 							anchors.top:			filterGeneratedBox.top
@@ -314,11 +315,11 @@ FocusScope
 							onActiveFocusChanged:	if(!activeFocus) deselect()
 							font.pixelSize:         baseFontSize * preferencesModel.uiScale
 							font.family:			jaspTheme.fontCode.family
-							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
+							wrapMode:				QTC.TextArea.WrapAtWordBoundaryOrAnywhere
 
 						}
 
-						JaspControls.RectangularButton
+						RectangularButton
 						{
 							id:						resetAllGeneratedFilters
 							width:					dataSetModel.columnsFilteredCount > 0 ? height : 0
@@ -344,7 +345,7 @@ FocusScope
 						anchors.left:	parent.left
 						anchors.right:	parent.right
 
-						TextArea
+						QTC.TextArea
 						{
 
 							id:						filterEdit
@@ -353,7 +354,7 @@ FocusScope
 							onActiveFocusChanged:	if(!activeFocus) deselect()
 							font.family:			jaspTheme.fontCode.family
 							font.pixelSize:         baseFontSize * preferencesModel.uiScale
-							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
+							wrapMode:				QTC.TextArea.WrapAtWordBoundaryOrAnywhere
 							color:					jaspTheme.textEnabled
 
 							property bool changedSinceLastApply: text !== filterModel.rFilter
@@ -403,7 +404,7 @@ FocusScope
 				}
 			}
 
-			ScrollView
+			QTC.ScrollView
 			{
 				id:				filterErrorScroll
 				height:			filterWindow.minimumHeightTextBoxes
@@ -415,7 +416,7 @@ FocusScope
 					bottom: filterButtons.top
 				}
 
-				TextArea
+				QTC.TextArea
 				{
 					id:						filterError
 					color:					jaspTheme.red
@@ -455,7 +456,7 @@ FocusScope
 					bottom:		parent.bottom
 				}
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id:				easyRectangularButton
 					iconSource:		jaspTheme.iconPath + "/NotR.png"
@@ -470,7 +471,7 @@ FocusScope
 					}
 				}
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id:			showInactiveFilteredButtonR
 					iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
@@ -485,7 +486,7 @@ FocusScope
 					}
 				}
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id:			clearRectangularButton
 					iconSource: jaspTheme.iconPath + "eraser.png"
@@ -503,7 +504,7 @@ FocusScope
 					}
 				}
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id: applyFilter
 
@@ -521,7 +522,7 @@ FocusScope
 					toolTip:		filterEdit.changedSinceLastApply ? qsTr("Click to apply filter") : filterIsDefault ? qsTr("Filter is unchanged from default") : qsTr("Filter is already applied")
 				}
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id:				helpButton
 					iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -534,7 +535,7 @@ FocusScope
 				}
 
 
-				JaspControls.RectangularButton
+				RectangularButton
 				{
 					id:				closeRectangularButton
 					iconSource:		jaspTheme.iconPath + "cross.png"

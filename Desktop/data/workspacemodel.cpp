@@ -1,6 +1,6 @@
 #include "workspacemodel.h"
 #include "datasetpackage.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "gui/preferencesmodel.h"
 
 WorkspaceModel* WorkspaceModel::_singleton = nullptr;

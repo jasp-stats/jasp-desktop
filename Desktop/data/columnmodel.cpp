@@ -1,6 +1,6 @@
 #include "columnmodel.h"
 #include "jasptheme.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "datasettablemodel.h"
 #include "computedcolumnsmodel.h"
 

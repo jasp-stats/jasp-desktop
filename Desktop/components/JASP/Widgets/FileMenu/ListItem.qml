@@ -1,7 +1,6 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import JASP.Controls 1.0
-
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Controls
 
 FocusScope
 {
@@ -95,7 +94,7 @@ FocusScope
 				onDoubleClicked:	{}
 			}
 
-			ToolTip
+			QTC.ToolTip
 			{
 				id:			firstFileOrFolderTooltip
 				delay:		500
@@ -176,7 +175,7 @@ FocusScope
 				cursorShape:	Qt.PointingHandCursor
 			}
 
-			ToolTip
+			QTC.ToolTip
 			{
 				id:			datafileToolTip
 				delay:		500
@@ -233,7 +232,7 @@ FocusScope
 			onDoubleClicked:	{}
 		}
 
-		ToolTip
+		QTC.ToolTip
 		{
 			id:			commonToolTip
 			delay:		500

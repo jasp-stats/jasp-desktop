@@ -1,7 +1,7 @@
 #include "enginerepresentation.h"
 #include "gui/preferencesmodel.h"
-#include "utilities/messageforwarder.h"
-#include "utilities/qutils.h"
+#include "messageforwarder.h"
+#include "qutils.h"
 #include "utils.h"
 #include "log.h"
 

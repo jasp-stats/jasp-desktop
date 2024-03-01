@@ -1,5 +1,5 @@
 #include "changeremove.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 namespace Modules
 {

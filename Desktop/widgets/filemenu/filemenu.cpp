@@ -20,11 +20,11 @@
 
 #include <QFileInfo>
 #include "utilities/settings.h"
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	

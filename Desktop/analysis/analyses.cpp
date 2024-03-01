@@ -15,23 +15,15 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
-#include "analyses.h"
-#include "utilities/appdirs.h"
-#include "utilities/settings.h"
-#include "processinfo.h"
-#include "modules/ribbonmodel.h"
-#include "analysisform.h"
-
 #include <QFile>
 #include <QTimer>
 
-
-#include "utils.h"
-#include "tempfiles.h"
+#include "analyses.h"
+#include "utilities/settings.h"
+#include "modules/ribbonmodel.h"
 #include "log.h"
-
 #include "knownissues.h"
+#include "analysisformbase.h"
 
 using namespace std;
 using Modules::Upgrader;

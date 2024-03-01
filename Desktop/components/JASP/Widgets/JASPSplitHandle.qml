@@ -1,6 +1,6 @@
-import QtQuick			2.11
-import JASP.Widgets		1.0
-import QtQuick.Controls	6.0
+import QtQuick
+import JASP.Widgets
+import QtQuick.Controls
 
 //Only works vertically right now...
 

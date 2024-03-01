@@ -1,6 +1,6 @@
 #include "columnsmodel.h"
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "mainwindow.h"
 
 ColumnsModel * ColumnsModel::_singleton = nullptr;

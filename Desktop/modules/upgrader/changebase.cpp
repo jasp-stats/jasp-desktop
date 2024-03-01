@@ -1,4 +1,4 @@
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "changebase.h"
 #include "upgrade.h"
 

@@ -20,7 +20,8 @@ import QtQuick
 import QtWebEngine
 import QtWebChannel
 import JASP
-import QtQuick.Controls
+import JASP.Controls
+//import QtQuick.Controls
 
 Item
 {

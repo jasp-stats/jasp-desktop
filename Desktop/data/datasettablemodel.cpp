@@ -17,7 +17,7 @@
 //
 
 #include "datasettablemodel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 
 DataSetTableModel::DataSetTableModel(bool showInactive) 

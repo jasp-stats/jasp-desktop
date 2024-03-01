@@ -1,8 +1,8 @@
-import QtQuick			2.12
-import QtQuick.Window	2.12
-import QtWebEngine		1.8
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Window
+import QtWebEngine
+import JASP.Widgets
+import JASP.Controls
 
 Window
 {

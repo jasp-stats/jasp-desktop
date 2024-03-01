@@ -38,7 +38,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/json/*.cpp")
+file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/jaspCommonLib/json/*.cpp")
 list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
@@ -150,7 +150,7 @@ if(WIN32)
     R-Interface
     PUBLIC # JASP
            ${CMAKE_CURRENT_LIST_DIR}
-           ${PROJECT_SOURCE_DIR}/../Common
+           ${PROJECT_SOURCE_DIR}/../jaspCommonLib
            ${PROJECT_SOURCE_DIR}/../CommonData
            # R
            ${R_INCLUDE_PATH}
@@ -168,13 +168,12 @@ if(WIN32)
            #
            #${RTOOLS_LIB_JSONCPP_DLL}
            #
-           $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+           )
 
   target_compile_definitions(
     R-Interface
     PUBLIC JASP_R_INTERFACE_LIBRARY
            QT_NO_DEPRECATED_WARNINGS
-           $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
            $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
   target_compile_definitions(
@@ -194,9 +193,9 @@ else()
   target_include_directories(
     R-Interface
     PUBLIC # JASP
-           ${PROJECT_SOURCE_DIR}/Common
+           ${PROJECT_SOURCE_DIR}/jaspCommonLib
            ${PROJECT_SOURCE_DIR}/CommonData
-           ${PROJECT_SOURCE_DIR}/Common/json
+           ${PROJECT_SOURCE_DIR}/jaspCommonLib/json
            #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
            # R
            ${R_INCLUDE_PATH}
@@ -220,15 +219,13 @@ else()
            ${_LIB_RINSIDE}
            $<$<PLATFORM_ID:Linux>:${_LIB_R}>
            $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-           #
-           $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+       )
 
   target_compile_definitions(
     R-Interface
     PUBLIC JASP_R_INTERFACE_LIBRARY
            QT_NO_DEPRECATED_WARNINGS
 		   RCPP_NO_SUGAR
-           $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
            $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
   if(IWYU_EXECUTABLE AND RUN_IWYU)

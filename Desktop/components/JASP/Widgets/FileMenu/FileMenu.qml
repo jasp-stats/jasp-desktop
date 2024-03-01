@@ -1,10 +1,9 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
-
-import JASP.Controls 1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
 import JASP
-import FileOperation 1.0
+import JASP.Controls
+import FileOperation
 
 FocusScope
 {
@@ -153,7 +152,7 @@ FocusScope
 							}
 						}
 
-						ToolSeparator
+						QTC.ToolSeparator
 						{
 							id:					actionToolSeperator
 							anchors

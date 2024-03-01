@@ -24,14 +24,12 @@
 #include "version.h"
 
 #include "enginedefinitions.h"
-#include "controls/jaspcontrol.h"
 
 #include <set>
 #include "analysisbase.h"
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
-#include "utilities/qutils.h"
-#include "modules/upgrader/upgradechange.h"
+#include "qutils.h"
 #include <QFileSystemWatcher>
 #include <QQuickItem>
 
@@ -110,8 +108,8 @@ public:
 	const	Json::Value		&	imgOptions()		const				{ return _imgOptions;						}
 	const	Json::Value		&	imgResults()		const				{ return _imgResults;						}
 	Modules::DynamicModule	*	dynamicModule()		const				{ return _dynamicModule;					}
-			AnalysisForm	*	form()				const				{ return _analysisForm;						}
-			bool				hasForm()			const				{ return _analysisForm;						}
+			AnalysisFormBase*	form()				const;
+			bool				hasForm()			const				{ return _analysisForm != nullptr;			}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form();	}
 			bool				beingTranslated()						{ return _beingTranslated; };

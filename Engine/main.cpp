@@ -22,8 +22,6 @@
 #include <fstream>
 #include <codecvt>
 #include "otoolstuff.h"
-#include "rbridge.h"
-#include "utils.h"
 #include "dirs.h"
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>

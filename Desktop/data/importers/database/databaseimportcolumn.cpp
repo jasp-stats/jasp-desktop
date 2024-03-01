@@ -1,5 +1,5 @@
 #include "databaseimportcolumn.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 DatabaseImportColumn::DatabaseImportColumn(ImportDataSet* importDataSet, std::string name, QMetaType type) 
 	: ImportColumn(importDataSet, name), _type(type)

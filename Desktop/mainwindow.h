@@ -25,7 +25,6 @@
 #include <QFileSystemWatcher>
 
 #include "analysis/analyses.h"
-#include "analysisform.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
@@ -49,12 +48,13 @@
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/reporter.h"
 #include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
 #include "data/workspacemodel.h"
+#include "messageforwarder.h"
 
 #include "utilities/languagemodel.h"
 #include <vector>

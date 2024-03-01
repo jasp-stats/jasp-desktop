@@ -28,7 +28,6 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/gui/preferencesmodel.cpp.in
 	           ${CMAKE_CURRENT_LIST_DIR}/gui/preferencesmodel.cpp)
 message(STATUS "preferencesmodel.cpp is successfully generated...")
 
-
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
@@ -48,7 +47,6 @@ qt_add_executable(
 set(
     QML_IMPORT_PATH
     "${PROJECT_SOURCE_DIR}/Desktop/components" 
-	"${PROJECT_SOURCE_DIR}/QMLComponents/components"
     CACHE
     PATH
     "Path used to locate CMake modules by Qt Creator"
@@ -93,9 +91,10 @@ target_include_directories(
     JASP
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
-    ${PROJECT_SOURCE_DIR}/Common
+    ${PROJECT_SOURCE_DIR}/jaspCommonLib
+    ${PROJECT_SOURCE_DIR}/jaspCommonLib/QtUtils
     ${PROJECT_SOURCE_DIR}/CommonData
-    ${PROJECT_SOURCE_DIR}/QMLComponents
+    #${PROJECT_SOURCE_DIR}/JASPQMLControlsPlugin
     # ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
     ${LIBREADSTAT_INCLUDE_DIRS}
@@ -109,9 +108,8 @@ target_include_directories(
 target_link_libraries(
     JASP
     PUBLIC
-    Common
+    CommonQt
     CommonData
-    QMLComponents
     Qt::Core
     Qt::Gui
     Qt::OpenGL

@@ -142,3 +142,9 @@
 [submodule "Modules/jaspSurvival"]
 	path = Modules/jaspSurvival
 	url = https://github.com/jasp-stats/jaspSurvival
+[submodule "jaspCommonLib"]
+	path = jaspCommonLib
+	url = https://github.com/jasp-stats/jaspCommonLib
+[submodule "jaspQMLControlsPlugin"]
+	path = jaspQMLControlsPlugin
+	url = https://github.com/jasp-stats/jaspQMLControlsPlugin

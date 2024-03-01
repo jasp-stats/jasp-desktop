@@ -1,5 +1,5 @@
 #include "helpmodel.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>

@@ -1,4 +1,4 @@
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 #define ENUM_DECLARATION_CPP
 #include "upgradestep.h"

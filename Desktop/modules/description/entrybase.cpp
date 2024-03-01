@@ -1,5 +1,5 @@
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "../analysisentry.h"
 #include "gui/preferencesmodel.h"
 

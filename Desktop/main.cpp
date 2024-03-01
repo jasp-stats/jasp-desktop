@@ -44,7 +44,7 @@ const std::string	jaspExtension		= ".jasp",
 
 #ifdef _WIN32
 #include "utilities/dynamicruntimeinfo.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 #include "utilities/processhelper.h"
 // This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode or remove-junction mode.
 // The junction-fixining mode is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere

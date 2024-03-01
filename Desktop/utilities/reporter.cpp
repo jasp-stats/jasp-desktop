@@ -2,7 +2,7 @@
 #include "QtCore/qdiriterator.h"
 #include "results/resultsjsinterface.h"
 #include "data/datasetpackage.h"
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include "gui/preferencesmodel.h"
 #include "analysis/analyses.h"
 #include <iostream>

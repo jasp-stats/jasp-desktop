@@ -18,8 +18,8 @@
 
 
 #include "ribbonmodel.h"
-#include "utilities/appdirs.h"
-#include "utilities/messageforwarder.h"
+#include "appdirs.h"
+#include "messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
 #include "jasptheme.h"

@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.15
-import QtQuick.Controls 2.15
+import QtQuick
 import JASP
+import JASP.Controls
 
 Item
 {

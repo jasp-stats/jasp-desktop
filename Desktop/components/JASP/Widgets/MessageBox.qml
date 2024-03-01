@@ -1,11 +1,10 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import JASP.Controls 1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Controls
 //import QtQuick.Dialogs 1.2
 
 
-Popup
-//MessageDialog
+QTC.Popup
 {
 	id: messageRoot
 
@@ -102,7 +101,7 @@ Popup
 			margins:		jaspTheme.generalAnchorMargin
 		}
 
-		TextArea
+		QTC.TextArea
 		{
 			id:						messageText
 			text:					"I should be changed, and I will be!"

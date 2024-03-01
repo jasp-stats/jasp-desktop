@@ -1,9 +1,9 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
+import QtQuick
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
 
-import JASP.Widgets 1.0
-import JASP.Controls 1.0
+import JASP.Widgets
+import JASP.Controls
 
 Item
 {
@@ -63,7 +63,7 @@ Item
 		}
 	}
 
-	ToolSeparator
+	QTC.ToolSeparator
 	{
 		id:				firstSeparator
 

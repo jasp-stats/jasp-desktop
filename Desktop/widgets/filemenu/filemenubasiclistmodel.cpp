@@ -4,7 +4,7 @@
 #include <QTimer>
 #include "log.h"
 #include "jasptheme.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {

@@ -1,6 +1,6 @@
-import JASP.Controls 1.0
-import QtQuick.Controls 2.2
-import QtQuick 2.9
+import JASP.Controls
+import QtQuick.Controls
+import QtQuick
 
 
 FocusScope

@@ -24,7 +24,7 @@
 #include <QPainter>
 #endif
 
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "gui/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
@@ -33,7 +33,7 @@
 #include "utilities/settings.h"
 #include <QMimeData>
 #include <QAction>
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include <QApplication>
 #include "gui/preferencesmodel.h"
 #include <QThread>

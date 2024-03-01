@@ -1,8 +1,8 @@
-import QtQuick			2.15
-import QtQuick.Controls 2.15
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Controls
 
-Popup
+QTC.Popup
 {
 	id:			popupRenameColumnDialog;
 	modal:		true;

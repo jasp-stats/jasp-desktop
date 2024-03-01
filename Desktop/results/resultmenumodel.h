@@ -22,7 +22,7 @@
 #include <QAbstractListModel>
 #include <QStringList>
 
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "results/resultmenuentry.h"
 
 /// Model for the custom menu in JASP. It is not just used in the results despite the name.

@@ -18,7 +18,7 @@
 
 #include "computer.h"
 #include <QDir>
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include "log.h"
 
 Computer::Computer(FileMenu *parent): FileMenuObject(parent)

@@ -28,7 +28,7 @@
 #include "tempfiles.h"
 #include "log.h"
 #include "utilenums.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <fstream>
 #include "appinfo.h"
 

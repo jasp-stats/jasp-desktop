@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.11
-import QtQuick.Controls 2.5
-import JASP.Controls	1.0 as JaspControls
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls
+import JASP.Controls	as JaspControls
+import JASP
 
 Item
 {
@@ -97,7 +97,7 @@ Item
 	TextField
 	{
 		id:							valueField
-		validator:					JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals }
+		validator:					JaspControls.JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals }
 		anchors
 		{
 			left:					minus.right

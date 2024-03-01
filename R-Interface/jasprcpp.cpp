@@ -17,7 +17,6 @@
 
 #include "jasprcpp.h"
 #include <fstream>
-#include "tempfiles.h"
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";

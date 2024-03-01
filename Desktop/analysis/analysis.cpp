@@ -21,14 +21,15 @@
 #include "appinfo.h"
 #include "dirs.h"
 #include "analyses.h"
-#include "analysisform.h"
-#include "utilities/qutils.h"
+#include "analysisformbase.h"
+#include "qutils.h"
 #include "log.h"
 #include "utils.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/reporter.h"
 #include "results/resultsjsinterface.h"
+#include "messageforwarder.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses(), moduleVersion),
@@ -332,10 +333,10 @@ void Analysis::createForm(QQuickItem* parentItem)
 
 	if (_analysisForm)
 	{
-		connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisForm::rSourceChanged				);
-		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
-		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
-		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
+		connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisFormBase::rSourceChanged				);
+		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisFormBase::refreshTableViewModels		);
+		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisFormBase::titleChanged					);
+		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisFormBase::needsRefreshChanged			);
 		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
 
 		setRSyntaxTextInResult();
@@ -657,6 +658,11 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emi
 	}
 
 	return editOptions;
+}
+
+AnalysisFormBase* Analysis::form() const
+{
+	return _analysisForm;
 }
 
 bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions)

@@ -1,5 +1,5 @@
-import QtQuick	2.12
-import JASP		1.0
+import QtQuick
+import JASP
 
 QtObject
 {

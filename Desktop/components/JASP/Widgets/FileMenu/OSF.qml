@@ -16,11 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.0
-import QtQuick.Controls 2.2
-
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Controls
+import JASP.Widgets
 
 //import QtQuick.Layouts  1.3
 
@@ -120,7 +119,7 @@ Item
 		sortMenuModel:	fileMenuModel.osf.sortedMenuModel
 	}
 
-	ToolSeparator
+	QTC.ToolSeparator
 	{
 		id			: firstSeparator
 		visible		: loggedin

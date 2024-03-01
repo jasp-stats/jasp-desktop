@@ -2,7 +2,7 @@
 #define FILTERMODEL_H
 
 #include <QObject>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "labelfiltergenerator.h"
 
 ///

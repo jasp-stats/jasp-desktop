@@ -25,7 +25,7 @@
 
 #include <boost/bind.hpp>
 
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utils.h"
 #include "osf/onlinedatamanager.h"
 #include "log.h"

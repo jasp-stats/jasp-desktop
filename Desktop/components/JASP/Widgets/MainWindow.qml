@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.11
-import QtQuick.Window	2.11
+import QtQuick
+import QtQuick.Window
 import JASP
-import QtQuick.Controls	2.12
+import QtQuick.Controls
 
 Window
 {

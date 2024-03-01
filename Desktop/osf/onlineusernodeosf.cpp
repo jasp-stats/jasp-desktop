@@ -8,7 +8,7 @@
 #include <QByteArray>
 #include <QEventLoop>
 #include <stdexcept>
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include "widgets/filemenu/osf.h"
 
 

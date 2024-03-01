@@ -39,32 +39,11 @@
 #include "processinfo.h"
 #include "columnutils.h"
 #include "mainwindow.h"
-
-#include "analysisform.h"
-#include "controls/jaspcontrol.h"
-#include "controls/checkboxbase.h"
-#include "controls/comboboxbase.h"
-#include "controls/textinputbase.h"
-#include "controls/componentslistbase.h"
-#include "controls/factorsformbase.h"
-#include "controls/inputlistbase.h"
-#include "controls/textareabase.h"
-#include "controls/sliderbase.h"
-#include "controls/expanderbuttonbase.h"
-#include "controls/variableslistbase.h"
-#include "controls/variablesformbase.h"
-#include "controls/factorlevellistbase.h"
-#include "controls/tableviewbase.h"
-#include "controls/radiobuttonbase.h"
-#include "controls/radiobuttonsgroupbase.h"
-#include "controls/jaspdoublevalidator.h"
-
-
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-#include "ALTNavigation/altnavigation.h"
-#include "ALTNavigation/altnavcontrol.h"
-#include "utilities/messageforwarder.h"
+//TODO: #include "ALTNavigation/altnavigation.h"
+//#include "ALTNavigation/altnavcontrol.h"
+#include "messageforwarder.h"
 
 #include "modules/activemodules.h"
 #include "modules/dynamicmodules.h"
@@ -76,15 +55,14 @@
 
 #include "resultstesting/compareresults.h"
 
-#include "utilities/qutils.h"
-#include "utilities/appdirs.h"
+#include "qutils.h"
+#include "appdirs.h"
 #include "utilities/settings.h"
-#include "utilities/qmlutils.h"
+#include "qmlutils.h"
 #include "utilities/reporter.h"
 
 #include "widgets/filemenu/filemenu.h"
-#include "rsyntax/formulabase.h"
-#include "utilities/desktopcommunicator.h"
+#include "desktopcommunicator.h"
 
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
@@ -163,38 +141,13 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
-	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
-
-	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"						);
-	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"						);
-	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"					);
-	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"						);
-	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"						);
-	qmlRegisterType<ExpanderButtonBase>							("JASP",		1, 0, "ExpanderButtonBase"				);
-	qmlRegisterType<CheckBoxBase>								("JASP",		1, 0, "CheckBoxBase"					);
-	qmlRegisterType<SliderBase>									("JASP",		1, 0, "SliderBase"						);
-	qmlRegisterType<TextInputBase>								("JASP",		1, 0, "TextInputBase"					);
-	qmlRegisterType<TextAreaBase>								("JASP",		1, 0, "TextAreaBase"					);
-	qmlRegisterType<ComboBoxBase>								("JASP",		1, 0, "ComboBoxBase"					);
-	qmlRegisterType<RadioButtonBase>							("JASP",		1, 0, "RadioButtonBase"					);
-	qmlRegisterType<RadioButtonsGroupBase>						("JASP",		1, 0, "RadioButtonsGroupBase"			);
-	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"				);
-	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"					);
-	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
-	qmlRegisterType<FactorLevelListBase>						("JASP",		1, 0, "FactorLevelListBase"				);
-	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
-	qmlRegisterType<VariablesFormBase>							("JASP",		1, 0, "VariablesFormBase"				);
-	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
-	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
-	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
-	qmlRegisterType<ColumnModel>								("JASP",		1, 0, "ColumnModel"						);
-	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
-	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
-	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
-
-	ALTNavigation::registerQMLTypes("JASP");
-	ALTNavControl::ctrl()->enableAlTNavigation(_preferences->ALTNavModeActive());
+	qmlRegisterUncreatableType<MessageForwarder>				("JASP",				1, 0, "MessageForwarder",	"You can't touch this"				);
+	qmlRegisterType<DataSetView>								("JASP",				1, 0, "DataSetView"						);
+	qmlRegisterType<JaspTheme>									("JASP",				1, 0, "JaspTheme"						);
+	qmlRegisterType<RCommander>									("JASP",				1, 0, "RCommander"						);
+	qmlRegisterType<ResultsJsInterface>							("JASP",				1, 0, "ResultsJsInterface"				);
+	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",		1, 0, "AxisModel",					"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",		1, 0, "PlotEditorModel",			"Can't make it");
 
 	_dynamicModules->registerQMLTypes();
 
@@ -404,7 +357,6 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::checkDataSetForUpdates,				_package,				&DataSetPackage::checkDataSetForUpdates,					Qt::QueuedConnection);
 
 	qRegisterMetaType<columnType>();
-	qRegisterMetaType<ListModel*>();
 	qRegisterMetaType<DbType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
@@ -481,7 +433,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
-	connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
+	// TODO: connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
 
@@ -583,31 +535,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 
-
-	bool	debug	= false,
-			isMac	= false,
-			isLinux = false;
-
-#ifdef JASP_DEBUG
-	debug = true;
-#endif
-
-#ifdef __APPLE__
-	isMac = true;
-#endif
-
-#ifdef __linux__
-	isLinux = true;
-#endif
-
-	bool isWindows = !isMac && !isLinux;
-
-	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
-	_qml->rootContext()->setContextProperty("MACOS",				isMac);
-	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
-	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
-	_qml->rootContext()->setContextProperty("INTERACTION_SEPARATOR", Term::separator);
-
 	_qml->setOutputWarningsToStandardError(true);
 
 	setQmlImportPaths();
@@ -705,6 +632,7 @@ void MainWindow::setQmlImportPaths()
 
 	QStringList newImportPaths = originalImportPaths;
 
+	newImportPaths.append(AppDirs::pluginsDir());
 	newImportPaths.append("qrc:///components");
 	newImportPaths.append(_dynamicModules->importPaths());
 

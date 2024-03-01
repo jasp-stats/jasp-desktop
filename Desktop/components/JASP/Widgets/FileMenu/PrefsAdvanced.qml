@@ -1,9 +1,9 @@
-import QtQuick			2.12
-import QtQuick.Controls 2.12
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import JASP.Widgets
+import JASP.Controls
 
-ScrollView
+QTC.ScrollView
 {
 	id:						scrollPrefs
 	focus:					true

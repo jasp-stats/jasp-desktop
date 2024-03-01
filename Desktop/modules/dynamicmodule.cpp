@@ -27,15 +27,15 @@
 #include "dynamicmodule.h"
 #include "dynamicmodules.h"
 #include <QRegularExpression>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "upgrader/upgrades.h"
-#include "utilities/appdirs.h"
+#include "appdirs.h"
 #include "utilities/settings.h"
-#include "utilities/messageforwarder.h"
+#include "messageforwarder.h"
 #include "utilities/languagemodel.h"
 #include "description/description.h"
 #include "utilities/extractarchive.h"
-#include "utilities/qmlutils.h"
+#include "qmlutils.h"
 #include "mainwindow.h"
 
 namespace Modules

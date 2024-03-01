@@ -1,5 +1,5 @@
 #include "databaseconnectioninfo.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <QSqlDatabase>
 #include <QSqlError>
 #include "log.h"

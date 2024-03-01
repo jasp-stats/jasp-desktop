@@ -1,10 +1,10 @@
-﻿import QtQuick				2.14
-import QtQuick.Controls		6.0
-import QtQuick.Layouts		1.3
-import JASP.Widgets			1.0		as	JASPW
-import JASP.Theme			1.0
-import JASP.Controls		1.0		as	JASPC
-import JASP.PlotEditor		1.0
+﻿import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import JASP.Widgets			as	JASPW
+import JASP.Theme
+import JASP.Controls		as	JASPC
+import JASP.PlotEditor
 
 Popup
 {

@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QDir>
 #include "dirs.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <QDirIterator>
 #include "results/resultsjsinterface.h"
 #include "modules/dynamicmodule.h"
