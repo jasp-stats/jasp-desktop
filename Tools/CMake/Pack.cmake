@@ -59,12 +59,6 @@ if(WIN32)
                  ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
 
   add_custom_target(
-    windowsPreInstallHacks
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    COMMAND cmd.exe /C windowsPreInstallHacks.cmd
-  )
-
-  add_custom_target(
     collect-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions.rds"
