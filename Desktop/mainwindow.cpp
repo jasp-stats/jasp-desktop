@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 //
 #include <QDir>
-
 #include <QFile>
 #include <QUrl>
 #include <QShortcut>
@@ -32,38 +31,26 @@
 #include <iostream>
 
 #include "log.h"
-#include "dirs.h"
 #include "timers.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "processinfo.h"
-#include "columnutils.h"
 #include "mainwindow.h"
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-//TODO: #include "ALTNavigation/altnavigation.h"
-//#include "ALTNavigation/altnavcontrol.h"
 #include "messageforwarder.h"
-
 #include "modules/activemodules.h"
 #include "modules/dynamicmodules.h"
-#include "modules/menumodel.h"
-#include "modules/description/entrybase.h"
-
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
-
 #include "resultstesting/compareresults.h"
-
 #include "qutils.h"
 #include "appdirs.h"
 #include "utilities/settings.h"
 #include "qmlutils.h"
 #include "utilities/reporter.h"
-
 #include "widgets/filemenu/filemenu.h"
 #include "desktopcommunicator.h"
-
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
 
@@ -433,7 +420,6 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
-	// TODO: connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
 

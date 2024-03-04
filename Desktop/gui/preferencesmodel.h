@@ -129,7 +129,7 @@ public:
 	void		zoomReset();
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
-	bool		ALTNavModeActive()						const;
+	bool		ALTNavModeActive()						const override;
 
 public slots:
 	bool useNativeFileDialog()					const;
