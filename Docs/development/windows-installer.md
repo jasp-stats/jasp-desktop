@@ -45,7 +45,7 @@ The generated MSIX for the Microsoft Store will be unsigned and must be provided
 The MSIXs can be generated after building JASP by running the following commands in your JASP build folder:
 
 ```
-cmake --build . --target windowsPreInstallHacks && cmake --build . --target install && cmake --build . --target collect-junctions && cmake --install . --component MSIX && cmake --build . --target msix
+cmake --build . --target install && cmake --build . --target collect-junctions && cmake --install . --component MSIX && cmake --build . --target msix
 ```
 
 This is subject to change, for an up to date sequence take a peak at the [buildbot-script](/Tools/windows/BuildBotScript.cmd).
