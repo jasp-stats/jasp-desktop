@@ -31,8 +31,6 @@ cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=D:/Qt
 
 cmake --build build --target all
 
-cmake --build build --target windowsPreInstallHacks
-
 cmake --build build --target install
 
 cmake --build build --target collect-junctions
