@@ -333,9 +333,6 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/CollectJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/windowsPreInstallHacks.cmd.in
-  ${CMAKE_BINARY_DIR}/windowsPreInstallHacks.cmd @ONLY)
-
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
