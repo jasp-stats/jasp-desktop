@@ -44,7 +44,7 @@ WavyWindow
 		}
 		
 		Column
-        {
+		{
 			spacing:					5 * preferencesModel.uiScale
 			anchors.horizontalCenter:	parent.horizontalCenter
 			width:						labelwidth * 4
@@ -102,7 +102,7 @@ WavyWindow
 			{
 				width:				parent.width
 		
-                Label
+				Label
 				{
 					id:				citationLabel
 					width:			aboutWindow.labelwidth
@@ -157,7 +157,7 @@ WavyWindow
 						}
 					}
 				}
-            }
+			}
 
 			Row
 			{

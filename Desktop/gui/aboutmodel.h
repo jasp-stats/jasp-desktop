@@ -21,7 +21,7 @@ class AboutModel : public QObject
 	Q_PROPERTY(QString	commit				READ commit												NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	commitUrl			READ commitUrl											NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	branch				READ branch												NOTIFY dummyNotifyBecauseWarNeverChanges	)
-    Q_PROPERTY(QString systemInfo           READ systemInfo                                         NOTIFY dummyNotifyBecauseWarNeverChanges	)
+	Q_PROPERTY(QString	systemInfo			READ systemInfo											NOTIFY dummyNotifyBecauseWarNeverChanges	)
 
 public:
 	explicit AboutModel(QObject *parent = nullptr) : QObject(parent) {}
@@ -38,7 +38,7 @@ public:
 	static	QString commit();
 	static	QString commitUrl()			{ return "https://github.com/jasp-stats/jasp-desktop/commit/" + commit(); }
 	static	QString branch();
-    static  QString systemInfo();
+	static  QString systemInfo();
 
 public slots:
 	void setVisible(bool visible);
