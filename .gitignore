@@ -79,5 +79,3 @@ R.framework/
 Modules/renv-root/
 Desktop/utilities/simplecryptkey.h
 Desktop/modules/activemodules.h
-Common/appinfo.cpp
-QMLComponents/utilities/appdirs.h

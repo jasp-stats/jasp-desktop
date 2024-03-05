@@ -106,7 +106,7 @@ public:
 	QString		currentThemeName()						const;
 	QString		languageCode()							const;
 	bool		disableAnimations()						const;
-	bool		animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
+	bool		animationsOn()							const override { return !disableAnimations() && !safeGraphics(); }
 	bool		generateMarkdown()						const;
 	QStringList allInterfaceFonts()						const { return _allInterfaceFonts; }
 	QStringList allCodeFonts()							const { return _allCodeFonts; }
@@ -218,7 +218,6 @@ signals:
 	void resultFontChanged(				QString		resultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
-	void languageCodeChanged();
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 	void disableAnimationsChanged(		bool		disableAnimations);
 	void generateMarkdownChanged(		bool		generateMarkdown);

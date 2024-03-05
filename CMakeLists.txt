@@ -52,7 +52,7 @@ project(
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
 
-#needed for R-Interface and QMLComponents for them to build stuff porperly when *inside* JASP
+#needed for R-Interface and jaspQMLControlsPlugin for them to build stuff porperly when *inside* JASP
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP TRUE)
 
