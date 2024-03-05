@@ -17,7 +17,7 @@ WavyWindow
 
 	title:					qsTr("About JASP")
 	width:					600 * jaspTheme.uiScale
-	height:					550 * jaspTheme.uiScale
+	height:					600 * jaspTheme.uiScale
 
 
 	property int labelwidth:	10 + Math.max(	jaspVersionLabel.implicitWidth,
@@ -158,8 +158,68 @@ WavyWindow
 					}
 				}
 			}
+
+			Row
+			{
+				width:                      parent.width
+				anchors.horizontalCenter:   parent.horizontalCenter
+
+				Rectangle
+				{
+					id:					debugInfoButton
+					z:                  15
+					color:				closebuttoncolor
+					radius:				5 * preferencesModel.uiScale
+					height:				25 * preferencesModel.uiScale
+					width:				parent.width * preferencesModel.uiScale
+
+					Text
+					{
+						id:                     copyInfoText
+						anchors.centerIn:		parent
+						text:					clicked ? qsTr("Copied to clipboard") : qsTr("Copy debug information")
+						color:					jaspTheme.white
+						horizontalAlignment:	Text.AlignHCenter
+						verticalAlignment:		Text.AlignVCenter
+
+						property bool clicked:  false
+					}
+
+					MouseArea
+					{
+						anchors.fill:			parent
+						cursorShape:			Qt.PointingHandCursor
+						focus:					true
+
+						property string _info: "-------- Application Info --------\n" +
+												"JASP Version: " + aboutModel.version + "\n" +
+												"Build Branch: " + aboutModel.branch + "\n" +
+												"Build Date: " + aboutModel.buildDate + "\n" +
+												"Last Commit: " + aboutModel.commit + "\n\n" +
+												aboutModel.systemInfo
+
+						onClicked:	(event) => {
+										resultsJsInterface.pushToClipboard("text/plain", _info, "")
+										debugInfoButton.color = jaspTheme.grayDarker
+										copyInfoText.clicked = true
+										changeButtonColorTimer.start()
+						}
+
+						Timer
+						{
+							id:				changeButtonColorTimer
+							interval:		1000
+							onTriggered:
+							{
+								debugInfoButton.color = closebuttoncolor
+								copyInfoText.clicked = false
+							}
+						}
+					}
+				}
+			}
 		}
-		
+
 		Text
 		{
 			id:						warrantyText
@@ -171,7 +231,7 @@ WavyWindow
 			width:					parent.width
 			horizontalAlignment:	Text.AlignHCenter
 		}
-	
+
 		Text
 		{
 			id:						openSourceText
@@ -180,7 +240,7 @@ WavyWindow
 			wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
 			width:					parent.width
 			horizontalAlignment:	Text.AlignHCenter
-	
+
 			MouseArea
 			{
 				id:				mouseAreaOpenSource
