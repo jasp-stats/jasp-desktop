@@ -73,14 +73,14 @@ QString AboutModel::systemInfo()
 
     if(!AboutModel().visible())
     {
-        info += "-------- Basic Info --------\n\n";
+        info += "-------- Basic Info --------\n";
         info += "Operating System: " + QSysInfo::prettyProductName() + "\n";
         info += "Product Version: "  + QSysInfo::productVersion() + "\n";
         info += "Kernel Type: "      + QSysInfo::kernelType() + "\n";
         info += "Kernel Version: "   + QSysInfo::kernelVersion() + "\n";
         info += "Architecture: "     + QSysInfo::currentCpuArchitecture() + "\n";
         info += "Install Path: "     + QCoreApplication::applicationDirPath() + "\n";
-        info += "System Local: "     + QLocale::system().name() + "\n";
+        info += "System Local: "     + QLocale::system().name() + "\n\n";
 
         process.start(command, arguments);
         process.waitForFinished(5000);
@@ -88,7 +88,8 @@ QString AboutModel::systemInfo()
         QByteArray outputData = process.readAllStandardOutput();
         process.close();
 
-        info += "-------- Extra Info --------\n\n" + outputData;
+		if(outputData.trimmed().length())
+			info += "-------- Extra Info --------\n" + outputData + "\n";
     }
 
     return info;

@@ -17,7 +17,7 @@ WavyWindow
 
 	title:					qsTr("About JASP")
 	width:					600 * jaspTheme.uiScale
-	height:					550 * jaspTheme.uiScale
+	height:					600 * jaspTheme.uiScale
 
 
 	property int labelwidth:	10 + Math.max(	jaspVersionLabel.implicitWidth,
@@ -191,11 +191,11 @@ WavyWindow
 						cursorShape:			Qt.PointingHandCursor
 						focus:					true
 
-						property string _info: "-------- Application Info --------\n\n" +
+						property string _info: "-------- Application Info --------\n" +
 												"JASP Version: " + aboutModel.version + "\n" +
 												"Build Branch: " + aboutModel.branch + "\n" +
 												"Build Date: " + aboutModel.buildDate + "\n" +
-												"Last Commit: " + aboutModel.commit + "\n" +
+												"Last Commit: " + aboutModel.commit + "\n\n" +
 												aboutModel.systemInfo
 
 						onClicked:	(event) => {
