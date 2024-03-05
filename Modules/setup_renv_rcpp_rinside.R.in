@@ -1,0 +1,65 @@
+# Generated from Tools/setup_renv_rcpp_rinside_jaspModuleInstaller.R.in
+#
+Sys.setenv(GITHUB_PAT          = "@GITHUB_PAT@")
+Sys.setenv(RENV_PATHS_ROOT     = "@MODULES_RENV_ROOT_PATH@")
+Sys.setenv(RENV_PATHS_CACHE    = "@MODULES_RENV_CACHE_PATH@")
+Sys.setenv(RENV_PATHS_SANDBOX  = "@RENV_SANDBOX@")
+Sys.setenv(JASPENGINE_LOCATION = "@JASP_ENGINE_PATH@/JASPEngine")
+
+
+RENV_LIBRARY                <- "@RENV_LIBRARY@"
+R_CPP_INCLUDES_LIBRARY      <- "@R_CPP_INCLUDES_LIBRARY@"
+JASPMODULEINSTALLER_LIBRARY <- "@JASPMODULEINSTALLER_LIBRARY@"
+PKGDEPENDS_LIBRARY          <- "@PKGDEPENDS_LIBRARY@"
+
+ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
+MODULES                <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
+TOOLS                  <- file.path("@PROJECT_SOURCE_DIR@", "Tools")
+
+# defines assignFunctionInRenv, getOS, and setupRenv
+source(file.path(ENGINE, "jaspModuleInstaller", "R", "renvOverrides.R"))
+
+mkdir <- function(paths) {
+  for (path in paths)
+    if (!dir.exists(path))
+      dir.create(path, recursive = TRUE)
+}
+
+mkdir(c(RENV_LIBRARY, R_CPP_INCLUDES_LIBRARY, JASPMODULEINSTALLER_LIBRARY))
+
+repos <- "https://packagemanager.posit.co/cran/latest"
+# alternative to 'http://cloud.r-project.org'
+
+if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
+  cat("Installing renv from CRAN\n")
+  install.packages(
+    pkgs         = "renv",
+    lib          = RENV_LIBRARY,
+    repos        ='http://cloud.r-project.org',
+    INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
+} else {
+  cat("renv already installed, not reinstalling\n")
+}
+
+# used by renv
+options(
+  install.opts                = "--no-multiarch --no-docs --no-test-load",
+  # these two could be added to setupRenv
+  renv.config.install.verbose = TRUE,
+  renv.config.ppm.default     = TRUE
+)
+
+.libPaths(RENV_LIBRARY)
+sandboxPaths <- renv:::renv_sandbox_activate()
+
+cat("Using sandbox paths:\n")
+for (path in sandboxPaths)
+  cat("    ", path, "\n", sep = "")
+
+cat("Restoring Rcpp & RInside\n")
+setupRenv(R_CPP_INCLUDES_LIBRARY)
+renv::restore(
+  library  = R_CPP_INCLUDES_LIBRARY,
+  lockfile = file.path(MODULES, "Rcpp_RInside.lock"),
+  clean    = TRUE
+)

@@ -157,37 +157,31 @@ execute_process(
           ${MODULES_BINARY_PATH}/)
 
 add_custom_target(
-  jaspBase
+  jaspModuleInstaller
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds)
+  DEPENDS ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller)
 
-configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
-	           ${SCRIPT_DIRECTORY}/install-jaspBase.R @ONLY)
+configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspModuleInstaller.R.in"
+                   ${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R @ONLY)
 
-# I'm using a custom_command here to make sure that jaspBase is installed once
-# and only once before everything else. So, `install-jaspBase.R` creates an empty
-# file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
-# it. If they find it, they proceed, if not, they trigger this custom command.
-# TODO:
-#   - [ ] The following commands can be turned into a function or a macro, but
-#         for now, I would like to keep a granular control over differnt steps
+# I'm using a custom_command here to make sure that jaspModuleInstaller is installed once
 if(APPLE)
-	add_dependencies(jaspBase JASPEngine)
+	add_dependencies(jaspModuleInstaller JASPEngine)
 
 	add_custom_command(
 	  WORKING_DIRECTORY ${R_HOME_PATH}
-	  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
-	  USES_TERMINAL
-	  COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-jaspBase.R
-	  COMMENT "------ Installing 'jaspBase'")
+          OUTPUT  ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
+          USES_TERMINAL
+          COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
+          COMMENT "------ Installing 'jaspModuleInstaller'")
 else()
 	add_custom_command(
 	  WORKING_DIRECTORY ${R_HOME_PATH}
-          OUTPUT ${R_HOME_PATH}/jaspBase_md5sums.rds
+          OUTPUT ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
 	  USES_TERMINAL
 	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-	          --file=${SCRIPT_DIRECTORY}/install-jaspBase.R
-	  COMMENT "------ Installing 'jaspBase'")
+                  --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
+          COMMENT "------ Installing 'jaspModuleInstaller'")
 endif()
   
   
@@ -221,7 +215,7 @@ if(APPLE)
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-	  DEPENDS	${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+          DEPENDS  ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
 	  COMMAND  ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-${MODULE}.R
       # COMMAND
       #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
@@ -239,7 +233,7 @@ else()
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${R_HOME_PATH}/jaspBase_md5sums.rds
+      DEPENDS ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
 	          --file=${SCRIPT_DIRECTORY}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
@@ -273,9 +267,7 @@ if(APPLE)
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS
-	    JASPEngine
-        ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
+      DEPENDS JASPEngine ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
         $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
 		COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-${MODULE}.R
@@ -293,10 +285,7 @@ else()
       ${MODULE}
       USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS
-        ${R_HOME_PATH}/jaspBase_md5sums.rds
-        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
-        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
+      DEPENDS ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}> $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
 	          --file=${SCRIPT_DIRECTORY}/install-${MODULE}.R
 
