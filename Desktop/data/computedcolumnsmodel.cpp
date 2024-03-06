@@ -175,6 +175,17 @@ void ComputedColumnsModel::revertToDefaultInvalidatedColumns()
 			DataSetPackage::pkg()->columnSetDefaultValues(col->name());
 }
 
+void ComputedColumnsModel::computeColumnRemoved(QString columnNameQ)
+{
+	std::string columnName	= columnNameQ.toStdString();
+
+	if(!dataSet())
+		return;
+	
+	dataSet()->checkForUpdates();
+}
+
+
 void ComputedColumnsModel::computeColumnSucceeded(QString columnNameQ, QString warningQ, bool dataChanged)
 {
 	std::string columnName	= columnNameQ.toStdString(),

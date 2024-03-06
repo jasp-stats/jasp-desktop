@@ -255,6 +255,7 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
 		connect(engine,						&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::computeColumnRemoved,			this,					&EngineSync::computeColumnRemoved,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
@@ -508,11 +509,21 @@ void EngineSync::process()
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
 	JASPTIMER_SCOPE(EngineSync::sendFilter);
+	
+	bool filterTheSame = _waitingFilter && (_waitingFilter->generatedfilter == generatedFilter && _waitingFilter->script == filter);
 
-	delete _waitingFilter;
-
-	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
-	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	if(!filterTheSame)
+	{
+		delete _waitingFilter;
+	
+		_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
+		Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	}
+	else
+	{
+		_waitingFilter->requestId = ++_filterCurrentRequestID;
+		Log::log() << "waiting filter requestid increased to " << _filterCurrentRequestID << std::endl;
+	}
 
 	return _filterCurrentRequestID;
 }

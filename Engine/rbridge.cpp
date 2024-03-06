@@ -41,6 +41,7 @@ std::function<DataSet *()						>	rbridge_dataSetSource				= NULL;
 std::function<size_t()							>	rbridge_getDataSetRowCount			= NULL;
 std::function<int(const std::string &)			>	rbridge_getColumnTypeEngine			= NULL;
 std::function<std::string(const std::string &)	>	rbridge_createColumnEngine			= NULL;
+std::function<bool(const std::string &)	>			rbridge_deleteColumnEngine			= NULL;
 std::function<int(const std::string &)			>	rbridge_getColumnAnalysisIdEngine	= NULL;
 
 
@@ -95,6 +96,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_requestJaspResultsFileSource,
 		rbridge_getColumnType,
 		rbridge_createColumn,
+		rbridge_deleteColumn,
 		rbridge_getColumnAnalysisId,
 		rbridge_setColumnAsScale,
 		rbridge_setColumnAsOrdinal,
@@ -105,6 +107,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_decodeColumnName,
 		rbridge_encodeAllColumnNames,
 		rbridge_decodeAllColumnNames,
+		rbridge_shouldEncodeColumnName,
+		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames
 	};
 
@@ -146,7 +150,8 @@ void rbridge_setColumnFunctionSources(			std::function<int 			(const std::string
 												std::function<bool			(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> ordinalSource,
 												std::function<bool			(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> nominalSource,
 												std::function<bool			(const std::string &, const	std::vector<std::string>&)										> nominalTextSource,
-												std::function<std::string	(const std::string &)																		> createColumnSource)
+												std::function<std::string	(const std::string &)																		> createColumnSource,
+												std::function<bool			(const std::string &)																		> deleteColumnSource)
 {
 	rbridge_getColumnTypeEngine					= getTypeSource;
 	rbridge_getColumnAnalysisIdEngine			= getAnalysisIdSource;
@@ -155,6 +160,7 @@ void rbridge_setColumnFunctionSources(			std::function<int 			(const std::string
 	rbridge_setColumnDataAsNominalEngine		= nominalSource;
 	rbridge_setColumnDataAsNominalTextEngine	= nominalTextSource;
 	rbridge_createColumnEngine					= createColumnSource;
+	rbridge_deleteColumnEngine					= deleteColumnSource;
 }
 
 void rbridge_setGetDataSetRowCountSource(std::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
@@ -177,6 +183,16 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 	else									out = ColumnEncoder::columnEncoder()->decode(in);
 
 	return out.c_str();
+}
+
+extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
+{
+	return ColumnEncoder::columnEncoder()->shouldEncode(in);
+}
+
+extern "C" bool STDCALL rbridge_shouldDecodeColumnName(const char * in)
+{
+	return ColumnEncoder::columnEncoder()->shouldDecode(in);
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
@@ -647,7 +663,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return int(columnType::unknown);
+		return rbridge_getColumnTypeEngine(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 	return rbridge_getColumnTypeEngine(colName);
@@ -656,7 +672,7 @@ extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return -1;
+		return  rbridge_getColumnAnalysisIdEngine(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 	return rbridge_getColumnAnalysisIdEngine(colName);
@@ -668,6 +684,11 @@ extern "C" const char * STDCALL rbridge_createColumn(const char * columnName)
 	lastColumnName = rbridge_createColumnEngine(columnName);
 
 	return lastColumnName.c_str();
+}
+
+extern "C" bool STDCALL rbridge_deleteColumn(const char * columnName)
+{
+	return rbridge_deleteColumnEngine(columnName);
 }
 
 extern "C" bool STDCALL rbridge_setColumnAsScale(const char* columnName, double * scalarData, size_t length)

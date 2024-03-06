@@ -617,17 +617,23 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 
 		if(memberset.count("columnName") > 0 && memberset.count("columnType") > 0 && memberset.count("dataChanged") > 0)
 		{
-			Log::log() << "The analysis reply contained information on changed computed columns: " << results.toStyledString() << std::endl;
+			//Log::log() << "The analysis reply contained information on changed computed columns: " << results.toStyledString() << std::endl;
 
 			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString()); This would work if jaspColumn wasn't defined in jaspColumn.h and Windows would not need to have that separately in a DLL... But it isn't really needed here anyway.
 			std::string		columnName	= results["columnName"].asString();
-			bool			dataChanged	= results["dataChanged"].asBool();
-			bool			typeChanged	= results["typeChanged"].asBool();
+			bool			dataChanged	= results["dataChanged"].asBool(),
+							typeChanged	= results["typeChanged"].asBool(),
+							removed 	= results["removed"]	.asBool();
 
-			emit computeColumnSucceeded(tq(columnName), "", dataChanged);
+			if(removed)
+				emit computeColumnRemoved(tq(columnName));
+			else
+			{
+				emit computeColumnSucceeded(tq(columnName), "", dataChanged);
 
-			if(typeChanged)
-				emit columnDataTypeChanged(tq(columnName));
+				if(typeChanged)
+					emit columnDataTypeChanged(tq(columnName));
+			}
 		}
 		else
 			for(const std::string & member : members)

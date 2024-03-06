@@ -33,7 +33,7 @@ Json::Value BoundControlBase::createMeta()  const
 { 
 	Json::Value meta(Json::objectValue);
 	
-	if (_isColumn || _control->encodeValue())	
+	if (_control->encodeValue())	
 		meta["shouldEncode"] = true;
 	
 	for(const std::string & key : _isRCode)

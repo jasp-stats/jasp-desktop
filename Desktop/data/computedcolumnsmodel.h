@@ -51,7 +51,8 @@ public:
 
 	static		ComputedColumnsModel * singleton()		{ return _singleton; }
 
-
+	
+	
 private:
 				void				revertToDefaultInvalidatedColumns();
 				void				validate(							const QString		& name);
@@ -77,6 +78,7 @@ signals:
 public slots:
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);
 				void	computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
+				void	computeColumnRemoved(QString columnNameQ);
 				void	computeColumnFailed(QString columnName, QString error);
 				void	checkForDependentColumnsToBeSentSlot(QString columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
 				void	recomputeColumn(QString columnName);

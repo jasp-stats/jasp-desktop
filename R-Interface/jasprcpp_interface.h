@@ -81,12 +81,14 @@ typedef bool						(STDCALL *RunCallbackCB)                (const char* in, int p
 typedef int							(STDCALL *GetColumnType)				(const char* columnName);
 typedef int							(STDCALL *GetColumnAnalysisId)			(const char* columnName);
 typedef const char *				(STDCALL *CreateColumn)					(const char* columnName);
+typedef bool						(STDCALL *DeleteColumn)					(const char* columnName);
 typedef bool						(STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
 typedef bool						(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
 typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
 typedef bool						(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
 typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
+typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
 typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encoded);
@@ -106,6 +108,7 @@ struct RBridgeCallBacks {
 	RequestPredefinedFileSourceCB	requestJaspResultsFileSourceCB;
 	GetColumnType					dataSetGetColumnType;
 	CreateColumn					dataSetCreateColumn;
+	DeleteColumn					dataSetDeleteColumn;
 	GetColumnAnalysisId				dataSetGetColumnAnalysisId;
 	SetColumnAsScale				dataSetColumnAsScale;
 	SetColumnAsOrdinal				dataSetColumnAsOrdinal;
@@ -116,6 +119,8 @@ struct RBridgeCallBacks {
 									decoder,
 									encoderAll,
 									decoderAll;
+	ShouldEnDecodeDef				shouldEncode,
+									shouldDecode;
 	getColNames						columnNames;
 };
 
