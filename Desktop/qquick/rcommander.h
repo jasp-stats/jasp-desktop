@@ -11,6 +11,8 @@ class EngineRepresentation;
 class RCommander : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
+
 	Q_PROPERTY(QString	output			READ output				WRITE setOutput		NOTIFY outputChanged			)
 	Q_PROPERTY(bool		running			READ running			WRITE setRunning	NOTIFY runningChanged			)
 	Q_PROPERTY(bool		isAnalysisCode	READ isAnalysisCode							NOTIFY isAnalysisCodeChanged	)

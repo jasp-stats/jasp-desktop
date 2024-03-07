@@ -129,10 +129,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	makeConnections();
 
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",				1, 0, "MessageForwarder",	"You can't touch this"				);
-	qmlRegisterType<DataSetView>								("JASP",				1, 0, "DataSetView"						);
+	qmlRegisterType<DataSetView>								("JASP.Controls",		1, 0, "DataSetView"						); // Register the real DataSetView in QML
 	qmlRegisterType<JaspTheme>									("JASP",				1, 0, "JaspTheme"						);
-	qmlRegisterType<RCommander>									("JASP",				1, 0, "RCommander"						);
-	qmlRegisterType<ResultsJsInterface>							("JASP",				1, 0, "ResultsJsInterface"				);
+	qmlRegisterType<RCommander>									("JASP.Widgets",		1, 0, "RCommander"						);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",		1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",		1, 0, "PlotEditorModel",			"Can't make it");
 

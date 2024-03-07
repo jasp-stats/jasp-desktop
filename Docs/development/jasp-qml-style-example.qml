@@ -11,7 +11,7 @@ import JASP.Widgets 	1.0
 Form 
 {				//Opening braces should on their own line and at the exact same indent as the closing brace.
 
-	GroupBox	//A subitem is indented and always has a space between the previous subitem/property/function
+	Group		//A subitem is indented and always has a space between the previous subitem/property/function
 	{
 		title:		qsTr("A nice grouping of elements") //putting qsTr(...) around string constants allows us to make the interface translatable.
 		

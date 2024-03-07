@@ -88,7 +88,7 @@ FocusScope
 
 					ALTNavigation.enabled:				true
 					ALTNavigation.scopeOnly:			true
-					ALTNavigation.strategy:				AssignmentStrategy.INDEXED
+					ALTNavigation.strategy:				JASP.INDEXED
 					ALTNavigation.requestedPostfix:		"A"
 
 					move: Transition

@@ -38,6 +38,7 @@ struct ItemContextualized
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( QAbstractItemModel	*	model					READ model					WRITE setModel					NOTIFY modelChanged					)
 	Q_PROPERTY( int						itemHorizontalPadding	READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )

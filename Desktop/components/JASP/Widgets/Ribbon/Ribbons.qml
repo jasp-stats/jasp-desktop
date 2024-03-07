@@ -17,7 +17,7 @@
 //
 
 import QtQuick
-import JASP
+import JASP.Widgets
 import JASP.Controls
 
 Item
@@ -133,7 +133,7 @@ Item
 
 		ALTNavigation.enabled:				true
 		ALTNavigation.scopeOnly:			true
-		ALTNavigation.strategy:				AssignmentStrategy.INDEXED
+		ALTNavigation.strategy:				JASP.INDEXED
 		ALTNavigation.requestedPostfix:		"M"
 
 		onDragStarted:					customMenu.hide()

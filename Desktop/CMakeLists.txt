@@ -94,7 +94,6 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/jaspCommonLib
     ${PROJECT_SOURCE_DIR}/jaspCommonLib/QtUtils
     ${PROJECT_SOURCE_DIR}/CommonData
-    #${PROJECT_SOURCE_DIR}/JASPQMLControlsPlugin
     # ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
     ${LIBREADSTAT_INCLUDE_DIRS}

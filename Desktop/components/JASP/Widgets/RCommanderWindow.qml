@@ -18,10 +18,9 @@
 
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
-import JASP
-import JASP.Widgets		as JW
-import JASP.Controls	as JC
+import QtQuick.Controls as QTC
+import JASP.Widgets
+import JASP.Controls
 
 Window
 {
@@ -108,7 +107,7 @@ Window
 					height:		Math.max(outputWindow.implicitHeight, outputScroll.height)
 					width:		outputScroll.width
 
-					TextArea
+					QTC.TextArea
 					{
 						id:					outputWindow
 						text:				rCmd.output
@@ -139,7 +138,7 @@ Window
 				}
 			}
 
-			JC.JASPScrollBar
+			JASPScrollBar
 			{
 				id:					vertScroll
 				flickable:			outputScroll
@@ -190,7 +189,7 @@ Window
 						width:					codeEntry.width
 						height:					codeEntry.implicitHeight
 
-						TextArea
+						QTC.TextArea
 						{
 							id:						codeEntry
 							font:					jaspTheme.fontRCode
@@ -228,7 +227,7 @@ Window
 					interactive:			false
 				}
 
-				JC.JASPScrollBar
+				JASPScrollBar
 				{
 					id:					codeEntryScrollbar
 					flickable:			codeEntryFlickable;
@@ -252,7 +251,7 @@ Window
 				}
 			}
 
-			JC.RoundedButton
+			RoundedButton
 			{
 				id:				runButton
 				text:			qsTr("Run code")
@@ -291,7 +290,7 @@ Window
 				}
 			}
 
-			JC.RoundedButton
+			RoundedButton
 			{
 				id:			addAnalysisItem
 				text:		qsTr("Add analysis")
@@ -310,7 +309,7 @@ Window
 				function addAnalysis() { if(addAnalysisItem.enabled && rCmd.addAnalysis(codeEntry.text)) codeEntry.text = ""; }
 			}
 
-			JC.RoundedButton
+			RoundedButton
 			{
 				id:			clearOutput
 				text:		qsTr("Clear output")
@@ -326,7 +325,7 @@ Window
 				}
 			}
 
-			JC.DropDown
+			DropDown
 			{
 				id:							selectModule
 				values:		 				dynamicModules.loadedModulesTitles
