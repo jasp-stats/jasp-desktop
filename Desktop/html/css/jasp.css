@@ -618,7 +618,6 @@ iframe.ql-video {
 	background-color: #ffffff;
 	z-index: 1;
 	border-radius: 5px;
-	min-height: 3.5em;
 	position: absolute;
 	left: 10px;
 }

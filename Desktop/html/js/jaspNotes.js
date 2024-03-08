@@ -271,7 +271,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
         this.$el.append(`<div id="editor"></div>`)
                 .append(`<div class="jasp-latex-container jasp-hide">
-                            <textarea class="jasp-latex-input" placeholder='${i18n("Enter LaTeX here")}'></textarea>
+                            <textarea class="jasp-latex-input" rows="7" cols="30" placeholder='${i18n("Input LaTeX here:")}
+								&bull; ${i18n("Press `Enter` to apply;")}
+								&bull; ${i18n("`Shift+Enter` for new line;")}'>
+								</textarea>
                             <div class="jasp-latex-preview" title='${i18n("Click to apply formula")}'><div></div></div>
                         </div>`)
 
@@ -402,6 +405,22 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				const _latexSvg = MathJax.tex2svg(_latexText)
 				latexPreview.get(0).replaceChildren(_latexSvg)
 			},
+			onSave: function (range, latexText) {
+				if (!range) {
+					range = self.$quill.getSelection(true);
+					index = range.index + range.length
+				}
+
+				self.$quill.insertEmbed(index, 'formula', latexText, 'user');
+				self.$quill.insertText(index + 1, ' ', 'user');
+				self.$quill.setSelection(index + 2, 'user');
+
+				if (self.oldBlot) {
+					self.oldBlot.remove();
+				}
+				self.oldBlot = null
+				range = null
+			},
 			onClose: function () {
 				latexContainer.addClass('jasp-hide');
 				latexInputBox.val('');
@@ -424,31 +443,32 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			lastMouseDownCoords = { x: e.clientX, y: e.clientY };
 		});
 
-		latexInputBox.on("blur", async (e) => {
+		latexInputBox.on("blur keydown", (e) => {
 
-			await new Promise(resolve => setTimeout(resolve, 100));
-			let _clickedElement;
-			if (lastMouseDownCoords) {
-				_clickedElement = document.elementFromPoint(lastMouseDownCoords.x, lastMouseDownCoords.y);
+			const latexText = latexInputBox.val();
+			
+			if (e.type === "blur") {
+
+				let _clickedElement;
+				if (lastMouseDownCoords) {
+					_clickedElement = document.elementFromPoint(lastMouseDownCoords.x, lastMouseDownCoords.y);
+				}
+				const _hasFormulaClicked = e.relatedTarget && e.relatedTarget.tagName === "MJX-CONTAINER";
+				if (_clickedElement && latexPreview.is(_clickedElement) || _hasFormulaClicked) {
+					self.handleLatexEditor.onSave(range, latexText);
+					self.handleLatexEditor.onClose();
+				} else {
+					self.handleLatexEditor.onClose();
+				}
 			}
-			const _hasFormulaClicked = e.relatedTarget && e.relatedTarget.tagName === "MJX-CONTAINER";
-			if (_clickedElement && latexPreview.is(_clickedElement) || _hasFormulaClicked) {
-				if (!range) {
-					range = self.$quill.getSelection(true);
-					index = range.index + range.length
-				}
 
-				self.$quill.insertEmbed(index, 'formula', latexInputBox.val(), 'user');
-				self.$quill.insertText(index + 1, ' ', 'user');
-				self.$quill.setSelection(index + 2, 'user');
-
-				if (self.oldBlot) {
-					self.oldBlot.remove();
-				}
-				self.oldBlot = null
-				range = null
+			if (e.key === "Enter" && !e.shiftKey) {
+				e.preventDefault(); 
+				self.handleLatexEditor.onSave(range, latexText);
 				self.handleLatexEditor.onClose();
-			} else {
+			} 
+			
+			if (e.key === 'Escape') {
 				self.handleLatexEditor.onClose();
 			}
 		});

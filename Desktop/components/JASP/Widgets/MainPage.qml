@@ -436,7 +436,8 @@ Item
 				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
 				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video"), "Unsupported video services" : qsTr("Unsupported video services"), 
 				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list."),
-				"Enter LaTeX here" : qsTr("Enter LaTeX here"), "Click to apply formula" : qsTr("Click to apply formula"), "Click to edit this formula" : qsTr("Click to edit this formula")
+				"Input LaTeX here:" : qsTr("Input LaTeX here:"),  "Press `Enter` to apply;" : qsTr("Press `Enter` to apply;"), "`Shift+Enter` for new line;" : qsTr("`Shift+Enter` for new line;"),
+				"Click to apply formula" : qsTr("Click to apply formula"), "Click to edit this formula" : qsTr("Click to edit this formula")
 
 			}
 
