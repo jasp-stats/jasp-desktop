@@ -84,6 +84,7 @@ public:
 
 	Q_INVOKABLE QString			getSourceType(QString name);
 	Q_INVOKABLE bool			areTypesAllowed(QStringList types);
+	Q_INVOKABLE columnType		getVariableType(const QString& name);
 
 			const QVariant&		source()					const			{ return _source;				}
 			const QVariant&		values()					const			{ return _values;				}
