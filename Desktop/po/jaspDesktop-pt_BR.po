@@ -5011,3 +5011,11 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Copied to clipboard"
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Copy debug information"
+msgstr ""

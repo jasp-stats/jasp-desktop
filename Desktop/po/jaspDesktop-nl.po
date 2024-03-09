@@ -5065,3 +5065,12 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr ""
+
+#, fuzzy
+msgctxt "AboutWindow|"
+msgid "Copied to clipboard"
+msgstr "Gekopieerd naar het klembord"
+
+msgctxt "AboutWindow|"
+msgid "Copy debug information"
+msgstr ""

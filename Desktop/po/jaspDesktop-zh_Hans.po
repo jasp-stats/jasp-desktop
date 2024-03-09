@@ -4909,3 +4909,12 @@ msgstr "重置加载变量的类型"
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr "缺失值设置"
+
+#, fuzzy
+msgctxt "AboutWindow|"
+msgid "Copied to clipboard"
+msgstr "已复制到剪贴板"
+
+msgctxt "AboutWindow|"
+msgid "Copy debug information"
+msgstr ""

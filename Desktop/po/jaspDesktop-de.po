@@ -5130,3 +5130,12 @@ msgstr "Die Typen geladener Variablen zurücksetzen"
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr "Einstellung fehlender Werte"
+
+#, fuzzy
+msgctxt "AboutWindow|"
+msgid "Copied to clipboard"
+msgstr "In Zwischenablage kopiert"
+
+msgctxt "AboutWindow|"
+msgid "Copy debug information"
+msgstr ""

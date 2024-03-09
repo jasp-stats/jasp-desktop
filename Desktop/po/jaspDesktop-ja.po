@@ -4999,3 +4999,12 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr ""
+
+#, fuzzy
+msgctxt "AboutWindow|"
+msgid "Copied to clipboard"
+msgstr "クリップボードにコピー"
+
+msgctxt "AboutWindow|"
+msgid "Copy debug information"
+msgstr ""
