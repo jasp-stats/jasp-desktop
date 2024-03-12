@@ -28,6 +28,7 @@ JASPMODULEINSTALLER_LIBRARY <- "@JASPMODULEINSTALLER_LIBRARY@"
 PKGDEPENDS_LIBRARY          <- "@PKGDEPENDS_LIBRARY@"
 RENV_LIBRARY                <- "@RENV_LIBRARY@"
 R_CPP_INCLUDES_LIBRARY      <- "@R_CPP_INCLUDES_LIBRARY@"
+JUNCTION_HANDLING_LIBRARY   <- "@JUNCTION_HANDLING_LIBRARY@"
 
 ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
 MODULES                <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
@@ -43,6 +44,17 @@ renv::restore(
 	lockfile = file.path(MODULES, "pkgdepends.lock"),
 	clean    = TRUE
 )
+
+cat("Restoring junction handling library\n")
+options(renv.config.cache.symlinks = FALSE)
+setupRenv(JUNCTION_HANDLING_LIBRARY)
+renv::restore(
+	library  = JUNCTION_HANDLING_LIBRARY,
+	lockfile = file.path(MODULES, "junctionBootstrap.lock"),
+	clean    = TRUE
+)
+options(renv.config.cache.symlinks = TRUE)
+
 
 cat("Restoring jaspModuleInstaller\n")
 setupRenv(JASPMODULEINSTALLER_LIBRARY)
@@ -88,6 +100,6 @@ if (!@IS_FLATPAK_USED@) {
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
 if (Sys.info()["sysname"] == "Darwin") {
-  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  source('@MODULES_BINARY_PATH@/Tools/symlinkTools.R')
   convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
 }

@@ -52,7 +52,7 @@ const std::string	jaspExtension		= ".jasp",
 bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
 {
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
-	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine();
+	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(true);
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
 
 	QProcess engine;
