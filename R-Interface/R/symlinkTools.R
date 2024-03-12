@@ -160,7 +160,7 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
               if(!startsWith(symPath, ".")) #if starts with dot it is already relative
                 symlinks[nrow(symlinks)+1, ] <<- list(linkLocation=path, linkTarget=relativeer(path, symPath), originalTarget=symPath)
             }
-            else if (depth < 2)
+            else if (depth < 6)
             {
               everything  <- list.files(path, recursive=FALSE, include.dirs=TRUE, all.files=FALSE, full.names=TRUE)
       
@@ -261,6 +261,7 @@ collectAndStoreJunctions <- function(buildfolder)
 
 restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
 {
+  print("Reached?!!!!111111")
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
   junctions <- readRDS(junctionRDSPath)
