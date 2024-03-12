@@ -24,12 +24,12 @@ set(JASP_TEST_MODULE	"jaspDescriptives"	CACHE STRING	"Which module other than ja
 if(NOT JASP_TEST_BUILD)
 	set(JASP_COMMON_MODULES
 		"jaspDescriptives"
-		"jaspTTests"
-		"jaspAnova"
-		"jaspMixedModels"
-		"jaspRegression"
-		"jaspFrequencies"
-		"jaspFactor"
+		# "jaspTTests"
+		# "jaspAnova"
+		# "jaspMixedModels"
+		# "jaspRegression"
+		# "jaspFrequencies"
+		# "jaspFactor"
 	)
 	
 	set(JASP_EXTRA_MODULES
@@ -152,9 +152,9 @@ message(STATUS "Installing Required R Modules...")
 execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
-          ${MODULES_BINARY_PATH}/
+          ${MODULES_BINARY_PATH}/Tools/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
-          ${MODULES_BINARY_PATH}/)
+          ${MODULES_BINARY_PATH}/Tools/)
 
 add_custom_target(
   jaspModuleInstaller

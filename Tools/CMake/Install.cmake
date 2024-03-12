@@ -336,6 +336,9 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecursiveJunctionRemover.cmd.in
+  ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd @ONLY)
+
   #msix stuff
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-store.xml @ONLY)
@@ -372,10 +375,21 @@ if(WIN32)
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
+  if(WIN32)    
+    install(
+      DIRECTORY ${CMAKE_BINARY_DIR}/Modules/Tools/
+      DESTINATION Modules/Tools
+      REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+      REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+    install(CODE "execute_process(
+      WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}/Install/Modules/Tools/
+      COMMAND cmd.exe /C ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd)")
+  endif()
+
   install(
     FILES ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
           ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
-    DESTINATION Modules/)
+    DESTINATION Modules/Tools/)
 
   install(
     FILES ${RTOOLS_LIBGCC_S_SEH_DLL}

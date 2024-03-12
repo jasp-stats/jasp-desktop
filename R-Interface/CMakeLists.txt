@@ -93,7 +93,7 @@ if(WIN32)
 
   set(RENV_PATH      "${JASP_BINARY_DIR}/_cache/R/renv_library/renv")
 
-  set(R_CPP_INCLUDES_LIBRARY      "${JASP_BINARY_DIR}/R/R_cpp_includes_library")
+  set(R_CPP_INCLUDES_LIBRARY      "${JASP_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
   include(FindRPackagePath)
 
   find_package_path(RCPP_PATH       ${R_CPP_INCLUDES_LIBRARY} "Rcpp")

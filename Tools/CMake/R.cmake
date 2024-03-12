@@ -814,9 +814,10 @@ elseif(LINUX)
 endif()
 
 set(RENV_LIBRARY                "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
-set(R_CPP_INCLUDES_LIBRARY      "${CMAKE_BINARY_DIR}/R/R_cpp_includes_library")
-set(JASPMODULEINSTALLER_LIBRARY "${CMAKE_BINARY_DIR}/R/jaspModuleInstaller_library")
-set(PKGDEPENDS_LIBRARY          "${CMAKE_BINARY_DIR}/R/pkgdepends_library")
+set(R_CPP_INCLUDES_LIBRARY      "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
+set(JASPMODULEINSTALLER_LIBRARY "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleInstaller_library")
+set(PKGDEPENDS_LIBRARY          "${CMAKE_BINARY_DIR}/Modules/Tools/pkgdepends_library")
+set(JUNCTION_HANDLING_LIBRARY   "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})

@@ -254,13 +254,16 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * module
 {
 	rinside = new RInside();
 	RInside &rInside = rinside->instance();
+
+	std::cout << "linkfolder: " << linkFolder << " " << junctionsFilePath << " " << modulesFolder << std::endl;
 	
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
 	
-	rinside->parseEvalQNT("source('Modules/symlinkTools.R')");
+	rinside->parseEvalQNT("source('Modules/Tools/symlinkTools.R')");
 	rInside["modulesFolder"] = modulesFolder;
 	rInside["symFolder"] = linkFolder;
 	rInside["junctionsFilePath"] = junctionsFilePath;
+	rinside->parseEvalQNT(".libPaths( c( paste0( modulesFolder, 'Tools/junction_bootstrap_library' )  , .libPaths() ) )");
 	
 	if(collectNotRestore)	rinside->parseEvalQNT("collectAndStoreJunctions(modulesFolder)");
 	else					rinside->parseEvalQNT("restoreModulesIfNeeded( modulesFolder, symFolder, junctionsFilePath)");
