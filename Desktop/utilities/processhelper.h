@@ -10,7 +10,7 @@ class ProcessHelper
 {
 public:
 	
-    static QProcessEnvironment getProcessEnvironmentForJaspEngine();
+    static QProcessEnvironment getProcessEnvironmentForJaspEngine(bool bootStrap = false);
 	
 private:
 	ProcessHelper(){}
