@@ -44,10 +44,10 @@ public:
 	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
 	AnalysisEntry();																										///< AnalysisEntry separator
 
-	std::string		menu()					const { return _menu;									}
-	std::string		title()					const { return _title;									}
-	std::string		function()				const { return _function;								}
-	std::string		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
+	const std::string&		menu()					const { return _menu;									}
+	const std::string&		title()					const { return _title;									}
+	const std::string&		function()				const { return _function;								}
+	const std::string&		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
 	std::string		icon()					const;
 	bool			isSeparator()			const { return _isSeparator;		}
 	bool			isGroupTitle()			const { return _isGroupTitle;		}

@@ -94,8 +94,8 @@ public:
 
 	const	Json::Value		&	results()			const				{ return _results;							}
 	const	Json::Value		&	userData()			const				{ return _userData;							}
-	const	std::string		&	name()				const	override	{ return _name;								}
-	const	std::string		&	qml()				const				{ return _qml;								}
+	const	std::string		&	name()				const	override	{ return _moduleData->function();			}
+	const	std::string		&	qmlFileName()		const	override	{ return _moduleData->qml();				}
 	const	std::string		&	title()				const	override	{ return _title;							}
 	const	std::string		&	rfile()				const				{ return _rfile;							}
 	const	std::string		&	module()			const	override	{ return _moduleData->dynamicModule()->name();	}
@@ -230,9 +230,7 @@ protected:
 private:
 	size_t						_id,
 								_counter						= 0;
-	std::string					_name,
-								_qml,
-								_titleDefault,
+	std::string					_titleDefault,
 								_title,
 								_rfile,
 								_showDepsName					= "",

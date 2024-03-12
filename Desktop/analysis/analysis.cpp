@@ -34,8 +34,6 @@
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses(), moduleVersion),
 	  _id(				id),
-	  _name(			analysisEntry->function()),
-	  _qml(				analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
 	  _titleDefault(	analysisEntry->title()),
 	  _title(			title == "" ? _titleDefault : title),
 	  _moduleData(		analysisEntry),
@@ -63,8 +61,6 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _imgOptions(						duplicateMe->_imgOptions						)
 	, _progress(						duplicateMe->_progress							)
 	, _id(								id												)
-	, _name(							duplicateMe->_name								)
-	, _qml(								duplicateMe->_qml								)
 	, _titleDefault(					duplicateMe->_titleDefault						)
 	, _title(fq(tr("Copy of %1").arg(tq(duplicateMe->_title)))							)
 	, _rfile(							duplicateMe->_rfile								)
@@ -389,7 +385,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	Json::Value analysisAsJson = Json::objectValue;
 
 	analysisAsJson["id"]			= int(_id);
-	analysisAsJson["name"]			= _name;
+	analysisAsJson["name"]			= name();
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
@@ -423,7 +419,7 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 
 void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status)
 {
-	Log::log() << "Now loading userdata results and R Sources for analysis " << _name << " from file." << std::endl;
+	Log::log() << "Now loading userdata results and R Sources for analysis " << name() << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
 	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
@@ -1154,5 +1150,5 @@ std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) 
 
 	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
-				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
+				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qmlFileName());
 }
