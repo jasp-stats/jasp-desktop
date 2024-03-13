@@ -21,6 +21,7 @@ import QtWebEngine
 import QtWebChannel
 import JASP
 import QtQuick.Controls
+import JASP.Controls	1.0 as JC
 
 Item
 {
@@ -232,6 +233,52 @@ Item
 		ALTNavigation.enabled:				true
 		ALTNavigation.requestedPostfix:		"R"
 		ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
+
+		JC.TextField
+		{
+			id:						searchBar
+			z:						1
+			anchors
+			{
+				left:			parent.left
+				right:			parent.right
+				top:			parent.top
+				margins:		jaspTheme.generalAnchorMargin
+			}
+			placeholderText:		qsTr("Search in results:")
+			value:					""
+			onValueChanged:			search()
+			fieldWidth:				parent.width - (jaspTheme.scrollbarBoxWidthBig + closeButton.width)
+			visible:				false
+			Keys.onEscapePressed:	visible = false
+
+			Shortcut 
+			{
+				sequences:		["Ctrl+F"]
+				onActivated: 	searchBar.visible = true
+			}
+
+			function search() { resultsView.findText(value) }
+		}
+
+		JC.MenuButton
+		{
+			id:					closeButton
+			z:					1
+			anchors
+			{
+				right:			searchBar.right
+				verticalCenter: searchBar.verticalCenter
+				margins:		jaspTheme.generalAnchorMargin
+			}
+			height:				33 * jaspTheme.uiScale
+			width:				33 * jaspTheme.uiScale
+			iconSource:			jaspTheme.iconPath + "close-button.png"
+			onClicked:			{ searchBar.value = ""; searchBar.visible = false }
+			toolTip:			qsTr("Close search bar")
+			radius:				height
+			visible:			searchBar.visible
+		}
 
 		WebEngineView
 		{
