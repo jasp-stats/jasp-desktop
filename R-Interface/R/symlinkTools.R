@@ -42,7 +42,7 @@ determineOverlap <- function(targetRoot, sourceRoot)
   {
     targetSplit  <- splitPath(target)
     rootToSrc    <- pastePath(sourceSplit[seq(overlap$len + 1, length(sourceSplit))])
-    stepsDown    <- length(targetSplit) - (overlap$len + as.integer(addRootToSource))
+    stepsDown    <- length(targetSplit) - (overlap$len + as.integer(addRootToSource)) - 1
     tgtToSrc     <- pastePath(rep("..", stepsDown)  )
 
     #for debug:
@@ -70,7 +70,7 @@ getRelativityFunction <- function(modulesRoot, renvCache)
 {
   
   if (Sys.info()["sysname"] == "Darwin") {
-    modToRenvS <- pastePath(c("..", "renv-cache"))
+    modToRenvS <- "renv-cache"
   } else {
     modToRenvF <- determineOverlap(modulesRoot, renvCache)
     modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
@@ -85,7 +85,7 @@ getRelativityFunction <- function(modulesRoot, renvCache)
       pathToRenv   <- determineOverlap(targetPath,   renvCache)$sourceToTarget
 
       linkToModS   <- linkToMod(linkLocation, FALSE)
-      linkToRenvS  <- modToRenvS #pastePath(c(linkToModS, modToRenvS))
+      linkToRenvS  <- pastePath(c(linkToModS, modToRenvS))
       pathToRenvS  <- pathToRenv(targetPath)
 
       newTarget    <- paste0(linkToRenvS, .Platform$file.sep, pathToRenvS)
