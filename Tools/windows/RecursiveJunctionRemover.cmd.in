@@ -1,0 +1,2 @@
+rem Need to remove junctions from Modules/Tools
+FOR /f "tokens=*" %%a in ('dir /AL /S /B @JASP_BINARY_DIR_NATIVE@\Install\Modules\Tools\') DO del /Q %%a

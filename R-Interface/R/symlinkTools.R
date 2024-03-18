@@ -247,8 +247,8 @@ collectAndStoreJunctions <- function(buildfolder)
   symlinks    <- collectLinks(modulesRoot, renvCache, isJunction2, normalizePath)
   overlap     <- determineOverlap(modulesRoot, modulesRoot)
   relLink     <- lapply(symlinks$linkLocation, overlap$sourceToTarget)
-  modules     <- lapply(relLink, function(p) splitPath(p)[[1]])
-  links       <- lapply(relLink, function(p) splitPath(p)[[2]])
+  modules     <- lapply(relLink, function(p) { x <- splitPath(p); pastePath(head(x, n=-1)) })
+  links       <- lapply(relLink, function(p) { x <- splitPath(p); tail(x, n=1) })
 
   if(nrow(symlinks) == 0)
     print("No absolute symlinks found, maybe you ran this script already?")
@@ -261,7 +261,10 @@ collectAndStoreJunctions <- function(buildfolder)
 
 restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
 {
-  print("Reached?!!!!111111")
+  #copy all the non junction dependencies into the Tools
+  require(utils)
+  file.copy(utils::shortPathName(pastePath(c(modulesFolder, "Tools"))), shortPathName(junctionsFolder), recursive = TRUE)
+
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
   junctions <- readRDS(junctionRDSPath)
@@ -282,7 +285,7 @@ restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
       modDir  <- pastePath(c(junctionsFolder, module))
 
       if(!file.exists(modDir))
-        dir.create(modDir)
+        dir.create(modDir, recursive = TRUE)
       setwd(modDir)
       # print(paste0("Creating junction '", padToMax(link, 1), "' to '", padToMax(renv, 2), "' in '", padToMax(pastePath(c(modulesRoot, module)), 3), "'"))
 
