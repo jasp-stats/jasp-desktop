@@ -227,7 +227,6 @@ void STDCALL jaspRCPP_init_jaspBase()
 	rInside[".shouldDecodeColName"]				= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldDecodeColumnName);
 	rInside[".encodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _encodeColumnName);
 	rInside[".decodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _decodeColumnName);
-	rInside[".baseCitation"]					= baseCitation;
 
 	//Pass a whole bunch of pointers to jaspBase
 	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .setColumnDataAsNominalTextPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .deleteColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
