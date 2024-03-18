@@ -218,13 +218,6 @@ void STDCALL jaspRCPP_init_jaspBase()
 	rInside[".encodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _encodeColumnName);
 	rInside[".decodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _decodeColumnName);
 	rInside[".baseCitation"]					= baseCitation;
-	rInside[".numDecimals"]						= 3;
-	rInside[".fixedDecimals"]					= false;
-	rInside[".normalizedNotation"]				= true;
-	rInside[".exactPValues"]					= false;	
-	rInside[".resultFont"]						= "Arial";
-	rInside[".imageBackground"]					= "transparent";
-	rInside[".ppi"]								= 300;
 
 	//Pass a whole bunch of pointers to jaspBase
 	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .getColumnType, .getColumnAnalysisId, .createColumn, .deleteColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
@@ -254,8 +247,6 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * module
 {
 	rinside = new RInside();
 	RInside &rInside = rinside->instance();
-
-	std::cout << "linkfolder: " << linkFolder << " " << junctionsFilePath << " " << modulesFolder << std::endl;
 	
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
 	
