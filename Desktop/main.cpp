@@ -497,8 +497,6 @@ int main(int argc, char *argv[])
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
 			ImgSchemeHandler  imgSchemeHandler;
 
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
-
 #ifdef _WIN32
 			auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();
 			Log::log() << "Runtime Environment: " << runtimeEnv << std::endl;
@@ -526,7 +524,7 @@ int main(int argc, char *argv[])
 				msgBox->hide();
 			}
 #endif
-
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 
 			try
 			{
