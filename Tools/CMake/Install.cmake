@@ -370,23 +370,6 @@ if(WIN32)
   install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
 
   install(
-    DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
-    DESTINATION Modules/
-    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
-
-  if(WIN32)    
-    install(
-      DIRECTORY ${CMAKE_BINARY_DIR}/Modules/Tools/
-      DESTINATION Modules/Tools
-      REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-      REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
-    install(CODE "execute_process(
-      WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}/Install/Modules/Tools/
-      COMMAND cmd.exe /C ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd)")
-  endif()
-
-  install(
     FILES ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
           ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
     DESTINATION Modules/Tools/)
@@ -403,6 +386,19 @@ if(WIN32)
           ${_LIB_R_INTERFACE_DLL}
     DESTINATION .)
 
+  install(
+  DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
+  DESTINATION Modules/
+  REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+  REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/Modules/Tools/
+    DESTINATION Modules/Tools
+    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(CODE "execute_process(COMMAND cmd.exe /C ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd)")
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
