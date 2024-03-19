@@ -479,7 +479,15 @@ To avoid confusion, use either the `allowedColumns` property or the `suggestedCo
     You can use so-called context properties in the components:
     * rowIndex: gives the row number in the list
     * rowValue: gives the name of the variable in the same row
-- `optionKey`: [optional, default: 'variable' (for Interaction type, default is 'components'] If there is no rowComponent, the values are just given as an array of strings. But if one or more components are specified, the values are more complex: it is also an array, but each element of the array contains the name of the variable with as key the value of this `optionKey`, and the values of each component with as key the name of the component. 
+- `optionKey`: [optional, default: 'variable' (for Interaction type, default is 'components'] If there is no rowComponent, the values are just given as an array of strings. But if one or more components are specified, the values are more complex: it is also an array, but each element of the array contains the name of the variable with as key the value of this `optionKey`, and the values of each component with as key the name of the component.
+
+	You can also use the `getVariableType` function to check, for example, whether a variable has some type (the type can get for values `columnTypeScale`, `columnTypeOrdinal` or `columnTypeNominal`):
+	```qml
+	rowComponent: Row 
+    {
+        CheckBox { name: "enableNumber"; checked: true; enabled: varListId.getVariableType(rowValue) == columnTypeScale }
+    }
+	```
 
 <details>
 	<summary>Examples</summary>
