@@ -234,50 +234,74 @@ Item
 		ALTNavigation.requestedPostfix:		"R"
 		ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
 
-		JC.TextField
+		Rectangle
 		{
-			id:						searchBar
+			id:						searchRectangle
+			height:					searchBar.height + 2*jaspTheme.generalAnchorMargin
 			z:						1
 			anchors
 			{
 				left:			parent.left
 				right:			parent.right
-				top:			parent.top
-				margins:		jaspTheme.generalAnchorMargin
+				bottom:			parent.bottom
 			}
-			placeholderText:		qsTr("Search in results:")
-			value:					""
-			onValueChanged:			search()
-			fieldWidth:				parent.width - (jaspTheme.scrollbarBoxWidthBig + closeButton.width)
-			visible:				false
-			Keys.onEscapePressed:	visible = false
-
-			Shortcut 
+			visible:			false
+			color:				jaspTheme.uiBackground 
+			border.color:		jaspTheme.uiBorder
+			border.width:		1
+			
+			JC.TextField
 			{
-				sequences:		["Ctrl+F"]
-				onActivated: 	searchBar.visible = true
+				id:						searchBar
+				placeholderText:		qsTr("Search in results:")
+				value:					""
+				Keys.onEscapePressed:	searchRectangle.visible = false
+				Keys.onReturnPressed:	search(displayValue)
+				onValueChanged:			search(displayValue)
+				onDisplayValueChanged:	search(displayValue)
+				onVisibleChanged:		search("")
+				moveFocusOnEdit:		false
+				
+				function startSearching()
+				{
+					searchRectangle.visible = true
+					forceActiveFocus();
+				}
+	
+				Shortcut 
+				{
+					sequences:		["Ctrl+F"]
+					onActivated: 	searchBar.startSearching()
+				}
+	
+				function search(thisText) { resultsView.findText(thisText); }
+				
+				anchors
+				{
+					left:			parent.left
+					right:			closeButton.left
+					bottom:			parent.bottom
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				fieldWidth:				parent.width - (jaspTheme.scrollbarBoxWidthBig + closeButton.width)
 			}
-
-			function search() { resultsView.findText(value) }
-		}
-
-		JC.MenuButton
-		{
-			id:					closeButton
-			z:					1
-			anchors
+	
+			JC.MenuButton
 			{
-				right:			searchBar.right
-				verticalCenter: searchBar.verticalCenter
-				margins:		jaspTheme.generalAnchorMargin
+				id:					closeButton
+				anchors
+				{
+					right:			searchRectangle.right
+					verticalCenter: searchBar.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				height:				searchBar.height
+				width:				height
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				onClicked:			searchRectangle.visible = false
+				toolTip:			qsTr("Close search bar")
+				radius:				height
 			}
-			height:				33 * jaspTheme.uiScale
-			width:				33 * jaspTheme.uiScale
-			iconSource:			jaspTheme.iconPath + "close-button.png"
-			onClicked:			{ searchBar.value = ""; searchBar.visible = false }
-			toolTip:			qsTr("Close search bar")
-			radius:				height
-			visible:			searchBar.visible
 		}
 
 		WebEngineView
