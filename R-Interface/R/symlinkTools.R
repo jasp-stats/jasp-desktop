@@ -43,7 +43,7 @@ determineOverlap <- function(targetRoot, sourceRoot)
     targetSplit  <- splitPath(target)
     rootToSrc    <- pastePath(sourceSplit[seq(overlap$len + 1, length(sourceSplit))])
     stepsDown    <- length(targetSplit) - (overlap$len + as.integer(addRootToSource)) - 1
-    tgtToSrc     <- pastePath(rep("..", stepsDown)  )
+    tgtToSrc     <- pastePath(rep("..", max(0, stepsDown)) )
 
     #for debug:
     #tgtToSrc     <- paste0(tgtToSrc, .Platform$file.sep, ".")
