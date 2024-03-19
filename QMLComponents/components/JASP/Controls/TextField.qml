@@ -42,7 +42,7 @@ TextInputBase
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
 	property alias	startValue:			textField.defaultValue
-
+	property bool	moveFocusOnEdit:	true
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
 	property string	inputType:			"string"
@@ -225,7 +225,7 @@ TextInputBase
 			if (checkValue(false, false))
 			{
 				var nextItem = nextItemInFocusChain();
-				if (nextItem)
+				if (nextItem && moveFocusOnEdit)
 					nextItem.forceActiveFocus();
 
 				event.accepted = false;

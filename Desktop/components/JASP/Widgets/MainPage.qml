@@ -21,6 +21,7 @@ import QtWebEngine
 import QtWebChannel
 import JASP
 import QtQuick.Controls
+import JASP.Controls	1.0 as JC
 
 Item
 {
@@ -232,6 +233,76 @@ Item
 		ALTNavigation.enabled:				true
 		ALTNavigation.requestedPostfix:		"R"
 		ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
+
+		Rectangle
+		{
+			id:						searchRectangle
+			height:					searchBar.height + 2*jaspTheme.generalAnchorMargin
+			z:						1
+			anchors
+			{
+				left:			parent.left
+				right:			parent.right
+				bottom:			parent.bottom
+			}
+			visible:			false
+			color:				jaspTheme.uiBackground 
+			border.color:		jaspTheme.uiBorder
+			border.width:		1
+			
+			JC.TextField
+			{
+				id:						searchBar
+				placeholderText:		qsTr("Search in results:")
+				value:					""
+				Keys.onEscapePressed:	searchRectangle.visible = false
+				Keys.onReturnPressed:	search(displayValue)
+				onValueChanged:			search(displayValue)
+				onDisplayValueChanged:	search(displayValue)
+				onVisibleChanged:		search("")
+				moveFocusOnEdit:		false
+				
+				function startSearching()
+				{
+					searchRectangle.visible = true
+					forceActiveFocus();
+				}
+	
+				Shortcut 
+				{
+					sequences:		["Ctrl+F"]
+					onActivated: 	searchBar.startSearching()
+				}
+	
+				function search(thisText) { resultsView.findText(thisText); }
+				
+				anchors
+				{
+					left:			parent.left
+					right:			closeButton.left
+					bottom:			parent.bottom
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				fieldWidth:				parent.width - (jaspTheme.scrollbarBoxWidthBig + closeButton.width)
+			}
+	
+			JC.MenuButton
+			{
+				id:					closeButton
+				anchors
+				{
+					right:			searchRectangle.right
+					verticalCenter: searchBar.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				height:				searchBar.height
+				width:				height
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				onClicked:			searchRectangle.visible = false
+				toolTip:			qsTr("Close search bar")
+				radius:				height
+			}
+		}
 
 		WebEngineView
 		{
