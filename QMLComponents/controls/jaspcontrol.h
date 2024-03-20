@@ -23,6 +23,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								name					READ name					WRITE setName					NOTIFY nameChanged					)
 	Q_PROPERTY( QString								title					READ title					WRITE setTitle					NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
 	Q_PROPERTY( QString								info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY( QString								infoLabel				READ infoLabel				WRITE setInfoLabel				NOTIFY infoLabelChanged				)
 	Q_PROPERTY( QString								toolTip					READ toolTip				WRITE setToolTip				NOTIFY toolTipChanged				)
 	Q_PROPERTY( QString								helpMD					READ helpMDControl											NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound					READ isBound				WRITE setIsBound				NOTIFY isBoundChanged				)
@@ -172,7 +173,10 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
-
+	
+	QString infoLabel() const;
+	void setInfoLabel(const QString &newInfoLabel);
+	
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
 	void	setChildControlsArea(	QQuickItem		*	childControlsArea);
@@ -254,7 +258,9 @@ signals:
 	void				requestColumnCreation(std::string columnName, columnType columnType);
 	void				requestComputedColumnCreation(std::string columnName);
 	void				requestComputedColumnDestruction(std::string columnName);
-
+	
+	void infoLabelChanged();
+	
 protected:
 	void				componentComplete() override;
 	void				_setType();
@@ -316,6 +322,8 @@ protected:
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
 	static const QStringList						_optionReservedNames;
+private:
+	QString _infoLabel;
 };
 
 
