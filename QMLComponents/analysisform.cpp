@@ -45,6 +45,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	_rSyntax = new RSyntax(this);
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
 	connect(this,									&AnalysisForm::infoChanged,					this, &AnalysisForm::helpMDChanged			);
+	connect(this,									&AnalysisForm::infoBottomChanged,			this, &AnalysisForm::helpMDChanged			);
 	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
@@ -872,7 +873,7 @@ QString AnalysisForm::helpMD() const
 		title(), "\n",
 		"=====================\n",
 		_info, "\n\n",
-		"---\n# ", tr("Options"), "\n"
+		"---\n## ", tr("Options"), "\n"
 	};
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
@@ -884,6 +885,9 @@ QString AnalysisForm::helpMD() const
 			markdown.push_back(control->helpMD(markdowned));
 
 	markdown.push_back(metaHelpMD());
+	
+	if(!_infoBottom.isEmpty())
+		markdown.push_back(_infoBottom + "\n");
 	
 	QString md = markdown.join("");
 	
@@ -1001,4 +1005,17 @@ void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocu
 
 	if (emitSignal)
 		emit activeJASPControlChanged();
+}
+
+QString AnalysisForm::infoBottom() const
+{
+	return _infoBottom;
+}
+
+void AnalysisForm::setInfoBottom(const QString &newInfoBottom)
+{
+	if (_infoBottom == newInfoBottom)
+		return;
+	_infoBottom = newInfoBottom;
+	emit infoBottomChanged();
 }

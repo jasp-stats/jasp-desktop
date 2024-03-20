@@ -53,6 +53,7 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			hasVolatileNotes		READ hasVolatileNotes										NOTIFY hasVolatileNotesChanged		)
 	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
 	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY(QString		infoBottom				READ infoBottom				WRITE setInfoBottom				NOTIFY infoBottomChanged			)
 	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
@@ -127,7 +128,9 @@ signals:
 	void					rSyntaxTextChanged();
 	void					showAllROptionsChanged();
 	void					activeJASPControlChanged();
-
+	
+	void infoBottomChanged();
+	
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
@@ -183,7 +186,10 @@ public:
 	JASPControl*	getActiveJASPControl()	{ return _activeJASPControl; }
 
 	static const QString	rSyntaxControlName;
-
+	
+	QString infoBottom() const;
+	void setInfoBottom(const QString &newInfoBottom);
+	
 private:
 
 	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
@@ -234,6 +240,7 @@ private:
 													_developerMode					= false;
 	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
+	QString _infoBottom;
 };
 
 #endif // ANALYSISFORM_H
