@@ -46,6 +46,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);
+	connect(this, &JASPControl::infoLabelChanged,		this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
