@@ -85,7 +85,11 @@ getRelativityFunction <- function(modulesRoot, renvCache)
       pathToRenv   <- determineOverlap(targetPath,   renvCache)$sourceToTarget
 
       linkToModS   <- linkToMod(linkLocation, FALSE)
-      linkToRenvS  <- pastePath(c(linkToModS, modToRenvS))
+      if (Sys.info()["sysname"] == "Darwin") {
+        linkToRenvS  <- pastePath(c(linkToModS, modToRenvS))
+      } else {
+        linkToRenvS  <- modToRenvS
+      }
       pathToRenvS  <- pathToRenv(targetPath)
 
       newTarget    <- paste0(linkToRenvS, .Platform$file.sep, pathToRenvS)
