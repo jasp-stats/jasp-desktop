@@ -277,7 +277,12 @@ QString	TextInputBase::helpMD(SetConst & markdowned, int howDeep, bool) const
 
 	QStringList md;
 
-	md	<< QString{howDeep, '#' } << " " << friendlyName() << "\n"
+	md	<< QString{howDeep, '#' } << " " << friendlyName();
+	
+	if(infoLabel().size())
+		md << " - " << infoLabel();
+			  
+	md	<< "\n"
 		<< "`" << label() << " ... " << afterLabel() << "`\n\n"
 		<< info() << "\n";
 

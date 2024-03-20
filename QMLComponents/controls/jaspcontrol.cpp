@@ -46,6 +46,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);
+	connect(this, &JASPControl::infoLabelChanged,		this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
@@ -597,7 +598,8 @@ QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) con
 		if(!markdowned.count(childControl))
 			childMDs << childControl->helpMD(markdowned, newDeep, childrenList);
 
-	QString childMD = childMDs.join("");
+	QString childMD = childMDs.join(""),
+			titleLabel = (!infoLabel().size() ? title() : infoLabel());
 
 	//If we have no info and none of our children have info then we shouldn't be part of the help md
 	if(info() == "" && (!aControlThatEncloses || childMD == ""))
@@ -605,7 +607,7 @@ QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) con
 
 	//If on the other hand we are a simply radiobutton we can just turn it into a list entry
 	if(controlType() == ControlType::RadioButton && !aControlThatEncloses)
-		return "- *" + title() + "*: " + info() + "\n";
+		return "- *" + titleLabel + "*: " + info() + "\n";
 
 	//And otherwise we go the full mile, header + title + info and all followed by whatever children we have
 	if(aControlThatEncloses)
@@ -619,7 +621,7 @@ QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) con
 
 	markdown << friendlyName();
 
-	if(title() != "")	markdown << " - *" + title() + "*:\n";
+	if(titleLabel != "")	markdown << " - *" + titleLabel  + "*:\n";
 	else				markdown << "\n";
 
 
@@ -849,3 +851,17 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	_initializedWithValue = (value != Json::nullValue);
 	emit initializedChanged();
 }
+		
+QString JASPControl::infoLabel() const
+{
+		return _infoLabel;
+}
+		
+void JASPControl::setInfoLabel(const QString &newInfoLabel)
+{
+	if (_infoLabel == newInfoLabel)
+		return;
+		_infoLabel = newInfoLabel;
+	emit infoLabelChanged();
+}
+		
