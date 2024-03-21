@@ -171,7 +171,7 @@ WavyWindow
 					color:				closebuttoncolor
 					radius:				5 * preferencesModel.uiScale
 					height:				25 * preferencesModel.uiScale
-					width:				parent.width * preferencesModel.uiScale
+					width:				parent.width
 
 					Text
 					{
@@ -198,7 +198,8 @@ WavyWindow
 												"Last Commit: " + aboutModel.commit + "\n\n" +
 												aboutModel.systemInfo
 
-						onClicked:	(event) => {
+						onClicked:	(event) => 
+						{
 										resultsJsInterface.pushToClipboard("text/plain", _info, "")
 										debugInfoButton.color = jaspTheme.grayDarker
 										copyInfoText.clicked = true
