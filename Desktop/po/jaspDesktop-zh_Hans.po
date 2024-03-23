@@ -4917,3 +4917,11 @@ msgstr "已复制到剪贴板"
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
 msgstr "复制调试信息"
+
+msgctxt "MainPage|"
+msgid "Search in results:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Close search bar"
+msgstr ""

@@ -5146,3 +5146,11 @@ msgstr "Copiado al portapapeles"
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
 msgstr "Copiar información del depurado"
+
+msgctxt "MainPage|"
+msgid "Search in results:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Close search bar"
+msgstr ""

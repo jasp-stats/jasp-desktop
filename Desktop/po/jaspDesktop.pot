@@ -4697,3 +4697,11 @@ msgstr ""
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
 msgstr ""
+
+msgctxt "MainPage|"
+msgid "Search in results:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Close search bar"
+msgstr ""

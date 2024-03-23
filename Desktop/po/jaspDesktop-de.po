@@ -5138,3 +5138,11 @@ msgstr "In Zwischenablage kopiert"
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
 msgstr "Debug-Informationen kopieren"
+
+msgctxt "MainPage|"
+msgid "Search in results:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Close search bar"
+msgstr ""
