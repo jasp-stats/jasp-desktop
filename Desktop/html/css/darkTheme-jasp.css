@@ -182,20 +182,23 @@ div.jasp-image-image.no-data.error {
 
 
 .jasp-notes {
-  border-bottom:		1px solid #5c5c5c;
-  border-radius:		0;
-  color:			#000;
-  filter:			invert(1);
+  z-index:       1;
+  border-bottom: 1px solid #5c5c5c;
+  border-radius: 0;
+  color:        #000;
+  filter:       invert(1);
 }
 
+.jasp-latex-container svg {
+  filter:       invert(1);
+}
 
 /* not use color invert for img in annotations */
 .ql-editor p img,
 iframe.ql-video:not(:fullscreen),
-.ql-editor mjx-container svg,
-.jasp-latex-container .jasp-latex-preview svg,
+mjx-container svg,
 mjx-container {
-    filter:  invert(1);
+  filter:       invert(1);
 }
 
 

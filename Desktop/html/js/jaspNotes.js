@@ -271,9 +271,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
         this.$el.append(`<div id="editor"></div>`)
                 .append(`<div class="jasp-latex-container jasp-hide">
-                            <textarea class="jasp-latex-input" rows="7" cols="30" placeholder='${i18n("Input LaTeX here:")}
-								&bull; ${i18n("Press `Enter` to apply;")}
-								&bull; ${i18n("`Shift+Enter` for new line;")}'>
+                            <textarea class="jasp-latex-input" rows="5" cols="25" placeholder='${i18n("Input LaTeX here:")}
+								&bull; ${i18n("Press `Cmd/Ctrl + Enter` to apply;")}'>
 								</textarea>
                             <div class="jasp-latex-preview" title='${i18n("Click to apply formula")}'><div></div></div>
                         </div>`)
@@ -406,20 +405,22 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				latexPreview.get(0).replaceChildren(_latexSvg)
 			},
 			onSave: function (range, latexText) {
-				if (!range) {
+				if (self.oldBlot) {
 					range = self.$quill.getSelection(true);
-					index = range.index + range.length
+					range.index = self.formulaBlot.offset(self.formulaBlot.scroll)				
+				} else {
+					range = self.$quill.getSelection(true);
 				}
-
-				self.$quill.insertEmbed(index, 'formula', latexText, 'user');
-				self.$quill.insertText(index + 1, ' ', 'user');
-				self.$quill.setSelection(index + 2, 'user');
+				
+				self.$quill.insertEmbed(range.index, 'formula', latexText, 'user');
+				self.$quill.insertText(range.index + 1, ' ', 'user');
+				self.$quill.setSelection(range.index + 2, 'user');
 
 				if (self.oldBlot) {
 					self.oldBlot.remove();
+					self.oldBlot = null
 				}
-				self.oldBlot = null
-				range = null
+				range = null			
 			},
 			onClose: function () {
 				latexContainer.addClass('jasp-hide');
@@ -432,42 +433,27 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			self.handleLatexEditor.onEdit('');
 		})
 
+		let range = null;
+
 		latexInputBox.on("input", (e) => {
 			self.handleLatexEditor.onEdit(e.target.value)
 		})
 
-		let range = null
-		let lastMouseDownCoords;
-
-		latexPreview.on("mousedown", (e) => {
-			lastMouseDownCoords = { x: e.clientX, y: e.clientY };
-		});
-
-		latexInputBox.on("blur keydown", (e) => {
-
+		latexInputBox.on("blur", (e) => {
+			if(e.relatedTarget && !e.relatedTarget.parentNode.className === 'jasp-latex-preview')
+				return;
 			const latexText = latexInputBox.val();
-			
-			if (e.type === "blur") {
+			self.handleLatexEditor.onSave(range, latexText);
+			self.formulaClicked = false;
+			self.handleLatexEditor.onClose();
+		})
 
-				let _clickedElement;
-				if (lastMouseDownCoords) {
-					_clickedElement = document.elementFromPoint(lastMouseDownCoords.x, lastMouseDownCoords.y);
-				}
-				const _hasFormulaClicked = e.relatedTarget && e.relatedTarget.tagName === "MJX-CONTAINER";
-				if (_clickedElement && latexPreview.is(_clickedElement) || _hasFormulaClicked) {
-					self.handleLatexEditor.onSave(range, latexText);
-					self.handleLatexEditor.onClose();
-				} else {
-					self.handleLatexEditor.onClose();
-				}
-			}
-
-			if (e.key === "Enter" && !e.shiftKey) {
-				e.preventDefault(); 
-				self.handleLatexEditor.onSave(range, latexText);
-				self.handleLatexEditor.onClose();
+		latexInputBox.on("keydown", (e) => {
+			if (e.key === 'Enter' && e.ctrlKey) {
+				e.preventDefault();
+				latexInputBox.blur();
 			} 
-			
+				
 			if (e.key === 'Escape') {
 				self.handleLatexEditor.onClose();
 			}
@@ -488,25 +474,21 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 
 		self.$quill.on('editor-change', () => {
-
+			$(".ui-tooltip-content").parents('div').remove(); // Remove jquery-ui tooltips legacy,bug:https://stackoverflow.com/questions/19266886/tooltip-not-disappearing
 			let $formulaNode = this.$el.find('.ql-editor mjx-container')
 				$formulaNode.attr('title', i18n('Click to edit this formula'))
 							.tooltip({position: {my:"center bottom-15", at:"center top"}});
 
-			$formulaNode.on('click', (e) => {
-				if (this.$quillToolbar.is(':hidden'))
-					self.setQuillToolbarVisibility('block');
-				else
-					e.preventDefault();
-				let currentFormula = e.currentTarget
-				let formulaBlot = Quill.find(currentFormula);
-				if (!range) {
-					range = self.$quill.getSelection(true);
-					index = formulaBlot.offset(self.$quill.scroll);
-				}
-				self.handleLatexEditor.onEdit(formulaBlot.contentNode.innerText)
+			$formulaNode.on('click dblclick', (e) => {
+				if (e.type === 'dblclick')
+					return; // Make sure that click and double clicks do not interfere with each other
 
-				self.oldBlot = formulaBlot // Get legacy formula range to remove while save
+				self.formulaClicked = true
+				let currentFormula = e.currentTarget
+				self.formulaBlot = window.Quill.find(currentFormula);
+				const _currentLatex = currentFormula.getAttribute("data-value").trim();
+				self.handleLatexEditor.onEdit(_currentLatex)
+				self.oldBlot = self.formulaBlot // Get legacy formula range to remove while save
 			});
 
 			////--- Image resizer ---////
@@ -518,22 +500,15 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			$imgBlot.on(    "mouseenter", () => { $resizeHandles.show() }).on("mouseleave", () => { $resizeHandles.hide() });
 
 		});
+		
+		quillEditorElement.addEventListener('focusin', () => {
+			self.setQuillToolbarVisibility('block');
+		});
 
-		quillEditorElement.addEventListener('focusout', (event) => {
-			let x = event.clientX;
-			let y = event.clientY;
-
-			const quillRect = quillEditorElement.getBoundingClientRect();
-			const toolbarRect = this.$quillToolbar.get(0).getBoundingClientRect();
-
-			const isInsideQuill = x >= quillRect.left && x <= quillRect.right && y >= quillRect.top && y <= quillRect.bottom;
-			const isInsideToolbar = x >= toolbarRect.left && x <= toolbarRect.right && y >= toolbarRect.top && y <= toolbarRect.bottom;
-
-			if (isInsideQuill || isInsideToolbar || !latexContainer.hasClass('jasp-hide') || this.$quillTooltip.is(':visible'))
-				self.setQuillToolbarVisibility('block');
-			else
-				self.setQuillToolbarVisibility('none');
-
+		quillEditorElement.addEventListener('focusout', () => {
+			if (!latexContainer.hasClass('jasp-hide') || this.$quillTooltip.is(':visible') || self.formulaClicked)
+				return;
+			self.setQuillToolbarVisibility('none');
 		});
 
 		if (this.model.get('deltaAvailable')) {
