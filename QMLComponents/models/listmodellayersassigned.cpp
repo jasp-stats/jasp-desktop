@@ -42,11 +42,8 @@ void ListModelLayersAssigned::initLayers(const std::vector<std::vector<std::stri
 
 	_setTerms();
 
-	if (availableModel() != nullptr)
-	{
-		if (!_copyTermsWhenDropped)
-			availableModel()->removeTermsInAssignedList();
-	}
+	if (availableModel())
+		availableModel()->removeTermsInAssignedList();
 	
 	endResetModel();
 }

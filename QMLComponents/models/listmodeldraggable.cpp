@@ -19,10 +19,10 @@
 #include "listmodeldraggable.h"
 #include "analysisform.h"
 #include "controls/jasplistcontrol.h"
+#include "log.h"
 
 ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
-	, _copyTermsWhenDropped(false)	
 {
 }
 

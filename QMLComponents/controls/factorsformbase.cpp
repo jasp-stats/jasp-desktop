@@ -71,12 +71,8 @@ Json::Value FactorsFormBase::createJson() const
 	for (int i = 0; i < _initNumberFactors; i++)
 	{
 		Json::Value row(Json::objectValue);
-		QString name("Factor");
-		name += QString::number(i+1);
-		QString title("Factor ");
-		title += QString::number(i+1);
-		row["name"] = fq(name);
-		row["title"] = fq(title);
+		row["name"] = fq(baseName() + QString::number(i + startIndex()));
+		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
 		row["indicators"] = Json::Value(Json::arrayValue);
 
 		result.append(row);

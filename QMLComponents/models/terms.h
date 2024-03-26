@@ -116,6 +116,10 @@ public:
 	bool operator!=(const Terms &terms) const;
 	const Term& operator[](size_t index) const { return at(index); }
 
+	bool strictlyEquals(const Terms &terms) const; // Also takes care of the draggable flag
+	void setDraggable(bool draggable);
+	void setUndraggableTerms(const Terms& undraggableTerms);
+
 private:
 
 	int		rankOf(const QString &component)						const;

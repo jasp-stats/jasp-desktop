@@ -149,13 +149,18 @@ void Terms::add(const Term &term, bool isUnique)
 
 		if (result > 0)
 			_terms.insert(itr, term);
+		else if (result == 0)
+			itr->setDraggable(term.isDraggable());
 		else if (result < 0)
 			_terms.push_back(term);
 	}
 	else
 	{
-		if ( ! contains(term))
+		int i = indexOf(term.asQString());
+		if (i < 0)
 			_terms.push_back(term);
+		else
+			_terms.at(i).setDraggable(term.isDraggable());
 	}
 }
 
@@ -450,6 +455,41 @@ bool Terms::operator!=(const Terms &terms) const
 {
 	return _terms != terms._terms;
 }
+
+bool Terms::strictlyEquals(const Terms &terms) const
+{
+	bool isEqual = _terms == terms._terms;
+
+	for (size_t i = 0; isEqual && (i < _terms.size()); i++)
+		isEqual = _terms.at(i).isDraggable() == terms._terms.at(i).isDraggable();
+
+	return isEqual;
+}
+
+void Terms::setDraggable(bool draggable)
+{
+	for (Term& term : _terms)
+		term.setDraggable(draggable);
+}
+
+void Terms::setUndraggableTerms(const Terms& undraggableTerms)
+{
+	std::vector<Term> newTerms = undraggableTerms._terms;
+	for (Term& term : newTerms)
+		term.setDraggable(false);
+
+	// Then add only the draggabled terms that are not in undraggableTerms and that are draggable
+	// All undraggable terms that are not in undraggableTerms will be then automatically removed.
+	for (Term term : _terms)
+	{
+		if (term.isDraggable() && !undraggableTerms.contains(term))
+			newTerms.push_back(term);
+	}
+
+	_terms = newTerms;
+}
+
+
 
 void Terms::set(const QByteArray & array, bool isUnique)
 {

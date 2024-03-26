@@ -27,7 +27,6 @@ using namespace std;
 ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
-	_copyTermsWhenDropped		= true;
 	_mustContainLowerTerms		= mustContainLowerTerms;
 	_addInteractionsByDefault	= addInteractionsByDefault;
 }
@@ -130,10 +129,7 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 				covariates.add(term);
 		}
 		else
-		{
-			if (!_interactionTerms.contains(term))
 				others.add(term);
-		}
 	}
 			
 	if (fixedFactors.size() > 0)

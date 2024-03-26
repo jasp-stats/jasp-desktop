@@ -23,6 +23,7 @@
 #include "controls/jaspcontrol.h"
 #include "analysisform.h"
 #include "controls/factorsformbase.h"
+#include "models/listmodelassignedinterface.h"
 
 using namespace std;
 
@@ -31,6 +32,8 @@ ListModelFactorsForm::ListModelFactorsForm(JASPListControl* listView)
 {
 	_factorsForm = qobject_cast<FactorsFormBase*>(listView);
 	_needsSource = false;
+	connect(_factorsForm, &FactorsFormBase::nestedChanged, this, &ListModelFactorsForm::ensureNesting);
+	connect(_factorsForm, &FactorsFormBase::nestedChanged, this, &ListModelFactorsForm::setAllTermsDraggable);
 }
 
 QHash<int, QByteArray> ListModelFactorsForm::roleNames() const
@@ -71,15 +74,18 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 	Terms newTerms;
 
 	int index = 0;
+	Terms previousTerms;
 	for (const auto &factorTuple : factors)
 	{
 		QString name = tq(get<0>(factorTuple));
 		QString title = tq(get<1>(factorTuple));
-		std::vector<string> terms = get<2>(factorTuple);
-		Factor* factor = new Factor(name, title, terms);
+		Terms newTerms = get<2>(factorTuple);
+		if (_factorsForm->nested())
+			newTerms.setUndraggableTerms(previousTerms);
+		Factor* factor = new Factor(name, title, newTerms);
 		_factors.push_back(factor);
-		newTerms.add(Terms(terms));
 		index++;
+		previousTerms = newTerms;
 	}
 	
 	_setTerms(newTerms);
@@ -116,7 +122,7 @@ ListModelFactorsForm::FactorVec ListModelFactorsForm::getFactors()
 	for (Factor* factor : _factors)
 	{
 		JASPListControl* listView = factor->listView;
-		result.push_back(make_tuple(fq(factor->name), fq(factor->title), listView ? listView->model()->terms().asVector() : factor->initTerms));
+		result.push_back(make_tuple(fq(factor->name), fq(factor->title), listView ? listView->model()->terms().asVector() : factor->initTerms.asVector()));
 	}
 	
 	return result;
@@ -126,10 +132,17 @@ void ListModelFactorsForm::addFactor()
 {
 	beginInsertRows(QModelIndex(), _factors.size(), _factors.size());
 
-	QString index = QString::number(_factors.size() + 1);
-	QString name = tq("Factor") + index;
-	QString title = tq("Factor ") + index;
-	Factor* factor = new Factor(name, title);
+	QString index = QString::number(_factors.size() + _factorsForm->startIndex());
+	QString name = _factorsForm->baseName() + index;
+	QString title = _factorsForm->baseTitle() + " " + index;
+	Terms terms;
+	if (_factors.size() > 0 && _factorsForm->nested())
+	{
+		terms = _factors[_factors.size() - 1]->listView->model()->terms();
+		terms.setDraggable(false);
+	}
+
+	Factor* factor = new Factor(name, title, terms);
 	_factors.push_back(factor);
 
 	endInsertRows();
@@ -148,6 +161,9 @@ void ListModelFactorsForm::removeFactor()
 
 			const Terms& lastTerms = listView->model()->terms();
 			_removeTerms(lastTerms);
+			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_factorsForm->availableVariablesList()->model());
+			ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(listView->model());
+			availableModel->removeAssignedModel(assignedModel);
 			_factors.removeLast();
 
 			endRemoveRows();
@@ -197,7 +213,46 @@ void ListModelFactorsForm::factorAdded(int index, VariablesListBase* listView)
 	Factor* factor = _factors[index];
 	factor->listView = listView;
 	Terms terms(factor->initTerms);
+
 	ListModelDraggable* model = listView->draggableModel();
-	model->setCopyTermsWhenDropped(true);
+	connect(model, &ListModel::termsChanged, this, &ListModelFactorsForm::ensureNesting, static_cast<Qt::ConnectionType>(Qt::UniqueConnection | Qt::QueuedConnection) );
+
 	model->initTerms(terms);
+}
+
+void ListModelFactorsForm::ensureNesting()
+{
+	if (!_factorsForm->nested() || _ensuringNesting)
+		return;
+
+	_ensuringNesting = true;
+
+
+	for (int i = 0; i < _factors.size() - 1; i++)
+	{
+		ListModelDraggable	*currentModel = qobject_cast<ListModelDraggable*>(_factors[i]->listView->model()),
+							*onderModel = qobject_cast<ListModelDraggable*>(_factors[i+1]->listView->model());
+
+		Terms newTerms = onderModel->terms();
+		newTerms.setUndraggableTerms(currentModel->terms());
+		if (!newTerms.strictlyEquals(onderModel->terms()))
+			onderModel->initTerms(newTerms);
+	}
+
+	_ensuringNesting = false;
+}
+
+void ListModelFactorsForm::setAllTermsDraggable()
+{
+	if (_factorsForm->nested())
+		return;
+
+	for (int i = 0; i < _factors.size(); i++)
+	{
+		ListModelDraggable	*currentModel = qobject_cast<ListModelDraggable*>(_factors[i]->listView->model());
+		Terms draggableTerms = currentModel->terms();
+		draggableTerms.setDraggable(true);
+		if (!draggableTerms.strictlyEquals(currentModel->terms()))
+			currentModel->initTerms(draggableTerms);
+	}
 }

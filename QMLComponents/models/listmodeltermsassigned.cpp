@@ -35,11 +35,8 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValu
 {
 	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
 
-	if (availableModel() != nullptr)
-	{
-		if (!_copyTermsWhenDropped)
-			availableModel()->removeTermsInAssignedList();
-	}
+	if (availableModel())
+		availableModel()->removeTermsInAssignedList();
 }
 
 void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
@@ -50,7 +47,7 @@ void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms 
 		_addTerms(termsAdded);
 		endResetModel();
 
-		if (!_copyTermsWhenDropped && availableModel())
+		if (availableModel())
 			availableModel()->removeTermsInAssignedList();
 	}
 

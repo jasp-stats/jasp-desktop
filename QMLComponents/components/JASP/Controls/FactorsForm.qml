@@ -18,7 +18,8 @@ FactorsFormBase
 	property alias	availableVariablesList: availableVariablesList
     property bool   allowAll: false
 	property int    listWidth:			parent.width * 2 / 5
-    property int    factorListHeight: (jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
+	property int    factorListHeight: (jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing
+	property int	assignAvailableVariablesToList:	allowInteraction ? (initNumberFactors - 1) : -1 // If interaction is used, set automatically the available variables to the last assigned variables list
 
 	AvailableVariablesList
 	{
@@ -52,7 +53,7 @@ FactorsFormBase
 				AssignButton
                 {
 					id: button
-					name: "Factor form "
+					name: "Factor form"
                     Layout.leftMargin:  (factorsFormColumn.width / 3 - width) / 2
                     Layout.rightMargin: (factorsFormColumn.width / 3 - width) / 2
 					leftSource:         factorsForm.availableVariablesList
@@ -71,19 +72,27 @@ FactorsFormBase
 					name:               factorName
 					editableTitle:      factorTitle
 					dropKeys:			availableVariablesListName
-					dropMode:			JASP.DropReplace
+					//dropMode:			JASP.DropReplace
 					suggestedColumns:	allowAll ? [] : ["scale", "ordinal"]
-                    allowedColumns:     allowAll ? [] : ["scale", "ordinal"]
+					allowedColumns:     allowAll ? [] : ["scale", "ordinal"]
 					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
 					implicitWidth:		listWidth
 					isBound:			false
+					listViewType:		allowInteraction ? JASP.Interaction : JASP.AssignedVariables
+					addAvailableVariablesToAssigned: index === assignAvailableVariablesToList
 
 					onTitleIsChanged:	factorsForm.titleChanged(index, editableTitle)
 				}
 			}
-			onItemAdded:
+			onItemAdded: (index, item) =>
 			{
 				availableVariablesList.dropKeys.push(item.factorList.name);
+				for (let i = 0; i < index; i++)
+				{
+					itemAt(i).factorList.dropKeys.push(item.factorList.name)
+					item.factorList.dropKeys.push(itemAt(i).factorList.name)
+				}
+
 				item.factorList.activeFocusChanged.connect(item.button.setIconToLeft);
 				availableVariablesList.activeFocusChanged.connect(item.button.setIconToRight);
 				item.factorList.selectedItemsChanged.connect(item.button.setState);
@@ -94,27 +103,32 @@ FactorsFormBase
 
         Row 
         {
-            id:             factorButtons
-            anchors.right:  parent.right
-            spacing:        10
+			id:						factorButtons
+			anchors.right:			parent.right
+			anchors.rightMargin:	(listWidth - copyButton.width * 2 - spacing) / 2
+			spacing:				2
 
-            Button 
-            { 
-                name: "add"; 
-                text: qsTr("+")
-                control.width: height 
-                width: control.width
-				onClicked: factorsForm.addFactor()
-            }
-            Button 
-            { 
-                name: "remove"; 
-                text: qsTr("-") 
-                control.width: height 
-				width: control.width
-				onClicked: factorsForm.removeFactor()
-                enabled: factorsFormRepeater.count > 1
-            }
+			MenuButton
+			{
+				id:					copyButton
+				width:				height
+				iconSource:			jaspTheme.iconPath + "/duplicate.png"
+				onClicked:			factorsForm.addFactor()
+				toolTip:			qsTr("Add a %1").arg(baseTitle)
+				radius:				height
+			}
+
+			MenuButton
+			{
+				id:					closeButton
+				width:				height
+				iconSource:			jaspTheme.iconPath + "close-button.png"
+				opacity:			enabled ? 1 : .5
+				enabled:			factorsFormRepeater.count > initNumberFactors
+				onClicked:			factorsForm.removeFactor()
+				toolTip:			qsTr("Remove last %1").arg(baseTitle)
+				radius:				height
+			}
         }
         
 	}

@@ -263,7 +263,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 			Terms removedTermsWhenAdding;
 			QList<int> indexAdded = indexes;
 
-			if (!sourceModel->copyTermsWhenDropped())
+			if (targetModel->removeTermsWhenMoved()) // If the target keeps its terms anyway, don't add new terms
 			{
 				Terms terms = sourceModel->termsFromIndexes(indexes);
 				if (terms.size() == 0)
@@ -291,7 +291,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 				}
 			}
 				
-			if (!targetModel->copyTermsWhenDropped())
+			if (sourceModel->removeTermsWhenMoved())
 			{
 				if (indexAdded.size() > 0)
 				{
@@ -319,6 +319,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
+	Log::log() << "LOG setDropKeys " << name() << ": " << dropKeys.join('/') << std::endl;
 	if (dropKeys != _dropKeys)
 	{
 		_dropKeys = dropKeys;
@@ -421,6 +422,10 @@ void VariablesListBase::_setRelations()
 				addDependency(availableModel->listView());
 				setContainsVariables();
 				setContainsInteractions();
+
+				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
+				if (_listViewType == ListViewType::Interaction || columns() > 1)
+					availableModel->setRemoveTermsWhenMoved(false);
 			}
 		}
 	}

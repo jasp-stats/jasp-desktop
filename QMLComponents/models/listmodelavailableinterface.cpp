@@ -179,17 +179,19 @@ bool ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
+	if (!removeTermsWhenMoved())
+		return;
+
 	beginResetModel();
 	
 	Terms newTerms = _allSortedTerms;
 	
-	for (ListModelAssignedInterface* modelAssign : assignedModel())
+	for (ListModelAssignedInterface* modelAssign : assignedModels())
 	{
 		Terms assignedTerms = modelAssign->terms();
 		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
 			modelAssign->initTerms(assignedTerms, RowControlsValues(), true); // initTerms call removeTermsInAssignedList
-		if (!modelAssign->copyTermsWhenDropped())
-			newTerms.remove(assignedTerms);
+		newTerms.remove(assignedTerms);
 	}
 
 	_setTerms(newTerms, _allSortedTerms);
@@ -201,7 +203,7 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 {
 	_assignedModels.push_back(assignedModel);
 
-	connect(assignedModel,	&ListModelAssignedInterface::destroyed,				this,						&ListModelAvailableInterface::removeAssignedModel		);
+//	connect(assignedModel,	&ListModelAssignedInterface::destroyed,				this,						&ListModelAvailableInterface::removeAssignedModel		);
 	connect(this,			&ListModelAvailableInterface::availableTermsReset,	assignedModel,				&ListModelAssignedInterface::availableTermsResetHandler	);
 	connect(this,			&ListModelAvailableInterface::namesChanged,			assignedModel,				&ListModelAssignedInterface::sourceNamesChanged			);
 	connect(this,			&ListModelAvailableInterface::columnsChanged,		assignedModel,				&ListModelAssignedInterface::sourceColumnsChanged		);
@@ -212,8 +214,8 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 	connect(listView(),		&JASPListControl::containsInteractionsChanged,		assignedModel->listView(),	&JASPListControl::setContainsInteractions				);
 }
 
-void ListModelAvailableInterface::removeAssignedModel(ListModelDraggable* assignedModel)
+void ListModelAvailableInterface::removeAssignedModel(ListModelAssignedInterface *assignedModel)
 {
-	_assignedModels.removeAll(qobject_cast<ListModelAssignedInterface*>(assignedModel));
+	_assignedModels.removeAll(assignedModel);
 }
 
