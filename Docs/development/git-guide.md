@@ -5,6 +5,11 @@ Git ([website](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git))
 
 For those familiar with Git, please read our core principles found in the [Principles section at the bottom](#principles)
 
+### How often do I commit?
+You should commit often, don't think things like "I will commit later this week" or "I will just finish it up perfectly and then commit it".
+It makes sense to commit whenever you implement something, or at the end of the day or something.
+This way you minimize the amount of code you lose [if mishaps occur](#commit-your-changes).
+
 ## Prerequisites
 This guide assumes you have `git` installed [(instructions)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and that you have an account on `GitHub` [(make an account)](https://github.com/join). We recommend that you activate the two-factor authentication [(2FA instructions here)](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) procedure to secure your `GitHub` account.
 
@@ -280,6 +285,7 @@ git push --set-upstream origin myFeatureBranch
 
 #### Commit your changes
 - Committing your changes means that you're happy with the code on your "local" machine and that you would like to commit it to your fork "cloud".
+- A good guideline is to commit *at least once a day* but probably more often.
 - A client shows provides a visual aid on this. For instance, GitHub desktop client shows the changed files nicely and this helps you "committing" changes to your fork. Note, however, that you should be careful with pushing and pulling with such a client; use terminal code `git ...` instead.
 
 When implementing a feature, regularly commit your progress as you code. To commit changes, roughly the following workflow applies.
