@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="Layer_1"
    x="0px"
    y="0px"
-   viewBox="0 0 128 128"
+   viewBox="0 0 64 64"
+   style="enable-background:new 0 0 64 64;"
    xml:space="preserve"
    sodipodi:docname="data-button-new.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
-   width="128"
-   height="128"><metadata
+   inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><metadata
    id="metadata29"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
    id="defs27" /><sodipodi:namedview
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -29,19 +28,21 @@
    guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
-   inkscape:window-width="3832"
-   inkscape:window-height="2076"
+   inkscape:window-width="2014"
+   inkscape:window-height="987"
    id="namedview25"
    showgrid="false"
    inkscape:zoom="11.171875"
-   inkscape:cx="-2.2377606e-08"
-   inkscape:cy="58.060787"
-   inkscape:window-x="0"
-   inkscape:window-y="36"
-   inkscape:window-maximized="1"
-   inkscape:current-layer="g899"
-   inkscape:snap-intersection-paths="true"
-   inkscape:document-rotation="0" />
+   inkscape:cx="25.152448"
+   inkscape:cy="35.490909"
+   inkscape:window-x="1725"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="g22"
+   inkscape:document-rotation="0"
+   inkscape:showpageshadow="2"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1" />
 <style
    type="text/css"
    id="style2">
@@ -54,7 +55,7 @@
 </style>
 <g
    id="g22"
-   transform="matrix(2.8052262,0,0,2.817463,-25.526788,-25.910443)">
+   transform="matrix(1.3894375,0,0,1.3801876,-12.341043,-12.373077)">
 	<g
    id="g20">
 		<g
@@ -62,17 +63,19 @@
 			<line
    class="st0"
    x1="23.92"
-   y1="10.12"
+   y1="16.216263"
    x2="23.92"
    y2="53.880001"
-   id="line4" />
+   id="line4"
+   style="stroke:#000000;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
    y1="35.130001"
    x2="10.04"
    y2="35.130001"
-   id="line6" />
+   id="line6"
+   style="stroke:#000000;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
@@ -86,28 +89,31 @@
    y1="25.75"
    x2="10.04"
    y2="25.75"
-   id="line10" />
+   id="line10"
+   style="stroke:#000000;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
    y1="44.5"
    x2="10.04"
    y2="44.5"
-   id="line12" />
+   id="line12"
+   style="fill:#000000;stroke:#000000;stroke-opacity:1" />
 		</g>
 		<path
    class="st1"
    d="M 52.92,53.88 H 11.08 c -0.58,0 -1.05,-0.38 -1.05,-0.85 V 16.37 h 43.92 v 36.65 c 0.01,0.47 -0.46,0.86 -1.03,0.86 z"
-   id="path16" />
+   id="path16"
+   style="stroke:#000000;stroke-opacity:1" />
 		<path
    class="st2"
    d="M 53.96,16.37 H 10.04 v -5.4 c 0,-0.47 0.47,-0.85 1.05,-0.85 h 41.83 c 0.58,0 1.05,0.38 1.05,0.85 v 5.4 z"
-   id="path18" />
+   id="path18"
+   style="stroke:#000000;stroke-opacity:1" />
 	</g>
-</g>
 <g
    id="g859"
-   transform="matrix(0.96495068,0,0,0.96495068,7.8631835,4.5352835)"><circle
+   transform="matrix(0.33901969,0,0,0.34002727,12.476571,10.940206)"><circle
      style="fill:#00cf00;fill-opacity:1"
      id="path852"
      cx="94.575943"
@@ -132,4 +138,5 @@
        height="3.2912426"
        x="-61.817322"
        y="54.082195"
-       transform="rotate(-90)" /></g></g></svg>
+       transform="rotate(-90)" /></g></g></g>
+</svg>
