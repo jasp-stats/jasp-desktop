@@ -1352,15 +1352,8 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered)
     
 	if(userEntered == "")
 	{
-		if(_type == columnType::scale && _ints[row] != Label::DOUBLE_LABEL_VALUE)
-		{
-			Label * label = labelByIntsId(_ints[row]);
-			
-			if(label && (std::isnan(_dbls[row]) || label->isEmptyValue())) //if user entered nan and dbls is nan then the label can stay where it is
-				return false;
-		}
-		
-		return setValue(row, EmptyValues::missingValueDouble);
+		if (getValue(row) == "")	return false;
+		else						return setValue(row, EmptyValues::missingValueDouble);
 	}
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
