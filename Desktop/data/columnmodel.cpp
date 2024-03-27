@@ -675,7 +675,7 @@ void ColumnModel::setValue(int rowIndex, const QString &value)
 {
 	JASPTIMER_SCOPE(ColumnModel::setValue);
 	
-	if(value == data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString())
+	if(value == data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString() || value == data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString())
 		return; //Its already that value
 	
 	_editing = true;

@@ -206,6 +206,12 @@ std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 	return value;
 }
 
+std::string ColumnUtils::doubleToStringMaxPrec(double dbl)
+{
+	constexpr auto max_precision{std::numeric_limits<long double>::digits10 + 1};
+	return 	doubleToString(dbl, max_precision);
+}
+
 std::string ColumnUtils::doubleToString(double dbl, int precision)
 {
 	JASPTIMER_SCOPE(ColumnUtils::doubleToString);

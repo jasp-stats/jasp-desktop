@@ -834,7 +834,7 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 	beginSynchingData(false);
 	
 	Json::Value originalValue = newLabelValue.toStdString();
-	
+
 	int		anInteger;
 	double	aDouble;
 
@@ -872,7 +872,7 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 	//If the user is changing the value of a column with a integer/double value we want the display/label to also change
 	//But only if its the same
 	if(	label->originalValueAsString(false) == label->labelDisplay() && label->originalValue().isDouble() && originalValue.isDouble())
-		aChange = label->setLabel(originalValue.asString()) || aChange;
+		aChange = label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false)) || aChange;
 	
 	aChange = label->setOriginalValue(originalValue) || aChange;
 	

@@ -135,7 +135,7 @@ FocusScope
 						{
 							anchors.fill:		selectionRectangle
 							acceptedButtons:	Qt.LeftButton
-							cursorShape:		Qt.CrossCursor	
+							cursorShape:		Qt.DragHandCursor	
 							z:					0
 							hoverEnabled: 		true
 

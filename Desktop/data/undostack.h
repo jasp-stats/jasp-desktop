@@ -88,7 +88,8 @@ private:
 	int						_colId		= -1,
 							_labelIndex = -1;
 	QString					_newOriginalValue,
-							_oldOriginalValue;
+							_oldOriginalValue,
+							_oldLabel;
 };
 
 class FilterLabelCommand: public UndoModelCommand

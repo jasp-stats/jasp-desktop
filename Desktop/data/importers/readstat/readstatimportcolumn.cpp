@@ -41,12 +41,12 @@ std::string ReadStatImportColumn::readstatValueToString(const readstat_value_t &
 
 	switch(type)
 	{
-	case READSTAT_TYPE_STRING:		return								(			readstat_string_value(value)	);
-	case READSTAT_TYPE_INT8:		return	std::to_string				(int(		readstat_int8_value(value))		);
-	case READSTAT_TYPE_INT16:		return	std::to_string				(int(		readstat_int16_value(value))	);
-	case READSTAT_TYPE_INT32:		return	std::to_string				(int(		readstat_int32_value(value))	);
-	case READSTAT_TYPE_FLOAT:		return	ColumnUtils::doubleToString	(			readstat_float_value(value)		);
-	case READSTAT_TYPE_DOUBLE:		return	ColumnUtils::doubleToString	(			readstat_double_value(value)	);
+	case READSTAT_TYPE_STRING:		return										(			readstat_string_value(value)	);
+	case READSTAT_TYPE_INT8:		return	std::to_string						(int(		readstat_int8_value(value))		);
+	case READSTAT_TYPE_INT16:		return	std::to_string						(int(		readstat_int16_value(value))	);
+	case READSTAT_TYPE_INT32:		return	std::to_string						(int(		readstat_int32_value(value))	);
+	case READSTAT_TYPE_FLOAT:		return	ColumnUtils::doubleToStringMaxPrec	(			readstat_float_value(value)		);
+	case READSTAT_TYPE_DOUBLE:		return	ColumnUtils::doubleToStringMaxPrec	(			readstat_double_value(value)	);
 	case READSTAT_TYPE_STRING_REF:	throw	std::runtime_error("File contains string references and we do not support this.");
 	}
 

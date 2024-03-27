@@ -1197,7 +1197,7 @@ void DataSetView::_copy(QPoint where, bool clear)
 		for(int r=minRow; r<=maxRow; r++)
 		{
 			vals.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::value)).toString());
-			labs.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::label)).toString());
+			labs.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::label		)).toString());
 		}
 		
 		_lastJaspCopyValues.push_back(vals);

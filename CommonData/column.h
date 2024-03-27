@@ -120,11 +120,7 @@ public:
 			double					labelsTempValueDouble(	size_t tempLabelIndex);
 			int						labelsDoubleValueIsTempLabelRow(double dbl);
 			Label				*	labelDoubleDummy()		{ return _doubleDummy; }
-
-			bool					labelsSyncInts(		const intset	& dataValues);
-			bool					labelsSyncIntsMap(	const intstrmap	& dataValues);
-			strintmap				labelsSyncStrings(	const stringvec	& new_values, const strstrmap &new_labels, bool * changedSomething = nullptr);
-
+			
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
 
@@ -196,7 +192,7 @@ public:
 			Json::Value				serialize()																const;
 			void					deserialize(const Json::Value& info);
 			std::string				getUniqueName(const std::string& name)									const;
-			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false)		const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
+			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false)					const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
 			bool					hasCustomEmptyValues()													const;
 	const   EmptyValues    		*	emptyValues()															const { return _emptyValues; }
 			void					setHasCustomEmptyValues(		bool hasCustom);
