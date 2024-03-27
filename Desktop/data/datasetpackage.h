@@ -284,6 +284,7 @@ signals:
 				void				labelChanged(			QString columnName, QString originalLabel, QString newLabel);
 				void				columnDataTypeChanged(	QString columnName);
 				void				labelsReordered(		QString columnName);
+				void				columnAddedManually(	QString columnName);
 				void				isModifiedChanged();
 				void				enginesPrepareForDataSignal();
 				void				enginesReceiveNewDataSignal();

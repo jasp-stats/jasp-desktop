@@ -23,6 +23,7 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsInserted,				this, &ColumnModel::checkInsertedColumns		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::datasetChanged,				this, &ColumnModel::checkCurrentColumn			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &ColumnModel::emptyValuesChanged			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAddedManually,			this, &ColumnModel::columnAddedManuallyHandler,	Qt::QueuedConnection);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
@@ -433,7 +434,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 	_virtual = data ? (chosenColumn >= data->columnCount()) : true;
 	emit isVirtualChanged();
 
-	subNodeModel()->selectNode(!_virtual ? data->column(chosenColumn) : nullptr);
+	subNodeModel()->selectNode(!_virtual && data ? data->column(chosenColumn) : nullptr);
 
 	_currentColIndex = chosenColumn;
 
@@ -445,9 +446,16 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 
 void ColumnModel::setChosenColumn(const QString & chosenName)
 {
-	DataSet * data = DataSetPackage::pkg()->dataSet();
-	Column* col = data->column(fq(chosenName));
+	DataSet * data	= DataSetPackage::pkg()->dataSet();
+	Column	* col	= data->column(fq(chosenName));
+	
 	setChosenColumn(data->columnIndex(col));
+}
+
+void ColumnModel::columnAddedManuallyHandler(const QString &chosenName) 
+{ 
+	setChosenColumn(chosenName); 
+	setVisible(true);
 }
 
 

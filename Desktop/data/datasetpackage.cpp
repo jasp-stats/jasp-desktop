@@ -1852,51 +1852,44 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	setManualEdits(true); //set manual edits here so external synching is turned off, endSynchingData also just reset it, so thats why it is way down here
 }
 
-QString DataSetPackage::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)
+QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString, QVariant>& props)
 {
-	if(column < 0)
-		column = 0;
+	if(columnIndex < 0)
+		columnIndex = 0;
 
-	if(column > dataColumnCount())
-		column = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
+	if(columnIndex > dataColumnCount())
+		columnIndex = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
 	setManualEdits(true); //Don't synch with external file after editing
 #ifdef ROUGH_RESET
 	beginResetModel();
 #else
-	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), column, column);
+	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), columnIndex, columnIndex);
 #endif
 
-	stringvec changed;
+	_dataSet->insertColumn(columnIndex);
+	
+	Column * column = _dataSet->column(columnIndex);
 
-	_dataSet->insertColumn(column);
-
-	const std::string & name = props.contains("name") ? fq(props["name"].toString()) : freeNewColumnName(column);
-	columnType type = props.contains("type") ? columnType(props["type"].toInt()) : columnType::scale;
-	setColumnName(column, name, false);
-	_dataSet->column(column)->setDefaultValues(type);
-
-	if(props.contains("computed"))
-		_dataSet->column(column)->setCodeType(computedColumnType(props["computed"].toInt()));
+	column->setName(			props.contains("name")		? fq(props["name"].toString())					: freeNewColumnName(columnIndex)	);
+	column->setDefaultValues(	props.contains("type")		? columnType(props["type"].toInt())				: columnType::scale					);
+	column->setCodeType(		props.contains("computed")	? computedColumnType(props["computed"].toInt())	: computedColumnType::notComputed	);
 
 	_dataSet->incRevision();
-
-	changed.push_back(name);
 
 #ifdef ROUGH_RESET
 	endResetModel();
 #else
 	endInsertColumns();
 #endif
-
-	strstrmap		changeNameColumns;
-	stringvec		missingColumns;
-
-	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
+	
+	emit datasetChanged(tq(stringvec{column->name()}), {}, {}, false, true);
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+	
+	emit columnAddedManually(tq(column->name()));
 
-	return QString::fromStdString(name);
+	return QString::fromStdString(column->name());
 }
 
 QString DataSetPackage::appendColumnSpecial(const QMap<QString, QVariant>& props)
