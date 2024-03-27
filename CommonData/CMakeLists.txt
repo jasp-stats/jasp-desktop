@@ -8,10 +8,14 @@
 #
 list(APPEND CMAKE_MESSAGE_CONTEXT CommonData)
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+make_includable(internalDbDefinition.sql internalDbDefinition.h)
 
-add_library(CommonData ${SOURCE_FILES} ${HEADER_FILES})
+file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
+file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB_RECURSE SQL_FILES		"${CMAKE_CURRENT_LIST_DIR}/*.sql")
+
+add_library(CommonData ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
+
 
 if(LINUX)
 

@@ -5,6 +5,10 @@ ComputeColumnWindow         1.0 ComputeColumnWindow.qml
 CreateComputeColumnDialog   1.0 CreateComputeColumnDialog.qml
 DataPanel                   1.0 DataPanel.qml
 DataTableView               1.0 DataTableView.qml
+DataTableViewItem           1.0 DataTableViewItem.qml
+DataTableViewEdit           1.0 DataTableViewEdit.qml
+DataTableViewRowHeader      1.0 DataTableViewRowHeader.qml
+DataTableViewColumnHeader   1.0 DataTableViewColumnHeader.qml
 FilterWindow                1.0 FilterWindow.qml
 JASPDataView                1.0 JASPDataView.qml
 JASPMouseAreaToolTipped     1.0 JASPMouseAreaToolTipped.qml

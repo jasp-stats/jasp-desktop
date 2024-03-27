@@ -270,6 +270,23 @@ void copyQDirRecursively(QDir copyThis, QDir toHere)
 		}
 
 	}
+	
+	
+}
 
+std::vector<string> fq(const std::vector<QString> & vec)
+{
+	std::vector<string> out;
+	out.resize(vec.size());
+	
+	for(const QString & v : vec)
+		out.push_back(fq(v));
+	
+	return out;
+}
 
+std::set<string> fql(const QStringList & from)	
+{ 
+	const std::vector<std::string> vec(fq(from));
+	return std::set<std::string>(vec.begin(), vec.end()); 
 }

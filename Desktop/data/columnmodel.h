@@ -31,7 +31,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool			computedTypeEditable		READ computedTypeEditable										NOTIFY computedTypeEditableChanged		)
 	Q_PROPERTY(QVariantList	computedTypeValues			READ computedTypeValues											NOTIFY computedTypeValuesChanged		)
 	Q_PROPERTY(QString		currentColumnType			READ currentColumnType			WRITE setColumnType				NOTIFY columnTypeChanged				)
-	Q_PROPERTY(QVariantList	columnTypeValues			READ columnTypeValues											CONSTANT								)
+	Q_PROPERTY(QVariantList	columnTypeValues			READ columnTypeValues											NOTIFY columnTypeValuesChanged			)
 	Q_PROPERTY(bool			useCustomEmptyValues		READ useCustomEmptyValues		WRITE setUseCustomEmptyValues	NOTIFY useCustomEmptyValuesChanged		)
 	Q_PROPERTY(QStringList	emptyValues					READ emptyValues				WRITE setCustomEmptyValues		NOTIFY emptyValuesChanged				)
 	Q_PROPERTY(QVariantList	tabs						READ tabs														NOTIFY tabsChanged						)
@@ -41,9 +41,10 @@ class ColumnModel : public DataSetTableProxy
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
 
-	static QMap<computedColumnType, QString>	columnTypeFriendlyName;
+	static QString	columnTypeFriendlyName(		computedColumnType compColT);
+	static QVariant	columnTypeFriendlyMapping(	computedColumnType compColT);
 
-	bool			labelNeedsFilter(size_t col);
+	bool			labelNeedsFilter(qsizetype col);
 	QString			columnNameQ();
 	QString			columnTitle()					const;
 	QString			columnDescription()				const;
@@ -59,6 +60,7 @@ public:
 	bool			setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
 	QVariant		data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant		headerData(int section, Qt::Orientation orientation, int role)							const	override;
+	int				rowCount(const QModelIndex & = QModelIndex())											const	override;
 
 	bool			visible()			const {	return _visible; }
 	int				filteredOut()		const;
@@ -72,10 +74,11 @@ public:
 	Q_INVOKABLE void resetFilterAllows();
 	Q_INVOKABLE void unselectAll();
 	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
-	Q_INVOKABLE void addEmptyValue(QString value);
-	Q_INVOKABLE void removeEmptyValue(QString value);
-	Q_INVOKABLE void resetEmptyValues();
+	Q_INVOKABLE void setValue(int rowIndex, const QString & value);
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
+	Q_INVOKABLE void addEmptyValue(		const QString & value);
+	Q_INVOKABLE void removeEmptyValue(	const QString & value);
+	Q_INVOKABLE void resetEmptyValues();
 	Q_INVOKABLE void undo()				{ _undoStack->undo(); }
 	Q_INVOKABLE void redo()				{ _undoStack->redo(); }
 
@@ -116,6 +119,7 @@ public slots:
 	void openComputedColumn(const QString & name);
 	void checkCurrentColumn( QStringList changedColumns, QStringList missingColumns, QMap<QString, QString>	changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 	void setCompactMode(bool newCompactMode);
+	void languageChangedHandler();
 
 signals:
 	void visibleChanged(bool visible);
@@ -132,6 +136,7 @@ signals:
 	void computedTypeChanged();
 	void computedTypeEditableChanged();
 	void computedTypeValuesChanged();
+	void columnTypeValuesChanged();
 	void columnTypeChanged();
 	void columnIsFilteredChanged();
 	void beforeChangingColumn(int chosenColumn);
@@ -143,9 +148,9 @@ signals:
 	void compactModeChanged();
 	
 private:
-	std::vector<size_t> getSortedSelection()					const;
-	void				setValueMaxWidth();
-	void				clearVirtual();
+	std::vector<qsizetype>	getSortedSelection()					const;
+	void					setValueMaxWidth();
+	void					clearVirtual();
 
 	struct
 	{

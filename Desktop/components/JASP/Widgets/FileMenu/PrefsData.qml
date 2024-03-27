@@ -151,8 +151,8 @@ QTC.ScrollView
 					onClicked:		mainWindow.resetVariableTypes()
 					anchors
 					{
-						top: thresholdScale.top
-						left: thresholdScale.right
+						top:		thresholdScale.top
+						left:		thresholdScale.right
 						leftMargin: jaspTheme.generalAnchorMargin
 					}
 

@@ -107,7 +107,7 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 	QString value = tq(jsonValue.asString());
 	if (!value.isEmpty())
 	{
-		for (auto* button: qAsConst(_buttons))
+		for (auto* button: std::as_const(_buttons))
 		{
 			if (button->name() == value)
 			{

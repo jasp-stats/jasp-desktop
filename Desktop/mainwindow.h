@@ -29,7 +29,7 @@
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
-#include "data/computedcolumnsmodel.h"
+#include "data/computedcolumnmodel.h"
 #include "data/datasettablemodel.h"
 #include "data/fileevent.h"
 #include "data/filtermodel.h"
@@ -49,7 +49,7 @@
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/reporter.h"
 #include "utilities/codepageswindows.h"
@@ -295,7 +295,7 @@ private:
 								*	_dataSetModelVarInfo	= nullptr;
 	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
 	ColumnsModel				*	_columnsModel			= nullptr;
-	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
+	ComputedColumnModel		*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
 	Modules::DynamicModules		*	_dynamicModules			= nullptr;

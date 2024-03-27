@@ -22,11 +22,10 @@
 #include <fstream>
 #include <codecvt>
 #include "otoolstuff.h"
-#include "rbridge.h"
-#include "utils.h"
 #include "dirs.h"
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
+#include "rbridge.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -142,7 +141,10 @@ int main(int argc, char *argv[])
 #endif
 		std::cout << "Engine started in R (Module) Library Fixer mode because it received a single argument: '" << singleArg << "'." << std::endl;
 
-		Engine e(0, 0); //It needs to start to make sure rbridge functions work
+		Engine e(0, 0);
+		
+		rbridge_setEngine(&e);
+		
 
 		_moduleLibraryFixer(singleArg, true, true);
 

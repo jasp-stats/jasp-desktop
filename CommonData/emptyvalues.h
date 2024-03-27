@@ -1,52 +1,46 @@
 #ifndef EMPTYVALUES_H
 #define EMPTYVALUES_H
 
-#include "json/json.h"
 #include "utils.h"
-#include "stringutils.h"
+#include "json/value.h"
 
 class EmptyValues
 {
-protected:
-	typedef std::map<std::string, std::map<int, std::string>>	missingDataMap;
-
 public:
-							EmptyValues();
-							~EmptyValues();
+	explicit					EmptyValues(EmptyValues * parent = nullptr);
+								~EmptyValues();
+								
+			void				resetEmptyValues();
 
-	static	EmptyValues *	singleton() { return _singleton; }
+			void				fromJson(				const Json::Value	& json);
+			Json::Value			toJson() const;
+			
+            bool				isEmptyValue(const std::string & data)				const;
+            bool				isEmptyValue(double				data)           	const;
+			
+	const	stringset		&	emptyStrings()										const;
+	const	stringset		&	emptyStringsColumnModel()							const;
+	const	doubleset		&	emptyDoubles()										const;
+			bool				hasEmptyValues()									const;
+			void				setHasCustomEmptyValues(bool hasThem);
+		    void				setEmptyValues(const stringset	& values);
+			void				setEmptyValues(const stringset	& values, bool custom);
+			
+			static	void		setDisplayString(const std::string & str)	{ _displayString = str;}
+	static	std::string		&	displayString()								{ return _displayString; }
 
-			void			fromJson(				const Json::Value	& json);
-			Json::Value		toJson() const;
-
-	const	stringset &		emptyValues(			const std::string	& colName)								const;
-	const	doubleset &		doubleEmptyValues(		const std::string	& colName)								const;
-	const	stringset &		workspaceEmptyValues()																const;
-	const	doubleset &		workspaceDoubleEmptyValues()														const;
-	const	intstrmap &		missingData(			const std::string	& colName)								const;
-			bool			hasCutomEmptyValues(	const std::string	& colName)								const;
-			void			setWorkspaceEmptyValues(const stringset		& values);
-			void			setCustomEmptyValues(	const std::string	& colName, const stringset	& values);
-			void			setMissingData(			const std::string	& colName, const intstrmap	& data);
-			void			setHasCustomEmptyValues(const std::string	& colName, bool hasCustom);
+	static	const int			missingValueInteger;
+	static	const double		missingValueDouble;
 
 private:
-	void					resetEmptyValues();
-
-	Json::Value				stringSetToJson(const stringset& vec)		const;
-	stringset				jsonToStringSet(const Json::Value& json)	const;
-	doubleset				getDoubleValues(const stringset& values)	const;
-
-
-	missingDataMap						_missingData;
-	stringset							_workspaceEmptyValues;
-	doubleset							_workspaceDoubleEmptyValues;
-	std::map<std::string, stringset>	_customEmptyValuesPerColumn;
-	std::map<std::string, doubleset>	_customDoubleEmptyValuesPerColumn;
-
-	const intstrmap						_emptyMissingData;
-
-	static EmptyValues *				_singleton; //I hope this really is a singleton, but I think there is never more than 1 DataSet active at the same time?
+	
+	
+private:
+	static	std::string			_displayString;
+			EmptyValues		*	_parent					= nullptr;
+			stringset			_emptyStrings;
+			doubleset			_emptyDoubles;
+			bool				_hasEmptyValues			= false;
 };
 
 #endif // EMPTYVALUES_H

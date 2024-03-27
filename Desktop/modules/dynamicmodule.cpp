@@ -549,7 +549,7 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & codedReference) const
 {
-	auto parts = stringUtils::splitString(codedReference, '~');
+	auto parts = stringUtils::split(codedReference, '~');
 
 	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
 				function		= parts.size() > 1 ? parts[1] : parts[0];

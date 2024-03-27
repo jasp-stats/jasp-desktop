@@ -24,28 +24,26 @@
 #include "../readstatimporter.h"
 #include "readstatimportcolumn.h"
 
-//needed for the key of the submap in ReadStatImportDataSet::labelsMapT (otherwise it just compares the pointer probably)
-bool operator<(const readstat_value_t & l, const readstat_value_t & r);
 
 ///
 /// Handles input from ReadStat during importing
 /// Insofar as it pertains to the dataset.
 class ReadStatImportDataSet : public ImportDataSet
 {
-	typedef std::pair<readstat_type_t, std::string>							keyTypeAndLabelT;
-	typedef std::map<std::string, std::map<std::string, keyTypeAndLabelT>>	labelsMapT;
+	typedef std::map<std::string, strstrmap>	labelsMapT;
 public:
-				ReadStatImportDataSet(ReadStatImporter * importer, std::function<void(int)>	progressCallback)
-					: ImportDataSet(importer), _progressCallback(progressCallback) {}
+								ReadStatImportDataSet(ReadStatImporter * importer, std::function<void(int)>	progressCallback);
 
-				~ReadStatImportDataSet()					override;
+								~ReadStatImportDataSet()					override;
 
-	int			var_count()							const	{ return _var_count; }
-	void		setVariableCount(int newCount)				{ _var_count = newCount; }
+	int							var_count()							const	{ return _var_count; }
+	void						setVariableCount(int newCount)				{ _var_count = newCount; }
 
 	void						addLabelKeyValue(	const std::string & labelsID, const readstat_value_t & key, const std::string & label);
-	const std::string		&	getLabel(			const std::string & labelsID, const readstat_value_t & key);
 	void						setLabelsToColumns();
+
+	void						addNote(int note_index, const std::string & note);
+	const std::string		&	description() const override;
 
 	void						addColumn(int index, ReadStatImportColumn * col); //Calls hidden virtual function addColumn(ImportColumn*)
 	ReadStatImportColumn	*	column(int index);
@@ -54,7 +52,8 @@ public:
 	void						setExpectedRows(int rows)	{ _expectedRows = rows; }
 	void						setCurrentRow(int row);
 	void						incrementRow()				{ setCurrentRow(_currentRow + 1); }
-
+	
+	
 private:
 	labelsMapT								_labelMap;
 	int										_var_count			= 0;
@@ -62,6 +61,7 @@ private:
 	int										_expectedRows		= 0,
 											_currentRow			= 0;
 	std::function<void(int)>				_progressCallback;
+	stringvec								_notes;
 };
 
 #endif // ReadStatImportDataSet_H

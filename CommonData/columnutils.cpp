@@ -1,6 +1,6 @@
 #include "columnutils.h"
 #include "utils.h"
-#include "emptyvalues.h"
+//#include "emptyvalues.h"
 
 #ifndef IGNORE_BOOST
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -8,13 +8,11 @@
 #endif
 #include <codecvt>
 #include <regex>
+#include "emptyvalues.h"
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
-
-
-string					ColumnUtils::emptyValue							= "";
 
 bool ColumnUtils::getIntValue(const string &value, int &intValue)
 {
@@ -50,7 +48,7 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 
 		if (modf(value, &intPart) == 0.0)
 		{
-			if (intPart <=  std::numeric_limits<int>::max() && intPart >= std::numeric_limits<int>::lowest())
+			if (intPart <=  std::numeric_limits<int>::max() && intPart >= EmptyValues::missingValueInteger)
 			{
 				intValue = int(intPart);
 				return true;
@@ -64,9 +62,15 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 
 bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 {
+	if(value == "∞" || value == "-∞")
+	{
+		doubleValue = std::numeric_limits<double>::infinity() * (value == "-∞" ? -1 : 1);
+		return true;
+	}
+	
 	try
 	{
-		doubleValue = boost::lexical_cast<double>(value);
+		doubleValue = boost::lexical_cast<double>(deEuropeaniseForImport(value));
 		return true;
 	}
 	catch (...) {}
@@ -74,19 +78,84 @@ bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 	return false;
 }
 
+doubleset ColumnUtils::getDoubleValues(const stringset & values, bool stripNAN)
+{
+	doubleset result;
+	for (const std::string & val : values)
+	{
+		double doubleValue;
+		if (getDoubleValue(val, doubleValue) && !std::isnan(doubleValue))
+			result.insert(doubleValue);
+	}
+
+	return result;
+}
 
 bool ColumnUtils::isDoubleValue(const string &value)
 {
-	try
-	{
-		boost::lexical_cast<double>(value);
-		return true;
-	}
-	catch (...)	{}
-
-	return false;
+	static double last;
+	return getDoubleValue(value, last);
 }
 
+
+bool ColumnUtils::convertVecToInt(const stringvec &values, intvec & intValues, intset & uniqueValues)
+{
+	JASPTIMER_SCOPE(ColumnUtils::convertVecToInt);
+	
+	uniqueValues.clear();
+	intValues.clear();
+	intValues.reserve(values.size());
+	
+	int row = 0;
+	
+	for (const std::string &value : values)
+	{
+		int intValue = EmptyValues::missingValueInteger;
+		
+		if (ColumnUtils::getIntValue(value, intValue))
+		{
+			if (intValue != EmptyValues::missingValueInteger)
+				uniqueValues.insert(intValue);
+			
+			intValues.push_back(intValue);
+		}
+		else
+		{
+			std::vector<int>().swap(intValues); //this clears intValues and guarentees its memory is released
+			return false;
+		}
+		
+		row++;
+	}
+	
+	return true;
+}
+
+bool ColumnUtils::convertVecToDouble(const stringvec & values, doublevec & doubleValues)
+{
+	JASPTIMER_SCOPE(ColumnUtils::convertVecToDouble);
+	
+	doubleValues.clear();
+	doubleValues.resize(values.size());
+	
+	int row = 0;
+	for (const std::string & value : values)
+	{
+		double doubleValue = static_cast<double>(EmptyValues::missingValueDouble);
+		
+		if (ColumnUtils::getDoubleValue(value, doubleValue))
+			doubleValues[row] = doubleValue;
+		else
+		{
+			std::vector<double>().swap(doubleValues); //this clears doubleValues and guarentees its memory is released
+			return false;
+		}
+		
+		row++;
+	}
+	
+	return true;
+}
 
 std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 {
@@ -137,55 +206,12 @@ std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 	return value;
 }
 
-bool ColumnUtils::convertValueToIntForImport(const std::string &strValue, int &intValue)
-{
-	JASPTIMER_SCOPE(ColumnUtils::convertValueToIntForImport);
-	
-	if(isEmptyValue(strValue, EmptyValues::singleton()->workspaceEmptyValues()))
-		intValue = std::numeric_limits<int>::lowest();
-	else
-	{
-		if (!ColumnUtils::getIntValue(strValue, intValue))
-			return false;
-	}
-
-	return true;
-}
-
-bool ColumnUtils::convertValueToDoubleForImport(const std::string & strValue, double & doubleValue)
-{
-	std::string v = deEuropeaniseForImport(strValue);
-
-	if(isEmptyValue(v, EmptyValues::singleton()->workspaceEmptyValues()))
-		doubleValue = NAN;
-	
-	else if (!ColumnUtils::getDoubleValue(v, doubleValue))
-		return false;
-	
-	return true;
-}
-
-bool ColumnUtils::isEmptyValue(const std::string & val, const stringset & emptyValues)
-{
-	if (val.empty()) return true;
-
-	return emptyValues.count(val);
-}
-
-bool ColumnUtils::isEmptyValue(const double val, const doubleset & doubleEmptyValues)
-{
-	if (std::isnan(val)) return true;
-
-	// Don't use doubleEmptyValues.contains(val): if values contains nan, then it returns always true...
-	for (double d : doubleEmptyValues)
-		if (!std::isnan(d) && d == val)
-			return true;
-	return false;
-}
-
 std::string ColumnUtils::doubleToString(double dbl, int precision)
 {
 	JASPTIMER_SCOPE(ColumnUtils::doubleToString);
+	
+	if (dbl > std::numeric_limits<double>::max())		return "∞";
+	if (dbl < std::numeric_limits<double>::lowest())	return "-∞";
 	
 	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
 	conv << std::setprecision(precision);

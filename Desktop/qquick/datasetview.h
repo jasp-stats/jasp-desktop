@@ -60,6 +60,8 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QItemSelectionModel *	selection				READ selectionModel											NOTIFY selectionModelChanged		)
 	Q_PROPERTY(	QPoint					selectionStart			READ selectionStart			WRITE setSelectionStart			NOTIFY selectionStartChanged		)
 	Q_PROPERTY(	QPoint					selectionEnd			READ selectionEnd			WRITE setSelectionEnd			NOTIFY selectionEndChanged			)
+	Q_PROPERTY(	QPoint					selectionMin			READ selectionMin											NOTIFY selectionMinChanged			)
+	Q_PROPERTY(	QPoint					selectionMax			READ selectionMax											NOTIFY selectionMaxChanged			)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
 	
 public:
@@ -98,7 +100,9 @@ public:
 	bool					expandDataSet()						const	{ return _model ? _model->expandDataSet() : false;			}
 	QPoint					selectionStart()					const	{ return _selectionStart;			}
 	QPoint					selectionEnd()						const	{ return _selectionEnd;				}
-	bool					editing()							const	{ return _editing;		}
+	QPoint					selectionMin()						const;
+	QPoint					selectionMax()						const;
+	bool					editing()							const	{ return _editing;					}
 
 	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)					{ return _columnHeaderItems.count(col) 	> 0	? _columnHeaderItems[col]->item : nullptr;	}
 	Q_INVOKABLE QQuickItem*	getRowHeader(	int row)					{ return _rowNumberItems.count(row) 	> 0 ? _rowNumberItems[row]->item	: nullptr;	}
@@ -156,6 +160,9 @@ signals:
 	
 	void		selectionStartChanged(	QPoint selectionStart);
 	void		selectionEndChanged(	QPoint selectionEnd);
+	void		selectionMinChanged();
+	void		selectionMaxChanged();
+	
 	void		editingChanged(bool shiftSelectActive);
 
 	void		selectionBudgesUp();
@@ -192,9 +199,6 @@ public slots:
 	bool		isColumnHeader	(const QPoint& p) { return p.x() >= 0	&& p.y() == -1; }
 	bool		isRowHeader		(const QPoint& p) { return p.x() == -1	&& p.y() >= 0;	}
 	bool		isCell			(const QPoint& p) { return p.x() >= 0	&& p.y() >= 0;	}
-
-
-
 
 	void		cut(	QPoint where = QPoint(-1,-1)) { _copy(where, true);  }
 	void		copy(	QPoint where = QPoint(-1,-1)) { _copy(where, false); }
@@ -237,7 +241,7 @@ public slots:
 	void		onDataModeChanged(bool dataMode);
 	void		commitLastEdit();
 
-	int			setColumnType(int columnIndex, int newColumnType)	{ return _model->setColumnType(columnIndex, newColumnType); }
+	void		setColumnType(int columnIndex, int newColumnType);
 protected:
 	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
@@ -303,38 +307,39 @@ protected:
 	std::map<size_t, std::map<size_t, unsigned char>>		_storedLineFlags;
 	std::map<size_t, std::map<size_t, QString>>				_storedDisplayText;
 	static DataSetView									*	_lastInstancedDataSetView;
-	
-	bool		_cacheItems				= true,
-				_recalculateCellSizes	= false,
-				_ignoreViewpoint		= true,
-				_linesWasChanged		= false,
-				_editing				= false;
-	double		_dataRowsMaxHeight,
-				_dataWidth				= -1,
-				_rowNumberMaxWidth		= 0,
-				_viewportX				= 0,
-				_viewportY				= 0, 
-				_viewportW				= 1, 
-				_viewportH				= 1;
-	int			_itemHorizontalPadding	= 8,
-				_itemVerticalPadding	= 8,
-				_previousViewportColMin = -1,
-				_previousViewportColMax = -1,
-				_previousViewportRowMin = -1,
-				_previousViewportRowMax = -1,
-				_viewportMargin			=  1,
-				_currentViewportColMin	= -1,
-				_currentViewportColMax	= -1,
-				_currentViewportRowMin	= -1,
-				_currentViewportRowMax	= -1,
-				_prevEditRow			= -1,
-				_prevEditCol			= -1;
-	size_t		_linesActualSize		= 0;
-	long		_selectScrollMs			= 0;
-	QPoint		_selectionStart			= QPoint(-1, -1),
-				_selectionEnd			= QPoint(-1, -1);
-	std::vector<Json::Value>	_copiedColumns;
-	QString						_lastJaspCopyIntoClipboard;
+	bool													_cacheItems				= false,
+															_recalculateCellSizes	= false,
+															_ignoreViewpoint		= true,
+															_linesWasChanged		= false,
+															_editing				= false;
+	double													_dataRowsMaxHeight,
+															_dataWidth				= -1,
+															_rowNumberMaxWidth		= 0,
+															_viewportX				= 0,
+															_viewportY				= 0, 
+															_viewportW				= 1, 
+															_viewportH				= 1;
+	int														_itemHorizontalPadding	= 8,
+															_itemVerticalPadding	= 8,
+															_previousViewportColMin = -1,
+															_previousViewportColMax = -1,
+															_previousViewportRowMin = -1,
+															_previousViewportRowMax = -1,
+															_viewportMargin			=  1,
+															_currentViewportColMin	= -1,
+															_currentViewportColMax	= -1,
+															_currentViewportRowMin	= -1,
+															_currentViewportRowMax	= -1,
+															_prevEditRow			= -1,
+															_prevEditCol			= -1;
+	size_t													_linesActualSize		= 0;
+	long													_selectScrollMs			= 0;
+	QPoint													_selectionStart			= QPoint(-1, -1),
+															_selectionEnd			= QPoint(-1, -1);
+	std::vector<Json::Value>								_copiedColumns;
+	QString													_lastJaspCopyIntoClipboard;
+	std::vector<qstringvec>									_lastJaspCopyValues,
+															_lastJaspCopyLabels;
 
 
 };
