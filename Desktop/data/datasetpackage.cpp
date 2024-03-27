@@ -1887,7 +1887,8 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames());
 	
-	emit columnAddedManually(tq(column->name()));
+	if(column->codeType() == computedColumnType::constructorCode || column->codeType() == computedColumnType::rCode)
+		emit columnAddedManually(tq(column->name())); //Will trigger setChosenColumn and setVisible(true) on ColumnModel, showing it to the user
 
 	return QString::fromStdString(column->name());
 }

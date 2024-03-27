@@ -18,11 +18,8 @@
 
 
 #include "ribbonmodel.h"
-#include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
 #include "log.h"
-#include "data/datasetpackage.h"
-#include "jasptheme.h"
 #include "qquick/datasetview.h"
 #include "mainwindow.h"
 
@@ -123,10 +120,16 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	//_entriesInsert and _entriesDelete are destroyed by the menumodel destructor when the button gets destroyed.
 	_entriesInsert = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(-1,false,false);		},	"insert-column-before",			fq(tr("Insert column before")),	true,		"menu-column-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(-1,false,false);		},	"insert-column-after",			fq(tr("Insert column after")),	true,		"menu-column-insert-after"),
-		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(-1);					},	"insert-row-before",			fq(tr("Insert row above")),		true,		"menu-row-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(-1);						},	"insert-row-after",				fq(tr("Insert row below")),		true,		"menu-row-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(	-1);				},	"insert-row-before",			fq(tr("Insert row above")),					true,		"menu-row-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(		-1);				},	"insert-row-after",				fq(tr("Insert row below")),					true,		"menu-row-insert-after"),
+		new AnalysisEntry(),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,false,false);	},	"insert-column-before",			fq(tr("Insert column before")),				true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,false,false);	},	"insert-column-after",			fq(tr("Insert column after")),				true,		"menu-column-insert-after"),
+		new AnalysisEntry(),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,false);	},	"insert-c-column-before",		fq(tr("Insert constructor column before")),	true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,false);	},	"insert-c-column-after",		fq(tr("Insert constructor column after")),	true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,true);		},	"insert-r-column-before",		fq(tr("Insert R column before")),			true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,true);		},	"insert-r-column-after",		fq(tr("Insert R column after")),			true,		"menu-column-insert-after"),
 	});
 	
 	_entriesDelete = new AnalysisEntries(

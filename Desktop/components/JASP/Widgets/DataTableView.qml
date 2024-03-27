@@ -105,19 +105,8 @@ FocusScope
 					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },			icon: "menu-undo",			enabled: dataTableView.view.undoText() !== ""	},
 					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },			icon: "menu-redo",			enabled: dataTableView.view.redoText() !== ""	},
 				]
-
-				if(!isVirtual && (isCell || isColHeader))
-				{
-					menuModel.push({ text: "---" });
-					if (isCell)
-						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
-					menuModel.push(
-						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
-						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
-						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
-
-				 }
-
+				
+				
 				if(!isVirtual && (isCell || isRowHeader))
 				{
 					menuModel.push({ text: "---" })
@@ -129,59 +118,57 @@ FocusScope
 						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
 				}
 
-				var menuText = []
-				var menuShortcuts = []
-				var menuFunctions = []
-				var menuIcons = []
-				var menuEnabled = []
+				if(!isVirtual && (isCell || isColHeader))
+				{
+					menuModel.push({ text: "---" });
+					if (isCell)
+						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+					menuModel.push(
+						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },									icon: "menu-column-remove"			},
+						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex)				},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex)				},	icon: "menu-column-insert-after"	},
+						{ text:	"---" },
+						{ text: qsTr("Insert constructor column before"),							func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, false)	},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert constructor column after"),							func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, false)	},	icon: "menu-column-insert-after"	},
+						{ text: qsTr("Insert R column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, true)	},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert R column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, true)	},	icon: "menu-column-insert-after"	}
+						)
+
+				 }
+
+				var menuText		= []
+				var menuShortcuts	= []
+				var menuFunctions	= []
+				var menuIcons		= []
+				var menuEnabled		= []
 
 				for (var i = 0; i < menuModel.length; i++)
 				{
 					var menu = menuModel[i]
-					menuText.push(menu["text"])
-					if (menu.hasOwnProperty("func"))
-						menuFunctions.push(menu["func"])
-					else
-						menuFunctions.push(function() {})
-					if (menu.hasOwnProperty("icon"))
-						menuIcons.push(jaspTheme.iconPath + menu["icon"] + ".svg")
-					else
-						menuIcons.push("")
-					if (menu.hasOwnProperty("shortcut"))
-						menuShortcuts.push(menu["shortcut"])
-					else
-						menuShortcuts.push("")
-					if (menu.hasOwnProperty("enabled"))
-						menuEnabled.push(menu["enabled"])
-					else
-						menuEnabled.push(true)
+					
+					menuText		.push(!menu.hasOwnProperty("text")		? "???"			: menu["text"]								)
+					menuFunctions	.push(!menu.hasOwnProperty("func")		? function() {} : menu["func"]								)
+					menuIcons		.push(!menu.hasOwnProperty("icon")		? ""			: jaspTheme.iconPath + menu["icon"] + ".svg")
+					menuShortcuts	.push(!menu.hasOwnProperty("shortcut")	? ""			: menu["shortcut"]							)
+					menuEnabled		.push(!menu.hasOwnProperty("enabled")	? true			: menu["enabled"]							)
 				}
 
 				var props = {
-					"hasIcons": true,
+					"hasIcons":		true,
 					"model":		menuText,
+					"icons":		menuIcons,
+					"shortcut":		menuShortcuts,
+					"enabled":		menuEnabled,
 					"functionCall": function (index)
 					{
 						menuFunctions[index]();
-
 						customMenu.hide()
-					},
-					"icons": menuIcons,
-					"shortcut": menuShortcuts,
-					"enabled": menuEnabled
+					}
 				};
-
-				//customMenu.scrollOri.x	= __JASPDataViewRoot.contentX;
-				//customMenu.scrollOri.y	= 0;
 
 				var fromItemPos = fromItem.mapFromGlobal(globalPos.x, globalPos.y)
 
 				customMenu.show(fromItem, props, fromItemPos.x, fromItemPos.y);
-
-				//customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (__JASPDataViewRoot.contentX - customMenu.scrollOri.x); });
-				//customMenu.menuScroll.y	= 0;
-				//customMenu.menuMinIsMin	= true
-				//customMenu.menuMaxPos.x	= __JASPDataViewRoot.width + __JASPDataViewRoot.x
 			}
 
 			Keys.onPressed: (event) =>
