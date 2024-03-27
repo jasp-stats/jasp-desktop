@@ -235,6 +235,15 @@ Rectangle
 					dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex)
 			}
 		}
+		
+		onPositionChanged:	(mouseEvent) =>
+		{
+			if(ribbonModel.dataMode && Boolean(mouseEvent.modifiers & Qt.ShiftModifier))
+			{
+				dataTableView.view.pollSelectScroll(-1, columnIndex)
+				dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
+			}
+		}
 
 		hoverEnabled:		true
 		ToolTip.visible:	containsMouse

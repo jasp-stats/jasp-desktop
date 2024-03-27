@@ -672,8 +672,8 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::finishCurrentEdit,				DataSetView::lastInstancedDataSetView(),	&DataSetView::commitLastEdit);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertBefore);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
-	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDelete);
-	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDelete);
+	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDeleteSelected);
+	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDeleteSelected);
 	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::lastInstancedDataSetView(),	&DataSetView::cellsClear);
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::redo);

@@ -86,8 +86,6 @@ public:
 	double					viewportW()							const	{ return _viewportW;				}
 	double					viewportH()							const	{ return _viewportH;				}
 
-	QPoint					selectionTopLeft()					const;
-
 	QQmlComponent		*	itemDelegate()						const	{ return _itemDelegate;				}
 	QQmlComponent		*	rowNumberDelegate()					const	{ return _rowNumberDelegate;		}
 	QQmlComponent		*	columnHeaderDelegate()				const	{ return _columnHeaderDelegate;		}
@@ -209,11 +207,13 @@ public slots:
 	QString		columnInsertAfter(			int col = -1,	bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
-	void		columnsDelete();
+	void		columnsDeleteSelected();
+	void		columnsDelete(				int row);
 	void		rowSelect(					int row,		bool shiftPressed = false, bool rightClicked = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
-	void		rowsDelete();
+	void		rowsDelete(					int row);
+	void		rowsDeleteSelected();
 	void		cellsClear();
 
 	void		columnsAboutToBeInserted(	const QModelIndex &parent, int first, int last);

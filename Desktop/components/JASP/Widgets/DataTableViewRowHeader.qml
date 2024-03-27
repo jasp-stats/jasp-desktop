@@ -35,5 +35,14 @@ Rectangle
 								if(mouseEvent.button === Qt.RightButton)
 									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
 							}
+		
+		onPositionChanged:	(mouseEvent) =>
+		{
+			if(ribbonModel.dataMode && Boolean(mouseEvent.modifiers & Qt.ShiftModifier))
+			{
+				dataTableView.view.pollSelectScroll(rowIndex, -1)
+				dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
+			}
+		}
 	}
 }

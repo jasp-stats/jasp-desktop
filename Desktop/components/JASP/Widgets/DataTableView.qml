@@ -115,7 +115,7 @@ FocusScope
 					menuModel.push(
 						{ text: qsTr("Insert row above"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 						{ text: qsTr("Insert row below"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
+						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete(			rowIndex);},	icon: "menu-row-remove"				})
 				}
 
 				if(!isVirtual && (isCell || isColHeader))
@@ -124,7 +124,7 @@ FocusScope
 					if (isCell)
 						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
 					menuModel.push(
-						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },									icon: "menu-column-remove"			},
+						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete(		columnIndex) },					icon: "menu-column-remove"			},
 						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex)				},	icon: "menu-column-insert-before"	},
 						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex)				},	icon: "menu-column-insert-after"	},
 						{ text:	"---" },
