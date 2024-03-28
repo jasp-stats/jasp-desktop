@@ -193,8 +193,8 @@ ScrollView
 				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
 				checked:			preferencesModel.generateMarkdown
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
-
-				KeyNavigation.tab:		cleanModulesFolder
+				visible:			preferencesModel.developerMode
+				KeyNavigation.tab:	cleanModulesFolder
 
 			}
 	
