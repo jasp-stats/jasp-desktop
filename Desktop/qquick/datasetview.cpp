@@ -153,8 +153,11 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 					
 					if (roles.contains(Qt::DisplayRole))
 					{
-						context->setContextProperty("itemText",		_model->data(row, col));
-						context->setContextProperty("itemLabel",	_model->data(row, col, _model->getRole("label")));
+						//Changes here should be considered also for DataSetView::setStyleDataItem:
+						context->setContextProperty("itemText",			_model->data(row, col));
+						context->setContextProperty("itemShadowText",	_model->data(row, col, _model->getRole("shadowDisplay")));
+						context->setContextProperty("itemLabel",		_model->data(row, col, _model->getRole("label")));
+						context->setContextProperty("itemValue",		_model->data(row, col, _model->getRole("value")));
 					}
 				}
 			}
@@ -1666,9 +1669,14 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
+	
 
+	//The first four also get updated in DataSetView::modelDataChanged!
+	//If adding or changes behaviour also do that there
 	previousContext->setContextProperty("itemText",			text);
+	previousContext->setContextProperty("itemShadowText",	_model->data(row, col, _model->getRole("shadowDisplay")));
 	previousContext->setContextProperty("itemLabel",		_model->data(row, col, _model->getRole("label")));
+	previousContext->setContextProperty("itemValue",		_model->data(row, col, _model->getRole("value")));
 	previousContext->setContextProperty("itemActive",		active);
 	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("itemSelected",		_model->data(row, col, _model->getRole("selected")));

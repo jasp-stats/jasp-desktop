@@ -28,14 +28,14 @@ Item
 	Text
 	{
 		id:						itemDelegateLabel
-		text:					itemLabel ? itemLabel : ""
+		text:					itemShadowText ? itemShadowText : ""
 		textFormat:				Text.RichText
 		color:					jaspTheme.textDisabled
 		font:					jaspTheme.font
 		verticalAlignment:		Text.AlignVCenter
 		horizontalAlignment:	Text.AlignRight
 		elide:					Text.ElideRight
-		visible:				itemLabel !== undefined && itemText !== undefined && itemText !== itemLabel
+		visible:				itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
 		width:					Math.max(0, parent.width - itemDelegateText.width)
 		anchors
 		{

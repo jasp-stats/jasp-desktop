@@ -906,15 +906,16 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue) const
 
 std::string Column::getDisplay(size_t row, bool fancyEmptyValue) const
 {
-	if (row < rowCount())
-	{
-		if (_type == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue);
-		else
-			return _getLabelDisplayStringByValue(_ints[row]);
-	}
-	
-	return fancyEmptyValue ? EmptyValues::displayString() : "";
+	return _type == columnType::scale	
+		?	getValue(row, fancyEmptyValue)
+		:	getLabel(row, fancyEmptyValue);
+}
+
+std::string Column::getShadow(size_t row, bool fancyEmptyValue) const
+{
+	return _type != columnType::scale	
+		?	getValue(row, fancyEmptyValue)
+		:	getLabel(row, fancyEmptyValue);
 }
 
 std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue) const

@@ -503,7 +503,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 
 		switch(role)
 		{
-		case Qt::DisplayRole:						return tq((*column)[index.row()]);
+		case Qt::DisplayRole:						return tq(column->getDisplay(index.row()));
+		case int(specialRoles::shadowDisplay):		return tq(column->getShadow(index.row()));
 		case int(specialRoles::label):				return tq(column->getLabel(index.row(), false, true));
 		case int(specialRoles::description):		return tq(column->description());
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
