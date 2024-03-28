@@ -390,7 +390,7 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 #endif
 
 	//Create column entry
-	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, isComputed, analysisId) VALUES (?, ?, ?, ?, 0, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
+	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
 	{
 		sqlite3_bind_int(stmt,	1, dataSetId);
 		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
@@ -951,22 +951,17 @@ void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
 
-	// The isComputed is not longer needed in the database (this can be deduced by codeType), but for downgrade purpose, the isComputed is still needed.
-	// In 0.19 we can remove it from the database.
-	bool isComputed = codeType != computedColumnType::notComputed && codeType != computedColumnType::analysisNotComputed;
-
-	runStatements("UPDATE Columns SET isComputed=?, invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	runStatements("UPDATE Columns SET invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=? WHERE id=?;", [&](sqlite3_stmt * stmt)
 	{
 		std::string codeT = computedColumnTypeToString(codeType);
 
-		sqlite3_bind_int(stmt,  1, int(isComputed));
-		sqlite3_bind_int(stmt,  2, int(invalidated));
-		sqlite3_bind_text(stmt, 3, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 4, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 6, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,  7, analysisId);
-		sqlite3_bind_int(stmt,  8, columnId);
+		sqlite3_bind_int(stmt,  1, int(invalidated));
+		sqlite3_bind_text(stmt, 2, codeT.c_str(),				codeT.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 3, rCode.c_str(),				rCode.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, error.c_str(),				error.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,  6, analysisId);
+		sqlite3_bind_int(stmt,  7, columnId);
 	});
 }
 
