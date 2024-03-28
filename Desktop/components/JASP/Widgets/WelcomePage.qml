@@ -75,7 +75,7 @@ FocusScope
 				id:				welcomeToJASP
 				text:			qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
-				font.family:	jaspTheme.font
+				font.family:	jaspTheme.font.family
 				font.pixelSize: 30 * welcomeRoot.scaler
 				font.weight:	Font.Bold
 				renderType:		Text.QtRendering
@@ -93,7 +93,7 @@ FocusScope
 				id:				version
 				text:			mainWindow.versionString()
 				color:			jaspTheme.white
-				font.family:	jaspTheme.font
+				font.family:	jaspTheme.font.family
 				font.pixelSize: 14 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
@@ -125,7 +125,7 @@ FocusScope
 				id:				freshAndFunky
 				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
-				font.family:	jaspTheme.font
+				font.family:	jaspTheme.font.family
 				font.pixelSize: 16 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
@@ -162,7 +162,7 @@ FocusScope
 				{
 					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
 					text:				modelData
-					font.family:		jaspTheme.font
+					font.family:		jaspTheme.font.family
 					font.pixelSize:		freshAndFunky.font.pixelSize
 					//font.weight:		Font.Bold
 					verticalAlignment:	Text.AlignVCenter
@@ -181,7 +181,7 @@ FocusScope
 					Layout.leftMargin:	10
 					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
 					text:				modelData
-					font.family:		jaspTheme.font
+					font.family:		jaspTheme.font.family
 					font.pixelSize:		freshAndFunky.font.pixelSize
 					Layout.preferredWidth:	560 * welcomeRoot.scaler
 					//font.weight:		Font.Thin
@@ -235,7 +235,7 @@ FocusScope
 				text:					qsTr("So open a data file and take JASP for a spin!").replace(/, /g, ",&nbsp;")
 				color:					jaspTheme.black
 				font.underline:			openDataFileMouse.containsMouse
-				font.family:			jaspTheme.font
+				font.family:			jaspTheme.font.family
 				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
 				renderType:				Text.QtRendering
 				textFormat:				Text.StyledText
@@ -280,7 +280,7 @@ FocusScope
 					id:						downloadNewJASP
 					anchors.centerIn:		parent
 					text:					qsTr("Click to get latest version").replace(/, /g, ",&nbsp;")
-					font.family:			jaspTheme.font
+					font.family:			jaspTheme.font.family
 					font.pixelSize:			openADataFile.font.pixelSize + (downloadMouseArea.containsMouse ? 4 * welcomeRoot.scaler : 0)
 					font.weight:			Font.Bold
 					color:					jaspTheme.white

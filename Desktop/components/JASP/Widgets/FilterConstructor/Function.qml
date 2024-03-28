@@ -108,8 +108,9 @@ Item
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
 
-			text: funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
-			font.pixelSize: filterConstructor.fontPixelSize
+			text:				funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
+			font.pixelSize:		filterConstructor.fontPixelSize
+			font.family:		jaspTheme.font.family
 
 			visible: !functionImg.visible
 		}
@@ -151,18 +152,19 @@ Item
 
 	Text
 	{
-		id:				haakjesLinks
-		anchors.top:	meanBar.top
-		anchors.bottom: parent.bottom
+		id:						haakjesLinks
+		anchors.top:			meanBar.top
+		anchors.bottom:			parent.bottom
 
-		x:				functionDef.width + functionDef.x
+		x:						functionDef.width + functionDef.x
 
 		verticalAlignment:		Text.AlignVCenter
 		horizontalAlignment:	Text.AlignHCenter
 
-		width: showParentheses ? filterConstructor.blockDim / 3 : 0
-		text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
-		font.pixelSize: filterConstructor.fontPixelSize
+		width:					showParentheses ? filterConstructor.blockDim / 3 : 0
+		text:					! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
+		font.pixelSize:			filterConstructor.fontPixelSize
+		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
 
 		Rectangle
@@ -340,15 +342,16 @@ Item
 
 				Text
 				{
-					id: comma
-					text: index < funcRoot.parameterNames.length - 1 ? "," : ""
+					id:					comma
+					text:				index < funcRoot.parameterNames.length - 1 ? "," : ""
 
-					font.pixelSize: filterConstructor.fontPixelSize
-					color:					jaspTheme.textEnabled
-					anchors.top: parent.top
-					anchors.bottom: parent.bottom
+					font.pixelSize:		filterConstructor.fontPixelSize
+					font.family:		jaspTheme.font.family
+					color:				jaspTheme.textEnabled
+					anchors.top:		parent.top
+					anchors.bottom:		parent.bottom
 
-					anchors.left: spot.right
+					anchors.left:		spot.right
 				}
 			}
 		}
@@ -361,12 +364,13 @@ Item
 		anchors.bottom: parent.bottom
 		x:				dropRow.x + dropRow.width
 
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		horizontalAlignment:	Text.AlignHCenter
 
-		width: showParentheses ? filterConstructor.blockDim / 3 : 0
-		text: !showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
-		font.pixelSize: filterConstructor.fontPixelSize
+		width:					 showParentheses ? filterConstructor.blockDim / 3 : 0
+		text:					!showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
+		font.pixelSize:			filterConstructor.fontPixelSize
+		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
 
 		Rectangle

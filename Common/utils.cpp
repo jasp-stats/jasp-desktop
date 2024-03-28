@@ -60,6 +60,21 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 	return filetype;
 }
 
+const string &Utils::currentDateTime()
+{
+	static std::string currentDateTimeCache;
+
+	auto now = std::chrono::system_clock::now();
+	auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+
+	currentDateTimeCache = ss.str();
+
+	return currentDateTimeCache;
+}
+
 long Utils::currentMillis()
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -227,6 +242,7 @@ bool Utils::isEqual(const double a, const double b)
 
 	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<double>::epsilon()));
 }
+
 bool Utils::isEqual(const float a, const float b)
 {
 	if (isnan(a) || isnan(b)) return (isnan(a) && isnan(b));

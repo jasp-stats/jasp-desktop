@@ -18,20 +18,16 @@
 #include "engine.h"
 
 #include <sstream>
-#include <cstdio>
 
-//#include "../Common/analysisloader.h"
-#include <boost/bind.hpp>
 #include "tempfiles.h"
 #include "utils.h"
 #include "columnutils.h"
-#include <csignal>
-
+#include "processinfo.h"
 #include "rbridge.h"
 #include "timers.h"
 #include "log.h"
 #include "databaseinterface.h"
-
+#include "r_functionwhitelist.h"
 
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
 bool PollMessagesFunctionForJaspResults()
@@ -46,7 +42,7 @@ bool PollMessagesFunctionForJaspResults()
 			case engineAnalysisStatus::changed:
 			case engineAnalysisStatus::aborted:
 			case engineAnalysisStatus::stopped:
-				Log::log() << "Analysis status changed for engine #" << Engine::theEngine()->slaveNo() << " to: " << engineAnalysisStatusToString(Engine::theEngine()->getAnalysisStatus()) << std::endl;
+			Log::log() << "Analysis status changed for engine #" << Engine::theEngine()->engineNum() << " to: " << engineAnalysisStatusToString(Engine::theEngine()->getAnalysisStatus()) << std::endl;
 				return true;
 				
 			default:							
@@ -66,7 +62,7 @@ bool PollMessagesFunctionForJaspResults()
 Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID)
-	: _slaveNo(slaveNo), _parentPID(parentPID)
+	: _engineNum(slaveNo), _parentPID(parentPID)
 {
 	JASPTIMER_SCOPE(Engine Constructor);
 	assert(_EngineInstance == NULL);
@@ -79,24 +75,6 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	if(parentPID != 0) //Otherwise we are just running to fix R packages
 		_db = new DatabaseInterface();
 
-	rbridge_setDataSetSource(			boost::bind(&Engine::provideAndUpdateDataSet,		this));
-	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
-	rbridge_setSpecificFileNameSource(	boost::bind(&Engine::provideSpecificFileName,		this, _1, _2, _3));
-
-	rbridge_setStateFileSource(			boost::bind(&Engine::provideStateFileName,			this, _1, _2));
-	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
-
-	rbridge_setColumnFunctionSources(	boost::bind(&Engine::getColumnType,					this, _1),
-										boost::bind(&Engine::getColumnAnalysisId,			this, _1),
-										boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2),
-										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
-										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
-										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2),
-										boost::bind(&Engine::createColumn,					this, _1),
-										boost::bind(&Engine::deleteColumn,					this, _1));
-
-	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
-	
 	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 }
 
@@ -107,29 +85,13 @@ void Engine::initialize()
 	try
 	{
 		std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
-		_channel = new IPCChannel(memoryName, _slaveNo, true);
+		_channel = new IPCChannel(memoryName, _engineNum, true);
 
-		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultFont.c_str());
+		rbridge_init(this, SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 	
 		sendEngineLoadingData();
-
-		//Is there maybe already some data? Like, if we just killed and restarted the engine
-		std::vector<std::string> columns;
-                if(provideAndUpdateDataSet())
-		{
-                    columns = provideAndUpdateDataSet()->getColumnNames();
-			Log::log() << "There is a dataset and got " << columns.size() << " columns in it, loading them into encoder now." << std::endl;
-		}
-		else
-			Log::log() << "No dataset available so resetting columnnames in encoder." << std::endl;
-
-                ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
-
-
-
-		Log::log() << "Engine::initialize() done" << std::endl;
 	}
 	catch(std::exception & e)
 	{
@@ -377,7 +339,7 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str(), true) : jaspRCPP_evalRCode(rCode.c_str(), true);
 
 	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
-	else						sendRCodeResult(rCodeResult, rCodeRequestId);
+	else						sendRCodeResult(rCodeRequestId, rCodeResult);
 
 	_engineState = engineState::idle;
 }
@@ -407,13 +369,13 @@ void Engine::runRCodeCommander(std::string rCode)
 		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
 	}
 
-	sendRCodeResult(rCodeResult, -1);
+	sendRCodeResult(-1, rCodeResult);
 
 	_engineState = engineState::idle;
 }
 
 
-void Engine::sendRCodeResult(const std::string & rCodeResult, int rCodeRequestId)
+void Engine::sendRCodeResult(int rCodeRequestId, const std::string & rCodeResult)
 {
 	Json::Value rCodeResponse(Json::objectValue);
 
@@ -453,10 +415,10 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
+	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType, jsonRequest.get("forceType", false).asBool());
 }
 
-void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
+void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, bool forceType)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -469,18 +431,30 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	Json::Value computeColumnResponse		= Json::objectValue;
 	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
 	computeColumnResponse["columnName"]		= computeColumnName;
-
-
+	
     if(provideAndUpdateDataSet())
 	{
-		std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-		computeColumnResponse["columnName"]		= computeColumnNameEnc;
-
-		std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
-		std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
-
-		computeColumnResponse["result"]			= computeColumnResultStr;
-		computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+		try
+		{
+			if(forceType)
+				rbridge_setComputedColumnTypeDesired(computeColumnType);
+			
+			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
+			computeColumnResponse["columnName"]		= computeColumnNameEnc;
+	
+			std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
+			std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
+	
+			computeColumnResponse["result"]			= computeColumnResultStr;
+			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+		}
+		catch(std::exception e)
+		{
+			rbridge_setComputedColumnTypeDesired(columnType::unknown);	
+			throw e;
+		}
+		
+		rbridge_setComputedColumnTypeDesired(columnType::unknown);	
 	}
 	else
 	{
@@ -489,7 +463,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	}
 
 	sendString(computeColumnResponse.toStyledString());
-
+	
 	_engineState = engineState::idle;
 }
 
@@ -812,36 +786,12 @@ bool Engine::deleteColumn(const std::string &columnName)
 	return true;
 }
 
-bool Engine::setColumnDataAsScale(const std::string &columnName, const std::vector<double> &scalarData)
+bool Engine::setColumnDataAndType(const std::string &columnName, const std::vector<std::string> &data, columnType colType)
 {
 	if(!isColumnNameOk(columnName))
 		return false;
 
-	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithScale(scalarData);
-}
-
-bool Engine::setColumnDataAsOrdinal(const std::string &columnName, std::vector<int> &ordinalData, const std::map<int, std::string> &levels)
-{
-	if(!isColumnNameOk(columnName))
-		return false;
-
-	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);
-}
-
-bool Engine::setColumnDataAsNominal(const std::string &columnName, std::vector<int> &nominalData, const std::map<int, std::string> &levels)
-{
-	if(!isColumnNameOk(columnName))
-		return false;
-
-	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);
-}
-
-bool Engine::setColumnDataAsNominalText(const std::string &columnName, const std::vector<std::string> &nominalData)
-{
-	if(!isColumnNameOk(columnName))
-		return false;
-
-	return provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(nominalData);
+	return provideAndUpdateDataSet()->column(columnName)->overwriteDataAndType(data, colType);
 }
 
 void Engine::sendAnalysisResults()
@@ -929,46 +879,12 @@ void Engine::provideTempFileName(const std::string & extension, std::string & ro
 	TempFiles::create(extension, _analysisId, root, relativePath);
 }
 
-bool Engine::isColumnNameOk(std::string columnName)
+bool Engine::isColumnNameOk(const std::string & columnName)
 {
     if(columnName == "" || !provideAndUpdateDataSet())
 		return false;
 
     return provideAndUpdateDataSet()->column(columnName);
-}
-
-bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels)
-{
-	std::map<int, int> uniqueInts;
-
-	for(auto & keyval : levels)
-	{
-		size_t convertedChars;
-
-		try
-		{
-			int asInt = std::stoi(keyval.second, &convertedChars);
-
-			if(convertedChars == keyval.second.size()) //It was a number!
-				uniqueInts[keyval.first] = asInt;
-		}
-		catch(std::invalid_argument & e) {}
-	}
-
-	if(uniqueInts.size() == levels.size()) //everything was an int!
-	{
-		for(auto & dat : data)
-			if(dat != std::numeric_limits<int>::lowest())
-				dat = uniqueInts[dat];
-
-                if(isOrdinal)	return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithOrdinal(data);
-                else			return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(data);
-	}
-	else
-	{
-            if(isOrdinal)	return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithOrdinal(data, levels);
-            else			return	provideAndUpdateDataSet()->column(columnName)->overwriteDataWithNominal(data, levels);
-	}
 }
 
 void Engine::stopEngine()

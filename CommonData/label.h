@@ -21,7 +21,8 @@ class DatabaseInterface;
 class Label : public DataSetBaseNode
 {
 public:	
-	static const int MAX_LABEL_DISPLAY_LENGTH = 64; //we can store the rest in description if necessary
+	static const int MAX_LABEL_DISPLAY_LENGTH;
+	static const int DOUBLE_LABEL_VALUE;
 
 								Label(Column * column);
 								Label(Column * column, int value);
@@ -33,25 +34,28 @@ public:
 			void				dbUpdate();
 
 			Label			&	operator=(const Label &label);
-
-			int					id()						const	{ return _id;				}
+			
+			int					dbId()						const	{ return _dbId;				}
 	const	std::string		&	description()				const	{ return _description;		}
 			std::string			label(bool shorten = false)	const	{ return !shorten || _label.size() <= MAX_LABEL_DISPLAY_LENGTH ? _label : _label.substr(0, MAX_LABEL_DISPLAY_LENGTH) + "...";	}
-			int					value()						const	{ return _value;			}
+			std::string			labelDisplay()				const;
+			std::string			labelIgnoreEmpty()			const;
+			int					intsId()					const	{ return _intsId;			}
+			bool				isEmptyValue()				const;
 			int					order()						const	{ return _order;			}
 			bool				filterAllows()				const	{ return _filterAllows;		}
 	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
 
 			std::string			originalValueAsString(bool fancyEmptyValue = false)		const;
 			std::string			str() const;
-
-			void				setValue(			int value);
+			
+			void				setIntsId(			int value);
 			void				setOrder(			int order);
-			void				setId(				int id) { _id = id; }
+			void				setDbId(			int id) { _dbId = id; }
 			bool				setLabel(			const std::string & label);
-			void				setOriginalValue(	const Json::Value & originalValue);
-			void				setDescription(		const std::string & description);
-			void				setFilterAllows(	bool allowFilter);
+			bool				setOriginalValue(	const Json::Value & originalValue);
+			bool				setDescription(		const std::string & description);
+			bool				setFilterAllows(	bool allowFilter);
 			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
 
 			Json::Value			serialize()	const;
@@ -64,13 +68,15 @@ private:
 	Column		*	_column;
 
 	Json::Value		_originalValue	= Json::nullValue;	///< Could contain integers, floats or strings. Arrays and objects are undefined.
-
-	int				_id				= -1,	///< Database id
+	
+	int				_dbId			= -1,	///< Database id
 					_order			= -1,	///< Should correspond to its position in Column::_labels
-					_value			= -1;	///< value of label, should always map to Column::_ints
+					_intsId			= -1;	///< value of label, should always map to Column::_ints
 	std::string		_label,					///< What to display in the dataview
 					_description;			///< Extended information for tooltip in dataview and of course in the variableswindow
 	bool			_filterAllows	= true;	///< Used in generating filters for when users disable and enable certain labels/levels
 };
+
+typedef std::vector<Label*> Labels;
 
 #endif // LABEL_H

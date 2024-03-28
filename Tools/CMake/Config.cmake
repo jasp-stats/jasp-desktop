@@ -310,4 +310,19 @@ if(APPLE)
 
 endif()
 
+
+# -- little utility function for including textfiles easily as string:
+function(make_includable input_file output_file)
+    file(READ ${input_file} content)
+    set(delim "for_c++_include")
+    set(content "R\"${delim}(\n${content})${delim}\"")
+    file(WRITE ${output_file} "${content}")
+endfunction(make_includable)
+
+# Use like: "make_includable(external/shaders/cool.frag generated/cool.frag)"
+# See the source: https://stackoverflow.com/a/47801116
+# https://www.stroustrup.com/C++11FAQ.html#raw-strings
+
+
+
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

@@ -28,11 +28,7 @@ void WorkspaceModel::refresh()
 
 QStringList WorkspaceModel::emptyValues() const
 {
-	QStringList result;
-	for (const std::string& val : DataSetPackage::pkg()->workspaceEmptyValues())
-		result.push_back(tq(val));
-
-	return result;
+	return tql(DataSetPackage::pkg()->workspaceEmptyValues());
 }
 
 QString WorkspaceModel::name() const
@@ -57,10 +53,7 @@ void WorkspaceModel::removeEmptyValue(const QString &value)
 	QStringList values = tql(DataSetPackage::pkg()->workspaceEmptyValues());
 
 	if (values.removeAll(value) > 0)
-	{
 		_undoStack->pushCommand(new SetWorkspaceEmptyValuesCommand(DataSetPackage::pkg(), values));
-		emit emptyValuesChanged();
-	}
 }
 
 void WorkspaceModel::addEmptyValue(const QString &value)
@@ -71,7 +64,6 @@ void WorkspaceModel::addEmptyValue(const QString &value)
 	{
 		values.push_back(value);
 		_undoStack->pushCommand(new SetWorkspaceEmptyValuesCommand(DataSetPackage::pkg(), values));
-		emit emptyValuesChanged();
 	}
 }
 
@@ -80,8 +72,5 @@ void WorkspaceModel::resetEmptyValues()
 	QStringList defaultValues = PreferencesModel::prefs()->emptyValues();
 
 	if (defaultValues != emptyValues())
-	{
 		_undoStack->pushCommand(new SetWorkspaceEmptyValuesCommand(DataSetPackage::pkg(), defaultValues));
-		emit emptyValuesChanged();
-	}
 }

@@ -22,6 +22,7 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 		int rowCount = importDataSet->rowCount();
 
 		DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
+		DataSetPackage::pkg()->dataSet()->setDescription(importDataSet->description());
 		DataSetPackage::pkg()->setDataSetSize(columnCount, rowCount);
 
 

@@ -230,13 +230,13 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 	_undoStack->endMacro(new SetDataCommand(_sourceModel, row, col, value, role));
 }
 
-void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & cells, const QStringList& colNames)
+void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames)
 {
-	if (!_sourceModel || row < 0 || col < 0 || cells.size() == 0 || cells[0].size() == 0)
+	if (!_sourceModel || row < 0 || col < 0 || values.size() == 0 || values[0].size() == 0 )
 		return;
 
-	_expandIfNecessary(row + cells[0].size() - 1, col + cells.size() - 1);
-	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, cells, colNames));
+	_expandIfNecessary(row + values[0].size() - 1, col + values.size() - 1);
+	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, values, labels, colNames));
 }
 
 int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)

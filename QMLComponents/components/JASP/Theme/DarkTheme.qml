@@ -6,7 +6,7 @@ Theme
 	isDark:								true
 
 	//Color definitions:
-	white:								"#333"
+	white:								"#141414"
 	whiteBroken:						"#050505"
 	black:								"#EEE"
 
@@ -25,7 +25,7 @@ Theme
 	redDarker:							"#FC625D"
 
 	green:								"#36CE4C"
-	yellowLight:						"#AAAA75"
+	yellowLight:						"#553"
 
 	rose:								"#AF707B"
 	roseLight:							"#AE919C"
@@ -42,7 +42,7 @@ Theme
 	controlWarningBackgroundColor:		"#620"
 	controlWarningTextColor:			"#B80"
 
-	textDisabled:						grayLighter
-	buttonColorDisabled:				gray
+	textDisabled:						gray
+	buttonColorDisabled:				grayLighter
 	buttonBorderColorHovered:			black
 }

@@ -134,7 +134,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 	STRING_REMOVE_CHAR(strMap, ' ');
 	STRING_REMOVE_CHAR(strMap, '(');
 
-	std::vector<std::string> enumTokens(stringUtils::splitString(strMap));
+	std::vector<std::string> enumTokens(stringUtils::split(strMap));
 	std::map<T, std::string> retMap;
 	T inxMap;
 
@@ -147,7 +147,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 			enumName = tokenString;
 		else
 		{
-			std::vector<std::string> enumNameValue(stringUtils::splitString(tokenString, '='));
+			std::vector<std::string> enumNameValue(stringUtils::split(tokenString, '='));
 			enumName = enumNameValue[0];
 			//inxMap = static_cast<T>(enumNameValue[1]);
 #ifdef JASP_USES_QT_HERE

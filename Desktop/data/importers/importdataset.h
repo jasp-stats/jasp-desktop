@@ -2,6 +2,7 @@
 #define IMPORTDATASET_H
 
 #include "importcolumn.h"
+#include "emptyvalues.h"
 
 class Importer;
 
@@ -15,30 +16,35 @@ class ImportDataSet
 {
 
 public:
-					ImportDataSet(Importer* importer);
-	virtual			~ImportDataSet();
+											ImportDataSet(Importer* importer);
+	virtual									~ImportDataSet();
 
-	virtual void	addColumn(ImportColumn *column);
-	virtual size_t	rowCount()							const;
-	virtual size_t	columnCount()						const;
+	virtual void							addColumn(ImportColumn *column);
+	virtual size_t							rowCount()							const;
+	virtual size_t							columnCount()						const;
 
-	ImportColumn * getColumn(std::string name)			const;
-	ImportColumn * getColumn(size_t ind)				const { return _columns[ind]; }
+	EmptyValues							&	emptyValues()								{ return _emptyValues; }
+	virtual const std::string			&	description()						const;
 
-	ImportColumns::iterator			begin();
-	ImportColumns::iterator			end();
-	ImportColumns::reverse_iterator	rbegin();
-	ImportColumns::reverse_iterator	rend();
+	ImportColumn						*	getColumn(std::string name)			const;
+	ImportColumn						*	getColumn(size_t ind)				const	{ return _columns[ind]; }
 
-	void clearColumns() { _columns.clear(); }
-	void clear();
-	void erase(ImportColumns::iterator it);
-	void buildDictionary();
+	ImportColumns::iterator					begin();
+	ImportColumns::iterator					end();
+	ImportColumns::reverse_iterator			rbegin();
+	ImportColumns::reverse_iterator			rend();
+
+	void									clearColumns() { _columns.clear(); }
+	void									clear();
+	void									erase(ImportColumns::iterator it);
+	void									buildDictionary();
+
 
 protected:
-	Importer								*	_importer;
-	ImportColumns								_columns;
-	std::map<std::string, ImportColumn*>		_nameToColMap;
+	EmptyValues								_emptyValues;
+	Importer							*	_importer;
+	ImportColumns							_columns;
+	std::map<std::string, ImportColumn*>	_nameToColMap;
 };
 
 #endif // IMPORTDATASET_H

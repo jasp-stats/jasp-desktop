@@ -61,6 +61,15 @@ int handle_value_label(const char *val_labels, readstat_value_t value, const cha
 	return READSTAT_HANDLER_OK;
 }
 
+int handle_note(int note_index, const char *note, void *ctx)
+{
+	ReadStatImportDataSet * data = static_cast<ReadStatImportDataSet*>(ctx);
+
+	data->addNote(note_index, note);
+
+	return READSTAT_HANDLER_OK;
+}
+
 bool ReadStatImporter::extSupported(const std::string & ext)
 {
 	static std::set<std::string> supportedExts({"dta", "por", "sav", "zsav", "sas7bdat", "sas7bcat", "xpt", ".dta", ".por", ".sav", ".zsav", ".sas7bdat", ".sas7bcat", ".xpt"});
@@ -89,6 +98,7 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, std::funct
 	readstat_set_variable_handler(		parser, &handle_variable	);
 	readstat_set_value_handler(			parser, &handle_value		);
 	readstat_set_value_label_handler(	parser, &handle_value_label	);
+	readstat_set_note_handler(			parser, &handle_note		);
 
 	if		(_ext == "sav")			error = readstat_parse_sav(		parser, locator.c_str(), data);
 	else if	(_ext == "zsav")		error = readstat_parse_sav(		parser, locator.c_str(), data);
@@ -110,7 +120,6 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, std::funct
 	Log::log() << "Building dictionary" << std::endl;
 	data->buildDictionary(); //Not necessary for opening this file but synching will break otherwise...
 
-
 	Log::log() << "Freeing readstat structs" << std::endl;
 	readstat_parser_free(parser);
 
@@ -127,29 +136,7 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 	JASPTIMER_SCOPE(ReadStatImporter::initColumn);
 	
 	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
-
-	col->tryNominalMinusText(); //If we converted some doubles to strings as value because spss has weird datatypes then maybe they are ints anyway. so try to convert it back to nominal in that case.
-
-	switch(col->getColumnType())
-	{
-	case columnType::scale:
-		DataSetPackage::pkg()->initColumnAsScale(colId, col->name(), col->doubles());
-		break;
-
-	case columnType::ordinal:
-	case columnType::nominal:
-		if(col->hasLabels())	DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
-		else					DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),					col->getColumnType() == columnType::ordinal);
-		break;
-
-	case columnType::nominalText:
-		DataSetPackage::pkg()->storeMissingData(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
-		break;
-
-	default:
-		Log::log() << "Column " << col->name() << " has unknown type after loading so presumably doesn't contain any data whatsoever. We will make it into a scalar column to get it to show up.\n";
-		DataSetPackage::pkg()->initColumnAsScale(colId, col->name(), std::vector<double>(DataSetPackage::pkg()->dataRowCount(), ReadStatImportColumn::missingValueDouble()));
-		break;
-	}
+	
+	DataSetPackage::pkg()->initColumnWithStrings(colId, col->name(), col->values(), col->labels(), "", col->getColumnType(), col->emptyValues());
 }
 

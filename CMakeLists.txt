@@ -6,6 +6,12 @@ set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
 # ------ Build Toolchain
 
+if (UNIX)
+#Please just give me errors when there is no proper return defined in non-void functions:
+add_compile_options(-Werror=return-type)
+endif()
+
+
 if(APPLE)
 
   execute_process(COMMAND uname -m OUTPUT_VARIABLE HOST_PROCESSOR OUTPUT_STRIP_TRAILING_WHITESPACE)

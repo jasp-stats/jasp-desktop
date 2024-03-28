@@ -28,10 +28,10 @@ FocusScope
 		ribbon.focus = true;
 	}
 
-	Keys.onTabPressed: { increaseIndex(); }
-	Keys.onBacktabPressed: { decreaseIndex(); }
-	Keys.onDownPressed: { increaseIndex(); }
-	Keys.onUpPressed: { decreaseIndex(); }
+	Keys.onTabPressed:		{ increaseIndex(); }
+	Keys.onBacktabPressed:	{ decreaseIndex(); }
+	Keys.onDownPressed:		{ increaseIndex(); }
+	Keys.onUpPressed:		{ decreaseIndex(); }
 
 	function increaseIndex()
 	{
@@ -145,6 +145,13 @@ FocusScope
 						undoModel:			columnModel
 						useTabAsSpaces:		false
 						nextTabItem:		missingValues
+						wrapMode:			TextEdit.Wrap
+						anchors
+						{
+							left:			parent.left
+							right:			parent.right
+							margins:		jaspTheme.generalAnchorMargin
+						}
 
 					}
 				}

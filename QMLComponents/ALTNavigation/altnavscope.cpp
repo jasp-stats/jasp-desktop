@@ -122,7 +122,7 @@ void ALTNavScope::traverse(QString input)
 	ALTNavControl* ctrl = ALTNavControl::ctrl();
 
 	bool matchPossible = false;
-	for(ALTNavScope* scope : qAsConst(_childScopes))
+	for(ALTNavScope* scope : std::as_const(_childScopes))
 	{
 		//total match, progress in tree
 		if(scope->_prefix == input)

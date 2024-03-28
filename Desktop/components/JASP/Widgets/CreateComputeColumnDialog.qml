@@ -259,7 +259,7 @@ Popup
 					Repeater
 					{
 						id:		iconRepeater
-						model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
+						model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
 	
 						Rectangle
 						{

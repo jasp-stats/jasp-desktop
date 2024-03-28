@@ -54,7 +54,7 @@
 	<p>
 		A special type of computed column creation only available in R is the rowwise operations of mean, variance etc.<br><br>
 		These functions are:<br>
-		<code>rowMean, rowSum, rowSD, rowVariance, rowCovariance, rowCorrelation, rowMedian, rowMin, rowMax</code><br>
+		<code>rowMean, rowSum, rowSD, rowVariance, rowMedian, rowMin, rowMax</code><br>
 		They will probably return NA for when any of the column's rows contain one.
 		So there are also variants like <code>rowMeanNaRm</code> available that drop NA first.<br><br>
 		It can be used like: <code>rowMean(Column 1, Column 2, Column 3)</code>

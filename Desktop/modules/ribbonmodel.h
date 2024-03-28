@@ -111,8 +111,8 @@ signals:
 				void finishCurrentEdit();
 				void dataInsertComputedColumnBefore(int, bool);
 				void dataInsertComputedColumnAfter(int,  bool);
-				void dataInsertColumnBefore(int,bool,bool);
-				void dataInsertColumnAfter(int,bool,bool);
+				void dataInsertColumnBefore(int col, bool computed, bool R);
+				void dataInsertColumnAfter(int col, bool computed, bool R);
 				void dataInsertRowBefore(int);
 				void dataInsertRowAfter(int);
 				void dataRemoveColumn();

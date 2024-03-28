@@ -6,7 +6,7 @@
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
-#include "columnutils.h"
+#include "emptyvalues.h"
 #include "preferencesmodelbase.h"
 #include <QQuickWindow>
 
@@ -504,7 +504,7 @@ void PreferencesModel::resetRememberedModules(bool setToRemember)
 
 void PreferencesModel::dataLabelNAChangedSlot(QString dataLabelNA)
 {
-	ColumnUtils::emptyValue = fq(dataLabelNA);
+	EmptyValues::setDisplayString(fq(dataLabelNA));
 }
 
 void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)

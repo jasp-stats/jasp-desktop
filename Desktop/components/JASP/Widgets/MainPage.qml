@@ -274,7 +274,7 @@ Item
 					onActivated: 	searchBar.startSearching()
 				}
 	
-				function search(thisText) { resultsView.findText(thisText); }
+				function search(thisText) { if(resultsView) resultsView.findText(thisText); }
 				
 				anchors
 				{

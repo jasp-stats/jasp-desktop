@@ -105,19 +105,8 @@ FocusScope
 					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },			icon: "menu-undo",			enabled: dataTableView.view.undoText() !== ""	},
 					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },			icon: "menu-redo",			enabled: dataTableView.view.redoText() !== ""	},
 				]
-
-				if(!isVirtual && (isCell || isColHeader))
-				{
-					menuModel.push({ text: "---" });
-					if (isCell)
-						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
-					menuModel.push(
-						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex) },	icon: "menu-column-insert-before"	},
-						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex) },	icon: "menu-column-insert-after"	},
-						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete() },					icon: "menu-column-remove"			})
-
-				 }
-
+				
+				
 				if(!isVirtual && (isCell || isRowHeader))
 				{
 					menuModel.push({ text: "---" })
@@ -126,62 +115,60 @@ FocusScope
 					menuModel.push(
 						{ text: qsTr("Insert row above"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
 						{ text: qsTr("Insert row below"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete();	},						icon: "menu-row-remove"				})
+						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete(			rowIndex);},	icon: "menu-row-remove"				})
 				}
 
-				var menuText = []
-				var menuShortcuts = []
-				var menuFunctions = []
-				var menuIcons = []
-				var menuEnabled = []
+				if(!isVirtual && (isCell || isColHeader))
+				{
+					menuModel.push({ text: "---" });
+					if (isCell)
+						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+					menuModel.push(
+						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete(		columnIndex) },					icon: "menu-column-remove"			},
+						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex)				},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex)				},	icon: "menu-column-insert-after"	},
+						{ text:	"---" },
+						{ text: qsTr("Insert constructor column before"),							func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, false)	},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert constructor column after"),							func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, false)	},	icon: "menu-column-insert-after"	},
+						{ text: qsTr("Insert R column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, true)	},	icon: "menu-column-insert-before"	},
+						{ text: qsTr("Insert R column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, true)	},	icon: "menu-column-insert-after"	}
+						)
+
+				 }
+
+				var menuText		= []
+				var menuShortcuts	= []
+				var menuFunctions	= []
+				var menuIcons		= []
+				var menuEnabled		= []
 
 				for (var i = 0; i < menuModel.length; i++)
 				{
 					var menu = menuModel[i]
-					menuText.push(menu["text"])
-					if (menu.hasOwnProperty("func"))
-						menuFunctions.push(menu["func"])
-					else
-						menuFunctions.push(function() {})
-					if (menu.hasOwnProperty("icon"))
-						menuIcons.push(jaspTheme.iconPath + menu["icon"] + ".svg")
-					else
-						menuIcons.push("")
-					if (menu.hasOwnProperty("shortcut"))
-						menuShortcuts.push(menu["shortcut"])
-					else
-						menuShortcuts.push("")
-					if (menu.hasOwnProperty("enabled"))
-						menuEnabled.push(menu["enabled"])
-					else
-						menuEnabled.push(true)
+					
+					menuText		.push(!menu.hasOwnProperty("text")		? "???"			: menu["text"]								)
+					menuFunctions	.push(!menu.hasOwnProperty("func")		? function() {} : menu["func"]								)
+					menuIcons		.push(!menu.hasOwnProperty("icon")		? ""			: jaspTheme.iconPath + menu["icon"] + ".svg")
+					menuShortcuts	.push(!menu.hasOwnProperty("shortcut")	? ""			: menu["shortcut"]							)
+					menuEnabled		.push(!menu.hasOwnProperty("enabled")	? true			: menu["enabled"]							)
 				}
 
 				var props = {
-					"hasIcons": true,
+					"hasIcons":		true,
 					"model":		menuText,
+					"icons":		menuIcons,
+					"shortcut":		menuShortcuts,
+					"enabled":		menuEnabled,
 					"functionCall": function (index)
 					{
 						menuFunctions[index]();
-
 						customMenu.hide()
-					},
-					"icons": menuIcons,
-					"shortcut": menuShortcuts,
-					"enabled": menuEnabled
+					}
 				};
-
-				//customMenu.scrollOri.x	= __JASPDataViewRoot.contentX;
-				//customMenu.scrollOri.y	= 0;
 
 				var fromItemPos = fromItem.mapFromGlobal(globalPos.x, globalPos.y)
 
 				customMenu.show(fromItem, props, fromItemPos.x, fromItemPos.y);
-
-				//customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (__JASPDataViewRoot.contentX - customMenu.scrollOri.x); });
-				//customMenu.menuScroll.y	= 0;
-				//customMenu.menuMinIsMin	= true
-				//customMenu.menuMaxPos.x	= __JASPDataViewRoot.width + __JASPDataViewRoot.x
 			}
 
 			Keys.onPressed: (event) =>
@@ -203,6 +190,30 @@ FocusScope
 						dataTableView.view.selectAll();
 					}
 					break;
+									
+				case Qt.Key_C:
+					if(controlPressed && dataTableView.view.selectionMin.x >= 0 && dataTableView.view.selectionMin.y >= 0)
+					{
+						dataTableView.view.copy();
+						event.accepted = true;
+					}
+					break;
+		
+				case Qt.Key_X:
+					if(controlPressed && dataTableView.view.selectionMin.x >= 0 && dataTableView.view.selectionMin.y >= 0)
+					{
+						dataTableView.view.cut();
+						event.accepted = true;
+					}
+					break;
+		
+				case Qt.Key_V:
+					if(controlPressed && dataTableView.view.selectionMin.x >= 0 && dataTableView.view.selectionMin.y >= 0)
+					{
+						dataTableView.view.paste();
+						event.accepted = true;
+					}
+					break;
 
 				case Qt.Key_Home:
 						event.accepted = true;
@@ -216,239 +227,10 @@ FocusScope
 			}
 
 
-			editDelegate:
-				TextInput
-				{
-					id:						editItem
-					text:					itemText
-					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-					font:					jaspTheme.font
-					verticalAlignment:		Text.AlignVCenter
-					onEditingFinished:		dataTableView.view.commitEdit(rowIndex, columnIndex, text);
-					z:						10
-					readOnly:				!itemEditable
-
-					onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
-					onVisibleChanged:		{ isEditing = false; keyPressed = false }
-					property bool isEditing: false
-					property bool keyPressed: false
-
-					Component.onCompleted:	{ focusTimer.start(); }
-					Timer
-					{
-						id:					focusTimer
-						interval:			10
-						repeat:				false
-						onTriggered:
-						{
-							editItem.forceActiveFocus()
-							dataTableView.moveItemIntoView(editItem);
-						}
-					}
-
-					Keys.onPressed: (event) =>
-					{
-						keyPressed = true
-
-						var rowI			= rowIndex
-						var colI			= columnIndex
-						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
-						var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
-						var arrowPressed	= false;
-						var arrowIndex;
-
-						switch(event.key)
-						{
-						case Qt.Key_C:
-							if(controlPressed)
-							{
-								theView.copy(Qt.point(colI, rowI));
-								event.accepted = true;
-							}
-							break;
-
-						case Qt.Key_X:
-							if(controlPressed)
-							{
-								theView.cut(Qt.point(colI, rowI));
-								event.accepted = true;
-							}
-							break;
-
-						case Qt.Key_V:
-							if(controlPressed)
-							{
-								theView.paste(Qt.point(colI, rowI));
-								event.accepted = true;
-							}
-							break;
-
-						case Qt.Key_A:
-							if(controlPressed)
-							{
-								theView.selectAll();
-								event.accepted = true;
-							}
-							break;
-
-						case Qt.Key_Z:
-							if(controlPressed)
-							{
-								if (shiftPressed)
-									theView.redo();
-								else
-									theView.undo();
-							}
-							break;
-
-						case Qt.Key_Y:
-							if(controlPressed && !shiftPressed)
-								theView.redo();
-								break;
-
-						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
-
-						case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
-						case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
-						case Qt.Key_Left:	if(colI	> 0 && (editItem.cursorPosition <= 0 || !itemEditable))		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
-						case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 &&
-											   editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
-						case Qt.Key_Backtab: if(colI > 0)										{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false; } break;
-						case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
-
-						case Qt.Key_Return:
-						case Qt.Key_Enter:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
-
-
-						}
-
-						if(arrowPressed)
-						{
-							if(!shiftPressed)
-								dataTableView.view.selectionStart	= arrowIndex;
-							else
-								dataTableView.view.selectionEnd  = arrowIndex;
-
-							dataTableView.view.edit(arrowIndex.y, arrowIndex.x);
-
-							event.accepted = true;
-						}
-
-						if(!itemEditable)
-							event.accepted = true; //textinput steals the focus otherwise and we cant move with arrows after pressing anything
-
-					}
-
-
-					Rectangle
-					{
-						id:					highlighter
-						color:				editItem.isEditing ? "transparent" : jaspTheme.itemHighlight
-						z:					-1
-						visible:			ribbonModel.dataMode
-						border.width:		2
-						border.color:		jaspTheme.itemHighlight
-						anchors
-						{
-							fill:			 parent
-							topMargin:		-dataTableView.itemVerticalPadding
-							leftMargin:		-dataTableView.itemHorizontalPadding
-							rightMargin:	-dataTableView.itemHorizontalPadding
-							bottomMargin:	-dataTableView.itemVerticalPadding
-						}
-
-						MouseArea
-						{
-							z:					1234
-							anchors.fill:		parent
-							acceptedButtons:	Qt.RightButton
-
-							onPressed: (mouse) =>
-							{
-								if(mouse.buttons & Qt.RightButton)
-									dataTableView.showPopupMenu(editItem, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
-							}
-						}
-					}
-				}
-
-			itemDelegate:
-				Text
-				{
-					text:				itemText
-					textFormat:			Text.RichText
-					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-					font:				jaspTheme.font
-					verticalAlignment:	Text.AlignVCenter
-
-					MouseArea
-					{
-						z:					1234
-						hoverEnabled:		true
-						anchors.fill:		itemHighlight
-						acceptedButtons:	Qt.LeftButton | Qt.RightButton
-
-						onPressed:	(mouse) =>
-						{
-							if(ribbonModel.dataMode)
-							{
-								var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier)
-								var rightPressed = Boolean(mouse.buttons & Qt.RightButton)
-								var isSelected = dataTableView.view.isSelected(rowIndex, columnIndex)
-
-								if(!shiftPressed)
-								{
-									if (!rightPressed || !isSelected)
-										dataTableView.view.selectionStart = Qt.point(columnIndex, rowIndex)
-								}
-								else
-									dataTableView.view.selectionEnd = Qt.point(columnIndex, rowIndex);
-
-								if(rightPressed)
-								{
-									dataTableView.view.clearEdit()
-									dataTableView.showPopupMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
-								}
-								else if(!shiftPressed)
-									dataTableView.view.edit(rowIndex, columnIndex)
-
-							}
-							else if (columnModel.visible)
-							{
-								columnModel.chosenColumn = columnIndex
-							}
-						}
-
-						onPositionChanged:	(mouse) =>
-						{
-							if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
-							{
-								dataTableView.view.pollSelectScroll(rowIndex, columnIndex)
-								dataTableView.view.selectionEnd = Qt.point(columnIndex, rowIndex)
-							}
-						}
-
-					}
-
-					Rectangle
-					{
-						id:				itemHighlight
-						visible:		ribbonModel.dataMode && (dataTableView.selection && dataTableView.selection.hasSelection && dataTableView.view.isSelected(rowIndex, columnIndex))
-
-						color:			jaspTheme.itemHighlight
-						opacity:		1.0
-						z:				-1
-
-						anchors
-						{
-							fill:			 parent
-							topMargin:		-dataTableView.itemVerticalPadding
-							leftMargin:		-dataTableView.itemHorizontalPadding
-							rightMargin:	-dataTableView.itemHorizontalPadding
-							bottomMargin:	-dataTableView.itemVerticalPadding
-						}
-					}
-				}
+			editDelegate:			DataTableViewEdit {}
+			itemDelegate:			DataTableViewItem {}
+			rowNumberDelegate:		DataTableViewRowHeader {}
+			columnHeaderDelegate:	DataTableViewColumnHeader {}
 
 			leftTopCornerItem:
 				JaspControls.RectangularButton
@@ -473,296 +255,7 @@ FocusScope
 					visible:		!dataTableView.expandDataSet
 				}
 
-			rowNumberDelegate:
-				Rectangle
-				{
-					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					color:	ribbonModel.dataMode && (dataTableView.view.selectionStart.y === rowIndex) ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
-					Text {
-						text:				rowNumber
-						font:				jaspTheme.font
-						anchors.centerIn:	parent
-						color:				virtual ? jaspTheme.textDisabled : jaspTheme.textEnabled
-					}
 
-					MouseArea
-					{
-						anchors.fill:		parent
-						enabled:			ribbonModel.dataMode
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to select the row, hold shift for selecting multiple.")
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-						cursorShape:		Qt.PointingHandCursor
-						acceptedButtons:	Qt.LeftButton | Qt.RightButton
-						onClicked: 			(mouseEvent)=>
-											{
-												if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-													dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
-												if(mouseEvent.button === Qt.RightButton)
-													dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
-											}
-					}
-				}
-
-			columnHeaderDelegate: Rectangle
-			{
-				id:		headerRoot
-				color:	(!ribbonModel.dataMode && columnModel.chosenColumn === columnIndex && columnModel.visible) || (ribbonModel.dataMode && (dataTableView.view.selectionStart.x === columnIndex)) ? jaspTheme.itemSelectedNoFocusColor : jaspTheme.uiBackground
-
-							property real	iconTextPadding:	10
-				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
-
-				function getColumnTypeIcon(type)
-				{
-					return String(dataSetModel.getColumnTypesWithIcons()[type]) === "" ? "" : jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[type]
-				}
-
-				Connections
-				{
-					target: dataSetModel
-					function onColumnTypeChanged(colName, colType)
-					{
-						if (headerText === colName)
-							colIcon.source = getColumnTypeIcon(colType)
-					}
-				}
-
-
-				Keys.onPressed: (event) =>
-				{
-					var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier)
-
-					if (controlPressed)
-					{
-						switch(event.key)
-						{
-						case Qt.Key_C:
-							theView.copy(Qt.point(columnIndex, -1));
-							event.accepted = true;
-							break;
-						case Qt.Key_X:
-							theView.cut(Qt.point(columnIndex, -1));
-							event.accepted = true;
-							break;
-						case Qt.Key_V:
-							theView.paste(Qt.point(columnIndex, -1));
-							event.accepted = true;
-							break;
-						}
-					}
-				}
-
-				Image
-				{
-					id:						colIcon
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.left:			parent.left
-					anchors.margins:		4
-
-
-					source: getColumnTypeIcon(columnType)
-					width:	source == "" ? 0 : headerRoot.__iconDim
-					height: headerRoot.__iconDim
-
-					sourceSize {	width:	width * 2
-									height:	height * 2 }
-
-
-					function setColumnType(newColumnType)
-					{
-						dataTableView.view.setColumnType(columnIndex, newColumnType)
-					}
-
-
-					MouseArea
-					{
-						enabled:			!virtual && computedColumnType != computedColumnTypeAnalysis
-						anchors.fill:		parent
-						onClicked:
-						{
-							var functionCall      = function (index)
-							{
-								// FIXME:
-								var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
-
-								if (columnType !== undefined)
-									colIcon.setColumnType(columnType);
-
-								customMenu.hide()
-							}
-
-							var props = {
-								"model":		columnTypesModel,
-								"functionCall": functionCall
-							};
-
-							customMenu.scrollOri.x	= dataTableView.contentX;
-							customMenu.scrollOri.y	= 0;
-
-							customMenu.toggle(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
-
-							customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
-							customMenu.menuScroll.y	= 0;
-							customMenu.menuMinIsMin	= true
-							customMenu.menuMaxPos.x	= dataTableView.width + dataTableView.x
-						}
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to change column type")
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-                        cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-					}
-				}
-
-				Image
-				{
-					id:			colIsComputed
-
-					width:		visible ? headerRoot.__iconDim : 0
-					height:		headerRoot.__iconDim
-					visible:	columnIsComputed
-
-					anchors.left:			colIcon.right
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-
-					source:				jaspTheme.iconPath + "/computed.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-				}
-
-				Text
-				{
-					id:				headerTextItem
-
-					text:			headerText
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-					textFormat:		Text.RichText
-
-					horizontalAlignment:		Text.AlignHCenter
-
-					anchors.horizontalCenter:	headerRoot.horizontalCenter
-					anchors.verticalCenter:		headerRoot.verticalCenter
-				}
-
-				LoadingIndicator
-				{
-					id:			colIsInvalidated
-
-
-					width:		columnIsInvalidated ? headerRoot.__iconDim : 0
-					visible:	columnIsInvalidated && columnIsComputed
-
-					anchors.right:			colFilterOn.left
-					anchors.verticalCenter:	parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-				}
-
-				Image
-				{
-					id:						colFilterOn
-
-					width:					columnIsFiltered ? headerRoot.__iconDim : 0
-					height:					headerRoot.__iconDim
-
-					source:					jaspTheme.iconPath + "filter.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					anchors.right:			colHasError.left
-					anchors.margins:		columnIsFiltered ? 1 : 0
-					anchors.verticalCenter:	parent.verticalCenter
-				}
-
-				Image
-				{
-					id:			colHasError
-
-					width:		columnError.length > 0 ? headerRoot.__iconDim : 0
-					height:		headerRoot.__iconDim
-					visible:	columnError.length > 0 // && !columnIsInvalidated
-
-					source:					jaspTheme.iconPath + "/error.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					anchors.right:			parent.right
-					anchors.verticalCenter:	parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-
-				}
-
-				MouseArea
-				{
-					anchors.left:		colIcon.right
-					anchors.top:		parent.top
-					anchors.bottom:		parent.bottom
-					anchors.right:		parent.right
-					acceptedButtons:	Qt.LeftButton | Qt.RightButton
-					onDoubleClicked:	(mouseEvent)=>
-					{
-						if(mouseEvent.button !== Qt.LeftButton)
-							return;
-
-						if (columnModel.chosenColumn === columnIndex && columnModel.visible)
-							columnModel.visible = false;
-						else
-						{
-							columnModel.chosenColumn	= columnIndex;
-							columnModel.visible			= true;
-
-							if(dataSetModel.columnUsedInEasyFilter(columnIndex))
-							{
-								filterWindow.showEasyFilter = true
-								filterWindow.open()
-							}
-                            
-							//A button in VariablesWindow will do this? in any case, it is kind of annoying to have the analysis always pop up instead of variableswindow...
-							//if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
-							//    computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
-                        }
-
-					}
-
-					onClicked:	(mouseEvent)=>
-					{
-						if(columnIndex >= 0)
-						{
-							headerRoot.forceActiveFocus()
-
-							if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-								dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
-
-							if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
-								dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex)
-						}
-					}
-
-					hoverEnabled:		true
-					ToolTip.visible:	containsMouse
-					ToolTip.text:		virtual ? qsTr("Add column")
-											:   ("<b>" + columnTitle + "</b>"
-                                                + (computedColumnType == computedColumnTypeAnalysis ? "<br>" + qsTr("Computed by an analysis") + "<br>": "")
-												+ (columnDescription === "" ? "" : "<br><i>" + columnDescription + "</i>")
-												+ "<br><br>"
-												+ (!columnModel.visible	? qsTr("Doubleclick here to change variable settings")
-																		: (columnModel.chosenColumn === columnIndex ? qsTr("Doubleclick here to close variable window")
-																													: qsTr("Click here to change selected variable")
-																		  )
-												  )
-											  )
-					ToolTip.timeout:	3000
-					ToolTip.delay:		500
-					cursorShape:		Qt.PointingHandCursor
-				}
-			}
 		}
 
 		Rectangle

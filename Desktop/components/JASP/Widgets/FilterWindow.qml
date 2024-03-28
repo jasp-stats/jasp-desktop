@@ -423,7 +423,7 @@ FocusScope
 					text:					filterModel.filterErrorMsg + "\n"
 					selectByMouse:			true
 					onActiveFocusChanged:	if(!activeFocus) deselect()
-					font.family:			"Courier"
+					font.family:			jaspTheme.fontCode.family
 					font.pixelSize:			baseFontSize * preferencesModel.uiScale
 
 					states:
@@ -509,8 +509,7 @@ FocusScope
 
 					property bool filterIsDefault: filterEdit.text === filterModel.defaultRFilter
 
-					text:			filterEdit.changedSinceLastApply ? qsTr("Apply pass-through filter") : filterIsDefault ? qsTr("Default filter applied") : qsTr("Filter applied")
-					enabled:		filterEdit.changedSinceLastApply
+					text:			qsTr("Apply pass-through filter")
 					anchors.left:	clearRectangularButton.right
 					anchors.right:	helpButton.left
 					anchors.bottom:	parent.bottom
@@ -518,7 +517,7 @@ FocusScope
 
 					onClicked:		filterWindow.applyAndSendFilter(filterEdit.text)
 
-					toolTip:		filterEdit.changedSinceLastApply ? qsTr("Click to apply filter") : filterIsDefault ? qsTr("Filter is unchanged from default") : qsTr("Filter is already applied")
+					toolTip:		qsTr("Click to apply filter")
 				}
 
 				JaspControls.RectangularButton

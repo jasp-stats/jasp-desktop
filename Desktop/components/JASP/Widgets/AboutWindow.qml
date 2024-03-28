@@ -8,7 +8,19 @@ WavyWindow
 	id:				aboutWindow
 
 	visible:				aboutModel.visible
-	onVisibleChanged:		aboutModel.visible = visible
+	onVisibleChanged:		
+	{
+		if(visible)
+			_info = "-------- Application Info --------\n"		+
+					"JASP Version: "	+ aboutModel.version	+ "\n" +
+					"Build Branch: "	+ aboutModel.branch		+ "\n" +
+					"Build Date: "		+ aboutModel.buildDate	+ "\n" +
+					"Last Commit: "		+ aboutModel.commit		+ "\n\n" +
+					aboutModel.systemInfo
+		
+		aboutModel.visible = visible
+		
+	}
 	onCloseModel:
 	{
 		aboutModel.visible = false
@@ -18,6 +30,7 @@ WavyWindow
 	title:					qsTr("About JASP")
 	width:					600 * jaspTheme.uiScale
 	height:					600 * jaspTheme.uiScale
+	property string _info:	"Only look this up when visible!"
 
 
 	property int labelwidth:	10 + Math.max(	jaspVersionLabel.implicitWidth,
@@ -190,13 +203,6 @@ WavyWindow
 						anchors.fill:			parent
 						cursorShape:			Qt.PointingHandCursor
 						focus:					true
-
-						property string _info: "-------- Application Info --------\n" +
-												"JASP Version: " + aboutModel.version + "\n" +
-												"Build Branch: " + aboutModel.branch + "\n" +
-												"Build Date: " + aboutModel.buildDate + "\n" +
-												"Last Commit: " + aboutModel.commit + "\n\n" +
-												aboutModel.systemInfo
 
 						onClicked:	(event) => 
 						{

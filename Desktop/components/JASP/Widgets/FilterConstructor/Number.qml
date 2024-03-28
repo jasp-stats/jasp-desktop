@@ -20,6 +20,7 @@ Item
 		anchors.horizontalCenter:	parent.horizontalCenter
 		anchors.verticalCenter:		parent.verticalCenter
 
+		font.family:				jaspTheme.font.family
 		font.pixelSize:				filterConstructor.fontPixelSize
 		color:						jaspTheme.textEnabled
 

@@ -1,7 +1,7 @@
 #include "knownissues.h"
 #include "utilities/messageforwarder.h"
 #include "appinfo.h"
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "log.h"
 #include "utilities/appdirs.h"
 #include "utils.h"

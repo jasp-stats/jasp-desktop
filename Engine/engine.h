@@ -21,7 +21,6 @@
 #include "enginedefinitions.h"
 #include "dataset.h"
 #include "ipcchannel.h"
-#include "processinfo.h"
 #include <json/json.h>
 #include "columnencoder.h"
 
@@ -31,111 +30,102 @@
 class Engine
 {
 public:
-	explicit Engine(int slaveNo, unsigned long parentPID);
-	static Engine * theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
-	~Engine();
-
-	void run();
-	bool receiveMessages(int timeout = 0);
-	void setSlaveNo(int no);
-	int	 slaveNo() const { return _slaveNo; }
-	void sendString(std::string message);
-
 	typedef engineAnalysisStatus Status;
+	
+	explicit				Engine(int slaveNo, unsigned long parentPID);
+							~Engine();
+	static Engine		*	theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
+
+	void					run();
+	bool					receiveMessages(int timeout = 0);
+	void					setSlaveNo(int no);
+	int						engineNum() const { return _engineNum; }
+	void					sendString(std::string message);
+
+	
 
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();
 
-	//the following functions in public can all be called (indirectly) from R
-	int  		getColumnType(			const std::string & columnName);
-	int  		getColumnAnalysisId(	const std::string & columnName);
-	std::string createColumn(			const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
-	bool		deleteColumn(			const std::string & columnName);
+	//the following functions in public can all be called (indirectly) from R and/or rbridge:
+	int						getColumnType(			const std::string & columnName);
+	int						getColumnAnalysisId(	const std::string & columnName);
+	std::string				createColumn(			const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
+	bool					deleteColumn(			const std::string & columnName);
+	bool					setColumnDataAndType(	const std::string & columnName, const	std::vector<std::string>	& nominalData, columnType colType); ///< return true for any changes
+	bool					isColumnNameOk(			const std::string & columnName);
+	int						dataSetRowCount()		{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
+	bool					paused()				{ return _engineState == engineState::paused; }
+	DataSet				*	provideAndUpdateDataSet();
 
-	//return true if changed:
-	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData);
-	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels);
-	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels);
-	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData);
+	void					provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
+	void					provideStateFileName(											std::string & root,	std::string & relativePath);
+	void					provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
+	void					provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
+	void					reloadColumnNames();
 
-	bool isColumnNameOk(std::string columnName);
+private:
+	void					initialize();
+	void					beIdle(bool newlyIdle);
 
-	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels);
+	void					receiveRCodeMessage(			const Json::Value & jsonRequest);
+	void					receiveFilterMessage(			const Json::Value & jsonRequest);
+	void					receiveAnalysisMessage(			const Json::Value & jsonRequest);
+	void					receiveComputeColumnMessage(	const Json::Value & jsonRequest);
+	void					receiveModuleRequestMessage(	const Json::Value & jsonRequest);
+	void					receiveReloadData();
+	void					receiveLogCfg(					const Json::Value & jsonRequest);
+	void					receiveSettings(				const Json::Value & jsonRequest);
+	void					absorbSettings(					const Json::Value & json);
 
-	int dataSetRowCount()	{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
+	void					runAnalysis();
+	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType,	bool forceType);
+	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
+	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
+	void					runRCodeCommander(		  std::string   rCode																						);
 
-	bool paused() { return _engineState == engineState::paused; }
+	void					stopEngine();
+	void					pauseEngine(	const Json::Value & jsonRequest);
+	void					resumeEngine(	const Json::Value & jsonRequest); 
+	void					sendEnginePaused();
+	void					sendEngineResumed(bool justReloadedData = false);
+	void					sendEngineLoadingData();
+	void					sendEngineStopped();
 
+	void					saveImage();
+	void					editImage();
+	void					rewriteImages();
+	void					removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
-private: // Methods:
-	void initialize();
-	void beIdle(bool newlyIdle);
+	void					sendAnalysisResults();
+	void					sendFilterResult(		int filterRequestId);
+	void					sendFilterError(		int filterRequestId,	const std::string & errorMessage);
+	void					sendRCodeResult(		int rCodeRequestId,		const std::string & rCodeResult);
+	void					sendRCodeError(			int rCodeRequestId);
 
-	void receiveRCodeMessage(			const Json::Value & jsonRequest);
-	void receiveFilterMessage(			const Json::Value & jsonRequest);
-	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
-	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
-	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
-	void receiveReloadData();
-	void receiveLogCfg(					const Json::Value & jsonRequest);
-	void receiveSettings(				const Json::Value & jsonRequest);
-	void absorbSettings(				const Json::Value & json);
+public:
 
-	void runAnalysis();
-	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
-	void runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
-	void runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void runRCodeCommander(		  std::string   rCode																						);
-
-	void stopEngine();
-	void pauseEngine(	const Json::Value & jsonRequest);
-	void resumeEngine(	const Json::Value & jsonRequest); 
-	void sendEnginePaused();
-	void sendEngineResumed(bool justReloadedData = false);
-	void sendEngineLoadingData();
-	void sendEngineStopped();
-
-	void saveImage();
-	void editImage();
-	void rewriteImages();
-	void removeNonKeepFiles(const Json::Value & filesToKeepValue);
-
-	void sendAnalysisResults();
-	void sendFilterResult(		int filterRequestId);
-	void sendFilterError(		int filterRequestId,				const std::string & errorMessage);
-	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
-	void sendRCodeError(		int rCodeRequestId);
-
-	DataSet * provideAndUpdateDataSet();
-
-	void provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
-	void provideStateFileName(											std::string & root,	std::string & relativePath);
-	void provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
-	void provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
-	void reloadColumnNames();
 
 private: // Data:
 	static Engine		*	_EngineInstance;
-	const int				_slaveNo;
-	const unsigned long		_parentPID			= 0;
-	DataSet				*	_dataSet			= nullptr;
-	DatabaseInterface	*	_db					= nullptr;
-	engineState				_engineState		= engineState::initializing,
-							_lastRequest		= engineState::initializing;
-
-	Status					_analysisStatus		= Status::empty;
-
+	const int				_engineNum;
+	const unsigned long		_parentPID;
+	DataSet				*	_dataSet				= nullptr;
+	DatabaseInterface	*	_db						= nullptr;
+	IPCChannel			*	_channel				= nullptr;
+	ColumnEncoder		*	_extraEncodings			= nullptr;
+	engineState				_engineState			= engineState::initializing,
+							_lastRequest			= engineState::initializing;
+	Status					_analysisStatus			= Status::empty;
 	int						_analysisId,
 							_analysisRevision,
 							_progress,
-							_ppi				= 96,
-							_numDecimals		= 3;
-
-	bool					_developerMode		= false,
-							_fixedDecimals		= false,
-							_exactPValues		= false,
-							_normalizedNotation	= true;
-
+							_ppi					= 96,
+							_numDecimals			= 3;
+	bool					_developerMode			= false,
+							_fixedDecimals			= false,
+							_exactPValues			= false,
+							_normalizedNotation		= true;
 	std::string				_analysisName,
 							_analysisTitle,
 							_analysisDataKey,
@@ -143,18 +133,15 @@ private: // Data:
 							_analysisStateKey,
 							_analysisResultsString,
 							_resultFont,
-							_imageBackground	= "white",
-							_analysisRFile		= "",
-							_dynamicModuleCall	= "",
-							_langR				= "en";
-
+							_imageBackground		= "white",
+							_analysisRFile			= "",
+							_dynamicModuleCall		= "",
+							_langR					= "en";
 	Json::Value				_imageOptions,
-							_analysisOptions	= Json::nullValue,
+							_analysisOptions		= Json::nullValue,
 							_analysisResults;
 
-	IPCChannel			*	_channel = nullptr;
-	
-	ColumnEncoder		*	_extraEncodings = nullptr;
+
 };
 
 #endif // ENGINE_H

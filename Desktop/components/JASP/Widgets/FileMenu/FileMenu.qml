@@ -95,7 +95,6 @@ FocusScope
 			{
 				id:			fileAction
 				spacing:	jaspTheme.menuSpacing
-				width:		parent.width
 
 				anchors
 				{
@@ -111,7 +110,7 @@ FocusScope
 					Item
 					{
 						id:				itemActionMenu
-						width:			parent.width
+						width:			fileMenuModel.actionButtons.width + jaspTheme.subMenuIconHeight + jaspTheme.generalAnchorMargin
 						anchors.left:	parent.left
 						height:			actionButtionHeight + actionToolSeperator.height
 						enabled:		enabledRole

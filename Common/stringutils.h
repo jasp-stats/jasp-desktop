@@ -72,7 +72,7 @@ public:
 		return out.str();
 	}
 
-    inline static std::vector<std::string> splitString(const std::string & str, const char sep = ',')
+	inline static std::vector<std::string> split(const std::string & str, const char sep = ',')
     {
         stringvec			vecString;
         std::string			item;
@@ -82,6 +82,18 @@ public:
 			vecString.push_back(item);
 
 		return vecString;
+	}
+
+	inline static std::string join(const stringvec & strs, const std::string & sep = ",")
+	{
+		std::stringstream strm;
+
+		unsigned char howFarAreWe = 0;
+		for(const std::string & str : strs)
+			strm << (howFarAreWe++ ? sep : "") << str;
+
+		return strm.str();
+
 	}
 
 	inline static std::string toLower(std::string input)
@@ -204,6 +216,15 @@ public:
 		}
 
 		return useQuotes;
+	}
+	
+	// Counts "first bytes" and thus hopefully code points, adapted from https://stackoverflow.com/a/4063229
+	static inline uint64_t approximateVisualLength(const std::string & in)
+	{
+		uint64_t len = 0;
+		for(const char kar : in)
+			len += (kar & 0xc0) != 0x80;
+		return len;
 	}
 
 private:

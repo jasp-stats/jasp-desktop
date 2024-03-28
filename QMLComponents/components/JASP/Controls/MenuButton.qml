@@ -9,12 +9,12 @@ RoundedButton
 	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
 	property color defaultColor:        "transparent"
 
-	id: root
-	font:			jaspTheme.fontRibbon
-	color:			(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
-	border.width:	0
-	centerText:		false
-	activeFocusOnTab: true
+	id:					root
+	font:				jaspTheme.fontRibbon
+	color:				(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
+	border.width:		0
+	centerText:			false
+	activeFocusOnTab:	true
 
 	signal hoverClicked();
 	onHoverClicked:			forceActiveFocus();

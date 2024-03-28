@@ -273,6 +273,7 @@ Window
 			font:			jaspTheme.font
 			wrapMode:		Text.WrapAtWordBoundaryOrAnywhere
 			text:			ToolTip.toolTip.text
+			color:			jaspTheme.textEnabled
 		}
 		ToolTip.toolTip.implicitWidth:			Math.min(jaspTheme.formWidth * 0.8, ToolTip.toolTip.contentItem.implicitWidth + (2 * ToolTip.toolTip.padding))
 		ToolTip.toolTip.z:						1234

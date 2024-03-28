@@ -51,24 +51,25 @@ public:
 	typedef FileTypeBase					FileType;
 	typedef std::vector<Utils::FileType>	FileTypeVector;
 
-	static Utils::FileType getTypeFromFileName(	const std::string &path);
+	static Utils::FileType			getTypeFromFileName(	const std::string &path);
 
-	static long currentMillis();
-	static long currentSeconds();
-	static long getFileModificationTime(const std::string &filename);
-	static long getFileSize(			const std::string &filename);
-	static void touch(					const std::string &filename);
-	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
-	static bool removeFile(				const std::string &path);
+	static const std::string &		currentDateTime();
+	static long						currentMillis();
+	static long						currentSeconds();
+	static long						getFileModificationTime(const std::string &filename);
+	static long						getFileSize(			const std::string &filename);
+	static void						touch(					const std::string &filename);
+	static bool						renameOverwrite(		const std::string &oldName, const std::string &newName);
+	static bool						removeFile(				const std::string &path);
 
-	static std::filesystem::path osPath(const std::string &path);
-	static std::string osPath(const std::filesystem::path &path);
+	static std::filesystem::path	osPath(const std::string &path);
+	static std::string				osPath(const std::filesystem::path &path);
 
-	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
-	static void sleep(int ms);
+	static void						remove(stringvec &target, const stringvec &toRemove);
+	static void						sleep(int ms);
 
-	static bool isEqual(const float a, const float b);
-	static bool isEqual(const double a, const double b);
+	static bool						isEqual(const float a,	const float b);
+	static bool						isEqual(const double a, const double b);
 
 #ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
