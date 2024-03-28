@@ -43,6 +43,9 @@ public:
 	std::vector<std::string>	scomponents()	const;
 	std::string					asString()		const;
 
+	bool						isDraggable()	const			{ return _draggable; }
+	void						setDraggable(bool draggable)	{ _draggable = draggable; }
+
 	typedef QStringList::const_iterator const_iterator;
 	typedef QStringList::iterator		iterator;
 
@@ -72,6 +75,7 @@ private:
 
 	QStringList		_components;
 	QString			_asQString;
+	bool			_draggable = true;
 
 };
 

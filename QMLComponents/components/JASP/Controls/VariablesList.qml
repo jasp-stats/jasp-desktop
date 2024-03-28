@@ -426,7 +426,7 @@ VariablesListBase
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraItem:				model.rowComponent
 
-				enabled: variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])
+				enabled: (variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])) && (!variablesList.draggable || model.selectable)
 				
 				function setRelative(draggedRect)
 				{

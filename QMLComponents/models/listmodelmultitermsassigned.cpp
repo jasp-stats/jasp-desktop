@@ -27,7 +27,6 @@ ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(JASPListControl* listVi
 	: ListModelAssignedInterface(listView)
 	, _columns(columns)
 {
-	_copyTermsWhenDropped = true;
 	_allowDuplicatesInMultipleColumns = listView->property("allowDuplicatesInMultipleColumns").toBool();
 }
 

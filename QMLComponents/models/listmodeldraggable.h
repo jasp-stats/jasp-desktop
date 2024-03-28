@@ -32,11 +32,11 @@ public:
 	ListModelDraggable(JASPListControl* listView);
 	~ListModelDraggable();
 
-	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }
+	bool removeTermsWhenMoved() const						{ return _removeTermsWhenMoved;	}
+	void setRemoveTermsWhenMoved(bool remove)				{ _removeTermsWhenMoved = remove; }
 	JASPControl::DropMode dropMode() const					{ return _dropMode; }
 	
 	void setDropMode(JASPControl::DropMode dropMode)		{ _dropMode = dropMode; }
-	void setCopyTermsWhenDropped(bool copy)					{ _copyTermsWhenDropped = copy; }
 	
 	virtual Terms termsFromIndexes(const QList<int> &indexes)					const;
 	virtual Terms canAddTerms(const Terms& terms)								const;
@@ -48,7 +48,7 @@ signals:
 	void destroyed(ListModelDraggable * me);
 
 protected:
-	bool						_copyTermsWhenDropped;
+	bool						_removeTermsWhenMoved					= true;
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;
 		
 	bool						isAllowed(const Term &term) const;

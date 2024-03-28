@@ -30,7 +30,11 @@ class FactorsFormBase :  public JASPListControl, public BoundControlBase
 
 	Q_PROPERTY( int		initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
 	Q_PROPERTY( int		countVariables			READ countVariables										NOTIFY countVariablesChanged	)
-
+	Q_PROPERTY(QString	baseName				READ baseName				WRITE setBaseName			NOTIFY baseNameChanged			)
+	Q_PROPERTY(QString	baseTitle				READ baseTitle				WRITE setBaseTitle			NOTIFY baseTitleChanged			)
+	Q_PROPERTY(int		startIndex				READ startIndex				WRITE setStartIndex			NOTIFY startIndexChanged		)
+	Q_PROPERTY(bool		nested					READ nested					WRITE setNested				NOTIFY nestedChanged			)
+	Q_PROPERTY(bool		allowInteraction		READ allowInteraction		WRITE setAllowInteraction	NOTIFY allowInteractionChanged	)
 
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
@@ -49,10 +53,26 @@ public:
 	int					initNumberFactors()						const				{ return _initNumberFactors;						}
 	int					countVariables()						const				{ return _initialized ? _factorsModel->countVariables() : 0; }
 	JASPListControl*	availableVariablesList()				const				{ return _availableVariablesListItem;				}
+	QString				baseName()								const				{ return _baseName;		}
+	QString				baseTitle()								const				{ return _baseTitle;	}
+	int					startIndex()							const				{ return _startIndex;	}
+	bool				nested()								const				{ return _nested;		}
+	bool				allowInteraction()						const				{ return _allowInteraction;		}
+
+	GENERIC_SET_FUNCTION(BaseName			, _baseName			, baseNameChanged			, QString		)
+	GENERIC_SET_FUNCTION(BaseTitle			, _baseTitle		, baseTitleChanged			, QString		)
+	GENERIC_SET_FUNCTION(StartIndex			, _startIndex		, startIndexChanged			, int			)
+	GENERIC_SET_FUNCTION(Nested				, _nested			, nestedChanged				, bool			)
+	GENERIC_SET_FUNCTION(AllowInteraction	, _allowInteraction	, allowInteractionChanged	, bool			)
 
 signals:
 	void initNumberFactorsChanged();
 	void countVariablesChanged();
+	void baseNameChanged();
+	void baseTitleChanged();
+	void startIndexChanged();
+	void nestedChanged();
+	void allowInteractionChanged();
 
 protected slots:
 	void			termsChangedHandler() override;
@@ -62,9 +82,15 @@ protected:
 
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;
-	QString					_availableVariablesListName;
 	JASPListControl*		_availableVariablesListItem	= nullptr;
-	int						_initNumberFactors			= 1;
+	int						_initNumberFactors			= 1,
+							_startIndex					= 1;
+	QString					_availableVariablesListName,
+							_baseName					= tr("Factor"),
+							_baseTitle					= tr("Factor");
+	bool					_nested						= false,
+							_allowInteraction			= false;
+
 };
 
 #endif // FACTORSFORMBASE_H

@@ -401,23 +401,24 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	if (row_t >= myTerms.size())
 		return QVariant();
 
+	const Term& term = myTerms.at(row_t);
+
 	switch (role)
 	{
 	case Qt::DisplayRole:
-	case ListModel::NameRole:			return QVariant(myTerms.at(row_t).asQString());
-	case ListModel::SelectableRole:		return !myTerms.at(row_t).asQString().isEmpty();
+	case ListModel::NameRole:			return QVariant(term.asQString());
+	case ListModel::SelectableRole:		return !term.asQString().isEmpty() && term.isDraggable();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);
 	case ListModel::RowComponentRole:
 	{
-		QString term = myTerms.at(row_t).asQString();
-		return _rowControlsMap.contains(term) ? QVariant::fromValue(_rowControlsMap[term]->getRowObject()) : QVariant();
+		QString termStr = term.asQString();
+		return _rowControlsMap.contains(termStr) ? QVariant::fromValue(_rowControlsMap[termStr]->getRowObject()) : QVariant();
 	}
 	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
 	case ListModel::ColumnTypeRole:
 	case ListModel::ColumnTypeIconRole:
 	case ListModel::ColumnTypeDisabledIconRole:
 	{
-		const Term& term = myTerms.at(row_t);
 		if (!listView()->containsVariables() || term.size() != 1)	return "";
 		if (role == ListModel::ColumnTypeRole)						return requestInfo(VariableInfo::VariableTypeName, term.asQString());
 		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(VariableInfo::VariableTypeIcon, term.asQString());

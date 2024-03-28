@@ -42,7 +42,7 @@ public:
 			void sortItems(SortType sortType)											override;
 
 			void										addAssignedModel(ListModelAssignedInterface* model);
-			const QList<ListModelAssignedInterface*>&	assignedModel()	const			{ return _assignedModels; }
+			const QList<ListModelAssignedInterface*>&	assignedModels()	const			{ return _assignedModels; }
 
 signals:
 			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
@@ -54,7 +54,7 @@ public slots:
 			int  sourceColumnTypeChanged(QString name)										override;
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
 			bool sourceLabelsReordered(QString columnName)									override;
-			void removeAssignedModel(ListModelDraggable* model);
+			void removeAssignedModel(ListModelAssignedInterface *assignedModel);
 			void clearAssignedModels() { _assignedModels.clear(); }
 
 protected:

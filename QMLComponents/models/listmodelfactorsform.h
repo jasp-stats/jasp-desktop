@@ -60,19 +60,24 @@ public slots:
 signals:
 	void addListView(JASPListControl* listView);
 	
+protected slots:
+	void ensureNesting();
+	void setAllTermsDraggable();
+
 protected:
 	struct Factor
 	{
 		QString						name;
 		QString						title;
 		JASPListControl*			listView;
-		std::vector<std::string>	initTerms;
-		Factor(const QString& _name, const QString& _title, std::vector<std::string> _initTerms = std::vector<std::string>()) :
+		Terms						initTerms;
+		Factor(const QString& _name, const QString& _title, const Terms& _initTerms) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
 	};
 
 	QVector<Factor*>	_factors;
-	FactorsFormBase*	_factorsForm = nullptr;
+	FactorsFormBase*	_factorsForm		= nullptr;
+	bool				_ensuringNesting	= false;
 	
 };
 
