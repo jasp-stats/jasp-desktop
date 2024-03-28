@@ -615,3 +615,43 @@ iframe.ql-video {
  width: 16px;
  height: 16px;
 }
+
+/* jaspNote Latex editor */
+.jasp-latex-container {
+	display: flex;
+	background-color: #ffffff;
+	z-index: 1;
+	border-radius: 5px;
+	position: absolute;
+	left: 10px;
+}
+
+.jasp-latex-input {
+	border: 2px solid #726565;
+	background-color: #ffffff;
+	flex-grow: 1;
+	margin-right:3px;
+}
+
+.jasp-latex-input, .jasp-latex-preview {
+	border-radius: 5px;
+	min-height: 3em;
+	min-width: 5em;
+	padding: 0.5em;
+}
+
+.jasp-latex-preview {
+	display: none;
+	background-color: #eeeeee;
+	border: 2px solid #0099cc;
+	animation: slide-in 0.5s ease-in-out;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
