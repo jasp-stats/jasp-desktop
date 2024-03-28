@@ -449,7 +449,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		})
 
 		latexInputBox.on("keydown", (e) => {
-			if (e.key === 'Enter' && e.ctrlKey) {
+			if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
 				e.preventDefault();
 				latexInputBox.blur();
 			} 
