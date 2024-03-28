@@ -23,7 +23,7 @@ public:
 
 				bool				datasetLoaded()					{ return DataSetPackage::pkg()->hasDataSet();	}
 				DataSet			*	dataSet()						{ return DataSetPackage::pkg()->dataSet();		}
-				const Columns	&	computedColumns() const			{ return DataSetPackage::pkg()->dataSet()->computedColumns(); }
+				const Columns	&	computedColumns() const;
 				QString				computeColumnRCode();
 				QString				computeColumnRCodeCommentStripped();
 				QString				computeColumnError();

@@ -13,18 +13,25 @@ ComputedColumnModel::ComputedColumnModel()
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 
-        connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnJsonChanged				);
-        connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
-        connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
-        connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
-        connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
-        connect(this,					&ComputedColumnModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
-	//connect(this,					&ComputedColumnsModel::headerDataChanged,		DataSetPackage::pkg(),	&DataSetPackage::headerDataChanged,							Qt::QueuedConnection);
-
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnJsonChanged				);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
+	connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
+	connect(this,					&ComputedColumnModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
+	
 	connect(Analyses::analyses(),	&Analyses::requestComputedColumnCreation,		DataSetPackage::pkg(),	&DataSetPackage::requestComputedColumnCreation,				Qt::UniqueConnection);
 	connect(Analyses::analyses(),	&Analyses::requestColumnCreation,				DataSetPackage::pkg(),	&DataSetPackage::requestColumnCreation,						Qt::UniqueConnection);
 	connect(Analyses::analyses(),	&Analyses::requestComputedColumnDestruction,	DataSetPackage::pkg(),	&DataSetPackage::requestComputedColumnDestruction,			Qt::UniqueConnection);
-        connect(Analyses::analyses(),	&Analyses::analysisRemoved,						this,					&ComputedColumnModel::analysisRemoved						);
+    connect(Analyses::analyses(),	&Analyses::analysisRemoved,						this,					&ComputedColumnModel::analysisRemoved						);
+}
+
+const Columns &ComputedColumnModel::computedColumns() const			
+{ 
+	static const Columns _thereIsNoData;
+	DataSet * data = DataSetPackage::pkg()->dataSet();
+	
+	return data ? data->computedColumns() : _thereIsNoData;
 }
 
 QString ComputedColumnModel::computeColumnRCode()
