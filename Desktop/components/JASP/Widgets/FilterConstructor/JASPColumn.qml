@@ -54,8 +54,9 @@ Item
 			bottom:		parent.bottom
 		}
 
-        width:          Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize - colIcon.width)
+        width:          Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize - (colIcon.width + 2*colIcon.anchors.margins))
 		font.pixelSize: baseFontSize * preferencesModel.uiScale
+		font.family:	jaspTheme.font.family
 		color:			jaspTheme.textEnabled
 		leftPadding:	2
 

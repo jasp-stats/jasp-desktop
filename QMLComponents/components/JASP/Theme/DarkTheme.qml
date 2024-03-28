@@ -6,7 +6,7 @@ Theme
 	isDark:								true
 
 	//Color definitions:
-	white:								"#222"
+	white:								"#141414"
 	whiteBroken:						"#050505"
 	black:								"#EEE"
 
@@ -25,7 +25,7 @@ Theme
 	redDarker:							"#FC625D"
 
 	green:								"#36CE4C"
-	yellowLight:						"#AAAA75"
+	yellowLight:						"#553"
 
 	rose:								"#AF707B"
 	roseLight:							"#AE919C"

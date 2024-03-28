@@ -19,7 +19,7 @@ Item
 		Text
 		{
 			text:					qsTr("JASP is supported by the following institutions:").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
-			font.family:			jaspTheme.font
+			font.family:			jaspTheme.font.family
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler
 			color:					jaspTheme.white
@@ -57,7 +57,7 @@ Item
             delegate:   Text
             {
                 text:					String(modelData).replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
-                font.family:			jaspTheme.font
+                font.family:			jaspTheme.font.family
                 font.weight:			Font.Bold
                 font.pixelSize:         (4 + fontPixelSize) * welcomeRoot.scaler
                 color:					jaspTheme.white
@@ -78,7 +78,7 @@ Item
 		Text
 		{
 			text:					qsTr("Suggest your institution joins the JASP Community").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
-			font.family:			jaspTheme.font
+			font.family:			jaspTheme.font.family
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler
 			font.underline:			true

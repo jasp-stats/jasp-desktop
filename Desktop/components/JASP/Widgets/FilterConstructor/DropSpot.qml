@@ -139,6 +139,7 @@ DropArea {
 
 			text:			dragTarget.containsItem === null ? dropText.text : ""
 			font.pixelSize: filterConstructor.fontPixelSize
+			font.family:	jaspTheme.font.family
 			anchors.top:	parent.top
 
 			visible:		!dropTextInput.visible
@@ -152,6 +153,7 @@ DropArea {
 			text:			dropText.text
 			color:			errorMarker.visible ? jaspTheme.white : jaspTheme.black
 			font.pixelSize: filterConstructor.fontPixelSize
+			font.family:	jaspTheme.font.family
 			anchors.top:	parent.top
 
 			visible:		dragTarget.acceptsDrops && dragTarget.containsItem === null

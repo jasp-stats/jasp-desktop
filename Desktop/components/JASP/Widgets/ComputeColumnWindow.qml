@@ -271,19 +271,18 @@ FocusScope
 
 			JaspControls.RectangularButton
 			{
-				id:			showGeneratedRCode
-				visible:	!computedColumnsInterface.computeColumnUsesRCode
-				width:		visible ? implicitWidth : 0
+				id:				showGeneratedRCode
+				visible:		!computedColumnsInterface.computeColumnUsesRCode
+				width:			visible ? implicitWidth : 0
 
-				toolTip:	qsTr("Show generated R code")
-				iconSource: jaspTheme.iconPath + "/R.png"
+				toolTip:		qsTr("Show generated R code")
+				iconSource:		jaspTheme.iconPath + "/R.png"
 
 				anchors.left:	parent.left
 				anchors.bottom:	parent.bottom
 				anchors.top:	helpButton.top
 
 				onClicked:		computedColumnConstructor.showGeneratedRCode = !computedColumnConstructor.showGeneratedRCode
-
 			}
 
 			JaspControls.RectangularButton
