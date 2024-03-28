@@ -251,7 +251,7 @@ FocusScope
             horizontalAlignment:	Text.AlignHCenter
 
 			textFormat:				Text.StyledText
-			font.pixelSize:			filterConstructor.fontPixelSize
+			font:					jaspTheme.fontRCode
 			color:					jaspTheme.textEnabled
 		}
 

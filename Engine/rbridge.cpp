@@ -35,6 +35,7 @@ Engine						*	rbridge_engine		= nullptr;
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
+columnType						desiredCompColType	= columnType::unknown;
 std::vector<std::string>		columnNamesInDataSet;
 ColumnEncoder				*	extraEncodings		= nullptr;
 
@@ -313,7 +314,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 		if(filterColumnsUsed.count(columns[iIn]->name()) > 0)
 		{
 			colHeaders[iOut].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[iIn]->name()).c_str());
-			colHeaders[iOut].type = (int)columns[iIn]->type();
+			colHeaders[iOut].type = int(desiredCompColType != columnType::unknown ? desiredCompColType : columns[iIn]->type());
 
 			iOut++;
 		}
@@ -770,6 +771,11 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	}
 
 	return returnThis;
+}
+
+void rbridge_setComputedColumnTypeDesired(columnType colType)
+{
+	desiredCompColType	= colType;
 }
 
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)

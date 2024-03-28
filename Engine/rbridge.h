@@ -96,4 +96,5 @@ extern "C" {
 	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd);
 	void				rbridge_setLANG(						const std::string & lang);
+	void				rbridge_setComputedColumnTypeDesired(	columnType colType);
 #endif // RBRIDGE_H

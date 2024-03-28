@@ -431,18 +431,29 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	Json::Value computeColumnResponse		= Json::objectValue;
 	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
 	computeColumnResponse["columnName"]		= computeColumnName;
-
-
+	
     if(provideAndUpdateDataSet())
 	{
-		std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-		computeColumnResponse["columnName"]		= computeColumnNameEnc;
-
-		std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
-		std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
-
-		computeColumnResponse["result"]			= computeColumnResultStr;
-		computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+		try
+		{
+			rbridge_setComputedColumnTypeDesired(computeColumnType);
+			
+			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
+			computeColumnResponse["columnName"]		= computeColumnNameEnc;
+	
+			std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
+			std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
+	
+			computeColumnResponse["result"]			= computeColumnResultStr;
+			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+		}
+		catch(std::exception e)
+		{
+			rbridge_setComputedColumnTypeDesired(columnType::unknown);	
+			throw e;
+		}
+		
+		rbridge_setComputedColumnTypeDesired(columnType::unknown);	
 	}
 	else
 	{
@@ -451,7 +462,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	}
 
 	sendString(computeColumnResponse.toStyledString());
-
+	
 	_engineState = engineState::idle;
 }
 

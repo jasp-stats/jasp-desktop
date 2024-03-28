@@ -423,7 +423,7 @@ FocusScope
 					text:					filterModel.filterErrorMsg + "\n"
 					selectByMouse:			true
 					onActiveFocusChanged:	if(!activeFocus) deselect()
-					font.family:			"Courier"
+					font.family:			jaspTheme.fontCode.family
 					font.pixelSize:			baseFontSize * preferencesModel.uiScale
 
 					states:
