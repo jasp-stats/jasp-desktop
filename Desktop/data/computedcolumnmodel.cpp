@@ -61,6 +61,25 @@ QString ComputedColumnModel::computeColumnError()
 	return !_selectedColumn ? "" : tq(_selectedColumn->error());
 }
 
+bool ComputedColumnModel::computeColumnForceType() const
+{
+	return _selectedColumn && _selectedColumn->forceTypes();
+}
+
+void ComputedColumnModel::setComputeColumnForceType(bool newComputeColumnForceType)
+{
+	if(!_selectedColumn)
+		return;
+	
+	if(_selectedColumn->forceTypes() == newComputeColumnForceType)
+		return;
+	
+	_selectedColumn->setForceType(newComputeColumnForceType);
+	emit computeColumnForceTypeChanged();
+	
+	_selectedColumn->invalidate();
+}
+
 void ComputedColumnModel::setComputeColumnRCode(const QString & newCode)
 {
 	if(!_selectedColumn)
@@ -117,13 +136,14 @@ bool ComputedColumnModel::areLoopDependenciesOk(const std::string & columnName, 
 	return true;
 }
 
-void ComputedColumnModel::emitSendComputeCode(const QString & columnName, const QString & code, columnType colType)
+void ComputedColumnModel::emitSendComputeCode(Column * column)
 {
-	if(code.isEmpty())
+	const std::string code = column->rCodeStripped();
+	if(code.empty())
 		return;
 
-	if(areLoopDependenciesOk(columnName.toStdString(), code.toStdString()))
-		emit sendComputeCode(columnName, code, colType);
+	if(areLoopDependenciesOk(column->name(), code))
+		emit sendComputeCode(tq(column->name()), tq(code), column->type(), column->forceTypes());
 }
 
 void ComputedColumnModel::sendCode(const QString & code, const QString & json)
@@ -135,7 +155,7 @@ void ComputedColumnModel::sendCode(const QString & code, const QString & json)
 void ComputedColumnModel::sendCode(const QString & code)
 {
 	setComputeColumnRCode(code);
-	emitSendComputeCode(tq(_selectedColumn->name()), computeColumnRCodeCommentStripped(), _selectedColumn->type());
+	emitSendComputeCode(_selectedColumn);
 }
 
 void ComputedColumnModel::validate(const QString & columnName)
@@ -276,7 +296,7 @@ void ComputedColumnModel::checkForDependentColumnsToBeSent(QString columnNameQ, 
 		if(	col->codeType() != computedColumnType::analysis				&&
 			col->codeType() != computedColumnType::analysisNotComputed	&&
 			col->iShouldBeSentAgain() )
-			emitSendComputeCode(tq(col->name()), tq(col->rCodeStripped()), col->type());
+			emitSendComputeCode(col);
 
 	checkForDependentAnalyses(columnName);
 }
@@ -391,7 +411,7 @@ void ComputedColumnModel::datasetChanged(	QStringList				changedColumns,
 		col->findDependencies(); //columnNames might have changed right? so check it again
 
 		if(col->iShouldBeSentAgain())
-			emitSendComputeCode(tq(col->name()), tq(col->rCodeStripped()), col->type());
+			emitSendComputeCode(col);
 	}
 
 	emit refreshData();

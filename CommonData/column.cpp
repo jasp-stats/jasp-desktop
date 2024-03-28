@@ -41,7 +41,7 @@ void Column::dbLoad(int id, bool getValues)
 	Json::Value emptyVals;
 	
 	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals);
-	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
+	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, _constructorJson);
 	
 	_emptyValues->fromJson(emptyVals);
 
@@ -84,6 +84,7 @@ void Column::loadComputedColumnJsonBackwardsCompatibly(const Json::Value & json)
 	setCompColStuff
 	(
 		json["invalidated"].asBool(),
+		false,
 		computedColumnTypeFromString(json["codeType"].asString()),
 		rCode,
 		json["error"].asString(),
@@ -186,7 +187,7 @@ bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	incRevision();
 }
 
@@ -199,6 +200,18 @@ void Column::setInvalidated(bool invalidated)
 	
 	_invalidated = invalidated;
 	db().columnSetInvalidated(_id, _invalidated);
+	incRevision(false);
+}
+
+void Column::setForceType(bool force)
+{
+	JASPTIMER_SCOPE(Column::setForceType);
+
+	if(_forceTypes == force)
+		return;
+	
+	_forceTypes = force;
+	db().columnSetForceSourceColType(_id, _forceTypes);
 	incRevision(false);
 }
 
@@ -302,11 +315,12 @@ bool Column::iShouldBeSentAgain()
 }
 
 
-void Column::setCompColStuff(bool invalidated, computedColumnType codeType, const std::string &rCode, const std::string &error, const Json::Value &constructorJson)
+void Column::setCompColStuff(bool invalidated, bool forceSourceColType, computedColumnType codeType, const std::string &rCode, const std::string &error, const Json::Value &constructorJson)
 {
 	JASPTIMER_SCOPE(Column::setCompColStuff);
 
 	_invalidated		= invalidated;
+	_forceTypes			= forceSourceColType;
 	_codeType			= codeType;
 	_rCode				= rCode;
 	_constructorJson	= constructorJson;
@@ -1600,6 +1614,7 @@ Json::Value Column::serialize() const
 	json["type"]			= int(_type);
 	json["analysisId"]		= _analysisId;
 	json["invalidated"]		= _invalidated;
+	json["forceTypes"]		= _forceTypes;
 	json["codeType"]		= int(_codeType);
 	json["error"]			= _error;
 	json["rCode"]			= _rCode;
@@ -1648,13 +1663,14 @@ void Column::deserialize(const Json::Value &json)
 	db().columnSetType(_id, _type);
 
 	_invalidated		= json["invalidated"].asBool();
+	_forceTypes			= json["forceTypes"].asBool();
 	_codeType			= computedColumnType(json["codeType"].asInt());
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
 	_constructorJson	= json["constructorJson"];
 	_analysisId			= json["analysisId"].asInt();
 
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	
 	for (Label* label : _labels)
 	{

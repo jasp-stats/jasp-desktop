@@ -295,7 +295,7 @@ private:
 								*	_dataSetModelVarInfo	= nullptr;
 	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
 	ColumnsModel				*	_columnsModel			= nullptr;
-	ComputedColumnModel		*	_computedColumnsModel	= nullptr;
+	ComputedColumnModel			*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
 	Modules::DynamicModules		*	_dynamicModules			= nullptr;

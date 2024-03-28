@@ -546,44 +546,44 @@ void MainWindow::loadQML()
 {
 	Log::log() << "Initializing QML" << std::endl;
 
-	_qml->rootContext()->setContextProperty("mainWindow",				this							);
-	_qml->rootContext()->setContextProperty("columnModel",				_columnModel					);
-	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel						);
-	_qml->rootContext()->setContextProperty("dataSetModel",				_datasetTableModel				);
-	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel					);
-	_qml->rootContext()->setContextProperty("workspaceModel",			_workspaceModel					);
-	_qml->rootContext()->setContextProperty("analysesModel",			_analyses						);
-	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules					);
-	_qml->rootContext()->setContextProperty("plotEditorModel",			_plotEditorModel				);
-	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences					);
-	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface				);
-	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel			);
-	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",	_windowsWorkaroundCPs			); //is nullptr on not-windows!
-	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered			);
-	_qml->rootContext()->setContextProperty("columnTypesModel",			_columnTypesModel				);
-	_qml->rootContext()->setContextProperty("ribbonModelUncommon",		_ribbonModelUncommon			);
-	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel				);
-	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu						);
-	_qml->rootContext()->setContextProperty("filterModel",				_filterModel					);
-	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel					);
-	_qml->rootContext()->setContextProperty("engineSync",				_engineSync						);
-	_qml->rootContext()->setContextProperty("helpModel",				_helpModel						);
-	_qml->rootContext()->setContextProperty("jaspTheme",				nullptr							); //Will be set from jaspThemeChanged()!
-	_qml->rootContext()->setContextProperty("messages",					MessageForwarder::msgForwarder());
-	_qml->rootContext()->setContextProperty("qmlUtils",					new QmlUtils(this)				);
+	_qml->rootContext()->setContextProperty("mainWindow",								this											);
+	_qml->rootContext()->setContextProperty("columnModel",								_columnModel									);
+	_qml->rootContext()->setContextProperty("aboutModel",								_aboutModel										);
+	_qml->rootContext()->setContextProperty("dataSetModel",								_datasetTableModel								);
+	_qml->rootContext()->setContextProperty("columnsModel",								_columnsModel									);
+	_qml->rootContext()->setContextProperty("workspaceModel",							_workspaceModel									);
+	_qml->rootContext()->setContextProperty("analysesModel",							_analyses										);
+	_qml->rootContext()->setContextProperty("dynamicModules",							_dynamicModules									);
+	_qml->rootContext()->setContextProperty("plotEditorModel",							_plotEditorModel								);
+	_qml->rootContext()->setContextProperty("preferencesModel",							_preferences									);
+	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface								);
+	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered							);
+	_qml->rootContext()->setContextProperty("computedColumnsInterface",					_computedColumnsModel							);
+	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",					_windowsWorkaroundCPs							); //is nullptr on not-windows!
+	_qml->rootContext()->setContextProperty("ribbonModelUncommon",						_ribbonModelUncommon							);
+	_qml->rootContext()->setContextProperty("columnTypesModel",							_columnTypesModel								);
+	_qml->rootContext()->setContextProperty("resultMenuModel",							_resultMenuModel								);
+	_qml->rootContext()->setContextProperty("fileMenuModel",							_fileMenu										);
+	_qml->rootContext()->setContextProperty("filterModel",								_filterModel									);
+	_qml->rootContext()->setContextProperty("ribbonModel",								_ribbonModel									);
+	_qml->rootContext()->setContextProperty("engineSync",								_engineSync										);
+	_qml->rootContext()->setContextProperty("helpModel",								_helpModel										);
+	_qml->rootContext()->setContextProperty("jaspTheme",								nullptr											); //Will be set from jaspThemeChanged()!
+	_qml->rootContext()->setContextProperty("messages",									MessageForwarder::msgForwarder()				);
+	_qml->rootContext()->setContextProperty("qmlUtils",									new QmlUtils(this)								);
 
-	_qml->rootContext()->setContextProperty("baseBlockDim",				20								); //should be taken from Theme
-	_qml->rootContext()->setContextProperty("baseFontSize",				16								);
-	_qml->rootContext()->setContextProperty("languageModel",			_languageModel					);
+	_qml->rootContext()->setContextProperty("baseBlockDim",								20												); //should be taken from Theme
+	_qml->rootContext()->setContextProperty("baseFontSize",								16												);
+	_qml->rootContext()->setContextProperty("languageModel",							_languageModel									);
 
-	_qml->rootContext()->setContextProperty("columnTypeScale",			int(columnType::scale)			);
-	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
+	_qml->rootContext()->setContextProperty("columnTypeScale",							int(columnType::scale)							);
+	_qml->rootContext()->setContextProperty("columnTypeOrdinal",						int(columnType::ordinal)						);
+	_qml->rootContext()->setContextProperty("columnTypeNominal",						int(columnType::nominal)						);
+	_qml->rootContext()->setContextProperty("columnTypeNominalText",					int(columnType::nominalText)					);
 
 	_qml->rootContext()->setContextProperty("computedColumnTypeRCode",					int(computedColumnType::rCode)					);
-	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysis",				int(computedColumnType::analysis)				);
+	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 

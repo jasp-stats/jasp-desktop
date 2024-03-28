@@ -79,7 +79,7 @@ private:
 	void					absorbSettings(					const Json::Value & json);
 
 	void					runAnalysis();
-	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
+	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType,	bool forceType);
 	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
 	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void					runRCodeCommander(		  std::string   rCode																						);

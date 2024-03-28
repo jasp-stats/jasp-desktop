@@ -415,10 +415,10 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
+	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType, jsonRequest.get("forceType", false).asBool());
 }
 
-void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
+void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, bool forceType)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -436,7 +436,8 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	{
 		try
 		{
-			rbridge_setComputedColumnTypeDesired(computeColumnType);
+			if(forceType)
+				rbridge_setComputedColumnTypeDesired(computeColumnType);
 			
 			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 			computeColumnResponse["columnName"]		= computeColumnNameEnc;

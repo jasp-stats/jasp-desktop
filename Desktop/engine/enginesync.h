@@ -67,7 +67,7 @@ public slots:
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
 	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
-	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
+	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType, bool forceType);
 	void		pauseEngines(bool  unloadData = false);
 	void		stopEngines();
 	void		resumeEngines();

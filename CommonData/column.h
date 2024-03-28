@@ -67,7 +67,8 @@ public:
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
 			void					setInvalidated(		bool				invalidated		);
-			void					setCompColStuff(bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
+			void					setForceType(		bool				force		);
+			void					setCompColStuff(bool   invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(enum columnType columnType = columnType::unknown);
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
@@ -88,6 +89,7 @@ public:
 			int						analysisId()			const	{ return _analysisId;		}
 			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
 			bool					invalidated()			const	{ return _invalidated;		}
+			bool					forceTypes()			const	{ return _forceTypes;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
 			const std::string	&	title()					const	{ return _title.empty() ? _name : _title;	}
@@ -234,7 +236,8 @@ private:
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
-									_batchedLabel		= false;
+									_batchedLabel		= false,
+									_forceTypes			= true; ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
