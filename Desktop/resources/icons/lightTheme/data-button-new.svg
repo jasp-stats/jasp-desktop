@@ -46,9 +46,9 @@
 <style
    type="text/css"
    id="style2">
-	.st0{fill:none;stroke:#CCCCCC;stroke-width:1.3455;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
-	.st2{fill:#CCCCCC;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st0{fill:none;stroke:#222222;stroke-width:1.3455;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#222222;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st2{fill:#222222;stroke:#222222;stroke-width:1.4178;stroke-miterlimit:10;}
 	.st3{fill:#FFFFFF;}
 	.st4{fill:none;stroke:#231F20;stroke-width:0.0752;stroke-miterlimit:10;}
 	.st5{fill:#8CC63E;}
@@ -67,7 +67,7 @@
    x2="23.92"
    y2="53.880001"
    id="line4"
-   style="stroke:#000000;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
@@ -75,7 +75,7 @@
    x2="10.04"
    y2="35.130001"
    id="line6"
-   style="stroke:#000000;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
@@ -90,7 +90,7 @@
    x2="10.04"
    y2="25.75"
    id="line10"
-   style="stroke:#000000;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1" />
 			<line
    class="st0"
    x1="53.959999"
@@ -98,18 +98,18 @@
    x2="10.04"
    y2="44.5"
    id="line12"
-   style="fill:#000000;stroke:#000000;stroke-opacity:1" />
+   style="fill:#222222;stroke:#222222;stroke-opacity:1" />
 		</g>
 		<path
    class="st1"
    d="M 52.92,53.88 H 11.08 c -0.58,0 -1.05,-0.38 -1.05,-0.85 V 16.37 h 43.92 v 36.65 c 0.01,0.47 -0.46,0.86 -1.03,0.86 z"
    id="path16"
-   style="stroke:#000000;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1" />
 		<path
    class="st2"
    d="M 53.96,16.37 H 10.04 v -5.4 c 0,-0.47 0.47,-0.85 1.05,-0.85 h 41.83 c 0.58,0 1.05,0.38 1.05,0.85 v 5.4 z"
    id="path18"
-   style="stroke:#000000;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1" />
 	</g>
 <g
    id="g859"

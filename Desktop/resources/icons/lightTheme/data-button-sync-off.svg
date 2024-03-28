@@ -47,9 +47,9 @@
 <style
    type="text/css"
    id="style2">
-	.st0{fill:none;stroke:#CCCCCC;stroke-width:1.3455;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
-	.st2{fill:#CCCCCC;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st0{fill:none;stroke:#222222;stroke-width:1.3455;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#222222;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st2{fill:#222222;stroke:#222222;stroke-width:1.4178;stroke-miterlimit:10;}
 	.st3{fill:#FFFFFF;}
 	.st4{fill:none;stroke:#231F20;stroke-width:0.0752;stroke-miterlimit:10;}
 	.st5{fill:#8CC63E;}
