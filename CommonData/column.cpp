@@ -1011,9 +1011,9 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 			{
 				Label * label = labelByIntsId(_ints[row]);
 				
-				assert(label);
+				assert(label || _ints[row] == EmptyValues::missingValueInteger);
 				
-				if(!label->isEmptyValue())
+				if(label && !label->isEmptyValue())
 					_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), true);
 			}
 			else
@@ -1045,9 +1045,9 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 			{
 				Label * label = labelByIntsId(_ints[row]);
 				
-				assert(label);
+				assert(label || _ints[row] == EmptyValues::missingValueInteger);
 				
-				if(!label->isEmptyValue())
+				if(label && !label->isEmptyValue())
 					values.push_back(levelToValueMap[useLabels ? label->labelDisplay() : label->originalValueAsString(false)]);
 				else
 					values.push_back(EmptyValues::missingValueInteger);
