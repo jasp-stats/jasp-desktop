@@ -6,7 +6,7 @@
 namespace Coop
 {
 
-const QStringList & educatorsTier()
+const QStringList & goldTier()
 {
 	// Want to thank an institution on the welcomepage?
 	// Just add an entry in the list below:
@@ -22,7 +22,7 @@ const QStringList & educatorsTier()
 	return list;
 }
 
-const QStringList & sponsorsTier()
+const QStringList & silverTier()
 {
 	// Want to thank an institution on the welcomepage?
 	// Just add an entry in the list below:
@@ -35,7 +35,7 @@ const QStringList & sponsorsTier()
 	return list;
 }
 
-const QStringList & supportersTier()
+const QStringList & bronzeTier()
 {
 	// Want to thank an institution on the welcomepage?
 	// Just add an entry in the list below:

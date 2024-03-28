@@ -84,9 +84,9 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
 	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT							)
-	Q_PROPERTY(QString		coopEducators		READ coopEducators											CONSTANT							)
-	Q_PROPERTY(QString		coopSponsors		READ coopSponsors											CONSTANT							)
-	Q_PROPERTY(QString		coopSupporters		READ coopSupporters											CONSTANT							)
+	Q_PROPERTY(QString		coopGold		READ coopGold											CONSTANT							)
+	Q_PROPERTY(QString		coopSilver		READ coopSilver											CONSTANT							)
+	Q_PROPERTY(QString		coopBronze		READ coopBronze											CONSTANT							)
 	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT							)
 	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
@@ -117,9 +117,9 @@ public:
 	bool				communityVisible()	const;
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & coopThankYou()			const;
-	const QString &		coopEducators()			const;
-	const QString &		coopSponsors()			const;
-	const QString &		coopSupporters()		const;
+	const QString &		coopGold()			const;
+	const QString &		coopSilver()			const;
+	const QString &		coopBronze()		const;
 	const QString &		coopHowToSupport()		const;
 	const QString &		coopUrl()				const;
 	const QString 		contactText()			const;

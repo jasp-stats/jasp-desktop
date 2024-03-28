@@ -31,18 +31,18 @@ The institutions of higher learning that participate in the JASP community joint
 
 If your institution is not yet part of the JASP community, you can <a href=\"%1\">suggest that they join</a>.
 
-<i><b>Educator Institutions:</b></i>
+<i><b>Gold Educators:</b></i>
 %2
                  
-<i><b>Sponsor Institutions:</b></i>
+<i><b>Silver Educators:</b></i>
 %3
 
-<i><b>Supporter Institutions:</b></i>
+<i><b>Bronze Educator:</b></i>
 %4")
 .arg(mainWindow.coopHowToSupport)
-.arg(mainWindow.coopEducators)
-.arg(mainWindow.coopSponsors)
-.arg(mainWindow.coopSupporters)
+.arg(mainWindow.coopGold)
+.arg(mainWindow.coopSilver)
+.arg(mainWindow.coopBronze)
 .replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
         
 		color:					jaspTheme.textEnabled

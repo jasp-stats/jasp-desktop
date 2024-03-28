@@ -254,8 +254,8 @@ QString MainWindow::windowTitle() const
 const QStringList & MainWindow::coopThankYou() const
 {
 	static QStringList thankYou = [](){
-		QStringList thankThese = Coop::educatorsTier();
-		thankThese.append(Coop::sponsorsTier());
+		QStringList thankThese = Coop::goldTier();
+		thankThese.append(Coop::silverTier());
 		return thankThese;
 	}();
 	
@@ -274,22 +274,22 @@ const QString MainWindow::coopConcatter(QStringList listIn, const QString & name
 	return listIn.join(", ");
 }
 
-const QString & MainWindow::coopEducators() const
+const QString & MainWindow::coopGold() const
 {
-	static QString educators = coopConcatter(Coop::educatorsTier(), "Coop::educatorsTier()");
-	return educators;
+	static QString golds = coopConcatter(Coop::goldTier(), "Coop::goldTier()");
+	return golds;
 }
 
-const QString & MainWindow::coopSponsors() const
+const QString & MainWindow::coopSilver() const
 {
-	static QString sponsors = coopConcatter(Coop::sponsorsTier(), "Coop::sponsorsTier()");
-	return sponsors;
+	static QString silvers = coopConcatter(Coop::silverTier(), "Coop::silverTier()");
+	return silvers;
 }
 
-const QString & MainWindow::coopSupporters() const
+const QString & MainWindow::coopBronze() const
 {
-	static QString supporters = coopConcatter(Coop::supportersTier(), "Coop::supportersTier()");
-	return supporters;
+	static QString bronzes = coopConcatter(Coop::bronzeTier(), "Coop::bronzeTier()");
+	return bronzes;
 }
 
 const QString & MainWindow::coopHowToSupport() const

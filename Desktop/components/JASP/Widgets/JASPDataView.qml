@@ -212,18 +212,10 @@ FocusScope
 				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollDown()
 				else									vertiScroller.scrollDown()
 			}
-			/* Might be needed to have scrolling when flickable is !interactive. But something else seems to be stealing the wheel.
-			else if(!flickableInteractive)
-			{
-				horiScroller.scroll( -wheel.pixelDelta.x);
-				vertiScroller.scroll(-wheel.pixelDelta.y);
-			}*/
 			else
 				wheel.accepted = false;
 		}
 	}
-
-
 	
 	JASPScrollBar
 	{
