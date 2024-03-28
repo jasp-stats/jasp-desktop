@@ -94,10 +94,6 @@ JASPWidgets.Exporter = {
 		this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
 		this.includeNotes = false;
 
-		this.isFormatted = function () {
-			return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
-		};
-
 		this.htmlOnly = function () {
 			return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
 		};
@@ -242,32 +238,19 @@ JASPWidgets.Exporter = {
 	},
 
 	getSpacingStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float"]);
-		else
-			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
+		return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float"]);
 	},
 
 	getHeaderStyles: function (element, exportParams) {
-		// I commented isFormatted out because nonw of us knew the intention...
-		//if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color", "font-style", "text-transform"]);
-		// else
-		// 	return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
+		return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color", "font-style", "text-transform"]);
 	},
 
 	getTableStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "color"]);
-		else
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
 	},
 
 	getTableContentStyles: function (element, exportParams) {
-		if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font", "color"]);
-		else
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float", "text-align"]);
 	},
 
 	getErrorStyles: function (element, component) {
@@ -282,10 +265,7 @@ JASPWidgets.Exporter = {
 	},
 
 	getNoteStyles: function (element, exportParams) {
-		// if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
-		// else
-		// 	return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {

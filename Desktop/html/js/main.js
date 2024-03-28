@@ -541,8 +541,6 @@ var wrapHTML = function (html, exportParams, doctype = false) {
 	completehtml += "		<title>JASP</title>"
 	completehtml += "		<style>"
 	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
-	if (exportParams.isFormatted())
-		completehtml += "			body {font-family: sans-serif;}"
 	completehtml += "		</style>"
 	completehtml += "	</head>\n"
 
