@@ -738,31 +738,34 @@ bool jaspRCPP_columnIsNominal(		const std::string & columnName) { return jaspRCP
 
 bool jaspRCPP_setColumnDataAsScale(const std::string & columnName, Rcpp::RObject scalarData)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, Rf_isNull(scalarData) ? Rcpp::Vector<STRSXP>() : Rcpp::as<Rcpp::Vector<STRSXP>>(scalarData), columnType::scale);
+	return _jaspRCPP_setColumnDataAndType(columnName, scalarData, columnType::scale);
 }
 
 
 bool jaspRCPP_setColumnDataAsOrdinal(const std::string & columnName, Rcpp::RObject ordinalData)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, Rf_isNull(ordinalData) ? Rcpp::Vector<STRSXP>() : Rcpp::as<Rcpp::Vector<STRSXP>>(ordinalData), columnType::ordinal);
+	return _jaspRCPP_setColumnDataAndType(columnName, ordinalData, columnType::ordinal);
 }
 
 
 bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObject nominalData)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, Rf_isNull(nominalData) ? Rcpp::Vector<STRSXP>() : Rcpp::as<Rcpp::Vector<STRSXP>>(nominalData), columnType::nominal);
+	return _jaspRCPP_setColumnDataAndType(columnName, nominalData, columnType::nominal);
 }
 
-bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::Vector<STRSXP> nominalData, columnType colType)
+bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
 {
-	std::vector<std::string> convertedStrings(nominalData.begin(), nominalData.end());
+	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::Vector<STRSXP>()	: Rcpp::as<Rcpp::Vector<STRSXP>>(data);
+	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::as<Rcpp::NumericVector>(data);
+	
+	std::vector<std::string> convertedStrings(strData.begin(), strData.end());
 
 	const char ** nominals = new const char*[convertedStrings.size()]();
 
 	for(size_t i=0; i<convertedStrings.size(); i++)
-		nominals[i] = convertedStrings[i].c_str();
+		nominals[i] = std::isnan(dblData[i]) && convertedStrings[i] == "NA" ? "" : convertedStrings[i].c_str();
 
-	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(nominalData.size()), int(colType));
+	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType));
 }
 
 

@@ -17,6 +17,8 @@ ComputedColumnModel::ComputedColumnModel()
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnForceTypeChanged		);
+	
 	connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
 	connect(this,					&ComputedColumnModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
 	
