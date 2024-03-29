@@ -110,7 +110,7 @@ FocusScope
 					Item
 					{
 						id:				itemActionMenu
-						width:			fileMenuModel.actionButtons.width + jaspTheme.subMenuIconHeight + jaspTheme.generalAnchorMargin
+						width:			fileMenuModel.actionButtons.width + jaspTheme.subMenuIconHeight + jaspTheme.generalAnchorMargin + jaspTheme.generalAnchorMargin
 						anchors.left:	parent.left
 						height:			actionButtionHeight + actionToolSeperator.height
 						enabled:		enabledRole

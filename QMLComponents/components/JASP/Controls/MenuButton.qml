@@ -5,9 +5,10 @@ import JASP.Controls	1.0
 
 RoundedButton
 {
-	property bool hasSubMenu:			false
-	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
-	property color defaultColor:        "transparent"
+	property bool	hasSubMenu:			false
+	property bool	showHovered:		hasSubMenu ? delayOnhoverTimer.running : hovered
+	property color	defaultColor:       "transparent"
+	property real	arrowExtraWidth:	arrow.width + jaspTheme.generalAnchorMargin
 
 	id:					root
 	font:				jaspTheme.fontRibbon
@@ -37,9 +38,9 @@ RoundedButton
 
 	Image
 	{
+		id:						arrow
 		anchors.verticalCenter:	parent.verticalCenter
 		anchors.right:			parent.right
-		anchors.rightMargin:	jaspTheme.generalAnchorMargin
 		height:					jaspTheme.subMenuIconHeight
 		width:					height
 		source:					root.hasSubMenu ? jaspTheme.iconPath + "/large-arrow-right.png" : ""
