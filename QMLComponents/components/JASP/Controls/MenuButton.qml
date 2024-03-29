@@ -40,7 +40,7 @@ RoundedButton
 	{
 		id:						arrow
 		anchors.verticalCenter:	parent.verticalCenter
-		anchors.right:			parent.right
+		anchors.right:			parent.right	
 		height:					jaspTheme.subMenuIconHeight
 		width:					height
 		source:					root.hasSubMenu ? jaspTheme.iconPath + "/large-arrow-right.png" : ""

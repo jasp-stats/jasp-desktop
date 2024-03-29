@@ -900,12 +900,12 @@ std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue
 	return std::to_string(key);
 }
 
-std::string Column::getValue(size_t row, bool fancyEmptyValue) const
+std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue) const
 {
 	if (row < rowCount())
 	{
 		if (_type == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue);
+			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue);
 
 		else if (_ints[row] != EmptyValues::missingValueInteger)
 		{
@@ -929,8 +929,8 @@ std::string Column::getDisplay(size_t row, bool fancyEmptyValue) const
 std::string Column::getShadow(size_t row, bool fancyEmptyValue) const
 {
 	return _type != columnType::scale	
-		?	getValue(row, fancyEmptyValue)
-		:	getLabel(row, fancyEmptyValue);
+		?	getValue(row, fancyEmptyValue, true)
+		:	getLabel(row, fancyEmptyValue, true);
 }
 
 std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue) const

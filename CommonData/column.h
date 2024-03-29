@@ -127,7 +127,7 @@ public:
 			void					labelsReverse();
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
-			std::string				getValue(	size_t row,	bool fancyEmptyValue = false)									const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
+			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
 			std::string				getDisplay(	size_t row,	bool fancyEmptyValue = true)									const;
 			std::string				getShadow(	size_t row,	bool fancyEmptyValue = true)									const;
 			std::string				getLabel(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const;
