@@ -2481,14 +2481,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
 
-msgctxt "FactorsForm|"
-msgid "+"
-msgstr ""
-
-msgctxt "FactorsForm|"
-msgid "-"
-msgstr ""
-
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
 msgstr ""
@@ -3789,10 +3781,6 @@ msgid "Unordered List"
 msgstr ""
 
 msgctxt "MainPage|"
-msgid "Color Picker"
-msgstr ""
-
-msgctxt "MainPage|"
 msgid "Background Color"
 msgstr ""
 
@@ -4283,10 +4271,6 @@ msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
 msgstr ""
 
-msgctxt "RibbonModel|"
-msgid "No Data"
-msgstr ""
-
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
@@ -4553,28 +4537,6 @@ msgid "JASP Community"
 msgstr ""
 
 #, qt-format
-msgctxt "CommunityWindow|"
-msgid ""
-"<h3>Community</h3>\n"
-"The institutions of higher learning that participate in the JASP community "
-"jointly support the maintenance and further development of JASP, therefore "
-"providing an invaluable educational service to their own students and to "
-"those of other institutions worldwide.\n"
-"\n"
-"If your institution is not yet part of the JASP community, you can <a "
-"href=\"%1\">suggest that they join</a>.\n"
-"\n"
-"<i><b>Educator Institutions:</b></i>\n"
-"%2\n"
-"                 \n"
-"<i><b>Sponsor Institutions:</b></i>\n"
-"%3\n"
-"\n"
-"<i><b>Supporter Institutions:</b></i>\n"
-"%4"
-msgstr ""
-
-#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "<h3>Contact</h3>\n"
@@ -4704,4 +4666,60 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Close search bar"
+msgstr ""
+
+#, qt-format
+msgctxt "CommunityWindow|"
+msgid ""
+"<h3>Community</h3>\n"
+"The institutions of higher learning that participate in the JASP community "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the JASP community, you can <a "
+"href=\"%1\">suggest that they join</a>.\n"
+"\n"
+"<i><b>Gold Educators:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Silver Educators:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Bronze Educator:</b></i>\n"
+"%4"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Font Color"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Input LaTeX here:"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Press `Cmd/Ctrl + Enter` to apply;"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Click to apply formula"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Click to edit this formula"
+msgstr ""
+
+#, qt-format
+msgctxt "FactorsForm|"
+msgid "Add a %1"
+msgstr ""
+
+#, qt-format
+msgctxt "FactorsForm|"
+msgid "Remove last %1"
+msgstr ""
+
+msgctxt "FactorsFormBase|"
+msgid "Factor"
 msgstr ""
