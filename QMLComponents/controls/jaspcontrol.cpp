@@ -36,13 +36,6 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 {
 	setFlag(ItemIsFocusScope);
 	setActiveFocusOnTab(true);
-	/*if (JaspTheme::currentTheme()) // THis does not work...
-	{
-		// TODO: Add currentTheme changed font changed
-		QQmlProperty(this, "ToolTip.timeout", qmlContext(this)).write(JaspTheme::currentTheme()->toolTipTimeout());
-		setProperty("ToolTip.delay", JaspTheme::currentTheme()->toolTipDelay());
-		setProperty("ToolTip.tooltip.font", JaspTheme::currentTheme()->font());
-	}*/
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 
-DragGeneric {
+DragGeneric 
+{
 	property string columnName: "?"
 	property string columnIcon: ""
 

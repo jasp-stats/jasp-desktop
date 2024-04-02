@@ -18,6 +18,7 @@ Item
 				property bool	lastCheckPassed:		true
 				property bool	showStartupMsg:			true
 				property alias	functionModel:			functieLijst.model
+				property string forceColumnInputs:		""
 
 	signal rCodeChanged(string rScript)
 

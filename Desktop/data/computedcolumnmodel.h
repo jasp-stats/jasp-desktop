@@ -2,9 +2,7 @@
 #define COMPUTEDCOLUMNSCODEITEM_H
 
 #include <QQuickItem>
-#include <QObject>
 #include "datasetpackage.h"
-#include "analysis/analyses.h"
 
 /// 
 /// A model for use by the computed columns editor in QML
@@ -17,7 +15,9 @@ class ComputedColumnModel : public QObject
 	Q_PROPERTY(bool		computeColumnForceType		READ computeColumnForceType			WRITE setComputeColumnForceType			NOTIFY computeColumnForceTypeChanged	)
 	Q_PROPERTY(QString	computeColumnJson			READ computeColumnJson														NOTIFY computeColumnJsonChanged			)
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
+	Q_PROPERTY(int		columnType					READ computedColumnColumnType												NOTIFY columnTypeChanged				)
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY refreshProperties				)
+	Q_PROPERTY(QString	computeColumnIconSource		READ computeColumnIconSource												NOTIFY computeColumnIconSourceChanged	)
 
 public:
     explicit	ComputedColumnModel();
@@ -29,7 +29,9 @@ public:
 				QString				computeColumnRCodeCommentStripped();
 				QString				computeColumnError();
 				QString				computeColumnJson();
+				int					computedColumnColumnType();
 				bool				computeColumnForceType()	const;
+				QString				computeColumnIconSource()	const;
 				Column			*	column()					const;
 				bool				computeColumnUsesRCode();
 
@@ -45,7 +47,7 @@ public:
 	Q_INVOKABLE bool				isColumnNameFree(const QString & name)						{ return DataSetPackage::pkg()->isColumnNameFree(name.toStdString()); }
 
 				Column			*	createComputedColumn(const std::string & name, int columnType, computedColumnType computeType, Analysis * analysis = nullptr);
-	Q_INVOKABLE void				createComputedColumn(const QString     & name, int columnType, bool jsonPlease)	{ createComputedColumn(fq(name), columnType, jsonPlease ? computedColumnType::constructorCode : computedColumnType::rCode);	}
+	Q_INVOKABLE void				createComputedColumn(const QString     & name, int columnType, bool jsonPlease);
 
 				bool				areLoopDependenciesOk(const std::string & columnName);
 				bool				areLoopDependenciesOk(const std::string & columnName, const std::string & code);
@@ -54,8 +56,6 @@ public:
 
                                 static		ComputedColumnModel * singleton()		{ return _singleton; }
 
-	
-								
 								
 private:
 				void				revertToDefaultInvalidatedColumns();
@@ -73,12 +73,15 @@ signals:
 				void	computeColumnJsonChanged();
 				void	refreshColumn(QString columnName);
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
-				void	sendComputeCode(QString columnName, QString code, columnType columnType, bool forceType);
+				void	sendComputeCode(QString columnName, QString code, enum columnType columnType, bool forceType);
 				void	computeColumnUsesRCodeChanged();
 				void	showAnalysisForm(Analysis *analysis);
 				void	dataColumnAdded(QString columnName);
 				void	refreshData();
 				void	computeColumnForceTypeChanged();
+				void	columnTypeChanged();
+				
+				void computeColumnIconSourceChanged();
 				
 public slots:
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);
@@ -97,11 +100,7 @@ public slots:
 private:
 	static	ComputedColumnModel		* _singleton;
 			Column					* _selectedColumn	= nullptr;
-
 			UndoStack				* _undoStack		= nullptr;
-
-			
-			
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H
