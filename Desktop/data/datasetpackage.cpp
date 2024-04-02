@@ -1380,6 +1380,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 	int			colIndex		=	getColIndex(colId),
 				threshold		=	Settings::value(Settings::THRESHOLD_SCALE).toInt();
 	Column	*	column			=	_dataSet->columns()[colIndex];
+				column			->	setHasCustomEmptyValues(emptyValues.size());
 				column			->	setCustomEmptyValues(emptyValues);
 				column			->	setName(newName);
 				column			->	setTitle(title);
