@@ -2,6 +2,7 @@
 #include "jsonutilities.h"
 #include "utilities/qutils.h"
 #include "columnencoder.h"
+#include "analysis/analyses.h"
 
 ComputedColumnModel * ComputedColumnModel::_singleton = nullptr;
 
@@ -13,11 +14,12 @@ ComputedColumnModel::ComputedColumnModel()
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 
-	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnJsonChanged				);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnJsonChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnForceTypeChanged		);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::columnTypeChanged					);
 	
 	connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
 	connect(this,					&ComputedColumnModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
@@ -56,6 +58,11 @@ QString ComputedColumnModel::computeColumnJson()
 	QString json = !_selectedColumn ? "" : tq(_selectedColumn->constructorJsonStr());
 
 	return json;
+}
+
+int ComputedColumnModel::computedColumnColumnType()
+{
+	return int(!_selectedColumn ? columnType::unknown : _selectedColumn->type());
 }
 
 QString ComputedColumnModel::computeColumnError()
@@ -443,6 +450,11 @@ Column * ComputedColumnModel::createComputedColumn(const std::string & name, int
 		selectColumn(createdColumn);
 
 	return createdColumn;
+}
+
+void ComputedColumnModel::createComputedColumn(const QString &name, int columnType, bool jsonPlease)	
+{ 
+	createComputedColumn(fq(name), columnType, jsonPlease ? computedColumnType::constructorCode : computedColumnType::rCode);	
 }
 
 

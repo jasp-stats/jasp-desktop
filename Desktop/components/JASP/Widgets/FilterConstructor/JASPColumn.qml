@@ -12,8 +12,8 @@ Item
 					height:			filterConstructor.blockDim
 					implicitWidth:	colIcon.width + colName.width
                     width:          implicitWidth
-	property bool	isNumerical:	columnIcon.indexOf("scale") >= 0
-	property bool	isOrdinal:		columnIcon.indexOf("ordinal") >= 0
+	property bool	isNumerical:	(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "scale")		|| columnIcon.indexOf("scale")		>= 0
+	property bool	isOrdinal:		(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "ordinal")	|| columnIcon.indexOf("ordinal")	>= 0
 
 
 	property var	dragKeys:		isOrdinal ? ["string", "ordered"] : isNumerical ? ["number"] : ["string"]
@@ -40,7 +40,7 @@ Item
 	TextMetrics
 	{
 		id:				columnNameMeasure
-		font.pixelSize:	colName.font.pixelSize
+		font:			colName.font
 		text:			colName.text
 	}
 
@@ -49,16 +49,15 @@ Item
 		id:				colName
 		anchors
 		{
-			top:		parent.top
-			left:		colIcon.right
-			bottom:		parent.bottom
+			verticalCenter:	parent.vertivalCenter
+			left:			colIcon.right
 		}
 
         width:          Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize - (colIcon.width + 2*colIcon.anchors.margins))
 		font.pixelSize: baseFontSize * preferencesModel.uiScale
 		font.family:	jaspTheme.font.family
 		color:			jaspTheme.textEnabled
-		leftPadding:	2
+		leftPadding:	4 * preferencesModel.uiScale
 
 		text:			columnName
 		elide:			Text.ElideMiddle

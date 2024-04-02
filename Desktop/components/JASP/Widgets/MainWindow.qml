@@ -263,7 +263,7 @@ Window
 	}
 	
 	//Utility:
-	readonly property Item _toolTipOverrideItem: Item
+	property Item _toolTipOverrideItem: Item
 	{
 		//These properties override those for ALL attached ToolTips in the application
 		//ToolTip.toolTip shouldn't be changed anywhere else otherwise we get hard to debug behaviour

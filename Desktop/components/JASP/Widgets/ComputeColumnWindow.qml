@@ -155,6 +155,15 @@ FocusScope
 				anchors.fill:			parent
                 anchors.leftMargin:     1
 				visible:				!computedColumnsInterface.computeColumnUsesRCode
+				forceColumnInputs:		!computedColumnsInterface.computeColumnForceType 
+										? "" 
+										: computedColumnsInterface.columnType === columnTypeScale 
+											? "scale" 
+											: computedColumnsInterface.columnType === columnTypeOrdinal 
+												? "ordinal" 
+												: computedColumnsInterface.columnType === columnTypeNominal 
+													? "nominal" 
+													: "unknown"
 
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
@@ -287,7 +296,7 @@ FocusScope
 			{
 				id:				forceSourceColTypeButton
 
-				toolTip:		qsTr("The columns used above can be read in the type of the computed column, or as their own type.\nKeep types will import columns with the type they have, while convert will force it to the type of the computed column in question.")	
+				toolTip:		qsTr("- Keep types: use columns with their defined columntype.\n- Convert types: convert all used columns to the columntype of this computed column before use.\n\nThe button displays the *current setting*, not what will happen when you press it!")	
 				text:			!computedColumnsInterface.computeColumnForceType 
 									? qsTr("Keep types")
 									: qsTr("Convert types")

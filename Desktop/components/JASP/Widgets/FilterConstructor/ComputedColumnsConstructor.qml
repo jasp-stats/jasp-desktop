@@ -21,6 +21,8 @@ FocusScope
 				property alias	functionModel:			functieLijst.model
 				property string	rCode:					""
 				property string jsonConstructed:		""
+				property string forceColumnInputs:		""
+						
 
 	onSomethingChangedChanged:
 	{
