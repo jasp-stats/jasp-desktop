@@ -62,49 +62,6 @@ void DatabaseImporter::initColumn(QVariant colId, ImportColumn *importColumn)
 	
 	DatabaseImportColumn * col = static_cast<DatabaseImportColumn*>(importColumn);
 	
-	switch(col->type().id())
-	{
-	default:
-	case MT::QDate:			//These could later get their own handler, dependent on https://github.com/jasp-stats/INTERNAL-jasp/issues/312 and https://github.com/jasp-stats/jasp-issues/issues/606
-	case MT::QDateTime: 
-	case MT::Char:
-	case MT::QString:
-	{
-		stringvec asStrings;
-		asStrings.reserve(col->size());
-		
-		for(const QVariant & v : col->getValues())
-			asStrings.push_back(fq(v.toString()));
-		
-		initColumnAsNominalText(colId, col->name(), asStrings);
-		break;
-	}
-		
-	case MT::Int:
-	case MT::UInt:
-	{
-		std::vector<int> asInts;
-		asInts.reserve(col->size());
-		
-		for(const QVariant & v : col->getValues())
-			asInts.push_back(v.toInt());
-		
-		initColumnAsNominalOrOrdinal(colId, col->name(), asInts, true);
-		break;
-	}
-		
-	case MT::Double:
-	case MT::Float:
-	{
-		std::vector<double> asDoubles;
-		asDoubles.reserve(col->size());
-		
-		for(const QVariant & v : col->getValues())
-			asDoubles.push_back(v.toDouble());
-		
-		initColumnAsScale(colId, col->name(), asDoubles);
-		break;
-	}
-			
-	}
+	initColumnWithStrings(colId, col->name(), col->allValuesAsStrings());
+	
 }

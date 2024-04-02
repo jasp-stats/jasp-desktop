@@ -18,15 +18,14 @@
 #ifndef JASPIMPORTEROLD_H
 #define JASPIMPORTEROLD_H
 
-
-#include "../datasetpackage.h"
-
 #include <boost/function.hpp>
 
 #include <string>
 #include <vector>
 #include <QCoreApplication>
-#include "utilities/qutils.h"
+#include "json/value.h"
+#include "columntype.h"
+#include "version.h"
 
 ///
 /// Loads a jasp file
@@ -43,17 +42,19 @@ public:
 	static Compatibility isCompatible(const std::string &path);
 
 private:
-	static void loadDataArchive(		const std::string &path, std::function<void(int)> progressCallback);
-	static void loadJASPArchive(		const std::string &path, std::function<void(int)> progressCallback);
-	static void loadDataArchive_1_00(	const std::string &path, std::function<void(int)> progressCallback);
-	static void loadJASPArchive_1_00(	const std::string &path, std::function<void(int)> progressCallback);
+	static void				loadDataArchive(		const std::string &path, std::function<void(int)> progressCallback);
+	static void				loadJASPArchive(		const std::string &path, std::function<void(int)> progressCallback);
+	static void				loadDataArchive_1_00(	const std::string &path, std::function<void(int)> progressCallback);
+	static void				loadJASPArchive_1_00(	const std::string &path, std::function<void(int)> progressCallback);
 
-	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
-	static void readManifest(const std::string &path);
-	static Compatibility isCompatible();
-
+	static bool				parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
+	static void				readManifest(const std::string &path);
+	static Compatibility	isCompatible();
 	
-	static const Version maxSupportedJaspArchiveVersion;
+	static columnType		parseColumnTypeForJASPFile(const std::string & name);
+	static void				columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Value columnDesc, size_t columnIndex);
+	
+	static const Version	maxSupportedJaspArchiveVersion;
 };
 
 #endif // JASPIMPORTEROLD_H

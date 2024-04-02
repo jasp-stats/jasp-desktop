@@ -132,13 +132,15 @@ FocusScope
 				Repeater
 				{
 					id:		tabButtonRepeater
-					model:	columnModel.tabs.length
+					model:	columnModel.tabs
 
 					QTC.TabButton
 					{
 						id:			tabButton
 						height:		tabbar.height
 						width:		labelText.implicitWidth + 20 * preferencesModel.uiScale
+						
+						required property int index
 
 						onCheckedChanged: if (checked) tabView.currentTabButton = tabButton
 
@@ -245,7 +247,10 @@ FocusScope
 
 			StackLayout
 			{
-				id: stack
+				id:					stack
+				currentIndex:		tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
+				clip:				true
+				
 				property var componentIndex:
 				{
 					"computed":			0,
@@ -253,7 +258,7 @@ FocusScope
 					"missingValues" :	2,
 					"basicInfo":		3
 				}
-				currentIndex:		tabbar.currentIndex >= 0 ? componentIndex[columnModel.tabs[tabbar.currentIndex].name] : -1
+				
 
 				anchors
 				{

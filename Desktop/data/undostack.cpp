@@ -3,7 +3,7 @@
 #include "datasettablemodel.h"
 #include "columnmodel.h"
 #include "filtermodel.h"
-#include "computedcolumnsmodel.h"
+#include "computedcolumnmodel.h"
 #include "utilities/qutils.h"
 #include "columnutils.h"
 
@@ -63,7 +63,7 @@ void SetDataCommand::undo()
 void SetDataCommand::redo()
 {
 	_oldValue = _model->data(_model->index(_row, _col));
-	if(fq(_oldValue.toString()) == ColumnUtils::emptyValue)
+	if(fq(_oldValue.toString()) == EmptyValues::displayString())
 		_oldValue = "";
 
 	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
@@ -152,7 +152,7 @@ void RemoveRowsCommand::undo()
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_start, 0, _values, _colTypes);
+		dataSetTable->pasteSpreadsheet(_start, 0, _values, _labels, _colTypes);
 	else
 	{
 		for (int i = 0; i < _model->columnCount() && i < _values.size(); i++)
@@ -163,24 +163,29 @@ void RemoveRowsCommand::undo()
 
 void RemoveRowsCommand::redo()
 {
-	_values.clear();
-	_colTypes.clear();
+	_values		. clear();
+	_labels		. clear();
+	_colTypes	. clear();
 
 	for (int i = 0; i < _model->columnCount(); i++)
 	{
-		_values.push_back(std::vector<QString>());
-		_colTypes.push_back(_model->data(_model->index(0, i), int(dataPkgRoles::columnType)).toInt());
+		_values		. push_back(std::vector<QString>());
+		_labels		. push_back(std::vector<QString>());
+		_colTypes	. push_back(_model->data(_model->index(0, i), int(dataPkgRoles::columnType)).toInt());
 
 		for (int j = _start; j < _start + _count; j++)
 			if (j < _model->rowCount())
-				_values[i].push_back(_model->data(_model->index(j, i)).toString());
+			{
+				_values[i]	. push_back(_model->data(_model->index(j, i), int(dataPkgRoles::value)).toString());
+				_labels[i]	. push_back(_model->data(_model->index(j, i), int(dataPkgRoles::label)).toString());
+			}
 	}
 
 	_model->removeRows(_start, _count);
 }
 
-PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > &cells, const QStringList& colNames)
-	: UndoModelCommand(model), _row{row}, _col{col}, _newCells{cells}, _newColNames{colNames}
+PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const QStringList& colNames)
+	: UndoModelCommand(model), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}
 {
 	setText(QObject::tr("Paste values at row %1 column '%2'").arg(rowName(_row)).arg(columnName(_col)));
 }
@@ -190,24 +195,30 @@ void PasteSpreadsheetCommand::undo()
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _oldCells, {}, _oldColNames);
+		dataSetTable->pasteSpreadsheet(_row, _col, _oldValues, _oldLabels, {}, _oldColNames);
 }
 
 void PasteSpreadsheetCommand::redo()
 {
-	_oldCells.clear();
-	for (int c = 0; c < _newCells.size(); c++)
+	_oldValues.clear();
+	_oldLabels.clear();
+	for (int c = 0; c < _newValues.size(); c++)
 	{
-		_oldCells.push_back(std::vector<QString>());
+		_oldValues.push_back(std::vector<QString>());
+		_oldLabels.push_back(std::vector<QString>());
+		
 		_oldColNames.push_back(_model->headerData(_col + c, Qt::Horizontal).toString());
-		for (int r = 0; r < _newCells[c].size(); r++)
-			_oldCells[c].push_back(_model->data(_model->index(_row + r, _col + c)).toString());
+		for (int r = 0; r < _newValues[c].size(); r++)
+		{
+			_oldValues[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::value)).toString());
+			_oldLabels[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::label)).toString());
+		}
 	}
 
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _newCells, {}, _newColNames);
+		dataSetTable->pasteSpreadsheet(_row, _col, _newValues, _newLabels, {}, _newColNames);
 }
 
 
@@ -307,7 +318,7 @@ void SetColumnPropertyCommand::redo()
 
 QString SetColumnPropertyCommand::friendlyColumnType(int type)
 {
-	return ColumnModel::columnTypeFriendlyName[computedColumnType(type)];
+	return ColumnModel::columnTypeFriendlyName(computedColumnType(type));
 }
 
 
@@ -345,7 +356,7 @@ SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QStr
 	{
 		_colId = _columnModel->chosenColumn();
 		_oldLabel = _model->data(_model->index(_labelIndex, 0)).toString();
-		QString value = _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::value)).toString();
+		QString value = _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
 		setText(QObject::tr("Set label for value '%1' of column '%2' from '%3' to '%4'").arg(value).arg(_columnModel->columnNameQ()).arg(_oldLabel).arg(_newLabel));
 	}
 	else
@@ -357,17 +368,53 @@ SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QStr
 
 void SetLabelCommand::undo()
 {
+	assert(_columnModel && _model);
 	_columnModel->setChosenColumn(_colId);
-	_model->setData(_model->index(_labelIndex, 0), _oldLabel);
+	_model->setData(_model->index(_labelIndex, 0), _oldLabel, int(DataSetPackage::specialRoles::label));
 	_columnModel->setLabelMaxWidth();
 }
 
 void SetLabelCommand::redo()
 {
+	assert(_columnModel && _model);
 	_columnModel->setChosenColumn(_colId);
-	_model->setData(_model->index(_labelIndex, 0), _newLabel);
+	_model->setData(_model->index(_labelIndex, 0), _newLabel, int(DataSetPackage::specialRoles::label));
 	_columnModel->setLabelMaxWidth();
 }
+
+SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue)
+	: UndoModelCommand(model), _labelIndex{labelIndex}, _newOriginalValue{originalValue}
+{
+	_columnModel = qobject_cast<ColumnModel*>(model);
+	if (_columnModel)
+	{
+		_colId				= _columnModel->chosenColumn();
+		_oldOriginalValue	= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::value)).toString();
+		_oldLabel			= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
+		setText(QObject::tr("Set original value  from '%3' to '%4' for label '%1' of column '%2'").arg(_oldLabel).arg(_columnModel->columnNameQ()).arg(_oldOriginalValue).arg(_newOriginalValue));
+	}
+	else
+	{
+		Log::log() << "Try to set a label name with a wrong model!" << std::endl;
+		setObsolete(true);
+	}
+}
+
+void SetLabelOriginalValueCommand::undo()
+{
+	_columnModel->setChosenColumn(_colId);
+	_model->setData(_model->index(_labelIndex, 0), _oldOriginalValue,	int(DataSetPackage::specialRoles::value));
+	_model->setData(_model->index(_labelIndex, 0), _oldLabel,			int(DataSetPackage::specialRoles::label));
+	_columnModel->setLabelMaxWidth();
+}
+
+void SetLabelOriginalValueCommand::redo()
+{
+	_columnModel->setChosenColumn(_colId);
+	_model->setData(_model->index(_labelIndex, 0), _newOriginalValue, int(DataSetPackage::specialRoles::value));
+	_columnModel->setLabelMaxWidth();
+}
+
 
 
 FilterLabelCommand::FilterLabelCommand(QAbstractItemModel *model, int labelIndex, bool checked)
@@ -403,7 +450,7 @@ void FilterLabelCommand::redo()
 	_model->setData(_model->index(_labelIndex, 0), _checked, int(DataSetPackage::specialRoles::filter));
 }
 
-MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t> &indexes, bool up)
+MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<qsizetype> &indexes, bool up)
 	: UndoModelCommand(model), _up{up}
 {
 	_columnModel = qobject_cast<ColumnModel*>(model);
@@ -442,9 +489,9 @@ MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<
 	}
 }
 
-std::vector<size_t> MoveLabelCommand::_getIndexes()
+std::vector<qsizetype> MoveLabelCommand::_getIndexes()
 {
-	std::vector<size_t> indexes;
+	std::vector<qsizetype> indexes;
 	QStringList allLabels = DataSetPackage::pkg()->getColumnLabelsAsStringList(_colId);
 	for (const QString& label : _labels)
 	{
@@ -459,7 +506,7 @@ std::vector<size_t> MoveLabelCommand::_getIndexes()
 void MoveLabelCommand::_moveLabels(bool up)
 {
 	_columnModel->setChosenColumn(_colId);
-	std::vector<size_t> indexes = _getIndexes(); // The indexes must be recalculated each time
+	std::vector<qsizetype> indexes = _getIndexes(); // The indexes must be recalculated each time
 	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, up); //through DataSetPackage to make sure signals get sent
 }
 
@@ -553,7 +600,7 @@ void CreateComputedColumnCommand::redo()
 SetComputedColumnCodeCommand::SetComputedColumnCodeCommand(QAbstractItemModel *model, const std::string& name, const QString& rCode, const QString& jsonCode)
 	: UndoModelCommand(model), _name{name}, _newRCode{rCode}, _newJsonCode{jsonCode}
 {
-	_computedColumnModel = ComputedColumnsModel::singleton();
+    _computedColumnModel = ComputedColumnModel::singleton();
 	setText(QObject::tr("Set code to computed column with name '%1'").arg(tq(name)));
 }
 
@@ -659,7 +706,7 @@ SetCustomEmptyValuesCommand::SetCustomEmptyValuesCommand(QAbstractItemModel *mod
 		Column* col = columnModel->column();
 		_colId = columnModel->chosenColumn();
 		std::string colName = col->name();
-		_oldCustomEmptyValues = col->emptyValues();
+		_oldCustomEmptyValues = col->emptyValues()->emptyStrings();
 		_newCustomEmptyValues.clear();
 		for (const QString& val : customEmptyValues)
 			_newCustomEmptyValues.insert(fq(val));

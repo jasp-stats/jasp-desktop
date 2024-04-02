@@ -91,7 +91,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 			std::string libPath		= stringUtils::replaceBy(path.string(), " ", "\\ "),
 						otoolCmd	= "otool -L " + libPath,
 						otoolOut	= _system(otoolCmd);
-			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
+			auto		otoolLines	= stringUtils::split(otoolOut, '\n');
 
 			std::string libName 	= path.stem().string() + path.extension().string();
 

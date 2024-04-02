@@ -48,14 +48,15 @@ ScrollView
 		{
 			id:		fontGroup
 			title:	qsTr("Fonts")
+			
+			property real maxText: Math.max(Math.max(interfaceTxt.implicitWidth, codeTxt.implicitWidth), Math.max(resultTxt.implicitWidth, languageTxt.implicitWidth));
 
-			GridLayout
+			Row
 			{
-				columns:		2
-				rowSpacing: 	3 * preferencesModel.uiScale
-				columnSpacing:	3 * preferencesModel.uiScale
-
-				Text { text: qsTr("Interface:") }
+				spacing:		3 * preferencesModel.uiScale
+				width:			parent.width
+				
+				Text { id: interfaceTxt;		width:	fontGroup.maxText; text: qsTr("Interface:") }
 
 				DropDown
 				{
@@ -69,6 +70,9 @@ ScrollView
 					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab:		codeFonts
+					
+					control.width:			parent.width - (x + control.x)
+					
 
 					Text
 					{
@@ -80,8 +84,15 @@ ScrollView
 						visible:		 false
 					}
 				}
+			}
 
-				Text { text: qsTr("R, JAGS, or lavaan code:") }
+				
+			Row
+			{
+				spacing:		3 * preferencesModel.uiScale
+				width:			parent.width
+				
+				Text { id: codeTxt;		width:	fontGroup.maxText; text: qsTr("R, JAGS, or lavaan code:") }
 
 				DropDown
 				{
@@ -95,6 +106,8 @@ ScrollView
 					onValueChanged:				preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab:			resultFonts
+					
+					control.width:			parent.width - (x + control.x)
 
 					Text
 					{
@@ -106,7 +119,15 @@ ScrollView
 
 				}
 
-				Text { text: qsTr("Result & help:") }
+			
+			}
+			
+			Row
+			{
+				spacing:		3 * preferencesModel.uiScale
+				width:			parent.width
+				
+				Text { id: resultTxt;		width:	fontGroup.maxText; text: qsTr("Result & help:") }
 
 				DropDown
 				{
@@ -120,6 +141,8 @@ ScrollView
 					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab: 			qtTextRendering
+					
+					control.width:			parent.width - (x + control.x)
 
 					Text
 					{
@@ -130,6 +153,7 @@ ScrollView
 					}
 				}
 			}
+			
 
 			CheckBox
 			{
@@ -180,25 +204,34 @@ ScrollView
 		{
 			id:		languageGroup
 			title:	qsTr("Preferred language")
-
-			ComboBox
+			
+			Row
 			{
-				id:						languages
-				fieldWidth:				100
+				spacing:		3 * preferencesModel.uiScale
+				width:			parent.width
+				
+				Text { id: languageTxt;		width:	fontGroup.maxText; text: qsTr("Choose language  ") }
 
-				label:					qsTr("Choose language  ")
+				DropDown
+				{
+					id:							languages
+					source:						languageModel
+					addEmptyValue:				true
+					showEmptyValueAsNormal:		true
+					addLineAfterEmptyValue:		true
+					startValue: 				languageModel.currentLanguage
+					onValueChanged: 			languageModel.currentLanguage = (currentIndex <= 0 ? "" : value)
 
-				currentValue:			languageModel.currentLanguage
-				onCurrentValueChanged:	languageModel.currentLanguage = currentValue;
-
-				source:					languageModel
-
-				KeyNavigation.tab:			altnavcheckbox
+					KeyNavigation.tab: 			altnavcheckbox
+					
+					control.width:				parent.width - (x + control.x)
+				}
 			}
+			
 
 			Text
 			{
-				id:                     translationDocLink
+				id:					translationDocLink
 
 				text:				qsTr("Help us translate or improve JASP in your language")
 				color:				jaspTheme.blue

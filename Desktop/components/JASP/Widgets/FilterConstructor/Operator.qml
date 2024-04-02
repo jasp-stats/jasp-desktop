@@ -92,6 +92,8 @@ Item
 		text:					opRoot.isNested ? "(" : ""
 		font.pixelSize:			filterConstructor.fontPixelSize
 		color:					jaspTheme.textEnabled
+		font.family:			jaspTheme.font.family
+		
 
 		visible:				opRoot.isNested
 	}
@@ -144,6 +146,7 @@ Item
 
 		text:					opRoot.operator
 		font.pixelSize:			filterConstructor.fontPixelSize
+		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
 		visible:				!opImg.visible
 
@@ -182,6 +185,7 @@ Item
 		//text: ")"
 		text:					opRoot.isNested ? ")" : ""
 		font.pixelSize:			filterConstructor.fontPixelSize
+		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
 		visible:				opRoot.isNested
 	}

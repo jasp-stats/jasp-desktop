@@ -5,16 +5,17 @@ import JASP.Controls	1.0
 
 RoundedButton
 {
-	property bool hasSubMenu:			false
-	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
-	property color defaultColor:        "transparent"
+	property bool	hasSubMenu:			false
+	property bool	showHovered:		hasSubMenu ? delayOnhoverTimer.running : hovered
+	property color	defaultColor:       "transparent"
+	property real	arrowExtraWidth:	arrow.width + jaspTheme.generalAnchorMargin
 
-	id: root
-	font:			jaspTheme.fontRibbon
-	color:			(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
-	border.width:	0
-	centerText:		false
-	activeFocusOnTab: true
+	id:					root
+	font:				jaspTheme.fontRibbon
+	color:				(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
+	border.width:		0
+	centerText:			false
+	activeFocusOnTab:	true
 
 	signal hoverClicked();
 	onHoverClicked:			forceActiveFocus();
@@ -37,9 +38,9 @@ RoundedButton
 
 	Image
 	{
+		id:						arrow
 		anchors.verticalCenter:	parent.verticalCenter
-		anchors.right:			parent.right
-		anchors.rightMargin:	jaspTheme.generalAnchorMargin
+		anchors.right:			parent.right	
 		height:					jaspTheme.subMenuIconHeight
 		width:					height
 		source:					root.hasSubMenu ? jaspTheme.iconPath + "/large-arrow-right.png" : ""

@@ -19,22 +19,19 @@
 #define RBRIDGE_H
 
 #ifdef _WIN32
-
 #undef Realloc
 #undef Free
-
 #endif
 
 #include <string>
 #include <map>
 #include <set>
 #include <regex>
-#include <boost/function.hpp>
 #include "dataset.h"
 #include "jasprcpp_interface.h"
-#include "r_functionwhitelist.h"
 #include "columnencoder.h"
-#include "appinfo.h"
+
+class Engine;
 
 /// The R Bridge provides functions to the R analyses;
 /// i.e. functions to read the data set from shared memory
@@ -64,10 +61,7 @@ extern "C" {
 	int							STDCALL rbridge_getColumnAnalysisId		(const char * columnName);
 	const char *				STDCALL rbridge_createColumn			(const char * columnName);
 	bool						STDCALL rbridge_deleteColumn			(const char * columnName);
-	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
-	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
-	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
-	bool						STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length);
+	bool						STDCALL rbridge_setColumnDataAndType	(const char* columnName, const char **	nominalData,	size_t length,	int columnType);
 	int							STDCALL rbridge_dataSetRowCount();
 	const char *				STDCALL rbridge_encodeColumnName(		const char * in);
 	const char *				STDCALL rbridge_decodeColumnName(		const char * in);
@@ -82,27 +76,13 @@ extern "C" {
 
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
+	void rbridge_setEngine(Engine * engine);
+	void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
 	void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
-	void rbridge_setFileNameSource(			std::function<void(const std::string &, std::string &, std::string &)> source);
-	void rbridge_setSpecificFileNameSource(	std::function<void(const std::string &, std::string &, std::string &)> source);
-	void rbridge_setStateFileSource(		std::function<void(std::string &, std::string &)> source);
-	void rbridge_setJaspResultsFileSource(	std::function<void(std::string &, std::string &)> source);
-	void rbridge_setDataSetSource(			std::function<DataSet *()> source);
 	void rbridge_memoryCleaning();
 
 	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode);
-
-	void rbridge_setColumnFunctionSources(			std::function<int 			(const std::string &)																		> getTypeSource,
-													std::function<int 			(const std::string &)																		> getAnalysisIdSource,
-													std::function<bool			(const std::string &, const	std::vector<double>&)											> scaleSource,
-													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> ordinalSource,
-													std::function<bool			(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
-													std::function<bool			(const std::string &, const	std::vector<std::string>&)										> nominalTextSource,
-													std::function<std::string	(const std::string &)																		> createColumn,
-													std::function<bool			(const std::string &)																		> deleteColumn);
-	void rbridge_setGetDataSetRowCountSource(		std::function<int()> source);
 
 	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);
 	void	rbridge_setupRCodeEnv(int rowCount, const std::string & dataname = "data");
@@ -116,4 +96,5 @@ extern "C" {
 	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd);
 	void				rbridge_setLANG(						const std::string & lang);
+	void				rbridge_setComputedColumnTypeDesired(	columnType colType);
 #endif // RBRIDGE_H

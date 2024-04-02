@@ -274,6 +274,7 @@ Item
 
 				textFormat:				Text.StyledText
 				font.pixelSize:			filterConstructor.fontPixelSize
+				font.family:			jaspTheme.font.family
 
 				anchors
 				{

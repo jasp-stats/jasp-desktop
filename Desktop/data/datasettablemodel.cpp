@@ -25,7 +25,7 @@ DataSetTableModel::DataSetTableModel(bool showInactive)
 {
 	
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, [&](QString colName) { emit columnTypeChanged(colName, int(DataSetPackage::pkg()->getColumnType(colName)));	});
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, [&](QString colName) { emit columnTypeChanged(colName, int(DataSetPackage::pkg()->getColumnType(colName)));	}, Qt::QueuedConnection);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this, &DataSetTableModel::labelChanged					);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &DataSetTableModel::labelsReordered				);
 	//connect(this,		&DataSetTableModel::dataChanged,				this, &DataSetTableModel::onDataChanged,				Qt::QueuedConnection);
@@ -74,10 +74,10 @@ bool DataSetTableModel::columnUsedInEasyFilter(int column) const
 			).toBool();
 }
 
-void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, const std::vector<int> & colTypes, const QStringList & colNames)
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString>> & labels, const std::vector<int> & colTypes, const QStringList & colNames)
 {
 	QModelIndex idx = mapToSource(index(row, col));
-	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, colTypes, colNames);
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), values, labels, colTypes, colNames);
 }
 
 QString DataSetTableModel::insertColumnSpecial(int column, const QMap<QString, QVariant>& props)

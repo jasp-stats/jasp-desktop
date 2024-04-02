@@ -14,6 +14,7 @@ TextAreaBase
 	innerControl:		control
 	
 	property alias	control				: control
+	property alias	wrapMode			: control.wrapMode
 	property alias	text				: control.text
 	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  infoText			: infoText.text

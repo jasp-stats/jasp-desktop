@@ -1,5 +1,6 @@
 #include "importdataset.h"
 #include "timers.h"
+#include "appinfo.h"
 
 using namespace std;
 
@@ -23,6 +24,13 @@ void ImportDataSet::addColumn(ImportColumn *column)
 size_t ImportDataSet::columnCount() const
 {
 	return _columns.size();
+}
+
+const string & ImportDataSet::description() const
+{
+	static std::string localCache;
+	localCache = "Originally imported into " + AppInfo::getShortDesc()+ " on " + Utils::currentDateTime();	
+	return localCache;
 }
 
 size_t ImportDataSet::rowCount() const

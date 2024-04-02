@@ -36,6 +36,7 @@ Item
 	property bool	centerText:			true
 	property bool	iconLeft:			true
 	property bool	isLink:				false
+	property bool	centerTextParent:	false
 
 	property real	_scaledDim:			Math.max(jaspTheme.defaultRectangularButtonHeight, buttonText.height + 2 * buttonPadding)
 	property alias	_pressed:			buttonMouseArea.pressed
@@ -44,6 +45,7 @@ Item
 	property alias	radius:				rect.radius
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
+	property real	centerParentX:		(parent.width / 2) - x
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
 
@@ -102,13 +104,10 @@ Item
 						filterButtonRoot.buttonWidthPadding :
 						parent.width - (width + filterButtonRoot.buttonWidthPadding)
 
-			y:	(parent.height / 2) - (height / 2)
+			y:			(parent.height / 2) - (height / 2)
 
-			width:	Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
-			height: filterButtonRoot.height - (2 * buttonPadding)
-
-		//	sourceSize.width:	Math.max(96, width  * 2)
-		//	sourceSize.height:	Math.max(96, height * 2)
+			width:		Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
+			height:		filterButtonRoot.height - (2 * buttonPadding)
 
 			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
 			source:		filterButtonRoot.iconSource
@@ -119,17 +118,16 @@ Item
 		Text
 		{
 			id: buttonText
-			x:	filterButtonRoot.centerText ?
-					(parent.width / 2) - (contentWidth / 2) :
-					!buttonIcon.visible || !filterButtonRoot.iconLeft ?
-						filterButtonRoot.buttonWidthPadding :
-						buttonIcon.x + buttonIcon.width
-
+			x:	!filterButtonRoot.centerText 
+				?	filterButtonRoot.buttonPadding
+				:	filterButtonRoot.centerTextParent
+					? (centerParentX - (contentWidth / 2))
+					: ((parent.width / 2) - (contentWidth / 2) )
 
 			y:	(parent.height / 2) - (height / 2)
 
 			text:		filterButtonRoot.text
-			wrapMode:	Text.Wrap
+			wrapMode:	Text.NoWrap
 			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
 			color:		isLink
 							? (enabled ? jaspTheme.blueDarker : jaspTheme.textDisabled)

@@ -1,7 +1,7 @@
 #include "ploteditoraxismodel.h"
 #include "ploteditormodel.h"
 #include "utilities/qutils.h"
-#include "utilities/jsonutilities.h"
+#include "jsonutilities.h"
 #include "log.h"
 #include "utilities/messageforwarder.h"
 #include "utils.h"
@@ -66,7 +66,7 @@ Json::Value AxisModel::getAxisData() const
 	settings["titleType"]	= TitleTypeToString(_titleType);
 	settings["type"]		= _type.toStdString();
 	settings["breaks"]		= JsonUtilities::vecToJsonArray(_breaks);
-	settings["labels"]		= JsonUtilities::vecToJsonArray(_labels);
+	settings["labels"]		= JsonUtilities::vecToJsonArray(fq(_labels));
 	settings["range"]		= JsonUtilities::vecToJsonArray(_range);
 	settings["limits"]		= JsonUtilities::vecToJsonArray(_limits);
 	settings["breaksType"]	= BreaksTypeToString(_breaksType);

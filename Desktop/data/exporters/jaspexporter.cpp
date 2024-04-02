@@ -32,6 +32,7 @@
 #include <fstream>
 #include "appinfo.h"
 
+
 const Version JASPExporter::jaspArchiveVersion = Version("5.0.0");
 time_t JASPExporter::_now;
 

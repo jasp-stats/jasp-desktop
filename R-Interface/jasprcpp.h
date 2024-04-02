@@ -72,20 +72,14 @@ std::string		jaspRCPP_nativeToUtf8(			const	Rcpp::String & in);
 
 int jaspRCPP_dataSetRowCount();
 
-bool jaspRCPP_columnIsScale(				std::string columnName	);
-bool jaspRCPP_columnIsOrdinal(				std::string columnName		  );
-bool jaspRCPP_columnIsNominal(				std::string columnName				 );
-bool jaspRCPP_columnIsNominalText(			std::string columnName						);
+bool jaspRCPP_columnIsScale(				const std::string & columnName	);
+bool jaspRCPP_columnIsOrdinal(				const std::string & columnName		  );
+bool jaspRCPP_columnIsNominal(				const std::string & columnName				 );
 
-bool jaspRCPP_setColumnDataAsScale(			std::string columnName,	Rcpp::RObject scalarData	);
-bool jaspRCPP_setColumnDataAsOrdinal(		std::string columnName,	Rcpp::RObject ordinalData		);
-bool jaspRCPP_setColumnDataAsNominal(		std::string columnName,	Rcpp::RObject nominalData			);
-bool jaspRCPP_setColumnDataAsNominalText(	std::string columnName,	Rcpp::RObject nominalData			);
-
-bool _jaspRCPP_setColumnDataAsScale(		std::string columnName,	Rcpp::Vector<REALSXP> scalarData	);
-bool _jaspRCPP_setColumnDataAsOrdinal(		std::string columnName,	Rcpp::Vector<INTSXP> ordinalData	);
-bool _jaspRCPP_setColumnDataAsNominal(		std::string columnName,	Rcpp::Vector<INTSXP> nominalData	);
-bool _jaspRCPP_setColumnDataAsNominalText(	std::string columnName,	Rcpp::Vector<STRSXP> nominalData	);
+bool jaspRCPP_setColumnDataAsScale(			const std::string & columnName,	Rcpp::RObject scalarData	);
+bool jaspRCPP_setColumnDataAsOrdinal(		const std::string & columnName,	Rcpp::RObject ordinalData		);
+bool jaspRCPP_setColumnDataAsNominal(		const std::string & columnName,	Rcpp::RObject nominalData			);
+bool _jaspRCPP_setColumnDataAndType(		const std::string & columnName, Rcpp::RObject data, columnType colType);
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels);
 
@@ -95,7 +89,7 @@ typedef void (*sendFuncDef)(const char *);
 //Calls from jaspBase
 typedef void			(*logFuncDef)(const std::string &);
 typedef bool			(*shouldEnDecodeFuncDef)	(std::string);
-typedef bool			(*setColumnDataFuncDef)		(std::string, Rcpp::RObject);
+typedef bool			(*setColumnDataFuncDef)		(const std::string &, Rcpp::RObject);
 typedef columnType		(*getColumnTypeFuncDef)		(std::string);
 typedef int				(*getColumnAnIdFuncDef)		(std::string);
 typedef bool			(*getColumnExistsFDef)		(std::string);

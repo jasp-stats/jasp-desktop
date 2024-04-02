@@ -84,9 +84,8 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 
     //Store sqlite into tempfiles:
     ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
-
+	
 	DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
-
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 	{
@@ -101,8 +100,6 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 
 		resultXmlCompare::compareResults::theOne()->setOriginalResult(QString::fromStdString(html));
 	}
-
-
 }
 
 void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(int)> progressCallback)
@@ -130,9 +127,12 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 
 	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	
+
 	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 	DataSetPackage::pkg()->setAnalysesData(analysesData);
 	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
+	
+
 
 	progressCallback(100); //"Initializing Analyses & Results",
 }
@@ -158,13 +158,13 @@ void JASPImporter::readManifest(const std::string &path)
 		Json::Value     manifest;
 		parser.parse(manifestStr, manifest);
 
-		std::string jaspArchiveVersionStr = manifest.get("jaspArchiveVersion", "").asString();
-		std::string jaspVersionStr = manifest.get("jaspVersion", "").asString();
+		std::string jaspArchiveVersionStr	= manifest.get("jaspArchiveVersion", "").asString();
+		std::string jaspVersionStr			= manifest.get("jaspVersion",		"").asString();
 
 		foundVersion = ! jaspArchiveVersionStr.empty();
 
-		DataSetPackage::pkg()->setArchiveVersion(Version(jaspArchiveVersionStr));
-		DataSetPackage::pkg()->setJaspVersion(Version(jaspVersionStr));
+		DataSetPackage::pkg()->setArchiveVersion(	Version(jaspArchiveVersionStr));
+		DataSetPackage::pkg()->setJaspVersion(		Version(jaspVersionStr));
 	}
 
 	if ( ! foundVersion)

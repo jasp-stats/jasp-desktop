@@ -141,7 +141,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_labelFilterGenerator	= new labelFilterGenerator(_columnModel,		this);
 	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
 	_workspaceModel			= new WorkspaceModel(this);
-	_computedColumnsModel	= new ComputedColumnsModel();
+	_computedColumnsModel	= new ComputedColumnModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
 	_ribbonModel			= new RibbonModel();
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
@@ -163,33 +163,33 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
-	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
+	qmlRegisterUncreatableType<JASPControl>						("JASP",			1, 0, "JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
+	qmlRegisterUncreatableType<MessageForwarder>				("JASP",			1, 0, "MessageForwarder",	"You can't touch this"				);
 
-	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"						);
-	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"						);
-	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"					);
-	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"						);
-	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"						);
-	qmlRegisterType<ExpanderButtonBase>							("JASP",		1, 0, "ExpanderButtonBase"				);
-	qmlRegisterType<CheckBoxBase>								("JASP",		1, 0, "CheckBoxBase"					);
-	qmlRegisterType<SliderBase>									("JASP",		1, 0, "SliderBase"						);
-	qmlRegisterType<TextInputBase>								("JASP",		1, 0, "TextInputBase"					);
-	qmlRegisterType<TextAreaBase>								("JASP",		1, 0, "TextAreaBase"					);
-	qmlRegisterType<ComboBoxBase>								("JASP",		1, 0, "ComboBoxBase"					);
-	qmlRegisterType<RadioButtonBase>							("JASP",		1, 0, "RadioButtonBase"					);
-	qmlRegisterType<RadioButtonsGroupBase>						("JASP",		1, 0, "RadioButtonsGroupBase"			);
-	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"				);
-	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"					);
-	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
-	qmlRegisterType<FactorLevelListBase>						("JASP",		1, 0, "FactorLevelListBase"				);
-	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
-	qmlRegisterType<VariablesFormBase>							("JASP",		1, 0, "VariablesFormBase"				);
-	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
-	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
-	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
-	qmlRegisterType<ColumnModel>								("JASP",		1, 0, "ColumnModel"						);
-	qmlRegisterType<FormulaBase>								("JASP",		1, 0, "Formula"							);
+	qmlRegisterType<DataSetView>								("JASP",			1, 0, "DataSetView"						);
+	qmlRegisterType<JaspTheme>									("JASP",			1, 0, "JaspTheme"						);
+	qmlRegisterType<AnalysisForm>								("JASP",			1, 0, "AnalysisForm"					);
+	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
+	qmlRegisterType<JASPControl>								("JASP",			1, 0, "JASPControl"						);
+	qmlRegisterType<ExpanderButtonBase>							("JASP",			1, 0, "ExpanderButtonBase"				);
+	qmlRegisterType<CheckBoxBase>								("JASP",			1, 0, "CheckBoxBase"					);
+	qmlRegisterType<SliderBase>									("JASP",			1, 0, "SliderBase"						);
+	qmlRegisterType<TextInputBase>								("JASP",			1, 0, "TextInputBase"					);
+	qmlRegisterType<TextAreaBase>								("JASP",			1, 0, "TextAreaBase"					);
+	qmlRegisterType<ComboBoxBase>								("JASP",			1, 0, "ComboBoxBase"					);
+	qmlRegisterType<RadioButtonBase>							("JASP",			1, 0, "RadioButtonBase"					);
+	qmlRegisterType<RadioButtonsGroupBase>						("JASP",			1, 0, "RadioButtonsGroupBase"			);
+	qmlRegisterType<ComponentsListBase>							("JASP",			1, 0, "ComponentsListBase"				);
+	qmlRegisterType<FactorsFormBase>							("JASP",			1, 0, "FactorsFormBase"					);
+	qmlRegisterType<InputListBase>								("JASP",			1, 0, "InputListBase"					);
+	qmlRegisterType<FactorLevelListBase>						("JASP",			1, 0, "FactorLevelListBase"				);
+	qmlRegisterType<VariablesListBase>							("JASP",			1, 0, "VariablesListBase"				);
+	qmlRegisterType<VariablesFormBase>							("JASP",			1, 0, "VariablesFormBase"				);
+	qmlRegisterType<TableViewBase>								("JASP",			1, 0, "TableViewBase"					);
+	qmlRegisterType<JASPDoubleValidator>						("JASP",			1, 0, "JASPDoubleValidator"				);
+	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
+	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
+	qmlRegisterType<FormulaBase>								("JASP",			1, 0, "Formula"							);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
@@ -374,12 +374,12 @@ void MainWindow::makeConnections()
 
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
 	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,						Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::checkForDependentColumnsToBeSent,	_computedColumnsModel,	&ComputedColumnsModel::checkForDependentColumnsToBeSentSlot	);
+	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnModel::datasetChanged,						Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::checkForDependentColumnsToBeSent,	_computedColumnsModel,	&ComputedColumnModel::checkForDependentColumnsToBeSentSlot	);
 	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
-	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
+	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
 	connect(_package,				&DataSetPackage::synchingIntervalPassed,			this,					&MainWindow::syncKeyPressed									);
 	connect(_package,				&DataSetPackage::newDataLoaded,						this,					&MainWindow::populateUIfromDataSet							);
@@ -391,10 +391,11 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::runFilter,							_filterModel,			&FilterModel::sendGeneratedAndRFilter						);
 	connect(_package,				&DataSetPackage::showWarning,						_msgForwarder,			&MessageForwarder::showWarningQML,							Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
+	connect(_package,				&DataSetPackage::workspaceEmptyValuesChanged,		_analyses,				&Analyses::refreshAllAnalyses								);
 	
-	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
-	connect(_engineSync,			&EngineSync::computeColumnRemoved,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnRemoved					);
-	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
+	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnModel::computeColumnSucceeded				);
+	connect(_engineSync,			&EngineSync::computeColumnRemoved,					_computedColumnsModel,	&ComputedColumnModel::computeColumnRemoved					);
+	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnModel::computeColumnFailed					);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError,									Qt::QueuedConnection); //To give the process some time to realize it has crashed or something
 	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_columnsModel,			&ColumnsModel::columnTypeChanged							);
 	connect(_engineSync,			&EngineSync::refreshAllPlotsExcept,					_analyses,				&Analyses::refreshAllPlots									);
@@ -408,10 +409,12 @@ void MainWindow::makeConnections()
 	qRegisterMetaType<ListModel*>();
 	qRegisterMetaType<DbType>();
 
-	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showAnalysis									);
+	connect(_computedColumnsModel,	&ComputedColumnModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
+	connect(_computedColumnsModel,	&ComputedColumnModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
+	connect(_computedColumnsModel,	&ComputedColumnModel::showAnalysisForm,				_analyses,				&Analyses::selectAnalysis									);
+	connect(_computedColumnsModel,	&ComputedColumnModel::showAnalysisForm,				this,					&MainWindow::showAnalysis									);
+			
+	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_columnModel,			&ColumnModel::languageChangedHandler,						Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -543,44 +546,44 @@ void MainWindow::loadQML()
 {
 	Log::log() << "Initializing QML" << std::endl;
 
-	_qml->rootContext()->setContextProperty("mainWindow",				this							);
-	_qml->rootContext()->setContextProperty("columnModel",				_columnModel					);
-	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel						);
-	_qml->rootContext()->setContextProperty("dataSetModel",				_datasetTableModel				);
-	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel					);
-	_qml->rootContext()->setContextProperty("workspaceModel",			_workspaceModel					);
-	_qml->rootContext()->setContextProperty("analysesModel",			_analyses						);
-	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules					);
-	_qml->rootContext()->setContextProperty("plotEditorModel",			_plotEditorModel				);
-	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences					);
-	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface				);
-	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel			);
-	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",	_windowsWorkaroundCPs			); //is nullptr on not-windows!
-	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered			);
-	_qml->rootContext()->setContextProperty("columnTypesModel",			_columnTypesModel				);
-	_qml->rootContext()->setContextProperty("ribbonModelUncommon",		_ribbonModelUncommon			);
-	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel				);
-	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu						);
-	_qml->rootContext()->setContextProperty("filterModel",				_filterModel					);
-	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel					);
-	_qml->rootContext()->setContextProperty("engineSync",				_engineSync						);
-	_qml->rootContext()->setContextProperty("helpModel",				_helpModel						);
-	_qml->rootContext()->setContextProperty("jaspTheme",				nullptr							); //Will be set from jaspThemeChanged()!
-	_qml->rootContext()->setContextProperty("messages",					MessageForwarder::msgForwarder());
-	_qml->rootContext()->setContextProperty("qmlUtils",					new QmlUtils(this)				);
+	_qml->rootContext()->setContextProperty("mainWindow",								this											);
+	_qml->rootContext()->setContextProperty("columnModel",								_columnModel									);
+	_qml->rootContext()->setContextProperty("aboutModel",								_aboutModel										);
+	_qml->rootContext()->setContextProperty("dataSetModel",								_datasetTableModel								);
+	_qml->rootContext()->setContextProperty("columnsModel",								_columnsModel									);
+	_qml->rootContext()->setContextProperty("workspaceModel",							_workspaceModel									);
+	_qml->rootContext()->setContextProperty("analysesModel",							_analyses										);
+	_qml->rootContext()->setContextProperty("dynamicModules",							_dynamicModules									);
+	_qml->rootContext()->setContextProperty("plotEditorModel",							_plotEditorModel								);
+	_qml->rootContext()->setContextProperty("preferencesModel",							_preferences									);
+	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface								);
+	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered							);
+	_qml->rootContext()->setContextProperty("computedColumnsInterface",					_computedColumnsModel							);
+	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",					_windowsWorkaroundCPs							); //is nullptr on not-windows!
+	_qml->rootContext()->setContextProperty("ribbonModelUncommon",						_ribbonModelUncommon							);
+	_qml->rootContext()->setContextProperty("columnTypesModel",							_columnTypesModel								);
+	_qml->rootContext()->setContextProperty("resultMenuModel",							_resultMenuModel								);
+	_qml->rootContext()->setContextProperty("fileMenuModel",							_fileMenu										);
+	_qml->rootContext()->setContextProperty("filterModel",								_filterModel									);
+	_qml->rootContext()->setContextProperty("ribbonModel",								_ribbonModel									);
+	_qml->rootContext()->setContextProperty("engineSync",								_engineSync										);
+	_qml->rootContext()->setContextProperty("helpModel",								_helpModel										);
+	_qml->rootContext()->setContextProperty("jaspTheme",								nullptr											); //Will be set from jaspThemeChanged()!
+	_qml->rootContext()->setContextProperty("messages",									MessageForwarder::msgForwarder()				);
+	_qml->rootContext()->setContextProperty("qmlUtils",									new QmlUtils(this)								);
 
-	_qml->rootContext()->setContextProperty("baseBlockDim",				20								); //should be taken from Theme
-	_qml->rootContext()->setContextProperty("baseFontSize",				16								);
-	_qml->rootContext()->setContextProperty("languageModel",			_languageModel					);
+	_qml->rootContext()->setContextProperty("baseBlockDim",								20												); //should be taken from Theme
+	_qml->rootContext()->setContextProperty("baseFontSize",								16												);
+	_qml->rootContext()->setContextProperty("languageModel",							_languageModel									);
 
-	_qml->rootContext()->setContextProperty("columnTypeScale",			int(columnType::scale)			);
-	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
-	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
+	_qml->rootContext()->setContextProperty("columnTypeScale",							int(columnType::scale)							);
+	_qml->rootContext()->setContextProperty("columnTypeOrdinal",						int(columnType::ordinal)						);
+	_qml->rootContext()->setContextProperty("columnTypeNominal",						int(columnType::nominal)						);
+	_qml->rootContext()->setContextProperty("columnTypeNominalText",					int(columnType::nominalText)					);
 
 	_qml->rootContext()->setContextProperty("computedColumnTypeRCode",					int(computedColumnType::rCode)					);
-	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysis",				int(computedColumnType::analysis)				);
+	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 
@@ -669,8 +672,8 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::finishCurrentEdit,				DataSetView::lastInstancedDataSetView(),	&DataSetView::commitLastEdit);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertBefore);
 	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
-	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDelete);
-	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDelete);
+	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDeleteSelected);
+	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDeleteSelected);
 	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::lastInstancedDataSetView(),	&DataSetView::cellsClear);
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::redo);

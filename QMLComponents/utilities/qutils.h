@@ -39,6 +39,8 @@
 /// This file collect a set of useful functions for interop between Qt and stdlib, like `fq` and `tq` for easily converting to and fro normal strings and whatnot
 /// These could have been collected into a class but because we use `fq` and `tq` in so many places that would probably not have made our life easier anyway.
 
+typedef std::vector<QString>				qstringvec;
+
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
 //fq -> fromQt, tq -> toQt
@@ -46,11 +48,13 @@ enum Encryption { NoEncryption, SimpleCryptEncryption };
 //fqj and tqj are for from/to QtJson
 inline	std::string							fq (const QString							 & from)	{ return from.toUtf8().toStdString(); }
 		std::vector<std::string>			fq (const QVector<QString>					 & vec);
+		std::vector<std::string>			fq (const std::vector<QString>				 & vec);
 		std::map<std::string, std::string>	fq (const QMap<QString, QString>			 & map);
 		QMap<QString, QString>				tq (const std::map<std::string, std::string> & map);
 inline	QString								tq (const std::string						 & from)	{ return QString::fromUtf8(from.c_str(), from.length()); }
 		QVector<QString>					tq (const std::vector<std::string>			 & vec);
 inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tq(std::vector<std::string>(from.begin(), from.end())); }
+		std::set<std::string>				fql(const QStringList						 & from);
 
 		//These need to have a different name because otherwise the default Json::Value(const std::string & str) constructor steals any fq(std::string()) call...
 		Json::Value							fqj(const QJSValue							 & jsVal);

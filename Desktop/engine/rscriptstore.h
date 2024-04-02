@@ -33,11 +33,13 @@ struct RFilterStore : public RScriptStore
 /// For when a computed column must be, well, computed
 struct RComputeColumnStore : public RScriptStore
 {
-	RComputeColumnStore(QString columnName, QString computeCode, columnType colType) : RScriptStore(-1, computeCode, "", engineState::computeColumn), _columnName(columnName), _columnType(colType)
+	RComputeColumnStore(QString columnName, QString computeCode, columnType colType, bool forceType) 
+		: RScriptStore(-1, computeCode, "", engineState::computeColumn), _columnName(columnName), _columnType(colType), _forceType(forceType)
 	{ }
 
 	QString		_columnName;
 	columnType	_columnType;
+	bool		_forceType;
 };
 
 #endif // RSCRIPTSTORE_H

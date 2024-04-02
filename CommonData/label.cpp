@@ -2,19 +2,21 @@
 #include "column.h"
 #include <sstream>
 #include "databaseinterface.h"
-#include "columnutils.h"
 
+
+const int Label::MAX_LABEL_DISPLAY_LENGTH	= 64; //we can store the rest in description if necessary
+const int Label::DOUBLE_LABEL_VALUE			= -1; 
 
 Label::Label(Column * column)
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
-	_value = std::numeric_limits<int>::lowest();
+	_intsId = EmptyValues::missingValueInteger;
 }
 
 Label::Label(Column * column, int value)
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
-	setValue(value);
+	setIntsId(value);
 	setOriginalValue(value);
 	setLabel(originalValueAsString());
 }
@@ -23,14 +25,14 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
 	_label			= label;
-	_value			= value;
+	_intsId			= value;
 	_filterAllows	= filterAllows;
 	_description	= description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
 	_originalValue	= originalValue;
 	_order			= order;
 
 	if(id == -1)	dbCreate();
-	else			_id = id;
+	else			_dbId = id;
 }
 
 void Label::dbDelete()
@@ -38,9 +40,9 @@ void Label::dbDelete()
 	if(_column->batchedLabel())
 		return;
 	
-	assert(_id != -1);
-	db().labelDelete(_id);
-	_id = -1;
+	assert(_dbId != -1);
+	db().labelDelete(_dbId);
+	_dbId = -1;
 }
 
 void Label::dbCreate()
@@ -49,9 +51,9 @@ void Label::dbCreate()
 
 	if(_column->batchedLabel())
 		return;
-		
-	assert(_id == -1);
-	_id = db().labelAdd(_column->id(), _value, _label, _filterAllows, _description, _originalValue.toStyledString());
+	
+	assert(_dbId == -1);
+	_dbId = db().labelAdd(_column->id(), _intsId, _label, _filterAllows, _description, _originalValue.toStyledString());
 }
 
 void Label::dbLoad(int labelId)
@@ -59,15 +61,15 @@ void Label::dbLoad(int labelId)
 	if(_column->batchedLabel())
 		return;
 	
-	assert(_id != -1 || labelId != -1);
+	assert(_dbId != -1 || labelId != -1);
 
 	if(labelId != -1)
-		_id = labelId;
+		_dbId = labelId;
 
 	int columnId;
 
 	std::string origValJsonStr;
-	db().labelLoad(labelId, columnId, _value, _label, _filterAllows, _description, origValJsonStr, _order);
+	db().labelLoad(labelId, columnId, _intsId, _label, _filterAllows, _description, origValJsonStr, _order);
 
 	_originalValue = Json::nullValue;
 
@@ -81,21 +83,21 @@ void Label::dbUpdate()
 	if(_column->batchedLabel())
 		return;
 	
-	if(_id == -1)
+	if(_dbId == -1)
 		dbCreate();
 	else
 	{
-		db().labelSet(_id, _column->id(), _value, _label, _filterAllows, _description, _originalValue.toStyledString());
+		db().labelSet(_dbId, _column->id(), _intsId, _label, _filterAllows, _description, _originalValue.toStyledString());
 		_column->incRevision();
 	}
 }
 
 void Label::setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
 {
-	_id				= id;
+	_dbId				= id;
 	_order			= order;
 	_label			= label;
-	_value			= value;	
+	_intsId			= value;	
 	_filterAllows	= filterAllows;
 	_description	= description;
 	_originalValue	= originalValue;
@@ -104,11 +106,11 @@ void Label::setInformation(Column * column, int id, int order, const std::string
 Json::Value Label::serialize() const
 {
 	Json::Value json(Json::objectValue);
-
-	json["id"]				= _id;
+	
+	json["id"]				= _dbId;
 	json["order"]			= _order;
 	json["label"]			= _label;
-	json["value"]			= _value;
+	json["value"]			= _intsId;
 	json["filterAllows"]	= _filterAllows;
 	json["description"]		= _description;
 	json["originalValue"]	= _originalValue;
@@ -116,9 +118,9 @@ Json::Value Label::serialize() const
 	return json;
 }
 
-void Label::setValue(int value)
+void Label::setIntsId(int value)
 {
-	_value = value;
+	_intsId = value;
 
 	dbUpdate();
 }
@@ -130,25 +132,49 @@ void Label::setOrder(int order)
 	//We'll let Column handle the order changes
 }
 
-void Label::setOriginalValue(const Json::Value & originalLabel)
+bool Label::setLabel(const std::string & label)
+{
+	if(_label != label)
+	{
+		_label = label.empty() ? originalValueAsString() : label;
+		
+		_column->labelDisplayChanged(this);
+
+		dbUpdate();
+		return true;
+	}
+	
+	return false;
+}
+
+bool Label::setOriginalValue(const Json::Value & originalLabel)
 {
 	if(_originalValue != originalLabel)
 	{
 		_originalValue = originalLabel;
 		dbUpdate();
+		
+		if(_originalValue.isDouble())	_column->labelValueChanged(this, _originalValue.asDouble()		);
+		else if(_originalValue.isInt())	_column->labelValueChanged(this, _originalValue.asInt()			);
+		else							_column->labelValueChanged(this, EmptyValues::missingValueDouble);
+		
+		return true;
 	}
+	return false;
 }
 
-void Label::setDescription(const std::string &description)
+bool Label::setDescription(const std::string &description)
 {
 	if(_description != description)
 	{
 		_description = description;
 		dbUpdate();
+		return true;
 	}
+	return false;
 }
 
-void Label::setFilterAllows(bool allowFilter)
+bool Label::setFilterAllows(bool allowFilter)
 {
 	JASPTIMER_SCOPE(Label::setFilterAllows);
 
@@ -156,7 +182,9 @@ void Label::setFilterAllows(bool allowFilter)
 	{
 		_filterAllows = allowFilter;
 		dbUpdate();
+		return true;
 	}
+	return false;
 }
 
 DatabaseInterface & Label::db()
@@ -174,14 +202,28 @@ Label &Label::operator=(const Label &label)
 	this->_originalValue	= label._originalValue;
 	this->_filterAllows		= label._filterAllows;
 	this->_description		= label._description;
-	this->_value			= label._value;
+	this->_intsId			= label._intsId;
 	this->_label			= label._label;
 	this->_order			= label._order;
-	this->_id				= label._id;
-
-	//this->_column			= label._column; // ???
-
+	this->_dbId				= label._dbId;
+	this->_column			= label._column;
+	
 	return *this;
+}
+
+std::string Label::labelDisplay() const
+{
+	return isEmptyValue() ? EmptyValues::displayString() : label(true);
+}
+
+std::string Label::labelIgnoreEmpty() const
+{
+	return label(true);
+}
+
+bool Label::isEmptyValue() const
+{
+	return _column->isEmptyValue(_label);
 }
 
 std::string Label::originalValueAsString(bool fancyEmptyValue) const
@@ -189,7 +231,7 @@ std::string Label::originalValueAsString(bool fancyEmptyValue) const
 	switch(_originalValue.type())
 	{
 	default:
-		return fancyEmptyValue ? ColumnUtils::emptyValue : "";
+		return fancyEmptyValue ? EmptyValues::displayString() : "";
 
 	case Json::intValue:
 		return std::to_string(_originalValue.asInt());
@@ -204,18 +246,6 @@ std::string Label::originalValueAsString(bool fancyEmptyValue) const
 
 std::string Label::str() const
 {
-	return "Label of column '" + _column->name() + "' has display: '" + label() + "' for value " + std::to_string(value()) + " and order " + std::to_string(order());
+	return "Label of column '" + _column->name() + "' has display: '" + label() + "' for value " + std::to_string(intsId()) + ", order " + std::to_string(order()) + " and " + ( isEmptyValue() ? "considers itself to be " : "is not ") + "a missing value!";
 }
 
-bool Label::setLabel(const std::string & label)
-{
-	if(_label != label)
-	{
-		_label = label.empty() ? originalValueAsString() : label;
-
-		dbUpdate();
-		return true;
-	}
-	
-	return false;
-}

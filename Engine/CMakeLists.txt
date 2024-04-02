@@ -38,9 +38,6 @@ target_include_directories(
   PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/CommonData
          ${PROJECT_SOURCE_DIR}/Common
-         # Conan
-         #$<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
-         #
          ${Boost_INCLUDE_DIRS})
 
 if(WIN32)
