@@ -3,6 +3,7 @@
 #include "utilities/qutils.h"
 #include "columnencoder.h"
 #include "analysis/analyses.h"
+#include "variableinfo.h"
 
 ComputedColumnModel * ComputedColumnModel::_singleton = nullptr;
 
@@ -19,6 +20,7 @@ ComputedColumnModel::ComputedColumnModel()
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnForceTypeChanged		);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnIconSourceChanged	);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::columnTypeChanged					);
 	
 	connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
@@ -457,7 +459,6 @@ void ComputedColumnModel::createComputedColumn(const QString &name, int columnTy
 	createComputedColumn(fq(name), columnType, jsonPlease ? computedColumnType::constructorCode : computedColumnType::rCode);	
 }
 
-
 bool ComputedColumnModel::showAnalysisFormForColumn(const QString & columnName)
 {
 	try
@@ -490,4 +491,9 @@ void ComputedColumnModel::analysisRemoved(Analysis * analysis)
 
 	for(const std::string & col : colsToRemove)
 		DataSetPackage::pkg()->requestComputedColumnDestruction(col);
+}
+
+QString ComputedColumnModel::computeColumnIconSource() const
+{
+	return VariableInfo::getIconFile(!_selectedColumn ? columnType::unknown : _selectedColumn->type(), VariableInfo::DefaultIconType);
 }

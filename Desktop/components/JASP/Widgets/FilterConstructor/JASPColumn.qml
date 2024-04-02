@@ -21,7 +21,7 @@ Item
 	Image
 	{
 		id:				colIcon
-		source:			columnIcon
+		source:			filterConstructor.forceColumnInputs === "" ? columnIcon : computedColumnsInterface.computeColumnIconSource
 		width:			height
 		sourceSize
 		{

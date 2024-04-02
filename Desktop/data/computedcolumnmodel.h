@@ -17,6 +17,7 @@ class ComputedColumnModel : public QObject
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(int		columnType					READ computedColumnColumnType												NOTIFY columnTypeChanged				)
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY refreshProperties				)
+	Q_PROPERTY(QString	computeColumnIconSource		READ computeColumnIconSource												NOTIFY computeColumnIconSourceChanged	)
 
 public:
     explicit	ComputedColumnModel();
@@ -30,6 +31,7 @@ public:
 				QString				computeColumnJson();
 				int					computedColumnColumnType();
 				bool				computeColumnForceType()	const;
+				QString				computeColumnIconSource()	const;
 				Column			*	column()					const;
 				bool				computeColumnUsesRCode();
 
@@ -54,8 +56,6 @@ public:
 
                                 static		ComputedColumnModel * singleton()		{ return _singleton; }
 
-	
-								
 								
 private:
 				void				revertToDefaultInvalidatedColumns();
@@ -81,6 +81,8 @@ signals:
 				void	computeColumnForceTypeChanged();
 				void	columnTypeChanged();
 				
+				void computeColumnIconSourceChanged();
+				
 public slots:
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);
 				void	computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
@@ -98,11 +100,7 @@ public slots:
 private:
 	static	ComputedColumnModel		* _singleton;
 			Column					* _selectedColumn	= nullptr;
-
 			UndoStack				* _undoStack		= nullptr;
-
-			
-			
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H
