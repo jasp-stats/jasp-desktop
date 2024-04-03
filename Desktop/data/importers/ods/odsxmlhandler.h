@@ -20,8 +20,6 @@
 #define __ODSXMLERRORHANDLER_H_
 
 #include <QXmlDefaultHandler>
-
-//#include "odsdata.h"
 #include "odsimportdataset.h"
 
 namespace ods
@@ -30,46 +28,8 @@ namespace ods
 class XmlHandler : public QXmlDefaultHandler
 {
 public:
-	/**
-	 * @brief OdsXmlHandler Ctor
-	 * @param data A
-	 */
-//	XmlHandler(Data *data);
 	XmlHandler(ODSImportDataSet *data);
-	virtual ~XmlHandler();
-
-	/**
-	 * @brief startElement Called on the start of an element.
-	 * @param namespaceURI - the URI.
-	 * @param localName - local name (name without prefix).
-	 * @param qName - Qualified name.
-	 * @param atts- Attributes.
-	 * @return true on no error found.
-	 *
-	 * Called when a <tag ...> construction found.
-	 *
-	 */
-	virtual bool startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts) = 0;
-
-	/**
-	 * @brief endElement Called on the end of an element.
-	 * @param namespaceURI - the URI.
-	 * @param localName - local name (name without prefix).
-	 * @param qName - Qualified name.
-	 * @param atts- Attributes.
-	 * @return true on no error found.
-	 *
-	 * Called when a </tag> construction found.
-	 *
-	 */
-	virtual bool endElement(const QString &namespaceURI, const QString &localName, const QString &qName) = 0;
-
-	/**
-	 * @brief characters Called when char data found.
-	 * @param ch The found data.
-	 * @return true on no error.
-	 */
-	virtual bool characters(const QString &ch) = 0;
+	~XmlHandler() override;
 
 protected:
 	ODSImportDataSet * _dataSet;

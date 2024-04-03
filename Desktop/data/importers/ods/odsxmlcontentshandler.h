@@ -21,6 +21,7 @@ class XmlContentsHandler : public XmlHandler
 		table,
 		table_row,
 		table_cell,
+		annotation,
 		text			// Only for string cells.
 	} DocDepth;
 
@@ -77,17 +78,18 @@ private:
 	QString			_currentCell;
 
 	// Names we search for.
-	static const QString _nameDocContent;
 	static const QString _nameBody;
-	static const QString _nameSpreadsheet;
 	static const QString _nameTable;
 	static const QString _nameTableRow;
+	static const QString _nameDocContent;
+	static const QString _nameSpreadsheet;
+	static const QString _nameAnnotation;
 	static const QString _nameTableCell;
 	static const QString _nameText;
 
 	// Attribute names we search for.
-	static const QString _attValueType;
 	static const QString _attValue;
+	static const QString _attValueType;
 	static const QString _attDateValue;
 	static const QString _attTimeValue;
 	static const QString _attBoolValue;
@@ -95,11 +97,11 @@ private:
 	static const QString _attRowRepeatCount;
 
 	// Values of the attribute attValueType.
-	static const QString _typeFloat;
 	static const QString _typeCurrency;
 	static const QString _typePercent;
 	static const QString _typeBoolean;
 	static const QString _typeString;
+	static const QString _typeFloat;
 	static const QString _typeDate;
 	static const QString _typeTime;
 

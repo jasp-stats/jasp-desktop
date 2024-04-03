@@ -11,6 +11,7 @@ const QString XmlContentsHandler::_nameSpreadsheet("spreadsheet");
 const QString XmlContentsHandler::_nameTable("table");
 const QString XmlContentsHandler::_nameTableRow("table-row");
 const QString XmlContentsHandler::_nameTableCell("table-cell");
+const QString XmlContentsHandler::_nameAnnotation("annotation");
 const QString XmlContentsHandler::_nameText("p");
 
 const QString XmlContentsHandler::_attValueType("office:value-type");
@@ -103,7 +104,9 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 			break;
 
 		case table_cell:
-			if (localName == _nameText)
+			if (localName == _nameAnnotation)
+				_docDepth = annotation;
+			else if (localName == _nameText)
 				_docDepth = text;
 			break;
 
@@ -224,6 +227,11 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 				_colRepeat = 1;
 				_currentCell.clear();
 			}
+			break;
+		
+		case annotation:
+			if (localName == _nameAnnotation)
+				_docDepth = table_cell;
 			break;
 
 		case text:
