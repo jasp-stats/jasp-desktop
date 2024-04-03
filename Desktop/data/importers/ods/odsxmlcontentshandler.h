@@ -22,6 +22,7 @@ class XmlContentsHandler : public XmlHandler
 		table_row,
 		table_cell,
 		annotation,
+		text_annotation,
 		text			// Only for string cells.
 	} DocDepth;
 
@@ -68,14 +69,15 @@ public:
 
 private:
 	DocDepth 		_docDepth;			///< Current depth of document.
-	int				_row;				///< Current row in document/table.
-	int				_column;			///< Current column in document/table.
-	int				_lastNotEmptyColumn;
+	int				_row,				///< Current row in document/table.
+					_column,			///< Current column in document/table.
+					_lastNotEmptyColumn;
 	bool			_tableRead;			///< True if first table read.
-	XmlDatatype		_lastType;		///< The last type we found in a opening tag.
-	int				_colRepeat;			///< Number cells this XML element spans.
-	int				_rowRepeat;
-	QString			_currentCell;
+	XmlDatatype		_lastType;			///< The last type we found in a opening tag.
+	int				_colRepeat,			///< Number cells this XML element spans.
+					_rowRepeat;
+	QString			_currentCell,
+					_currentComment;
 
 	// Names we search for.
 	static const QString _nameBody;

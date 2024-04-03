@@ -1,6 +1,7 @@
 #include "odsxmlcontentshandler.h"
 #include "odsimportcolumn.h"
 #include "log.h"
+#include "utilities/qutils.h"
 
 using namespace std;
 using namespace ods;
@@ -109,7 +110,11 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 			else if (localName == _nameText)
 				_docDepth = text;
 			break;
-
+			
+		case annotation:
+			_docDepth = text_annotation;
+			break;
+		
 		case text:
 			break;
 		}
@@ -176,11 +181,12 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 				}
 				_row++;
 				// Starting next column.
-				_column = 0;
+				_column				= 0;
 				_lastNotEmptyColumn = -1;
-				_currentCell.clear();
-				_colRepeat = 1;
-				_rowRepeat = 1;
+				_currentCell		.clear();
+				_currentComment		.clear();
+				_colRepeat			= 1;
+				_rowRepeat			= 1;
 			}
 			break;
 		case table_cell:
@@ -222,16 +228,22 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 					_lastNotEmptyColumn = _column + _colRepeat - 1;
 				}
 				
-				_docDepth = table_row;
-				_column += _colRepeat;
-				_colRepeat = 1;
-				_currentCell.clear();
+				_docDepth		=	table_row;
+				_column			+=	_colRepeat;
+				_colRepeat		=	1;
+				_currentCell	.	clear();
+				_currentComment	.	clear();
 			}
 			break;
 		
 		case annotation:
 			if (localName == _nameAnnotation)
 				_docDepth = table_cell;
+			break;
+			
+		case text_annotation:
+			if (localName == _nameText)
+				_docDepth = annotation;
 			break;
 
 		case text:
@@ -255,10 +267,23 @@ bool XmlContentsHandler::characters(const QString &ch)
 
 	if (_tableRead == false)
 	{
-		if ((_docDepth == text) && (ch.isEmpty() == false) && _currentCell.isEmpty())
+		if (!ch.isEmpty())
 		{
-			//Log::log() << "Characters: " << ch << std::endl;
-			_currentCell = ch;
+			Log::log() << "Characters " << (_docDepth == text ? "text" : _docDepth == text_annotation ? "text_anno" : "???") << ": " << ch << std::endl;
+			switch(_docDepth)
+			{
+			case text:
+				_currentCell.push_back(ch);
+				break;
+			
+			case text_annotation:
+				_currentComment.push_back(ch);
+				break;
+				
+			default:
+				break;
+			}
+			
 		}
 	}
 	return true;
