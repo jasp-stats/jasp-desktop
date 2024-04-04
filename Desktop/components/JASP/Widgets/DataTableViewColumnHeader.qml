@@ -126,7 +126,7 @@ Rectangle
 		anchors.verticalCenter:		headerRoot.verticalCenter
 	}
 	
-	DataTableViewColumnHeaderFilterInfo
+	DataTableViewColumnHeaderComputedColumnInfo
 	{
 		id:						colIsComputed
 
