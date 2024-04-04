@@ -110,21 +110,13 @@ Rectangle
 		}
 	}
 
-	Image
+	DataTableViewColumnHeaderFilterInfo
 	{
 		id:			colIsComputed
 
-		width:		visible ? headerRoot.__iconDim : 0
-		height:		headerRoot.__iconDim
-		visible:	columnIsComputed
-
 		anchors.left:			colIcon.right
 		anchors.verticalCenter: parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
-
-		source:				jaspTheme.iconPath + "/computed.png"
-		sourceSize {	width:	headerRoot.__iconDim * 2
-						height:	headerRoot.__iconDim * 2 }
+		anchors.margins:		2 * jaspTheme.uiScale
 
 	}
 
