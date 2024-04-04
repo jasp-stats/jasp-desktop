@@ -248,73 +248,55 @@ void VariablesListBase::moveItemsDelayedHandler()
 
 void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex)
 {
-	if (targetModel && indexes.size() > 0)
-	{
-		std::sort(indexes.begin(), indexes.end());
-		if (form()) form()->blockValueChangeSignal(true);
+	if (!targetModel || !indexes.size()) return;
 
-		ListModelDraggable* sourceModel = _draggableModel;
-		if (sourceModel == targetModel)
-			sourceModel->moveTerms(indexes, dropItemIndex);
-		else
-		{
-			bool refreshSource = false;
-			Terms termsAdded;
-			Terms removedTermsWhenAdding;
-			QList<int> indexAdded = indexes;
+	if (form()) form()->blockValueChangeSignal(true);
 
-			if (targetModel->removeTermsWhenMoved()) // If the target keeps its terms anyway, don't add new terms
-			{
-				Terms terms = sourceModel->termsFromIndexes(indexes);
-				if (terms.size() == 0)
-					Log::log() << "No terms found when trying to move them" << std::endl;
-
-				termsAdded = targetModel->canAddTerms(terms);
-
-				if (termsAdded.size() > 0)
-					removedTermsWhenAdding = targetModel->addTerms(termsAdded, dropItemIndex);
-
-				if (termsAdded.size() != terms.size())
-				{
-					indexAdded.clear();
-					for (int i = 0; i < indexes.size(); i++)
-					{
-						int index = indexes[i];
-						if (i < int(terms.size()))
-						{
-							const Term& term = terms[size_t(i)];
-							if (termsAdded.contains(term))
-								indexAdded.append(index);
-						}
-					}
-					refreshSource = true;
-				}
-			}
-				
-			if (sourceModel->removeTermsWhenMoved())
-			{
-				if (indexAdded.size() > 0)
-				{
-					sourceModel->removeTerms(indexAdded);
-					refreshSource = false;
-				}
-				if (removedTermsWhenAdding.size() > 0)
-				{
-					sourceModel->addTerms(removedTermsWhenAdding);
-					refreshSource = false;
-				}
-			}
-
-			if (refreshSource)
-				sourceModel->refresh();
-		}
-		
-		if (form()) form()->blockValueChangeSignal(false);
-	}
+	std::sort(indexes.begin(), indexes.end());
+	ListModelDraggable* sourceModel = _draggableModel;
+	if (sourceModel == targetModel)
+		sourceModel->moveTerms(indexes, dropItemIndex);
 	else
 	{
-		Log::log()  << (!targetModel ? "no dropModel" : "no indexes") << std::endl;
+		Terms termsToAdd;
+		Terms removedTermsWhenAdding;
+		QList<int> termsToAddIndexes = indexes;
+
+		if (!targetModel->keepTerms()) // If the target keeps its terms anyway, don't (re-)add new terms (because they probably came from target)
+		{
+			// Check which terms can be added in the target model (especially terms that have not the right types might be refused).
+			Terms terms = sourceModel->termsFromIndexes(indexes);
+			termsToAdd = targetModel->canAddTerms(terms);
+
+			if (termsToAdd.size() < terms.size())
+				// If some terms cannot be added, remove their indexes in termsToAddIndexes
+				// The i'th index in indexes corresponds to the i'th term in terms.
+				for (int i = 0; i < indexes.size(); i++)
+				{
+					int index = indexes[i];
+					if (!termsToAdd.contains(terms.at(i)))
+						termsToAddIndexes.removeAll(index);
+				}
+		}
+
+		// Then remove the terms in the source model.
+		// This must be done before adding them in the target model: for nested FactorsForm, it is important that the term is first removed from the source and afterwards added to the target.
+		if (!sourceModel->keepTerms() && termsToAddIndexes.size() > 0)
+			sourceModel->removeTerms(termsToAddIndexes);
+
+		// Add the terms in the target model
+		if (!targetModel->keepTerms() && termsToAdd.size() > 0)
+			removedTermsWhenAdding = targetModel->addTerms(termsToAdd, dropItemIndex);
+
+
+		// If the target model has a maximum, then the extra terms are removed (this is used for singleVariable VariablesList)
+		// They must be then added to the source model.
+		if (!sourceModel->keepTerms() && removedTermsWhenAdding.size() > 0)
+			sourceModel->addTerms(removedTermsWhenAdding);
+
 	}
+
+	if (form()) form()->blockValueChangeSignal(false);
 }
 
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
@@ -425,7 +407,7 @@ void VariablesListBase::_setRelations()
 
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
 				if (_listViewType == ListViewType::Interaction || columns() > 1)
-					availableModel->setRemoveTermsWhenMoved(false);
+					availableModel->setKeepTerms(true);
 			}
 		}
 	}

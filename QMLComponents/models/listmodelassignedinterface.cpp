@@ -112,7 +112,7 @@ bool ListModelAssignedInterface::checkAllowedTerms(Terms& terms)
 	if (notAllowedTerms.size() == 0) return true;
 
 	terms.set(allowedTerms);
-	if (_availableModel->removeTermsWhenMoved())
+	if (!_availableModel->keepTerms())
 		_availableModel->addTerms(notAllowedTerms);
 
 	QString notAllowedTermsStr = notAllowedTerms.asQList().join(", ");

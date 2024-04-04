@@ -13,6 +13,8 @@ FactorsFormBase
 	height				: implicitHeight
 	width				: implicitWidth
 	Layout.columnSpan	: parent.columns
+	optionKey			: allowInteraction ? "components" : "indicators" // The option has the name, the title and the terms of each VariablesList: optionKey gives the key name for the terms.
+
 
 	property string availableVariablesListName: "allAvailableVariables"
 	property alias	availableVariablesList: availableVariablesList

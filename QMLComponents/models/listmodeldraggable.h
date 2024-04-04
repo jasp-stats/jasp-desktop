@@ -32,8 +32,8 @@ public:
 	ListModelDraggable(JASPListControl* listView);
 	~ListModelDraggable();
 
-	bool removeTermsWhenMoved() const						{ return _removeTermsWhenMoved;	}
-	void setRemoveTermsWhenMoved(bool remove)				{ _removeTermsWhenMoved = remove; }
+	bool keepTerms() const									{ return _keepTerms;	}
+	void setKeepTerms(bool keep)							{ _keepTerms = keep; }
 	JASPControl::DropMode dropMode() const					{ return _dropMode; }
 	
 	void setDropMode(JASPControl::DropMode dropMode)		{ _dropMode = dropMode; }
@@ -48,7 +48,7 @@ signals:
 	void destroyed(ListModelDraggable * me);
 
 protected:
-	bool						_removeTermsWhenMoved					= true;
+	bool						_keepTerms								= false;
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;
 		
 	bool						isAllowed(const Term &term) const;

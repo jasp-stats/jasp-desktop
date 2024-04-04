@@ -17,8 +17,6 @@
 //
 
 #include "factorsformbase.h"
-#include "boundcontrols/boundcontrolterms.h"
-#include "analysisform.h"
 #include "utilities/qutils.h"
 #include "variableslistbase.h"
 #include "log.h"
@@ -54,11 +52,25 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 
 	for (const Json::Value& factor : value)
 	{
-		vector<string> indicators;
-		for (const Json::Value& indicator : factor["indicators"])
-			indicators.push_back(indicator.asString());
+		Terms initTerms;
+		for (const Json::Value& termsJson : factor[fq(_optionKey)])
+		{
+			if (allowInteraction())
+			{
+				// For interaction, each term is an array of strings
+				std::vector<std::string> term;
+				for (const Json::Value& elt : termsJson)
+					if (elt.isString())
+						term.push_back(elt.asString());
+				initTerms.add(Term(term));
+			}
+			else
+				// If not, each term is just a string
+				initTerms.add(termsJson.asString());
+		}
+
 		
-		factors.push_back(make_tuple(factor["name"].asString(), factor["title"].asString(), indicators));
+		factors.push_back(ListModelFactorsForm::Factor(tq(factor["name"].asString()), tq(factor["title"].asString()), initTerms));
 	}
 	
 	_factorsModel->initFactors(factors);
@@ -73,7 +85,7 @@ Json::Value FactorsFormBase::createJson() const
 		Json::Value row(Json::objectValue);
 		row["name"] = fq(baseName() + QString::number(i + startIndex()));
 		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
-		row["indicators"] = Json::Value(Json::arrayValue);
+		row[fq(_optionKey)] = Json::Value(Json::arrayValue);
 
 		result.append(row);
 	}
@@ -88,7 +100,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &value) const
 	{
 		for (const Json::Value& factor : value)
 		{
-			valid = factor.isObject() && factor["name"].isString() && factor["title"].isString() && factor["indicators"].isArray();
+			valid = factor.isObject() && factor["name"].isString() && factor["title"].isString() && factor[fq(_optionKey)].isArray();
 			if (!valid) break;
 		}
 	}
@@ -109,12 +121,22 @@ void FactorsFormBase::termsChangedHandler()
 	for (const auto &factor : factors)
 	{
 		Json::Value factorJson(Json::objectValue);
-		factorJson["name"] = get<0>(factor);
-		factorJson["title"] = get<1>(factor);
-		Json::Value indicators(Json::arrayValue);
-		for (const string &level : get<2>(factor))
-			indicators.append(level);
-		factorJson["indicators"] = indicators;
+		factorJson["name"] = fq(factor.name);
+		factorJson["title"] = fq(factor.title);
+		Json::Value termsJson(Json::arrayValue);
+		for (const Term &term : factor.listView ? factor.listView->model()->terms() : factor.initTerms)
+		{
+			Json::Value termJson(allowInteraction() ? Json::arrayValue : Json::stringValue);
+			if (allowInteraction())
+			{
+				for (const std::string & elt : term.scomponents())
+					termJson.append(elt);
+			}
+			else
+				termJson = term.asString();
+			termsJson.append(termJson);
+		}
+		factorJson[fq(_optionKey)] = termsJson;
 		boundValue.append(factorJson);
 	}
 	
@@ -133,6 +155,7 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	
 	_factorsModel->factorAdded(index, listView);
 	
-	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms);
+	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms, Qt::QueuedConnection);
 	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::countVariablesChanged);
+	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::ensureNesting);
 }

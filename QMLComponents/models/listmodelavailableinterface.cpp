@@ -179,7 +179,7 @@ bool ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
-	if (!removeTermsWhenMoved())
+	if (keepTerms())
 		return;
 
 	beginResetModel();
