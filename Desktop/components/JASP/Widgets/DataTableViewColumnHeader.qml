@@ -50,7 +50,7 @@ Rectangle
 		id:						colIcon
 		anchors.verticalCenter: parent.verticalCenter
 		anchors.left:			parent.left
-		anchors.margins:		4
+		anchors.margins:		4 * jaspTheme.uiScale
 
 
 		source:					getColumnTypeIcon(columnType)
@@ -122,7 +122,7 @@ Rectangle
 		horizontalAlignment:		Text.AlignLeft
 
 		anchors.left:				colIcon.right
-		anchors.leftMargin:			jaspTheme.generalAnchorMargin
+		anchors.leftMargin:			colIcon.anchors.margins
 		anchors.verticalCenter:		headerRoot.verticalCenter
 	}
 	
@@ -148,7 +148,7 @@ Rectangle
 						height:	headerRoot.__iconDim * 2 }
 
 		anchors.right:			parent.right
-		anchors.margins:		columnIsFiltered ? 1 : 0
+		anchors.margins:		columnIsFiltered ? 2 * jaspTheme.uiScale : 0
 		anchors.verticalCenter:	parent.verticalCenter
 	}
 
@@ -224,8 +224,9 @@ Rectangle
 																										: qsTr("Click here to change selected variable")
 															  )
 									  )
+									+ (columnError == "" ? "" : "<br><br>" + qsTr("Computed column has error:<br>") + "<code'>" + columnError.replace("\n","<br>") + "</code>")
 								  )
-		ToolTip.timeout:	3000
+		ToolTip.timeout:	30000
 		ToolTip.delay:		500
 		cursorShape:		Qt.PointingHandCursor
 	}

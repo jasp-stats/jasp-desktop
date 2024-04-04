@@ -596,7 +596,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		{
 			//calculate some kind of maximum string to give views an expectation of the width needed for a column
 			bool		hasFilter	= col && (col->hasFilter() || isColumnUsedInEasyFilter(col->name()));
-			QString		dummyText	= headerData(section, orientation, Qt::DisplayRole).toString() + "XXX" + (isColumnComputed(section) ? "XXX" : "") + (hasFilter ? "XXX" : ""); //Bit of padding for hamburger, filtersymbol and columnIcon
+			QString		dummyText	= headerData(section, orientation, int(specialRoles::maxColumnHeaderString)).toString() + (isColumnComputed(section) ? "XXX" : "") + (hasFilter ? "XXX" : ""); //Bit of padding for hamburger, filtersymbol and columnIcon
 			qsizetype	colWidth	= getMaximumColumnWidthInCharacters(section);
 
 			while(colWidth > dummyText.length())
@@ -604,7 +604,8 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 
 			return dummyText;
 		}
-		case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet ? _dataSet->rowCount() : 0 ) + "XXX";
+		case int(specialRoles::maxColumnHeaderString):			return headerData(section, orientation, Qt::DisplayRole).toString() + "XXX";
+		case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet ? _dataSet->rowCount() : 0 )		+ "XXX";
 		case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
 		case int(specialRoles::filter):							return		!col ? false							: col->hasFilter() || isColumnUsedInEasyFilter(col->name());
 		case Qt::DisplayRole:									return tq(	!col ? "?"								: col->name());

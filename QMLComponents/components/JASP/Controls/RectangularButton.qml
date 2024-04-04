@@ -139,8 +139,8 @@ Item
 			font:	isLink ? jaspTheme.fontLink : jaspTheme.font
 			//font.pixelSize: jaspTheme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
-			//height: contentHeight
-			width:	filterButtonRoot.width - 2 * buttonWidthPadding //implicitWidth //Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
+			
+			width:	filterButtonRoot.width - (!filterButtonRoot.centerText ?	filterButtonRoot.buttonPadding : 0)
 
 
 			elide:	Text.ElideMiddle

@@ -111,6 +111,6 @@ void					jaspRCPP_crashPlease();
 void					jaspRCPP_checkForCrashRequest();
 void					jaspRCPP_postProcessLocalPackageInstall(	SEXP moduleLibFileNames);
 
-std::string				__sinkMe(const std::string code);
+std::string				__sinkMe(const std::string code = "");
 
 #endif // JASPRCPP_H
