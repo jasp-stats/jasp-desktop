@@ -1236,15 +1236,29 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered)
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];	
-	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet);
+	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
+			nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+							&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	Label * newLabel		= labelByDisplay(userEntered);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
+	
+	if(nothingThereYet)
+	{
+		if(itsADouble)
+		{
+			if(!isEmptyValue(newDoubleToSet))
+				setType(columnType::scale);
+		}
+		else if(!isEmptyValue(userEntered))
+			setType(columnType::nominal);
+	}
 		
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
 		return setValue(row, newDoubleToSet);
 
 	if(newLabel)
 		return setValue(row, newLabel->intsId(), newDoubleToSet);
+	
 		
 	if(itsADouble)
 	{
