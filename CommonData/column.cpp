@@ -1237,8 +1237,8 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered)
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];	
 	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
-			nothingThereYet	=	_ints.size() == std::count_if(_ints.begin(), _ints.end(), [&](int i)	{ return i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue(); }) 
-							&&	_dbls.size() == std::count_if(_dbls.begin(), _dbls.end(), [&](double d)	{ return std::isnan(d) || isEmptyValue(d); });
+			nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+							&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	Label * newLabel		= labelByDisplay(userEntered);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
 	
