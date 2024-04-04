@@ -870,13 +870,6 @@
             "description": "Grand Point 6 个学期 200 名大学生的平均分，以及有关性别、高中 GPA 以及他们是否被自己选择的大学录取的信息。 <br><br> JASP 文件当前不包含任何分析。 <br><br> <i>数据来自 Hox, Moerbeek, and Van de Schoot (2017).<\/i>",
             "kind": "file",
             "associated_datafile": "Grand Point Average.csv"
-          },
-          {
-            "name": "Social Participation",
-            "path": "Social Participation.jasp",
-            "description": "社会参与的衡量（教会成员资格、志愿组织的成员资格以及见过的朋友数量），以及对社会互动的潜在原因（收入、职业和教育）的衡量。 <br><br> JASP 文件当前不包含任何分析。 <br><br>  <i>模拟数据来自 Hodge and Treiman (1986).<\/i>",
-            "kind": "file",
-            "associated_datafile": "Social Participation.csv"
           }
         ],
         "debug": false

@@ -867,16 +867,9 @@
         {
           "name": "Grand Point Average",
           "path": "Grand Point Average.jasp",
-          "description": "Gemiddeld aantal studiepunten van 200 studenten over 6 semesters, samen met informatie over geslacht, aantal studiepunten op de middelbare school en of ze zijn toegelaten tot de universiteit van hun keuze. <br><br>Het JASP-bestand bevat momenteel geen analyses. <br><br> <i>Dataset van Hox, Moerbeek, en Van de Schoot (2017).<\/i>",
+          "description": "Grand Point Average van 200 hogeschoolstudenten over 6 semesters, samen met informatie over geslacht, middelbare school GPA, of ze werden toegelaten tot de universiteit van hun keuze, en werkuren over 6 semesters. <br><br> <i>Het JASP-bestand demonstreert het gebruik van latente groeicurve modellering (LGCM). Gegevens van Hox, Moerbeek en Van de Schoot (2017).<\/i>",
           "kind": "file",
           "associated_datafile": "Grand Point Average.csv"
-        },
-        {
-          "name": "Social Participation",
-          "path": "Social Participation.jasp",
-          "description": "Metingen van sociale participatie (kerklidmaatschap, lidmaatschappen van vrijwilligersorganisaties, en aantal vrienden dat wordt gezien), alsmede metingen van mogelijke oorzaken van sociale interactie (inkomen, beroep en opleiding). <br><br> Het JASP-bestand bevat momenteel geen analyses. <br><br> <i>Gesimuleerde gegevens gebaseerd op Hodge en Treiman (1986).<\/i>",
-          "kind": "file",
-          "associated_datafile": "Social Participation.csv"
         }
       ],
       "debug": false
