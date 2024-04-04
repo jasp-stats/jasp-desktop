@@ -77,6 +77,9 @@ Terms ListModelInteractionAssigned::filterTerms(const Terms& terms, const QStrin
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 {
+	if(!indices.count())
+		return;
+	
 	Terms toRemove;
 
 	for (int i : indices)

@@ -258,42 +258,15 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 		sourceModel->moveTerms(indexes, dropItemIndex);
 	else
 	{
-		Terms termsToAdd;
-		Terms removedTermsWhenAdding;
-		QList<int> termsToAddIndexes = indexes;
+		Terms	termsToAdd	= sourceModel->termsFromIndexes(indexes),
+				termsRejected;
 
-		if (!targetModel->keepTerms()) // If the target keeps its terms anyway, don't (re-)add new terms (because they probably came from target)
-		{
-			// Check which terms can be added in the target model (especially terms that have not the right types might be refused).
-			Terms terms = sourceModel->termsFromIndexes(indexes);
-			termsToAdd = targetModel->canAddTerms(terms);
-
-			if (termsToAdd.size() < terms.size())
-				// If some terms cannot be added, remove their indexes in termsToAddIndexes
-				// The i'th index in indexes corresponds to the i'th term in terms.
-				for (int i = 0; i < indexes.size(); i++)
-				{
-					int index = indexes[i];
-					if (!termsToAdd.contains(terms.at(i)))
-						termsToAddIndexes.removeAll(index);
-				}
-		}
-
-		// Then remove the terms in the source model.
-		// This must be done before adding them in the target model: for nested FactorsForm, it is important that the term is first removed from the source and afterwards added to the target.
-		if (!sourceModel->keepTerms() && termsToAddIndexes.size() > 0)
-			sourceModel->removeTerms(termsToAddIndexes);
-
-		// Add the terms in the target model
-		if (!targetModel->keepTerms() && termsToAdd.size() > 0)
-			removedTermsWhenAdding = targetModel->addTerms(termsToAdd, dropItemIndex);
-
-
-		// If the target model has a maximum, then the extra terms are removed (this is used for singleVariable VariablesList)
-		// They must be then added to the source model.
-		if (!sourceModel->keepTerms() && removedTermsWhenAdding.size() > 0)
-			sourceModel->addTerms(removedTermsWhenAdding);
-
+		//if a model keeps terms we dont need to bother adding or removing anything
+		if (!targetModel->keepTerms())	termsToAdd				=	targetModel->canAddTerms(	sourceModel->termsFromIndexes(indexes)		);	// Check which terms can be added in the target model (especially terms that have not the right types might be refused).
+		if (!sourceModel->keepTerms())								sourceModel->removeTerms(	sourceModel->indexesFromTerms(termsToAdd)	);	// Then remove the terms in the source model. This must be done before adding them in the target model: for nested FactorsForm, it is important that the term is first removed from the source and afterwards added to the target.	
+		if (!targetModel->keepTerms())	termsRejected			=	targetModel->addTerms(		termsToAdd, dropItemIndex					);	// Add the terms in the target model
+		if (!sourceModel->keepTerms())								sourceModel->addTerms(		termsRejected								);	// Any possible overflow (such as for single-variable-list) gets returned to the source
+		
 	}
 
 	if (form()) form()->blockValueChangeSignal(false);
