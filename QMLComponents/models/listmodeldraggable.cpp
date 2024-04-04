@@ -19,7 +19,6 @@
 #include "listmodeldraggable.h"
 #include "analysisform.h"
 #include "controls/jasplistcontrol.h"
-#include "log.h"
 
 ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
@@ -28,24 +27,32 @@ ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 
 ListModelDraggable::~ListModelDraggable()
 {
-	emit destroyed(this);
 }
 
 Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms result;
-	const Terms& myTerms = terms();
+
 	for (int index : indexes)
-	{
-		size_t index_t = size_t(index);
-		if (index_t < myTerms.size())
-		{
-			const Term& term = myTerms.at(index_t);
-			result.add(term);
-		}
-	}
+		if (size_t(index) < terms().size())
+			result.add(terms().at(index));
 	
 	return result;
+}
+
+QList<int> ListModelDraggable::indexesFromTerms(const  Terms & termsIn) const
+{
+	std::set<int>		result;
+	std::map<Term, int> termToIndex;
+	
+	for(size_t t=0; t<terms().size(); t++)
+		termToIndex[terms().at(t)] = t;
+
+	for(const Term & term : termsIn)
+		if(termToIndex.count(term))
+			result.insert(termToIndex[term]);
+	
+	return tql(result);
 }
 
 void ListModelDraggable::removeTerms(const QList<int> &indices)
@@ -74,15 +81,12 @@ void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 	Terms terms = termsFromIndexes(indexes);
 	removeTerms(indexes); // Remove first before adding: we cannot add terms that already exist
 	for (int index : indexes)
-	{
 		if (index < dropItemIndex)
 			dropItemIndex--;
-	}
+
 	Terms removedTerms = addTerms(terms, dropItemIndex);
 	if (removedTerms.size() > 0)
-	{
 		addTerms(removedTerms);
-	}
 	
 	endResetModel();
 }

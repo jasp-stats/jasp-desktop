@@ -32,21 +32,19 @@ public:
 	ListModelDraggable(JASPListControl* listView);
 	~ListModelDraggable();
 
-	bool keepTerms() const									{ return _keepTerms;	}
-	void setKeepTerms(bool keep)							{ _keepTerms = keep; }
-	JASPControl::DropMode dropMode() const					{ return _dropMode; }
+	bool					keepTerms() const									{ return _keepTerms;	}
+	JASPControl::DropMode	dropMode()	const									{ return _dropMode; }
 	
-	void setDropMode(JASPControl::DropMode dropMode)		{ _dropMode = dropMode; }
+	void					setKeepTerms(bool keep)								{ _keepTerms = keep; }
+	void					setDropMode(JASPControl::DropMode dropMode)			{ _dropMode = dropMode; }
 	
-	virtual Terms termsFromIndexes(const QList<int> &indexes)					const;
-	virtual Terms canAddTerms(const Terms& terms)								const;
-	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues());
-	virtual void removeTerms(const QList<int>& indexes);
-	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
-
-signals:
-	void destroyed(ListModelDraggable * me);
-
+	virtual QList<int>		indexesFromTerms(	const Terms		& terms)		const;
+	virtual Terms			canAddTerms(		const Terms		& terms)		const;
+	virtual Terms			addTerms(			const Terms		& terms,	int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues());
+	virtual void			moveTerms(			const QList<int>& indexes,	int dropItemIndex = -1);
+	virtual void			removeTerms(		const QList<int>& indexes);
+	virtual Terms			termsFromIndexes(	const QList<int>& indexes)		const;
+	
 protected:
 	bool						_keepTerms								= false;
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;
