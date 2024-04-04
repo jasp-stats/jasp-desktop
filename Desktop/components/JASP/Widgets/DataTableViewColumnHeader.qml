@@ -13,7 +13,6 @@ Rectangle
 				? jaspTheme.itemSelectedNoFocusColor 
 				: jaspTheme.buttonColor
 
-				property real	iconTextPadding:	10
 	readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
 	function getColumnTypeIcon(type)
@@ -110,15 +109,6 @@ Rectangle
 		}
 	}
 
-	DataTableViewColumnHeaderFilterInfo
-	{
-		id:			colIsComputed
-
-		anchors.left:			colIcon.right
-		anchors.verticalCenter: parent.verticalCenter
-		anchors.margins:		2 * jaspTheme.uiScale
-
-	}
 
 	Text
 	{
@@ -129,24 +119,22 @@ Rectangle
 		color:			jaspTheme.textEnabled
 		textFormat:		Text.RichText
 
-		horizontalAlignment:		Text.AlignHCenter
+		horizontalAlignment:		Text.AlignLeft
 
-		anchors.horizontalCenter:	headerRoot.horizontalCenter
+		anchors.left:				colIcon.right
+		anchors.leftMargin:			jaspTheme.generalAnchorMargin
 		anchors.verticalCenter:		headerRoot.verticalCenter
 	}
-
-	LoadingIndicator
+	
+	DataTableViewColumnHeaderFilterInfo
 	{
-		id:			colIsInvalidated
-
-
-		width:		columnIsInvalidated ? headerRoot.__iconDim : 0
-		visible:	columnIsInvalidated && columnIsComputed
+		id:						colIsComputed
 
 		anchors.right:			colFilterOn.left
-		anchors.verticalCenter:	parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
+		anchors.verticalCenter: parent.verticalCenter
+		anchors.margins:		2 * jaspTheme.uiScale
 	}
+
 
 	Image
 	{
@@ -159,28 +147,12 @@ Rectangle
 		sourceSize {	width:	headerRoot.__iconDim * 2
 						height:	headerRoot.__iconDim * 2 }
 
-		anchors.right:			colHasError.left
+		anchors.right:			parent.right
 		anchors.margins:		columnIsFiltered ? 1 : 0
 		anchors.verticalCenter:	parent.verticalCenter
 	}
 
-	Image
-	{
-		id:			colHasError
 
-		width:		columnError.length > 0 ? headerRoot.__iconDim : 0
-		height:		headerRoot.__iconDim
-		visible:	columnError.length > 0 // && !columnIsInvalidated
-
-		source:					jaspTheme.iconPath + "/error.png"
-		sourceSize {	width:	headerRoot.__iconDim * 2
-						height:	headerRoot.__iconDim * 2 }
-
-		anchors.right:			parent.right
-		anchors.verticalCenter:	parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
-
-	}
 
 	MouseArea
 	{
@@ -223,8 +195,11 @@ Rectangle
 				if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 					dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
 
-				if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
+				if(mouseEvent.button === Qt.RightButton)
+				{
+					ribbonModel.dataMode = true
 					dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex)
+				}
 			}
 		}
 		

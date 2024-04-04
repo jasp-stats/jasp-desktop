@@ -208,6 +208,12 @@ void RibbonModel::addSpecialRibbonButtonsLate()
 	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R console")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console")), false, true), size_t(RowType::Analyses));
 }
 
+void RibbonModel::setDataMode(bool data)
+{
+	if(data)	showData();
+	else		showStatistics();
+}
+
 void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)
 {
 	Log::log() << "void RibbonModel::dynamicModuleChanged(" << dynMod->toString() << ")" << std::endl;

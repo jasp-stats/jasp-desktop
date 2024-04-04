@@ -87,7 +87,7 @@ Window
 			acceptedButtons:	Qt.MiddleButton | Qt.RightButton
 
 			toolTipText:		qsTr("Right and middle mouse button to kill an engine.")
-
+			anchors.fill:		parent
 
 
 			onClicked: (mouse) =>

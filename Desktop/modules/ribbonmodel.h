@@ -35,7 +35,7 @@ class RibbonModel : public QAbstractListModel
 	Q_OBJECT
 	Q_PROPERTY(int	highlightedModuleIndex	READ highlightedModuleIndex WRITE setHighlightedModuleIndex NOTIFY highlightedModuleIndexChanged)
 	Q_PROPERTY(int	currentRow				READ currentRow				WRITE setCurrentRow				NOTIFY currentRowChanged			)
-	Q_PROPERTY(bool dataMode				READ dataMode												NOTIFY dataModeChanged				)
+	Q_PROPERTY(bool dataMode				READ dataMode				WRITE setDataMode				NOTIFY dataModeChanged				)
 
 public:
 	enum {
@@ -69,6 +69,7 @@ public:
 
 	void						addSpecialRibbonButtonsEarly();
 	void						addSpecialRibbonButtonsLate();
+	void						setDataMode(bool data);
 	Q_INVOKABLE void			showData()			{ setCurrentRow(int(RowType::Data));		}
 	Q_INVOKABLE void			showStatistics()	{ setCurrentRow(int(RowType::Analyses));	}
 	void						genShowEmptyData()	{ generateEmptyData(); showData(); }

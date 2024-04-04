@@ -32,7 +32,7 @@ FocusScope
 	visible:	columnModel.visible
 
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
-	property real calculatedMinimumHeight:		calculatedBaseHeight * 2
+	property real calculatedMinimumHeight:		calculatedBaseHeight * 1.5
 	property real calculatedPreferredHeight:	calculatedBaseHeight * 3
 	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.90 * parent.height
 	

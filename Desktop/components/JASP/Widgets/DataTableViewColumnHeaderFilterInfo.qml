@@ -11,8 +11,15 @@ Image
 	height:		headerRoot.__iconDim
 	visible:	columnIsComputed
 
-	source:					jaspTheme.iconPath + "/computed.png"
+	source:		columnIsInvalidated ? "" :	jaspTheme.iconPath + (columnError.length > 0 ? "/error.png" : "/computed.png")
 	sourceSize {	width:	headerRoot.__iconDim * 2
 					height:	headerRoot.__iconDim * 2 }
-
+	
+	
+	LoadingIndicator
+	{
+		id:				colIsInvalidated
+		anchors.fill:	parent
+		visible:		columnIsInvalidated
+	}
 }

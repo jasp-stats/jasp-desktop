@@ -595,7 +595,8 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		case int(specialRoles::maxColString):
 		{
 			//calculate some kind of maximum string to give views an expectation of the width needed for a column
-			QString		dummyText	= headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX" + (isColumnComputed(section) ? "XXXXX" : ""); //Bit of padding for filtersymbol and columnIcon
+			bool		hasFilter	= col && (col->hasFilter() || isColumnUsedInEasyFilter(col->name()));
+			QString		dummyText	= headerData(section, orientation, Qt::DisplayRole).toString() + "XXX" + (isColumnComputed(section) ? "XXX" : "") + (hasFilter ? "XXX" : ""); //Bit of padding for hamburger, filtersymbol and columnIcon
 			qsizetype	colWidth	= getMaximumColumnWidthInCharacters(section);
 
 			while(colWidth > dummyText.length())

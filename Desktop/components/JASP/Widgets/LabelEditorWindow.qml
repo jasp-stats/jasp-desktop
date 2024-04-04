@@ -20,10 +20,10 @@ FocusScope
 			anchors
 			{
 				top:			parent.top
-				left:			parent.left
-				right:			buttonColumnVariablesWindow.left
+				left:			buttonColumnVariablesWindow.right
+				right:			parent.right
 				bottom:			parent.bottom
-				rightMargin:	jaspTheme.generalAnchorMargin
+				leftMargin:	jaspTheme.generalAnchorMargin
 			}
 
 
@@ -330,7 +330,7 @@ FocusScope
 			id:					buttonColumnVariablesWindow
 
 			anchors.top:		parent.top
-			anchors.right:		parent.right
+			anchors.left:		parent.left
 			anchors.bottom:		parent.bottom
 			spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
