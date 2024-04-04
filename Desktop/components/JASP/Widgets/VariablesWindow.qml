@@ -35,7 +35,7 @@ FocusScope
 	property real calculatedMinimumHeight:		calculatedBaseHeight * 1.5
 	property real calculatedPreferredHeight:	calculatedBaseHeight * 3
 	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.90 * parent.height
-	
+
 	Connections
 	{
 		target: columnModel
@@ -66,8 +66,8 @@ FocusScope
 
 		property int minWidth: 500 * preferencesModel.uiScale
 		
-		onHeightChanged:		columnModel.setCompactMode(height < variablesContainer.calculatedPreferredHeight)
-		
+		onHeightChanged: columnModel.setCompactMode(height < variablesContainer.calculatedPreferredHeight)
+					
 		anchors
 		{
 			fill:			parent
@@ -142,7 +142,8 @@ FocusScope
 						
 						required property int index
 
-						onCheckedChanged: if (checked) tabView.currentTabButton = tabButton
+						onCheckedChanged:	if (checked)
+												tabView.currentTabButton				= tabButton; 
 
 						background: Rectangle
 						{

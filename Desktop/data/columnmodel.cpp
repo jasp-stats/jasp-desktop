@@ -277,8 +277,6 @@ void ColumnModel::setColumnType(QString type)
 		_dummyColumn.type = cType;
 	else if(column())
 		_undoStack->pushCommand(new SetColumnTypeCommand(this, chosenColumn(), int(cType)));
-
-	emit tabsChanged();
 }
 
 std::vector<qsizetype> ColumnModel::getSortedSelection() const
@@ -466,9 +464,6 @@ void ColumnModel::columnDataTypeChanged(const QString & colName)
 	if(colIndex == chosenColumn())
 	{
 		emit columnTypeChanged();
-//		if(DataSetPackage::pkg()->dataSet()->column(colIndex)->type() == columnType::scale)
-//			setChosenColumn(-1);
-		emit tabsChanged();
 		invalidate();
 	}
 }
@@ -731,7 +726,6 @@ void ColumnModel::setCompactMode(bool newCompactMode)
 		return;
 	_compactMode = newCompactMode;
 	emit compactModeChanged();
-	
 	emit tabsChanged();
 }
 

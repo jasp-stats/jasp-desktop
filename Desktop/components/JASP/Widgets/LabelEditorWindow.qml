@@ -23,7 +23,7 @@ FocusScope
 				left:			buttonColumnVariablesWindow.right
 				right:			parent.right
 				bottom:			parent.bottom
-				leftMargin:	jaspTheme.generalAnchorMargin
+				leftMargin:		jaspTheme.generalAnchorMargin
 			}
 
 
@@ -329,9 +329,13 @@ FocusScope
 		{
 			id:					buttonColumnVariablesWindow
 
-			anchors.top:		parent.top
-			anchors.left:		parent.left
-			anchors.bottom:		parent.bottom
+			anchors
+			{
+				top:			parent.top
+				left:			parent.left
+				bottom:			parent.bottom
+				leftMargin:		jaspTheme.generalAnchorMargin / 2
+			}
 			spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 
 			property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
