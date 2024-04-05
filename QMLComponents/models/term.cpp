@@ -120,6 +120,12 @@ bool Term::operator!=(const Term &other) const
 	return this->operator==(other) == false;
 }
 
+bool Term::operator<(const Term &other) const
+{
+	return asQString() < other.asQString();
+}
+
+
 size_t Term::size() const
 {
 	return _components.size();

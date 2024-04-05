@@ -103,6 +103,9 @@ void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListMod
 
 Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues&)
 {
+	if(!termsToAdd.size())
+		return Terms();
+	
 	beginResetModel();
 	if (dropItemIndex >= 0)
 		dropItemIndex = dropItemIndex / 2;
@@ -169,6 +172,9 @@ void ListModelMeasuresCellsAssigned::moveTerms(const QList<int> &indexes, int dr
 
 void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
 {
+	if(!indexes.count())
+		return;
+	
 	beginResetModel();
 	for (int i = 0; i < indexes.length(); i++)
 	{

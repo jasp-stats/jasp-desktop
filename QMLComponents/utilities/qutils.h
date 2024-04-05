@@ -54,6 +54,7 @@ inline	std::string							fq (const QString							 & from)	{ return from.toUtf8()
 inline	QString								tq (const std::string						 & from)	{ return QString::fromUtf8(from.c_str(), from.length()); }
 		QVector<QString>					tq (const std::vector<std::string>			 & vec);
 inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tq(std::vector<std::string>(from.begin(), from.end())); }
+inline	QList<int>							tql(const std::set<int>						 & from)	{ return QList<int>(from.begin(), from.end()); }
 		std::set<std::string>				fql(const QStringList						 & from);
 
 		//These need to have a different name because otherwise the default Json::Value(const std::string & str) constructor steals any fq(std::string()) call...

@@ -122,6 +122,10 @@ Terms ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
 Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
 {
 	Terms result;
+	
+	if(!terms.size())
+		return result;
+	
 	beginResetModel();
 	
 	int layer = _variables.length();
@@ -211,6 +215,9 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 
 void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 {
+	if(!indexes.count())
+		return;
+	
 	beginResetModel();
 	
 	QList<int> sortedIndexes = indexes;

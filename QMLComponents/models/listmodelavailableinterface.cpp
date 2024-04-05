@@ -179,7 +179,7 @@ bool ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
-	if (!removeTermsWhenMoved())
+	if (keepTerms())
 		return;
 
 	beginResetModel();
@@ -203,7 +203,6 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 {
 	_assignedModels.push_back(assignedModel);
 
-//	connect(assignedModel,	&ListModelAssignedInterface::destroyed,				this,						&ListModelAvailableInterface::removeAssignedModel		);
 	connect(this,			&ListModelAvailableInterface::availableTermsReset,	assignedModel,				&ListModelAssignedInterface::availableTermsResetHandler	);
 	connect(this,			&ListModelAvailableInterface::namesChanged,			assignedModel,				&ListModelAssignedInterface::sourceNamesChanged			);
 	connect(this,			&ListModelAvailableInterface::columnsChanged,		assignedModel,				&ListModelAssignedInterface::sourceColumnsChanged		);
