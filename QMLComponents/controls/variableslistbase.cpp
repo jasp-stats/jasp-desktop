@@ -262,7 +262,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 				termsRejected;
 
 		//if a model keeps terms we dont need to bother adding or removing anything
-		if (!targetModel->keepTerms())	termsToAdd				=	targetModel->canAddTerms(	sourceModel->termsFromIndexes(indexes)		);	// Check which terms can be added in the target model (especially terms that have not the right types might be refused).
+		if (!targetModel->keepTerms())	termsToAdd				=	targetModel->canAddTerms(	termsToAdd									);	// Check which terms can be added in the target model (especially terms that have not the right types might be refused).
 		if (!sourceModel->keepTerms())								sourceModel->removeTerms(	sourceModel->indexesFromTerms(termsToAdd)	);	// Then remove the terms in the source model. This must be done before adding them in the target model: for nested FactorsForm, it is important that the term is first removed from the source and afterwards added to the target.	
 		if (!targetModel->keepTerms())	termsRejected			=	targetModel->addTerms(		termsToAdd, dropItemIndex					);	// Add the terms in the target model
 		if (!sourceModel->keepTerms())								sourceModel->addTerms(		termsRejected								);	// Any possible overflow (such as for single-variable-list) gets returned to the source

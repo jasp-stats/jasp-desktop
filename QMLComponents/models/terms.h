@@ -94,6 +94,7 @@ public:
 	bool contains(const QString		&	component);
 	bool contains(const std::string &	component);
 	int	 indexOf(const QString		&	component)				const;
+	int	 indexOf(const Term			&	component)				const;
 
 	std::vector<std::string>				asVector()			const;
 	std::set<std::string>					asSet()				const;

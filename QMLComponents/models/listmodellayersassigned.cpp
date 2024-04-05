@@ -101,24 +101,6 @@ void ListModelLayersAssigned::_setTerms()
 	ListModel::_setTerms(newTerms);
 }
 
-Terms ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
-{
-	Terms terms;
-
-	for (int index : indexes)
-	{
-		int indexInLayer = -1;
-		int layer = _getLayer(index, indexInLayer);
-		if (layer < _variables.length())
-		{
-			if (indexInLayer >= 0 && indexInLayer < _variables[layer].length())
-				terms.add(Term(_variables[layer][indexInLayer]));
-		}
-	}
-	
-	return terms;
-}
-
 Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
 {
 	Terms result;
