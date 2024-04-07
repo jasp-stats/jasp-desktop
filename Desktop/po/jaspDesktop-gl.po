@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-04-07 21:10+0000\n"
+"PO-Revision-Date: 2024-04-07 22:49+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/gl/>\n"
@@ -3951,7 +3951,7 @@ msgstr "seleccionou módulo "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr "Fai click no ficheiro de abaixo para sincronizar ou usar "
+msgstr "Fai clic no ficheiro de abaixo para sincronizar ou usar "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
@@ -4166,7 +4166,7 @@ msgstr "Limpar o Formato"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr "Preme click aquí para engadir texto"
+msgstr "Preme clic aquí para engadir texto"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
@@ -4986,7 +4986,7 @@ msgstr ""
 "substituírse ou combinarse cun filtro personalizado.\n"
 "# Para combinar, podes engadir cláusulas usando '&': 'generatedFilter & "
 "customFilter & perhapsAnotherFilter'\n"
-"# Fai click na icona (i) da esquina inferior dereita para obter máis axuda.\n"
+"# Fai clic na icona (i) da esquina inferior dereita para obter máis axuda.\n"
 "\n"
 "Filtroxerado\n"
 
@@ -5162,20 +5162,20 @@ msgstr "Calculado mediante unha análise"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr "Premer dobre click aquí para trocar as configuracións de variables"
+msgstr "Premer dobre clic aquí para trocar as configuracións de variables"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr "Premer dobre click aquí para pechar a xanela de variables"
+msgstr "Premer dobre clic aquí para pechar a xanela de variables"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr "Preme click aquí para cambiar a variable elixida"
+msgstr "Preme clic aquí para cambiar a variable elixida"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
-"Preme click aquí para elixir a fila, pulsando 'Maiús' para unha selección "
+"Preme clic aquí para elixir a fila, pulsando 'Maiús' para unha selección "
 "múltiple."
 
 #, qt-format
