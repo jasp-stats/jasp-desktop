@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-04-07 21:10+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4909,62 +4915,59 @@ msgid ""
 "The button displays the *current setting*, not what will happen when you "
 "press it!"
 msgstr ""
+"- 保留类型：使用已经定义的变量类型。\n"
+"- 转换类型：使用前将所有已使用的变量转换为该计算列的类型。\n"
+"\n"
+"该按钮显示*当前生效设置*，而不是按下后将要产生的结果。"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Keep types"
-msgstr ""
+msgstr "保留类型"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Convert types"
-msgstr ""
+msgstr "转换类型"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "在前方插入构造函数列"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "在后方插入构造函数列"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "在前方插入R函数列"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "在后方插入R函数列"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "单击此处更改列类型"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "添加列"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr "由一个分析计算"
+msgstr "由分析模块计算"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
 msgstr "双击此处以设置变量属性"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
 msgstr "双击此处以关闭变量窗口"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
 msgstr "点击此处更改所选变量"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr "单击此处选择行，按住 Shift 键可多选。"
@@ -4972,20 +4975,20 @@ msgstr "单击此处选择行，按住 Shift 键可多选。"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr ""
+msgstr "将列 “%2” 的标签 “%1” 的原始值从 “%3” 设置为 “%4”"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "在前方插入构造函数列"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "在后方插入构造函数列"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "在前方插入R函数列"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "在后方插入R函数列"
