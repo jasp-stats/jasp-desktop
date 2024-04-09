@@ -136,6 +136,7 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_rewriteImages(const char * nam
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(			const char *rCode, bool setWd);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * setColumnCode);
 
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);

@@ -95,6 +95,7 @@ extern "C" {
 	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd);
+	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode);
 	void				rbridge_setLANG(						const std::string & lang);
 	void				rbridge_setComputedColumnTypeDesired(	columnType colType);
 #endif // RBRIDGE_H

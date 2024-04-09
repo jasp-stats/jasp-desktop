@@ -451,6 +451,54 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, int analysisID)
 	jaspRCPP_parseEvalQNT("jaspBase:::rewriteImages(.analysisName, .ppi, .imageBackground)", true);
 }
 
+
+
+const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * setColumnCode) 
+{
+	// Function to evaluate computed column R code from C++
+	// Returns string if R result is a string, else returns "null"
+	// Can also load the entire dataset if need be
+	bool setWd = false;
+
+	//jaspRCPP_logString(std::string("jaspRCPP_evalComputedColumn runs: \n\"") + rCode + "\"\nand \""+setColumnCode+"\"\n" );
+
+	lastErrorMessage = "";
+	rinside->instance()[".rCode"] = rCode;
+	const std::string rCodeTryCatch(""
+		"returnVal = NULL;	"
+		"tryCatch("
+		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"    error	= function(e) { .setRError( toString(e$message)) } 	"
+		")"
+		"; returnVal	");
+
+	static std::string staticResult;
+	try
+	{
+		try
+		{
+			rinside->instance()[".calcedVals"]	= Rcpp::RObject(jaspRCPP_parseEval(rCodeTryCatch,	false, false));
+		}
+		catch(std::runtime_error e)
+		{
+			jaspRCPP_setErrorMsg(e.what());	
+			staticResult						=	NullString;
+			rinside->instance()[".calcedVals"]	=	NULL;
+		}
+		
+		staticResult = jaspRCPP_parseEvalStringReturn(setColumnCode,	false, false);
+		
+		rinside->instance()[".calcedVals"]	=	NULL;
+		
+	}
+	catch(...)
+	{
+		staticResult = NullString;
+	}
+
+	return staticResult.c_str();
+}
+
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 	// Function to evaluate arbitrary R code from C++
 	// Returns string if R result is a string, else returns "null"
@@ -465,7 +513,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 		"returnVal = 'null';	"
 		"tryCatch("
 		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
-		"    error	= function(e) { .setRError(  paste0(toString(e), '\n', paste0(sys.calls(), collapse='\n'))) } 	"
+		"    error	= function(e) { .setRError(  paste0(toString(e$message), '\n', paste0(sys.calls()[sys.nframe():2], collapse='\n'))) } 	"
 		")"
 		"; returnVal	");
 
@@ -674,12 +722,12 @@ void jaspRCPP_returnString(SEXP Message)
 
 void jaspRCPP_setRWarning(SEXP Message)
 {
-	lastErrorMessage = "Warning: " + Rcpp::as<std::string>(Message);
+	lastErrorMessage = Rcpp::as<std::string>(Message);
 }
 
 void jaspRCPP_setRError(SEXP Message)
 {
-	lastErrorMessage = "Error: " + Rcpp::as<std::string>(Message);
+	lastErrorMessage = Rcpp::as<std::string>(Message);
 }
 
 void jaspRCPP_setLog(SEXP Message)
@@ -755,8 +803,9 @@ bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObje
 
 bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
 {
+	static Rcpp::Function asNumeric("as.numeric");
 	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::Vector<STRSXP>()	: Rcpp::as<Rcpp::Vector<STRSXP>>(data);
-	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::as<Rcpp::NumericVector>(data);
+	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(asNumeric(Rcpp::_["x"] = data));
 	
 	std::vector<std::string> convertedStrings(strData.begin(), strData.end());
 
@@ -1069,7 +1118,7 @@ void jaspRCPP_parseEvalPreface(const std::string & code, const char * msg = "Eva
 
 std::string __sinkMe(const std::string code)
 {
-	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
+	return	"sink(.outputSink);\n" + code; //default type = c('message', 'output') anyway
 }
 
 void jaspRCPP_setWorkingDirectory()
@@ -1088,9 +1137,9 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
-	rinside->parseEvalQNT(__sinkMe(code));
+	rinside->parseEvalQNT(__sinkMe());
+	rinside->parseEvalQNT(code);
 	jaspRCPP_logString("\n");
-
 	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
@@ -1110,7 +1159,8 @@ RInside::Proxy jaspRCPP_parseEval(const std::string & code, bool setWd, bool pre
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
-	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code)); //Not throwing is nice actually! Well, unless you want to hear about missing modules etc...
+	rinside->parseEvalQNT(__sinkMe());
+	RInside::Proxy returnthis = rinside->parseEval(code); //Not throwing is nice actually! Well, unless you want to hear about missing modules etc...
 	jaspRCPP_logString("\n");
 
 	rinside->parseEvalQNT("sink();"); //back to normal!

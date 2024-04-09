@@ -10,7 +10,7 @@ Item
 
 	property real	maxSize:		baseFontSize * 10 * preferencesModel.uiScale
 					height:			filterConstructor.blockDim
-					implicitWidth:	colIcon.width + colName.width
+					implicitWidth:	colName.x + colName.width
                     width:          implicitWidth
 	property bool	isNumerical:	(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "scale")		|| columnIcon.indexOf("scale")		>= 0
 	property bool	isOrdinal:		(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "ordinal")	|| columnIcon.indexOf("ordinal")	>= 0
@@ -53,7 +53,7 @@ Item
 			left:			colIcon.right
 		}
 
-        width:          Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize - (colIcon.width + 2*colIcon.anchors.margins))
+        width:          Math.min(columnNameMeasure.width + 10 + leftPadding, jaspColumnRoot.maxSize - (colIcon.width + 2*colIcon.anchors.margins))
 		font.pixelSize: baseFontSize * preferencesModel.uiScale
 		font.family:	jaspTheme.font.family
 		color:			jaspTheme.textEnabled

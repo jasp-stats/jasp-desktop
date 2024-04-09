@@ -13,7 +13,6 @@ Rectangle
 				? jaspTheme.itemSelectedNoFocusColor 
 				: jaspTheme.buttonColor
 
-				property real	iconTextPadding:	10
 	readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
 	function getColumnTypeIcon(type)
@@ -51,7 +50,7 @@ Rectangle
 		id:						colIcon
 		anchors.verticalCenter: parent.verticalCenter
 		anchors.left:			parent.left
-		anchors.margins:		4
+		anchors.margins:		4 * jaspTheme.uiScale
 
 
 		source:					getColumnTypeIcon(columnType)
@@ -110,23 +109,6 @@ Rectangle
 		}
 	}
 
-	Image
-	{
-		id:			colIsComputed
-
-		width:		visible ? headerRoot.__iconDim : 0
-		height:		headerRoot.__iconDim
-		visible:	columnIsComputed
-
-		anchors.left:			colIcon.right
-		anchors.verticalCenter: parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
-
-		source:				jaspTheme.iconPath + "/computed.png"
-		sourceSize {	width:	headerRoot.__iconDim * 2
-						height:	headerRoot.__iconDim * 2 }
-
-	}
 
 	Text
 	{
@@ -137,24 +119,22 @@ Rectangle
 		color:			jaspTheme.textEnabled
 		textFormat:		Text.RichText
 
-		horizontalAlignment:		Text.AlignHCenter
+		horizontalAlignment:		Text.AlignLeft
 
-		anchors.horizontalCenter:	headerRoot.horizontalCenter
+		anchors.left:				colIcon.right
+		anchors.leftMargin:			colIcon.anchors.margins
 		anchors.verticalCenter:		headerRoot.verticalCenter
 	}
-
-	LoadingIndicator
+	
+	DataTableViewColumnHeaderComputedColumnInfo
 	{
-		id:			colIsInvalidated
-
-
-		width:		columnIsInvalidated ? headerRoot.__iconDim : 0
-		visible:	columnIsInvalidated && columnIsComputed
+		id:						colIsComputed
 
 		anchors.right:			colFilterOn.left
-		anchors.verticalCenter:	parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
+		anchors.verticalCenter: parent.verticalCenter
+		anchors.margins:		2 * jaspTheme.uiScale
 	}
+
 
 	Image
 	{
@@ -167,28 +147,12 @@ Rectangle
 		sourceSize {	width:	headerRoot.__iconDim * 2
 						height:	headerRoot.__iconDim * 2 }
 
-		anchors.right:			colHasError.left
-		anchors.margins:		columnIsFiltered ? 1 : 0
-		anchors.verticalCenter:	parent.verticalCenter
-	}
-
-	Image
-	{
-		id:			colHasError
-
-		width:		columnError.length > 0 ? headerRoot.__iconDim : 0
-		height:		headerRoot.__iconDim
-		visible:	columnError.length > 0 // && !columnIsInvalidated
-
-		source:					jaspTheme.iconPath + "/error.png"
-		sourceSize {	width:	headerRoot.__iconDim * 2
-						height:	headerRoot.__iconDim * 2 }
-
 		anchors.right:			parent.right
+		anchors.margins:		columnIsFiltered ? 2 * jaspTheme.uiScale : 0
 		anchors.verticalCenter:	parent.verticalCenter
-		anchors.margins:		visible ? 1 : 0
-
 	}
+
+
 
 	MouseArea
 	{
@@ -231,8 +195,11 @@ Rectangle
 				if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
 					dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
 
-				if(ribbonModel.dataMode && mouseEvent.button === Qt.RightButton)
+				if(mouseEvent.button === Qt.RightButton)
+				{
+					ribbonModel.dataMode = true
 					dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), -1, columnIndex)
+				}
 			}
 		}
 		
@@ -257,8 +224,9 @@ Rectangle
 																										: qsTr("Click here to change selected variable")
 															  )
 									  )
+									+ (columnError == "" ? "" : "<br><br>" + qsTr("Computed column has error:<br>") + "<code'>" + columnError.replace("\n","<br>") + "</code>")
 								  )
-		ToolTip.timeout:	3000
+		ToolTip.timeout:	30000
 		ToolTip.delay:		500
 		cursorShape:		Qt.PointingHandCursor
 	}

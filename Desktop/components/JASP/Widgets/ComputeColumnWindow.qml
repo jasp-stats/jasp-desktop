@@ -296,10 +296,10 @@ FocusScope
 			{
 				id:				forceSourceColTypeButton
 
-				toolTip:		qsTr("- Keep types: use columns with their defined columntype.\n- Convert types: convert all used columns to the columntype of this computed column before use.\n\nThe button displays the *current setting*, not what will happen when you press it!")	
+				toolTip:		qsTr("- Keeping types: use columns with their defined columntype.\n- Converting types: convert all used columns to the columntype of this computed column before use.\n\nThe button displays the *current setting*, not what will happen when you press it!")	
 				text:			!computedColumnsInterface.computeColumnForceType 
-									? qsTr("Keep types")
-									: qsTr("Convert types")
+									? qsTr("Keeping types")
+									: qsTr("Converting types")
 
 				anchors.left:	showGeneratedRCode.right
 				anchors.bottom:	parent.bottom

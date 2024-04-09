@@ -441,9 +441,10 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 			
 			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 			computeColumnResponse["columnName"]		= computeColumnNameEnc;
-	
-			std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', calcedVals)));})";
-			std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
+
+			std::string computeColumnResultStr		= rbridge_evalRComputedColumn(
+						computeColumnCode, 
+						"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals))");
 	
 			computeColumnResponse["result"]			= computeColumnResultStr;
 			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
@@ -505,8 +506,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 	if(_engineState != engineState::idle && _engineState != engineState::analysis)
 		throw std::runtime_error("Unexpected analysis message, current state is not idle or analysis (" + engineStateToString(_engineState) + ")");
 
-	int analysisId		= jsonRequest.get("id",			-1).asInt(),
-		analysisRev		= jsonRequest.get("revision",	-1).asInt();
+	int analysisId		= jsonRequest.get("id",			-1).asInt();
 	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
 	
 #ifdef PRINT_ENGINE_MESSAGES

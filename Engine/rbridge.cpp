@@ -800,6 +800,29 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 	return result;
 }
 
+
+std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc)
+{
+	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
+
+	jaspRCPP_resetErrorMsg();
+
+	std::string rCode64(	rbridge_encodeColumnNamesInScript(rCode));
+
+	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
+	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
+
+
+	rbridge_setupRCodeEnv(rowCount);
+	std::string result = jaspRCPP_evalComputedColumn(rCode64.c_str(), setColumnFunc.c_str());
+	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+
+	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+
+	return result;
+}
+
 //Isn't used anywhere at the moment but is meant to be called from jaspRCPP that is why const char * instead of std::string
 bool rbridge_rCodeSafe(const char * rCode)
 {
@@ -846,3 +869,4 @@ extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool e
 	
 	return names;
 }
+

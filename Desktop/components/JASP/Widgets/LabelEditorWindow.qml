@@ -20,10 +20,10 @@ FocusScope
 			anchors
 			{
 				top:			parent.top
-				left:			parent.left
-				right:			buttonColumnVariablesWindow.left
+				left:			buttonColumnFlickable.right
+				right:			parent.right
 				bottom:			parent.bottom
-				rightMargin:	jaspTheme.generalAnchorMargin
+				leftMargin:		jaspTheme.generalAnchorMargin
 			}
 
 
@@ -325,88 +325,94 @@ FocusScope
 
 		}
 
-		ColumnLayout
+		Flickable
 		{
-			id:					buttonColumnVariablesWindow
-
-			anchors.top:		parent.top
-			anchors.right:		parent.right
-			anchors.bottom:		parent.bottom
-			spacing:			Math.max(1, 2 * preferencesModel.uiScale)
-
-			property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-			property real	minimumHeight:		(buttonHeight + 2 * spacing) * shownButtons - spacing
-			property real	buttonHeight:		32 * preferencesModel.uiScale
-
-			RoundedButton
+			id:					buttonColumnFlickable
+			width:				buttonColumnVariablesWindow.width
+			contentWidth:		buttonColumnVariablesWindow.width
+			contentHeight:		buttonColumnVariablesWindow.height
+			
+			anchors
 			{
-				//text: "UP"
-				iconSource:		jaspTheme.iconPath + "arrow-up.png"
-
-				onClicked:		columnModel.moveSelectionUp()
-				toolTip:		qsTr("Move selected labels up")
-
-				height:			buttonColumnVariablesWindow.buttonHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
-				width:			height
+				top:			parent.top
+				left:			parent.left
+				bottom:			parent.bottom
+				leftMargin:		jaspTheme.generalAnchorMargin / 2
 			}
-
-			RoundedButton
+			
+			
+			ColumnLayout
 			{
-				//text: "DOWN"
-				iconSource:		jaspTheme.iconPath + "arrow-down.png"
+				id:					buttonColumnVariablesWindow
 
-				onClicked:		columnModel.moveSelectionDown()
-				toolTip:		qsTr("Move selected labels down")
-
-				height:			buttonColumnVariablesWindow.buttonHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
-				width:			height
-			}
-
-			RoundedButton
-			{
-				//text: "REVERSE"
-				iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-				onClicked:		columnModel.reverse()
-
-				toolTip:		qsTr("Reverse order of all labels")
-
-				height:			buttonColumnVariablesWindow.buttonHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
-				width:			height
-			}
-
-			RoundedButton
-			{
-				id:				eraseFiltersOnThisColumn
-				iconSource:		jaspTheme.iconPath + "eraser.png"
-				onClicked:		columnModel.resetFilterAllows()
-				visible:		columnModel.filteredOut > 0
-
-				toolTip:		qsTr("Reset all filter checkmarks for this column")
-
-				height:			buttonColumnVariablesWindow.buttonHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
-				width:			height
-			}
-
-			RoundedButton
-			{
-				id:				eraseFiltersOnAllColumns
-				iconSource:		jaspTheme.iconPath + "eraser_all.png"
-				onClicked:		dataSetModel.resetAllFilters()
-				visible:		dataSetModel.columnsFilteredCount > (columnModel.filteredOut > 0 ? 1 : 0)
-				height:			buttonColumnVariablesWindow.buttonHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
-				width:			height
-
-				toolTip:		qsTr("Reset all filter checkmarks for all columns")
-			}
-
-			Item //Spacer
-			{
-				Layout.fillHeight:	true
+				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
+	
+				property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+				property real	buttonHeight:		32 * preferencesModel.uiScale
+				
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-up.png"
+	
+					onClicked:		columnModel.moveSelectionUp()
+					toolTip:		qsTr("Move selected labels up")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-down.png"
+	
+					onClicked:		columnModel.moveSelectionDown()
+					toolTip:		qsTr("Move selected labels down")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
+					onClicked:		columnModel.reverse()
+	
+					toolTip:		qsTr("Reverse order of all labels")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				RoundedButton
+				{
+					id:				eraseFiltersOnThisColumn
+					iconSource:		jaspTheme.iconPath + "eraser.png"
+					onClicked:		columnModel.resetFilterAllows()
+					visible:		columnModel.filteredOut > 0
+	
+					toolTip:		qsTr("Reset all filter checkmarks for this column")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				RoundedButton
+				{
+					id:				eraseFiltersOnAllColumns
+					iconSource:		jaspTheme.iconPath + "eraser_all.png"
+					onClicked:		dataSetModel.resetAllFilters()
+					visible:		dataSetModel.columnsFilteredCount > (columnModel.filteredOut > 0 ? 1 : 0)
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+	
+					toolTip:		qsTr("Reset all filter checkmarks for all columns")
+				}
 			}
 		}
 	}
