@@ -352,6 +352,11 @@ void ColumnModel::reverseValues()
 	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, {chosenColumn()}));
 }
 
+void ColumnModel::orderByValues()
+{
+	
+}
+
 bool ColumnModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
 	if(role == int(DataSetPackage::specialRoles::selected))

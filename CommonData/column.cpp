@@ -1468,15 +1468,9 @@ void Column::labelsReverse()
 	_dbUpdateLabelOrder();
 }
 
-void Column::valuesReverse()
+doublevec Column::valuesNumericOrdered()
 {
-	JASPTIMER_SCOPE(Column::valuesReverse);
-	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
-	
-	//first collect the values
 	doubleset	values;
-	
 	
 	for(const Label * label : _labels)
 	{
@@ -1491,8 +1485,16 @@ void Column::valuesReverse()
 			values.insert(aValue);
 	}
 	
-	//put them in order to flip em
-	doublevec	asc = doublevec(values.begin(), values.end()),
+	return doublevec(values.begin(), values.end());
+}
+
+void Column::valuesReverse()
+{
+	JASPTIMER_SCOPE(Column::valuesReverse);
+	
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	
+	doublevec	asc = valuesNumericOrdered(),
 				dsc	= asc;
 	
 	std::reverse(dsc.begin(), dsc.end());
@@ -1515,6 +1517,35 @@ void Column::valuesReverse()
 		if(!std::isnan(aValue))
 			label->setOriginalValue(flipIt[aValue]);
 	}
+}
+
+void Column::labelsOrderByValue()
+{
+	JASPTIMER_SCOPE(Column::labelsOrderByValue);
+	
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	
+	doublevec				asc			= valuesNumericOrdered();
+	size_t					curMax		= asc.size();
+	std::map<double, int>	orderMap;
+	
+	for(size_t i=0; i<asc.size(); i++)
+		orderMap[asc[i]] = i+1;
+	
+	//and now to write them back into the data
+	for(Label * label : _labels)
+	{
+		double	aValue	= EmptyValues::missingValueDouble;
+		
+		if(label->originalValue().isDouble())
+			aValue = label->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
+		
+		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
+	}
+	
+	_sortLabelsByOrder();
 }
 
 DatabaseInterface & Column::db()

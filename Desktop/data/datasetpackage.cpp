@@ -1605,6 +1605,24 @@ void DataSetPackage::setColumnCustomEmptyValues(size_t columnIndex, const string
 
 void DataSetPackage::columnsReverseValues(intset columnIndexes)
 {
+	columnsApply(columnIndexes, [&](Column * column) 
+	{ 
+		column->valuesReverse();
+		return true;
+	});
+}
+
+void DataSetPackage::columnsOrderByValues(intset columnIndexes)
+{
+	columnsApply(columnIndexes, [&](Column * column) 
+	{ 
+		column->labelsOrderByValue();
+		return true;
+	});
+}
+
+void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column)> applyThis)
+{
 	if(!_dataSet)
 		return;
 	
@@ -1616,8 +1634,8 @@ void DataSetPackage::columnsReverseValues(intset columnIndexes)
 	
 		if(column)
 		{
-			column->valuesReverse();
-			changedCols << tq(column->name());
+			if(applyThis(column))
+				changedCols << tq(column->name());
 		}	
 	}
 	
@@ -1626,7 +1644,6 @@ void DataSetPackage::columnsReverseValues(intset columnIndexes)
 		refresh();
 		emit datasetChanged(changedCols, {}, {}, false, false);
 	}
-	
 }
 
 bool DataSetPackage::setFilterData(const std::string & rFilter, const boolvec & filterResult)

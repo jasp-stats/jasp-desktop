@@ -239,6 +239,7 @@ public:
 				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
 				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
 				void						columnsReverseValues(				intset				columnIndex);
+				void						columnsOrderByValues(				intset				columnIndex);
 				qsizetype					getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
 				QStringList					getColumnLabelsAsStringList(		const std::string & columnName)					const;
 				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;
@@ -338,6 +339,7 @@ private:
 				bool				setLabelValue(			const QModelIndex & index, const QString & newLabel);
 				QModelIndex			lastCurrentCell();
 				int					getColIndex(QVariant colID);
+				void				columnsApply(intset columnIndexes, std::function<bool (Column *)> applyThis);
 
 private:
 	static DataSetPackage	*	_singleton;
@@ -379,6 +381,7 @@ private:
 	QTimer						_databaseIntervalSyncher,
 								_delayedRefreshTimer;
 	UndoStack				*	_undoStack					= nullptr;
+	
 };
 
 #endif // FILEPACKAGE_H

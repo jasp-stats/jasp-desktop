@@ -234,18 +234,37 @@ private:
 										_col = -1;
 };
 
-class SetColumnTypeCommand : public UndoModelCommand
+class UndoModelCommandMultipleColumns : public UndoModelCommand
+{
+public:
+	UndoModelCommandMultipleColumns(QAbstractItemModel *model, intset cols);
+
+	void undo()					override;
+
+protected:
+	intset						_cols;
+
+private:
+	std::map<int, Json::Value>	_serializedColumns;
+};
+
+class SetColumnTypeCommand : public UndoModelCommandMultipleColumns
 {
 public:
 	SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType);
 
-	void undo()					override;
 	void redo()					override;
 
 private:
-	intset								_cols;
-	int									_newColType = -1;
-	std::map<int,intset>				_oldColsPerType;
+	int							_newColType = -1;
+};
+
+class ColumnOrderByValuesCommand : public UndoModelCommandMultipleColumns
+{
+public:
+	ColumnOrderByValuesCommand(QAbstractItemModel *model, intset cols);
+
+	void redo()					override;
 };
 
 class ColumnReverseValuesCommand : public UndoModelCommand
@@ -255,9 +274,9 @@ public:
 
 	void undo()					override { redo(); }
 	void redo()					override;
-
+	
 private:
-	intset									_cols;
+	intset			_cols;
 };
 
 class InsertColumnCommand : public UndoModelCommand

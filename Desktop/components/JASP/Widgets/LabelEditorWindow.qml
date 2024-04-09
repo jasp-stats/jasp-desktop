@@ -402,6 +402,18 @@ FocusScope
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
 				}
+				
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "menu-column-order-by-values.svg"
+					onClicked:		{ forceActiveFocus(); columnModel.orderByValues(); }
+	
+					toolTip:		qsTr("Reverse order of all numerical values")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
 	
 				RoundedButton
 				{

@@ -223,24 +223,15 @@ void PasteSpreadsheetCommand::redo()
 
 
 SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType)
-	: UndoModelCommand(model), _cols{cols}, _newColType{colType}
+	: UndoModelCommandMultipleColumns(model, cols), _newColType{colType}
 {
 	QStringList columnNames;
 	
 	for(int col : _cols)
-	{
-		_oldColsPerType[_model->data(_model->index(0, col), int(dataPkgRoles::columnType)).toInt()].insert(col);
 		columnNames.push_back(columnName(col));
-	}
 		
 	if(columnNames.size() <= 3)	setText(QObject::tr("Set type to '%1' for column(s) '%2'")		.arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
 	else						setText(QObject::tr("Set type to '%1' for %2 columns from '%3'").arg(columnTypeToQString(columnType(colType)), QString::number(columnNames.size()), columnNames[0]));
-}
-
-void SetColumnTypeCommand::undo()
-{
-	for(const auto & typeCols : _oldColsPerType)
-		DataSetPackage::pkg()->setColumnTypes(typeCols.second, columnType(typeCols.first));
 }
 
 void SetColumnTypeCommand::redo()
@@ -266,6 +257,37 @@ void ColumnReverseValuesCommand::redo()
 	DataSetPackage::pkg()->columnsReverseValues(_cols);
 }
 
+ColumnOrderByValuesCommand::ColumnOrderByValuesCommand(QAbstractItemModel *model, intset cols)
+: UndoModelCommandMultipleColumns(model, cols)
+{
+	QStringList columnNames;
+	
+	for(int col : _cols)
+		columnNames.push_back(columnName(col));
+	
+	if(columnNames.size() <= 3)		setText(QObject::tr("Order labels by values for column(s) '%1'")			.arg(columnNames.join(", ")));
+	else							setText(QObject::tr("Order labels by values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+}
+
+void ColumnOrderByValuesCommand::redo()
+{
+	DataSetPackage::pkg()->columnsOrderByValues(_cols);
+}
+
+
+
+UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemModel *model, intset cols)
+: UndoModelCommand(model), _cols{cols}
+{
+	for(int col : _cols)
+		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col)->serialize();
+}
+
+void UndoModelCommandMultipleColumns::undo()
+{
+	for(int col : _cols)
+		DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+}
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
 	: UndoModelCommand(model), _prop(prop), _newValue{newValue}
