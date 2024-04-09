@@ -222,34 +222,48 @@ void PasteSpreadsheetCommand::redo()
 }
 
 
-SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, int col, int colType)
-	: UndoModelCommand(model), _col{col}, _newColType{colType}
+SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType)
+	: UndoModelCommand(model), _cols{cols}, _newColType{colType}
 {
-	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
-	setText(QObject::tr("Set column '%2''s type to '%1'").arg(columnTypeToQString(columnType(colType)), columnName(col)));
+	QStringList columnNames;
+	
+	for(int col : _cols)
+	{
+		_oldColsPerType[_model->data(_model->index(0, col), int(dataPkgRoles::columnType)).toInt()].insert(col);
+		columnNames.push_back(columnName(col));
+	}
+		
+	if(columnNames.size() <= 3)	setText(QObject::tr("Set type to '%1' for column(s) '%2'")		.arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
+	else						setText(QObject::tr("Set type to '%1' for %2 columns from '%3'").arg(columnTypeToQString(columnType(colType)), QString::number(columnNames.size()), columnNames[0]));
 }
 
 void SetColumnTypeCommand::undo()
 {
-	DataSetPackage::pkg()->setColumnType(_col, columnType(_oldColType));
+	for(const auto & typeCols : _oldColsPerType)
+		DataSetPackage::pkg()->setColumnTypes(typeCols.second, columnType(typeCols.first));
 }
 
 void SetColumnTypeCommand::redo()
 {
-	if (!DataSetPackage::pkg()->setColumnType(_col, columnType(_newColType)))
-		setObsolete(true);
+	DataSetPackage::pkg()->setColumnTypes(_cols, columnType(_newColType));
 }
 
 
-ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model, int col)
-: UndoModelCommand(model), _col{col}
+ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model, intset cols)
+: UndoModelCommand(model), _cols{cols}
 {
-	setText(QObject::tr("Reverse column '%1''s values").arg(columnName(col)));
+	QStringList columnNames;
+	
+	for(int col : _cols)
+		columnNames.push_back(columnName(col));
+	
+	if(columnNames.size() <= 3)		setText(QObject::tr("Reverse values of column(s) '%1'")			.arg(columnNames.join(", ")));
+	else							setText(QObject::tr("Reverse values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
 }
 
 void ColumnReverseValuesCommand::redo()
 {
-	DataSetPackage::pkg()->columnReverseValues(_col);
+	DataSetPackage::pkg()->columnsReverseValues(_cols);
 }
 
 

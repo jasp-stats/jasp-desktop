@@ -249,6 +249,8 @@ protected:
 	void		determineCurrentViewPortIndices();
 	void		storeOutOfViewItems();
 	void		buildNewLinesAndCreateNewItems();
+	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
+	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);
 
 #ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
@@ -341,10 +343,6 @@ protected:
 	QString													_lastJaspCopyIntoClipboard;
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
-
-	
-private:
-	void columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 };
 
 

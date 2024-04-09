@@ -276,7 +276,7 @@ void ColumnModel::setColumnType(QString type)
 	if (_virtual)
 		_dummyColumn.type = cType;
 	else if(column())
-		_undoStack->pushCommand(new SetColumnTypeCommand(this, chosenColumn(), int(cType)));
+		_undoStack->pushCommand(new SetColumnTypeCommand(this, {chosenColumn()}, int(cType)));
 }
 
 std::vector<qsizetype> ColumnModel::getSortedSelection() const
@@ -349,7 +349,7 @@ void ColumnModel::reverse()
 void ColumnModel::reverseValues()
 {
 	_lastSelected = -1;
-	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, chosenColumn()));
+	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, {chosenColumn()}));
 }
 
 bool ColumnModel::setData(const QModelIndex & index, const QVariant & value, int role)
