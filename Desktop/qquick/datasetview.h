@@ -208,7 +208,8 @@ public slots:
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
 	void		columnsDeleteSelected();
-	void		columnsDelete(				int row);
+	void		columnsDelete(				int col);
+	void		columnReverseValues(		int col = -1);
 	void		rowSelect(					int row,		bool shiftPressed = false, bool rightClicked = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
@@ -341,7 +342,9 @@ protected:
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
 
-
+	
+private:
+	void columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 };
 
 

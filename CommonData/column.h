@@ -125,6 +125,7 @@ public:
 			
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
+			void					valuesReverse();
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
 			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json

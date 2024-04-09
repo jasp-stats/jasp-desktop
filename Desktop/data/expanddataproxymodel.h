@@ -34,6 +34,7 @@ public:
 	void				insertColumn(int col, bool computed, bool R);
 	void				pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {});
 	int					setColumnType(int columnIndex, int columnType);
+	void				columnReverseValues(int columnIndex);
 	void				copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns);
 	Json::Value			serializedColumn(int col);
 

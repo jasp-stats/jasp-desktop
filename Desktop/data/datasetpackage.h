@@ -237,6 +237,7 @@ public:
 				void						setColumnComputedType(				const std::string &	columnName,	computedColumnType	type);
 				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
 				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
+				void						columnReverseValues(				size_t				columnIndex);
 				qsizetype					getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
 				QStringList					getColumnLabelsAsStringList(		const std::string & columnName)					const;
 				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;

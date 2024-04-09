@@ -248,6 +248,17 @@ private:
 										_oldColType = -1;
 };
 
+class ColumnReverseValuesCommand : public UndoModelCommand
+{
+public:
+	ColumnReverseValuesCommand(QAbstractItemModel *model, int col);
+
+	void undo()					override { redo(); }
+	void redo()					override;
+
+private:
+	int									_col		= -1;
+};
 
 class InsertColumnCommand : public UndoModelCommand
 {

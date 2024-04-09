@@ -39,6 +39,7 @@ typedef std::map<int,			std::string>	intstrmap;
 typedef std::map<std::string,	std::string>	strstrmap;
 typedef std::map<std::string,	int>			strintmap;
 typedef std::map<int, int>						intintmap;
+typedef std::map<double, double>				dbldblmap;
 typedef std::set<std::string>					stringset;
 typedef std::vector<std::string>				stringvec;
 typedef std::vector<stringvec>					stringvecvec;

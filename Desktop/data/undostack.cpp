@@ -226,7 +226,7 @@ SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, int col, i
 	: UndoModelCommand(model), _col{col}, _newColType{colType}
 {
 	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
-	setText(QObject::tr("Set type '%1' to column '%2'").arg(columnTypeToQString(columnType(colType)), columnName(col)));
+	setText(QObject::tr("Set column '%2''s type to '%1'").arg(columnTypeToQString(columnType(colType)), columnName(col)));
 }
 
 void SetColumnTypeCommand::undo()
@@ -239,6 +239,19 @@ void SetColumnTypeCommand::redo()
 	if (!DataSetPackage::pkg()->setColumnType(_col, columnType(_newColType)))
 		setObsolete(true);
 }
+
+
+ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model, int col)
+: UndoModelCommand(model), _col{col}
+{
+	setText(QObject::tr("Reverse column '%1''s values").arg(columnName(col)));
+}
+
+void ColumnReverseValuesCommand::redo()
+{
+	DataSetPackage::pkg()->columnReverseValues(_col);
+}
+
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
 	: UndoModelCommand(model), _prop(prop), _newValue{newValue}

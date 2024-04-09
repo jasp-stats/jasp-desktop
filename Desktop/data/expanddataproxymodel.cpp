@@ -246,6 +246,11 @@ int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
 	return data(0, columnIndex, int(dataPkgRoles::columnType)).toInt();
 }
 
+void ExpandDataProxyModel::columnReverseValues(int columnIndex)
+{
+	_undoStack->pushCommand(new ColumnReverseValuesCommand(_sourceModel, columnIndex));
+}
+
 void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)
 {
 	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0)

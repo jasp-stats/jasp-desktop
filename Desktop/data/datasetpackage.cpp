@@ -1546,8 +1546,7 @@ void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newT
 
 	column->setTitle(newTitle);
 	
-	beginResetModel();
-	endResetModel();
+	refresh();
 }
 
 void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription)
@@ -1560,6 +1559,7 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 		return;
 
 	column->setDescription(newDescription);
+	refresh();
 }
 
 void DataSetPackage::setColumnComputedType(size_t columnIndex, computedColumnType type)
@@ -1577,7 +1577,6 @@ void DataSetPackage::setColumnComputedType(size_t columnIndex, computedColumnTyp
 	//we need to actually send lots of signals from ColumnModel but because of the undo/redo this is a bit convoluted now...
 
 	refresh();
-
 }
 
 void DataSetPackage::setColumnComputedType(const std::string & columnName, computedColumnType type)
@@ -1609,6 +1608,22 @@ void DataSetPackage::setColumnCustomEmptyValues(size_t columnIndex, const string
 	
 	if(column && column->setCustomEmptyValues(customEmptyValues))
 	{
+		refresh();
+		
+		emit datasetChanged({tq(column->name())}, {}, {}, false, false);
+	}
+}
+
+void DataSetPackage::columnReverseValues(size_t columnIndex)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	
+	if(column)
+	{
+		column->valuesReverse();
 		refresh();
 		
 		emit datasetChanged({tq(column->name())}, {}, {}, false, false);
