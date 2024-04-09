@@ -156,7 +156,7 @@ void Terms::add(const Term &term, bool isUnique)
 	}
 	else
 	{
-		int i = indexOf(term.asQString());
+		int i = indexOf(term);
 		if (i < 0)
 			_terms.push_back(term);
 		else
@@ -233,6 +233,16 @@ int Terms::indexOf(const QString &component) const
 
 	return -1;
 }
+
+int Terms::indexOf(const Term &term) const
+{
+	auto it = std::find(_terms.begin(), _terms.end(), term);
+	if (it == _terms.end())
+		return -1;
+	else
+		return it - _terms.begin();
+}
+
 
 bool Terms::contains(const QString & component)
 {

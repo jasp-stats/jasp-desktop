@@ -94,19 +94,6 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 	setTerms();
 }
 
-Terms ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
-{
-	Terms result;
-	for (int i : indexes)
-	{
-		int index = i;
-		if (index < rowCount())
-			result.add(terms().at(size_t(index)));
-	}
-	
-	return result;
-}
-
 void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWithExistingTerms)
 {
 	Terms fixedFactors;

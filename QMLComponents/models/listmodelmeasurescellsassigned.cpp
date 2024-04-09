@@ -95,6 +95,15 @@ Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes
 	return result;
 }
 
+QList<int> ListModelMeasuresCellsAssigned::indexesFromTerms(const Terms &terms) const
+{
+	QList<int> indexes = ListModelAssignedInterface::indexesFromTerms(terms);
+
+	std::for_each(indexes.begin(), indexes.end(), [](int &n) { n *= 2; });
+
+	return indexes;
+}
+
 void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsValues &allValuesMap, bool reInit)
 {
 	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
