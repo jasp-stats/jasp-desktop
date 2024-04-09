@@ -1370,7 +1370,7 @@ void DataSetView::columnSelect(int col,	bool shiftPressed, bool rightClicked)
 	setSelectionEnd(	QPoint(col,		_model->rowCount(false) - 1));
 }
 
-void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndex)> applyThis)
+void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndexes)> applyThis)
 {
 	int columnA	= selectionMin().x(),
 		columnB	= selectionMax().x();
