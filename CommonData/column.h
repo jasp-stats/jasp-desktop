@@ -205,8 +205,8 @@ public:
 			bool					isEmptyValue(					const std::string	& val)															const;
 			bool					isEmptyValue(					const double		  val)															const;
 			
-			
-			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
+			qsizetype				getMaximumWidthInCharactersIncludingShadow();
+			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
 			

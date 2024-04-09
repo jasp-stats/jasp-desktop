@@ -174,7 +174,7 @@ qsizetype DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 	if(columnIndex >= columnCount())
 		return 0;
 
-	return _columns[columnIndex]->getMaximumWidthInCharacters(true, false);
+	return _columns[columnIndex]->getMaximumWidthInCharactersIncludingShadow();
 }
 
 stringvec DataSet::getColumnNames()
