@@ -15,7 +15,7 @@ class UndoModelCommand : public QUndoCommand
 public:
 	UndoModelCommand(QAbstractItemModel* model = nullptr);
 
-	QString		columnName(int colIndex)			const;
+	QString		columnName(int colIndex = -1)		const;
 	QString		rowName(int rowIndex)				const;
 
 protected:
