@@ -1468,6 +1468,38 @@ void Column::labelsReverse()
 	_dbUpdateLabelOrder();
 }
 
+
+void Column::labelsOrderByValue()
+{
+	JASPTIMER_SCOPE(Column::labelsOrderByValue);
+	
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	
+	doublevec				asc			= valuesNumericOrdered();
+	size_t					curMax		= asc.size()+1;
+	std::map<double, int>	orderMap;
+	
+	for(size_t i=0; i<asc.size(); i++)
+		orderMap[asc[i]] = i+1;
+	
+	//and now to write them back into the data
+	for(Label * label : _labels)
+	{
+		double	aValue	= EmptyValues::missingValueDouble;
+		
+		if(label->originalValue().isDouble())
+			aValue = label->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
+		
+		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
+	}
+	
+	_sortLabelsByOrder();
+	labelsTempReset();
+	_dbUpdateLabelOrder();
+}
+
 doublevec Column::valuesNumericOrdered()
 {
 	doubleset	values;
@@ -1519,34 +1551,6 @@ void Column::valuesReverse()
 	}
 }
 
-void Column::labelsOrderByValue()
-{
-	JASPTIMER_SCOPE(Column::labelsOrderByValue);
-	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
-	
-	doublevec				asc			= valuesNumericOrdered();
-	size_t					curMax		= asc.size();
-	std::map<double, int>	orderMap;
-	
-	for(size_t i=0; i<asc.size(); i++)
-		orderMap[asc[i]] = i+1;
-	
-	//and now to write them back into the data
-	for(Label * label : _labels)
-	{
-		double	aValue	= EmptyValues::missingValueDouble;
-		
-		if(label->originalValue().isDouble())
-			aValue = label->originalValue().asDouble();
-		else 
-			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
-		
-		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
-	}
-	
-	_sortLabelsByOrder();
-}
 
 DatabaseInterface & Column::db()
 {
