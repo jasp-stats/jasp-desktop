@@ -47,7 +47,11 @@ FocusScope
 				//flickableInteractive:		false
 				doubleClickWorkaround:		false
 
-				Binding { target: columnModel; property: "rowWidth"; value: Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
+				Binding 
+				{ 
+					target:		columnModel
+					property:	"rowWidth"
+					value:		Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
 
 				property real filterColWidth:	60  * jaspTheme.uiScale
 				property real valueColWidth:	(columnModel.valueMaxWidth + 10) * jaspTheme.uiScale
@@ -355,7 +359,7 @@ FocusScope
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 	
-					onClicked:		columnModel.moveSelectionUp()
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); }
 					toolTip:		qsTr("Move selected labels up")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
@@ -367,7 +371,7 @@ FocusScope
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 	
-					onClicked:		columnModel.moveSelectionDown()
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); }
 					toolTip:		qsTr("Move selected labels down")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
@@ -378,7 +382,7 @@ FocusScope
 				RoundedButton
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-					onClicked:		columnModel.reverse()
+					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
 					toolTip:		qsTr("Reverse order of all labels")
 	
@@ -391,7 +395,7 @@ FocusScope
 				{
 					id:				eraseFiltersOnThisColumn
 					iconSource:		jaspTheme.iconPath + "eraser.png"
-					onClicked:		columnModel.resetFilterAllows()
+					onClicked:		{ forceActiveFocus(); columnModel.resetFilterAllows(); }
 					visible:		columnModel.filteredOut > 0
 	
 					toolTip:		qsTr("Reset all filter checkmarks for this column")
@@ -405,7 +409,7 @@ FocusScope
 				{
 					id:				eraseFiltersOnAllColumns
 					iconSource:		jaspTheme.iconPath + "eraser_all.png"
-					onClicked:		dataSetModel.resetAllFilters()
+					onClicked:		{ forceActiveFocus(); dataSetModel.resetAllFilters(); }
 					visible:		dataSetModel.columnsFilteredCount > (columnModel.filteredOut > 0 ? 1 : 0)
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
