@@ -222,23 +222,50 @@ void PasteSpreadsheetCommand::redo()
 }
 
 
-SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, int col, int colType)
-	: UndoModelCommand(model), _col{col}, _newColType{colType}
+SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType)
+	: UndoModelCommand(model), _cols{cols}, _newColType{colType}
 {
-	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
-	setText(QObject::tr("Set type '%1' to column '%2'").arg(columnTypeToQString(columnType(colType)), columnName(col)));
+	QStringList columnNames;
+	
+	for(int col : _cols)
+	{
+		_oldColsPerType[_model->data(_model->index(0, col), int(dataPkgRoles::columnType)).toInt()].insert(col);
+		columnNames.push_back(columnName(col));
+	}
+		
+	if(columnNames.size() <= 3)	setText(QObject::tr("Set type to '%1' for column(s) '%2'")		.arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
+	else						setText(QObject::tr("Set type to '%1' for %2 columns from '%3'").arg(columnTypeToQString(columnType(colType)), QString::number(columnNames.size()), columnNames[0]));
 }
 
 void SetColumnTypeCommand::undo()
 {
-	DataSetPackage::pkg()->setColumnType(_col, columnType(_oldColType));
+	for(const auto & typeCols : _oldColsPerType)
+		DataSetPackage::pkg()->setColumnTypes(typeCols.second, columnType(typeCols.first));
 }
 
 void SetColumnTypeCommand::redo()
 {
-	if (!DataSetPackage::pkg()->setColumnType(_col, columnType(_newColType)))
-		setObsolete(true);
+	DataSetPackage::pkg()->setColumnTypes(_cols, columnType(_newColType));
 }
+
+
+ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model, intset cols)
+: UndoModelCommand(model), _cols{cols}
+{
+	QStringList columnNames;
+	
+	for(int col : _cols)
+		columnNames.push_back(columnName(col));
+	
+	if(columnNames.size() <= 3)		setText(QObject::tr("Reverse values of column(s) '%1'")			.arg(columnNames.join(", ")));
+	else							setText(QObject::tr("Reverse values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+}
+
+void ColumnReverseValuesCommand::redo()
+{
+	DataSetPackage::pkg()->columnsReverseValues(_cols);
+}
+
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
 	: UndoModelCommand(model), _prop(prop), _newValue{newValue}
@@ -251,20 +278,20 @@ SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QV
 		switch (_prop)
 		{
 		case ColumnProperty::Name:
-			_oldValue = columnModel->columnNameQ();
-			setText(QObject::tr("Change column name of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
+			_oldValue = columnName();
+			setText(QObject::tr("Change column name of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
 		case ColumnProperty::Title:
 			_oldValue = columnModel->columnTitle();
-			setText(QObject::tr("Change column title of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
+			setText(QObject::tr("Change column title of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
 		case ColumnProperty::Description:
 			_oldValue = columnModel->columnDescription();
-			setText(QObject::tr("Change column description of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), _oldValue.toString(), _newValue.toString()));
+			setText(QObject::tr("Change column description of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
 		case ColumnProperty::ComputedColumn:
 			_oldValue = int(computedColumnTypeFromQString(columnModel->computedType()));
-			setText(QObject::tr("Set computed type of '%1' from '%2' to '%3'").arg(columnModel->columnNameQ(), friendlyColumnType(_oldValue.toInt()), friendlyColumnType(_newValue.toInt())));
+			setText(QObject::tr("Set computed type of '%1' from '%2' to '%3'").arg(columnName(), friendlyColumnType(_oldValue.toInt()), friendlyColumnType(_newValue.toInt())));
 			break;
 		}
 	}
@@ -357,7 +384,7 @@ SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QStr
 		_colId = _columnModel->chosenColumn();
 		_oldLabel = _model->data(_model->index(_labelIndex, 0)).toString();
 		QString value = _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
-		setText(QObject::tr("Set label for value '%1' of column '%2' from '%3' to '%4'").arg(value).arg(_columnModel->columnNameQ()).arg(_oldLabel).arg(_newLabel));
+		setText(QObject::tr("Set label for value '%1' of column '%2' from '%3' to '%4'").arg(value).arg(columnName()).arg(_oldLabel).arg(_newLabel));
 	}
 	else
 	{
@@ -391,7 +418,7 @@ SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *m
 		_colId				= _columnModel->chosenColumn();
 		_oldOriginalValue	= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::value)).toString();
 		_oldLabel			= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
-		setText(QObject::tr("Set original value  from '%3' to '%4' for label '%1' of column '%2'").arg(_oldLabel).arg(_columnModel->columnNameQ()).arg(_oldOriginalValue).arg(_newOriginalValue));
+		setText(QObject::tr("Set original value  from '%3' to '%4' for label '%1' of column '%2'").arg(_oldLabel).arg(columnName()).arg(_oldOriginalValue).arg(_newOriginalValue));
 	}
 	else
 	{
@@ -427,9 +454,9 @@ FilterLabelCommand::FilterLabelCommand(QAbstractItemModel *model, int labelIndex
 		_colId = _columnModel->chosenColumn();
 		QString label = _model->data(_model->index(_labelIndex, 0)).toString();
 		if (checked)
-			setText(QObject::tr("Filter rows having label '%1' in column '%2'").arg(label).arg(_columnModel->columnNameQ()));
+			setText(QObject::tr("Filter rows having label '%1' in column '%2'").arg(label).arg(columnName()));
 		else
-			setText(QObject::tr("Remove filter for rows having label '%1' in column '%2'").arg(label).arg(_columnModel->columnNameQ()));
+			setText(QObject::tr("Remove filter for rows having label '%1' in column '%2'").arg(label).arg(columnName()));
 	}
 	else
 	{
@@ -470,16 +497,16 @@ MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<
 		{
 			QString label = _labels[0];
 			if (_up)
-				setText(QObject::tr("Move up label '%1' of column '%2'").arg(label).arg(_columnModel->columnNameQ()));
+				setText(QObject::tr("Move up label '%1' of column '%2'").arg(label).arg(columnName()));
 			else
-				setText(QObject::tr("Move down label '%1' of column '%2'").arg(label).arg(_columnModel->columnNameQ()));
+				setText(QObject::tr("Move down label '%1' of column '%2'").arg(label).arg(columnName()));
 		}
 		else
 		{
 			if (_up)
-				setText(QObject::tr("Move up labels of column '%1'").arg(_columnModel->columnNameQ()));
+				setText(QObject::tr("Move up labels of column '%1'").arg(columnName()));
 			else
-				setText(QObject::tr("Move down labels of column '%1'").arg(_columnModel->columnNameQ()));
+				setText(QObject::tr("Move down labels of column '%1'").arg(columnName()));
 		}
 	}
 	else
@@ -527,7 +554,7 @@ ReverseLabelCommand::ReverseLabelCommand(QAbstractItemModel *model)
 	if (_columnModel)
 	{
 		_colId = _columnModel->chosenColumn();
-		setText(QObject::tr("Reverse labels of column '%2'").arg(_columnModel->columnNameQ()));
+		setText(QObject::tr("Reverse labels of column '%1'").arg(columnName()));
 	}
 	else
 	{
@@ -756,6 +783,11 @@ UndoModelCommand::UndoModelCommand(QAbstractItemModel *model)
 
 QString UndoModelCommand::columnName(int colIndex) const
 {
+	// Sometimes the model is the ColumnModel (when the action is triggered from the Variables Window): in this case, use it to get the column name.
+	ColumnModel* colModel = qobject_cast<ColumnModel*>(_model);
+	if (colModel)
+		return colModel->columnNameQ();
+
 	QString result = _model->headerData(colIndex, Qt::Orientation::Horizontal).toString();
 	if (result.isEmpty())
 		result = QString::number(colIndex + 1);

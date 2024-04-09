@@ -239,11 +239,16 @@ void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<
 	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, values, labels, colNames));
 }
 
-int ExpandDataProxyModel::setColumnType(int columnIndex, int columnType)
+int ExpandDataProxyModel::setColumnType(intset columnIndex, int columnType)
 {
 	_undoStack->pushCommand(new SetColumnTypeCommand(_sourceModel, columnIndex, columnType));
 
-	return data(0, columnIndex, int(dataPkgRoles::columnType)).toInt();
+	return columnType; //it always works
+}
+
+void ExpandDataProxyModel::columnReverseValues(intset columnIndex)
+{
+	_undoStack->pushCommand(new ColumnReverseValuesCommand(_sourceModel, columnIndex));
 }
 
 void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)

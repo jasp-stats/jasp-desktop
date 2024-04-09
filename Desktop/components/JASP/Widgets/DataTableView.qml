@@ -94,16 +94,16 @@ FocusScope
 
 				var menuModel =
 				[
-					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),											func: function() { dataTableView.view.selectAll() },	icon: "menu-select-all",	enabled: !isVirtual				},
+					{ text: qsTr("Select All"),	shortcut: qsTr("%1+A").arg(ctrlCmd),											func: function() { dataTableView.view.selectAll() },			icon: "menu-select-all",	enabled: !isVirtual				},
 
 					{ text: "---" },
 
-					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),										func: function() { dataTableView.view.cut(point) },		icon: "menu-data-cut",		enabled: !isVirtual				},
-					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),										func: function() { dataTableView.view.copy(point) },	icon: "menu-data-copy",		enabled: !isVirtual				},
-					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),										func: function() { dataTableView.view.paste(point)},	icon: "menu-data-paste"										},
-					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),														func: function() { dataTableView.view.cellsClear(); },	icon: "menu-cells-clear",	enabled: !isVirtual				},
-					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },			icon: "menu-undo",			enabled: dataTableView.view.undoText() !== ""	},
-					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },			icon: "menu-redo",			enabled: dataTableView.view.redoText() !== ""	},
+					{ text: qsTr("Cut"),			shortcut: qsTr("%1+X").arg(ctrlCmd),										func: function() { dataTableView.view.cut(point) },				icon: "menu-data-cut",		enabled: !isVirtual				},
+					{ text: qsTr("Copy"),			shortcut: qsTr("%1+C").arg(ctrlCmd),										func: function() { dataTableView.view.copy(point) },			icon: "menu-data-copy",		enabled: !isVirtual				},
+					{ text: qsTr("Paste"),			shortcut: qsTr("%1+V").arg(ctrlCmd),										func: function() { dataTableView.view.paste(point)},			icon: "menu-data-paste"										},
+					{ text: qsTr("Clear cells"),	shortcut: qsTr("Del"),														func: function() { dataTableView.view.cellsClear(); },			icon: "menu-cells-clear",	enabled: !isVirtual				},
+					{ text: qsTr("Undo: %1").arg(dataTableView.view.undoText()),	shortcut: qsTr("%1+Z").arg(ctrlCmd),		func: function() { dataTableView.view.undo() },					icon: "menu-undo",			enabled: dataTableView.view.undoText() !== ""	},
+					{ text: qsTr("Redo: %1").arg(dataTableView.view.redoText()),	shortcut: qsTr("%1+Shift+Z").arg(ctrlCmd),	func: function() { dataTableView.view.redo() },					icon: "menu-redo",			enabled: dataTableView.view.redoText() !== ""	},
 				]
 				
 				
@@ -111,18 +111,18 @@ FocusScope
 				{
 					menuModel.push({ text: "---" })
 					if (isCell)
-						menuModel.push({ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			rowIndex) },	icon: "menu-row-select"				})
+						menuModel.push({ text: qsTr("Select row"),									func: function() { dataTableView.view.rowSelect(			rowIndex) },					icon: "menu-row-select"				})
 					menuModel.push(
-						{ text: qsTr("Insert row above"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },	icon: "menu-row-insert-before"		},
-						{ text: qsTr("Insert row below"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },	icon: "menu-row-insert-after"		},
-						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete(			rowIndex);},	icon: "menu-row-remove"				})
+						{ text: qsTr("Insert row above"),											func: function() { dataTableView.view.rowInsertBefore(		rowIndex) },					icon: "menu-row-insert-before"		},
+						{ text: qsTr("Insert row below"),											func: function() { dataTableView.view.rowInsertAfter(		rowIndex) },					icon: "menu-row-insert-after"		},
+						{ text: qsTr("Delete row"),													func: function() { dataTableView.view.rowsDelete(			rowIndex);},					icon: "menu-row-remove"				})
 				}
 
 				if(!isVirtual && (isCell || isColHeader))
 				{
 					menuModel.push({ text: "---" });
 					if (isCell)
-						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },	icon: "menu-column-select"			})
+						menuModel.push({ text: qsTr("Select column"),								func: function() { dataTableView.view.columnSelect(			columnIndex) },					icon: "menu-column-select"			})
 					menuModel.push(
 						{ text: qsTr("Delete column"),												func: function() { dataTableView.view.columnsDelete(		columnIndex) },					icon: "menu-column-remove"			},
 						{ text: qsTr("Insert column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex)				},	icon: "menu-column-insert-before"	},
@@ -131,7 +131,9 @@ FocusScope
 						{ text: qsTr("Insert constructor column before"),							func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, false)	},	icon: "menu-column-insert-before"	},
 						{ text: qsTr("Insert constructor column after"),							func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, false)	},	icon: "menu-column-insert-after"	},
 						{ text: qsTr("Insert R column before"),										func: function() { dataTableView.view.columnInsertBefore(	columnIndex, true, true)	},	icon: "menu-column-insert-before"	},
-						{ text: qsTr("Insert R column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, true)	},	icon: "menu-column-insert-after"	}
+						{ text: qsTr("Insert R column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, true)	},	icon: "menu-column-insert-after"	},
+						{ text:	"---" },
+						{ text: qsTr("Reverse values"),												func: function() { dataTableView.view.columnReverseValues(	columnIndex)				},	icon: "menu-column-reverse-values"	}
 						)
 
 				 }

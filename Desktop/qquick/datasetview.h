@@ -208,7 +208,8 @@ public slots:
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
 	void		columnComputedInsertBefore(	int col = -1,	bool R=true);
 	void		columnsDeleteSelected();
-	void		columnsDelete(				int row);
+	void		columnsDelete(				int col);
+	void		columnReverseValues(		int col = -1);
 	void		rowSelect(					int row,		bool shiftPressed = false, bool rightClicked = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
@@ -248,6 +249,8 @@ protected:
 	void		determineCurrentViewPortIndices();
 	void		storeOutOfViewItems();
 	void		buildNewLinesAndCreateNewItems();
+	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
+	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);
 
 #ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
@@ -340,8 +343,6 @@ protected:
 	QString													_lastJaspCopyIntoClipboard;
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
-
-
 };
 
 

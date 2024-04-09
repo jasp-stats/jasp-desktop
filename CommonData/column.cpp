@@ -1468,6 +1468,54 @@ void Column::labelsReverse()
 	_dbUpdateLabelOrder();
 }
 
+void Column::valuesReverse()
+{
+	JASPTIMER_SCOPE(Column::valuesReverse);
+	
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	
+	//first collect the values
+	doubleset	values;
+	
+	
+	for(const Label * label : _labels)
+	{
+		double	aValue	= EmptyValues::missingValueDouble;
+				
+		if(label->originalValue().isDouble())
+			aValue = label->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
+		
+		if(!std::isnan(aValue))
+			values.insert(aValue);
+	}
+	
+	//put them in order to flip em
+	doublevec	asc = doublevec(values.begin(), values.end()),
+				dsc	= asc;
+	
+	std::reverse(dsc.begin(), dsc.end());
+	
+	dbldblmap flipIt;
+	
+	for(size_t i=0; i<asc.size(); i++)
+		flipIt[asc[i]] = dsc[i];
+	
+	//and now to write them back into the data
+	for(Label * label : _labels)
+	{
+		double	aValue	= EmptyValues::missingValueDouble;
+		
+		if(label->originalValue().isDouble())
+			aValue = label->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
+		
+		if(!std::isnan(aValue))
+			label->setOriginalValue(flipIt[aValue]);
+	}
+}
 
 DatabaseInterface & Column::db()
 {
@@ -1768,10 +1816,28 @@ bool Column::isEmptyValue(const double val) const
 	return _emptyValues->isEmptyValue(val);
 }
 
-qsizetype Column::getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease)
+qsizetype Column::getMaximumWidthInCharactersIncludingShadow()
 {
-	qsizetype	extraPad	= 4,
-				maxWidth	= 0;
+	bool thereIsAShadow = false;
+	
+	//If there are no labels there no shadows? 
+	for(Label * label : labels())
+		if(label->originalValueAsString(true) != label->label(true))
+		{
+			thereIsAShadow = true;
+			break;
+		}
+		
+	if(!thereIsAShadow)
+		return getMaximumWidthInCharacters(true, false);
+	
+	return getMaximumWidthInCharacters(true, false) + getMaximumWidthInCharacters(true, true, 0);
+}
+
+
+qsizetype Column::getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad)
+{
+	qsizetype	maxWidth	= 0;
 	std::string takeWidth;
 	
 	//Call labelsTempCount() to both find out how many there are and generate them if necessary

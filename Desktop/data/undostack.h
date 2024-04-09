@@ -15,7 +15,7 @@ class UndoModelCommand : public QUndoCommand
 public:
 	UndoModelCommand(QAbstractItemModel* model = nullptr);
 
-	QString		columnName(int colIndex)			const;
+	QString		columnName(int colIndex = -1)		const;
 	QString		rowName(int rowIndex)				const;
 
 protected:
@@ -237,17 +237,28 @@ private:
 class SetColumnTypeCommand : public UndoModelCommand
 {
 public:
-	SetColumnTypeCommand(QAbstractItemModel *model, int col, int colType);
+	SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	int									_col		= -1,
-										_newColType = -1,
-										_oldColType = -1;
+	intset								_cols;
+	int									_newColType = -1;
+	std::map<int,intset>				_oldColsPerType;
 };
 
+class ColumnReverseValuesCommand : public UndoModelCommand
+{
+public:
+	ColumnReverseValuesCommand(QAbstractItemModel *model, intset cols);
+
+	void undo()					override { redo(); }
+	void redo()					override;
+
+private:
+	intset									_cols;
+};
 
 class InsertColumnCommand : public UndoModelCommand
 {

@@ -69,6 +69,7 @@ public:
 	bool			nameEditable()		const;
 	
 	Q_INVOKABLE void reverse();
+	Q_INVOKABLE void reverseValues();
 	Q_INVOKABLE void moveSelectionUp();
 	Q_INVOKABLE void moveSelectionDown();
 	Q_INVOKABLE void resetFilterAllows();

@@ -1370,8 +1370,8 @@ void DataSetView::columnSelect(int col,	bool shiftPressed, bool rightClicked)
 	setSelectionEnd(	QPoint(col,		_model->rowCount(false) - 1));
 }
 
-void DataSetView::setColumnType(int columnIndex, int newColumnType)	
-{ 
+void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndex)> applyThis)
+{
 	int columnA	= selectionMin().x(),
 		columnB	= selectionMax().x();
 
@@ -1381,8 +1381,31 @@ void DataSetView::setColumnType(int columnIndex, int newColumnType)
 	if(columnA == -1 || columnB == -1 || !(columnIndex >= columnA && columnIndex <= columnB))
 		columnA = columnB = columnIndex;
 	
+	intset ints;
 	for	(columnIndex	= columnA; columnIndex <= columnB; columnIndex++)
-		_model->setColumnType(columnIndex, newColumnType); 
+		ints.insert(columnIndex);
+	
+	applyThis(ints);
+}
+
+void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(int columnIndex)> applyThis)
+{
+	columnIndexSelectedApply(columnIndex, [&](intset ints)
+	{
+		for	(int anInt : ints)
+			applyThis(anInt);
+	});
+	
+}
+
+void DataSetView::setColumnType(int columnIndex, int newColumnType)
+{ 
+	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->setColumnType(col, newColumnType);  });
+}
+
+void DataSetView::columnReverseValues(int columnIndex)
+{
+	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnReverseValues(col);  });
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -1439,6 +1462,7 @@ void DataSetView::columnsDelete(int col)
 	setSelectionStart(	QPoint(-1, -1));
 	setSelectionEnd(	QPoint(-1, -1));
 }
+
 
 void DataSetView::rowSelect(int row, bool shiftPressed, bool rightClicked)
 {
