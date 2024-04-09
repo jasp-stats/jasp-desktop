@@ -408,7 +408,7 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "menu-column-order-by-values.svg"
 					onClicked:		{ forceActiveFocus(); columnModel.orderByValues(); }
 	
-					toolTip:		qsTr("Reverse order of all numerical values")
+					toolTip:		qsTr("Order labels by their numeric value")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
