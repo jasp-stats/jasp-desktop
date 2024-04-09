@@ -394,7 +394,7 @@ FocusScope
 				RoundedButton
 				{
 					iconSource:		jaspTheme.iconPath + "menu-column-reverse-values.svg"
-					onClicked:		columnModel.reverseValues()
+					onClicked:		{ forceActiveFocus(); columnModel.reverseValues(); }
 	
 					toolTip:		qsTr("Reverse order of all numerical values")
 	
