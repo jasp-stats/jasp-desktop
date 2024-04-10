@@ -97,22 +97,23 @@ Item
 
 		Image
 		{
-			id: buttonIcon
-			x:	!filterButtonRoot.showIconAndText ?
-					(parent.width / 2) - (width / 2) :
-					filterButtonRoot.iconLeft ?
-						filterButtonRoot.buttonWidthPadding :
-						parent.width - (width + filterButtonRoot.buttonWidthPadding)
+			id:					buttonIcon
+			x:					!filterButtonRoot.showIconAndText 
+								?	(parent.width / 2) - (width / 2) 
+								:	filterButtonRoot.iconLeft 
+								?	filterButtonRoot.buttonWidthPadding 
+								:	parent.width - (width + filterButtonRoot.buttonWidthPadding)
+			y:					(parent.height / 2) - (height / 2)
 
-			y:			(parent.height / 2) - (height / 2)
+			width:				Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
+			height:				filterButtonRoot.height - (2 * buttonPadding)
 
-			width:		Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
-			height:		filterButtonRoot.height - (2 * buttonPadding)
-
-			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
-			source:		filterButtonRoot.iconSource
-			mipmap:		true
-			smooth:		true
+			visible:			filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
+			source:				filterButtonRoot.iconSource
+			sourceSize.width:	width  * 2
+			sourceSize.height:	height * 2
+			mipmap:				true
+			smooth:				true
 		}
 
 		Text

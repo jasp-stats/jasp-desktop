@@ -548,11 +548,11 @@ void ColumnModel::refresh()
 	setLabelMaxWidth();
 }
 
-void ColumnModel::changeSelectedColumn(QPoint selectionStart)
+/*void ColumnModel::changeSelectedColumn(QPoint selectionStart)
 {
 	if (selectionStart.x() != chosenColumn() && visible())
 		setChosenColumn(selectionStart.x());
-}
+}*/
 
 void ColumnModel::checkInsertedColumns(const QModelIndex &, int first, int)
 {

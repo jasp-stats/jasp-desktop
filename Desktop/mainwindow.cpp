@@ -685,7 +685,7 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::redo);
 
-	connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
+	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
 	Log::log() << "QML Initialized!"  << std::endl;
 

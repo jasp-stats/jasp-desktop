@@ -47,11 +47,9 @@ DataSetView::DataSetView(QQuickItem *parent)
 	connect(this,						&DataSetView::itemSizeChanged,					this, &DataSetView::reloadRowNumbers);
 	connect(this,						&DataSetView::itemSizeChanged,					this, &DataSetView::reloadColumnHeaders);
 	
-	connect(this,						&DataSetView::selectionStartChanged,			this, &DataSetView::selectionMinChanged);
-	connect(this,						&DataSetView::selectionStartChanged,			this, &DataSetView::selectionMaxChanged);
-	connect(this,						&DataSetView::selectionEndChanged,				this, &DataSetView::selectionMinChanged);
-	connect(this,						&DataSetView::selectionEndChanged,				this, &DataSetView::selectionMaxChanged);
-
+	connect(this,						&DataSetView::selectionChanged,					this, &DataSetView::selectionMinChanged);
+	connect(this,						&DataSetView::selectionChanged,					this, &DataSetView::selectionMaxChanged);
+	
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,				this, &DataSetView::resetItems,				Qt::QueuedConnection);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,		this, &DataSetView::resetItems,				Qt::QueuedConnection);
 
@@ -69,24 +67,26 @@ void DataSetView::setModel(QAbstractItemModel * model)
 
 	if (model)
 	{
-		connect(model, &QAbstractItemModel::dataChanged,				this, &DataSetView::modelDataChanged			);
-		connect(model, &QAbstractItemModel::headerDataChanged,			this, &DataSetView::modelHeaderDataChanged		);
-		connect(model, &QAbstractItemModel::modelAboutToBeReset,		this, &DataSetView::modelAboutToBeReset			);
-		connect(model, &QAbstractItemModel::modelReset,					this, &DataSetView::modelWasReset				);
+		connect(model,				&QAbstractItemModel::modelReset,				this, &DataSetView::modelWasReset				);
+		connect(model,				&QAbstractItemModel::dataChanged,				this, &DataSetView::modelDataChanged			);
+		connect(model,				&QAbstractItemModel::headerDataChanged,			this, &DataSetView::modelHeaderDataChanged		);
+		connect(model,				&QAbstractItemModel::modelAboutToBeReset,		this, &DataSetView::modelAboutToBeReset			);
 
+		connect(_selectionModel,	&QItemSelectionModel::selectionChanged,			this, &DataSetView::selectionChanged);
 
-		connect(model, &QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
-		connect(model, &QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
-		connect(model, &QAbstractItemModel::rowsAboutToBeInserted,		this, &DataSetView::rowsAboutToBeInserted		);
-		connect(model, &QAbstractItemModel::rowsAboutToBeRemoved,		this, &DataSetView::rowsAboutToBeRemoved		);
-		connect(model, &QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted,			Qt::QueuedConnection);
-		connect(model, &QAbstractItemModel::columnsRemoved,				this, &DataSetView::columnsRemoved,				Qt::QueuedConnection);
-		connect(model, &QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted,				Qt::QueuedConnection);
-		connect(model, &QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved,				Qt::QueuedConnection);
-
+		connect(model,				&QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
+		connect(model,				&QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
+		connect(model,				&QAbstractItemModel::rowsAboutToBeInserted,		this, &DataSetView::rowsAboutToBeInserted		);
+		connect(model,				&QAbstractItemModel::rowsAboutToBeRemoved,		this, &DataSetView::rowsAboutToBeRemoved		);
+		connect(model,				&QAbstractItemModel::columnsInserted,			this, &DataSetView::columnsInserted,			Qt::QueuedConnection);
+		connect(model,				&QAbstractItemModel::columnsRemoved,			this, &DataSetView::columnsRemoved,				Qt::QueuedConnection);
+		connect(model,				&QAbstractItemModel::rowsInserted,				this, &DataSetView::rowsInserted,				Qt::QueuedConnection);
+		connect(model,				&QAbstractItemModel::rowsRemoved,				this, &DataSetView::rowsRemoved,				Qt::QueuedConnection);
+		
+		
 		_selectionModel->setModel(model);
 		emit selectionModelChanged(); //Or maybe it hasn't?
-
+		
 		setRowNumberWidth(getRowHeaderSize().width());
 
 		//recalculateCellSizes = true;
@@ -96,8 +96,6 @@ void DataSetView::setModel(QAbstractItemModel * model)
 		emit modelChanged();
 	}
 }
-
-
 
 QSizeF DataSetView::getColumnSize(int col)
 {
@@ -193,7 +191,7 @@ void DataSetView::modelWasReset()
 {
 	calculateCellSizes();
 	
-	QModelIndex startIndex	= _model->index(_selectionStart.y(),	_selectionStart.x()),
+	/*QModelIndex startIndex	= _model->index(_selectionStart.y(),	_selectionStart.x()),
 				endIndex	= _model->index(_selectionEnd.y(),		_selectionEnd.x());
 	
 	if(!endIndex.isValid())
@@ -204,7 +202,7 @@ void DataSetView::modelWasReset()
 			_selectionModel->select(startIndex, QItemSelectionModel::ClearAndSelect);
 	}
 	else
-		_selectionModel->select(QItemSelection(startIndex, endIndex), QItemSelectionModel::ClearAndSelect);
+		_selectionModel->select(QItemSelection(startIndex, endIndex), QItemSelectionModel::ClearAndSelect);*/
 }
 
 void DataSetView::resetItems()
@@ -1023,51 +1021,6 @@ void DataSetView::setExtraColumnX()
 	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
 }
 
-void DataSetView::setSelectionStart(QPoint selectionStart)
-{
-	if (_selectionStart == selectionStart || !_selectionModel)
-		return;
-
-	Log::log() << "DataSetView::setSelectionStart( row=" << selectionStart.y() << ", col=" << selectionStart.x() << " )" << std::endl;
-
-	QModelIndex startIndex = _model->index(selectionStart.y(), selectionStart.x());
-
-	if(startIndex.isValid())
-		_selectionModel->select(startIndex, QItemSelectionModel::ClearAndSelect);
-	else
-		_selectionModel->clear();
-
-	_selectionStart = selectionStart;
-	emit selectionStartChanged(_selectionStart);
-
-	_selectionEnd = QPoint(-1, -1);
-	emit selectionEndChanged(_selectionEnd);
-}
-
-void DataSetView::setSelectionEnd(QPoint selectionEnd)
-{
-	if (!_selectionModel)
-		return;
-
-	if (_model->isRowVirtual(selectionEnd.y()) || _model->isColumnVirtual(selectionEnd.x()))
-		return;
-
-	if (_selectionEnd == selectionEnd)
-		return;
-
-	clearEdit();
-
-	_selectionEnd = selectionEnd;
-
-	emit selectionEndChanged(_selectionEnd);
-
-	if (_selectionStart.y() == -1 || _selectionStart.x() == -1 || selectionEnd.y() == -1 || selectionEnd.x() == -1)
-		_selectionModel->clear();
-	else
-		_selectionModel->select(QItemSelection(_model->index(_selectionStart.y(), _selectionStart.x()), _model->index(_selectionEnd.y(), _selectionEnd.x())), QItemSelectionModel::ClearAndSelect);
-
-	_selectScrollMs = Utils::currentMillis();
-}
 
 bool DataSetView::isSelected(int row, int col)
 {
@@ -1076,8 +1029,7 @@ bool DataSetView::isSelected(int row, int col)
 
 void DataSetView::selectAll()
 {
-	setSelectionStart(QPoint(0, 0));
-	setSelectionEnd(QPoint(_model->columnCount(false) - 1, _model->rowCount(false) - 1));
+	_selectionModel->select(QItemSelection(_model->index(0, 0), _model->index(_model->rowCount(false), _model->columnCount(false))), QItemSelectionModel::Select);
 }
 
 
@@ -1314,60 +1266,59 @@ void DataSetView::paste(QPoint where)
 	}
 }
 
+void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPressed)
+{
+	bool	wholeRow	= row < 0,
+			wholeColumn	= col < 0;
+	
+	if(wholeRow && wholeColumn)
+	{
+		selectAll();
+		return;
+	}
+	
+	QItemSelection selection 
+				= wholeRow 
+				? QItemSelection(_model->index(row,	0),		_model->index(row,					_model->columnCount())	)
+				: wholeColumn	
+				? QItemSelection(_model->index(0,	col),	_model->index(_model->rowCount(),	col)					)
+				: QItemSelection(_model->index(row,	col),	_model->index(row,					col)					);
+	
+	QItemSelectionModel::SelectionFlags		flags  = QItemSelectionModel::Current; //Current means we will update the stored selection, so we commit here
+	if(!shiftPressed && !ctrlCmdPressed)	flags |= QItemSelectionModel::ClearAndSelect;
+	else if(ctrlCmdPressed)					flags |= QItemSelectionModel::Toggle;
+	else if(shiftPressed)					flags |= QItemSelectionModel::Select;
+		
+	
+	if(shiftPressed)
+	{
+		QPoint	minNewSelection = minQModelIndex(selection.indexes()),
+				maxNewSelection = maxQModelIndex(selection.indexes()),
+				minOldSelection = selectionMin(),
+				maxOldSelection = selectionMax();
+				selection		= QItemSelection(	_model->index(std::min(minNewSelection.y(), minOldSelection.y()), std::min(minNewSelection.x(), minOldSelection.x())), 
+													_model->index(std::max(maxNewSelection.y(), maxOldSelection.y()), std::max(maxNewSelection.x(), maxOldSelection.x())));
+	}
+	
+	if(shiftPressed || ctrlCmdPressed)
+		clearEdit();
+			
+	_selectionModel->select(selection, flags);
+}
+
+void DataSetView::selectHover(int row, int col)
+{
+	pollSelectScroll(row, col);
+}
+
 QPoint DataSetView::selectionMin() const	
 { 
-	QPoint p(_selectionStart);
-	
-	if(_selectionEnd.x() > -1 && _selectionEnd.y() > -1)
-	{
-		if(p.x() == -1 || p.x() > _selectionEnd.x())
-			p.setX(_selectionEnd.x());
-		
-		if(p.y() == -1 || p.y() > _selectionEnd.y())
-			p.setY(_selectionEnd.y());
-	}
-		
-	return p;		
+	return minQModelIndex(_selectionModel->selectedIndexes());	
 }
 
 QPoint DataSetView::selectionMax() const	
 { 
-	QPoint p(_selectionStart);
-	
-	if(_selectionEnd.x() > -1 && _selectionEnd.y() > -1)
-	{
-		if(p.x() == -1 || p.x() < _selectionEnd.x())
-			p.setX(_selectionEnd.x());
-		
-		if(p.y() == -1 || p.y() < _selectionEnd.y())
-			p.setY(_selectionEnd.y());
-	}
-		
-	return p;										
-}
-
-
-void DataSetView::columnSelect(int col,	bool shiftPressed, bool rightClicked)
-{
-	if (col < 0) return;
-	
-	if(shiftPressed)
-	{
-		if(_selectionStart.y() != 0)
-			setSelectionStart( QPoint(_selectionStart.x() != -1 ? _selectionStart.x() : col, 0) );
-		
-		setSelectionEnd(	QPoint(col,	_model->rowCount(false) - 1));
-		return;
-	}
-
-	if (rightClicked)
-	{
-		if (_selectionModel->columnIntersectsSelection(col))
-			return;
-	}
-	
-	setSelectionStart(	QPoint(col,	0));
-	setSelectionEnd(	QPoint(col,		_model->rowCount(false) - 1));
+	return maxQModelIndex(_selectionModel->selectedIndexes());
 }
 
 void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndexes)> applyThis)
@@ -1464,33 +1415,9 @@ void DataSetView::columnsDelete(int col)
 	else
 		_model->removeColumns(columnA, 1 + (columnB - columnA));
 
-	setSelectionStart(	QPoint(-1, -1));
-	setSelectionEnd(	QPoint(-1, -1));
+	_selectionModel->clear();
 }
 
-
-void DataSetView::rowSelect(int row, bool shiftPressed, bool rightClicked)
-{
-	if (row < 0) return;
-	
-	if(shiftPressed)
-	{
-		if(_selectionStart.x() != 0)
-			setSelectionStart( QPoint(0, _selectionStart.y() != -1 ? _selectionStart.y() : row) );
-		
-		setSelectionEnd(	QPoint(_model->columnCount(false) - 1, row));
-		return;
-	}
-
-	if (rightClicked)
-	{
-		if (_selectionModel->rowIntersectsSelection(row))
-			return;
-	}
-	
-	setSelectionStart(	QPoint(0,								row));
-	setSelectionEnd(	QPoint(_model->columnCount(false) - 1,	row));
-}
 
 void DataSetView::rowInsertBefore(int row)
 {
@@ -1533,19 +1460,21 @@ void DataSetView::rowsDelete(int row)
 	else
 		_model->removeRows(rowA, 1 + (rowB -  rowA));
 
-	setSelectionStart(	QPoint(-1, -1));
-	setSelectionEnd(	QPoint(-1, -1));
+	_selectionModel->clear();
 }
 
 void DataSetView::cellsClear()
 {
-	if(_selectionStart.x() == -1 || _selectionStart.y() == -1)
+	QPoint	selMin(selectionMin()),
+			selMax(selectionMax());
+	
+	if(selMin.x() == -1 || selMin.y() == -1)
 		return;
 
-	int cols = 1 + std::abs(selectionMax().x() - selectionMin().x()),
-		rows = 1 + std::abs(selectionMax().y() - selectionMin().y()),
-		col0 = selectionMin().x(),
-		row0 = selectionMin().y();
+	int cols = 1 + std::abs(selMax.x() - selMin.x()),
+		rows = 1 + std::abs(selMax.y() - selMin.y()),
+		col0 = selMin.x(),
+		row0 = selMin.y();
 
 	std::vector<std::vector<QString>> cells(cols, std::vector<QString>(rows, QString("")));
 
@@ -1639,8 +1568,7 @@ void DataSetView::edit(int row, int col)
 	if (row == -1 || col == -1)
 		return;
 
-	if (_selectionEnd.x() != col || _selectionEnd.y() != row)
-		setSelectionEnd(QPoint(-1, -1));
+	_selectionModel->setCurrentIndex(_model->index(row, col), QItemSelectionModel::Current);
 
 	clearEdit();
 	

@@ -58,8 +58,6 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( bool					expandDataSet			READ expandDataSet			WRITE setExpandDataSet			NOTIFY expandDataSetChanged			)
 	Q_PROPERTY( QQuickItem			*	tableViewItem			READ tableViewItem			WRITE setTableViewItem												)
 	Q_PROPERTY( QItemSelectionModel *	selection				READ selectionModel											NOTIFY selectionModelChanged		)
-	Q_PROPERTY(	QPoint					selectionStart			READ selectionStart			WRITE setSelectionStart			NOTIFY selectionStartChanged		)
-	Q_PROPERTY(	QPoint					selectionEnd			READ selectionEnd			WRITE setSelectionEnd			NOTIFY selectionEndChanged			)
 	Q_PROPERTY(	QPoint					selectionMin			READ selectionMin											NOTIFY selectionMinChanged			)
 	Q_PROPERTY(	QPoint					selectionMax			READ selectionMax											NOTIFY selectionMaxChanged			)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
@@ -96,8 +94,6 @@ public:
 
 	bool					cacheItems()						const	{ return _cacheItems;				}
 	bool					expandDataSet()						const	{ return _model ? _model->expandDataSet() : false;			}
-	QPoint					selectionStart()					const	{ return _selectionStart;			}
-	QPoint					selectionEnd()						const	{ return _selectionEnd;				}
 	QPoint					selectionMin()						const;
 	QPoint					selectionMax()						const;
 	bool					editing()							const	{ return _editing;					}
@@ -149,6 +145,7 @@ signals:
 	void		editDelegateChanged(QQmlComponent * editDelegate);
 
 	void		itemSizeChanged();
+	void		selectionChanged();
 
 	void		headerHeightChanged();
 	void		rowNumberWidthChanged();
@@ -156,8 +153,6 @@ signals:
 	void		cacheItemsChanged();
 	void		expandDataSetChanged();
 	
-	void		selectionStartChanged(	QPoint selectionStart);
-	void		selectionEndChanged(	QPoint selectionEnd);
 	void		selectionMinChanged();
 	void		selectionMaxChanged();
 	
@@ -186,9 +181,7 @@ public slots:
 	void		modelWasReset();
 	void		setExtraColumnX();
 	
-	void		setSelectionStart(	QPoint selectionStart);
-	void		setSelectionEnd(	QPoint selectionEnd	);
-	bool		isSelected(int row, int col);
+	bool		isSelected(			int row, int col);
 	void		pollSelectScroll(	int row, int column);
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
@@ -202,7 +195,8 @@ public slots:
 	void		copy(	QPoint where = QPoint(-1,-1)) { _copy(where, false); }
 	void		paste(	QPoint where = QPoint(-1,-1));
 
-	void		columnSelect(				int col,		bool shiftPressed = false, bool rightClicked = false);
+	void		select(						int row, int column,	bool shiftPressed,			bool ctrlCmdPressed);
+	void		selectHover(				int row, int column);
 	QString		columnInsertBefore(			int col = -1,	bool computed = false, bool R = false);
 	QString		columnInsertAfter(			int col = -1,	bool computed = false, bool R = false);
 	void		columnComputedInsertAfter(	int col = -1,	bool R=true);
@@ -211,7 +205,6 @@ public slots:
 	void		columnsDelete(				int col);
 	void		columnReverseValues(		int col = -1);
 	void		columnOrderByValues(		int col = -1);
-	void		rowSelect(					int row,		bool shiftPressed = false, bool rightClicked = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
 	void		rowsDelete(					int row);
@@ -230,6 +223,7 @@ public slots:
 	int			rowCount()								{ return _model->rowCount();	}
 	int			columnCount()							{ return _model->columnCount(); }
 
+	
 	void		selectAll();
 	void		undo()									{ _model->undo(); }
 	void		redo()									{ _model->redo(); }
@@ -338,8 +332,6 @@ protected:
 															_prevEditCol			= -1;
 	size_t													_linesActualSize		= 0;
 	long													_selectScrollMs			= 0;
-	QPoint													_selectionStart			= QPoint(-1, -1),
-															_selectionEnd			= QPoint(-1, -1);
 	std::vector<Json::Value>								_copiedColumns;
 	QString													_lastJaspCopyIntoClipboard;
 	std::vector<qstringvec>									_lastJaspCopyValues,

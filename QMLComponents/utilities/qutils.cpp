@@ -290,3 +290,37 @@ std::set<string> fql(const QStringList & from)
 	const std::vector<std::string> vec(fq(from));
 	return std::set<std::string>(vec.begin(), vec.end()); 
 }
+
+QPoint minQModelIndex(const QModelIndexList &list)
+{
+	if(list.size() == 0)
+		return QPoint(-1, -1);
+	
+	int r = std::numeric_limits<int>::max(),
+		c = std::numeric_limits<int>::max();
+	
+	for(const QModelIndex & mi : list)
+	{
+		r = std::min(r, mi.row());
+		c = std::min(c, mi.column());
+	}
+	
+	return QPoint(c, r);
+}
+
+QPoint maxQModelIndex(const QModelIndexList &list)
+{
+	if(list.size() == 0)
+		return QPoint(-1, -1);
+	
+	int r = std::numeric_limits<int>::min(),
+		c = std::numeric_limits<int>::min();
+	
+	for(const QModelIndex & mi : list)
+	{
+		r = std::max(r, mi.row());
+		c = std::max(c, mi.column());
+	}
+	
+	return QPoint(c, r);
+}
