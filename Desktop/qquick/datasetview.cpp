@@ -1268,8 +1268,8 @@ void DataSetView::paste(QPoint where)
 
 void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPressed)
 {
-	bool	wholeRow	= row < 0,
-			wholeColumn	= col < 0;
+	bool	wholeRow	= col < 0,
+			wholeColumn	= row < 0;
 	
 	if(wholeRow && wholeColumn)
 	{
@@ -1284,18 +1284,22 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 				? QItemSelection(_model->index(0,	col),	_model->index(_model->rowCount(),	col)					)
 				: QItemSelection(_model->index(row,	col),	_model->index(row,					col)					);
 	
-	QItemSelectionModel::SelectionFlags		flags  = QItemSelectionModel::Current; //Current means we will update the stored selection, so we commit here
-	if(!shiftPressed && !ctrlCmdPressed)	flags |= QItemSelectionModel::ClearAndSelect;
-	else if(ctrlCmdPressed)					flags |= QItemSelectionModel::Toggle;
-	else if(shiftPressed)					flags |= QItemSelectionModel::Select;
-		
+	QItemSelectionModel::SelectionFlags		flags  = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect; //Current means we will update the stored selection, so we commit here
 	
-	if(shiftPressed)
+	if(ctrlCmdPressed)
+	{
+		QItemSelection old = _selectionModel->selection();
+		old.merge(selection, QItemSelectionModel::Toggle);
+		selection = old;
+	}
+	else if(shiftPressed)
 	{
 		QPoint	minNewSelection = minQModelIndex(selection.indexes()),
 				maxNewSelection = maxQModelIndex(selection.indexes()),
 				minOldSelection = selectionMin(),
 				maxOldSelection = selectionMax();
+		
+		if(minOldSelection != QPoint{-1, -1} && minNewSelection != QPoint{-1, -1})
 				selection		= QItemSelection(	_model->index(std::min(minNewSelection.y(), minOldSelection.y()), std::min(minNewSelection.x(), minOldSelection.x())), 
 													_model->index(std::max(maxNewSelection.y(), maxOldSelection.y()), std::max(maxNewSelection.x(), maxOldSelection.x())));
 	}
