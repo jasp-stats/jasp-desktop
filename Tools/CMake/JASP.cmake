@@ -68,6 +68,9 @@ set(MSIX_SIGN_CERT_PASSWORD
   "0000"
   CACHE STRING "Password selfsign cert for Nightlies")
 
+set(R_PKG_CELLAR_PATH
+  ""
+  CACHE STRING "Set the path for an renv package cellar to be used during build phase")
 
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
@@ -80,8 +83,8 @@ if(NOT R_REPOSITORY)
       "http://cloud.r-project.org"
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
-
 if(FLATPAK_USED AND LINUX)
+  set(R_PKG_CELLAR_PATH "/app/lib64/cellar")
   set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()
 
