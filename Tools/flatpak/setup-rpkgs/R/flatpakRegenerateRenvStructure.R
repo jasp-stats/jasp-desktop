@@ -28,50 +28,12 @@ prettyCat(flatpakDirs)
 Sys.setenv("RENV_PATHS_CACHE" = flatpakDirs["renv-cache"])
 Sys.setenv("RENV_PATHS_ROOT"  = flatpakDirs["renv-root"])
 
-options("repos" = c("local" = file.path("file:", dirs["local-cran"])))
 options(install.opts = "--no-html")
 options(renv.cache.linkable = TRUE)
-# options(renv.config.install.verbose = TRUE)
+options(renv.config.install.verbose = TRUE)
 
-# uncomment to test locally (and not pollute renv/library)
-# .libPaths(c(tempdir(), .libPaths()))
+renvPath <- file.path(dirs["bootstrap"], "renv.tar.gz")
+prettyCat(renvPath)
+install.packages(renvPath)
 
-# remotes is called through loadNamespace somewhere although we no longer need/ use it...
-install.packages(c("renv", "remotes"))
-
-# V8 needs to be present after installing as well
-file.copy(from = file.path(dirs["other-dependencies"], "v8"), to = dirLib64, recursive = TRUE)
-
-dirV8 <- file.path(dirLib64, "v8")
-# This must be an absolute path, since installation is staged
-if (runningLocally) dirV8 <- normalizePath(dirV8)
-
-prettyCat(dir())
-prettyCat(dir(dirApp))
-
-dirLibGit2 <- file.path(dirApp, "libgit2")
-configureVars <- c(
-  V8   = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8),
-  gert = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s", dirLibGit2)
-)
-options(configure.vars = configureVars)
-prettyCat(configureVars)
-
-# set environment variable for V8
-libArch <- system("uname -m", intern = TRUE)
-Sys.setenv("LIB_ARCH" = if (identical(libArch, "x86_64")) "x64" else "aarch64")
-prettyCat(Sys.getenv("LIB_ARCH"))
-
-# install V8 and gert here so later they only need to be retrieved from the cache
-availablePkgs <- available.packages()
-toInstall <- intersect(c("V8", "gert"), availablePkgs[, "Package"])
-renv::install(toInstall)
-renv::install('MatrixModels')
-
-# installJaspStats(c("jaspBase", "jaspGraphs"), dirs)
-
-prettyCat(setNames(lapply(.libPaths(), dir), .libPaths()))
-
-file.copy(from = dirs["local-cran"],                         to = dirLib64, recursive = TRUE)
-file.copy(from = dirs["local-github"],                       to = dirLib64, recursive = TRUE)
-file.copy(from = file.path(dirs["r-helpers"], "Rprofile.R"), to = dirLib64)
+file.copy(from = dirs["cellar"], to = dirLib64, recursive = TRUE)
