@@ -1282,7 +1282,6 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 
 	QModelIndex		tl	= _model->index(row,					col),
 					br	= _model->index(row,					col);
-	
 
 	if(wholeRow)	br	= _model->index(row,						_model->columnCount(false)-1);
 	if(wholeCol)	br	= _model->index(_model->rowCount(false)-1,	col);
@@ -1294,7 +1293,18 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	if(ctrlCmdPressed)
 	{
 		QItemSelection old = _selectionModel->selection();
-		old.merge(selection, QItemSelectionModel::Toggle);
+		if(!wholeRow && !wholeCol)	old.merge(selection, QItemSelectionModel::Toggle);
+		else if(wholeRow) //If a whole row is "toggled" we first make it all selected if it isnt yet fully, otherwise we deselect
+		{
+			if(_selectionModel->isRowSelected(row))		old.merge(selection, QItemSelectionModel::Deselect);
+			else										old.merge(selection, QItemSelectionModel::Select);
+		}
+		else if(wholeCol) //We do the same for the column
+		{
+			if(_selectionModel->isColumnSelected(col))		old.merge(selection, QItemSelectionModel::Deselect);
+			else											old.merge(selection, QItemSelectionModel::Select);
+		}
+			
 		selection = old;
 	}
 	else if(shiftPressed)
