@@ -126,6 +126,7 @@ public:
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
 			void					valuesReverse();
+			void					labelsOrderByValue();
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
 			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
@@ -211,6 +212,7 @@ public:
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
 			
 			
+
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
 			void					_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease = false);		///< Sets the order of the _labels to label.order and in DB
@@ -220,7 +222,7 @@ protected:
 			columnTypeChangeResult	_changeColumnToScale();
 			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
 			void					_resetLabelValueMap();
-			
+			doublevec				valuesNumericOrdered();			
 			void					labelsTempReset();
 
 private:
