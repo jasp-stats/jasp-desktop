@@ -1269,22 +1269,27 @@ void DataSetView::paste(QPoint where)
 void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPressed)
 {
 	bool	wholeRow	= col < 0,
-			wholeColumn	= row < 0;
+			wholeCol	= row < 0;
 	
-	if(wholeRow && wholeColumn)
+	if(wholeRow && wholeCol)
 	{
 		selectAll();
 		return;
 	}
 	
-	QItemSelection selection 
-				= wholeRow 
-				? QItemSelection(_model->index(row,	0),		_model->index(row,					_model->columnCount())	)
-				: wholeColumn	
-				? QItemSelection(_model->index(0,	col),	_model->index(_model->rowCount(),	col)					)
-				: QItemSelection(_model->index(row,	col),	_model->index(row,					col)					);
+					row = std::max(0, row);
+					col = std::max(0, col);
+
+	QModelIndex		tl	= _model->index(row,					col),
+					br	= _model->index(row,					col);
 	
-	QItemSelectionModel::SelectionFlags		flags  = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect; //Current means we will update the stored selection, so we commit here
+
+	if(wholeRow)	br	= _model->index(row,						_model->columnCount(false)-1);
+	if(wholeCol)	br	= _model->index(_model->rowCount(false)-1,	col);
+	
+	QItemSelection	selection(tl, br);
+	
+	QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect; //Current means we will update the stored selection, so we commit here
 	
 	if(ctrlCmdPressed)
 	{
@@ -1306,7 +1311,23 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	
 	if(shiftPressed || ctrlCmdPressed)
 		clearEdit();
-			
+
+	
+/* Even if you reenable this we prob dont want this in release par accident
+#ifdef JASP_DEBUG
+	{	
+		QStringList l;
+		for(QModelIndex i : selection.indexes())
+			l << QString("(r=%1, c=%2)").arg(i.row()).arg(i.column());
+		
+		Log::log()	<< "DataSetView::select(row=" << row << ", col=" << col << ", shift=" << shiftPressed << ", control="<< ctrlCmdPressed << "):\n"
+					<< QString("-\tModel size: r=%1, c=%2\n").arg(_model->columnCount(false)).arg(_model->rowCount(false))
+					<< QString("-\ttl = (r=%1, c=%2)\n").arg(tl.row()).arg(tl.column()) 
+					<< QString("-\tbr = (r=%1, c=%2)\n").arg(br.row()).arg(br.column()) 
+					<< "-\tset = " << l.join(", ") << std::endl;
+	}
+#endif*/
+	
 	_selectionModel->select(selection, flags);
 }
 
