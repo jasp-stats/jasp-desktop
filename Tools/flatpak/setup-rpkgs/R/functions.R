@@ -444,6 +444,7 @@ setupJaspDirs <- function(root = getwd(), jaspSubdir = "jasp-build", flatpakSubd
     "renv-root-binary" = file.path(root, jaspSubdir, "renv-root", "binary", copy_of_renv_bootstrap_platform_prefix(), "repository"),
 
     # these directories are only relevant for building flatpak
+    "bootstrap"           = file.path(root, flatpakSubdir, "bootstrap"),
     "module-environments" = file.path(root, flatpakSubdir, "module-environments"),
     "other-dependencies"  = file.path(root, flatpakSubdir, "other-dependencies"),
     "r-helpers"           = file.path(root, flatpakSubdir, "r-helpers"),

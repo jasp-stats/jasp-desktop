@@ -5,6 +5,8 @@ Sys.setenv(RENV_PATHS_ROOT     = "@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE    = "@MODULES_RENV_CACHE_PATH@")
 Sys.setenv(RENV_PATHS_SANDBOX  = "@RENV_SANDBOX@")
 Sys.setenv(JASPENGINE_LOCATION = "@JASP_ENGINE_PATH@/JASPEngine")
+Sys.setenv(RENV_PATHS_CELLAR   = "@R_PKG_CELLAR_PATH@")
+
 
 #Load the post-install fixes from jaspBase. Think Baron von Munchhausen ;)
 source("@PROJECT_SOURCE_DIR@/Engine/jaspModuleInstaller/R/renvOverrides.R")
@@ -16,10 +18,6 @@ source("@PROJECT_SOURCE_DIR@/Engine/jaspModuleInstaller/R/installModule.R")
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y.
 
-if (@IS_FLATPAK_USED@) {
-  source("/app/lib64/Rprofile.R")
-  options(repos = "@R_REPOSITORY@")
-}
 
 .libPaths("@RENV_LIBRARY@")
 sandboxPaths <- renv:::renv_sandbox_activate()
@@ -85,7 +83,6 @@ renv::restore(lockfile = lf, library = .libPaths(), rebuild = pkgName)
 
 print("jaspModuleInstaller::writeModuleStatusObject(@PROJECT_SOURCE_DIR@")
 jaspModuleInstaller::writeModuleStatusObject("@PROJECT_SOURCE_DIR@")
-
 #This is necessary because of conflicts with Matrix dep of base R lib.
 #Can be removed when a new version of R updates its Matrix
 if (!@IS_FLATPAK_USED@) {
