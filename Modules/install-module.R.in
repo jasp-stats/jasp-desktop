@@ -11,6 +11,9 @@ Sys.setenv(JAGS_PREFIX				="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR			="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR				="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
+Sys.setenv(MAKEFLAGS				="-j")
+Sys.setenv(RENV_PATHS_CELLAR        = "@R_PKG_CELLAR_PATH@")
+
 
 defaultMakeFlags  <- function() { Sys.setenv(MAKEFLAGS = "-j" ) }
 setMakeFlagsToOne <- function() { Sys.setenv(MAKEFLAGS = "-j1") }
@@ -29,11 +32,6 @@ options(renv.config.install.verbose = TRUE)
 if (@IS_LINUX_LOCAL_BUILD@) {
   # Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
   Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
-}
-
-
-if (@IS_FLATPAK_USED@) {
-  source('/app/lib64/Rprofile.R');
 }
 
 .libPaths("@JASPMODULEINSTALLER_LIBRARY@")
