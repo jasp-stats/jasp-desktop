@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-04-11 14:02+0000\n"
+"Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -3783,12 +3789,11 @@ msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
 msgstr "式内の記述に名前が与えられていません"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "ラベル '%1' のコントロールには名前がありません"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "コントロールには名前がありません"
@@ -4823,6 +4828,21 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>お問い合わせ</h3>\n"
+"<a href=\"%1\"> feature Request</a> と <a href=\"%2\"> バグ報告</a> "
+"については、 <a href=\"%3\"> GitHub のページ</a>で記述してください。\n"
+"これにより、JASPソフトウェア開発者と直接連絡することができます。\n"
+"\n"
+"統計的な質問については、<a href=\"%4\""
+">JASPフォーラム</a>にイシューを投稿してください。\n"
+"\n"
+"JASPコミュニティの情報については、<a href=\"%5\""
+">JASPサイトの情報</a>をお読みください。\n"
+"\n"
+"<a href=\"%6\">JASP World Map</a>にあなたの機関を追加するためには、 <a href="
+"\"%7\">communications@jasp-stats.org</a>に電子メールを送信してください。\n"
+"\n"
+"個別の寄付:<a href=\"%8\">JASPサイト</a>をご覧ください。\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
@@ -4870,7 +4890,7 @@ msgstr "列の定義"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
+msgstr "y の各欠測値に対して TRUE で boolean ベクトルを返します"
 
 msgctxt "FilterWindow|"
 msgid ""
@@ -4893,47 +4913,46 @@ msgstr ""
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "読み込みデータなし!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "データは%1行で、%2(%3%4%)がフィルタを通過しました"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "外部スプレッドシートエディタ(データ同期用)"
 
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
-msgstr ""
+msgstr "変数により明確な整数値がある場合、スケールとして解釈されます."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "読み込んだ変数の型をリセット"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "欠測値の設定"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
 msgstr "クリップボードにコピー"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "デバッグ情報をコピー"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "結果を検索:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "検索バーを閉じる"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -4956,38 +4975,53 @@ msgid ""
 "<i><b>Bronze Educator:</b></i>\n"
 "%4"
 msgstr ""
+"<h3>コミュニティ</h3>\n"
+"JASPコミュニティに参加する高等教育機関は、JASPのメンテナンスとさらなる開発を"
+"共同でサポートしつつ、自分の学生や世界中の他の機関に貴重な教育サービスを提供"
+"しています。\n"
+"\n"
+"機関がまだJASPコミュニティに参加していない場合は、 <a href=\"%1\"> "
+"に参加してもらうことができます</a>.\n"
+"\n"
+"<i><b>ゴールドエデュケーター:</b></i>\n"
+"%2\n"
+"\n"
+"<i><b>シルバーエデュケーター:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>ブロンズエデュケーター:</b></i>\n"
+"%4"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "フォントカラー"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "LaTeX入力はこちら:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "`Cmd/Ctrl + Enter`で適用;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "クリックして、式を適用"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "この式を編集するためにクリック"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "%1 を追加"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "最後の%1を削除"
 
-#, fuzzy
 msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "要因"
@@ -5001,62 +5035,61 @@ msgid ""
 "The button displays the *current setting*, not what will happen when you "
 "press it!"
 msgstr ""
+"- 型を守って:定義された列の型が付いている列を使用して下さい。\n"
+"- 型を変換: "
+"すべての使用する列を、使用する前に、この計算された列の列タイプに変換します。"
+"\n"
+"\n"
+"ボタンは*現在の設定*を表示していて、押すと起きることではありません!"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Keep types"
-msgstr ""
+msgstr "型を守って"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Convert types"
-msgstr ""
+msgstr "型を変換"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "コンストラクタの列を前に挿入"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "コンストラクタの列を後に挿入"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Rの列を前に挿入"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Rの列を後に挿入"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr "列タイプを変更するには、ここをクリックしてください"
+msgstr "列の型を変更するには、ここをクリック"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "列を追加"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
 msgstr "分析による計算"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
 msgstr "変数設定を変更するには、ここをダブルクリック"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
 msgstr "変数ウィンドウを閉じるにはここをダブルクリック"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
 msgstr "選択された変数を変更するにはここをクリック"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr "ここで行を選択し、シフトを押すことで複数の行を選択することができます."
@@ -5064,20 +5097,20 @@ msgstr "ここで行を選択し、シフトを押すことで複数の行を選
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr ""
+msgstr "列 '%2 のラベル '%1' の元の値  を'%3' から '%4' へと設定します"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "コンストラクタの列を前に挿入"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "コンストラクタの列を後に挿入"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Rの列を前に挿入"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Rの列を後に挿入"

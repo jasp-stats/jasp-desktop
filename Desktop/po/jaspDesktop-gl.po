@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-04-07 22:49+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -3945,7 +3951,7 @@ msgstr "seleccionou módulo "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr "Fai click no ficheiro de abaixo para sincronizar ou usar "
+msgstr "Fai clic no ficheiro de abaixo para sincronizar ou usar "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
@@ -4160,7 +4166,7 @@ msgstr "Limpar o Formato"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr "Preme click aquí para engadir texto"
+msgstr "Preme clic aquí para engadir texto"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
@@ -4980,7 +4986,7 @@ msgstr ""
 "substituírse ou combinarse cun filtro personalizado.\n"
 "# Para combinar, podes engadir cláusulas usando '&': 'generatedFilter & "
 "customFilter & perhapsAnotherFilter'\n"
-"# Fai click na icona (i) da esquina inferior dereita para obter máis axuda.\n"
+"# Fai clic na icona (i) da esquina inferior dereita para obter máis axuda.\n"
 "\n"
 "Filtroxerado\n"
 
@@ -5111,85 +5117,86 @@ msgid ""
 "The button displays the *current setting*, not what will happen when you "
 "press it!"
 msgstr ""
+"- Manter tipos: usar columnas co seu tipo de columna definido.\n"
+"- Converter tipos: converter tódalas columnas ao tipo de columna desta "
+"columna calculada antes de usar.\n"
+"\n"
+"O botón amosa a *configuración vixente*, non o que vai suceder cando o "
+"presiones!"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Keep types"
-msgstr ""
+msgstr "Manter tipos"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Convert types"
-msgstr ""
+msgstr "Convertir tipos"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Inserir a columna construtora antes"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Inserir a columna construtora despois"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Inserir a columna de R antes"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Inserir a columna de R despois"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "Fai clic aquí para cambiar o tipo de columna"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "Engadir columna"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
 msgstr "Calculado mediante unha análise"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr "Premer dobre click aquí para trocar a configuración de variables"
+msgstr "Premer dobre clic aquí para trocar as configuracións de variables"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr "Premer dobre click aquí para pechar a xanela de variables"
+msgstr "Premer dobre clic aquí para pechar a xanela de variables"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr "Preme click aquí para cambiar a variable elixida"
+msgstr "Preme clic aquí para cambiar a variable elixida"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
-"Fai click aquí para elixir a fila, pulsando 'shift' para unha selección "
+"Preme clic aquí para elixir a fila, pulsando 'Maiús' para unha selección "
 "múltiple."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"Establecer o valor orixinal de '%3' a '%4' para a etiqueta '%1' da columna "
+"'%2'"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Inserir a columna construtora antes"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Inserir a columna construtora despois"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Inserir a columna de R antes"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Inserir a columna de R despois"

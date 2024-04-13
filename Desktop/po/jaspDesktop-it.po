@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-02-11 19:01+0000\n"
-"Last-Translator: Alberto Dessì <websites.onstage058@passinbox.com>\n"
+"PO-Revision-Date: 2024-04-11 14:02+0000\n"
+"Last-Translator: federicapicogna <picognafederica@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "it/>\n"
 "Language: it\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -168,47 +168,38 @@ msgctxt "AnalysisForms|"
 msgid "Resize data/results"
 msgstr "Ridimensiona dati/risultati"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
 msgstr "Trascina per mostrare i dati"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
 msgstr "Nascondi le opzioni di input"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Show input options"
 msgstr "Mostra le opzioni di input"
 
-#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
 msgstr "Aggiungi"
 
-#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
 msgstr "Elimina"
 
-#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
 msgstr "Ripristina"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "Fattore di Bayes"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
 msgstr "BF₁₀"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
@@ -217,12 +208,10 @@ msgstr ""
 "Fattore di Bayes per quantificare l'evidenza dell'ipotesi alternativa "
 "rispetto all'ipotesi nulla."
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
 msgstr "BF₀₁"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
@@ -231,27 +220,22 @@ msgstr ""
 "Fattore di Bayes per quantificare l'evidenza dell'ipotesi nulla rispetto "
 "all'ipotesi alternativa."
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
 msgstr "Log(BF₁₀)"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
 msgstr "Logaritmo naturale di BF10."
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
 msgstr "Aggiungi colonna"
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
 msgstr "Elimina colonna"
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Ripristina"
@@ -260,35 +244,29 @@ msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
 msgstr "Colonna calcolata: "
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
 msgstr "Seleziona una colonna"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
 msgstr "valore assoluto"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
 msgstr "deviazione standard"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
 msgstr "varianza"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
 msgstr "somma"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr "prodotto di valori"
+msgstr "prodotto dei valori"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
@@ -298,37 +276,30 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
 msgstr "restituisce il massimo dei valori"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
 msgstr "media"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
 msgstr "arrotonda y a n decimali"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
 msgstr "restituisce il numero di elementi in y"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "median"
 msgstr "mediana"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
 msgstr "logaritmo naturale"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
 msgstr "logaritmo in base 2"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
 msgstr "logaritmo in base 10"
@@ -337,7 +308,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
 msgstr "logaritmo di y in 'base'"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
 msgstr "esponenziale"
@@ -358,10 +328,9 @@ msgstr ""
 "Trasformata Z inversa di Fisher (cioè la tangente iperbolica) per "
 "trasformare i numeri reali in numeri compresi tra -1 e 1"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "suddividi i dati in livelli numBreaks"
+msgstr "suddividi i dati in numBreaks livelli"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
@@ -436,10 +405,11 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr ""
+"genera i dati da una distribuzione beta con forme specificate alpha e beta"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
+msgstr "genera i dati da una distribuzione uniforme tra min e max"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
@@ -496,33 +466,35 @@ msgstr "Chiudi la finestra della colonna calcolata"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr ""
+msgstr "Colonna calcolata modificata"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
 msgstr ""
+"Ci sono delle modifiche non applicate alla tua colonna calcolata; cosa "
+"vorresti fare?"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "nessuno"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "deviazione"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "semplice"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "differenza"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"

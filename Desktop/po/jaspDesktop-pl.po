@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-04-09 13:34+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -5040,38 +5046,54 @@ msgid ""
 "<i><b>Bronze Educator:</b></i>\n"
 "%4"
 msgstr ""
+"<h3>Społeczność</h3>\n"
+"Instytucje akademickie biorące udział w społeczności JASP wspólnie wspierają "
+"utrzymanie oraz dalszy rozwój naszej aplikacji. Dzięki temu zapewniają "
+"nieocenione wsparcie dydaktyczne swoim studentom oraz studentom innych "
+"instytucji na całym świecie.\n"
+"\n"
+"Jeśli Twoja instytucja nie jest jeszcze częścią społeczności JASP, możesz <a "
+"href=\"%1\">zaproponować jej dołączenie</a>.\n"
+"\n"
+"<i><b>Status Złotego Edukatora:</b></i>\n"
+"%2\n"
+"\n"
+"<i><b>Status Srebrnego Edukatora:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Status Brązowego Edukatora:</b></i>\n"
+"%4"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Kolor czcionki"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "Wprowadź LaTeX tutaj:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "Naciśnij `Cmd/Ctrl + Enter` aby zatwierdzić;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Kliknij aby zatwierdzić formułę"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Kliknij aby edytować tę formułę"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Wstaw %1"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Usuń ostatni/e %1"
 
-#, fuzzy
 msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "Czynnik"
@@ -5085,14 +5107,20 @@ msgid ""
 "The button displays the *current setting*, not what will happen when you "
 "press it!"
 msgstr ""
+"- Zachowaj typy: użyj kolumn z ich zdefiniowanymi typami kolumn.\n"
+"- Konwertuj typy: przekonwertuj wszystkie używane kolumny do typu 'kolumna "
+"obliczona' przed użyciem.\n"
+"\n"
+"Przycisk wyświetla *aktualne ustawienie*, a nie to, co się stanie po jego "
+"naciśnięciu!"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Keep types"
-msgstr ""
+msgstr "Zachowaj typy"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Convert types"
-msgstr ""
+msgstr "Przekonwertuj typy"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
@@ -5104,43 +5132,36 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Wstaw kolumnę R przed"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Wstaw kolumnę R po"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "Kliknij tutaj, aby zmienić typ kolumny"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "Wstaw kolumnę"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
 msgstr "Obliczone przez analizę"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
 msgstr "Kliknij dwukrotnie tutaj, aby zmienić ustawienia zmiennej"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
 msgstr "Kliknij dwukrotnie tutaj, aby zamknąć okno zmiennej"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
 msgstr "Kliknij tutaj, aby wybrać inną zmienną"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
@@ -5151,6 +5172,7 @@ msgstr ""
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"Ustaw oryginalną wartość  od '%3' do '%4' dla etykiety '%1' kolumny '%2'"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
@@ -5162,8 +5184,8 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Wstaw kolumnę R przed"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Wstaw kolumnę R po"
