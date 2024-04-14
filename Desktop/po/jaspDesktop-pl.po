@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-04-14 10:38+0000\n"
+"PO-Revision-Date: 2024-04-15 12:02+0000\n"
 "Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
@@ -2184,7 +2184,7 @@ msgstr " w toku"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "Przerwij"
+msgstr "Zwiń"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
