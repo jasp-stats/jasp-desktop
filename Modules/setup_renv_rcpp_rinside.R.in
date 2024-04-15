@@ -32,9 +32,9 @@ repos <- "https://packagemanager.posit.co/cran/latest"
 # alternative to 'http://cloud.r-project.org'
 if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
   if (@IS_FLATPAK_USED@) {
-    cat("Installing renv from local bootstrap\n")
+    cat("Installing renv from cellar\n")
     install.packages(
-      pkgs         = file.path("@R_PKG_CELLAR_PATH@", "_bootstrap_jasp", "renv.tar.gz"),
+      pkgs         = file.path("@R_PKG_CELLAR_PATH@", "renv.tar.gz"),
       lib          = RENV_LIBRARY,
       INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
   } else {
