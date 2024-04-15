@@ -13,6 +13,7 @@ Sys.setenv(JAGS_LIBDIR				="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
 Sys.setenv(MAKEFLAGS				="-j")
 Sys.setenv(RENV_PATHS_CELLAR        = "@R_PKG_CELLAR_PATH@")
+Sys.setenv(RPKG_DOWNLOAD_ONLY       = "@RPKG_DOWNLOAD_ONLY@")
 
 
 defaultMakeFlags  <- function() { Sys.setenv(MAKEFLAGS = "-j" ) }
