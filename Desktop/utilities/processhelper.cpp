@@ -87,12 +87,12 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 
 	env.insert("LC_CTYPE",			"UTF-8"); //This isn't really a locale but seems necessary to get proper output from gettext on mac
 	env.insert("TZDIR",				TZDIR);
-
-#else  // linux
-//	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
+#elif FLATPAK_USED
 	env.insert("R_HOME",			rHome.absolutePath());
-//	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library") + ":" + programDir.absoluteFilePath("../R/R_cpp_includes_library"));
-	// TODO: the last one should be the sandbox, not the actual library!
+	env.insert("R_LIBS",			"/app/Modules/Tools/R_cpp_includes_library:/app/lib64/R/library" + custom_R_library);
+	env.insert("LD_LIBRARY_PATH",	"/app/Modules/Tools/R_cpp_includes_library/RInside/lib/:/app/lib64/R/lib/");
+#else  // linux
+	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			programDir.absoluteFilePath("../Modules/Tools/R_cpp_includes_library") + ":" + programDir.absoluteFilePath("R/library") + custom_R_library);
 #endif
 
