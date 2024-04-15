@@ -271,8 +271,6 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 					QMap<QString, QVariant> item {{"label", label}, {"x", xOffsets[result.count()]}};
 					result.push_back(item);
 				}
-				else
-					Log::log() << "headerLabels property of ComponentsList " << name() << " has too many items. " << label << " cannot be displayed" << std::endl;
 			}
 			else if (labelVar.canConvert<QMap<QString, QVariant> >())
 			{
