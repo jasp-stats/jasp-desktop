@@ -72,6 +72,10 @@ set(R_PKG_CELLAR_PATH
   ""
   CACHE STRING "Set the path for an renv package cellar to be used during build phase")
 
+set(RPKG_DOWNLOAD_ONLY
+  OFF
+  CACHE BOOL "If enabled renv will not install JASP module deps but just download them. Usefull to make a cellar for Flatpak")
+
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
 #       Qt Creator can categorize them nicely in its CMake configurator
