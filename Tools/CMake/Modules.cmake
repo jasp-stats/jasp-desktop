@@ -22,14 +22,44 @@ set(JASP_TEST_BUILD		OFF					CACHE BOOL		"Do a quick build with just descriptive
 set(JASP_TEST_MODULE	"jaspDescriptives"	CACHE STRING	"Which module other than jaspTestModule would you like to test?")
 
 if(NOT JASP_TEST_BUILD)
-	set(JASP_COMMON_MODULES
-		"jaspDescriptives"
+  set(JASP_COMMON_MODULES
+    "jaspDescriptives"
+    "jaspTTests"
     "jaspAnova"
+    "jaspMixedModels"
+    "jaspRegression"
+    "jaspFrequencies"
+    "jaspFactor"
+  )
 
-	)
-	
-	set(JASP_EXTRA_MODULES
-        )
+  set(JASP_EXTRA_MODULES
+    "jaspAcceptanceSampling"
+    "jaspAudit"
+    "jaspBain"
+    "jaspBsts"
+    "jaspCircular"
+    "jaspCochrane"
+    "jaspDistributions"
+    "jaspEquivalenceTTests"
+    "jaspJags"
+    "jaspLearnBayes"
+    "jaspLearnStats"
+    "jaspMachineLearning"
+    "jaspMetaAnalysis"
+    "jaspNetwork"
+    "jaspPower"
+    "jaspPredictiveAnalytics"
+    "jaspProcess"
+    "jaspProphet"
+    "jaspQualityControl"
+    "jaspReliability"
+    "jaspRobustTTests"
+    "jaspSem"
+    "jaspSurvival"
+    "jaspSummaryStatistics"
+    "jaspTimeSeries"
+    "jaspVisualModeling"
+    )
 else() #it IS a test build
 	message(STATUS "JASP_TEST_BUILD is enabled, building with minimal modules")
 	set(JASP_COMMON_MODULES
