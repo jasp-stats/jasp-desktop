@@ -250,6 +250,11 @@ endif()
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.mime.xml
           DESTINATION ${JASP_INSTALL_PREFIX}/share/mime/packages)
+  
+  #clean up flatpak
+  if(FLATPAK_USED)
+    install(CODE "execute_process(COMMAND ${CMAKE_SOURCE_DIR}/Tools/flatpak/cleanFlatpak.sh WORKING_DIRECTORY ${CMAKE_BINARY_DIR})")
+  endif()
 
 endif()
 
