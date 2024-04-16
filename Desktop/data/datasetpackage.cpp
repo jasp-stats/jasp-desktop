@@ -1851,6 +1851,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
 
 	beginSynchingData(false);
+	_dataSet->beginBatchedToDB();
 	
 	if(colCountChanged || rowCountChanged)	
 		setDataSetSize(std::max(size_t(dataColumnCount()), colMax + col), std::max(size_t(dataRowCount()), rowMax + row));
@@ -1881,6 +1882,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			changed.push_back(colName);
 	}
 
+	_dataSet->endBatchedToDB();
 	
 	stringvec		missingColumns;
 

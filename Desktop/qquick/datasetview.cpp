@@ -1027,11 +1027,6 @@ bool DataSetView::isSelected(int row, int col)
 	return _selectionModel->isSelected(_model->index(row, col));
 }
 
-void DataSetView::selectAll()
-{
-	_selectionModel->select(QItemSelection(_model->index(0, 0), _model->index(_model->rowCount(false), _model->columnCount(false))), QItemSelectionModel::Select);
-}
-
 
 bool DataSetView::relaxForSelectScroll()
 {
@@ -1266,6 +1261,12 @@ void DataSetView::paste(QPoint where)
 	}
 }
 
+void DataSetView::selectAll()
+{
+	clearEdit();
+	_selectionModel->select(QItemSelection(_model->index(0, 0), _model->index(_model->rowCount(false)-1, _model->columnCount(false)-1)), QItemSelectionModel::Select);
+}
+
 void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPressed)
 {
 	bool	wholeRow	= col < 0,
@@ -1461,7 +1462,7 @@ void DataSetView::rowInsertBefore(int row)
 	if(row == -1)
 		row = selectionMin().y() != -1 ? selectionMin().y() : 0;
 
-	_model->insertRow(row);
+	_model->insertRows(row);
 }
 
 void DataSetView::rowInsertAfter(int row)

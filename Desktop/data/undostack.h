@@ -292,16 +292,17 @@ private:
 	QMap<QString, QVariant>	_props;
 };
 
-class InsertRowCommand : public UndoModelCommand
+class InsertRowsCommand : public UndoModelCommand
 {
 public:
-	InsertRowCommand(QAbstractItemModel *model, int row);
+	InsertRowsCommand(QAbstractItemModel *model, int row, int count = 1);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	int						_row = -1;
+	int						_row = -1,
+							_count;
 };
 
 class RemoveColumnsCommand : public UndoModelCommand

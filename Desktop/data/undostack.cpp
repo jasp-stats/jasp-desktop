@@ -93,20 +93,20 @@ void InsertColumnCommand::redo()
 		dataSetTable->insertColumnSpecial(_col, _props);
 }
 
-InsertRowCommand::InsertRowCommand(QAbstractItemModel *model, int row)
-	: UndoModelCommand(model), _row{row}
+InsertRowsCommand::InsertRowsCommand(QAbstractItemModel *model, int row, int count)
+	: UndoModelCommand(model), _row{row}, _count{count}
 {
-	setText(QObject::tr("Insert row %1").arg(rowName(_row)));
+	setText(QObject::tr("Insert %2 rows at %1").arg(rowName(_row)).arg(_count));
 }
 
-void InsertRowCommand::undo()
+void InsertRowsCommand::undo()
 {
-	_model->removeRow(_row);
+	_model->removeRows(_row, _count);
 }
 
-void InsertRowCommand::redo()
+void InsertRowsCommand::redo()
 {
-	_model->insertRow(_row);
+	_model->insertRows(_row, _count);
 }
 
 RemoveColumnsCommand::RemoveColumnsCommand(QAbstractItemModel *model, int start, int count)
