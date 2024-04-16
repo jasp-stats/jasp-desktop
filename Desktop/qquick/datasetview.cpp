@@ -1227,6 +1227,8 @@ void DataSetView::paste(QPoint where)
 				labs[c].erase(labs[c].begin());
 			}
 			
+			use _lastJaspCopySelect !
+			
 			_model->pasteSpreadsheet(isColumnHeader(where) ? 0 : where.y(), where.x(), vals, labs, colNames);
 		}	
 	}
