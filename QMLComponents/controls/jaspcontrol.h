@@ -35,7 +35,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								hasError				READ hasError				WRITE setHasError				NOTIFY hasErrorChanged				)
 	Q_PROPERTY( bool								hasWarning				READ hasWarning				WRITE setHasWarning				NOTIFY hasWarningChanged			)
 	Q_PROPERTY( bool								initialized				READ initialized											NOTIFY initializedChanged			)
-	Q_PROPERTY( bool								shouldShowFocus			READ shouldShowFocus		WRITE setShouldShowFocus		NOTIFY shouldShowFocusChanged		)
 	Q_PROPERTY( bool								shouldStealHover		READ shouldStealHover		WRITE setShouldStealHover		NOTIFY shouldStealHoverChanged		)
 	Q_PROPERTY( QQuickItem						*	childControlsArea		READ childControlsArea		WRITE setChildControlsArea											)
 	Q_PROPERTY( JASPControl						*	parentListView			READ parentListViewEx										NOTIFY parentListViewChanged		)
@@ -122,7 +121,6 @@ public:
 	bool				isDependency()				const	{ return _isDependency;				}
 	bool				initialized()				const	{ return _initialized;				}
 	bool				initializedWithValue()		const	{ return _initializedWithValue;		}
-	bool				shouldShowFocus()			const	{ return _shouldShowFocus;			}
 	bool				shouldStealHover()			const	{ return _shouldStealHover;			}
 	bool				debug()						const	{ return _debug;					}
 	bool				parentDebug()				const	{ return _parentDebug;				}
@@ -173,10 +171,10 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
-	
+
 	QString infoLabel() const;
 	void setInfoLabel(const QString &newInfoLabel);
-	
+
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
 	void	setChildControlsArea(	QQuickItem		*	childControlsArea);
@@ -207,7 +205,6 @@ public slots:
 	GENERIC_SET_FUNCTION(IsBound				, _isBound				, isBoundChanged				, bool			)
 	GENERIC_SET_FUNCTION(Indent					, _indent				, indentChanged					, bool			)
 	GENERIC_SET_FUNCTION(IsDependency			, _isDependency			, isDependencyChanged			, bool			)
-	GENERIC_SET_FUNCTION(ShouldShowFocus		, _shouldShowFocus		, shouldShowFocusChanged		, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover		, _shouldStealHover		, shouldStealHoverChanged		, bool			)
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
@@ -215,7 +212,6 @@ public slots:
 
 private slots:
 	void	_setFocusBorder();
-	void	_setShouldShowFocus();
 	void	_setBackgroundColor();
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }
@@ -231,7 +227,6 @@ signals:
 	void	indentChanged();
 	void	isDependencyChanged();
 	void	initializedChanged();
-	void	shouldShowFocusChanged();
 	void	shouldStealHoverChanged();
 	void	debugChanged();
 	void	parentDebugChanged();
@@ -258,9 +253,9 @@ signals:
 	void				requestColumnCreation(std::string columnName, columnType columnType);
 	void				requestComputedColumnCreation(std::string columnName);
 	void				requestComputedColumnDestruction(std::string columnName);
-	
+
 	void infoLabelChanged();
-	
+
 protected:
 	void				componentComplete() override;
 	void				_setType();
@@ -292,7 +287,6 @@ protected:
 							_hasWarning					= false,
 							_isDependency				= false,
 							_useControlMouseArea		= true,
-							_shouldShowFocus			= false,
 							_shouldStealHover			= false,
 							_nameIsOptionValue			= false,
 							_hasUserInteractiveValue	= true,

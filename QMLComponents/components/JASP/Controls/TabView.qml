@@ -25,7 +25,6 @@ ComponentsListBase
 {
 	id						: tabView
 	background				: rectangleItem
-	focusIndicator			: null
 	implicitWidth 			: parent.width
 	implicitHeight			: itemStack.y + itemStack.height
 	shouldStealHover		: false
@@ -34,8 +33,7 @@ ComponentsListBase
 	minimumItems			: 1
 	newItemName				: qsTr("New tab")
 	controlType				: JASPControl.TabView
-
-	onFocusIndicatorChanged	: focusIndicator = null
+	focusOnTab				: false
 
 	property alias	label				: tabView.title
 	property bool	showAddIcon			: addItemManually
