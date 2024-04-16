@@ -291,3 +291,10 @@ void JASPListControl::sourceChangedHandler()
 	_setupSources();
 	model()->sourceTermsReset();
 }
+
+void JASPListControl::_setInitialized(const Json::Value &value)
+{
+	if (model() && hasSource()) model()->sourceTermsReset();
+
+	JASPControl::_setInitialized(value);
+}

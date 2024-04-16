@@ -27,7 +27,7 @@ ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* li
 {
 }
 
-void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
+void ListModelInteractionAvailable::resetTermsFromSources()
 {	
 	beginResetModel();
 	Terms termsAvailable;
@@ -81,8 +81,7 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 	
 	endResetModel();
 
-	if (updateAssigned)
-		emit availableTermsReset(addedTerms, removedTerms);
+	emit availableTermsReset(addedTerms, removedTerms);
 
 }
 

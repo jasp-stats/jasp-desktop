@@ -27,7 +27,7 @@ class ListModelTermsAvailable : public ListModelAvailableInterface
 public:
 	ListModelTermsAvailable(JASPListControl* listView) : ListModelAvailableInterface(listView) {}
 		
-	void	resetTermsFromSources(bool updateAssigned = true)	override;
+	void	resetTermsFromSources()		override;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H
