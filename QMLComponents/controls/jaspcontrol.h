@@ -211,7 +211,7 @@ public slots:
 	GENERIC_SET_FUNCTION(ExplicitDepends		, _explicitDepends		, explicitDependsChanged		, QVariant		)
 
 private slots:
-	void	_setFocusBorder();
+	void	_hightlightBorder();
 	void	_setBackgroundColor();
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }

@@ -45,10 +45,10 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
 	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(_info);					});
 	connect(this, &JASPControl::toolTipChanged,			[this] () { setShouldStealHover(!_toolTip.isEmpty());					});
-	connect(this, &JASPControl::hasErrorChanged,		this, &JASPControl::_setFocusBorder);
-	connect(this, &JASPControl::hasWarningChanged,		this, &JASPControl::_setFocusBorder);
-	connect(this, &JASPControl::isDependencyChanged,	this, &JASPControl::_setFocusBorder);
-	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocusBorder);
+	connect(this, &JASPControl::hasErrorChanged,		this, &JASPControl::_hightlightBorder);
+	connect(this, &JASPControl::hasWarningChanged,		this, &JASPControl::_hightlightBorder);
+	connect(this, &JASPControl::isDependencyChanged,	this, &JASPControl::_hightlightBorder);
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_hightlightBorder);
 	//connect(this, &JASPControl::implicitWidthChanged,	[this] () { setWidth(implicitWidth());		if (_preferredWidthBinding) setPreferredWidth(int(implicitWidth()), true);		});
 	//connect(this, &JASPControl::implicitHeightChanged,	[this] () { setHeight(implicitHeight());	if (_preferredHeightBinding) setPreferredHeight(int(implicitHeight()), true);	});
 	connect(this, &JASPControl::indentChanged,			[this] () { QQmlProperty(this, "Layout.leftMargin", qmlContext(this)).write( (indent() && JaspTheme::currentTheme()) ? JaspTheme::currentTheme()->indentationLength() : 0); });
@@ -86,7 +86,7 @@ void JASPControl::setInnerControl(QQuickItem* control)
 		_innerControl = control;
 		if (_innerControl && !qobject_cast<JASPControl*>(_innerControl))
 		{
-			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_setFocusBorder);
+			connect(_innerControl, &QQuickItem::activeFocusChanged, this, &JASPControl::_hightlightBorder);
 			//capture focus reason
 			control->installEventFilter(this);
 		}
@@ -368,44 +368,43 @@ void JASPControl::setFocusIndicator(QQuickItem *focusIndicator)
 	}
 }
 
-void JASPControl::_setFocusBorder()
+void JASPControl::_hightlightBorder()
 {
-	if (!_focusIndicator || !_form || !_form->initialized() ) return;
+	if (!_focusIndicator) return;
 
-	JaspTheme* theme = JaspTheme::currentTheme();
 	QObject* border = _focusIndicator->property("border").value<QObject*>();
 	if (!border) return;
 
-	QColor	borderColor = _defaultBorderColor;
+	QColor	targetBorderColor = _defaultBorderColor,
+			currentBorderColor = border->property("color").value<QColor>();
 
-	if (hasError())				borderColor = theme->controlErrorTextColor();
-	else if (hasWarning())		borderColor = theme->controlWarningTextColor();
-	else if (isDependency())	borderColor = theme->dependencyBorderColor();
-	else if (hasActiveFocus() && focusOnTab() && (!_innerControl || _innerControl->hasActiveFocus()))  borderColor = theme->focusBorderColor();
+	JaspTheme* theme = JaspTheme::currentTheme();
+	if (hasError())				targetBorderColor = theme->controlErrorTextColor();
+	else if (hasWarning())		targetBorderColor = theme->controlWarningTextColor();
+	else if (isDependency())	targetBorderColor = theme->dependencyBorderColor();
+	else if (hasActiveFocus() && focusOnTab() && (!_innerControl || _innerControl->hasActiveFocus()))  targetBorderColor = theme->focusBorderColor();
 
-	float borderWidth = (borderColor == _defaultBorderColor) ? _defaultBorderWidth : theme->jaspControlHighlightWidth();
+	if (currentBorderColor != targetBorderColor)
+		border->setProperty("color", targetBorderColor);
 
-	if (border->property("color").value<QColor>() != borderColor)
-		border->setProperty("color", borderColor);
+	float	targetBorderWidth = (targetBorderColor == _defaultBorderColor) ? _defaultBorderWidth : theme->jaspControlHighlightWidth(),
+			currentBorderWidth = border->property("width").toFloat();
 
-	_borderAnimation.stop();
-
-	if (!qFuzzyCompare(border->property("width").toFloat(), borderWidth))
+	if (!qFuzzyCompare(currentBorderWidth, targetBorderWidth))
 	{
-		if (qFuzzyCompare(borderWidth, _defaultBorderWidth))
-			border->setProperty("width", borderWidth); // No animation when coming back to normal.
+		_borderAnimation.stop();
+		if (qFuzzyCompare(targetBorderWidth, _defaultBorderWidth))
+			border->setProperty("width", targetBorderWidth); // No animation when coming back to normal.
 		else
 		{
 			_borderAnimation.setTargetObject(border);
 			_borderAnimation.setPropertyName("width");
 			_borderAnimation.setDuration(800);
 			_borderAnimation.setEasingCurve(QEasingCurve::OutElastic);
-			_borderAnimation.setEndValue(borderWidth);
+			_borderAnimation.setEndValue(targetBorderWidth);
 			_borderAnimation.start();
 		}
 	}
-	else
-		border->setProperty("width", borderWidth); // just to be sure..
 }
 
 void JASPControl::setDebug(bool debug)
