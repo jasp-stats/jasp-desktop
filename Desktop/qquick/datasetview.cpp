@@ -1093,35 +1093,33 @@ void DataSetView::_copy(QPoint where, bool clear)
 	_lastJaspCopyLabels			. clear();
 	_lastJaspCopyIntoClipboard	= "";
 
-	QModelIndexList selected = _selectionModel->selectedIndexes();
+	//QModelIndexList selected = _selectionModel->selectedIndexes();
 
 	std::vector<QStringList>	rows;
 
-	int		minCol = _model->columnCount(), 
-			maxCol = 0,
-			minRow = _model->rowCount(), 
-			maxRow = 0;
-
-
-	int previousRow = -1;
-	for(const QModelIndex & selectee : selected) //How do I know this is the right order? Random SO post. It does however seem to work and it would be surprising for it to suddenly change.
+	QPoint	minIdx = selectionMin(), 
+			maxIdx = selectionMax();
+	
+	for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
 	{
-		if(selectee.row() != previousRow)
-			rows.push_back({});
-
-		minCol = std::min(minCol, selectee.column()	);
-		maxCol = std::max(maxCol, selectee.column()	);
-		minRow = std::min(minRow, selectee.row()	);
-		maxRow = std::max(maxRow, selectee.row()	);
-
-		QVariant valVar = _model->data(selectee.row(), selectee.column());
-		std::string val = fq(valVar.toString());
-
-		rows[ rows.size()-1 ].append(
-						valVar.type() == QVariant::Double				?
-						QLocale::system().toString(valVar.toDouble())	: //To make sure commas etc are formatted as the system expects.
-						tq(val).replace('\n', ' ').replace('\t', ' ') )	; //Because Excel/etc use tab/newline for cell/row we make sure they are not in the cells at least.
-		previousRow = selectee.row();
+		rows.push_back({});
+		
+		for(size_t c=minIdx.x(); c<=maxIdx.x(); c++)
+			if(_selectionModel->columnIntersectsSelection(c))
+			{
+				if(!isSelected(r, c))
+					rows[ rows.size()-1 ].append("");
+				else
+				{
+					QVariant valVar = _model->data(r, c);
+					std::string val = fq(valVar.toString());
+			
+					rows[ rows.size()-1 ].append(
+									valVar.type() == QVariant::Double				?
+									QLocale::system().toString(valVar.toDouble())	: //To make sure commas etc are formatted as the system expects.
+									tq(val).replace('\n', ' ').replace('\t', ' ') )	; //Because Excel/etc use tab/newline for cell/row we make sure they are not in the cells at least.
+				}
+			}
 	}
 
 	if(rows.size() == 0)
@@ -1131,28 +1129,34 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 	if(isColumnHeader(where))
 	{
-		rows.insert(rows.begin(), tq(std::vector<std::string>(maxCol - minCol + 1, "")));
-		for(int c=minCol; c<=maxCol; c++)
-		{
-			_copiedColumns.push_back(_model->serializedColumn(c));
-			rows[0][c-minCol] = _model->headerData(c, Qt::Horizontal).toString();
-		}
+		rows.insert(rows.begin(), {});
+		for(int c=minIdx.x(); c<=maxIdx.x(); c++)
+			if(_selectionModel->columnIntersectsSelection(c))
+			{
+				_copiedColumns.push_back(_model->serializedColumn(c));
+				rows[0].push_back(_model->headerData(c, Qt::Horizontal).toString());
+			}
 	}
 	
 	//Collect values and labels shown for internal lossless copying, will obviously not work for copying to external jasp.
-	for(int c=minCol; c<=maxCol; c++)
-	{
-		qstringvec vals, labs;
-		
-		for(int r=minRow; r<=maxRow; r++)
+	for(int c=minIdx.x(); c<=maxIdx.x(); c++)
+		if(_selectionModel->columnIntersectsSelection(c))
 		{
-			vals.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::value)).toString());
-			labs.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::label		)).toString());
+			qstringvec	vals, 
+						labs;
+			boolvec		sels;
+			
+			for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
+			{
+				vals.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::value)).toString());
+				labs.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::label)).toString());
+				sels.push_back(isSelected(r, c));
+			}
+			
+			_lastJaspCopyValues.push_back(vals);
+			_lastJaspCopyLabels.push_back(labs);
+			_lastJaspCopySelect.push_back(sels);
 		}
-		
-		_lastJaspCopyValues.push_back(vals);
-		_lastJaspCopyLabels.push_back(labs);
-	}
 
 
 	QStringList	all;
@@ -1168,14 +1172,14 @@ void DataSetView::_copy(QPoint where, bool clear)
 		QPoint topLeft = selectionMin();
 
 		if(isColumnHeader(where))
-			_model->removeColumns(minCol, 1 + (maxCol - minCol));
+			_model->removeColumns(minIdx.x(), 1 + (maxIdx.x() - minIdx.x()));
 		else if(isRowHeader(where))
 			_model->removeRows(topLeft.y(), rowsSelected);
 		else
 		{
 			Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
 			auto emptyCells = 	std::vector<std::vector<QString>>(
-											 (maxCol - minCol) + 1,
+											 (maxIdx.x() - minIdx.x()) + 1,
 											 std::vector<QString>(
 												 rowsSelected,
 												 ""
@@ -1200,6 +1204,7 @@ void DataSetView::paste(QPoint where)
 		_copiedColumns		.clear();
 		_lastJaspCopyValues	.clear();
 		_lastJaspCopyLabels	.clear();
+		_lastJaspCopySelect	.clear();
 	}
 
 	if (isColumnHeader(where) && where.x() >= 0 && _copiedColumns.size())

@@ -336,6 +336,7 @@ protected:
 	QString													_lastJaspCopyIntoClipboard;
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
+	std::vector<boolvec>									_lastJaspCopySelect;
 };
 
 

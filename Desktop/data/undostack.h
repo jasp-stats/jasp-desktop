@@ -215,25 +215,6 @@ private:
 							_oldColType = -1;
 };
 
-class PasteSpreadsheetCommand : public UndoModelCommand
-{
-public:
-	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const QStringList & colNames);
-
-	void undo()					override;
-	void redo()					override;
-
-private:
-	std::vector<std::vector<QString>>	_newValues,
-										_newLabels,
-										_oldValues,
-										_oldLabels;
-	QStringList							_newColNames,
-										_oldColNames;
-	int									_row = -1,
-										_col = -1;
-};
-
 class UndoModelCommandMultipleColumns : public UndoModelCommand
 {
 public:
@@ -247,6 +228,24 @@ protected:
 private:
 	std::map<int, Json::Value>	_serializedColumns;
 };
+
+class PasteSpreadsheetCommand : public UndoModelCommandMultipleColumns
+{
+public:
+	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const QStringList & colNames);
+
+
+	void redo()					override;
+
+private:
+	std::vector<std::vector<QString>>	_newValues,
+										_newLabels;
+	QStringList							_newColNames;
+	int									_row = -1,
+										_col = -1;
+};
+
+
 
 class SetColumnTypeCommand : public UndoModelCommandMultipleColumns
 {

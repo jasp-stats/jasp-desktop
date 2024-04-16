@@ -184,37 +184,22 @@ void RemoveRowsCommand::redo()
 	_model->removeRows(_start, _count);
 }
 
+intset ___sneakyConvertToIntSetFunction(int col, int colCount)
+{
+	intset out;
+	for(int c=0; c< colCount; c++)
+		out.insert(col+c);
+	return out;
+}
+
 PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const QStringList& colNames)
-	: UndoModelCommand(model), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}
+	: UndoModelCommandMultipleColumns(model, ___sneakyConvertToIntSetFunction(col, values.size())), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}
 {
 	setText(QObject::tr("Paste values at row %1 column '%2'").arg(rowName(_row)).arg(columnName(_col)));
 }
 
-void PasteSpreadsheetCommand::undo()
-{
-	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
-
-	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _oldValues, _oldLabels, {}, _oldColNames);
-}
-
 void PasteSpreadsheetCommand::redo()
 {
-	_oldValues.clear();
-	_oldLabels.clear();
-	for (int c = 0; c < _newValues.size(); c++)
-	{
-		_oldValues.push_back(std::vector<QString>());
-		_oldLabels.push_back(std::vector<QString>());
-		
-		_oldColNames.push_back(_model->headerData(_col + c, Qt::Horizontal).toString());
-		for (int r = 0; r < _newValues[c].size(); r++)
-		{
-			_oldValues[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::value)).toString());
-			_oldLabels[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::label)).toString());
-		}
-	}
-
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
@@ -280,13 +265,20 @@ UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemMo
 : UndoModelCommand(model), _cols{cols}
 {
 	for(int col : _cols)
-		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col)->serialize();
+		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col) ? DataSetPackage::pkg()->dataSet()->column(col)->serialize() : Json::nullValue;
 }
 
 void UndoModelCommandMultipleColumns::undo()
 {
+	QStringList changed;
+	
 	for(int col : _cols)
-		DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+		if(!_serializedColumns[col].isNull())
+			DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+
+	
+	DataSetPackage::pkg()->refresh();
+	
 }
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
