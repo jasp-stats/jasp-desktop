@@ -47,7 +47,7 @@ QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) cons
 	return ListModelAvailableInterface::data(index, role);
 }
 
-void ListModelLabelValueTerms::resetTermsFromSources(bool )
+void ListModelLabelValueTerms::resetTermsFromSources()
 {
 	beginResetModel();
 

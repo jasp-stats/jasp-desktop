@@ -18,7 +18,7 @@
 
 #include "listmodeltermsavailable.h"
 
-void ListModelTermsAvailable::resetTermsFromSources(bool updateAssigned)
+void ListModelTermsAvailable::resetTermsFromSources()
 {
 	
 	beginResetModel();
@@ -38,6 +38,5 @@ void ListModelTermsAvailable::resetTermsFromSources(bool updateAssigned)
 
 	endResetModel();
 
-	if (updateAssigned)
-		emit availableTermsReset(addedTerms, removedTerms);
+	emit availableTermsReset(addedTerms, removedTerms);
 }

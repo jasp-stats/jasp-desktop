@@ -91,10 +91,7 @@ void VariablesListBase::setUp()
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
 {
-	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
-	if (availableModel)
-		availableModel->resetTermsFromSources(false);
-	else if (value == Json::nullValue && addAvailableVariablesToAssigned())
+	if (value == Json::nullValue && addAvailableVariablesToAssigned())
 	{
 		// If addAvailableVariablesToAssigned is true and this is initialized without value,
 		// maybe the availableAssignedList has some default values that must be assigned to this VariablesList

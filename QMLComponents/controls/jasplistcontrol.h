@@ -146,6 +146,8 @@ protected slots:
 			GENERIC_SET_FUNCTION(AllowAnalysisOwnComputedColumns, _allowAnalysisOwnComputedColumns,	allowAnalysisOwnComputedColumnsChanged,	bool	)
 
 protected:
+	void					_setInitialized(const Json::Value& value = Json::nullValue)	override;
+
 	QVector<SourceItem*>	_sourceItems;
 	QSet<columnType>		_variableTypesAllowed;
 	QString					_optionKey				= "value";

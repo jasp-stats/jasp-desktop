@@ -29,7 +29,7 @@ public:
 	ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values = JASPListControl::LabelValueMap());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
-	void						resetTermsFromSources(bool updateAssigned = true)					override;
+	void						resetTermsFromSources()												override;
 
 	std::vector<std::string>	getValues();
 	QString						getValue(const QString& label)								const;

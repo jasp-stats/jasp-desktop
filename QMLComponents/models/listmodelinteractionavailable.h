@@ -29,7 +29,7 @@ class ListModelInteractionAvailable : public ListModelAvailableInterface, public
 public:
 	ListModelInteractionAvailable(JASPListControl* listView);
 	
-	void resetTermsFromSources(bool updateAssigned = true) override;
+	void resetTermsFromSources() override;
 };
 
 #endif // LISTMODELINTERACTIONAVAILABLE_H
