@@ -386,7 +386,6 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			int rowNo = 0;
 					
 			resultCol.isScale	= true;
-			resultCol.hasLabels	= false;
 			resultCol.doubles	= (double*)calloc(filteredRowCount, sizeof(double));
 			
 			boolvec filterToUse;
@@ -399,7 +398,6 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		else // if (requestedType != ColumnType::scale)
 		{
 			resultCol.isScale	= false;
-			resultCol.hasLabels	= true;
 			resultCol.ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 			resultCol.isOrdinal = (requestedType == columnType::ordinal);
 			
@@ -480,56 +478,10 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 		if (requestedType == columnType::unknown)
 			requestedType = colType;
 
-		if (requestedType == columnType::scale)
-		{
-			resultCol.isScale	= colType == columnType::scale;
-			resultCol.hasLabels = colType == columnType::nominalText;
-			resultCol.isOrdinal = colType == columnType::ordinal; //Should I do this? Originally it was only set to false when nominaltext and not set at all in other cases...
 
-			if(colType == columnType::nominalText)
-				resultCol.labels = rbridge_getLabels(column->labels(), resultCol.nbLabels);
-		}
-		else
-		{
-			resultCol.isScale	= false;
-			resultCol.hasLabels = true;
-			resultCol.isOrdinal = (requestedType == columnType::ordinal);
-
-			if (colType != columnType::scale)
-				resultCol.labels = rbridge_getLabels(column->labels(), resultCol.nbLabels);
-			else
-			{
-				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)
-				std::set<int> uniqueValues;
-
-				for (double value: column->dbls())
-				{
-					if (std::isnan(value))
-						continue;
-
-					int intValue;
-
-					if (std::isfinite(value))	intValue = (int)(value * 1000);
-					else if (value < 0)			intValue = EmptyValues::missingValueInteger;
-					else						intValue = std::numeric_limits<int>::max();
-
-					uniqueValues.insert(intValue);
-				}
-
-				std::vector<std::string> labels;
-
-				for (int value: uniqueValues)
-				{
-					if (value == std::numeric_limits<int>::max())				labels.push_back("Inf");
-					else if (value == EmptyValues::missingValueInteger)		labels.push_back("-Inf");
-					else														labels.push_back(std::to_string((double)value / 1000.0f));
-				}
-
-				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
-
-			}
-
-		}
+		resultCol.isScale	= requestedType == columnType::scale;
+		resultCol.isOrdinal = requestedType == columnType::ordinal; 
+		resultCol.labels 	= rbridge_getLabels(column->labels(), resultCol.nbLabels);
 	}
 
 	return resultCols;
@@ -601,7 +553,7 @@ void freeRBridgeColumns()
 		if (column.isScale)	free(column.doubles);
 		else				free(column.ints);
 
-		if (column.hasLabels)
+		if (!column.isScale)
 			freeLabels(column.labels, column.nbLabels);
 	}
 	free(datasetStatic[datasetColMax].ints); //rownames/numbers
@@ -617,7 +569,7 @@ void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colM
 	{
 		RBridgeColumnDescription& column = columns[i];
 		free(column.name);
-		if (column.hasLabels)
+		if (!column.isScale)
 			freeLabels(column.labels, column.nbLabels);
 	}
 	free(columns);

@@ -991,7 +991,6 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn*
 			columnNames[i] = colResult.name;
 
 			if (colResult.isScale)			list[i] =						Rcpp::NumericVector(colResult.doubles,	colResult.doubles	+ colResult.nbRows);
-			else if(!colResult.hasLabels)	list[i] =						Rcpp::IntegerVector(colResult.ints,		colResult.ints		+ colResult.nbRows);
 			else							list[i] = jaspRCPP_makeFactor(	Rcpp::IntegerVector(colResult.ints,		colResult.ints		+ colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal);
 
 		}
@@ -1026,7 +1025,6 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 			columnNames[i] = colDescription.name;
 
 			if (colDescription.isScale)				list(i) = Rcpp::NumericVector(0);
-			else if (!colDescription.hasLabels)		list(i) = Rcpp::IntegerVector(0);
 			else									list(i) = jaspRCPP_makeFactor(Rcpp::IntegerVector(0), colDescription.labels, colDescription.nbLabels, colDescription.isOrdinal);
 		}
 

@@ -121,7 +121,7 @@
 [submodule "Modules/jaspPredictiveAnalytics"]
 	path = Modules/jaspPredictiveAnalytics
 	url = https://github.com/jasp-stats/jaspPredictiveAnalytics
-	branch = main
+	branch = master
 [submodule "Modules/jaspTimeSeries"]
 	path = Modules/jaspTimeSeries
 	url = https://github.com/jasp-stats/jaspTimeSeries.git
@@ -133,12 +133,16 @@
 [submodule "Modules/jaspRobustTTests"]
 	path = Modules/jaspRobustTTests
 	url = https://github.com/jasp-stats/jaspRobustTTests.git
+	branch = master
 [submodule "Modules/jaspTestModule"]
 	path = Modules/jaspTestModule
 	url = https://github.com/jasp-stats/jaspTestModule
+	branch = master
 [submodule "Modules/jaspProcess"]
 	path = Modules/jaspProcess
 	url = https://github.com/jasp-stats/jaspProcess
+	branch = master
 [submodule "Modules/jaspSurvival"]
 	path = Modules/jaspSurvival
 	url = https://github.com/jasp-stats/jaspSurvival
+	branch = master

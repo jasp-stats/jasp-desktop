@@ -166,7 +166,7 @@ Properties
 - `values`: [optional, default: empty] array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
 - `startValue`: [optional, default: ``] string specifying the value of the dropdown item that is selected by default
 - `currentIndex`, `currentValue`, `currentLabel`: [optional] gives the current index, value or label of the selected item. Can be used to set the current item.
-- `currentColumnType`: [read-only] if the values of the dropdown are variables of the dataset, then this property gives the type of this variable, i.e. `scale`, `nominal`, `nominalText`, `ordinal`.
+- `currentColumnType`: [read-only] if the values of the dropdown are variables of the dataset, then this property gives the type of this variable, i.e. `scale`, `nominal`, `ordinal`.
 - `source`: [optional, default: empty] if `values` is empty, you can use the name of a VariablesList or other kind of source (see [Variable Specification](#variable-specification)) to set the values of the DropDown. If `values` and `source` is empty, then all available columns of the dataset are used.
 - `addEmptyValue`: [optional, default: `false`] if `true`, add an empty value with a place holder (see `placeHolderText`) as first element of the dropdown list
 - `placeHolderText`: [optional, default: `<no choice>`] name used if an ampty value is added in the dropdown list
@@ -445,10 +445,10 @@ Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field
 - `columns`: [optional, default: 1] number of columns of the list.
-- `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal", "nominalText"]` ] array specifying the allowed column types. The difference between `nominal` and `nominalText` is that `nominal` uses integers to label the values, and `nominalText` uses strings.
-- `suggestedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal", "nominalText"]` ] array specifying the suggested column types. The difference between `allowedColumns` and `suggestedColumns` is that `allowedColumns` sets explicitly the types that are allowed, and `suggestedColumns` sets the allowed types in a looser way, with these rules:
+- `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the allowed column types.
+- `suggestedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the suggested column types. The difference between `allowedColumns` and `suggestedColumns` is that `allowedColumns` sets explicitly the types that are allowed, and `suggestedColumns` sets the allowed types in a looser way, with these rules:
     * if `suggestedColumns` contains the `scale` type, then `nominal` and `ordinal` types are also allowed
-    * if `suggestedColumns` contains the `nominal` type, then `nominalText`and `ordinal` tyes are also allowed
+    * if `suggestedColumns` contains the `nominal` type, then `ordinal` tyes are also allowed
 
 The `suggestedColumns` types are displayed as icons at the bottom-right of the VariablesList, indicating which kind of columns may be added in this VariablesList. If `suggestedColumns` is empty and `allowedColumns` is specified, then the `allowedColumns` is used to display the type icons.
 If `suggestedColumns` and `allowedColumns` are empty, then all column types are allowed.\

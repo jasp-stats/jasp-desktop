@@ -318,7 +318,7 @@ void VariablesListBase::_setAllowedVariables()
 	// The implicitAllowedTypes is either the allowedColumns if they are explicitely defined
 	// or the suggestedColumns with extra permitted types, with these rules:
 	// . if suggestedType contains the scale type, then nomincal & ordinal types are then also allowed.
-	// . if suggestedType contains the nomincal type, then nominalText & ordinal types are also allowed.
+	// . if suggestedType contains the nomincal type, then ordinal types are also allowed.
 
 	auto listToSet = [](QStringList l) { return QSet<QString> (l.constBegin(), l.constEnd()); };
 	if (!allowedColumns().empty())
@@ -331,11 +331,9 @@ void VariablesListBase::_setAllowedVariables()
 			implicitAllowedTypes.insert("nominal");
 			implicitAllowedTypes.insert("ordinal");
 		}
+		
 		if (suggestedColumns().contains("nominal"))
-		{
-			implicitAllowedTypes.insert("nominalText");
 			implicitAllowedTypes.insert("ordinal");
-		}
 	}
 
 	_variableTypesAllowed.clear();

@@ -45,7 +45,6 @@ extern "C" {
 struct RBridgeColumn {
   char*   name;
   bool    isScale;
-  bool    hasLabels;
   bool    isOrdinal;
   double* doubles;
   int*    ints;
@@ -58,7 +57,6 @@ struct RBridgeColumnDescription {
   int     type;
   char*   name;
   bool    isScale;
-  bool    hasLabels;
   bool    isOrdinal;
   char**  labels;
   size_t  nbLabels;
