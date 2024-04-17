@@ -193,7 +193,12 @@ Rectangle
 				headerRoot.forceActiveFocus()
 
 				if(mouseEvent.button === Qt.LeftButton)
-					dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
+				{
+					if(mouseEvent.modifiers & Qt.ShiftModifier || mouseEvent.modifiers & Qt.ControlModifier)
+						dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
+					else
+						columnModel.chosenColumn = columnIndex;
+				}
 
 				if(mouseEvent.button === Qt.RightButton)
 				{

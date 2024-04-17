@@ -28,11 +28,15 @@ public:
 	void						setSourceModel(QAbstractItemModel* model);
 	QAbstractItemModel*			sourceModel()																				const { return _sourceModel; }
 
+	
+	void						removeRows(intset rows);
+	void						removeColumns(intset cols);
+	
 	void						removeRows(int start, int count);
 	void						removeColumns(int start, int count);
 	void						insertRows(int row, int count = 1);
 	void						insertColumn(int col, bool computed, bool R);
-	void						pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {});
+	void						pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {}, const std::vector<boolvec> & selected = {});
 	int							setColumnType(intset columnIndex, int columnType);
 	void						columnReverseValues(intset columnIndexes);
 	void						columnOrderByValues(intset columnIndexes);

@@ -1841,7 +1841,7 @@ void DataSetPackage::setWorkspaceEmptyValues(const stringset &emptyValues, bool 
 	emit workspaceEmptyValuesChanged();
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> &  labels, const intvec & coltypes, const QStringList & colNames)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> &  labels, const intvec & coltypes, const QStringList & colNames, const std::vector<boolvec> & selected)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
 
@@ -1849,6 +1849,11 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colMax			= values.size();
 	bool	rowCountChanged = int(row + rowMax) > dataRowCount()	,
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
+	
+	auto isSelected = [selected](int row, int col)
+	{
+		return selected.size() == 0 || 	selected[col][row];
+	};
 
 	beginSynchingData(false);
 	_dataSet->beginBatchedToDB();
@@ -1868,7 +1873,8 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 
 		bool aChange = false;
 		for(int r=0; r<rowMax; r++)
-			aChange = column->setValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
+			if(isSelected(r, c))
+				aChange = column->setValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
 			
 		aChange = aChange || colName != column->name() || desiredType != column->type();
 		
@@ -1879,7 +1885,10 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 		column->setType(desiredType);
 
 		if(aChange)
+		{
 			changed.push_back(colName);
+			column->labelsTempReset();
+		}
 	}
 
 	_dataSet->endBatchedToDB();

@@ -1212,12 +1212,13 @@ void DataSetView::paste(QPoint where)
 	else if(_lastJaspCopyValues.size())
 	{
 		if (!isColumnHeader(where))
-			_model->pasteSpreadsheet(where.y(), where.x(), _lastJaspCopyValues, _lastJaspCopyLabels);
+			_model->pasteSpreadsheet(where.y(), where.x(), _lastJaspCopyValues, _lastJaspCopyLabels, {}, _lastJaspCopySelect);
 		else
 		{
 			QStringList	colNames;
 			auto		vals = _lastJaspCopyValues,
 						labs = _lastJaspCopyLabels;
+			auto		sels = _lastJaspCopySelect;
 			
 			for(size_t c=0; c<vals.size(); c++)
 			{
@@ -1225,11 +1226,10 @@ void DataSetView::paste(QPoint where)
 				
 				vals[c].erase(vals[c].begin());
 				labs[c].erase(labs[c].begin());
+				sels[c].erase(sels[c].begin());
 			}
 			
-			use _lastJaspCopySelect !
-			
-			_model->pasteSpreadsheet(isColumnHeader(where) ? 0 : where.y(), where.x(), vals, labs, colNames);
+			_model->pasteSpreadsheet(isColumnHeader(where) ? 0 : where.y(), where.x(), vals, labs, colNames, sels);
 		}	
 	}
 	else
@@ -1377,7 +1377,8 @@ void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(i
 	
 	intset ints;
 	for	(columnIndex	= columnA; columnIndex <= columnB; columnIndex++)
-		ints.insert(columnIndex);
+		if(_selectionModel->columnIntersectsSelection(columnIndex))
+			ints.insert(columnIndex);
 	
 	applyThis(ints);
 }

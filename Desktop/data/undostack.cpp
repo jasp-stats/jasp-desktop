@@ -192,8 +192,8 @@ intset ___sneakyConvertToIntSetFunction(int col, int colCount)
 	return out;
 }
 
-PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const QStringList& colNames)
-	: UndoModelCommandMultipleColumns(model, ___sneakyConvertToIntSetFunction(col, values.size())), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}
+PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const std::vector<boolvec> & selected, const QStringList& colNames)
+	: UndoModelCommandMultipleColumns(model, ___sneakyConvertToIntSetFunction(col, values.size())), _row{row}, _col{col}, _values{values}, _labels{labels}, _colNames{colNames}, _selected{selected}
 {
 	setText(QObject::tr("Paste values at row %1 column '%2'").arg(rowName(_row)).arg(columnName(_col)));
 }
@@ -203,7 +203,7 @@ void PasteSpreadsheetCommand::redo()
 	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
 
 	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _newValues, _newLabels, {}, _newColNames);
+		dataSetTable->pasteSpreadsheet(_row, _col, _values, _labels, {}, _colNames, _selected);
 }
 
 

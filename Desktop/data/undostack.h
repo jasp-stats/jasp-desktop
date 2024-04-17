@@ -232,15 +232,16 @@ private:
 class PasteSpreadsheetCommand : public UndoModelCommandMultipleColumns
 {
 public:
-	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const QStringList & colNames);
+	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const std::vector<boolvec> & selected, const QStringList & colNames);
 
 
 	void redo()					override;
 
 private:
-	std::vector<std::vector<QString>>	_newValues,
-										_newLabels;
-	QStringList							_newColNames;
+	std::vector<std::vector<QString>>	_values,
+										_labels;
+	std::vector<boolvec>				_selected;
+	QStringList							_colNames;
 	int									_row = -1,
 										_col = -1;
 };
