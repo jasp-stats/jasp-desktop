@@ -28,10 +28,6 @@ public:
 	void						setSourceModel(QAbstractItemModel* model);
 	QAbstractItemModel*			sourceModel()																				const { return _sourceModel; }
 
-	
-	void						removeRows(intset rows);
-	void						removeColumns(intset cols);
-	
 	void						removeRows(int start, int count);
 	void						removeColumns(int start, int count);
 	void						insertRows(int row, int count = 1);

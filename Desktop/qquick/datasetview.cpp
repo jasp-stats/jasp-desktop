@@ -1457,7 +1457,26 @@ void DataSetView::columnsDelete(int col)
 	if(columnA == -1 || columnA > col || columnB < col)
 		_model->removeColumns(col, 1);
 	else
-		_model->removeColumns(columnA, 1 + (columnB - columnA));
+	{
+		//Go through all columns and make separate removals for each contiguously selected set of columns	
+		std::vector<std::pair<int, int>> removals;
+		int lastStart = columnA,
+			c;
+		for(c=columnA; c<=columnB; c++)
+			if(!_selectionModel->columnIntersectsSelection(c))
+			{
+				removals.push_back(std::make_pair(lastStart, (c - lastStart))); //Dont do +1 because c is not contiguous with lastStart!
+				lastStart = -1;
+			}
+			else if(lastStart == -1)
+				lastStart = c;
+				
+		
+		removals.push_back(std::make_pair(lastStart, 1 + (c - lastStart)));
+		std::reverse(removals.begin(), removals.end());
+		for(auto & removal : removals)
+			_model->removeColumns(removal.first, removal.second);
+	}
 
 	_selectionModel->clear();
 }
@@ -1502,7 +1521,26 @@ void DataSetView::rowsDelete(int row)
 	if(rowA == -1 || rowA > row || rowB < row)
 		_model->removeRows(row, 1);
 	else
-		_model->removeRows(rowA, 1 + (rowB -  rowA));
+	{
+		//Go through all rows and make separate removals for each contiguously selected set of rows	
+		std::vector<std::pair<int, int>> removals;
+		int lastStart = rowA,
+			r;
+		for(r=rowA; r<=rowB; r++)
+			if(!_selectionModel->rowIntersectsSelection(r))
+			{
+				removals.push_back(std::make_pair(lastStart, (r - lastStart))); //Dont do +1 because r is not contiguous with lastStart!
+				lastStart = -1;
+			}
+			else if(lastStart == -1)
+				lastStart = r;
+				
+		
+		removals.push_back(std::make_pair(lastStart, 1 + (r - lastStart)));
+		std::reverse(removals.begin(), removals.end());
+		for(auto & removal : removals)
+			_model->removeRows(removal.first, removal.second);
+	}
 
 	_selectionModel->clear();
 }

@@ -181,7 +181,7 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 
 	if (start + count >= _sourceModel->columnCount())
 		count = _sourceModel->columnCount() - start;
-
+	
 	_undoStack->pushCommand(new RemoveColumnsCommand(_sourceModel, start, count));
 }
 
