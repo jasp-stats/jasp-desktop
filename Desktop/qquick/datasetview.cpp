@@ -1328,7 +1328,8 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 													_model->index(std::max(maxNewSelection.y(), maxOldSelection.y()), std::max(maxNewSelection.x(), maxOldSelection.x())));
 	}
 	
-	if(shiftPressed || ctrlCmdPressed)
+	//Reset edit if we are selecting things with shift or ctrl/cmd, or when the last clicked place is not the same as the editthing
+	if(shiftPressed || ctrlCmdPressed || row != _prevEditRow || col != _prevEditCol)
 		clearEdit();
 
 	
@@ -1656,7 +1657,7 @@ void DataSetView::edit(int row, int col)
 	if (row == -1 || col == -1)
 		return;
 
-	//_selectionModel->setCurrentIndex(_model->index(row, col), QItemSelectionModel::Current);
+	_selectionModel->setCurrentIndex(_model->index(row, col), QItemSelectionModel::Current);
 
 	clearEdit();
 	
