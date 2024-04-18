@@ -218,8 +218,11 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 	for (int colNr = _sourceModel->columnCount(); colNr <= col; colNr++)
 		insertColumn(colNr, false, false);
 	
-	int rowNr = _sourceModel->rowCount();
-	insertRows(rowNr, 1 + row - rowNr);
+	int rowNr = _sourceModel->rowCount(),
+		rowC  = row - rowNr;
+	
+	if(rowC)
+		insertRows(rowNr, rowC);
 
 }
 

@@ -194,10 +194,9 @@ Rectangle
 
 				if(mouseEvent.button === Qt.LeftButton)
 				{
-					if(mouseEvent.modifiers & Qt.ShiftModifier || mouseEvent.modifiers & Qt.ControlModifier)
-						dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
-					else
-						columnModel.chosenColumn = columnIndex;
+					dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
+					columnModel.chosenColumn = columnIndex;
+						
 				}
 
 				if(mouseEvent.button === Qt.RightButton)

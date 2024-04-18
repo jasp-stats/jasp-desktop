@@ -1350,6 +1350,11 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	_selectionModel->select(selection, flags);
 }
 
+void DataSetView::selectionClear()
+{
+	_selectionModel->clear();
+}
+
 void DataSetView::selectHover(int row, int col)
 {
 	pollSelectScroll(row, col);

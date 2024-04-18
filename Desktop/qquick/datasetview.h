@@ -196,6 +196,7 @@ public slots:
 	void		paste(	QPoint where = QPoint(-1,-1));
 
 	void		select(						int row, int column,	bool shiftPressed,			bool ctrlCmdPressed);
+	void		selectionClear();
 	void		selectHover(				int row, int column);
 	QString		columnInsertBefore(			int col = -1,	bool computed = false, bool R = false);
 	QString		columnInsertAfter(			int col = -1,	bool computed = false, bool R = false);
