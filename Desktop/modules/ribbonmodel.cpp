@@ -168,7 +168,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOffButton,	[=](bool synching){ _synchroniseOffButton->setEnabled(synching); });
 
 	{
-		DataSetView * view = DataSetView::lastInstancedDataSetView();
+		DataSetView * view = DataSetView::mainDataViewer();
 
 		auto setUnAndRedoButtonLambda = [&,view]()
 		{

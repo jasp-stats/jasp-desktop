@@ -93,8 +93,6 @@ public:
 		bool				dataSetBaseNodeStillExists(	DataSetBaseNode		* node	) const;
 		
 		void				waitForExportResultsReady();
-		
-
 
 		void				beginLoadingData(	bool informEngines = true);
 		void				endLoadingData(		bool informEngines = true);
@@ -147,10 +145,10 @@ public:
 				QString				windowTitle()						const;
 				QString				description()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
-				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
-				bool				synchingData()						const	{ return _synchingData;						  }
+				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
+				bool				synchingData()						const	{ return _synchingData;								}
 				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
-				bool				isDatabase()						const	{ return _database != Json::nullValue;			}
+				bool				isDatabase()						const	{ return _database != Json::nullValue;				}
 		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							}
@@ -160,7 +158,7 @@ public:
 
 				// The data file might be read-only if it comes from the examples or read from an external database
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						}
-				bool				currentFileIsExample()					const;
+				bool				currentFileIsExample()				const;
 				uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					}
 				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;					}

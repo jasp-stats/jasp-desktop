@@ -391,6 +391,21 @@ private:
 								_oldEmptyValues;
 };
 
+/*
+class ChangeSelectionCommand: public UndoModelCommand
+{
+public:
+	ChangeSelectionCommand(???);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	stringset					_newEmptyValues,
+								_oldEmptyValues;
+};
+*/
+
 class UndoStack : public QUndoStack
 {
 	Q_OBJECT
@@ -403,7 +418,7 @@ public:
 	void				startMacro(const QString& text = QString());
 	void				endMacro(UndoModelCommand* command = nullptr);
 	QUndoCommand*		parentCommand()		{ return _parentCommand; }
-
+	
 private:
 
 	UndoModelCommand*			_parentCommand			= nullptr;

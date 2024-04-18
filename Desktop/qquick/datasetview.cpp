@@ -15,7 +15,7 @@
 #include <QClipboard>
 #include "utils.h"
 
-DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
+DataSetView * DataSetView::_mainDataSetView = nullptr;
 
 
 DataSetView::DataSetView(QQuickItem *parent)
@@ -58,7 +58,8 @@ DataSetView::DataSetView(QQuickItem *parent)
 	
 	setZ(10);
 
-	_lastInstancedDataSetView = this;
+	if(!_mainDataSetView) //Lets just make sure we always create this one first!
+		_mainDataSetView = this;
 }
 
 void DataSetView::setModel(QAbstractItemModel * model)
@@ -1650,7 +1651,7 @@ void DataSetView::edit(int row, int col)
 	if (row == -1 || col == -1)
 		return;
 
-	_selectionModel->setCurrentIndex(_model->index(row, col), QItemSelectionModel::Current);
+	//_selectionModel->setCurrentIndex(_model->index(row, col), QItemSelectionModel::Current);
 
 	clearEdit();
 	

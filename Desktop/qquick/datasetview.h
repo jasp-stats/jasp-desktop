@@ -67,7 +67,7 @@ public:
 
 							DataSetView(QQuickItem *parent = nullptr);
 
-	static DataSetView *	lastInstancedDataSetView()					{ return _lastInstancedDataSetView; }
+							static DataSetView *	mainDataViewer()								{ return _mainDataSetView;}
 
 	void					setModel(QAbstractItemModel * model);
 	
@@ -304,7 +304,8 @@ protected:
 	QSGFlatColorMaterial									_material;
 	std::map<size_t, std::map<size_t, unsigned char>>		_storedLineFlags;
 	std::map<size_t, std::map<size_t, QString>>				_storedDisplayText;
-	static DataSetView									*	_lastInstancedDataSetView;
+	static DataSetView									*	_lastInstancedDataSetView,
+														*	_mainDataSetView;
 	bool													_cacheItems				= false,
 															_recalculateCellSizes	= false,
 															_ignoreViewpoint		= true,

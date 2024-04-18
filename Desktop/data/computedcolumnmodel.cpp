@@ -13,8 +13,6 @@ ComputedColumnModel::ComputedColumnModel()
 	assert(_singleton == nullptr);
 	_singleton = this;
 
-	_undoStack = DataSetPackage::pkg()->undoStack();
-
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnJsonChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
@@ -159,7 +157,7 @@ void ComputedColumnModel::emitSendComputeCode(Column * column)
 
 void ComputedColumnModel::sendCode(const QString & code, const QString & json)
 {
-	_undoStack->push(new SetComputedColumnCodeCommand(DataSetPackage::pkg(), _selectedColumn->name(), code, json));
+	DataSetPackage::pkg()->undoStack()->push(new SetComputedColumnCodeCommand(DataSetPackage::pkg(), _selectedColumn->name(), code, json));
 }
 
 
@@ -340,7 +338,7 @@ void ComputedColumnModel::removeColumn()
 		return;
 
 	// TODO pass RemoveColumnCommand aab
-	_undoStack->pushCommand(new RemoveColumnsCommand(DataSetPackage::pkg(), _selectedColumn->id(), 1));
+	DataSetPackage::pkg()->undoStack()->pushCommand(new RemoveColumnsCommand(DataSetPackage::pkg(), _selectedColumn->id(), 1));
 
 	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
 	emit refreshData();

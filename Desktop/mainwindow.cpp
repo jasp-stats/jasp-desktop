@@ -670,20 +670,21 @@ void MainWindow::loadQML()
 
 	
 	//To make sure we connect to the "main datasetview":
-	connect(_preferences, &PreferencesModel::uiScaleChanged,			DataSetView::lastInstancedDataSetView(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
-	connect(_preferences, &PreferencesModel::interfaceFontChanged,		DataSetView::lastInstancedDataSetView(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
-	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnBefore,	DataSetView::lastInstancedDataSetView(),	&DataSetView::columnComputedInsertBefore);
-	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnAfter,	DataSetView::lastInstancedDataSetView(),	&DataSetView::columnComputedInsertAfter);
-	connect(_ribbonModel, &RibbonModel::dataInsertColumnBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::columnInsertBefore);
-	connect(_ribbonModel, &RibbonModel::dataInsertColumnAfter,			DataSetView::lastInstancedDataSetView(),	&DataSetView::columnInsertAfter);
-	connect(_ribbonModel, &RibbonModel::finishCurrentEdit,				DataSetView::lastInstancedDataSetView(),	&DataSetView::commitLastEdit);
-	connect(_ribbonModel, &RibbonModel::dataInsertRowBefore,			DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertBefore);
-	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::lastInstancedDataSetView(),	&DataSetView::rowInsertAfter);
-	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::lastInstancedDataSetView(),	&DataSetView::columnsDeleteSelected);
-	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::lastInstancedDataSetView(),	&DataSetView::rowsDeleteSelected);
-	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::lastInstancedDataSetView(),	&DataSetView::cellsClear);
-	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::undo);
-	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::lastInstancedDataSetView(),	&DataSetView::redo);
+	connect(_preferences, &PreferencesModel::uiScaleChanged,			DataSetView::mainDataViewer(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
+	connect(_preferences, &PreferencesModel::interfaceFontChanged,		DataSetView::mainDataViewer(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
+	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnBefore,	DataSetView::mainDataViewer(),	&DataSetView::columnComputedInsertBefore);
+	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnAfter,	DataSetView::mainDataViewer(),	&DataSetView::columnComputedInsertAfter);
+	connect(_ribbonModel, &RibbonModel::dataInsertColumnBefore,			DataSetView::mainDataViewer(),	&DataSetView::columnInsertBefore);
+	connect(_ribbonModel, &RibbonModel::dataInsertColumnAfter,			DataSetView::mainDataViewer(),	&DataSetView::columnInsertAfter);
+	connect(_ribbonModel, &RibbonModel::finishCurrentEdit,				DataSetView::mainDataViewer(),	&DataSetView::commitLastEdit);
+	connect(_ribbonModel, &RibbonModel::dataInsertRowBefore,			DataSetView::mainDataViewer(),	&DataSetView::rowInsertBefore);
+	connect(_ribbonModel, &RibbonModel::dataInsertRowAfter,				DataSetView::mainDataViewer(),	&DataSetView::rowInsertAfter);
+	connect(_ribbonModel, &RibbonModel::dataRemoveColumn,				DataSetView::mainDataViewer(),	&DataSetView::columnsDeleteSelected);
+	connect(_ribbonModel, &RibbonModel::dataRemoveRow,					DataSetView::mainDataViewer(),	&DataSetView::rowsDeleteSelected);
+	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::mainDataViewer(),	&DataSetView::cellsClear);
+	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::mainDataViewer(),	&DataSetView::undo);
+	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::mainDataViewer(),	&DataSetView::redo);
+	
 
 	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
