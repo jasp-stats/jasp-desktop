@@ -28,17 +28,17 @@
    guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
-   inkscape:window-width="2560"
-   inkscape:window-height="1440"
+   inkscape:window-width="1360"
+   inkscape:window-height="669"
    id="namedview25"
    showgrid="false"
    inkscape:zoom="11.171875"
-   inkscape:cx="14.097902"
-   inkscape:cy="16.46993"
-   inkscape:window-x="1512"
-   inkscape:window-y="0"
+   inkscape:cx="24.481119"
+   inkscape:cy="24.302098"
+   inkscape:window-x="1602"
+   inkscape:window-y="71"
    inkscape:window-maximized="0"
-   inkscape:current-layer="g22"
+   inkscape:current-layer="g20"
    inkscape:document-rotation="0"
    inkscape:showpageshadow="2"
    inkscape:pagecheckerboard="0"
@@ -109,7 +109,7 @@
    class="st2"
    d="M 53.96,16.37 H 10.04 v -5.4 c 0,-0.47 0.47,-0.85 1.05,-0.85 h 41.83 c 0.58,0 1.05,0.38 1.05,0.85 v 5.4 z"
    id="path18"
-   style="stroke:#222222;stroke-opacity:1" />
+   style="stroke:#222222;stroke-opacity:1;fill:#222222;fill-opacity:1" />
 	</g>
 </g>
 </svg>
