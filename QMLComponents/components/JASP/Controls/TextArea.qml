@@ -29,6 +29,7 @@ TextAreaBase
 	property var	undoModel
 	property bool	useTabAsSpaces		: true
 	property var	nextTabItem
+	property bool   showLineNumber      : false
     
 	Component.onCompleted: control.editingFinished.connect(editingFinished)
     
@@ -86,13 +87,55 @@ TextAreaBase
 			boundsBehavior: Flickable.StopAtBounds
 			anchors.fill:	parent
 
+			Rectangle
+			{
+				id:					lineNumbersRect
+				anchors.top:		parent.top
+				anchors.left:		parent.left
+				anchors.topMargin:	jaspTheme.contentMargin
+				anchors.leftMargin:	2
+				visible:			textArea.showLineNumber
+				width:				lineNumbersRect.visible ? lineNumbers.width : 0
+				height:				Math.max(flickableRectangle.height, control.contentHeight) + 10
+				color:				"transparent"
+
+				ListView
+				{
+					id:				lineNumbers
+					width:			contentItem.childrenRect.width
+					height:			parent.height
+					model:			control.lineCount
+					delegate: Text {
+						text:		"<i>%1.</i>".arg(index + 1)
+						font:		jaspTheme.fontCode
+						color:		jaspTheme.grayDarker
+						height: 	control.contentHeight / control.lineCount
+						anchors.right: parent.right
+					}
+
+					onCountChanged: {
+						if (textArea.showLineNumber)
+							control.leftPadding = lineNumbers.width + 2 * jaspTheme.contentMargin
+					}
+				}
+
+				Rectangle
+				{
+					id:             separator
+					anchors.top:    parent.top
+					anchors.left:   parent.right
+					width:          2 * preferencesModel.uiScale
+					height:         Math.max(flickableRectangle.height, control.contentHeight) + 10
+					color:          jaspTheme.borderColor
+				}
+			}
+
 			QTC.TextArea.flickable: QTC.TextArea
 			{
 				id:					control
 				selectByMouse:		true
 				selectedTextColor:	jaspTheme.white
 				selectionColor:		jaspTheme.itemSelectedColor
-
 				font:				textArea.textType === JASP.TextTypeDefault || textArea.textType === JASP.TextTypeSource ? jaspTheme.font : jaspTheme.fontCode
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
