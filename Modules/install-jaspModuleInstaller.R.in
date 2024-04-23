@@ -45,18 +45,19 @@ renv::restore(
 	clean    = TRUE
 )
 
-cat("Restoring junction handling library\n")
-options(renv.config.cache.symlinks = FALSE)
-setupRenv(JUNCTION_HANDLING_LIBRARY)
-renv::restore(
+if(@WIN32@) {
+  cat("Restoring junction handling library\n")
+  options(renv.config.cache.symlinks = FALSE)
+  setupRenv(JUNCTION_HANDLING_LIBRARY)
+  renv::restore(
 	library  = JUNCTION_HANDLING_LIBRARY,
 	lockfile = file.path(MODULES, "junctionBootstrap.lock"),
 	clean    = TRUE
-)
-options(renv.config.cache.symlinks = TRUE)
-
+  )
+}
 
 cat("Restoring jaspModuleInstaller\n")
+options(renv.config.cache.symlinks = TRUE)
 setupRenv(JASPMODULEINSTALLER_LIBRARY)
 renv::restore(
 	library  = JASPMODULEINSTALLER_LIBRARY,
