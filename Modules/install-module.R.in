@@ -31,17 +31,22 @@ options("JASP_RENV_INSTALL_OPTIONS" = list(
 
 ))
 options(renv.config.install.verbose = TRUE)
+configureVars = NULL
 
 if (@IS_LINUX_LOCAL_BUILD@) {
   # Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
   Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
+} 
+if(@IS_FLATPAK_USED@) {
+  configureVars = c(V8 = "V8_PKG_LIBS='-L/app/lib64/v8/lib -lv8_monolith' V8_PKG_CFLAGS=-I/app/lib64/v8/include")
 }
 
 .libPaths("@JASPMODULEINSTALLER_LIBRARY@")
 sandboxPaths <- renv:::renv_sandbox_activate()
 
+configureVars = c(configureVars, jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
 options(
-  configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common'"), #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
+  configure.vars = configureVars,
   PKGDEPENDS_LIBRARY = "@PKGDEPENDS_LIBRARY@"
 )
 
