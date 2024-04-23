@@ -45,7 +45,7 @@ renv::restore(
 	clean    = TRUE
 )
 
-if(@WIN32@) {
+if (.Platform$OS.type == "windows") {
   cat("Restoring junction handling library\n")
   options(renv.config.cache.symlinks = FALSE)
   setupRenv(JUNCTION_HANDLING_LIBRARY)
