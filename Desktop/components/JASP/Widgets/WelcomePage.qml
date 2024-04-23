@@ -25,7 +25,7 @@ FocusScope
 {
 	id:		welcomeRoot
 
-	property real scaler: Math.max(0.9, Math.min(1.5, 0.9 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
+	property real scaler: Math.max(0.85, Math.min(1.5, 0.85 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
 	Rectangle
 	{
@@ -50,26 +50,8 @@ FocusScope
 			property int baseWidth:		700
 			property int baseHeight:	500
 
-			Image
-			{
-				id:				jaspLogo
-				source:			jaspTheme.iconPath + "jasp-logo.svg"
-				width:			(190 / 40) * height
-				height:			info.height / 14
-				mipmap:			true
-				sourceSize
-				{
-					width:		jaspLogo.width  * 2
-					height:		jaspLogo.height * 2
-				}
-
-				anchors
-				{
-					top:		parent.top
-					left:		parent.left
-				}
-			}
-
+			
+		
 			Text
 			{
 				id:				welcomeToJASP
@@ -88,22 +70,7 @@ FocusScope
 				}
 			}
 
-			Text
-			{
-				id:				version
-				text:			mainWindow.versionString()
-				color:			jaspTheme.white
-				font.family:	jaspTheme.font.family
-				font.pixelSize: 14 * welcomeRoot.scaler
-				font.weight:	Font.Normal
-				renderType:		Text.QtRendering
 
-				anchors
-				{
-					top:		parent.top
-					right:		parent.right
-				}
-			}
 
 			Rectangle
 			{
@@ -314,6 +281,7 @@ FocusScope
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}
+			
 		}
 
 
@@ -366,6 +334,45 @@ FocusScope
 			right:	parent.right
 			bottom:	parent.verticalCenter
 		}
+		
+		Image
+		{
+			id:				jaspLogo
+			source:			jaspTheme.iconPath + "jasp-logo.svg"
+			width:			(190 / 40) * height
+			height:			info.height / 14
+			mipmap:			true
+			sourceSize
+			{
+				width:		jaspLogo.width  * 2
+				height:		jaspLogo.height * 2
+			}
+
+			anchors
+			{
+				top:		parent.top
+				left:		parent.left
+				margins:	jaspUrl.anchors.margins
+			}
+		}
+		
+		Text
+		{
+			id:				version
+			text:			mainWindow.versionString()
+			color:			jaspTheme.white
+			font.family:	jaspTheme.font.family
+			font.pixelSize: 14 * welcomeRoot.scaler
+			font.weight:	Font.Normal
+			renderType:		Text.QtRendering
+
+			anchors
+			{
+				top:		parent.top
+				right:		parent.right
+				margins:	jaspUrl.anchors.margins
+			}
+		}
 	}
 
 	Rectangle
@@ -379,6 +386,36 @@ FocusScope
 			left:	parent.left
 			right:	parent.right
 			bottom:	parent.bottom
+		}
+		
+		Text
+		{
+			id:						jaspUrl
+			text:					"www.jasp-stats.org"
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			20 * welcomeRoot.scaler
+			font.weight:			Font.Normal
+			font.underline:			jaspStatsMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				bottom:				parent.bottom
+				right:				parent.right
+				margins:			10 * welcomeRoot.scaler
+			}
+			
+			MouseArea
+			{
+				id:						jaspStatsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
 		}
 	}
 
