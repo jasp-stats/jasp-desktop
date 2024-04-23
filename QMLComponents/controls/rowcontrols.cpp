@@ -75,13 +75,15 @@ void RowControls::_initializeControls(bool useInitialValue)
 				source->connectModels(); // If the source was disconnected, reconnect it.
 
 		Json::Value optionValue = Json::nullValue;
-		BoundControl* boundItem = control->boundControl();
-		if (boundItem && _initialValues.contains(control->name()))
+
+		if (useInitialValue && _initialValues.contains(control->name()))
+			optionValue = _initialValues[control->name()];
+		else
 		{
-			// When a control is created before its parent, it has no value yet.
-			// In this case use its initial value.
-			if (useInitialValue || boundItem->boundValue().isNull())
-				optionValue = _initialValues[control->name()];
+			// It it exists, reuse the current value.
+			BoundControl* boundItem = control->boundControl();
+			if (boundItem)
+				optionValue = boundItem->boundValue();
 		}
 
 		control->setInitialized(optionValue);
