@@ -18,7 +18,7 @@ Item
 
 		Text
 		{
-			text:					qsTr("JASP is supported by the following institutions:").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
+			text:					qsTr("JASP is supported by the following institutions:")
 			font.family:			jaspTheme.font.family
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler
@@ -56,7 +56,7 @@ Item
 
             delegate:   Text
             {
-                text:					String(modelData).replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
+                text:					String(modelData).replace(/&/g, "&amp;").replace(/\n/g, "<br>")
                 font.family:			jaspTheme.font.family
                 font.weight:			Font.Bold
                 font.pixelSize:         (4 + fontPixelSize) * welcomeRoot.scaler

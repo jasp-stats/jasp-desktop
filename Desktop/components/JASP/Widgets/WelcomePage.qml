@@ -65,7 +65,6 @@ FocusScope
 
 				anchors
 				{
-					top:				jaspLogo.bottom
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}

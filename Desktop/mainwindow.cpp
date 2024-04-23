@@ -255,7 +255,8 @@ const QStringList & MainWindow::coopThankYou() const
 {
 	static QStringList thankYou = [](){
 		QStringList thankThese = Coop::goldTier();
-		thankThese.append(Coop::silverTier());
+		for(const QString & silver : Coop::silverTier())
+			thankThese.append(silver);
 		return thankThese;
 	}();
 	

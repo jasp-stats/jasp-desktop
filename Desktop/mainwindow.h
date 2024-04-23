@@ -114,12 +114,12 @@ public:
 	bool				welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	bool				contactVisible()		const;
-	bool				communityVisible()	const;
+	bool				communityVisible()		const;
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & coopThankYou()			const;
-	const QString &		coopGold()			const;
+	const QString &		coopGold()				const;
 	const QString &		coopSilver()			const;
-	const QString &		coopBronze()		const;
+	const QString &		coopBronze()			const;
 	const QString &		coopHowToSupport()		const;
 	const QString &		coopUrl()				const;
 	const QString 		contactText()			const;

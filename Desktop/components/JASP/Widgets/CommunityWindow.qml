@@ -43,7 +43,7 @@ If your institution is not yet part of the JASP community, you can <a href=\"%1\
 .arg(mainWindow.coopGold)
 .arg(mainWindow.coopSilver)
 .arg(mainWindow.coopBronze)
-.replace(/&/g, "&amp;").replace(/, /g, ",&nbsp;").replace(/\n/g, "<br>")
+.replace(/&/g, "&amp;").replace(/\n/g, "<br>")
         
 		color:					jaspTheme.textEnabled
 		linkColor:				jaspTheme.jaspBlue
