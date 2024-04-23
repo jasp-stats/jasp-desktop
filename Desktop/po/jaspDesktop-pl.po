@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-04-20 14:01+0000\n"
+"PO-Revision-Date: 2024-04-23 18:36+0000\n"
 "Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "pl/>\n"
@@ -398,11 +398,11 @@ msgstr "Pokaż wygenerowany kod R"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr "Dodaj kolumnę obliczoną"
+msgstr "Wstaw kolumnę wyliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr "Kliknij, aby dodać kolumnę obliczoną"
+msgstr "Kliknij, aby wstawić kolumnę wyliczoną"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
@@ -500,7 +500,7 @@ msgstr "Kliknij tutaj, aby utworzyć nową kolumnę wyliczoną '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "Wprowadź poprawną (nieużywaną) nazwę dla kolumny wyliczonej"
+msgstr "Wprowadź unikalną nazwę dla kolumny wyliczonej"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
@@ -4293,7 +4293,7 @@ msgstr "Ustaw wartość na '%1' w wierszu %2 kolumny '%3'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr "Wstaw kolumnę wyliczona '%1'"
+msgstr "Wstaw kolumnę wyliczoną '%1'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5061,11 +5061,11 @@ msgstr "Czynnik"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Wstaw kolumnę wyliczoną przed"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Wstaw kolumnę wyliczoną po"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
@@ -5113,11 +5113,11 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Wstaw kolumnę wyliczoną przed"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Wstaw kolumnę wyliczoną po"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
