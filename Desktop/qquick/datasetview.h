@@ -210,6 +210,7 @@ public slots:
 	void		columnsDeleteSelected();
 	void		columnsDelete(				int col);
 	void		columnReverseValues(		int col = -1);
+	void		columnOrderByValues(		int col = -1);
 	void		rowSelect(					int row,		bool shiftPressed = false, bool rightClicked = false);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
