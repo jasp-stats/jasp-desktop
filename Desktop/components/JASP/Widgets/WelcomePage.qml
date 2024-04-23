@@ -69,38 +69,7 @@ FocusScope
 					left:		parent.left
 				}
 			}
-			
-			Text
-			{
-				id:						jaspUrl
-				text:					"www.jasp-stats.org"
-				color:					jaspTheme.jaspGreen
-				font.family:			jaspTheme.font.family
-				font.pixelSize:			20 * welcomeRoot.scaler
-				font.weight:			Font.Normal
-				font.underline:			jaspStatsMouseArea.containsMouse
-				renderType:				Text.QtRendering
-				textFormat:				Text.StyledText
-				horizontalAlignment:	Text.AlignHCenter
-				scale:					jaspLogo.width/contentWidth
-
-				anchors
-				{
-					top:				jaspLogo.bottom
-					left:				jaspLogo.left
-					right:				jaspLogo.right
-				}
-				
-				MouseArea
-				{
-					id:						jaspStatsMouseArea
-					hoverEnabled:			true
-					onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
-					anchors.fill:			parent
-					cursorShape:			Qt.PointingHandCursor
-				}
-			}
-
+		
 			Text
 			{
 				id:				welcomeToJASP
@@ -345,6 +314,7 @@ FocusScope
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}
+			
 		}
 
 
@@ -410,6 +380,36 @@ FocusScope
 			left:	parent.left
 			right:	parent.right
 			bottom:	parent.bottom
+		}
+		
+		Text
+		{
+			id:						jaspUrl
+			text:					"www.jasp-stats.org"
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			20 * welcomeRoot.scaler
+			font.weight:			Font.Normal
+			font.underline:			jaspStatsMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				bottom:				parent.bottom
+				right:				parent.right
+				margins:			10 * welcomeRoot.scaler
+			}
+			
+			MouseArea
+			{
+				id:						jaspStatsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
 		}
 	}
 
