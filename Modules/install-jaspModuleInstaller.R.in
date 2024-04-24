@@ -29,6 +29,7 @@ PKGDEPENDS_LIBRARY          <- "@PKGDEPENDS_LIBRARY@"
 RENV_LIBRARY                <- "@RENV_LIBRARY@"
 R_CPP_INCLUDES_LIBRARY      <- "@R_CPP_INCLUDES_LIBRARY@"
 JUNCTION_HANDLING_LIBRARY   <- "@JUNCTION_HANDLING_LIBRARY@"
+TMP_DEVMOD_LIBRARY			<- "@TMP_DEVMOD_LIBRARY@"
 
 ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
 MODULES                <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
@@ -55,6 +56,15 @@ if (.Platform$OS.type == "windows") {
 	clean    = TRUE
   )
 }
+
+cat("TMP lib for jaspBase dev module installing.\n")
+options(renv.config.cache.symlinks = TRUE)
+setupRenv(TMP_DEVMOD_LIBRARY)
+renv::restore(
+  library  = TMP_DEVMOD_LIBRARY,
+  lockfile = file.path(MODULES, "_tmpDevModuleInstaller.lock"),
+  clean    = TRUE
+)
 
 cat("Restoring jaspModuleInstaller\n")
 options(renv.config.cache.symlinks = TRUE)
