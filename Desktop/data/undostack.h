@@ -229,7 +229,7 @@ private:
 	std::map<int, Json::Value>	_serializedColumns;
 };
 
-
+class DataSetTableModel;
 class PasteSpreadsheetCommand : public UndoModelCommand
 {
 public:
@@ -239,15 +239,16 @@ public:
 	void redo()					override;
 
 private:
-	std::vector<std::vector<QString>>	_newValues,
-										_newLabels,
-										_oldValues,
-										_oldLabels;
-	std::vector<boolvec>				_selected;
-	QStringList							_newColNames,
-										_oldColNames;
-	int									_row = -1,
-										_col = -1;
+	DataSetTableModel					*	_dataSetTableModel;
+	std::vector<std::vector<QString>>		_newValues,
+											_newLabels,
+											_oldValues,
+											_oldLabels;
+	std::vector<boolvec>					_selected;
+	QStringList								_newColNames,
+											_oldColNames;
+	int										_row = -1,
+											_col = -1;
 };
 
 class SetColumnTypeCommand : public UndoModelCommandMultipleColumns
@@ -292,6 +293,19 @@ public:
 private:
 	int						_col		= -1;
 	QMap<QString, QVariant>	_props;
+};
+
+class InsertColumnsCommand : public UndoModelCommand
+{
+public:
+	InsertColumnsCommand(QAbstractItemModel *model, int col, int count = 1);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int						_col = -1,
+							_count;
 };
 
 class InsertRowsCommand : public UndoModelCommand

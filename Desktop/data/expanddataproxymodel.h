@@ -31,6 +31,7 @@ public:
 	void						removeRows(int start, int count);
 	void						removeColumns(int start, int count);
 	void						insertRows(int row, int count = 1);
+	void						insertColumns(int col, int count = 1);
 	void						insertColumn(int col, bool computed, bool R);
 	void						pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {}, const std::vector<boolvec> & selected = {});
 	int							setColumnType(intset columnIndex, int columnType);
