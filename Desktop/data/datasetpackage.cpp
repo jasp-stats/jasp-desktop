@@ -1850,7 +1850,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	bool	rowCountChanged = int(row + rowMax) > dataRowCount()	,
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
 	
-	auto isSelected = [selected](int row, int col)
+	auto isSelected = [&selected](int row, int col)
 	{
 		return selected.size() == 0 || 	selected[col][row];
 	};
