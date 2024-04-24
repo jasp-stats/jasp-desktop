@@ -1098,9 +1098,10 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 	std::vector<QStringList>	rows;
 
-	QPoint	minIdx = selectionMin(), 
-			maxIdx = selectionMax();
-	
+	QPoint	minIdx		= selectionMin(), 
+			maxIdx		= selectionMax();
+	bool	allSelected = minIdx.x() <= 0 && minIdx.y() <= 0 && maxIdx.x() + 1 >= _model->columnCount(false) && maxIdx.y() + 1 >= _model->rowCount(false);
+		
 	for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
 	{
 		rows.push_back({});
@@ -1174,24 +1175,30 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 	if(clear)
 	{
-		QPoint topLeft = selectionMin();
-
+		/*if(allSelected)
+		{
+			_model->pasteSpreadsheet(0, 0, {{""}}, {{""}}, {""}); 
+			
+			_model->removeColumns(	1 + minIdx.x(), (maxIdx.x() - minIdx.x()));
+			_model->removeRows(		1 + minIdx.y(), rowsSelected - 1);
+		}
+		else */
 		if(isColumnHeader(where))
 			_model->removeColumns(minIdx.x(), 1 + (maxIdx.x() - minIdx.x()));
 		else if(isRowHeader(where))
-			_model->removeRows(topLeft.y(), rowsSelected);
+			_model->removeRows(minIdx.y(), rowsSelected);
 		else
 		{
-			Log::log() << "DataSetView about to clear at row: " << topLeft.y() << " and col: " << topLeft.x() << std::endl;
+			Log::log() << "DataSetView about to clear at row: " << minIdx.y() << " and col: " << minIdx.x() << std::endl;
 			auto emptyCells = 	std::vector<std::vector<QString>>(
-											 (maxIdx.x() - minIdx.x()) + 1,
+											 1+(maxIdx.x() - minIdx.x()),
 											 std::vector<QString>(
 												 rowsSelected,
 												 ""
 											 )
 										 );
 			
-			_model->pasteSpreadsheet(topLeft.y(), topLeft.x(), emptyCells, emptyCells);
+			_model->pasteSpreadsheet(minIdx.y(), minIdx.x(), emptyCells, emptyCells, {}, _lastJaspCopySelect);
 		}
 	}
 }

@@ -301,8 +301,8 @@ QPoint minQModelIndex(const QItemSelection &list)
 	
 	for(const QItemSelectionRange & mi : list)
 	{
-		r = std::min(r, mi.top());
-		c = std::min(c, mi.left());
+		r = std::min(r, std::min(mi.bottom(), mi.top()));
+		c = std::min(c, std::min(mi.right() , mi.left()));
 	}
 	
 	return QPoint(c, r);
@@ -318,8 +318,8 @@ QPoint maxQModelIndex(const QItemSelection &list)
 	
 	for(const QItemSelectionRange & mi : list)
 	{
-		r = std::max(r, mi.bottom());
-		c = std::max(c, mi.right());
+		r = std::max(r, std::max(mi.bottom(), mi.top()));
+		c = std::max(c, std::max(mi.right() , mi.left()));
 	}
 	
 	return QPoint(c, r);
