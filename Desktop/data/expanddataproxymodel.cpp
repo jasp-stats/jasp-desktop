@@ -218,11 +218,15 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 	for (int colNr = _sourceModel->columnCount(); colNr <= col; colNr++)
 		insertColumn(colNr, false, false);
 	
-	int rowNr = _sourceModel->rowCount(),
-		rowC  = 1 + row - rowNr;
 	
-	if(rowC > 0 && row )
-		insertRows(rowNr, rowC);
+	if(row >= _sourceModel->rowCount())
+	{	
+		int rowNr = _sourceModel->rowCount(),
+			rowC  = 1 + row - rowNr;
+		
+		if(rowC > 0)
+			insertRows(rowNr, rowC);
+	}
 }
 
 void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int role)
