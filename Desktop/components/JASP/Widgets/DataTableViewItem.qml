@@ -73,10 +73,9 @@ Item
 					dataTableView.view.edit(rowIndex, columnIndex)
 
 			}
-			else if (columnModel.visible)
-			{
+			
+			if (columnModel.visible)
 				columnModel.chosenColumn = columnIndex
-			}
 		}
 
 		onPositionChanged:	(mouse) =>
