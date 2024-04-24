@@ -7,7 +7,7 @@ WavyWindow
 {
 	id:						communityWindow
 	title:					qsTr("JASP Community")
-	height:					700
+	height:					1200
 	width:					1200
 
 	visible:				mainWindow.communityVisible
@@ -30,6 +30,7 @@ WavyWindow
 The institutions of higher learning that participate in the JASP community jointly support the maintenance and further development of JASP, therefore providing an invaluable educational service to their own students and to those of other institutions worldwide.
 
 If your institution is not yet part of the JASP community, you can <a href=\"%1\">suggest that they join</a>.
+Below the educators that helped make this release possible:
 
 <i><b>Gold Educators:</b></i>
 %2
@@ -38,11 +39,15 @@ If your institution is not yet part of the JASP community, you can <a href=\"%1\
 %3
 
 <i><b>Bronze Educator:</b></i>
-%4")
+%4
+
+<a href=\"%6\">Click here for the current list of educators</a>
+")
 .arg(mainWindow.coopHowToSupport)
 .arg(mainWindow.coopGold)
 .arg(mainWindow.coopSilver)
 .arg(mainWindow.coopBronze)
+.arg(mainWindow.coopUrlMembers)
 .replace(/&/g, "&amp;").replace(/\n/g, "<br>")
         
 		color:					jaspTheme.textEnabled

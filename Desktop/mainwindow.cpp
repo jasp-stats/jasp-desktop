@@ -303,6 +303,11 @@ const QString & MainWindow::coopUrl() const
 	return Coop::communityUrl();
 }
 
+const QString &MainWindow::coopUrlMembers() const
+{
+	return Coop::communityMembersUrl();
+}
+
 const QString MainWindow::contactText() const
 {
 	return tr(

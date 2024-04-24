@@ -61,5 +61,12 @@ const QString & communityUrl()
 	return coop;
 }
 
+const QString & communityMembersUrl()
+{
+	static QString coop = "https://jasp-stats.org/community-institutional-members/";
+	return coop;
+}
+
+
 }
 #endif // COMMUNITYDEFS_H

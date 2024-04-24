@@ -144,19 +144,29 @@ FocusScope
 
 				Text
 				{
-					Layout.leftMargin:	10
-					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
-					text:				modelData
-					font.family:		jaspTheme.font.family
-					font.pixelSize:		freshAndFunky.font.pixelSize
+					id:						explanationText
+					Layout.leftMargin:		10
+					Layout.alignment:		Qt.AlignLeft | Qt.AlignTop
+					text:					modelData
+					font.family:			jaspTheme.font.family
+					font.pixelSize:			freshAndFunky.font.pixelSize
 					Layout.preferredWidth:	560 * welcomeRoot.scaler
-					//font.weight:		Font.Thin
-					opacity:			0.7
-					verticalAlignment:	Text.AlignVCenter
-					color:				jaspTheme.black
-					wrapMode:			Text.WordWrap
-					renderType:			Text.QtRendering
-					textFormat:			Text.StyledText
+					//font.weight:			Font.Thin
+					opacity:				0.7
+					verticalAlignment:		Text.AlignVCenter
+					color:					jaspTheme.black
+					linkColor:				jaspTheme.jaspBlue
+					wrapMode:				Text.WordWrap
+					renderType:				Text.QtRendering
+					textFormat:				Text.StyledText
+					onLinkActivated:		mainWindow.showCommunity()
+					
+					MouseArea
+					{
+						anchors.fill:		parent
+						acceptedButtons:	Qt.NoButton
+						cursorShape:		explanationText.hoveredLink !== "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+					}
 				}
 			}
 
@@ -186,7 +196,7 @@ FocusScope
 				Repeater
 				{
 					model:		[
-									qsTr("JASP is an open-source project with structural support from the University of Amsterdam.").replace(/, /g, ",&nbsp;"),
+									qsTr("JASP is an open-source project with structural support from the <a href=\"dummyLink\">University of Amsterdam &amp; others</a>.").replace(/, /g, ",&nbsp;"),
 									qsTr("JASP has an intuitive interface that was designed with the user in mind.").replace(/, /g, ",&nbsp;"),
 									qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.").replace(/, /g, ",&nbsp;")
 								]
