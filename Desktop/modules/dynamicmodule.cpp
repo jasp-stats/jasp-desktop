@@ -427,8 +427,8 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
 	}
 	setInstallLog("Installing module " + _name + ".\n");
-	
-	return "options(\"renv.config.install.verbose\" = FALSE);jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() +
+	std::string _tmpDevModInstallLib = AppDirs::bundledModulesDir().toStdString() + "/Tools/_tmp_dev_mod_library/";
+	return ".libPaths(\"" + _tmpDevModInstallLib + "\");options(\"renv.config.install.verbose\" = FALSE);jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() +
 		"', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") +
 	 	", force=TRUE, cacheAble=FALSE, frameworkLibrary='"+fq(AppDirs::rHome())+"/library');";
 }

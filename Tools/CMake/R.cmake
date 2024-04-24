@@ -803,6 +803,8 @@ set(R_CPP_INCLUDES_LIBRARY      "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_include
 set(JASPMODULEINSTALLER_LIBRARY "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleInstaller_library")
 set(PKGDEPENDS_LIBRARY          "${CMAKE_BINARY_DIR}/Modules/Tools/pkgdepends_library")
 set(JUNCTION_HANDLING_LIBRARY   "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
+set(TMP_DEVMOD_LIBRARY          "${CMAKE_BINARY_DIR}/Modules/Tools/_tmp_dev_mod_library")
+
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})
