@@ -291,7 +291,7 @@ std::set<string> fql(const QStringList & from)
 	return std::set<std::string>(vec.begin(), vec.end()); 
 }
 
-QPoint minQModelIndex(const QModelIndexList &list)
+QPoint minQModelIndex(const QItemSelection &list)
 {
 	if(list.size() == 0)
 		return QPoint(-1, -1);
@@ -299,16 +299,16 @@ QPoint minQModelIndex(const QModelIndexList &list)
 	int r = std::numeric_limits<int>::max(),
 		c = std::numeric_limits<int>::max();
 	
-	for(const QModelIndex & mi : list)
+	for(const QItemSelectionRange & mi : list)
 	{
-		r = std::min(r, mi.row());
-		c = std::min(c, mi.column());
+		r = std::min(r, mi.left());
+		c = std::min(c, mi.top());
 	}
 	
 	return QPoint(c, r);
 }
 
-QPoint maxQModelIndex(const QModelIndexList &list)
+QPoint maxQModelIndex(const QItemSelection &list)
 {
 	if(list.size() == 0)
 		return QPoint(-1, -1);
@@ -316,10 +316,10 @@ QPoint maxQModelIndex(const QModelIndexList &list)
 	int r = std::numeric_limits<int>::min(),
 		c = std::numeric_limits<int>::min();
 	
-	for(const QModelIndex & mi : list)
+	for(const QItemSelectionRange & mi : list)
 	{
-		r = std::max(r, mi.row());
-		c = std::max(c, mi.column());
+		r = std::max(r, mi.right());
+		c = std::max(c, mi.bottom());
 	}
 	
 	return QPoint(c, r);

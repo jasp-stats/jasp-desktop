@@ -1276,12 +1276,15 @@ void DataSetView::paste(QPoint where)
 
 void DataSetView::selectAll()
 {
+	JASPTIMER_SCOPE(DataSetView::selectAll);
 	clearEdit();
-	_selectionModel->select(QItemSelection(_model->index(0, 0), _model->index(_model->rowCount(false)-1, _model->columnCount(false)-1)), QItemSelectionModel::Select);
+	_selectionModel->select(QItemSelection(_model->index(0, 0), _model->index(_model->rowCount(false)-1, _model->columnCount(false)-1)), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPressed)
 {
+	JASPTIMER_SCOPE(DataSetView::select);
+	
 	bool	wholeRow	= col < 0,
 			wholeCol	= row < 0;
 	
@@ -1323,8 +1326,8 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	}
 	else if(shiftPressed)
 	{
-		QPoint	minNewSelection = minQModelIndex(selection.indexes()),
-				maxNewSelection = maxQModelIndex(selection.indexes()),
+		QPoint	minNewSelection = minQModelIndex(selection),
+				maxNewSelection = maxQModelIndex(selection),
 				minOldSelection = selectionMin(),
 				maxOldSelection = selectionMax();
 		
@@ -1338,7 +1341,7 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 		clearEdit();
 
 	
-/* Even if you reenable this we prob dont want this in release par accident
+/* //Even if you reenable this we prob dont want this in release par accident
 #ifdef JASP_DEBUG
 	{	
 		QStringList l;
@@ -1358,22 +1361,26 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 
 void DataSetView::selectionClear()
 {
+	JASPTIMER_SCOPE(DataSetView::selectClear);
 	_selectionModel->clear();
 }
 
 void DataSetView::selectHover(int row, int col)
 {
+	JASPTIMER_SCOPE(DataSetView::selectHover);
 	pollSelectScroll(row, col);
 }
 
 QPoint DataSetView::selectionMin() const	
 { 
-	return minQModelIndex(_selectionModel->selectedIndexes());	
+	JASPTIMER_SCOPE(DataSetView::selectionMin);
+	return minQModelIndex(_selectionModel->selection());	
 }
 
 QPoint DataSetView::selectionMax() const	
 { 
-	return maxQModelIndex(_selectionModel->selectedIndexes());
+	JASPTIMER_SCOPE(DataSetView::selectionMax);
+	return maxQModelIndex(_selectionModel->selection());
 }
 
 void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndexes)> applyThis)
