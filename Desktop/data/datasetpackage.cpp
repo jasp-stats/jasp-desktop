@@ -2076,16 +2076,18 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 
 	dataSet()->beginBatchedToDB();
 	
-	for(int c=0; c<dataColumnCount(); c++)
+	for(Column * column : dataSet()->columns())
 	{
-		const std::string & name = getColumnName(c);
-		changed.push_back(name);
+		changed.push_back(column->name());
+		
+		if(row+count > column->rowCount())
+			Log::log() << "???" << std::endl;
 	
 		for(int r=row+count; r>row; r--)
-			dataSet()->column(c)->rowDelete(r-1);
+			column->rowDelete(r-1);
 	}
 
-	setDataSetSize(dataColumnCount(), dataRowCount()-count);
+	dataSet()->setRowCount(dataSet()->rowCount() - count);
 	dataSet()->incRevision();
 	dataSet()->endBatchedToDB();
 

@@ -1139,6 +1139,10 @@ void DataSetView::_copy(QPoint where, bool clear)
 			}
 	}
 	
+	_lastJaspCopyValues.clear();
+	_lastJaspCopyLabels.clear();
+	_lastJaspCopySelect.clear();
+	
 	//Collect values and labels shown for internal lossless copying, will obviously not work for copying to external jasp.
 	for(int c=minIdx.x(); c<=maxIdx.x(); c++)
 		if(_selectionModel->columnIntersectsSelection(c))
@@ -1208,11 +1212,11 @@ void DataSetView::paste(QPoint where)
 		_lastJaspCopySelect	.clear();
 	}
 
-	if (isColumnHeader(where) && where.x() >= 0 && _copiedColumns.size())
+	if (isColumnHeader(where) && _copiedColumns.size() && where.x() >= 0) //internal column copy:
 		_model->copyColumns(where.x(), _copiedColumns);
-	else if(_lastJaspCopyValues.size())
+	else if(_lastJaspCopyValues.size()) //internal data copy:
 	{
-		if (!isColumnHeader(where))
+		if(!isColumnHeader(where))
 			_model->pasteSpreadsheet(where.y(), where.x(), _lastJaspCopyValues, _lastJaspCopyLabels, {}, _lastJaspCopySelect);
 		else
 		{
@@ -1230,10 +1234,11 @@ void DataSetView::paste(QPoint where)
 				sels[c].erase(sels[c].begin());
 			}
 			
-			_model->pasteSpreadsheet(isColumnHeader(where) ? 0 : where.y(), where.x(), vals, labs, colNames, sels);
-		}	
+			_model->pasteSpreadsheet(0, where.x(), vals, labs, colNames, sels);
+		}
+			
 	}
-	else
+	else //its external data:
 	{
 		std::vector<qstringvec> newData;
 		QStringList				colNames,

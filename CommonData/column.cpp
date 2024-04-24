@@ -1368,12 +1368,16 @@ void Column::rowDelete(size_t row)
 {
 	_dbls.erase(_dbls.begin() + row);
 	_ints.erase(_ints.begin() + row);
+	
+	labelsTempReset();
 }
 
 void Column::setRowCount(size_t rows)
 {
 	_dbls.resize(rows);
 	_ints.resize(rows);
+	
+	labelsTempReset();
 }
 
 Label *Column::labelByIntsId(int value) const
