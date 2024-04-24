@@ -91,5 +91,5 @@ void ReadStatImportDataSet::setCurrentRow(int row)
 
 	_currentRow = row;
 
-	_progressCallback(int(float(_currentRow) / float(_expectedRows) * 100.0));
+	_progressCallback(int(float(_currentRow) / float(_expectedRows) * 50.0));
 }
