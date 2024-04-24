@@ -1144,25 +1144,37 @@ void DataSetView::_copy(QPoint where, bool clear)
 	_lastJaspCopyLabels.clear();
 	_lastJaspCopySelect.clear();
 	
+	std::vector<boolvec> localSelected; //Doesnt ignore columns in which nothing was selected!
+	
 	//Collect values and labels shown for internal lossless copying, will obviously not work for copying to external jasp.
 	for(int c=minIdx.x(); c<=maxIdx.x(); c++)
 		if(_selectionModel->columnIntersectsSelection(c))
 		{
 			qstringvec	vals, 
 						labs;
-			boolvec		sels;
 			
 			for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
 			{
 				vals.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::value)).toString());
 				labs.push_back(_model->data(r, c, int(DataSetPackage::specialRoles::label)).toString());
-				sels.push_back(isSelected(r, c));
 			}
 			
-			_lastJaspCopyValues.push_back(vals);
-			_lastJaspCopyLabels.push_back(labs);
-			_lastJaspCopySelect.push_back(sels);
+			_lastJaspCopyValues	.push_back(vals);
+			_lastJaspCopyLabels	.push_back(labs);
 		}
+	
+	for(int c=minIdx.x(); c<=maxIdx.x(); c++)
+	{
+		boolvec		sels;
+		
+		for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
+			sels.push_back(isSelected(r, c));
+		
+		if(_selectionModel->columnIntersectsSelection(c))
+			_lastJaspCopySelect.push_back(sels);
+		
+		localSelected.push_back(sels);
+	}
 
 
 	QStringList	all;
@@ -1175,15 +1187,14 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 	if(clear)
 	{
-		/*if(allSelected)
+		if(allSelected)
 		{
-			_model->pasteSpreadsheet(0, 0, {{""}}, {{""}}, {""}); 
-			
+			UndoStack::singleton()->startMacro(tr("Cutting all data"));
 			_model->removeColumns(	1 + minIdx.x(), (maxIdx.x() - minIdx.x()));
 			_model->removeRows(		1 + minIdx.y(), rowsSelected - 1);
+			UndoStack::singleton()->endMacro(new PasteSpreadsheetCommand(_model->sourceModel(), 0, 0, {{""}}, {{""}}, {}, {}));
 		}
-		else */
-		if(isColumnHeader(where))
+		else if(isColumnHeader(where))
 			_model->removeColumns(minIdx.x(), 1 + (maxIdx.x() - minIdx.x()));
 		else if(isRowHeader(where))
 			_model->removeRows(minIdx.y(), rowsSelected);
@@ -1198,7 +1209,7 @@ void DataSetView::_copy(QPoint where, bool clear)
 											 )
 										 );
 			
-			_model->pasteSpreadsheet(minIdx.y(), minIdx.x(), emptyCells, emptyCells, {}, _lastJaspCopySelect);
+			_model->pasteSpreadsheet(minIdx.y(), minIdx.x(), emptyCells, emptyCells, {}, localSelected);
 		}
 	}
 }

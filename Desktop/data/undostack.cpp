@@ -25,8 +25,10 @@ void UndoStack::pushCommand(UndoModelCommand *command)
 void UndoStack::startMacro(const QString &text)
 {
 	if (_parentCommand)
-		Log::log() << "Macro started though last one is not finished!" << std::endl;
+		Log::log() << "Macro started though last one is not finished!" << std::endl; //I think this should be an assert...
+	
 	_parentCommand = new UndoModelCommand();
+	
 	if (!text.isEmpty())
 		_parentCommand->setText(text);
 }
@@ -35,11 +37,12 @@ void UndoStack::endMacro(UndoModelCommand *command)
 {
 	if (command)
 	{
-		if (_parentCommand)
+		if (_parentCommand && _parentCommand->text().isEmpty())
 			_parentCommand->setText(command->text());
 		else
 			push(command); // Case when macro was not started
 	}
+	
 	if (_parentCommand)
 		push(_parentCommand);
 
