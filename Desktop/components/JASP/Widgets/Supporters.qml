@@ -38,10 +38,11 @@ Item
 			clip:					true
 			currentIndex:			Math.floor(Math.random() * count)
 			//wheelEnabled:			true
-            height:                 65 * welcomeRoot.scaler
+            height:                 75 * welcomeRoot.scaler
             model:                  mainWindow.coopThankYou
             snapMode:               ListView.SnapOneItem
             onCurrentIndexChanged:  gottaMoveItMoveIt.restart()
+			spacing:				10
 
             Timer
 			{
@@ -81,7 +82,7 @@ Item
 			font.family:			jaspTheme.font.family
 			font.weight:			Font.Normal
 			font.pixelSize:         fontPixelSize * welcomeRoot.scaler
-			font.underline:			true
+			font.underline:			suggestMouseArea.containsMouse
 			color:					jaspTheme.white
 			wrapMode:				TextEdit.Wrap
 			renderType:				Text.QtRendering
@@ -92,8 +93,10 @@ Item
 
 			MouseArea
 			{
+				id:						suggestMouseArea
 				cursorShape:			Qt.PointingHandCursor
 				acceptedButtons:		Qt.LeftButton
+				hoverEnabled:			true
 				anchors.fill:			parent
 				onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
 				z:						-8
