@@ -5,7 +5,6 @@
 #include "filtermodel.h"
 #include "computedcolumnmodel.h"
 #include "utilities/qutils.h"
-#include "columnutils.h"
 
 UndoStack* UndoStack::_undoStack = nullptr;
 
@@ -35,20 +34,21 @@ void UndoStack::startMacro(const QString &text)
 
 void UndoStack::endMacro(UndoModelCommand *command)
 {
-	if (command)
+	if(!_parentCommand)
 	{
-		if (_parentCommand && _parentCommand->text().isEmpty())
-			_parentCommand->setText(command->text());
-		else
-			push(command); // Case when macro was not started
+		push(command);
+		return;
 	}
+	
+	if (command && _parentCommand->text().isEmpty())
+		_parentCommand->setText(command->text());
+	
 	
 	if (_parentCommand)
 		push(_parentCommand);
 
 	_parentCommand = nullptr;
 }
-
 
 SetDataCommand::SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &value, int role)
 	: UndoModelCommand(model), _newValue{value}, _row{row}, _col{col}, _role{role}

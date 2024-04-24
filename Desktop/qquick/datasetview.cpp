@@ -1190,9 +1190,11 @@ void DataSetView::_copy(QPoint where, bool clear)
 		if(allSelected)
 		{
 			UndoStack::singleton()->startMacro(tr("Cutting all data"));
-			_model->removeColumns(	1 + minIdx.x(), (maxIdx.x() - minIdx.x()));
-			_model->removeRows(		1 + minIdx.y(), rowsSelected - 1);
-			UndoStack::singleton()->endMacro(new PasteSpreadsheetCommand(_model->sourceModel(), 0, 0, {{""}}, {{""}}, {}, {}));
+			_model->removeColumns(	minIdx.x(), 1+(maxIdx.x() - minIdx.x()));
+			_model->removeRows(		minIdx.y(), rowsSelected);
+			_model->insertColumns(0);
+			_model->insertRows(0);
+			UndoStack::singleton()->endMacro();//new PasteSpreadsheetCommand(_model->sourceModel(), 0, 0, {{""}}, {{""}}, {}, {}));
 		}
 		else if(isColumnHeader(where))
 			_model->removeColumns(minIdx.x(), 1 + (maxIdx.x() - minIdx.x()));
