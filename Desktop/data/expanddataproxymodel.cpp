@@ -198,7 +198,7 @@ void ExpandDataProxyModel::insertColumns(int col, int count)
 	if (!_sourceModel)
 		return;
 
-	_undoStack->pushCommand(new InsertRowsCommand(_sourceModel, col, count));
+	_undoStack->pushCommand(new InsertColumnsCommand(_sourceModel, col, count));
 }
 
 
@@ -225,8 +225,8 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 
 	if(col >= _sourceModel->columnCount())
 	{	
-		int colNr = _sourceModel->rowCount(),
-			colC  = 1 + col - colNr;
+		int colNr = _sourceModel->columnCount(),
+			colC  = col - colNr;
 		
 		if(colC > 0)
 			insertColumns(colNr, colC);
@@ -236,7 +236,7 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 	if(row >= _sourceModel->rowCount())
 	{	
 		int rowNr = _sourceModel->rowCount(),
-			rowC  = 1 + row - rowNr;
+			rowC  = row - rowNr;
 		
 		if(rowC > 0)
 			insertRows(rowNr, rowC);
