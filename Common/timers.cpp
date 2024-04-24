@@ -26,8 +26,17 @@ void _printAllTimers()
 {
 	if(timers == nullptr)
 		return;
+	
+	typedef std::pair<std::string, boost::timer::cpu_timer *> nameTimerPair;
+	
+	std::vector<nameTimerPair> sortMe(timers->begin(), timers->end());
+	
+	std::sort(sortMe.begin(), sortMe.end(), [](const nameTimerPair & l, const nameTimerPair & r)
+	{
+		return l.second->elapsed().user > r.second->elapsed().user;
+	});
 
-	for(auto keyval : *timers)
+	for(const nameTimerPair & keyval : sortMe)
 		std::cout << keyval.first << " ran for " << keyval.second->format() << std::endl;
 }
 
