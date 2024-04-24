@@ -47,7 +47,7 @@ Below the educators that helped make this release possible:
 .arg(mainWindow.coopGold)
 .arg(mainWindow.coopSilver)
 .arg(mainWindow.coopBronze)
-.arg(mainWindow.coopUrl)
+.arg(mainWindow.coopUrlMembers)
 .replace(/&/g, "&amp;").replace(/\n/g, "<br>")
         
 		color:					jaspTheme.textEnabled
