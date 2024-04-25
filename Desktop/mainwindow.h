@@ -83,13 +83,15 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
-	Q_PROPERTY(QStringList	coopThankYou		READ coopThankYou											CONSTANT							)
-	Q_PROPERTY(QString		coopGold			READ coopGold												CONSTANT							)
-	Q_PROPERTY(QString		coopSilver			READ coopSilver												CONSTANT							)
-	Q_PROPERTY(QString		coopBronze			READ coopBronze												CONSTANT							)
-	Q_PROPERTY(QString		coopHowToSupport	READ coopHowToSupport										CONSTANT							)
-	Q_PROPERTY(QString		coopUrl				READ coopUrl												CONSTANT							)
-	Q_PROPERTY(QString		coopUrlMembers		READ coopUrlMembers											CONSTANT							)
+	Q_PROPERTY(QString		commUrl				READ commUrl												CONSTANT							)
+	Q_PROPERTY(QString		commGold			READ commGold												CONSTANT							)
+	Q_PROPERTY(QString		commSilver			READ commSilver												CONSTANT							)
+	Q_PROPERTY(QString		commBronze			READ commBronze												CONSTANT							)
+	Q_PROPERTY(QStringList	commThankYou		READ commThankYou											CONSTANT							)
+	Q_PROPERTY(QString		commUrlMembers		READ commUrlMembers											CONSTANT							)
+	Q_PROPERTY(QString		commHowToSupport	READ commHowToSupport										CONSTANT							)
+	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
+	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 
 
@@ -117,13 +119,15 @@ public:
 	bool				contactVisible()		const;
 	bool				communityVisible()		const;
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
-	const QStringList & coopThankYou()			const;
-	const QString &		coopGold()				const;
-	const QString &		coopSilver()			const;
-	const QString &		coopBronze()			const;
-	const QString &		coopHowToSupport()		const;
-	const QString &		coopUrl()				const;
-	const QString &		coopUrlMembers()		const;
+	const QStringList & commThankYou()			const;
+	const QString &		commGold()				const;
+	const QString &		commSilver()			const;
+	const QString &		commBronze()			const;
+	const QString 		commHowToSupport()		const;
+	const QString 		commUrl()				const;
+	const QString 		commUrlMembers()		const;
+	const QString 		contactUrlFeatures()	const;
+	const QString 		contactUrlBugs()		const;
 	const QString 		contactText()			const;
 
 public slots:
@@ -203,7 +207,7 @@ private:
 	void			analysisEditImageHandler(int id, QString options);
 	void			removeAnalysisRequestHandler(int id);
 	Json::Value		getResultsMeta();
-	const QString	coopConcatter(QStringList listIn, const QString & name) const;
+	const QString	commConcatter(QStringList listIn, const QString & name) const;
 
 	void startComparingResults();
 	void analysesForComparingDoneAlready();

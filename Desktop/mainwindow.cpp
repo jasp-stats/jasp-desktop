@@ -251,7 +251,7 @@ QString MainWindow::windowTitle() const
 	return _package->windowTitle();
 }
 
-const QStringList & MainWindow::coopThankYou() const
+const QStringList & MainWindow::commThankYou() const
 {
 	static QStringList thankYou = [](){
 		QStringList thankThese = Coop::goldTier();
@@ -264,7 +264,7 @@ const QStringList & MainWindow::coopThankYou() const
 }
 
 
-const QString MainWindow::coopConcatter(QStringList listIn, const QString & name) const
+const QString MainWindow::commConcatter(QStringList listIn, const QString & name) const
 {
 	if(listIn.size() == 0)
 		return "Something is wrong with " + name;
@@ -275,37 +275,47 @@ const QString MainWindow::coopConcatter(QStringList listIn, const QString & name
 	return listIn.join(", ");
 }
 
-const QString & MainWindow::coopGold() const
+const QString & MainWindow::commGold() const
 {
-	static QString golds = coopConcatter(Coop::goldTier(), "Coop::goldTier()");
+	static QString golds = commConcatter(Coop::goldTier(), "Coop::goldTier()");
 	return golds;
 }
 
-const QString & MainWindow::coopSilver() const
+const QString & MainWindow::commSilver() const
 {
-	static QString silvers = coopConcatter(Coop::silverTier(), "Coop::silverTier()");
+	static QString silvers = commConcatter(Coop::silverTier(), "Coop::silverTier()");
 	return silvers;
 }
 
-const QString & MainWindow::coopBronze() const
+const QString & MainWindow::commBronze() const
 {
-	static QString bronzes = coopConcatter(Coop::bronzeTier(), "Coop::bronzeTier()");
+	static QString bronzes = commConcatter(Coop::bronzeTier(), "Coop::bronzeTier()");
 	return bronzes;
 }
 
-const QString & MainWindow::coopHowToSupport() const
+const QString MainWindow::commHowToSupport() const
 {
 	return Coop::howToSupport();
 }
 
-const QString & MainWindow::coopUrl() const
+const QString MainWindow::commUrl() const
 {
 	return Coop::communityUrl();
 }
 
-const QString &MainWindow::coopUrlMembers() const
+const QString MainWindow::commUrlMembers() const
 {
 	return Coop::communityMembersUrl();
+}
+
+const QString MainWindow::contactUrlFeatures() const
+{
+	return "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Feature+Request&projects=&template=feature-request.yml&title=%5BFeature+Request%5D%3A+";	
+}
+
+const QString MainWindow::contactUrlBugs() const
+{
+	return "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Bug&projects=&template=bug-report.yml&title=%5BBug%5D%3A+";
 }
 
 const QString MainWindow::contactText() const
@@ -324,14 +334,14 @@ const QString MainWindow::contactText() const
 		"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 	)
 	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
-	.arg("https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Feature+Request&projects=&template=feature-request.yml&title=%5BFeature+Request%5D%3A+"
-	, "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Bug&projects=&template=bug-report.yml&title=%5BBug%5D%3A+"
-	, "https://jasp-stats.org/2018/03/29/request-feature-report-bug-jasp/"
-	, "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"
-	, coopUrl()
-	, "https://jasp-stats.org/world-map/"
-	, "mailto:communications@jasp-stats.org"
-	, "https://jasp-stats.org/donate/");
+	.arg(	contactUrlFeatures()
+	,		contactUrlBugs()
+	,		"https://jasp-stats.org/2018/03/29/request-feature-report-bug-jasp/"
+	,		"https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"
+	,		commUrl()
+	,		"https://jasp-stats.org/world-map/"
+	,		"mailto:communications@jasp-stats.org"
+	,		"https://jasp-stats.org/donate/");
 }
 
 

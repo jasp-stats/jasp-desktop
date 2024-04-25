@@ -12,7 +12,7 @@ Item
 	ColumnLayout
 	{
 		id:							supportColumn
-		spacing:					welcomeRoot.scaler * 10
+		spacing:					welcomeRoot.scaler * 4
 		anchors.left:				parent.left
 		anchors.right:				parent.right
 
@@ -38,12 +38,12 @@ Item
 			clip:					true
 			currentIndex:			Math.floor(Math.random() * count)
 			//wheelEnabled:			true
-            height:                 75 * welcomeRoot.scaler
-            model:                  mainWindow.coopThankYou
+            height:                 100 * welcomeRoot.scaler
+            model:                  mainWindow.commThankYou
             snapMode:               ListView.SnapOneItem
             onCurrentIndexChanged:  gottaMoveItMoveIt.restart()
-			spacing:				10
-
+			spacing:				10 * welcomeRoot.scaler
+			
             Timer
 			{
                 id:                 gottaMoveItMoveIt // https://www.youtube.com/watch?v=vuo8kD5zF5I
@@ -68,8 +68,8 @@ Item
                 horizontalAlignment:	Text.AlignHCenter
                 verticalAlignment:      Text.AlignVCenter
                 
-                height:                 swipeSupporters.height
-                width:					swipeSupporters.width
+                height:					ListView.view.height
+                width:					ListView.view.width
             }
 			
 
@@ -98,7 +98,7 @@ Item
 				acceptedButtons:		Qt.LeftButton
 				hoverEnabled:			true
 				anchors.fill:			parent
-				onClicked:				Qt.openUrlExternally(mainWindow.coopHowToSupport)
+				onClicked:				Qt.openUrlExternally(mainWindow.commHowToSupport)
 				z:						-8
 			}
 		}

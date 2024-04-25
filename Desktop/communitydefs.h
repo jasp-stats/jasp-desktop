@@ -49,22 +49,19 @@ const QStringList & bronzeTier()
 	return list;
 }
 
-const QString & howToSupport()
+const QString howToSupport()
 {
-	static QString howTo = "https://jasp-stats.org/community-how-to-join/";
-	return howTo;
+	return "https://jasp-stats.org/community-how-to-join/";
 }
 
-const QString & communityUrl()
+const QString communityUrl()
 {
-	static QString coop = "https://jasp-stats.org/community-vision-and-goals/";
-	return coop;
+	return "https://jasp-stats.org/community-vision-and-goals/";
 }
 
-const QString & communityMembersUrl()
+const QString communityMembersUrl()
 {
-	static QString coop = "https://jasp-stats.org/community-institutional-members/";
-	return coop;
+	return "https://jasp-stats.org/community-institutional-members/";
 }
 
 

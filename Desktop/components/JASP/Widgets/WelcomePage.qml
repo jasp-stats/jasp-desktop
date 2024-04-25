@@ -25,7 +25,7 @@ FocusScope
 {
 	id:		welcomeRoot
 
-	property real scaler: Math.max(0.85, Math.min(1.5, 0.85 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
+	property real scaler: Math.max(0.85, Math.min(2, 0.85 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
 	Rectangle
 	{
@@ -286,7 +286,7 @@ FocusScope
 				anchors
 				{
 					bottom:				parent.bottom
-					bottomMargin:		-15
+					bottomMargin:		-20
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}
@@ -363,6 +363,14 @@ FocusScope
 				left:		parent.left
 				margins:	jaspUrl.anchors.margins
 			}
+			
+			MouseArea
+			{
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
 		}
 		
 		Text
@@ -373,6 +381,7 @@ FocusScope
 			font.family:	jaspTheme.font.family
 			font.pixelSize: 14 * welcomeRoot.scaler
 			font.weight:	Font.Normal
+			font.underline: versionMouseArea.containsMouse
 			renderType:		Text.QtRendering
 
 			anchors
@@ -380,6 +389,15 @@ FocusScope
 				top:		parent.top
 				right:		parent.right
 				margins:	jaspUrl.anchors.margins
+			}
+			
+			MouseArea
+			{
+				id:						versionMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(aboutModel.commitUrl);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
 			}
 		}
 	}
@@ -399,6 +417,68 @@ FocusScope
 		
 		Text
 		{
+			id:						jaspUrlBug
+			text:					qsTr("Report bugs")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			14 * welcomeRoot.scaler
+			font.weight:			Font.Normal
+			font.underline:			bugsMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				bottom:				jaspUrlFeatures.top
+				left:				parent.left
+				leftMargin:			10 * welcomeRoot.scaler
+				bottomMargin:		4 * welcomeRoot.scaler
+			}
+			
+			MouseArea
+			{
+				id:						bugsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(mainWindow.contactUrlBugs);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
+		}
+		
+		
+		Text
+		{
+			id:						jaspUrlFeatures
+			text:					qsTr("Request features")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			jaspUrlBug.font.pixelSize
+			font.weight:			Font.Normal
+			font.underline:			featureMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				left:				parent.left
+				bottom:				parent.bottom
+				margins:			10 * welcomeRoot.scaler
+			}
+			
+			MouseArea
+			{
+				id:						featureMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(mainWindow.contactUrlFeatures);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
+		}
+		
+		Text
+		{
 			id:						jaspUrl
 			text:					"www.jasp-stats.org"
 			color:					jaspTheme.white
@@ -412,8 +492,8 @@ FocusScope
 
 			anchors
 			{
-				bottom:				parent.bottom
 				right:				parent.right
+				bottom:				parent.bottom
 				margins:			10 * welcomeRoot.scaler
 			}
 			

@@ -43,11 +43,11 @@ Below the educators that helped make this release possible:
 
 <a href=\"%6\">Click here for the current list of educators</a>
 ")
-.arg(mainWindow.coopHowToSupport)
-.arg(mainWindow.coopGold)
-.arg(mainWindow.coopSilver)
-.arg(mainWindow.coopBronze)
-.arg(mainWindow.coopUrlMembers)
+.arg(mainWindow.commHowToSupport)
+.arg(mainWindow.commGold)
+.arg(mainWindow.commSilver)
+.arg(mainWindow.commBronze)
+.arg(mainWindow.commUrlMembers)
 .replace(/&/g, "&amp;").replace(/\n/g, "<br>")
         
 		color:					jaspTheme.textEnabled
