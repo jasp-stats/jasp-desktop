@@ -1405,18 +1405,16 @@ QPoint DataSetView::selectionMax() const
 
 void DataSetView::columnIndexSelectedApply(int columnIndex, std::function<void(intset columnIndexes)> applyThis)
 {
-	int columnA	= selectionMin().x(),
-		columnB	= selectionMax().x();
-
-	if(columnA > columnB)
-		std::swap(columnA, columnB);
+	int		columnA			= selectionMin().x(),
+			columnB			= selectionMax().x();
+	bool	outSelection	= columnA == -1 || columnB == -1 || !(columnIndex >= columnA && columnIndex <= columnB);
 	
-	if(columnA == -1 || columnB == -1 || !(columnIndex >= columnA && columnIndex <= columnB))
+	if(outSelection)
 		columnA = columnB = columnIndex;
 	
 	intset ints;
 	for	(columnIndex	= columnA; columnIndex <= columnB; columnIndex++)
-		if(_selectionModel->columnIntersectsSelection(columnIndex))
+		if(outSelection || _selectionModel->columnIntersectsSelection(columnIndex))
 			ints.insert(columnIndex);
 	
 	applyThis(ints);
