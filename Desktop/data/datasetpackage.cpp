@@ -547,7 +547,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case int(specialRoles::filter):				return index.row() >= labels.size() || labels[index.row()]->filterAllows();
-		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row(), true));
+		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row()));
 		case int(specialRoles::description):		return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
