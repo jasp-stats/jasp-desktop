@@ -547,7 +547,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case int(specialRoles::filter):				return index.row() >= labels.size() || labels[index.row()]->filterAllows();
-		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row(), true));
+		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row()));
 		case int(specialRoles::description):		return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
@@ -1841,7 +1841,7 @@ void DataSetPackage::setWorkspaceEmptyValues(const stringset &emptyValues, bool 
 	emit workspaceEmptyValuesChanged();
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> &  labels, const intvec & coltypes, const QStringList & colNames)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> &  labels, const intvec & coltypes, const QStringList & colNames, const std::vector<boolvec> & selected)
 {
 	JASPTIMER_SCOPE(DataSetPackage::pasteSpreadsheet);
 
@@ -1849,8 +1849,14 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colMax			= values.size();
 	bool	rowCountChanged = int(row + rowMax) > dataRowCount()	,
 			colCountChanged = int(col + colMax) > dataColumnCount()	;
+	
+	auto isSelected = [&selected](int row, int col)
+	{
+		return selected.size() == 0 || 	selected[col][row];
+	};
 
 	beginSynchingData(false);
+	_dataSet->beginBatchedToDB();
 	
 	if(colCountChanged || rowCountChanged)	
 		setDataSetSize(std::max(size_t(dataColumnCount()), colMax + col), std::max(size_t(dataRowCount()), rowMax + row));
@@ -1867,7 +1873,8 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 
 		bool aChange = false;
 		for(int r=0; r<rowMax; r++)
-			aChange = column->setValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
+			if(isSelected(r, c))
+				aChange = column->setValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
 			
 		aChange = aChange || colName != column->name() || desiredType != column->type();
 		
@@ -1878,9 +1885,13 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 		column->setType(desiredType);
 
 		if(aChange)
+		{
 			changed.push_back(colName);
+			column->labelsTempReset();
+		}
 	}
 
+	_dataSet->endBatchedToDB();
 	
 	stringvec		missingColumns;
 
@@ -2065,16 +2076,18 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 
 	dataSet()->beginBatchedToDB();
 	
-	for(int c=0; c<dataColumnCount(); c++)
+	for(Column * column : dataSet()->columns())
 	{
-		const std::string & name = getColumnName(c);
-		changed.push_back(name);
+		changed.push_back(column->name());
+		
+		if(row+count > column->rowCount())
+			Log::log() << "???" << std::endl;
 	
 		for(int r=row+count; r>row; r--)
-			dataSet()->column(c)->rowDelete(r-1);
+			column->rowDelete(r-1);
 	}
 
-	setDataSetSize(dataColumnCount(), dataRowCount()-count);
+	dataSet()->setRowCount(dataSet()->rowCount() - count);
 	dataSet()->incRevision();
 	dataSet()->endBatchedToDB();
 

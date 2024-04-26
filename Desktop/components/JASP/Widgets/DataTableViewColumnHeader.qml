@@ -192,8 +192,12 @@ Rectangle
 			{
 				headerRoot.forceActiveFocus()
 
-				if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-					dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
+				if(mouseEvent.button === Qt.LeftButton)
+				{
+					dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
+					columnModel.chosenColumn = columnIndex;
+						
+				}
 
 				if(mouseEvent.button === Qt.RightButton)
 				{
@@ -206,10 +210,8 @@ Rectangle
 		onPositionChanged:	(mouseEvent) =>
 		{
 			if(ribbonModel.dataMode && Boolean(mouseEvent.modifiers & Qt.ShiftModifier))
-			{
-				dataTableView.view.pollSelectScroll(-1, columnIndex)
-				dataTableView.view.columnSelect(columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
-			}
+				dataTableView.view.selectHover(-1, columnIndex)
+
 		}
 
 		hoverEnabled:		true

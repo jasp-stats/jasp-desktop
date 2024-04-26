@@ -215,25 +215,6 @@ private:
 							_oldColType = -1;
 };
 
-class PasteSpreadsheetCommand : public UndoModelCommand
-{
-public:
-	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const QStringList & colNames);
-
-	void undo()					override;
-	void redo()					override;
-
-private:
-	std::vector<std::vector<QString>>	_newValues,
-										_newLabels,
-										_oldValues,
-										_oldLabels;
-	QStringList							_newColNames,
-										_oldColNames;
-	int									_row = -1,
-										_col = -1;
-};
-
 class UndoModelCommandMultipleColumns : public UndoModelCommand
 {
 public:
@@ -246,6 +227,28 @@ protected:
 
 private:
 	std::map<int, Json::Value>	_serializedColumns;
+};
+
+class DataSetTableModel;
+class PasteSpreadsheetCommand : public UndoModelCommand
+{
+public:
+	PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString>>& values, const std::vector<std::vector<QString>>& labels, const std::vector<boolvec> & selected, const QStringList & colNames);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	DataSetTableModel					*	_dataSetTableModel;
+	std::vector<std::vector<QString>>		_newValues,
+											_newLabels,
+											_oldValues,
+											_oldLabels;
+	std::vector<boolvec>					_selected;
+	QStringList								_newColNames,
+											_oldColNames;
+	int										_row = -1,
+											_col = -1;
 };
 
 class SetColumnTypeCommand : public UndoModelCommandMultipleColumns
@@ -292,16 +295,30 @@ private:
 	QMap<QString, QVariant>	_props;
 };
 
-class InsertRowCommand : public UndoModelCommand
+class InsertColumnsCommand : public UndoModelCommand
 {
 public:
-	InsertRowCommand(QAbstractItemModel *model, int row);
+	InsertColumnsCommand(QAbstractItemModel *model, int col, int count = 1);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	int						_row = -1;
+	int						_col = -1,
+							_count;
+};
+
+class InsertRowsCommand : public UndoModelCommand
+{
+public:
+	InsertRowsCommand(QAbstractItemModel *model, int row, int count = 1);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	int						_row = -1,
+							_count;
 };
 
 class RemoveColumnsCommand : public UndoModelCommand
@@ -390,6 +407,21 @@ private:
 								_oldEmptyValues;
 };
 
+/*
+class ChangeSelectionCommand: public UndoModelCommand
+{
+public:
+	ChangeSelectionCommand(???);
+
+	void undo()					override;
+	void redo()					override;
+
+private:
+	stringset					_newEmptyValues,
+								_oldEmptyValues;
+};
+*/
+
 class UndoStack : public QUndoStack
 {
 	Q_OBJECT
@@ -402,7 +434,7 @@ public:
 	void				startMacro(const QString& text = QString());
 	void				endMacro(UndoModelCommand* command = nullptr);
 	QUndoCommand*		parentCommand()		{ return _parentCommand; }
-
+	
 private:
 
 	UndoModelCommand*			_parentCommand			= nullptr;

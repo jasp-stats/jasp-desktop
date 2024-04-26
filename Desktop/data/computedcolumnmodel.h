@@ -100,7 +100,6 @@ public slots:
 private:
 	static	ComputedColumnModel		* _singleton;
 			Column					* _selectedColumn	= nullptr;
-			UndoStack				* _undoStack		= nullptr;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

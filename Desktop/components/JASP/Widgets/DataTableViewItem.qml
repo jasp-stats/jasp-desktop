@@ -56,40 +56,32 @@ Item
 		{
 			if(ribbonModel.dataMode)
 			{
-				var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier)
-				var rightPressed = Boolean(mouse.buttons & Qt.RightButton)
-				var isSelected = dataTableView.view.isSelected(rowIndex, columnIndex)
-
-				if(!shiftPressed)
-				{
-					if (!rightPressed && !isSelected)
-						dataTableView.view.selectionStart = Qt.point(columnIndex, rowIndex)
-				}
+				var shiftPressed	= Boolean(mouse.modifiers & Qt.ShiftModifier)
+				var controlPressed	= Boolean(mouse.modifiers & Qt.ControlModifier)
+				var rightPressed	= Boolean(mouse.buttons & Qt.RightButton)
+				var isSelected		= dataTableView.view.isSelected(rowIndex, columnIndex)
+					
+				if(!rightPressed)
+					dataTableView.view.select(rowIndex, columnIndex, shiftPressed, controlPressed);
 				else
-					dataTableView.view.selectionEnd = Qt.point(columnIndex, rowIndex);
-
-				if(rightPressed)
 				{
 					dataTableView.view.clearEdit()
 					dataTableView.showPopupMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 				}
-				else if(!shiftPressed)
+							
+				if(!shiftPressed && !controlPressed && !rightPressed)
 					dataTableView.view.edit(rowIndex, columnIndex)
 
 			}
-			else if (columnModel.visible)
-			{
+			
+			if (columnModel.visible)
 				columnModel.chosenColumn = columnIndex
-			}
 		}
 
 		onPositionChanged:	(mouse) =>
 		{
 			if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
-			{
-				dataTableView.view.pollSelectScroll(rowIndex, columnIndex)
-				dataTableView.view.selectionEnd = Qt.point(columnIndex, rowIndex)
-			}
+				dataTableView.view.selectHover(rowIndex, columnIndex)
 		}
 
 	}

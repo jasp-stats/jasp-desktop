@@ -1,6 +1,5 @@
 #include "expanddataproxymodel.h"
 #include "datasettablemodel.h"
-#include "log.h"
 
 ExpandDataProxyModel::ExpandDataProxyModel(QObject *parent)
 	: QObject{parent}
@@ -150,7 +149,7 @@ void ExpandDataProxyModel::_setRolenames()
 
 	auto roleNames = _sourceModel->roleNames();
 
-	for(auto rn : roleNames.keys())
+	for(const auto & rn : roleNames.keys())
 		_roleNameToRole[roleNames[rn].toStdString()] = rn;
 }
 
@@ -181,17 +180,27 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 
 	if (start + count >= _sourceModel->columnCount())
 		count = _sourceModel->columnCount() - start;
-
+	
 	_undoStack->pushCommand(new RemoveColumnsCommand(_sourceModel, start, count));
 }
 
-void ExpandDataProxyModel::insertRow(int row)
+void ExpandDataProxyModel::insertRows(int row, int count)
 {
 	if (!_sourceModel)
 		return;
 
-	_undoStack->pushCommand(new InsertRowCommand(_sourceModel, row));
+	_undoStack->pushCommand(new InsertRowsCommand(_sourceModel, row, count));
 }
+
+
+void ExpandDataProxyModel::insertColumns(int col, int count)
+{
+	if (!_sourceModel)
+		return;
+
+	_undoStack->pushCommand(new InsertColumnsCommand(_sourceModel, col, count));
+}
+
 
 void ExpandDataProxyModel::insertColumn(int col, bool computed, bool R)
 {
@@ -214,11 +223,24 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 	if (col >= _sourceModel->columnCount() || row >= _sourceModel->rowCount())
 		_undoStack->startMacro();
 
-	for (int colNr = _sourceModel->columnCount(); colNr <= col; colNr++)
-		insertColumn(colNr, false, false);
-	for (int rowNr = _sourceModel->rowCount(); rowNr <= row; rowNr++)
-		insertRow(rowNr);
-
+	if(col >= _sourceModel->columnCount())
+	{	
+		int colNr = _sourceModel->columnCount(),
+			colC  = 1 + col - colNr;
+		
+		if(colC > 0)
+			insertColumns(colNr, colC);
+	}
+	
+	
+	if(row >= _sourceModel->rowCount())
+	{	
+		int rowNr = _sourceModel->rowCount(),
+			rowC  = 1 + row - rowNr;
+		
+		if(rowC > 0)
+			insertRows(rowNr, rowC);
+	}
 }
 
 void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int role)
@@ -230,13 +252,13 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 	_undoStack->endMacro(new SetDataCommand(_sourceModel, row, col, value, role));
 }
 
-void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames)
+void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList & colNames, const std::vector<boolvec> & selected)
 {
 	if (!_sourceModel || row < 0 || col < 0 || values.size() == 0 || values[0].size() == 0 )
 		return;
 
 	_expandIfNecessary(row + values[0].size() - 1, col + values.size() - 1);
-	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, values, labels, colNames));
+	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, values, labels, selected, colNames));
 }
 
 int ExpandDataProxyModel::setColumnType(intset columnIndexes, int columnType)

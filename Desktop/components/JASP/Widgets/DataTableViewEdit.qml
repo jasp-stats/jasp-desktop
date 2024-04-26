@@ -113,11 +113,8 @@ TextInput
 
 		if(arrowPressed)
 		{
-			if(!shiftPressed)
-				dataTableView.view.selectionStart	= arrowIndex;
-			else
-				dataTableView.view.selectionEnd  = arrowIndex;
-
+			dataTableView.view.select(arrowIndex.y, arrowIndex.x, shiftPressed, controlPressed);				
+			
 			dataTableView.view.edit(arrowIndex.y, arrowIndex.x);
 
 			event.accepted = true;

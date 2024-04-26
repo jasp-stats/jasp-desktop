@@ -5,7 +5,6 @@
 #include "filtermodel.h"
 #include "computedcolumnmodel.h"
 #include "utilities/qutils.h"
-#include "columnutils.h"
 
 UndoStack* UndoStack::_undoStack = nullptr;
 
@@ -25,27 +24,31 @@ void UndoStack::pushCommand(UndoModelCommand *command)
 void UndoStack::startMacro(const QString &text)
 {
 	if (_parentCommand)
-		Log::log() << "Macro started though last one is not finished!" << std::endl;
+		Log::log() << "Macro started though last one is not finished!" << std::endl; //I think this should be an assert...
+	
 	_parentCommand = new UndoModelCommand();
+	
 	if (!text.isEmpty())
 		_parentCommand->setText(text);
 }
 
 void UndoStack::endMacro(UndoModelCommand *command)
 {
-	if (command)
+	if(!_parentCommand)
 	{
-		if (_parentCommand)
-			_parentCommand->setText(command->text());
-		else
-			push(command); // Case when macro was not started
+		push(command);
+		return;
 	}
+	
+	if (command && _parentCommand->text().isEmpty())
+		_parentCommand->setText(command->text());
+	
+	
 	if (_parentCommand)
 		push(_parentCommand);
 
 	_parentCommand = nullptr;
 }
-
 
 SetDataCommand::SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &value, int role)
 	: UndoModelCommand(model), _newValue{value}, _row{row}, _col{col}, _role{role}
@@ -93,20 +96,36 @@ void InsertColumnCommand::redo()
 		dataSetTable->insertColumnSpecial(_col, _props);
 }
 
-InsertRowCommand::InsertRowCommand(QAbstractItemModel *model, int row)
-	: UndoModelCommand(model), _row{row}
+InsertColumnsCommand::InsertColumnsCommand(QAbstractItemModel *model, int col, int count)
+	: UndoModelCommand(model), _col{col}, _count{count}
 {
-	setText(QObject::tr("Insert row %1").arg(rowName(_row)));
+	setText(QObject::tr("Insert %2 cols at %1").arg(columnName(_col)).arg(_count));
 }
 
-void InsertRowCommand::undo()
+void InsertColumnsCommand::undo()
 {
-	_model->removeRow(_row);
+	_model->removeColumns(_col, _count);
 }
 
-void InsertRowCommand::redo()
+void InsertColumnsCommand::redo()
 {
-	_model->insertRow(_row);
+	_model->insertColumns(_col, _count);
+}
+
+InsertRowsCommand::InsertRowsCommand(QAbstractItemModel *model, int row, int count)
+	: UndoModelCommand(model), _row{row}, _count{count}
+{
+	setText(QObject::tr("Insert %2 rows at %1").arg(rowName(_row)).arg(_count));
+}
+
+void InsertRowsCommand::undo()
+{
+	_model->removeRows(_row, _count);
+}
+
+void InsertRowsCommand::redo()
+{
+	_model->insertRows(_row, _count);
 }
 
 RemoveColumnsCommand::RemoveColumnsCommand(QAbstractItemModel *model, int start, int count)
@@ -184,42 +203,50 @@ void RemoveRowsCommand::redo()
 	_model->removeRows(_start, _count);
 }
 
-PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const QStringList& colNames)
-	: UndoModelCommand(model), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}
+PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int row, int col, 
+	const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const std::vector<boolvec> & selected, const QStringList& colNames)
+	: UndoModelCommand(model), _dataSetTableModel(qobject_cast<DataSetTableModel*>(_model)), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}, _selected{selected}
 {
-	setText(QObject::tr("Paste values at row %1 column '%2'").arg(rowName(_row)).arg(columnName(_col)));
-}
+	setText(QObject::tr("Paste values at row '%1' column '%2'").arg(rowName(_row)).arg(columnName(_col)));
+	
+	if(!_dataSetTableModel)
+	{
+		Log::log() << "Not DataSetTableModel for PasteSpreadsheetCommand!" << std::endl;
+		setObsolete(true);
+		return;
+	}
+	
+	auto isSelected = [&](int R, int C)
+	{
+		return _selected.size() == 0 || _selected[C][R];
+	};
 
-void PasteSpreadsheetCommand::undo()
-{
-	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
-
-	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _oldValues, _oldLabels, {}, _oldColNames);
-}
-
-void PasteSpreadsheetCommand::redo()
-{
-	_oldValues.clear();
-	_oldLabels.clear();
 	for (int c = 0; c < _newValues.size(); c++)
 	{
-		_oldValues.push_back(std::vector<QString>());
-		_oldLabels.push_back(std::vector<QString>());
+		_oldValues.push_back({});
+		_oldLabels.push_back({});
 		
 		_oldColNames.push_back(_model->headerData(_col + c, Qt::Horizontal).toString());
 		for (int r = 0; r < _newValues[c].size(); r++)
 		{
-			_oldValues[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::value)).toString());
-			_oldLabels[c].push_back(_model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::label)).toString());
+			_oldValues[c].push_back(!isSelected(r,c) ? "" : _model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::value)).toString());
+			_oldLabels[c].push_back(!isSelected(r,c) ? "" : _model->data(_model->index(_row + r, _col + c),	int(DataSetPackage::specialRoles::label)).toString());
 		}
 	}
-
-	DataSetTableModel* dataSetTable = qobject_cast<DataSetTableModel*>(_model);
-
-	if (dataSetTable)
-		dataSetTable->pasteSpreadsheet(_row, _col, _newValues, _newLabels, {}, _newColNames);
 }
+
+void PasteSpreadsheetCommand::undo()
+{
+	if (_dataSetTableModel)
+		_dataSetTableModel->pasteSpreadsheet(_row, _col, _oldValues, _oldLabels, {}, _oldColNames, _selected);
+}
+
+void PasteSpreadsheetCommand::redo()
+{
+	if (_dataSetTableModel)
+		_dataSetTableModel->pasteSpreadsheet(_row, _col, _newValues, _newLabels, {}, _newColNames, _selected);
+}
+
 
 
 SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset cols, int colType)
@@ -280,13 +307,20 @@ UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemMo
 : UndoModelCommand(model), _cols{cols}
 {
 	for(int col : _cols)
-		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col)->serialize();
+		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col) ? DataSetPackage::pkg()->dataSet()->column(col)->serialize() : Json::nullValue;
 }
 
 void UndoModelCommandMultipleColumns::undo()
 {
+	QStringList changed;
+	
 	for(int col : _cols)
-		DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+		if(!_serializedColumns[col].isNull())
+			DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+
+	
+	DataSetPackage::pkg()->refresh();
+	
 }
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)

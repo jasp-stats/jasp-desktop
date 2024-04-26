@@ -167,7 +167,7 @@ void Column::setHasCustomEmptyValues(bool hasCustom)
 	_emptyValues->setHasCustomEmptyValues(hasCustom);
 	db().columnSetEmptyVals(_id, _emptyValues->toJson().toStyledString());
 	
-	incRevision();
+	incRevision(false);
 }
 
 bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
@@ -180,7 +180,7 @@ bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
 	_emptyValues->setEmptyValues(customEmptyValues, _emptyValues->hasEmptyValues());
 	db().columnSetEmptyVals(_id, _emptyValues->toJson().toStyledString());
 	
-	incRevision();
+	incRevision(false);
 	
 	return true;
 }
@@ -628,7 +628,7 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 
 	db().labelsSetOrder(orderPerDbIds);
 	
-	incRevision();
+	incRevision(false);
 }
 
 void Column::_sortLabelsByOrder()
@@ -642,9 +642,7 @@ void Column::labelsClear()
 	_labels.clear();
 	_labelByIntsIdMap.clear();
 	
-	labelsTempReset();
-
-	incRevision();
+	incRevision(false);
 }
 
 void Column::beginBatchedLabelsDB()
@@ -801,12 +799,12 @@ int Column::labelsTempCount()
 		for(size_t r=0; r<_labels.size(); r++)
 			if(!_labels[r]->isEmptyValue())
 			{
-				_labelsTemp.push_back(		_labels[r]->label());
-				_labelsTempDbls.push_back(	_labels[r]->originalValue().isDouble() ? _labels[r]->originalValue().asDouble() : EmptyValues::missingValueDouble);
+				_labelsTemp												. push_back(_labels[r]->label());
+				_labelsTempDbls											. push_back(_labels[r]->originalValue().isDouble() ? _labels[r]->originalValue().asDouble() : EmptyValues::missingValueDouble);
 				_labelsTempToIndex[_labelsTemp[_labelsTemp.size()-1]]	= _labelsTemp.size()-1; //We store the index in _labelsTemp in a map.
 			}
 		
-		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to 	_labelsTemp and _labelsTempToIndex	
+		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
 		for(size_t r=0; r<rowCount(); r++)
 			if(_ints[r] == Label::DOUBLE_LABEL_VALUE)
 			{
@@ -1368,12 +1366,16 @@ void Column::rowDelete(size_t row)
 {
 	_dbls.erase(_dbls.begin() + row);
 	_ints.erase(_ints.begin() + row);
+	
+	labelsTempReset();
 }
 
 void Column::setRowCount(size_t rows)
 {
 	_dbls.resize(rows);
 	_ints.resize(rows);
+	
+	labelsTempReset();
 }
 
 Label *Column::labelByIntsId(int value) const

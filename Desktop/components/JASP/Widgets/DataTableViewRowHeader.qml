@@ -20,7 +20,7 @@ Rectangle
 	MouseArea
 	{
 		anchors.fill:		parent
-		enabled:			ribbonModel.dataMode
+		//enabled:			ribbonModel.dataMode
 		hoverEnabled:		true
 		ToolTip.visible:	containsMouse
 		ToolTip.text:		qsTr("Click here to select the row, hold shift for selecting multiple.")
@@ -30,8 +30,9 @@ Rectangle
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
 		onClicked: 			(mouseEvent)=>
 							{
-								if(mouseEvent.button === Qt.LeftButton || mouseEvent.button === Qt.RightButton)
-									dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton);
+								if(mouseEvent.button === Qt.LeftButton)
+									dataTableView.view.select(rowIndex, -1, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier);
+								
 								if(mouseEvent.button === Qt.RightButton)
 									dataTableView.showPopupMenu(parent, mapToGlobal(mouseEvent.x, mouseEvent.y), rowIndex, -1);
 							}
@@ -39,10 +40,7 @@ Rectangle
 		onPositionChanged:	(mouseEvent) =>
 		{
 			if(ribbonModel.dataMode && Boolean(mouseEvent.modifiers & Qt.ShiftModifier))
-			{
-				dataTableView.view.pollSelectScroll(rowIndex, -1)
-				dataTableView.view.rowSelect(rowIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.button === Qt.RightButton)
-			}
+				dataTableView.view.selectHover(rowIndex, -1)
 		}
 	}
 }

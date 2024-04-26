@@ -117,6 +117,7 @@ public:
 			
 			int						labelsTempCount(); ///< Generates the labelsTemp also!
 			const stringvec		&	labelsTemp();
+			void					labelsTempReset();
 			std::string				labelsTempDisplay(		size_t tempLabelIndex);
 			std::string				labelsTempValue(		size_t tempLabelIndex, bool fancyEmptyValue = false);
 			double					labelsTempValueDouble(	size_t tempLabelIndex);
@@ -223,7 +224,6 @@ protected:
 			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
 			void					_resetLabelValueMap();
 			doublevec				valuesNumericOrdered();			
-			void					labelsTempReset();
 
 private:
 			DataSet			* const	_data;

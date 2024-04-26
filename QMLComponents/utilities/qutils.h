@@ -35,6 +35,7 @@
 #include <vector>
 #include <sstream>
 #include <json/json.h>
+#include <QItemSelection>
 
 /// This file collect a set of useful functions for interop between Qt and stdlib, like `fq` and `tq` for easily converting to and fro normal strings and whatnot
 /// These could have been collected into a class but because we use `fq` and `tq` in so many places that would probably not have made our life easier anyway.
@@ -60,6 +61,8 @@ inline	QList<int>							tql(const std::set<int>						 & from)	{ return QList<int
 		//These need to have a different name because otherwise the default Json::Value(const std::string & str) constructor steals any fq(std::string()) call...
 		Json::Value							fqj(const QJSValue							 & jsVal);
 		QJSValue							tqj(const Json::Value						 & json,	const QQuickItem * qItem);
+		QPoint								minQModelIndex(const QItemSelection			 & list);
+		QPoint								maxQModelIndex(const QItemSelection			 & list);
 
 template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
 template<typename T> inline		QVector<T>		tq(std::vector<T>	in) { return QVector<T>::fromStdVector(in); }
