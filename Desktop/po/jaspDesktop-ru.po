@@ -1475,14 +1475,6 @@ msgstr "Гибко:"
 
 msgctxt "WelcomePage|"
 msgid ""
-"JASP is an open-source project with structural support from the University "
-"of Amsterdam."
-msgstr ""
-"JASP - это проект с открытым исходным кодом при поддержке Амстердамского "
-"университета."
-
-msgctxt "WelcomePage|"
-msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
 msgstr ""
 "JASP имеет интуитивно понятный интерфейс, который был разработан с учетом "
@@ -4302,22 +4294,12 @@ msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
-msgid "Insert row %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
 msgid "Remove column '%1'"
 msgstr ""
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Paste values at row %1 column '%2'"
 msgstr ""
 
 #, qt-format
@@ -4958,28 +4940,6 @@ msgctxt "MainPage|"
 msgid "Close search bar"
 msgstr ""
 
-#, qt-format
-msgctxt "CommunityWindow|"
-msgid ""
-"<h3>Community</h3>\n"
-"The institutions of higher learning that participate in the JASP community "
-"jointly support the maintenance and further development of JASP, therefore "
-"providing an invaluable educational service to their own students and to "
-"those of other institutions worldwide.\n"
-"\n"
-"If your institution is not yet part of the JASP community, you can <a "
-"href=\"%1\">suggest that they join</a>.\n"
-"\n"
-"<i><b>Gold Educators:</b></i>\n"
-"%2\n"
-"                 \n"
-"<i><b>Silver Educators:</b></i>\n"
-"%3\n"
-"\n"
-"<i><b>Bronze Educator:</b></i>\n"
-"%4"
-msgstr ""
-
 msgctxt "MainPage|"
 msgid "Font Color"
 msgstr ""
@@ -5103,10 +5063,6 @@ msgctxt "DataTableView|"
 msgid "Reverse values"
 msgstr ""
 
-msgctxt "DataTableView|"
-msgid "Order by values"
-msgstr ""
-
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
 msgstr ""
@@ -5161,4 +5117,66 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
+msgstr ""
+
+#, qt-format
+msgctxt "CommunityWindow|"
+msgid ""
+"<h3>Community</h3>\n"
+"The institutions of higher learning that participate in the JASP community "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the JASP community, you can <a "
+"href=\"%1\">suggest that they join</a>.\n"
+"Below the educators that helped make this release possible:\n"
+"\n"
+"<i><b>Gold Educators:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Silver Educators:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Bronze Educator:</b></i>\n"
+"%4\n"
+"\n"
+"<a href=\"%6\">Click here for the current list of educators</a>\n"
+msgstr ""
+
+msgctxt "DataTableView|"
+msgid "Order labels by values"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid ""
+"JASP is an open-source project with structural support from the <a "
+"href=\"dummyLink\">University of Amsterdam &amp; others</a>."
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Report bugs"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Request features"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert %2 cols at %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Insert %2 rows at %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Paste values at row '%1' column '%2'"
+msgstr ""
+
+msgctxt "DataSetView|"
+msgid "Cutting all data"
 msgstr ""
