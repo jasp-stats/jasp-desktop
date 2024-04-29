@@ -884,7 +884,7 @@ std::set<string> AnalysisForm::usedVariables()
 ///Generates documentation based on the "info" entered on each component
 QString AnalysisForm::helpMD() const
 {
-	if(!_analysis) return "";
+	if(!_analysis || !initialized()) return "";
 
 	QStringList markdown =
 	{
@@ -901,7 +901,7 @@ QString AnalysisForm::helpMD() const
 	markdown << metaHelpMD();
 	
 	if(!_info.bottom.isEmpty())
-		markdown << (_info.bottom + "\n");
+		markdown << _info.bottom  << "\n";
 
 	auto printList = [&markdown](const QStringList& list, const QString& title) -> void
 	{

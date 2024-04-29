@@ -268,31 +268,10 @@ QString TextInputBase::friendlyName() const
 	}
 }
 
-QString	TextInputBase::helpMD(int howDeep) const
-{
-	if(infoText() == "" || (label() == "" && afterLabel() == ""))
-		return "";
-
-	QStringList md;
-
-	md	<< QString{howDeep, '#' } << " " << friendlyName();
-	
-	if(infoLabel().size())
-		md << " - " << infoLabel();
-			  
-	md	<< "\n"
-		<< "`" << label() << " ... " << afterLabel() << "`\n\n"
-		<< infoText() << "\n";
-
-
-	return md.join("");
-}
-
 bool TextInputBase::encodeValue() const
 {
 	return _inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType;
 }
-
 
 bool TextInputBase::_formulaResultInBounds(double result)
 {

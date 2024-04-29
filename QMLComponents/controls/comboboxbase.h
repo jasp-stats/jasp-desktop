@@ -44,7 +44,7 @@ public:
 	void				setUp()												override;
 	ListModel*			model()										const	override	{ return _model;				}
 	void				setUpModel()										override;
-	QString				helpMD(int howDeep = 0)						const	override;
+	QString				helpMD(int depth = 0)						const	override;
 	bool				hasInfo()									const	override;
 
 	const QString&		currentText()								const				{ return _currentText;			}

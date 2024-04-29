@@ -26,7 +26,6 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 {
 	_controlType = ControlType::ComboBox;
 	_hasUserInteractiveValue = true;
-	_info.isHeader = true;
 }
 
 void ComboBoxBase::bindTo(const Json::Value& value)
@@ -247,17 +246,11 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-QString	ComboBoxBase::helpMD(int howDeep) const
+QString	ComboBoxBase::helpMD(int depth) const
 {
 	QStringList markdown;
 
-	if(!infoLabel().isEmpty() || _info.displayControlType)
-	{
-		markdown << "**";
-		if (_info.displayControlType)	markdown << (friendlyName() + " ");
-		markdown << infoLabel();
-		markdown << "**: ";
-	}
+	printLabelMD(markdown, depth);
 
 	if(!infoText().isEmpty())
 		markdown << infoText();
@@ -269,7 +262,7 @@ QString	ComboBoxBase::helpMD(int howDeep) const
 		{
 			QString label = term.asQString(),
 					info = _model->getInfo(label);
-			markdown << ( QString{howDeep * 2, ' '} + "- *" + label + "*");
+			markdown << ( QString{depth * 2, ' '} + "- *" + label + "*");
 			if (!info.isEmpty())
 				markdown << (": " + info);
 		}

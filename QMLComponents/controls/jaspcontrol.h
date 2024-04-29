@@ -125,7 +125,7 @@ public:
 	QString				infoText()					const	{ return _info.text;				}
 	QString				infoLabel()					const	{ return _info.label.isEmpty() ? _title : _info.label;	}
 	QString				toolTip()					const	{ return _toolTip;					}
-	virtual QString		helpMD(int howDeep = 0)		const;
+	virtual QString		helpMD(int depth = 0)		const;
 	virtual bool		hasInfo()					const;
 	bool				isBound()					const	{ return _isBound;					}
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}
@@ -265,16 +265,17 @@ signals:
 	void				requestComputedColumnDestruction(std::string columnName);
 
 protected:
-	void				componentComplete() override;
+	void				componentComplete()									override;
 	void				_setType();
 	void				setCursorShape(int shape);
 	void				setParentDebugToChildren(bool debug);
-	void				focusInEvent(QFocusEvent* event) override;
-	bool				eventFilter(QObject *watched, QEvent *event) override;
+	void				focusInEvent(QFocusEvent* event)					override;
+	bool				eventFilter(QObject *watched, QEvent *event)		override;
 	bool				checkOptionName(const QString& name);
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
 	virtual void		_setInitialized(const Json::Value &value);
+	void				printLabelMD(QStringList& md, int depth)			const;
 
 protected:
 	Set						_depends;

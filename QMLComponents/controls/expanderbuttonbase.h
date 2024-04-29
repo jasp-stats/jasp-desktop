@@ -30,7 +30,7 @@ public:
 	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
 
 	void	setUp()							override;
-	QString helpMD(int howDeep)		const	override;
+	QString helpMD(int depth)		const	override;
 };
 
 #endif // EXPANDERBUTTONBASE_H

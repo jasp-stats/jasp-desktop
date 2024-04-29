@@ -34,7 +34,7 @@ void ExpanderButtonBase::setUp()
 	setInitialized();
 }
 
-QString ExpanderButtonBase::helpMD(int howDeep) const
+QString ExpanderButtonBase::helpMD(int depth) const
 {
 	if (!hasInfo()) return "";
 

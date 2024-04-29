@@ -43,7 +43,6 @@ public:
 	void		setUp()												override;
 	void		rScriptDoneHandler(const QString& result)			override;
 	bool		encodeValue()								const	override;
-	QString		helpMD(int howDeep = 0)						const	override;
 
 	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;

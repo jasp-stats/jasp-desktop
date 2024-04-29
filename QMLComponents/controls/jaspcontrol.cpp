@@ -556,7 +556,22 @@ bool JASPControl::hasInfo() const
 	return false;
 }
 
-QString JASPControl::helpMD(int howDeep) const
+void JASPControl::printLabelMD(QStringList& md, int depth) const
+{
+	if(!infoLabel().isEmpty() || _info.displayControlType)
+	{
+		if(_info.isHeader)				md <<  QString{depth + 1, '#' } + " ";
+		else							md << "**"; // If not a header, make it bold
+		if (_info.displayControlType)	md << (" __" + friendlyName() + "__ ");
+		md << infoLabel();
+		if (!_info.isHeader)			md << "**";
+
+		if(!infoText().isEmpty())
+			md << ": ";
+	}
+}
+
+QString JASPControl::helpMD(int depth) const
 {
 	if (!hasInfo()) return "";
 		
@@ -564,45 +579,26 @@ QString JASPControl::helpMD(int howDeep) const
 
 	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this, true);
 
-	if(!infoLabel().isEmpty())
-		howDeep++;
-		
-	if (howDeep > 6)
-		howDeep = 6;
+	printLabelMD(markdown, depth);
 
 	for (JASPControl* childControl : children)
 	{
-		QString childMD = childControl->helpMD(howDeep);
+		QString childMD = childControl->helpMD(depth + 1);
 		if (!childMD.isEmpty())
 			childMDs.push_back(childMD);
 	}
 
-	if(!infoLabel().isEmpty() || _info.displayControlType)
-	{
-		if(_info.isHeader)				markdown <<  QString{howDeep + 1, '#' } + " ";
-		else							markdown << "**"; // If not a header, make it bold
-		if (_info.displayControlType)	markdown << (friendlyName() + " ");
-		markdown << infoLabel();
-		if (!_info.isHeader)			markdown << "**";
 
-		if(!infoText().isEmpty())
-			markdown << ": ";
-	}
-
-
-	if(!infoText().isEmpty())
-		markdown << infoText();
-
-	markdown << "\n\n";
+	markdown << infoText() << "\n";
 
 	for (const QString& childMD : childMDs)
 	{
-		markdown << QString{(howDeep - 1) * 2, ' '};
-		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- ";
-		markdown << childMD << "\n";
+		markdown << QString{depth * 2, ' '};
+		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- "; // Add bullet only if more than 1 child exist
+		markdown << childMD;
 	}
 
-	QString md = markdown.join("") + "\n";
+	QString md = markdown.join("");
 		
 	return md;
 }
