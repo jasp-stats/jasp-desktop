@@ -39,11 +39,10 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);
-	connect(this, &JASPControl::infoLabelChanged,		this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
-	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(_info);					});
+	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(infoText());					});
 	connect(this, &JASPControl::toolTipChanged,			[this] () { setShouldStealHover(!_toolTip.isEmpty());					});
 	connect(this, &JASPControl::hasErrorChanged,		this, &JASPControl::_hightlightBorder);
 	connect(this, &JASPControl::hasWarningChanged,		this, &JASPControl::_hightlightBorder);
@@ -171,6 +170,9 @@ void JASPControl::componentComplete()
 	_setBackgroundColor();
 	_setVisible();
 
+	if (_controlType == ControlType::GroupBox)
+		_info.isHeader = true;
+
 	connect(this, &JASPControl::initializedChanged, this, &JASPControl::_checkControlName);
 
 	if (_useControlMouseArea)
@@ -293,7 +295,7 @@ void JASPControl::clearControlError()
 		_form->clearControlError(this);
 }
 
-QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
+QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, bool removeUnecessaryGroups)
 {
 	QList<JASPControl*> result;
 
@@ -306,8 +308,24 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 	{
 		JASPControl* childControl = qobject_cast<JASPControl*>(childItem);
 
-		if (childControl)	result.push_back(childControl);
-		else				result.append(getChildJASPControls(childItem));
+		if (childControl)
+		{
+			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && childControl->infoLabel().isEmpty() && childControl->infoText().isEmpty())
+				// If a Group has no label, title or info, then it is used probably for layout purpose, but to structure the controls is sub elements.
+				// Just skip it: this is necessary for generating properly the markdown help
+				result.append(getChildJASPControls(childControl));
+			else
+				result.push_back(childControl);
+		}
+		else if (childItem->objectName() == "Section")
+		{
+			// The Expander button QML is not a JASPControl directly, it is composed by the button and a GridLayout wrapped up by a FocusScape
+			// So take here the Button to have a real JASPControl.
+			JASPControl* expanderButton = childItem->property("button").value<JASPControl*>();
+			result.push_back(expanderButton);
+		}
+		else
+			result.append(getChildJASPControls(childItem));
 	}
 
 	return result;
@@ -528,92 +546,63 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	}
 }
 
-QString JASPControl::helpMD(SetConst & markdowned, int howDeep, bool asList) const
+bool JASPControl::hasInfo() const
 {
-	if(!isEnabled())
-		return "";
+	if(!infoText().isEmpty()) return true;
 
-	markdowned.insert(this);
+	for (JASPControl* control : getChildJASPControls(_childControlsArea ? _childControlsArea : this))
+		if (control->hasInfo()) return true;
+
+	return false;
+}
+
+QString JASPControl::helpMD(int howDeep) const
+{
+	if (!hasInfo()) return "";
 		
-	Log::log() << "Generating markdown for control by name '" << name() << "', title '" << title() << "' and type: '" << JASPControl::ControlTypeToFriendlyString(controlType()) << "'.\n";
+	QStringList childMDs, markdown;
 
-	bool shouldChildrenBeAList;
+	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this, true);
 
-	switch(controlType())
-	{
-	case ControlType::GroupBox:
-	case ControlType::ComboBox:
-	case ControlType::RadioButtonGroup:
-	case ControlType::VariablesForm:
-		shouldChildrenBeAList = true;
-		break;
-
-	default:
-		shouldChildrenBeAList = false;
-		break;
-	}
-
-	if(controlType() == ControlType::Expander)
-		howDeep = 1; //When within a section we can go back to bigger titles. Together with howDeep++ right below here this ends up as default 2
-
-	howDeep++;
-	QStringList markdown, childMDs;
-
-	//First we determine if we have children, and if so if they contain anything.
-	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this);
-
-	bool aControlThatEncloses = children.size() > 0;
+	if(!infoLabel().isEmpty())
+		howDeep++;
 		
-	Log::log() << "Control encloses #" << children.size() << " children." << std::endl;
-
-	bool	childrenList = asList || shouldChildrenBeAList || howDeep > 6; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
-	int		newDeep = howDeep;
-
-	if(childrenList && !asList)
-		newDeep = 0;
+	if (howDeep > 6)
+		howDeep = 6;
 
 	for (JASPControl* childControl : children)
-		if(!markdowned.count(childControl))
-			childMDs << childControl->helpMD(markdowned, newDeep, childrenList);
+	{
+		QString childMD = childControl->helpMD(howDeep);
+		if (!childMD.isEmpty())
+			childMDs.push_back(childMD);
+	}
 
-	QString childMD = childMDs.join(""),
-			titleLabel = (!infoLabel().size() ? title() : infoLabel());
+	if(!infoLabel().isEmpty() || _info.displayControlType)
+	{
+		if(_info.isHeader)				markdown <<  QString{howDeep + 1, '#' } + " ";
+		else							markdown << "**"; // If not a header, make it bold
+		if (_info.displayControlType)	markdown << (friendlyName() + " ");
+		markdown << infoLabel();
+		if (!_info.isHeader)			markdown << "**";
 
-	//If we have no info and none of our children have info then we shouldn't be part of the help md
-	if(info() == "" && (!aControlThatEncloses || childMD == ""))
-		return "";
-
-	//If on the other hand we are a simply radiobutton we can just turn it into a list entry
-	if(controlType() == ControlType::RadioButton && !aControlThatEncloses)
-		return "- *" + titleLabel + "*: " + info() + "\n";
-
-	//And otherwise we go the full mile, header + title + info and all followed by whatever children we have
-	if(aControlThatEncloses)
-		markdown << "\n\n";
-
-	if(controlType() == ControlType::Expander)
-		markdown << "\n---\n";
-
-	if(asList)	markdown << QString{howDeep, ' '} + "- ";
-	else		markdown << QString{howDeep, '#' } + " "; // ;)
-
-	markdown << friendlyName();
-
-	if(titleLabel != "")	markdown << " - *" + titleLabel  + "*:\n";
-	else				markdown << "\n";
+		if(!infoText().isEmpty())
+			markdown << ": ";
+	}
 
 
-	markdown << info() + "\n";
+	if(!infoText().isEmpty())
+		markdown << infoText();
 
-	markdown << childMD;
+	markdown << "\n\n";
 
-	if(controlType() == ControlType::Expander)
-		markdown << "\n---\n";
+	for (const QString& childMD : childMDs)
+	{
+		markdown << QString{(howDeep - 1) * 2, ' '};
+		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- ";
+		markdown << childMD << "\n";
+	}
 
-
-	QString md = markdown.join("") + "\n\n";
-		
-	Log::log() << "Generated: '" << md << "'\n";
+	QString md = markdown.join("") + "\n";
 		
 	return md;
 }
@@ -703,6 +692,31 @@ bool JASPControl::hovered() const
 		return _mouseAreaObj->property("hovered").toBool();
 	else
 		return false;
+}
+
+void JASPControl::setInfo(const QVariant& info)
+{
+	if (_info.var == info)
+		return;
+
+	_info.var = info;
+
+	if (info.canConvert<QString>())
+		_info.text = info.toString();
+	else if (info.canConvert<QMap<QString, QVariant> >())
+	{
+		QMap<QString, QVariant> map = info.toMap();
+		if (map.contains("text"))
+			_info.text = map["text"].toString();
+		if (map.contains("label"))
+			_info.label = map["label"].toString();
+		if (map.contains("useControlType"))
+			_info.displayControlType = map["useControlType"].toBool();
+		if (map.contains("isHeader"))
+			_info.isHeader = map["isHeader"].toBool();
+	}
+
+	emit infoChanged();
 }
 
 QString JASPControl::humanFriendlyLabel() const
@@ -828,18 +842,4 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	_initialized = true;
 	_initializedWithValue = (value != Json::nullValue);
 	emit initializedChanged();
-}
-		
-QString JASPControl::infoLabel() const
-{
-		return _infoLabel;
-}
-		
-void JASPControl::setInfoLabel(const QString &newInfoLabel)
-{
-	if (_infoLabel == newInfoLabel)
-		return;
-		_infoLabel = newInfoLabel;
-	emit infoLabelChanged();
-}
-		
+}		

@@ -35,6 +35,13 @@ class JASPControl;
 class ExpanderButtonBase;
 class RSyntax;
 
+struct InfoFormProps
+{
+	QVariant var;
+	QString top, bottom;
+	QStringList references, RPackages, examples;
+};
+
 ///
 /// The backend for the `Form{}` used in all JASP's well, qml forms
 /// This is directly a QQuickItem and connects to Analyses to inform it when the options change.
@@ -52,8 +59,8 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(bool			needsRefresh			READ needsRefresh											NOTIFY needsRefreshChanged			)
 	Q_PROPERTY(bool			hasVolatileNotes		READ hasVolatileNotes										NOTIFY hasVolatileNotesChanged		)
 	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
-	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
-	Q_PROPERTY(QString		infoBottom				READ infoBottom				WRITE setInfoBottom				NOTIFY infoBottomChanged			)
+	Q_PROPERTY(QVariant		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY(QString		infoBottom				READ infoBottom				WRITE setInfoBottom				NOTIFY infoChanged					)
 	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
@@ -94,7 +101,7 @@ public:
 
 public slots:
 	void					runScriptRequestDone(const QString& result, const QString& requestId, bool hasError);
-	void					setInfo(QString info);
+	void					setInfo(const QVariant& info);
 	void					setAnalysis(AnalysisBase * analysis);
 	void					boundValueChangedHandler(JASPControl* control);
 	void					setOptionNameConversion(const QVariantList& conv);
@@ -128,9 +135,7 @@ signals:
 	void					rSyntaxTextChanged();
 	void					showAllROptionsChanged();
 	void					activeJASPControlChanged();
-	
-	void infoBottomChanged();
-	
+		
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
@@ -159,7 +164,7 @@ public:
 
 	bool			needsRefresh()			const;
 
-	QString			info()					const	{ return _info; }
+	QVariant		info()					const	{ return _info.var; }
 	QString			helpMD()				const;
 	QString			metaHelpMD()			const;
 	QString			errors()				const	{ return msgsListToString(_formErrors);		}
@@ -187,8 +192,8 @@ public:
 
 	static const QString	rSyntaxControlName;
 	
-	QString infoBottom() const;
-	void setInfoBottom(const QString &newInfoBottom);
+	QString infoBottom() const							{ return _info.bottom;			};
+	void setInfoBottom(const QString &newInfoBottom)	{ _info.bottom = newInfoBottom; emit infoChanged(); }
 	
 private:
 
@@ -232,7 +237,7 @@ private:
 													_hasVolatileNotes				= false,
 													_initialized					= false,
 													_valueChangedEmittedButBlocked	= false;
-	QString											_info;
+	InfoFormProps									_info;
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 	RSyntax										*	_rSyntax						= nullptr;
@@ -240,7 +245,6 @@ private:
 													_developerMode					= false;
 	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
-	QString _infoBottom;
 };
 
 #endif // ANALYSISFORM_H

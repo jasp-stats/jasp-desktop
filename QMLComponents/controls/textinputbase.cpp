@@ -268,11 +268,9 @@ QString TextInputBase::friendlyName() const
 	}
 }
 
-QString	TextInputBase::helpMD(SetConst & markdowned, int howDeep, bool) const
+QString	TextInputBase::helpMD(int howDeep) const
 {
-	markdowned.insert(this);
-
-	if(info() == "" || (label() == "" && afterLabel() == ""))
+	if(infoText() == "" || (label() == "" && afterLabel() == ""))
 		return "";
 
 	QStringList md;
@@ -284,7 +282,7 @@ QString	TextInputBase::helpMD(SetConst & markdowned, int howDeep, bool) const
 			  
 	md	<< "\n"
 		<< "`" << label() << " ... " << afterLabel() << "`\n\n"
-		<< info() << "\n";
+		<< infoText() << "\n";
 
 
 	return md.join("");

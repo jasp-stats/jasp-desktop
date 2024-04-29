@@ -42,9 +42,8 @@ public:
 	void		bindTo(const Json::Value& value)					override;
 	void		setUp()												override;
 	void		rScriptDoneHandler(const QString& result)			override;
-	QString		helpMD(SetConst & markdowned,
-					   int howDeep = 2, bool asList=true)	const	override;
 	bool		encodeValue()								const	override;
+	QString		helpMD(int howDeep = 0)						const	override;
 
 	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;

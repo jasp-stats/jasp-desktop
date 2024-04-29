@@ -26,6 +26,7 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 {
 	_controlType = ControlType::ComboBox;
 	_hasUserInteractiveValue = true;
+	_info.isHeader = true;
 }
 
 void ComboBoxBase::bindTo(const Json::Value& value)
@@ -246,36 +247,53 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-QString	ComboBoxBase::helpMD(SetConst & markdowned, int howDeep, bool) const
+QString	ComboBoxBase::helpMD(int howDeep) const
 {
-	QStringList md = { JASPControl::helpMD(markdowned, howDeep, false) };
-	howDeep++;
+	QStringList markdown;
 
-	if (values().isValid() && !values().isNull())
+	if(!infoLabel().isEmpty() || _info.displayControlType)
 	{
-		bool isInteger = false;
-		values().toInt(&isInteger);
-
-		if (!isInteger)
-		{
-			QList<QVariant> list = values().toList();
-			if (!list.isEmpty())
-			{
-				for (const QVariant& itemVariant : list)
-				{
-					QMap<QString, QVariant> labelValueInfoTriplet = itemVariant.toMap();
-					if (labelValueInfoTriplet.contains(labelRole()) && labelValueInfoTriplet.contains("info"))
-					{
-						QString label = labelValueInfoTriplet[labelRole()].toString(),
-								info  = labelValueInfoTriplet["info"].toString();
-
-						md << ( QString{howDeep, ' '} + "- *" + label + "*: " + info);
-					}
-				}
-			}
-		}
+		markdown << "**";
+		if (_info.displayControlType)	markdown << (friendlyName() + " ");
+		markdown << infoLabel();
+		markdown << "**: ";
 	}
 
+	if(!infoText().isEmpty())
+		markdown << infoText();
 
-	return md.join("\n");
+	// If one of the option has an info property, then display the options as an unordered list
+	if (_hasOptionInfo())
+	{
+		for (const Term& term : _model->terms())
+		{
+			QString label = term.asQString(),
+					info = _model->getInfo(label);
+			markdown << ( QString{howDeep * 2, ' '} + "- *" + label + "*");
+			if (!info.isEmpty())
+				markdown << (": " + info);
+		}
+	}
+	else
+		// Display the options in one line separated by a comma.
+		markdown << model()->terms().asQList().join(", ");
+
+
+	return markdown.join("") + "\n";
+}
+
+bool ComboBoxBase::_hasOptionInfo() const
+{
+	for (const Term& term : _model->terms())
+	{
+		if (!_model->getInfo(term.asQString()).isEmpty())
+			return true;
+	}
+
+	return false;
+}
+
+bool ComboBoxBase::hasInfo() const
+{
+	return !infoText().isEmpty() || _hasOptionInfo();
 }

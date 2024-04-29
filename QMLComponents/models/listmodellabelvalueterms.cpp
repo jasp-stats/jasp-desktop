@@ -20,7 +20,7 @@
 #include "log.h"
 #include "controls/sourceitem.h"
 
-ListModelLabelValueTerms::ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values)
+ListModelLabelValueTerms::ListModelLabelValueTerms(JASPListControl* listView, const SourceItem::SourceValuesType& values)
 	: ListModelAvailableInterface(listView)
 {
 	_setLabelValues(values);
@@ -38,8 +38,8 @@ QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) cons
 	if (role == ListModel::ValueRole)
 	{
 		QString label = myTerms.at(row_t).asQString();
-		if (_labelToValueMap.contains(label))
-			return _labelToValueMap[label];
+		if (_labelsMap.contains(label))
+			return _labelValues[_labelsMap[label]].value;
 		else
 			return label;
 	}
@@ -66,7 +66,7 @@ std::vector<std::string> ListModelLabelValueTerms::getValues()
 	for (const Term& term : terms)
 	{
 		QString label = term.asQString();
-		QString value = _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
+		QString value = _labelsMap.contains(label) ? _labelValues[_labelsMap[label]].value : label;
 		values.push_back(value.toStdString());
 	}
 
@@ -75,16 +75,22 @@ std::vector<std::string> ListModelLabelValueTerms::getValues()
 
 QString ListModelLabelValueTerms::getValue(const QString &label) const
 {
-	return _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
+	return _labelsMap.contains(label) ? _labelValues[_labelsMap[label]].value : label;
 }
+
+QString ListModelLabelValueTerms::getInfo(const QString &label) const
+{
+	return _labelsMap.contains(label) ? _labelValues[_labelsMap[label]].info : "";
+}
+
 
 QString ListModelLabelValueTerms::getLabel(const QString &value) const
 {
-	return _valueToLabelMap.contains(value) ? _valueToLabelMap[value] : value;
+	return _valuesMap.contains(value) ? _labelValues[_valuesMap[value]].label : value;
 }
 
 int ListModelLabelValueTerms::getIndexOfValue(const QString &value) const
-{
+{	
 	return terms().indexOf(getLabel(value));
 }
 
@@ -93,19 +99,22 @@ int ListModelLabelValueTerms::getIndexOfLabel(const QString &label) const
 	return terms().indexOf(label);
 }
 
-void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValueMap &labelvalues)
+void ListModelLabelValueTerms::_setLabelValues(const SourceItem::SourceValuesType &labelvalues)
 {
-	_valueToLabelMap.clear();
-	_labelToValueMap.clear();
+	_labelValues = labelvalues;
+	_valuesMap.clear();
+	_labelsMap.clear();
 	Terms newTerms;
 
-	for (const auto& labelValue :labelvalues)
+	int i = 0;
+	for (const auto& labelValue : labelvalues)
 	{
-		const QString& label = labelValue.first;
-		const QString& value = labelValue.second;
+		const QString& label = labelValue.label;
+		const QString& value = labelValue.value;
 		newTerms.add(Term::readTerm(label)); // The string can be an interaction between different variables (eg: a * b)
-		_valueToLabelMap[value] = label;
-		_labelToValueMap[label] = value;
+		_valuesMap[value] = i;
+		_labelsMap[label] = i;
+		i++;
 	}
 
 	_setTerms(newTerms);
@@ -113,10 +122,10 @@ void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValue
 
 void ListModelLabelValueTerms::setLabelValuesFromSource()
 {
-	JASPListControl::LabelValueMap labelValuePairs;
+	SourceItem::SourceValuesType labelValuePairs;
 
 	if (listView()->addEmptyValue())
-		labelValuePairs.push_back(std::make_pair(listView()->placeholderText(), ""));
+		labelValuePairs.push_back(SourceItem::SourceValuesItem(listView()->placeholderText(), "", ""));
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
@@ -125,7 +134,7 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 		{
 			QString label = term.asQString();
 			QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
-			labelValuePairs.push_back(std::make_pair(label, value));
+			labelValuePairs.push_back(SourceItem::SourceValuesItem(label, value, ""));
 		}
 	});
 
@@ -143,24 +152,22 @@ void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
 		it.next();
 		const QString& oldName = it.key(), newName = it.value();
 		Terms newTerms = terms();
-		QSet<int> indexes = newTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+		QSet<int> indexes = newTerms.replaceVariableName(oldName.toStdString(), newName.toStdString()); // In case of interaction, several terms might change
 		if (indexes.size() > 0)
 		{
 			_setTerms(newTerms);
-			QString oldValue = _labelToValueMap[oldName];
-			_labelToValueMap.remove(oldName);
-			_valueToLabelMap.remove(oldValue);
-			QString newValue = oldValue;
-			listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
+			for (int index : indexes)
 			{
-				ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->sourceListModel());
-				if (terms.contains(newName) && labelValueSourceModel)
-					newValue = labelValueSourceModel->getValue(newName);
-			});
-			_labelToValueMap[newName] = newValue;
-			_valueToLabelMap[newValue] = newName;
+				QString newLabel = newTerms.at(index).asQString();
+				SourceItem::SourceValuesItem elt = _labelValues.at(index);
+				QString oldLabel = elt.label;
+				elt.label = newLabel;
+				_labelValues.replace(index, elt);
+				_labelsMap.remove(oldLabel);
+				_labelsMap[newLabel] = index;
+				changedNamesMap[oldLabel] = newLabel;
+			}
 			changedIndexes += indexes;
-			changedNamesMap[oldName] = newName;
 		}
 	}
 

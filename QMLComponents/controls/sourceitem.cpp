@@ -25,10 +25,14 @@
 #include "rowcontrols.h"
 #include <QQmlEngine>
 
+const QString SourceItem::SourceValueLabel = "label";
+const QString SourceItem::SourceValueValue = "value";
+const QString SourceItem::SourceValueInfo = "info";
+
 SourceItem::SourceItem(
 		  JASPListControl*							targetListControl
 		, QMap<QString, QVariant>&					map
-		, const JASPListControl::LabelValueMap&		values
+		, const SourceValuesType&					values
 		, const QVector<SourceItem*>				rSources
 		, QAbstractItemModel*						nativeModel
 		, const QVector<SourceItem*>&				discardSources
@@ -68,7 +72,7 @@ SourceItem::SourceItem(
 	_setUp();
 }
 
-SourceItem::SourceItem(JASPListControl *listControl, const JASPListControl::LabelValueMap &values)
+SourceItem::SourceItem(JASPListControl *listControl, const SourceItem::SourceValuesType &values)
 	:  QObject(listControl), _targetListControl(listControl), _values(values), _isValuesSource(true)
 {
 	_setUp();
@@ -269,7 +273,7 @@ QString SourceItem::_readRSourceName(const QString& sourceNameExt, QString& sour
 }
 
 
-QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& nativeModel)
+QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, const QVariant& source, SourceItem::SourceValuesType& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& nativeModel)
 {
 	QMap<QString, QVariant> map;
 	QString sourceName, sourceControl, sourceUse;
@@ -318,7 +322,7 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 	if (nativeModel)
 	{
-		QString roleName = sourceUse.isEmpty() ? listControl->labelRole() : sourceUse;
+		QString roleName = sourceUse.isEmpty() ? SourceItem::SourceValueLabel : sourceUse;
 		map["nativeModelRole"] = Qt::DisplayRole;
 
 		if (!roleName.isEmpty())
@@ -342,9 +346,9 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 	return map;
 }
 
-JASPListControl::LabelValueMap SourceItem::_readValues(JASPListControl* listControl, const QVariant& values)
+SourceItem::SourceValuesType SourceItem::_readValues(JASPListControl* listControl, const QVariant& values)
 {
-	JASPListControl::LabelValueMap result;
+	SourceItem::SourceValuesType result;
 
 	bool isInteger = false;
 	int count =  values.toInt(&isInteger);
@@ -354,7 +358,7 @@ JASPListControl::LabelValueMap SourceItem::_readValues(JASPListControl* listCont
 		for (int i = 1; i <= count; i++)
 		{
 			QString number = QString::number(i);
-			result.push_back(std::make_pair(number, number));
+			result.push_back(SourceValuesItem(number, number, ""));
 		}
 	}
 	else
@@ -364,18 +368,18 @@ JASPListControl::LabelValueMap SourceItem::_readValues(JASPListControl* listCont
 		{
 			for (const QVariant& itemVariant : list)
 			{
-				//It is called labelValuePair but it might in fact also contain "info"
-				QMap<QString, QVariant> labelValuePair = itemVariant.toMap();
-				if (labelValuePair.isEmpty())
+				QMap<QString, QVariant> labelValueMap = itemVariant.toMap();
+				if (labelValueMap.isEmpty())
 				{
 					QString value = itemVariant.toString();
-					result.push_back(std::make_pair(value, value));
+					result.push_back(SourceValuesItem(value, value, ""));
 				}
 				else
 				{
-					QString label = labelValuePair[listControl->labelRole()].toString();
-					QString value = labelValuePair[listControl->valueRole()].toString();
-					result.push_back(std::make_pair(label, value));
+					QString label = labelValueMap[SourceItem::SourceValueLabel].toString();
+					QString value = labelValueMap[SourceItem::SourceValueValue].toString();
+					QString info = labelValueMap[SourceItem::SourceValueInfo].toString();
+					result.push_back(SourceValuesItem(label, value, info));
 				}
 			}
 		}
@@ -425,7 +429,7 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 	for (const QVariant& rawSource : rawSources)
 	{
-		JASPListControl::LabelValueMap sourceValues;
+		SourceItem::SourceValuesType sourceValues;
 		QVector<SourceItem*> rSources;
 		QAbstractItemModel* nativeModel = nullptr;
 		QMap<QString, QVariant> map = _readSource(listControl, rawSource, sourceValues, rSources, nativeModel);
@@ -438,7 +442,7 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 			for (const QVariant& discardSource : discardSources)
 			{
-				JASPListControl::LabelValueMap discardValues;
+				SourceItem::SourceValuesType discardValues;
 				QVector<SourceItem*> discardRSources;
 				QAbstractItemModel* discardNativeModel = nullptr;
 				QMap<QString, QVariant> discardMap = _readSource(listControl, discardSource, discardValues, discardRSources, discardNativeModel);

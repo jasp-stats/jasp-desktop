@@ -23,6 +23,7 @@ ExpanderButtonBase::ExpanderButtonBase(QQuickItem *parent)
 	: JASPControl(parent)
 {
 	_controlType = ControlType::Expander;
+	_info.isHeader = true;
 }
 
 void ExpanderButtonBase::setUp()
@@ -31,4 +32,12 @@ void ExpanderButtonBase::setUp()
 		return;
 
 	setInitialized();
+}
+
+QString ExpanderButtonBase::helpMD(int howDeep) const
+{
+	if (!hasInfo()) return "";
+
+	// For Section, draw first a line, and reset the depth to 0.
+	return "\n---\n\n" + JASPControl::helpMD(0);
 }

@@ -21,12 +21,13 @@
 
 #include "controls/jasplistcontrol.h"
 #include "listmodelavailableinterface.h"
+#include "controls/sourceitem.h"
 
 class ListModelLabelValueTerms : public ListModelAvailableInterface
 {
 	Q_OBJECT
 public:
-	ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values = JASPListControl::LabelValueMap());
+	ListModelLabelValueTerms(JASPListControl* listView, const SourceItem::SourceValuesType& values = SourceItem::SourceValuesType());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	void						resetTermsFromSources()												override;
@@ -34,6 +35,7 @@ public:
 	std::vector<std::string>	getValues();
 	QString						getValue(const QString& label)								const;
 	QString						getLabel(const QString& value)								const;
+	QString						getInfo(const QString& label)								const;
 	int							getIndexOfValue(const QString& value)						const;
 	int							getIndexOfLabel(const QString& label)						const;
 
@@ -43,10 +45,11 @@ public slots:
 	void						sourceNamesChanged(QMap<QString, QString> map)					override;
 
 protected:
-	void						_setLabelValues(const JASPListControl::LabelValueMap& values);
+	void						_setLabelValues(const SourceItem::SourceValuesType& values);
 
-	QMap<QString, QString>		_valueToLabelMap;
-	QMap<QString, QString>		_labelToValueMap;
+	QMap<QString, int>				_valuesMap;
+	QMap<QString, int>				_labelsMap;
+	SourceItem::SourceValuesType	_labelValues;
 
 };
 

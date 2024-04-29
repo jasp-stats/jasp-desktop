@@ -45,7 +45,6 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	_rSyntax = new RSyntax(this);
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
 	connect(this,									&AnalysisForm::infoChanged,					this, &AnalysisForm::helpMDChanged			);
-	connect(this,									&AnalysisForm::infoBottomChanged,			this, &AnalysisForm::helpMDChanged			);
 	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
@@ -308,12 +307,31 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
 }
 
-void AnalysisForm::setInfo(QString info)
+void AnalysisForm::setInfo(const QVariant& info)
 {
-	if (_info == info)
+	if (_info.var == info)
 		return;
 
-	_info = info;
+	_info.var = info;
+
+	if (info.canConvert<QString>())
+		_info.top = info.toString();
+	else if (info.canConvert<QMap<QString, QVariant> >())
+	{
+		QMap<QString, QVariant> map = info.toMap();
+		if (map.contains("top"))
+			_info.top = map["top"].toString();
+		if (map.contains("bottom"))
+			_info.bottom = map["bottom"].toString();
+		if (map.contains("references"))
+			_info.references = map["references"].toStringList();
+		if (map.contains("RPackages"))
+			_info.RPackages = map["RPackages"].toStringList();
+		if (map.contains("examples"))
+			_info.examples = map["examples"].toStringList();
+	}
+
+
 	emit infoChanged();
 }
 
@@ -870,29 +888,38 @@ QString AnalysisForm::helpMD() const
 
 	QStringList markdown =
 	{
-		title(), "\n",
-		"=====================\n",
-		_info, "\n\n",
-		"---\n## ", tr("Options"), "\n"
+		"# ", title(), "\n",
+		_info.top, "\n\n---\n"
 	};
+
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
-	std::set<const JASPControl *> markdowned;
-
 	for(JASPControl * control : orderedControls)
-		if(!markdowned.count(control))
-			markdown.push_back(control->helpMD(markdowned));
+		markdown << control->helpMD();
 
-	markdown.push_back(metaHelpMD());
+	markdown << metaHelpMD();
 	
-	if(!_infoBottom.isEmpty())
-		markdown.push_back(_infoBottom + "\n");
-	
+	if(!_info.bottom.isEmpty())
+		markdown << (_info.bottom + "\n");
+
+	auto printList = [&markdown](const QStringList& list, const QString& title) -> void
+	{
+		if(list.length() > 0)
+		{
+			markdown << ("\n\n---\n# " + title + "\n");
+			for (const QString& elt : list)
+				markdown << "- " << elt << "\n";
+		}
+	};
+
+	printList(_info.references, tr("References"));
+	printList(_info.RPackages, tr("R Packages"));
+	printList(_info.examples, tr("Examples"));
+
 	QString md = markdown.join("");
 	
-	if(_analysis)
-		_analysis->preprocessMarkdownHelp(md);
+	_analysis->preprocessMarkdownHelp(md);
 	
 	return md;
 }
@@ -1005,17 +1032,4 @@ void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocu
 
 	if (emitSignal)
 		emit activeJASPControlChanged();
-}
-
-QString AnalysisForm::infoBottom() const
-{
-	return _infoBottom;
-}
-
-void AnalysisForm::setInfoBottom(const QString &newInfoBottom)
-{
-	if (_infoBottom == newInfoBottom)
-		return;
-	_infoBottom = newInfoBottom;
-	emit infoBottomChanged();
 }
