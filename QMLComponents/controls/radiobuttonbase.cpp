@@ -25,6 +25,7 @@ RadioButtonBase::RadioButtonBase(QQuickItem* item)
 	_controlType		= ControlType::RadioButton;
 	_isBound			= false;
 	_nameIsOptionValue	= true;
+	_info.displayLabelItalic = true;
 
 	connect(this, &QQuickItem::parentChanged, this, &RadioButtonBase::registerWithParent);
 	connect(this, &JASPControl::nameChanged, this, &RadioButtonBase::valueChangeHandler);

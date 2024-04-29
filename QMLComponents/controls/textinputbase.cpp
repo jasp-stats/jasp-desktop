@@ -27,6 +27,7 @@ TextInputBase::TextInputBase(QQuickItem* parent)
 	: JASPControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::TextField;
+	_info.displayControlType = true;
 }
 
 QString TextInputBase::_getPercentValue(double dblVal)
@@ -255,7 +256,7 @@ QString TextInputBase::friendlyName() const
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:		return tr("Integer Field");
-	case TextInputType::NumberInputType:		return tr("Number Field");
+	case TextInputType::NumberInputType:		return tr("Double Field");
 	case TextInputType::PercentIntputType:		return tr("Percentage Field");
 	case TextInputType::IntegerArrayInputType:	return tr("Integers Field");
 	case TextInputType::DoubleArrayInputType:	return tr("Doubles Field");

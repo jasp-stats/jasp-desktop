@@ -17,7 +17,8 @@ struct InfoProps
 	QString text;
 	QString label;
 	bool	displayControlType	= false,
-			isHeader		= false;
+			isHeader			= false,
+			displayLabelItalic	= false;
 
 };
 

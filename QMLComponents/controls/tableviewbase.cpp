@@ -35,6 +35,7 @@ TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType = ControlType::TableView;
+	_info.displayControlType = true;
 }
 
 void TableViewBase::setUpModel()
@@ -271,3 +272,18 @@ void TableViewBase::setItemTypePerColumn(QVariantList list)
 		emit itemTypePerColumnChanged();
 	}
 }
+
+QString TableViewBase::friendlyName() const
+{
+	switch (modelType())
+	{
+	case ModelType::MultinomialChi2Model	: return tr("Mutinomial Chi2 Table");
+	case ModelType::JAGSDataInputModel		: return tr("JAGS Table");
+	case ModelType::CustomContrasts			: return tr("Custom Contrasts Table");
+	case ModelType::FilteredDataEntryModel	: return tr("Filterd Data Entry Table");
+	case ModelType::GridInput				: return tr("Grid Table");
+	case ModelType::Simple					:
+	default									: return tr("Table");
+	}
+}
+

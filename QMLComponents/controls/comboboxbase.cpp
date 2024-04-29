@@ -262,7 +262,7 @@ QString	ComboBoxBase::helpMD(int depth) const
 		{
 			QString label = term.asQString(),
 					info = _model->getInfo(label);
-			markdown << ( QString{depth * 2, ' '} + "- *" + label + "*");
+			markdown << ( "\n" + QString{depth * 2, ' '} + "- *" + label + "*");
 			if (!info.isEmpty())
 				markdown << (": " + info);
 		}

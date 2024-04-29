@@ -558,16 +558,19 @@ bool JASPControl::hasInfo() const
 
 void JASPControl::printLabelMD(QStringList& md, int depth) const
 {
-	if(!infoLabel().isEmpty() || _info.displayControlType)
+	QString label = infoLabel().trimmed();
+	if(!label.isEmpty() || _info.displayControlType)
 	{
-		if(_info.isHeader)				md <<  QString{depth + 1, '#' } + " ";
-		else							md << "**"; // If not a header, make it bold
-		if (_info.displayControlType)	md << (" __" + friendlyName() + "__ ");
-		md << infoLabel();
-		if (!_info.isHeader)			md << "**";
+		if (depth == 0)					md << "\n";
+		if(_info.isHeader)				md << QString{depth + 2, '#' } << " ";
+		else							md << (_info.displayLabelItalic ? "*" : "**");
+		if (_info.displayControlType)	md << ("__" + friendlyName() + "__" + (!label.isEmpty() ? "- " : ""));
+		md << label;
+		if (!_info.isHeader)			md << (_info.displayLabelItalic ? "*" : "**");
 
-		if(!infoText().isEmpty())
-			md << ": ";
+		if(!infoText().isEmpty() && !label.endsWith(":"))
+			md << ":";
+		md << " ";
 	}
 }
 
@@ -594,7 +597,7 @@ QString JASPControl::helpMD(int depth) const
 	for (const QString& childMD : childMDs)
 	{
 		markdown << QString{depth * 2, ' '};
-		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- "; // Add bullet only if more than 1 child exist
+		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- "; // Add bullet list only if more than 1 child exists
 		markdown << childMD;
 	}
 

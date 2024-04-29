@@ -29,7 +29,6 @@ RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 {
 	_controlType = ControlType::RadioButtonGroup;
 	_dependsOnDynamicComponents = true;
-	_info.isHeader = true;
 }
 
 void RadioButtonsGroupBase::setUp()

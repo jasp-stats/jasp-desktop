@@ -901,13 +901,13 @@ QString AnalysisForm::helpMD() const
 	markdown << metaHelpMD();
 	
 	if(!_info.bottom.isEmpty())
-		markdown << _info.bottom  << "\n";
+		markdown << "\n\n---\n" << _info.bottom  << "\n";
 
 	auto printList = [&markdown](const QStringList& list, const QString& title) -> void
 	{
 		if(list.length() > 0)
 		{
-			markdown << ("\n\n---\n# " + title + "\n");
+			markdown << ("\n\n---\n### " + title + "\n");
 			for (const QString& elt : list)
 				markdown << "- " << elt << "\n";
 		}

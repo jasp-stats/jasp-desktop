@@ -92,6 +92,7 @@ public:
 
 	void						setRowCount(int rows)											{ setSize(rows, -1);									}
 	void						setColumnCount(int columns)										{ setSize(-1, columns);									}
+	QString						friendlyName()								const	override;
 
 	Q_INVOKABLE void addColumn(int col = -1, bool left = true);
 	Q_INVOKABLE void removeColumn(int col);

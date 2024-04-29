@@ -122,10 +122,10 @@ void ListModelLabelValueTerms::_setLabelValues(const SourceItem::SourceValuesTyp
 
 void ListModelLabelValueTerms::setLabelValuesFromSource()
 {
-	SourceItem::SourceValuesType labelValuePairs;
+	SourceItem::SourceValuesType labelValues;
 
 	if (listView()->addEmptyValue())
-		labelValuePairs.push_back(SourceItem::SourceValuesItem(listView()->placeholderText(), "", ""));
+		labelValues.push_back(SourceItem::SourceValuesItem(listView()->placeholderText(), "", ""));
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
@@ -134,11 +134,12 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 		{
 			QString label = term.asQString();
 			QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
-			labelValuePairs.push_back(SourceItem::SourceValuesItem(label, value, ""));
+			QString info = labelValueSourceModel ? labelValueSourceModel->getInfo(label) : "";
+			labelValues.push_back(SourceItem::SourceValuesItem(label, value, info));
 		}
 	});
 
-	_setLabelValues(labelValuePairs);
+	_setLabelValues(labelValues);
 }
 
 void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
