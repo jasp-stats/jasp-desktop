@@ -44,7 +44,7 @@ public:
 
 	void			runScriptOnProcess(RFilterStore * filterStore);
 	void			runScriptOnProcess(RScriptStore * scriptStore);
-	void			runScriptOnProcess(const QString & rCmdCode);
+	void			runScriptOnCommanderProcess(const QString & rCmdCode);
 	void			runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void			runAnalysisOnProcess(Analysis *analysis);
 	void			runModuleInstallRequestOnProcess(Json::Value request);

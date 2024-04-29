@@ -362,7 +362,7 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 	}
 }
 
-void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
+void EngineRepresentation::runScriptOnCommanderProcess(const QString & rCmdCode)
 {
 	RScriptStore * script = new RScriptStore(-1, rCmdCode, "", engineState::rCode, false, true);
 
