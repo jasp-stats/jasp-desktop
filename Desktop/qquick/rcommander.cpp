@@ -11,10 +11,12 @@ RCommander::RCommander()
 
 	_engine = EngineSync::singleton()->createRCmdEngine();
 
-	connect(_engine, &EngineRepresentation::rCodeReturned,		this, &RCommander::rCodeReturned);
-	connect(_engine, &EngineRepresentation::rCodeReturnedLog,	this, &RCommander::rCodeReturnedLog);
-	connect(_engine, &EngineRepresentation::stateChanged,		this, &RCommander::processEngineChanges);
-	connect(_engine, &EngineRepresentation::moduleChanged,		this, &RCommander::processEngineChanges);
+	connect(_engine,				&EngineRepresentation::rCodeReturned,		this, &RCommander::rCodeReturned);
+	connect(_engine,				&EngineRepresentation::rCodeReturnedLog,	this, &RCommander::rCodeReturnedLog);
+	connect(_engine,				&EngineRepresentation::stateChanged,		this, &RCommander::processEngineChanges);
+	connect(_engine,				&EngineRepresentation::moduleChanged,		this, &RCommander::processEngineChanges);
+	
+	connect(DataSetPackage::pkg(),	&DataSetPackage::currentFileChanged,		this, [&](){ RCommander::_wdWasSet = false;  });
 
 	_scrollTimer = new QTimer(this);
 	_scrollTimer->setInterval(50);
@@ -49,8 +51,17 @@ bool RCommander::runCode(const QString & code)
 		return false;
 
 	setRunning(true);
-
-	_engine->runScriptOnProcess(code);
+	
+	if(!_wdWasSet)
+	{
+		_wdWasSet = true;
+		QFileInfo currentFile(DataSetPackage::pkg()->currentFile());
+		
+		QString path = !currentFile.isFile() ? "~" : currentFile.dir().absolutePath();
+		_engine->runScriptOnCommanderProcess("setwd('"+path+"');\n" + code);
+	}
+	else
+		_engine->runScriptOnCommanderProcess(code);
 
 	setLastCmd(code);
 

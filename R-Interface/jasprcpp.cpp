@@ -566,7 +566,7 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		");"
 		);
 
-	jaspRCPP_parseEvalQNT(rCodeTryCatch, true, false);
+	jaspRCPP_parseEvalQNT(rCodeTryCatch, false, false);
 
 	_logFlushFunction			= originalFlush;
 	_logWriteFunction			= originalLogger;
@@ -1038,7 +1038,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal)
 {
-#ifdef JASP_DEBUG
+/*#ifdef JASP_DEBUG
 	std::cout << "jaspRCPP_makeFactor:\n\tlevels:\n\t\tnum: " << nbLevels << "\n\t\tstrs:\n";
 	for(int i=0; i<nbLevels; i++)
 		std::cout << "\t\t\t'" << levels[i] << "'\n";
@@ -1047,7 +1047,7 @@ Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, in
 	for(int i=0; i<v.size(); i++)
 		std::cout << v[i] << (i < v.size() - 1 ? ", " : "" );
 	std::cout << std::endl;
-#endif
+#endif*/
 
 	Rcpp::CharacterVector labels(nbLevels);
 	for (int i = 0; i < nbLevels; i++)

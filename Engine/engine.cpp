@@ -347,7 +347,7 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 
 void Engine::runRCodeCommander(std::string rCode)
 {
-    bool thereIsSomeData = provideAndUpdateDataSet();
+    bool thereIsSomeData = provideAndUpdateDataSet() && provideAndUpdateDataSet()->rowCount();
 
 
 	static const std::string rCmdDataName = "data", rCmdFiltered = "filteredData";

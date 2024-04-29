@@ -61,7 +61,8 @@ private:
 								_lastCmd		= "";
 	EngineRepresentation	*	_engine			= nullptr;
 	bool						_running		= false,
-								_isAnalysisCode = false;
+								_isAnalysisCode = false,
+								_wdWasSet		= false;
 	QTimer					*	_scrollTimer	= nullptr;
 };
 
