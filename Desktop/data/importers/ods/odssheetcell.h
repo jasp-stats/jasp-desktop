@@ -41,16 +41,20 @@ public:
 	const XmlDatatype& xmlType() const { return _xmlType; }
 
 	void setTypeAndValue(XmlDatatype type, const QString &data);
-	const std::string &valueAsString() const;
+	const std::string &	valueAsString() const;
+	const std::string &	labelAsString() const;
+	const std::string &	commentAsString() const;
 
 
 private:
 	// The data types
 	XmlDatatype				_xmlType;
-	std::string				_string;
+	std::string				_string,
+							_comment;
 
 	void setValue(const QString &value);
 	void setValue(const std::string &value);
+	void setComment(const std::string &comment) { _comment = comment; }
 };
 
 } // end namespace ods

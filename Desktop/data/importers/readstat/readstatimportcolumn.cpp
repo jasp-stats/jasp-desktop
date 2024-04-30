@@ -7,7 +7,7 @@
 using namespace std;
 
 ReadStatImportColumn::ReadStatImportColumn(readstat_variable_t * readstat_var, ReadStatImportDataSet* importDataSet, string name, std::string title, std::string labelsID, columnType columnType)
-    : ImportColumn(importDataSet, name), _readstatDataSet(importDataSet), _readstatVariable(readstat_var), _labelsID(labelsID), _title(title), _type(columnType)
+    : ImportColumn(importDataSet, name, title), _readstatDataSet(importDataSet), _readstatVariable(readstat_var), _labelsID(labelsID), _type(columnType)
 {}
 
 ReadStatImportColumn::~ReadStatImportColumn()

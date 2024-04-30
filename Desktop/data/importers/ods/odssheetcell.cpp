@@ -106,3 +106,14 @@ const
 {
 	return _string;
 }
+
+const string &ODSSheetCell::commentAsString()
+const
+{
+	return _comment;
+}
+
+const string &ODSSheetCell::labelAsString() const
+{
+	return _comment.empty() ? _string : _comment;
+}

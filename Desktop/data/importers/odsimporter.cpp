@@ -20,7 +20,7 @@
 #include "ods/odsxmlmanifesthandler.h"
 #include "ods/odsxmlcontentshandler.h"
 #include "archivereader.h"
-
+#include "ods/odsimportcolumn.h"
 #include <QXmlInputSource>
 #include "log.h"
 #include "timers.h"
@@ -29,6 +29,9 @@ namespace ods
 {
 
 // Implmemtation of Inporter base class.
+ODSImporter::ODSImporter()  : Importer() 
+{}
+
 ImportDataSet* ODSImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(ODSImporter::loadFile);

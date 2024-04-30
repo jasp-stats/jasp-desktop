@@ -144,18 +144,22 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 		{
 		case not_in_doc:
 			break;
+			
 		case document_content:
 			if (localName == _nameDocContent)
 				_docDepth = not_in_doc;
 			break;
+			
 		case body:
 			if (localName == _nameBody)
 				_docDepth = document_content;
 			break;
+			
 		case spreadsheet:
 			if (localName == _nameSpreadsheet)
 				_docDepth = body;
 			break;
+			
 		case table:
 			if (localName == _nameTable)
 			{
@@ -163,6 +167,7 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 				_tableRead = true;
 			}
 			break;
+			
 		case table_row:
 			if (localName == _nameTableRow)
 			{
@@ -174,7 +179,8 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 					{
 						for (int j = 0; j < _dataSet->columnCount(); j++)
 						{
-							(*_dataSet)[j].setValue(_row, (*_dataSet)[j].getCell(_row - 1).valueAsString());
+							(*_dataSet)[j].setValue(_row,	(*_dataSet)[j].getCell(_row - 1).valueAsString());
+							(*_dataSet)[j].setComment(_row, (*_dataSet)[j].getCell(_row - 1).commentAsString());
 						}
 						_row++;
 					}
@@ -189,6 +195,7 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 				_rowRepeat			= 1;
 			}
 			break;
+			
 		case table_cell:
 			if (localName == _nameTableCell)
 			{
@@ -206,7 +213,11 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 							_dataSet->createColumn(ss.str());
 						}
 						// Create the column with the current cell name
-						_dataSet->createColumn(_currentCell.toStdString());
+						auto & col = _dataSet->createColumn(_currentCell.toStdString());
+						
+						if(!_currentComment.isEmpty())
+							col.setTitle(fq(_currentComment));
+						
 						// Repeat create column if necessary
 						for (int i = 1; i < _colRepeat; i++)
 						{
@@ -223,7 +234,13 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 							_dataSet->getOrCreate(i).setValue(_row - 1, string());
 						}
 						for (int i = 0; i < _colRepeat; i++)
-							_dataSet->getOrCreate(_column + i).setValue(_row - 1, _currentCell.toStdString());
+						{
+							ODSImportColumn & col = _dataSet->getOrCreate(_column + i);
+							col.setValue(_row - 1, _currentCell.toStdString());
+							
+							if(!_currentComment.isEmpty())
+								col.setComment(_row - 1, _currentComment.toStdString());
+						}
 					}
 					_lastNotEmptyColumn = _column + _colRepeat - 1;
 				}

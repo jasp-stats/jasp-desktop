@@ -98,7 +98,7 @@ void ImportDataSet::buildDictionary()
 			std::string newName = "";
 			while(newName == "" || _nameToColMap.count(newName) > 0)
 				newName = "Unnamed Column #" + std::to_string(++unnamedColumns);
-			col->changeName(newName);
+			col->setName(newName);
 
 			_nameToColMap[col->name()] = col;
 		}

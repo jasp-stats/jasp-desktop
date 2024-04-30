@@ -13,15 +13,13 @@ class ReadStatImporter : public Importer
 public:
 	ReadStatImporter(std::string ext) : Importer(), _ext(stringUtils::toLower(ext))
 	{
-            DataSetPackage::pkg()->setIsJaspFile(false);
-
 		if(_ext.size() == 0)	throw std::runtime_error("ReadStatImporter NEEDS to know the extension!");
 		if(_ext[0] == '.')		_ext = _ext.substr(1);
 	}
 	~ReadStatImporter() override;
 
 	static bool extSupported(const std::string & ext);
-	void initColumn(QVariant colId, ImportColumn * importColumn) override;
+	//void initColumn(QVariant colId, ImportColumn * importColumn) override;
 
 protected:
 	ImportDataSet *	loadFile(const std::string &locator, std::function<void(int)> progressCallback)	override;

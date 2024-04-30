@@ -62,6 +62,17 @@ const stringvec & ODSImportColumn::allValuesAsStrings() const
 	return values;
 }
 
+const stringvec & ODSImportColumn::allLabelsAsStrings() const
+{
+	static stringvec labels;
+	labels.resize(_rows.size());
+	
+	for(size_t i=0; i<_rows.size(); i++)
+		labels[i] = _rows[i].labelAsString();
+
+	return labels;
+}
+
 
 /**
  * @brief insert Inserts string value for cell, irrespective of type.
@@ -103,6 +114,17 @@ void ODSImportColumn::setValue(int row, const string &data)
 
 	ODSSheetCell & cell = _rows.at(row);
 	cell.setValue(data);	
+}
+
+void ODSImportColumn::setComment(int row, const string &data)
+{
+	//Log::log() << "Inserting " << data << ", row " << row << ", column " << _columnNumber << "." << std::endl;
+
+	// Big enough?
+	createSpace(row);
+
+	ODSSheetCell & cell = _rows.at(row);
+	cell.setComment(data);	
 }
 
 /**

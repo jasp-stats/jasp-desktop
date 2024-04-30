@@ -46,12 +46,6 @@ public:
 	ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber, std::string name);
 	virtual ~ODSImportColumn();
 
-	/**
-	 * @brief setName Setter for long name (label).
-	 * @param longname The long name (label) to set.
-	 */
-//	void setLongName(const string &longname) { _longName = longname; }
-	void setName(const std::string &name) { _name = name; }
 
 
 	// ImportColumn interface
@@ -62,6 +56,7 @@ public:
 	size_t size() const override;
 
 	const stringvec &	allValuesAsStrings()					const	override;
+	const stringvec &	allLabelsAsStrings()					const	override;
 
 	/**
 	 * @brief hasCall Checks for presence of a cell at row.
@@ -85,6 +80,8 @@ public:
 	 * @param data
 	 */
 	void setValue(int row, const std::string& data);
+	
+	void setComment(int row, const std::string& data);
 
 	const ODSSheetCell &getCell(int row) const { return _rows.at(row); }
 
@@ -98,15 +95,13 @@ public:
 	 */
 	void postLoadProcess();
 
-	columnType	getColumnType() const { return _columnType; }
+	columnType	getColumnType() const override { return _columnType; }
 
-	// Getters.
-	columnType	getJASPColumnType() const { return _columnType; }
 
 private:
 
 	// The cells/rows (as read).
-	Cases	_rows;
+	Cases				_rows;
 
 	typedef std::map< int, size_t > CellIndex;
 	CellIndex			_index;		///< cell indexes indexed by row.
