@@ -556,22 +556,31 @@ bool JASPControl::hasInfo() const
 	return false;
 }
 
-void JASPControl::printLabelMD(QStringList& md, int depth) const
+bool JASPControl::printLabelMD(QStringList& md, int depth) const
 {
 	QString label = infoLabel().trimmed();
-	if(!label.isEmpty() || _info.displayControlType)
-	{
-		if (depth == 0)					md << "\n";
-		if(_info.isHeader)				md << QString{depth + 2, '#' } << " ";
-		else							md << (_info.displayLabelItalic ? "*" : "**");
-		if (_info.displayControlType)	md << ("__" + friendlyName() + "__" + (!label.isEmpty() ? "- " : ""));
-		md << label;
-		if (!_info.isHeader)			md << (_info.displayLabelItalic ? "*" : "**");
+	if(label.isEmpty() && !_info.displayControlType)
+		return false;
 
-		if(!infoText().isEmpty() && !label.endsWith(":"))
+	// Print the label as a header, in italic or in bold
+	if (_info.isHeader)					md << QString{depth + 2, '#' } << " ";
+	else if	(_info.displayLabelItalic)	md << "*";
+	else								md << "**";
+
+	if (_info.displayControlType)		md << (friendlyName() + (!label.isEmpty() ? " - " : ""));
+
+	md << label;
+
+	if (_info.isHeader)					md << "\n";
+	else
+	{
+		md << (_info.displayLabelItalic ? "*" : "**");
+		if (!infoText().isEmpty() && !label.endsWith(":")) // Add ':' when necessary
 			md << ":";
 		md << " ";
 	}
+
+	return true;
 }
 
 QString JASPControl::helpMD(int depth) const
@@ -580,30 +589,38 @@ QString JASPControl::helpMD(int depth) const
 		
 	QStringList childMDs, markdown;
 
-	QList<JASPControl*> children =  getChildJASPControls(_childControlsArea ? _childControlsArea : this, true);
-
-	printLabelMD(markdown, depth);
-
-	for (JASPControl* childControl : children)
+	for (JASPControl* childControl : getChildJASPControls(_childControlsArea ? _childControlsArea : this, true))
 	{
 		QString childMD = childControl->helpMD(depth + 1);
 		if (!childMD.isEmpty())
 			childMDs.push_back(childMD);
 	}
 
+	bool hasLabel = printLabelMD(markdown, depth);
+	markdown << infoText();
 
-	markdown << infoText() << "\n";
-
-	for (const QString& childMD : childMDs)
+	if (childMDs.length() == 0)
+		markdown << "\n";
+	else if (childMDs.length() == 1)
 	{
-		markdown << QString{depth * 2, ' '};
-		if(!infoLabel().isEmpty() && childMDs.length() > 1)	 markdown << "- "; // Add bullet list only if more than 1 child exists
-		markdown << childMD;
+		if (_info.isHeader)
+			markdown << QString{depth * 2, ' '};
+		markdown << childMDs[0];
+	}
+	else
+	{
+		for (const QString& childMD : childMDs)
+		{
+			markdown << QString{depth * 2, ' '};
+			if (hasLabel)
+				markdown << "- "; // Add bullet list
+			markdown << childMD;
+			if (!hasLabel)
+				markdown << "\n"; // If no bullet list is used, markdown needs an extra '\n' to display a new line
+		}
 	}
 
-	QString md = markdown.join("");
-		
-	return md;
+	return markdown.join("");;
 }
 
 void JASPControl::setChildControlsArea(QQuickItem * childControlsArea)

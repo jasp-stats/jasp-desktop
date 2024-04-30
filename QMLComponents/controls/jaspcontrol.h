@@ -276,7 +276,7 @@ protected:
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
 	virtual void		_setInitialized(const Json::Value &value);
-	void				printLabelMD(QStringList& md, int depth)			const;
+	bool				printLabelMD(QStringList& md, int depth)			const;
 
 protected:
 	Set						_depends;

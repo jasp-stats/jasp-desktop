@@ -251,9 +251,7 @@ QString	ComboBoxBase::helpMD(int depth) const
 	QStringList markdown;
 
 	printLabelMD(markdown, depth);
-
-	if(!infoText().isEmpty())
-		markdown << infoText();
+	markdown << infoText();
 
 	// If one of the option has an info property, then display the options as an unordered list
 	if (_hasOptionInfo())
