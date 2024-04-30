@@ -91,7 +91,6 @@ void ODSImportDataSet::postLoadProcess()
 	for (ImportColumns::iterator colI = begin(); colI != end(); ++colI)
 	{
 		ODSImportColumn * col = static_cast<ODSImportColumn *>(*colI);
-		col->postLoadProcess();
 		numRows = max(numRows, col->size());
 	}
 

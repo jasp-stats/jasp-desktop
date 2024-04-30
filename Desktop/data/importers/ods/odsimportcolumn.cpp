@@ -73,43 +73,16 @@ const stringvec & ODSImportColumn::allLabelsAsStrings() const
 	return labels;
 }
 
-
-/**
- * @brief insert Inserts string value for cell, irrespective of type.
- * @param row
- * @param data
- */
 void insert(int row, const std::string& data);
 
-
-/**
- * @brief _createSpace Ensures that we have enough elements in _rows.
- * @param row Row number to check for.
- */
 void ODSImportColumn::createSpace(size_t row)
 {
-#ifdef JASP_DEBUG
-	size_t numAdded = 0;
-#endif
-
-	while (_rows.size() <= row)
-#ifdef JASP_DEBUG
-	{
-		numAdded++;
-#endif
-		_rows.push_back(ODSSheetCell());
-#ifdef JASP_DEBUG
-	}
-
-	//if (numAdded != 0) 	Log::log() << "ODSImportColumn::_createSpace(" << row << ") - added " << numAdded << " row" <<((numAdded != 1) ? "s" : "") << "." << std::endl;
-#endif
+	if(_rows.size() <= row)
+		_rows.resize(row+1);
 }
 
 void ODSImportColumn::setValue(int row, const string &data)
 {
-	//Log::log() << "Inserting " << data << ", row " << row << ", column " << _columnNumber << "." << std::endl;
-
-	// Big enough?
 	createSpace(row);
 
 	ODSSheetCell & cell = _rows.at(row);
@@ -118,50 +91,9 @@ void ODSImportColumn::setValue(int row, const string &data)
 
 void ODSImportColumn::setComment(int row, const string &data)
 {
-	//Log::log() << "Inserting " << data << ", row " << row << ", column " << _columnNumber << "." << std::endl;
-
-	// Big enough?
 	createSpace(row);
 
 	ODSSheetCell & cell = _rows.at(row);
 	cell.setComment(data);	
 }
 
-/**
- * @brief postLoadProcess Performs posy load processing.
- * @param dataSet Dataset we are a member of.
- *
- * This includes finding the long column name,
- * and the type of the column, and converting all
- * the cells to the same type.
- */
-void ODSImportColumn::postLoadProcess()
-{
-}
-
-/**
- * @brief colNumberAsExcel Returns the column number as a string (base 26 digits A-Z).
- * @param column Column number
- * @return
- */
-string ODSImportColumn::_colNumberAsExcel(int column)
-{
-	string result;
-	int divisor = 26 * 26 * 26 * 26 * 26 * 26;	// give up after col ZZZZZZ
-
-	// In essence, the the classic number base conversion.
-	bool found = false;
-	while(divisor > 0)
-	{
-		int c = column / divisor;
-		// supress leading zeros (i.e. 'A')
-		if ((c > 0) || (divisor == 1))
-			found = true;
-		if (found)
-			result.push_back((char) (c + 'A'));
-		column = column % divisor;
-		divisor = divisor / 26;
-	}
-
-	return result;
-}
