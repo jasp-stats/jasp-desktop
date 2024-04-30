@@ -1455,10 +1455,8 @@ QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 
 QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
 {
-	int columns = _model->columnCount(false);
 	if(col == -1)
-		col = selectionMax().x() != -1 ? selectionMax().x() : columns - 1;
-	
+		col = selectionMax().x() != -1 ? selectionMax().x() : _model->columnCount(false) - 1;	
 
 	return columnInsertBefore(col + 1, computed, R);
 }
@@ -1531,7 +1529,7 @@ void DataSetView::rowInsertBefore(int row)
 void DataSetView::rowInsertAfter(int row)
 {
 	if(row == -1)
-		row = selectionMax().y() != -1 ? selectionMax().y() : _model->rowCount(false);
+		row = selectionMax().y() != -1 ? selectionMax().y() : _model->rowCount(false) - 1;
 
 	rowInsertBefore(row + 1);
 }
