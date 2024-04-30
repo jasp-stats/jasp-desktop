@@ -19,7 +19,6 @@ public:
 	~ReadStatImporter() override;
 
 	static bool extSupported(const std::string & ext);
-	//void initColumn(QVariant colId, ImportColumn * importColumn) override;
 
 protected:
 	ImportDataSet *	loadFile(const std::string &locator, std::function<void(int)> progressCallback)	override;

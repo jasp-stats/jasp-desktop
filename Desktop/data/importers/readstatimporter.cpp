@@ -131,12 +131,3 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, std::funct
 	return data;
 }
 
-/*void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
-{
-	JASPTIMER_SCOPE(ReadStatImporter::initColumn);
-	
-	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
-	
-	DataSetPackage::pkg()->initColumnWithStrings(colId, col->name(), col->values(), col->labels(), "", col->getColumnType(), col->emptyValues());
-}*/
-
