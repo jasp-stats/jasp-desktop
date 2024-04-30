@@ -44,6 +44,7 @@ public:
 	void		rScriptDoneHandler(const QString& result)			override;
 	QString		helpMD(SetConst & markdowned,
 					   int howDeep = 2, bool asList=true)	const	override;
+	bool		encodeValue()								const	override;
 
 	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;

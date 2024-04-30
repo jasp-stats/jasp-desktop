@@ -290,6 +290,11 @@ QString	TextInputBase::helpMD(SetConst & markdowned, int howDeep, bool) const
 	return md.join("");
 }
 
+bool TextInputBase::encodeValue() const
+{
+	return _inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType;
+}
+
 
 bool TextInputBase::_formulaResultInBounds(double result)
 {
