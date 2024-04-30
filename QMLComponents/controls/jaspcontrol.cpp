@@ -602,13 +602,10 @@ QString JASPControl::helpMD(int depth) const
 	if (childMDs.length() == 0)
 		markdown << "\n";
 	else if (childMDs.length() == 1)
-	{
-		if (_info.isHeader)
-			markdown << QString{depth * 2, ' '};
-		markdown << childMDs[0];
-	}
+		markdown << QString{depth * 2, ' '} << childMDs[0];
 	else
 	{
+		markdown << "\n";
 		for (const QString& childMD : childMDs)
 		{
 			markdown << QString{depth * 2, ' '};
