@@ -2067,12 +2067,12 @@ void DataSetView::setMainData(bool newMainData)
 	if (_mainData == newMainData)
 		return;
 	
-	assert(!_mainDataSetView || _mainDataSetView == this);
+	assert(!_mainData || ( !_mainDataSetView || _mainDataSetView == this));
 	
 	_mainData = newMainData;
 	
-	if(_mainData)
-		_mainDataSetView = this;
+	if(_mainData)						_mainDataSetView = this;
+	else if(_mainDataSetView == this)	_mainDataSetView = nullptr;
 	
 	emit mainDataChanged();
 }
