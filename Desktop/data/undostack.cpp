@@ -92,8 +92,8 @@ void InsertColumnCommand::redo()
 {
 	DataSetTableModel * dataSetTable = dynamic_cast<DataSetTableModel *>(_model);
 
-	if (dataSetTable)
-		dataSetTable->insertColumnSpecial(_col, _props);
+	if (dataSetTable)	dataSetTable->insertColumnSpecial(_col, _props);
+	else				DataSetPackage::pkg()->insertColumnSpecial(_col, _props);
 }
 
 InsertColumnsCommand::InsertColumnsCommand(QAbstractItemModel *model, int col, int count)

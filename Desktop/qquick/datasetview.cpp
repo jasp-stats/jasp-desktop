@@ -57,9 +57,6 @@ DataSetView::DataSetView(QQuickItem *parent)
 	connect(_model,						&ExpandDataProxyModel::undoChanged,				this, &DataSetView::undoChanged);
 	
 	setZ(10);
-
-	if(!_mainDataSetView) //Lets just make sure we always create this one first!
-		_mainDataSetView = this;
 }
 
 void DataSetView::setModel(QAbstractItemModel * model)
@@ -1458,8 +1455,10 @@ QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
 
 QString DataSetView::columnInsertAfter(int col, bool computed, bool R)
 {
+	int columns = _model->columnCount(false);
 	if(col == -1)
-		col = selectionMax().x() != -1 ? selectionMax().x() : _model->columnCount(false) - 1;
+		col = selectionMax().x() != -1 ? selectionMax().x() : columns - 1;
+	
 
 	return columnInsertBefore(col + 1, computed, R);
 }
@@ -2064,3 +2063,18 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	return oldNode;
 }
 #endif
+
+void DataSetView::setMainData(bool newMainData)
+{
+	if (_mainData == newMainData)
+		return;
+	
+	assert(!_mainDataSetView || _mainDataSetView == this);
+	
+	_mainData = newMainData;
+	
+	if(_mainData)
+		_mainDataSetView = this;
+	
+	emit mainDataChanged();
+}

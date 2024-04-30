@@ -61,6 +61,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY(	QPoint					selectionMin			READ selectionMin											NOTIFY selectionMinChanged			)
 	Q_PROPERTY(	QPoint					selectionMax			READ selectionMax											NOTIFY selectionMaxChanged			)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
+	Q_PROPERTY( bool					mainData				READ mainData				WRITE setMainData				NOTIFY mainDataChanged				)
 	
 public:
 	friend ExpandDataProxyModel;
@@ -97,6 +98,7 @@ public:
 	QPoint					selectionMin()						const;
 	QPoint					selectionMax()						const;
 	bool					editing()							const	{ return _editing;					}
+	bool					mainData()							const	{ return _mainData;					}
 
 	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)					{ return _columnHeaderItems.count(col) 	> 0	? _columnHeaderItems[col]->item : nullptr;	}
 	Q_INVOKABLE QQuickItem*	getRowHeader(	int row)					{ return _rowNumberItems.count(row) 	> 0 ? _rowNumberItems[row]->item	: nullptr;	}
@@ -125,6 +127,8 @@ public:
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)
 	 
+	
+	void setMainData(bool newMainData);
 	
 signals:
 	void		modelChanged();
@@ -164,6 +168,8 @@ signals:
 	void		selectionBudgesRight();
 
 	void		undoChanged();
+	
+	void		mainDataChanged();
 	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
@@ -305,13 +311,13 @@ protected:
 	QSGFlatColorMaterial									_material;
 	std::map<size_t, std::map<size_t, unsigned char>>		_storedLineFlags;
 	std::map<size_t, std::map<size_t, QString>>				_storedDisplayText;
-	static DataSetView									*	_lastInstancedDataSetView,
-														*	_mainDataSetView;
+	static DataSetView									*	_mainDataSetView;
 	bool													_cacheItems				= false,
 															_recalculateCellSizes	= false,
 															_ignoreViewpoint		= true,
 															_linesWasChanged		= false,
-															_editing				= false;
+															_editing				= false,
+															_mainData				= false;
 	double													_dataRowsMaxHeight,
 															_dataWidth				= -1,
 															_rowNumberMaxWidth		= 0,
@@ -339,6 +345,7 @@ protected:
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
 	std::vector<boolvec>									_lastJaspCopySelect;
+
 };
 
 
