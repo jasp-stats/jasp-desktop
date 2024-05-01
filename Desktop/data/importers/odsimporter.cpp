@@ -98,7 +98,7 @@ void ODSImporter::readContents(const std::string &path, ODSImportDataSet *datase
 	}
 
 	{
-		XmlContentsHandler * contentsHandler = new XmlContentsHandler(dataset);
+		ODSXmlContentsHandler * contentsHandler = new ODSXmlContentsHandler(dataset);
 		QXmlSimpleReader reader;
 		reader.setContentHandler(contentsHandler);
 		reader.setErrorHandler(contentsHandler);

@@ -9,7 +9,7 @@
 namespace ods
 {
 
-class XmlContentsHandler : public XmlHandler
+class ODSXmlContentsHandler : public XmlHandler
 {
 	// Depth in XML document.
 	typedef enum e_docDepth
@@ -27,7 +27,7 @@ class XmlContentsHandler : public XmlHandler
 	} DocDepth;
 
 public:
-	XmlContentsHandler(ODSImportDataSet *dta);
+	ODSXmlContentsHandler(ODSImportDataSet *dta);
 
 	/**
 	 * @brief startElement Called on the start of an element.
@@ -106,6 +106,13 @@ private:
 	static const QString _typeFloat;
 	static const QString _typeDate;
 	static const QString _typeTime;
+	
+	// Excel sometimes exports too many "repeat columns/row" elements, only to make sure that it looks the same as in excel.
+	// It then wants you to repeat empty cells that many times.
+	// This is of course not very sensible so instead we detect that and ignore such cells.
+	// To do this we need to know the maximum size of an excelspreadsheet and it is:
+	const int				_excelMaxRows = 1048576, 
+							_excelMaxCols = 16384;
 
 
 	/**
