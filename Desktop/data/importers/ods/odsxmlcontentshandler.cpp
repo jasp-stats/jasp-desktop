@@ -34,15 +34,6 @@ const QString XmlContentsHandler::_typeTime("time");
 
 XmlContentsHandler::XmlContentsHandler(ODSImportDataSet *dta)
  : XmlHandler(dta)
- , _docDepth(not_in_doc)
- , _row(0)
- , _column(0)
- , _lastNotEmptyColumn(-1)
- , _tableRead(false)
- , _lastType(odsType_unknown)
- , _colRepeat(1)
- , _rowRepeat(1)
-
 {
 
 }
@@ -117,6 +108,7 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 			break;
 		
 		case text:
+		case text_annotation:
 			break;
 		}
 	} // if ! table read.
@@ -178,12 +170,14 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 					// Repeat the last row
 					for (int i = 1; i < _rowRepeat; i++)
 					{
+						_dataSet->createSpace(++_row);
+						
 						for (int j = 0; j < _dataSet->columnCount(); j++)
 						{
 							(*_dataSet)[j].setValue(_row,	(*_dataSet)[j].getCell(_row - 1).valueAsString());
 							(*_dataSet)[j].setComment(_row, (*_dataSet)[j].getCell(_row - 1).commentAsString());
 						}
-						_row++;
+						
 					}
 				}
 				_row++;
@@ -200,51 +194,56 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 		case table_cell:
 			if (localName == _nameTableCell)
 			{
-				if (!_currentCell.isEmpty())
+				if (!_currentCell.isEmpty() && _row == 0)
 				{
-					if (_row == 0)
+					// There is some celldata and we dont have any rows yet, so create headers:
+					// Deals with header
+					// First add columns that had no name
+					for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
 					{
-						// Deals with header
-						// First add columns that had no name
-						for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
-						{
-							// Set some names for columns that have no header.
-							stringstream ss;
-							ss << "_col" << (i + 1);
-							_dataSet->createColumn(ss.str());
-						}
-						// Create the column with the current cell name
-						auto & col = _dataSet->createColumn(_currentCell.toStdString());
+						// Set some names for columns that have no header.
+						stringstream ss;
+						ss << "_col" << (i + 1);
+						_dataSet->createColumn(ss.str());
+					}
+					// Create the column with the current cell name
+					auto & col = _dataSet->createColumn(_currentCell.toStdString());
+					
+					_lastNotEmptyColumn = _column;
+					
+					if(!_currentComment.isEmpty())
+						col.setTitle(fq(_currentComment));
+					
+					// Repeat create column if necessary
+					for (int i = 1; i < _colRepeat; i++)
+					{
+						stringstream ss;
+						ss << "_col" << (_column + i + 1);
+						_dataSet->createColumn(ss.str());
+					}
+				}
+				
+				if(_row > 0) 
+				{
+					for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
+					{
+						// Set empty values
+						_dataSet->getOrCreate(i).setValue(_row - 1, string());
+					}
+					
+					for (int i = 0; i < _colRepeat; i++)
+					{
+						ODSImportColumn & col = _dataSet->getOrCreate(_column + i);
+						col.setValue(_row - 1, _currentCell.toStdString());
 						
 						if(!_currentComment.isEmpty())
-							col.setTitle(fq(_currentComment));
-						
-						// Repeat create column if necessary
-						for (int i = 1; i < _colRepeat; i++)
-						{
-							stringstream ss;
-							ss << "_col" << (_column + i + 1);
-							_dataSet->createColumn(ss.str());
-						}
+							col.setComment(_row - 1, _currentComment.toStdString());
 					}
-					else
-					{
-						for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
-						{
-							// Set empty values
-							_dataSet->getOrCreate(i).setValue(_row - 1, string());
-						}
-						for (int i = 0; i < _colRepeat; i++)
-						{
-							ODSImportColumn & col = _dataSet->getOrCreate(_column + i);
-							col.setValue(_row - 1, _currentCell.toStdString());
-							
-							if(!_currentComment.isEmpty())
-								col.setComment(_row - 1, _currentComment.toStdString());
-						}
-					}
+					
 					_lastNotEmptyColumn = _column + _colRepeat - 1;
 				}
+				else
+					Log::log() << "???";
 				
 				_docDepth		=	table_row;
 				_column			+=	_colRepeat;
@@ -287,7 +286,7 @@ bool XmlContentsHandler::characters(const QString &ch)
 	{
 		if (!ch.isEmpty())
 		{
-			Log::log() << "Characters " << (_docDepth == text ? "text" : _docDepth == text_annotation ? "text_anno" : "???") << ": " << ch << std::endl;
+			//Log::log() << "Characters " << (_docDepth == text ? "text" : _docDepth == text_annotation ? "text_anno" : "???") << ": " << ch << std::endl;
 			switch(_docDepth)
 			{
 			case text:
@@ -379,7 +378,7 @@ XmlDatatype XmlContentsHandler::_setLastTypeGetValue(QString &value, const QXmlA
 
 /**
  * @brief _findColspan Finds the column span from attributes.
- * @param atts The attribuyes to search.
+ * @param atts The attributes to search.
  * @param defaultValue The value to return if not found.
  * @return The found value or default.
  */

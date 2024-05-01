@@ -20,7 +20,6 @@
 #include "ods/odsxmlmanifesthandler.h"
 #include "ods/odsxmlcontentshandler.h"
 #include "archivereader.h"
-#include "ods/odsimportcolumn.h"
 #include <QXmlInputSource>
 #include "log.h"
 #include "timers.h"

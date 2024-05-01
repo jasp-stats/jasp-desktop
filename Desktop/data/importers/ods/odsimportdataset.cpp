@@ -20,7 +20,6 @@
 */
 
 #include "odsimportdataset.h"
-#include "log.h"
 #include "../importdataset.h"
 #include "odsimportcolumn.h"
 #include "../odsimporter.h"
@@ -50,6 +49,12 @@ ODSImportColumn & ODSImportDataSet::createColumn(string name)
 	ODSImportColumn* column = new ODSImportColumn(this, columnCount(), name);
 	addColumn(column);
 	return *column;
+}
+
+void ODSImportDataSet::createSpace(size_t row)
+{
+	for(ImportColumn * colBase : _columns)
+		static_cast<ODSImportColumn*>(colBase)->createSpace(row);
 }
 
 

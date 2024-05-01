@@ -58,6 +58,8 @@ public:
 	const std::string &getContentFilename() const { return _contentFilename; }
 
 	ODSImportColumn & createColumn(std::string name);
+	
+	void	createSpace(size_t row);
 
 	/**
 	 * @brief operator [] Exposes the underlying vector of the ImportDataSet.

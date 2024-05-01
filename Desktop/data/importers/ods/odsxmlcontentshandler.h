@@ -68,14 +68,14 @@ public:
 	void resetDocument();
 
 private:
-	DocDepth 		_docDepth;			///< Current depth of document.
-	int				_row,				///< Current row in document/table.
-					_column,			///< Current column in document/table.
-					_lastNotEmptyColumn;
-	bool			_tableRead;			///< True if first table read.
-	XmlDatatype		_lastType;			///< The last type we found in a opening tag.
-	int				_colRepeat,			///< Number cells this XML element spans.
-					_rowRepeat;
+	DocDepth 		_docDepth			= DocDepth::not_in_doc;			///< Current depth of document.
+	int				_row				= 0,				///< Current row in document/table.
+					_column				= 0,			///< Current column in document/table.
+					_lastNotEmptyColumn	= -1;
+	bool			_tableRead			= false;			///< True if first table read.
+	XmlDatatype		_lastType			= odsType_unknown;			///< The last type we found in a opening tag.
+	int				_colRepeat			= 1,			///< Number cells this XML element spans.
+					_rowRepeat			= 1;
 	QString			_currentCell,
 					_currentComment;
 
