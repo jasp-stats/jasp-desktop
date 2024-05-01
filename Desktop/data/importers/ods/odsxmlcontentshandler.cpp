@@ -195,18 +195,14 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 		case table_cell:
 			if (localName == _nameTableCell)
 			{
-				if (!_currentCell.isEmpty() && _row == 0)
+				if ((!_currentCell.isEmpty() || _lastNotEmptyColumn > -1) && _row == 0)
 				{
 					// There is some celldata and we dont have any rows yet, so create headers:
 					// Deals with header
 					// First add columns that had no name
 					for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
-					{
-						// Set some names for columns that have no header.
-						stringstream ss;
-						ss << "_col" << (i + 1);
-						_dataSet->createColumn(ss.str());
-					}
+						_dataSet->createColumn("");
+
 					// Create the column with the current cell name
 					auto & col = _dataSet->createColumn(_currentCell.toStdString());
 					
@@ -218,11 +214,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 					// Repeat create column if necessary
 					if(_column + _colRepeat != _excelMaxCols)
 						for (int i = 1; i < _colRepeat; i++)
-						{
-							stringstream ss;
-							ss << "_col" << (_column + i + 1);
-							_dataSet->createColumn(ss.str());
-						}
+							_dataSet->createColumn(_currentCell.toStdString());
 				}
 				
 				if(_row > 0) 
