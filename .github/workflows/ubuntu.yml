@@ -30,7 +30,7 @@ jobs:
             arch: 'gcc_64'
             cache: 'true'
             modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor'
-            tools: 'tools_qtcreator,qt.tools.qtcreator tools_ninja tools_cmake'
+            tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake'
             
       - name: Install dependencies of build system
         run: |     
