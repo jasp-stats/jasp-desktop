@@ -112,7 +112,8 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 			break;
 			
 		case annotation:
-			_docDepth = text_annotation;
+			if (localName == _nameText)
+				_docDepth = text_annotation;
 			break;
 		
 		case text:
@@ -294,6 +295,8 @@ bool XmlContentsHandler::characters(const QString &ch)
 				break;
 			
 			case text_annotation:
+				if(_currentComment.size())
+					_currentComment.push_back("\t");
 				_currentComment.push_back(ch);
 				break;
 				

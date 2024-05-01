@@ -101,6 +101,11 @@ void ODSSheetCell::setValue(const string &value)
 		_xmlType = odsType_string;
 }
 
+void ODSSheetCell::setComment(const std::string &comment) 
+{ 
+	_comment = comment; 
+}
+
 const string &ODSSheetCell::valueAsString()
 const
 {
