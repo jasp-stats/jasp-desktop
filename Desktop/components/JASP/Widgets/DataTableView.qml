@@ -9,6 +9,8 @@ FocusScope
 	id: __myRoot
 
 	signal doubleClicked()
+	
+	property alias isMainDataViewer: dataTableView.isMainDataViewer
 
 	Rectangle
 	{

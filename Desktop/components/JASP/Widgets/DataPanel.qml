@@ -40,6 +40,7 @@ Rectangle
 			objectName:				"dataSetTableView"
 			SplitView.fillHeight:	true
 			onDoubleClicked:		ribbonModel.showData()
+			isMainDataViewer:		true
         }
 
 		handle: Rectangle
