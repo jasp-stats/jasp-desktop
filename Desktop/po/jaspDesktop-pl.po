@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-05-01 13:07+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.5.3-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -5089,7 +5095,7 @@ msgstr ""
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "Kolumna wyliczona zgłasza błąd:<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
@@ -5101,7 +5107,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "Nie udało się zmienić typu kolumny"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5111,12 +5117,12 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "Zmień typ na '%1' dla kolumn(y) '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for %2 columns from '%3'"
-msgstr ""
+msgstr "Zmień typ na '%1' dla %2 kolumn z '%3'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5138,10 +5144,10 @@ msgctxt "QObject|"
 msgid "Order labels by values for %1 columns from '%2'"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr "Odwróć kolejność etykiet w kolumnie '%2' {1'?}"
+msgstr "Odwróć kolejność etykiet w kolumnie '%1'"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -5177,24 +5183,26 @@ msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
+"JASP jest otwartym projektem wspieranym przez <a href=\"dummyLink\""
+">Universitet Amsterdamski &amp; others</a>."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "Zgłoś błędy"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "Zaproponuj nowe funkcje"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "Wstaw %2 kolumn w %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "Wstaw %2 wierszy w %1"
 
 #, qt-format
 msgctxt "QObject|"
