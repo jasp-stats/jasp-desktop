@@ -78,17 +78,9 @@ ODSImportColumn & ODSImportDataSet::getOrCreate (const int index)
 	if (index < columnCount())
 		return static_cast<ODSImportColumn &>(*(_columns[index]));
 	else
-	{
-		stringstream ss;
-		ss << "_col" << columnCount() + 1;
-		return createColumn(ss.str());
-	}
+		return createColumn("");
 }
 
-
-/**
- * @brief postLoadProcess Performs post load processing.
- */
 void ODSImportDataSet::postLoadProcess()
 {
 	size_t numRows = 0;

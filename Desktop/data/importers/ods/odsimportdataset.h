@@ -69,9 +69,6 @@ public:
 	ODSImportColumn & operator [] (const int index);
 	ODSImportColumn & getOrCreate (const int index);
 
-	/**
-	 * @brief postLoadProcess Performs post load processing.
-	 */
 	void postLoadProcess();
 
 

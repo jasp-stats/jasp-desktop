@@ -1,6 +1,5 @@
 #include "odsxmlcontentshandler.h"
 #include "odsimportcolumn.h"
-#include "log.h"
 #include "utilities/qutils.h"
 
 using namespace std;
@@ -182,7 +181,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 					}
 				}
 				_row++;
-				// Starting next column.
+				// Starting next row.
 				_column				= 0;
 				_lastNotEmptyColumn = -1;
 				_currentCell		.clear();
@@ -195,55 +194,49 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 		case table_cell:
 			if (localName == _nameTableCell)
 			{
-				if ((!_currentCell.isEmpty() || _lastNotEmptyColumn > -1) && _row == 0)
+				if(_row == 0)
 				{
-					// There is some celldata and we dont have any rows yet, so create headers:
-					// Deals with header
-					// First add columns that had no name
-					for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
-						_dataSet->createColumn("");
-
-					// Create the column with the current cell name
-					auto & col = _dataSet->createColumn(_currentCell.toStdString());
-					
-					_lastNotEmptyColumn = _column;
-					
-					if(!_currentComment.isEmpty())
-						col.setTitle(fq(_currentComment));
-					
-					// Repeat create column if necessary
-					if(_column + _colRepeat != _excelMaxCols)
-						for (int i = 1; i < _colRepeat; i++)
-							_dataSet->createColumn(_currentCell.toStdString());
-				}
-				
-				if(_row > 0) 
-				{
-					for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
+					if (!_currentCell.isEmpty()) //we have some headertext
 					{
-						// Set empty values
-						_dataSet->getOrCreate(i).setValue(_row - 1, string());
+						// There is some celldata and we dont have any rows yet, so create headers:
+						// Deals with header
+						// First add columns that had no name/data
+						for (int i = _lastNotEmptyColumn+1; i < _column; i++)
+							_dataSet->createColumn("");
+						
+						auto & col = _dataSet->createColumn(_currentCell.toStdString());
+							
+						if(!_currentComment.isEmpty())
+							col.setTitle(fq(_currentComment));
+						
+						_lastNotEmptyColumn = _column;	
 					}
+					
+					_column += _colRepeat;
+				}
+				else 
+				{
+					// Set empty values
+					for (int i = _lastNotEmptyColumn+1; i < _column; i++)
+						_dataSet->getOrCreate(i).setValue(_row - 1, "");
 					
 					if(_column + _colRepeat != _excelMaxCols)
 					{
 						for (int i = 0; i < _colRepeat; i++)
 						{
 							ODSImportColumn & col = _dataSet->getOrCreate(_column + i);
-							col.setValue(_row - 1, _currentCell.toStdString());
+							col.setValue(_row - 1, fq(_currentCell));
 							
 							if(!_currentComment.isEmpty())
-								col.setComment(_row - 1, _currentComment.toStdString());
+								col.setComment(_row - 1, fq(_currentComment));
 						}
 					
-						_lastNotEmptyColumn  = _column + _colRepeat - 1;
-						_column				+=	_colRepeat;
+						if(!_currentCell.isEmpty())
+							_lastNotEmptyColumn = _column + _colRepeat - 1;
 					}
-					else
-						_lastNotEmptyColumn = _column;
+					
+					_column += _colRepeat;
 				}
-				else
-					Log::log() << "???";
 				
 				_docDepth		=	table_row;
 				_colRepeat		=	1;

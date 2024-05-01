@@ -68,13 +68,13 @@ public:
 	void resetDocument();
 
 private:
-	DocDepth 		_docDepth			= DocDepth::not_in_doc;			///< Current depth of document.
-	int				_row				= 0,				///< Current row in document/table.
-					_column				= 0,			///< Current column in document/table.
+	DocDepth 		_docDepth			= DocDepth::not_in_doc;		///< Current depth of document.
+	size_t			_row				= 0;						///< Current row in document/table.
+	int				_column				= 0,						///< Current column in document/table.
 					_lastNotEmptyColumn	= -1;
-	bool			_tableRead			= false;			///< True if first table read.
+	bool			_tableRead			= false;					///< True if first table read.
 	XmlDatatype		_lastType			= odsType_unknown;			///< The last type we found in a opening tag.
-	int				_colRepeat			= 1,			///< Number cells this XML element spans.
+	int				_colRepeat			= 1,						///< Number cells this XML element spans.
 					_rowRepeat			= 1;
 	QString			_currentCell,
 					_currentComment;
@@ -108,6 +108,7 @@ private:
 	static const QString _typeTime;
 	
 	// Excel sometimes exports too many "repeat columns/row" elements, only to make sure that it looks the same as in excel.
+	// In the sense of looking the same as the entire editable table in excel...
 	// It then wants you to repeat empty cells that many times.
 	// This is of course not very sensible so instead we detect that and ignore such cells.
 	// To do this we need to know the maximum size of an excelspreadsheet and it is:
