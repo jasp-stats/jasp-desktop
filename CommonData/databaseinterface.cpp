@@ -428,7 +428,7 @@ int DatabaseInterface::columnGetDataSetId(int columnId)
 int	DatabaseInterface::columnLastFreeIndex(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnLastFreeIndex);
-	return runStatementsId("SELECT MAX(colIdx) from Columns WHERE dataSet=" + std::to_string(dataSetId) + ";");
+	return 1 + runStatementsId("SELECT MAX(colIdx) from Columns WHERE dataSet=" + std::to_string(dataSetId) + ";");
 }
 
 void DatabaseInterface::columnIndexIncrements(int dataSetId, int index)
