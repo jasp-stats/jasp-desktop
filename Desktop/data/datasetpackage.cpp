@@ -1238,9 +1238,9 @@ void DataSetPackage::endSynchingDataChangedColumns(stringvec &	changedColumns, b
 	endSynchingData(changedColumns, missingColumns, changeNameColumns, hasNewColumns, informEngines);
 }
 
-void DataSetPackage::endSynchingData(	stringvec		&	changedColumns,
-										stringvec		&	missingColumns,
-										strstrmap		&	changeNameColumns,  //origname -> newname
+void DataSetPackage::endSynchingData(	const stringvec	&	changedColumns,
+										const stringvec	&	missingColumns,
+										const strstrmap	&	changeNameColumns,  //origname -> newname
 										bool				rowCountChanged,
 										bool				hasNewColumns,
 										bool				informEngines)
@@ -2139,6 +2139,13 @@ bool DataSetPackage::columnExists(Column *column)
 				return true;
 		
 	return false;
+}
+
+void DataSetPackage::columnsReorder(const stringvec &order)
+{
+	beginResetModel();
+	_dataSet->columnsReorder(order);
+	endResetModel();
 }
 
 boolvec DataSetPackage::filterVector()

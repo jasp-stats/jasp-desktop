@@ -66,6 +66,7 @@ public:
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
+			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
 			void					setForceType(		bool				force		);
 			void					setCompColStuff(bool   invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);

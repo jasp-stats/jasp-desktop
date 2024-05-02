@@ -303,6 +303,14 @@ void Column::setAnalysisId(int analysisId)
 	dbUpdateComputedColumnStuff();
 }
 
+void Column::setIndex(int index)
+{
+	JASPTIMER_SCOPE(Column::setIndex);
+
+	db().columnSetIndex(id(), index);
+	incRevision();
+}
+
 bool Column::iShouldBeSentAgain()
 {
 	if(!invalidated()) 

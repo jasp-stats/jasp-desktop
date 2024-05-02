@@ -95,6 +95,34 @@ int DataSet::columnIndex(const Column * col) const
 	return -1;
 }
 
+void DataSet::columnsReorder(const stringvec &order)
+{
+	assert(order.size() == _columns								.size());
+	
+	stringset	orderSet(order.begin(), order.end()),
+				colSet;
+	
+	assert(order.size() == orderSet.size());
+	
+	std::map<std::string, Column*> nameColMap;
+	
+	for(Column * col : _columns)
+	{
+		nameColMap[col->name()] = col;
+		colSet.insert(col->name());
+	}
+	
+	assert(colSet == orderSet);
+	
+	for(size_t i=0; i<_columns.size(); i++)
+	{
+		_columns[i] =  nameColMap[order[i]];
+		_columns[i] -> setIndex(i);
+	}
+	
+	incRevision();
+}
+
 Column *DataSet::column(const std::string &name)
 {
 	for(Column * column : _columns)

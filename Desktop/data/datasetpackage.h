@@ -98,9 +98,9 @@ public:
 		void				endLoadingData(		bool informEngines = true);
 		void				beginSynchingData(	bool informEngines = true);
 		void				endSynchingDataChangedColumns(stringvec	&	changedColumns,		bool hasNewColumns = false, bool informEngines = true);
-		void				endSynchingData(stringvec				&	changedColumns,
-											stringvec				&	missingColumns,
-											std::map<std::string, std::string>		&	changeNameColumns,  //origname -> newname
+		void				endSynchingData(const stringvec		&	changedColumns,
+											const stringvec		&	missingColumns,
+											const strstrmap		&	changeNameColumns,  //origname -> newname
 											bool										rowCountChanged,
 											bool										hasNewColumns,		bool informEngines = true);
 
@@ -197,6 +197,7 @@ public:
 				void						renameColumn(			const std::string	& oldColumnName, const std::string & newColumnName);
 				void						removeColumn(			const std::string	& name);
 				bool						columnExists(			Column				* column);
+				void						columnsReorder(			const stringvec		& order);
 
 				stringvec					getColumnNames();
 				bool						isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals);
@@ -217,6 +218,7 @@ public:
 
 				bool						setColumnType(int		columnIndex,	columnType newColumnType);
 				bool						setColumnTypes(intset	columnIndexes,	columnType newColumnType);
+				
 
 				int							columnsFilteredCount();
 

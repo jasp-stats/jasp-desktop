@@ -30,11 +30,12 @@ protected:
 
 private:
 	void _syncPackage(
-			ImportDataSet								*	syncDataSet,
-			std::vector<std::pair<std::string, int>>	&	newColumns,
-			std::vector<std::pair<int, std::string>>	&	changedColumns,
-			std::set<std::string>						&	missingColumns,
-			std::map<std::string, std::string>			&	changeNameColumns,
+			ImportDataSet									*	syncDataSet,
+			const std::vector<std::pair<std::string, int>>	&	newColumns,
+			const std::vector<std::pair<int, std::string>>	&	changedColumns,
+			const stringset									&	missingColumns,
+			const strstrmap									&	changeNameColumns,
+			const stringvec									&	newOrder,	///<can be empty
 			bool											rowCountChanged);
 };
 
