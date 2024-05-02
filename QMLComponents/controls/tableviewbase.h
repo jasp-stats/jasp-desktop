@@ -66,6 +66,7 @@ public:
 	void						setUpModel()										override;
 	void						setUp()												override;
 	void						rScriptDoneHandler(const QString & result)			override;
+	bool						infoAddControlType()						const	override	{ return true; }
 
 	ItemType itemTypePerItem(int col = -1, int row = -1) const;
 

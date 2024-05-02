@@ -27,7 +27,6 @@ TextInputBase::TextInputBase(QQuickItem* parent)
 	: JASPControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::TextField;
-	_info.displayControlType = true;
 }
 
 QString TextInputBase::_getPercentValue(double dblVal)

@@ -35,7 +35,6 @@ TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType = ControlType::TableView;
-	_info.displayControlType = true;
 }
 
 void TableViewBase::setUpModel()

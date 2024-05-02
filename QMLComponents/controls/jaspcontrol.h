@@ -11,17 +11,6 @@ class AnalysisForm;
 class JASPListControl;
 class BoundControl;
 
-struct InfoProps
-{
-	QVariant var;
-	QString text;
-	QString label;
-	bool	displayControlType	= false,
-			isHeader			= false,
-			displayLabelItalic	= false;
-
-};
-
 ///
 /// Basic class for all our qml controls
 /// Contains all the properties that *must* be there for the QML components defined under Desktop/components/Controls and their bases in Desktop/widgets to function
@@ -33,8 +22,8 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( ControlType							controlType				READ controlType			WRITE setControlType			NOTIFY controlTypeChanged			)
 	Q_PROPERTY( QString								name					READ name					WRITE setName					NOTIFY nameChanged					)
 	Q_PROPERTY( QString								title					READ title					WRITE setTitle					NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
-	Q_PROPERTY( QVariant							info					READ info					WRITE setInfo					NOTIFY infoChanged					)
-	Q_PROPERTY( QString								infoLabel				READ infoLabel				WRITE setInfoLabel				NOTIFY infoChanged					)
+	Q_PROPERTY( QString								info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY( QString								infoLabel				READ infoLabel				WRITE setInfoLabel				NOTIFY infoLabelChanged				)
 	Q_PROPERTY( QString								toolTip					READ toolTip				WRITE setToolTip				NOTIFY toolTipChanged				)
 	Q_PROPERTY( QString								helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound					READ isBound				WRITE setIsBound				NOTIFY isBoundChanged				)
@@ -122,9 +111,12 @@ public:
 	ControlType			controlType()				const	{ return _controlType;				}
 	const QString	&	name()						const	{ return _name;						}
 	QString				title()						const	{ return _title;					}
-	QVariant			info()						const	{ return _info.var;					}
-	QString				infoText()					const	{ return _info.text;				}
-	QString				infoLabel()					const	{ return _info.label.isEmpty() ? _title : _info.label;	}
+	QString				info()						const	{ return _info;						}
+	QString				infoLabel()					const	{ return _infoLabel;				}
+	virtual bool		infoAddControlType()		const	{ return  false;					}
+	virtual bool		infoLabelIsHeader()			const	{ return  false;					}
+	virtual bool		infoLabelItalic()			const	{ return  false;					}
+
 	QString				toolTip()					const	{ return _toolTip;					}
 	virtual QString		helpMD(int depth = 0)		const;
 	virtual bool		hasInfo()					const;
@@ -208,8 +200,6 @@ public slots:
 	void	reconnectWithYourChildren();
 	void	parentListViewKeyChanged(const QString& oldName, const QString& newName);
 	void	setName(const QString& name);
-	void	setInfo(const QVariant& info);
-	void	setInfoLabel(const QString& label)		{ _info.label = label; emit infoChanged(); }
 
 	GENERIC_SET_FUNCTION(ToolTip				, _toolTip				, toolTipChanged				, QString		)
 	GENERIC_SET_FUNCTION(Title					, _title				, titleChanged					, QString		)
@@ -220,6 +210,8 @@ public slots:
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
 	GENERIC_SET_FUNCTION(ExplicitDepends		, _explicitDepends		, explicitDependsChanged		, QVariant		)
+	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
+	GENERIC_SET_FUNCTION(InfoLabel				, _infoLabel			, infoLabelChanged				, QString		)
 
 private slots:
 	void	_hightlightBorder();
@@ -249,6 +241,7 @@ signals:
 	void	backgroundChanged();
 	void	focusIndicatorChanged();
 	void	infoChanged();
+	void	infoLabelChanged();
 	void	toolTipChanged();
 	void	titleChanged();
 	void	helpMDChanged();
@@ -320,7 +313,8 @@ protected:
 	Qt::FocusReason			_focusReason				= Qt::FocusReason::NoFocusReason;
 	bool					_dependsOnDynamicComponents = false;
 	QVariant				_explicitDepends;
-	InfoProps				_info;
+	QString					_info,
+							_infoLabel;
 
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;

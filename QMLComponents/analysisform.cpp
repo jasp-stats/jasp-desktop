@@ -45,6 +45,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	_rSyntax = new RSyntax(this);
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
 	connect(this,									&AnalysisForm::infoChanged,					this, &AnalysisForm::helpMDChanged			);
+	connect(this,									&AnalysisForm::infoBottomChanged,			this, &AnalysisForm::helpMDChanged			);
 	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
@@ -305,34 +306,6 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 			text.append("<li>").append(msg).append("</li>");
 
 	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
-}
-
-void AnalysisForm::setInfo(const QVariant& info)
-{
-	if (_info.var == info)
-		return;
-
-	_info.var = info;
-
-	if (info.canConvert<QString>())
-		_info.top = info.toString();
-	else if (info.canConvert<QMap<QString, QVariant> >())
-	{
-		QMap<QString, QVariant> map = info.toMap();
-		if (map.contains("top"))
-			_info.top = map["top"].toString();
-		if (map.contains("bottom"))
-			_info.bottom = map["bottom"].toString();
-		if (map.contains("references"))
-			_info.references = map["references"].toStringList();
-		if (map.contains("RPackages"))
-			_info.RPackages = map["RPackages"].toStringList();
-		if (map.contains("examples"))
-			_info.examples = map["examples"].toStringList();
-	}
-
-
-	emit infoChanged();
 }
 
 QString AnalysisForm::_getControlLabel(QString controlName)
@@ -889,7 +862,7 @@ QString AnalysisForm::helpMD() const
 	QStringList markdown =
 	{
 		"# ", title(), "\n",
-		_info.top, "\n\n---\n"
+		_info, "\n\n---\n"
 	};
 
 
@@ -900,22 +873,8 @@ QString AnalysisForm::helpMD() const
 
 	markdown << metaHelpMD();
 	
-	if(!_info.bottom.isEmpty())
-		markdown << "\n\n---\n" << _info.bottom  << "\n";
-
-	auto printList = [&markdown](const QStringList& list, const QString& title) -> void
-	{
-		if(list.length() > 0)
-		{
-			markdown << ("\n\n---\n### " + title + "\n");
-			for (const QString& elt : list)
-				markdown << "- " << elt << "\n";
-		}
-	};
-
-	printList(_info.references, tr("References"));
-	printList(_info.RPackages, tr("R Packages"));
-	printList(_info.examples, tr("Examples"));
+	if(!_infoBottom.isEmpty())
+		markdown << "\n\n---\n" << _infoBottom  << "\n";
 
 	QString md = markdown.join("");
 	

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2024 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,23 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef EXPANDERBUTTONBASE_H
-#define EXPANDERBUTTONBASE_H
+#ifndef GROUPBOXBASE_H
+#define GROUPBOXBASE_H
 
 #include "jaspcontrol.h"
 
-#include <QObject>
-
-class ExpanderButtonBase : public JASPControl
+class GroupBoxBase : public JASPControl
 {
 	Q_OBJECT
+
 public:
-	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
+	GroupBoxBase(QQuickItem* parent = nullptr) : JASPControl(parent) { _controlType = JASPControl::ControlType::GroupBox; }
 
-	void	setUp()							override;
-	QString helpMD(int depth)		const	override;
+	bool infoLabelIsHeader()	const	override { return true; }
 
-	bool infoLabelIsHeader()		const	override	{ return true; }
 };
 
-#endif // EXPANDERBUTTONBASE_H
+#endif // GROUPBOXBASE_H

@@ -23,7 +23,6 @@
 VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 {
 	_controlType = ControlType::VariablesForm;
-	_info.isHeader = true;
 }
 
 void VariablesFormBase::componentComplete()

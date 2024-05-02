@@ -31,6 +31,8 @@ class RadioButtonBase : public JASPControl
 public:
 	RadioButtonBase(QQuickItem* parent = nullptr);
 
+	bool infoLabelItalic()	const	override	{ return true; }
+
 	JASPControl* group();
 
 public slots:

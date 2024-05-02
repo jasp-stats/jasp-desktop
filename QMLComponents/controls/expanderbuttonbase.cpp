@@ -23,7 +23,6 @@ ExpanderButtonBase::ExpanderButtonBase(QQuickItem *parent)
 	: JASPControl(parent)
 {
 	_controlType = ControlType::Expander;
-	_info.isHeader = true;
 }
 
 void ExpanderButtonBase::setUp()

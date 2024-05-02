@@ -42,7 +42,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
-	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(infoText());					});
+	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(info());					});
 	connect(this, &JASPControl::toolTipChanged,			[this] () { setShouldStealHover(!_toolTip.isEmpty());					});
 	connect(this, &JASPControl::hasErrorChanged,		this, &JASPControl::_hightlightBorder);
 	connect(this, &JASPControl::hasWarningChanged,		this, &JASPControl::_hightlightBorder);
@@ -169,9 +169,6 @@ void JASPControl::componentComplete()
 	QQuickItem::componentComplete();
 	_setBackgroundColor();
 	_setVisible();
-
-	if (_controlType == ControlType::GroupBox)
-		_info.isHeader = true;
 
 	connect(this, &JASPControl::initializedChanged, this, &JASPControl::_checkControlName);
 
@@ -310,7 +307,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 		if (childControl)
 		{
-			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && childControl->infoLabel().isEmpty() && childControl->infoText().isEmpty())
+			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && childControl->title().isEmpty() && childControl->infoLabel().isEmpty() && childControl->info().isEmpty())
 				// If a Group has no label, title or info, then it is used probably for layout purpose, but to structure the controls is sub elements.
 				// Just skip it: this is necessary for generating properly the markdown help
 				result.append(getChildJASPControls(childControl));
@@ -548,7 +545,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 
 bool JASPControl::hasInfo() const
 {
-	if(!infoText().isEmpty()) return true;
+	if(!info().isEmpty()) return true;
 
 	for (JASPControl* control : getChildJASPControls(_childControlsArea ? _childControlsArea : this))
 		if (control->hasInfo()) return true;
@@ -558,24 +555,24 @@ bool JASPControl::hasInfo() const
 
 bool JASPControl::printLabelMD(QStringList& md, int depth) const
 {
-	QString label = infoLabel().trimmed();
-	if(label.isEmpty() && !_info.displayControlType)
+	QString label = (infoLabel().isEmpty() ? title() : infoLabel()).trimmed();
+	if(label.isEmpty() && !infoAddControlType())
 		return false;
 
 	// Print the label as a header, in italic or in bold
-	if (_info.isHeader)					md << QString{depth + 2, '#' } << " ";
-	else if	(_info.displayLabelItalic)	md << "*";
+	if (infoLabelIsHeader())			md << QString{depth + 2, '#' } << " ";
+	else if	(infoLabelItalic())			md << "*";
 	else								md << "**";
 
-	if (_info.displayControlType)		md << (friendlyName() + (!label.isEmpty() ? " - " : ""));
+	if (infoAddControlType())			md << (friendlyName() + (!label.isEmpty() ? " - " : ""));
 
 	md << label;
 
-	if (_info.isHeader)					md << "\n";
+	if (infoLabelIsHeader())			md << "\n";
 	else
 	{
-		md << (_info.displayLabelItalic ? "*" : "**");
-		if (!infoText().isEmpty() && !label.endsWith(":")) // Add ':' when necessary
+		md << (infoLabelItalic() ? "*" : "**");
+		if (!info().isEmpty() && !label.endsWith(":")) // Add ':' when necessary
 			md << ":";
 		md << " ";
 	}
@@ -597,7 +594,7 @@ QString JASPControl::helpMD(int depth) const
 	}
 
 	bool hasLabel = printLabelMD(markdown, depth);
-	markdown << infoText();
+	markdown << info();
 
 	if (childMDs.length() == 0)
 		markdown << "\n";
@@ -707,30 +704,7 @@ bool JASPControl::hovered() const
 		return false;
 }
 
-void JASPControl::setInfo(const QVariant& info)
-{
-	if (_info.var == info)
-		return;
 
-	_info.var = info;
-
-	if (info.canConvert<QString>())
-		_info.text = info.toString();
-	else if (info.canConvert<QMap<QString, QVariant> >())
-	{
-		QMap<QString, QVariant> map = info.toMap();
-		if (map.contains("text"))
-			_info.text = map["text"].toString();
-		if (map.contains("label"))
-			_info.label = map["label"].toString();
-		if (map.contains("useControlType"))
-			_info.displayControlType = map["useControlType"].toBool();
-		if (map.contains("isHeader"))
-			_info.isHeader = map["isHeader"].toBool();
-	}
-
-	emit infoChanged();
-}
 
 QString JASPControl::humanFriendlyLabel() const
 {
