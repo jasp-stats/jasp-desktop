@@ -25,7 +25,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								info					READ info					WRITE setInfo					NOTIFY infoChanged					)
 	Q_PROPERTY( QString								infoLabel				READ infoLabel				WRITE setInfoLabel				NOTIFY infoLabelChanged				)
 	Q_PROPERTY( QString								toolTip					READ toolTip				WRITE setToolTip				NOTIFY toolTipChanged				)
-	Q_PROPERTY( QString								helpMD					READ helpMDControl											NOTIFY helpMDChanged				)
+	Q_PROPERTY( QString								helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound					READ isBound				WRITE setIsBound				NOTIFY isBoundChanged				)
 	Q_PROPERTY( bool								indent					READ indent					WRITE setIndent					NOTIFY indentChanged				)
 	Q_PROPERTY( bool								isDependency			READ isDependency			WRITE setIsDependency			NOTIFY isDependencyChanged			)
@@ -112,9 +112,14 @@ public:
 	const QString	&	name()						const	{ return _name;						}
 	QString				title()						const	{ return _title;					}
 	QString				info()						const	{ return _info;						}
+	QString				infoLabel()					const	{ return _infoLabel;				}
+	virtual bool		infoAddControlType()		const	{ return  false;					}
+	virtual bool		infoLabelIsHeader()			const	{ return  false;					}
+	virtual bool		infoLabelItalic()			const	{ return  false;					}
+
 	QString				toolTip()					const	{ return _toolTip;					}
-	QString				helpMDControl()				const	{ SetConst tmp; return helpMD(tmp);	} ///< If someone want to get it from qml they can this way.
-	virtual QString		helpMD(SetConst & markdowned, int howDeep = 2, bool asList = false)	const;
+	virtual QString		helpMD(int depth = 0)		const;
+	virtual bool		hasInfo()					const;
 	bool				isBound()					const	{ return _isBound;					}
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}
 	bool				indent()					const	{ return _indent;					}
@@ -154,7 +159,7 @@ public:
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
-	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
+	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool removeUnecessaryGroups = false);
 
 	virtual void					setUp()										{}
 	void							setInitialized(const Json::Value& value = Json::nullValue);
@@ -171,9 +176,6 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
-
-	QString infoLabel() const;
-	void setInfoLabel(const QString &newInfoLabel);
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -199,7 +201,6 @@ public slots:
 	void	parentListViewKeyChanged(const QString& oldName, const QString& newName);
 	void	setName(const QString& name);
 
-	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
 	GENERIC_SET_FUNCTION(ToolTip				, _toolTip				, toolTipChanged				, QString		)
 	GENERIC_SET_FUNCTION(Title					, _title				, titleChanged					, QString		)
 	GENERIC_SET_FUNCTION(IsBound				, _isBound				, isBoundChanged				, bool			)
@@ -209,6 +210,8 @@ public slots:
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
 	GENERIC_SET_FUNCTION(ExplicitDepends		, _explicitDepends		, explicitDependsChanged		, QVariant		)
+	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
+	GENERIC_SET_FUNCTION(InfoLabel				, _infoLabel			, infoLabelChanged				, QString		)
 
 private slots:
 	void	_hightlightBorder();
@@ -238,6 +241,7 @@ signals:
 	void	backgroundChanged();
 	void	focusIndicatorChanged();
 	void	infoChanged();
+	void	infoLabelChanged();
 	void	toolTipChanged();
 	void	titleChanged();
 	void	helpMDChanged();
@@ -254,26 +258,24 @@ signals:
 	void				requestComputedColumnCreation(std::string columnName);
 	void				requestComputedColumnDestruction(std::string columnName);
 
-	void infoLabelChanged();
-
 protected:
-	void				componentComplete() override;
+	void				componentComplete()									override;
 	void				_setType();
 	void				setCursorShape(int shape);
 	void				setParentDebugToChildren(bool debug);
-	void				focusInEvent(QFocusEvent* event) override;
-	bool				eventFilter(QObject *watched, QEvent *event) override;
+	void				focusInEvent(QFocusEvent* event)					override;
+	bool				eventFilter(QObject *watched, QEvent *event)		override;
 	bool				checkOptionName(const QString& name);
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
 	virtual void		_setInitialized(const Json::Value &value);
+	bool				printLabelMD(QStringList& md, int depth)			const;
 
 protected:
 	Set						_depends;
 	ControlType				_controlType;
 	AnalysisForm*			_form						= nullptr;
 	QString					_name,
-							_info,
 							_toolTip,
 							_title,
 							_parentListViewKey;
@@ -311,13 +313,14 @@ protected:
 	Qt::FocusReason			_focusReason				= Qt::FocusReason::NoFocusReason;
 	bool					_dependsOnDynamicComponents = false;
 	QVariant				_explicitDepends;
+	QString					_info,
+							_infoLabel;
+
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
 	static const QStringList						_optionReservedNames;
-private:
-	QString _infoLabel;
 };
 
 

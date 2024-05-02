@@ -42,8 +42,6 @@ public:
 	void		bindTo(const Json::Value& value)					override;
 	void		setUp()												override;
 	void		rScriptDoneHandler(const QString& result)			override;
-	QString		helpMD(SetConst & markdowned,
-					   int howDeep = 2, bool asList=true)	const	override;
 	bool		encodeValue()								const	override;
 
 	TextInputType	inputType()										{ return _inputType; }
@@ -52,8 +50,9 @@ public:
 	QVariant		defaultValue()							const	{ return _defaultValue;			}
 	QVariant		value()									const	{ return _value.isNull() ? _defaultValue : _value; } // Sometimes the value is asked before the control is setup, so in this case give the default value
 
-	const QString &label()									const	{ return _label;				}
-	const QString &afterLabel()								const	{ return _afterLabel;			}
+	const QString	&label()								const	{ return _label;				}
+	const QString	&afterLabel()							const	{ return _afterLabel;			}
+	bool			infoAddControlType()					const	override		{ return true;	}
 
 signals:
 	void		formulaCheckSucceeded();

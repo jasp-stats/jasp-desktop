@@ -32,3 +32,11 @@ void ExpanderButtonBase::setUp()
 
 	setInitialized();
 }
+
+QString ExpanderButtonBase::helpMD(int depth) const
+{
+	if (!hasInfo()) return "";
+
+	// For Section, draw first a line, and reset the depth to 0.
+	return "\n---\n\n" + JASPControl::helpMD(0);
+}

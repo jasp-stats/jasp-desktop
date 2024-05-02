@@ -308,15 +308,6 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 	return !text.size() ? "" : "<ul style=\"margins:0px\">" + text + "</ul>";
 }
 
-void AnalysisForm::setInfo(QString info)
-{
-	if (_info == info)
-		return;
-
-	_info = info;
-	emit infoChanged();
-}
-
 QString AnalysisForm::_getControlLabel(QString controlName)
 {
 	return _controls[controlName]->humanFriendlyLabel();
@@ -866,33 +857,28 @@ std::set<string> AnalysisForm::usedVariables()
 ///Generates documentation based on the "info" entered on each component
 QString AnalysisForm::helpMD() const
 {
-	if(!_analysis) return "";
+	if(!_analysis || !initialized()) return "";
 
 	QStringList markdown =
 	{
-		title(), "\n",
-		"=====================\n",
-		_info, "\n\n",
-		"---\n## ", tr("Options"), "\n"
+		"# ", title(), "\n",
+		_info, "\n\n---\n"
 	};
+
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
-	std::set<const JASPControl *> markdowned;
-
 	for(JASPControl * control : orderedControls)
-		if(!markdowned.count(control))
-			markdown.push_back(control->helpMD(markdowned));
+		markdown << control->helpMD() << "\n";
 
-	markdown.push_back(metaHelpMD());
+	markdown << metaHelpMD();
 	
 	if(!_infoBottom.isEmpty())
-		markdown.push_back(_infoBottom + "\n");
-	
+		markdown << "\n\n---\n" << _infoBottom  << "\n";
+
 	QString md = markdown.join("");
 	
-	if(_analysis)
-		_analysis->preprocessMarkdownHelp(md);
+	_analysis->preprocessMarkdownHelp(md);
 	
 	return md;
 }
@@ -1005,17 +991,4 @@ void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocu
 
 	if (emitSignal)
 		emit activeJASPControlChanged();
-}
-
-QString AnalysisForm::infoBottom() const
-{
-	return _infoBottom;
-}
-
-void AnalysisForm::setInfoBottom(const QString &newInfoBottom)
-{
-	if (_infoBottom == newInfoBottom)
-		return;
-	_infoBottom = newInfoBottom;
-	emit infoBottomChanged();
 }

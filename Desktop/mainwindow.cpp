@@ -58,7 +58,7 @@
 #include "controls/radiobuttonbase.h"
 #include "controls/radiobuttonsgroupbase.h"
 #include "controls/jaspdoublevalidator.h"
-
+#include "controls/groupboxbase.h"
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
@@ -171,6 +171,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<AnalysisForm>								("JASP",			1, 0, "AnalysisForm"					);
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
 	qmlRegisterType<JASPControl>								("JASP",			1, 0, "JASPControl"						);
+	qmlRegisterType<GroupBoxBase>								("JASP",			1, 0, "GroupBoxBase"					);
 	qmlRegisterType<ExpanderButtonBase>							("JASP",			1, 0, "ExpanderButtonBase"				);
 	qmlRegisterType<CheckBoxBase>								("JASP",			1, 0, "CheckBoxBase"					);
 	qmlRegisterType<SliderBase>									("JASP",			1, 0, "SliderBase"						);

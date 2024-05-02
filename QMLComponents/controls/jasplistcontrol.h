@@ -47,8 +47,6 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QString			optionKey				READ optionKey				WRITE setOptionKey													)
 	Q_PROPERTY( bool			addEmptyValue			READ addEmptyValue			WRITE setAddEmptyValue			NOTIFY addEmptyValueChanged			)
 	Q_PROPERTY( QString			placeholderText			READ placeholderText		WRITE setPlaceHolderText		NOTIFY placeHolderTextChanged		)
-	Q_PROPERTY( QString			labelRole				READ labelRole				WRITE setLabelRole				NOTIFY labelRoleChanged				)
-	Q_PROPERTY( QString			valueRole				READ valueRole				WRITE setValueRole				NOTIFY valueRoleChanged				)
 	Q_PROPERTY( bool			containsVariables		READ containsVariables										NOTIFY containsVariablesChanged		)
 	Q_PROPERTY( bool			containsInteractions	READ containsInteractions									NOTIFY containsInteractionsChanged	)
 	Q_PROPERTY( double			maxTermsWidth			READ maxTermsWidth											NOTIFY maxTermsWidthChanged			)
@@ -58,8 +56,6 @@ class JASPListControl : public JASPControl
 
 
 public:
-	typedef QVector<std::pair<QString, QString> > LabelValueMap;
-
 	JASPListControl(QQuickItem* parent);
 	
 	virtual ListModel		*	model()						const	= 0;
@@ -94,8 +90,6 @@ public:
 			int					maxRows()					const			{ return _maxRows;				}
 			bool				addEmptyValue()				const			{ return _addEmptyValue;		}
 			const QString&		placeholderText()			const			{ return _placeHolderText;		}
-			const QString&		labelRole()					const			{ return _labelRole;			}
-			const QString&		valueRole()					const			{ return _valueRole;			}
 			bool				containsVariables()			const			{ return _containsVariables;	}
 			bool				containsInteractions()		const			{ return _containsInteractions;	}
 			bool				encodeValue()				const override	{ return containsVariables() || containsInteractions();	}
@@ -113,8 +107,6 @@ signals:
 			void				maxRowsChanged();
 			void				addEmptyValueChanged();
 			void				placeHolderTextChanged();
-			void				labelRoleChanged();
-			void				valueRoleChanged();
 			void				containsVariablesChanged();
 			void				containsInteractionsChanged();
 			void				maxTermsWidthChanged();
@@ -138,8 +130,6 @@ protected slots:
 			GENERIC_SET_FUNCTION(Values,				_values,				sourceChanged,					QVariant		)
 			GENERIC_SET_FUNCTION(AddEmptyValue,			_addEmptyValue,			addEmptyValueChanged,			bool			)
 			GENERIC_SET_FUNCTION(PlaceHolderText,		_placeHolderText,		placeHolderTextChanged,			QString			)
-			GENERIC_SET_FUNCTION(LabelRole,				_labelRole,				labelRoleChanged,				QString			)
-			GENERIC_SET_FUNCTION(ValueRole,				_valueRole,				valueRoleChanged,				QString			)
 			GENERIC_SET_FUNCTION(RowComponent,			_rowComponent,			rowComponentChanged,			QQmlComponent*	)
 			GENERIC_SET_FUNCTION(MaxRows,				_maxRows,				maxRows,						int				)
 			GENERIC_SET_FUNCTION(AddAvailableVariablesToAssigned, _addAvailableVariablesToAssigned,	addAvailableVariablesToAssignedChanged,	bool	)
@@ -163,9 +153,7 @@ protected:
 							_allowAnalysisOwnComputedColumns = true;
 
 	int						_maxRows				= -1;
-	QString					_placeHolderText		= tr("<no choice>"),
-							_labelRole				= "label",
-							_valueRole				= "value";
+	QString					_placeHolderText		= tr("<no choice>");
 	QQmlComponent		*	_rowComponent			= nullptr;
 
 private:

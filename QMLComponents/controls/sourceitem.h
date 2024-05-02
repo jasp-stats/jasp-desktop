@@ -47,17 +47,27 @@ public:
 		ConditionVariable() {}
 	};
 
+	struct SourceValuesItem
+	{
+		QString label, value, info;
+		SourceValuesItem(const QString& l, const QString& v, const QString& i) : label{l}, value{v}, info{i} {}
+
+	};
+
+	static const QString SourceValueLabel, SourceValueValue, SourceValueInfo;
+	typedef QVector<SourceValuesItem> SourceValuesType;
+
 	SourceItem(
 			  JASPListControl* targetListControl
 			, QMap<QString, QVariant>& map
-			, const JASPListControl::LabelValueMap& values
+			, const SourceValuesType& values
 			, const QVector<SourceItem*> rSources
 			, QAbstractItemModel* nativeModel = nullptr
 			, const QVector<SourceItem*>& discardSources = QVector<SourceItem*>()
 			, const QVector<QMap<QString, QVariant> >& conditionVariables = QVector<QMap<QString, QVariant> >()
 			);
 
-	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
+	SourceItem(JASPListControl* _listControl, const SourceValuesType& _values);
 
 	SourceItem(JASPListControl* _listControl, const QString& sourceName, const QString& sourceUse);
 
@@ -75,19 +85,19 @@ public:
 	QSet<QString>			usedControls()				const;
 
 
-	void									connectModels();
-	void									disconnectModels();
-	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
-	static QList<QVariant>					getListVariant(QVariant var);
-	static Terms							filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {}, const QMap<QString, QStringList> &termsMap = {});
+	void										connectModels();
+	void										disconnectModels();
+	static QVector<SourceItem*>					readAllSources(JASPListControl* _listControl);
+	static QList<QVariant>						getListVariant(QVariant var);
+	static Terms								filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {}, const QMap<QString, QStringList> &termsMap = {});
 
 
 private:
 	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
 	static QString							_readRSourceName(const QString& sourceNameExt, QString& sourceUse);
-	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& _nativeModel);
-	static JASPListControl::LabelValueMap	_readValues(JASPListControl* _listControl, const QVariant& _values);
+	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, SourceValuesType& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& _nativeModel);
 	static SourceItem*						_readRSource(JASPListControl* listControl, const QVariant& rSource);
+	static SourceValuesType					_readValues(JASPListControl* _listControl, const QVariant& _values);
 
 	void									_setUp();
 	Terms									_readAllTerms();
@@ -104,7 +114,7 @@ private:
 	QStringList						_sourceFilter;
 	QVector<SourceItem*>			_discardSources;
 	QVector<SourceItem*>			_rSources;
-	JASPListControl::LabelValueMap	_values;
+	SourceValuesType				_values;
 	bool							_isValuesSource				= false;
 	bool							_isRSource					= false;
 	ListModel			*			_sourceListModel			= nullptr;

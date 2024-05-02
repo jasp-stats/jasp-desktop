@@ -44,8 +44,8 @@ public:
 	void				setUp()												override;
 	ListModel*			model()										const	override	{ return _model;				}
 	void				setUpModel()										override;
-	QString				helpMD(SetConst & markdowned,
-							   int howDeep = 2, bool asList=true)	const	override;
+	QString				helpMD(int depth = 0)						const	override;
+	bool				hasInfo()									const	override;
 
 	const QString&		currentText()								const				{ return _currentText;			}
 	const QString&		currentValue()								const				{ return _currentValue;			}
@@ -84,9 +84,10 @@ protected:
 								_currentColumnTypeIcon;
 	int							_currentIndex			= -1;
 
-	int	 _getStartIndex() const;
+	int	 _getStartIndex()											const;
 	void _resetItemWidth();
 	void _setCurrentProperties(int index, bool bindValue = true);
+	bool _hasOptionInfo()											const;
 
 };
 

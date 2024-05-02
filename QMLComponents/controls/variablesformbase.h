@@ -36,6 +36,7 @@ class VariablesFormBase : public JASPControl
 public:
 	VariablesFormBase(QQuickItem* parent = nullptr);
 
+	bool					infoLabelIsHeader()				const	override	{ return true; }
 	JASPControl*			availableVariablesList()		const;
 	QList<JASPControl*>		allAssignedVariablesList()		const	{ return _allAssignedVariablesList;		}
 	QList<JASPControl*>		allJASPControls()				const	{ return _allJASPControls;				}

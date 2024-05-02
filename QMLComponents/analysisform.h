@@ -94,7 +94,6 @@ public:
 
 public slots:
 	void					runScriptRequestDone(const QString& result, const QString& requestId, bool hasError);
-	void					setInfo(QString info);
 	void					setAnalysis(AnalysisBase * analysis);
 	void					boundValueChangedHandler(JASPControl* control);
 	void					setOptionNameConversion(const QVariantList& conv);
@@ -116,6 +115,7 @@ signals:
 	void					hasVolatileNotesChanged();
 	void					runOnChangeChanged();
 	void					infoChanged();
+	void					infoBottomChanged();
 	void					helpMDChanged();
 	void					errorsChanged();
 	void					warningsChanged();
@@ -128,9 +128,7 @@ signals:
 	void					rSyntaxTextChanged();
 	void					showAllROptionsChanged();
 	void					activeJASPControlChanged();
-	
-	void infoBottomChanged();
-	
+		
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
@@ -159,7 +157,8 @@ public:
 
 	bool			needsRefresh()			const;
 
-	QString			info()					const	{ return _info; }
+	QString			info()					const	{ return _info;								}
+	QString			infoBottom()			const	{ return _infoBottom;						}
 	QString			helpMD()				const;
 	QString			metaHelpMD()			const;
 	QString			errors()				const	{ return msgsListToString(_formErrors);		}
@@ -186,10 +185,10 @@ public:
 	JASPControl*	getActiveJASPControl()	{ return _activeJASPControl; }
 
 	static const QString	rSyntaxControlName;
-	
-	QString infoBottom() const;
-	void setInfoBottom(const QString &newInfoBottom);
-	
+		
+	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
+	GENERIC_SET_FUNCTION(InfoBottom				, _infoBottom			, infoBottomChanged				, QString		)
+
 private:
 
 	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
@@ -232,7 +231,8 @@ private:
 													_hasVolatileNotes				= false,
 													_initialized					= false,
 													_valueChangedEmittedButBlocked	= false;
-	QString											_info;
+	QString											_info,
+													_infoBottom;
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 	RSyntax										*	_rSyntax						= nullptr;
@@ -240,7 +240,6 @@ private:
 													_developerMode					= false;
 	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
-	QString _infoBottom;
 };
 
 #endif // ANALYSISFORM_H

@@ -246,36 +246,48 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-QString	ComboBoxBase::helpMD(SetConst & markdowned, int howDeep, bool) const
+QString	ComboBoxBase::helpMD(int depth) const
 {
-	QStringList md = { JASPControl::helpMD(markdowned, howDeep, false) };
-	howDeep++;
+	QStringList markdown;
 
-	if (values().isValid() && !values().isNull())
+	printLabelMD(markdown, depth);
+	markdown << info();
+
+	// If one of the option has an info property, then display the options as an unordered list
+	if (_hasOptionInfo())
 	{
-		bool isInteger = false;
-		values().toInt(&isInteger);
-
-		if (!isInteger)
+		for (const Term& term : _model->terms())
 		{
-			QList<QVariant> list = values().toList();
-			if (!list.isEmpty())
-			{
-				for (const QVariant& itemVariant : list)
-				{
-					QMap<QString, QVariant> labelValueInfoTriplet = itemVariant.toMap();
-					if (labelValueInfoTriplet.contains(labelRole()) && labelValueInfoTriplet.contains("info"))
-					{
-						QString label = labelValueInfoTriplet[labelRole()].toString(),
-								info  = labelValueInfoTriplet["info"].toString();
-
-						md << ( QString{howDeep, ' '} + "- *" + label + "*: " + info);
-					}
-				}
-			}
+			QString label = term.asQString(),
+					info = _model->getInfo(label);
+			markdown << "\n" << QString{depth * 2, ' '} << "- *" << label << "*";
+			if (!info.isEmpty())
+				markdown << (": " + info);
 		}
+	}
+	else
+	{
+		markdown << "\n" << QString{depth * 2, ' '};
+		// Display the options in one line separated by a comma.
+		markdown << model()->terms().asQList().join(", ");
 	}
 
 
-	return md.join("\n");
+	return markdown.join("") + "\n";
+}
+
+bool ComboBoxBase::_hasOptionInfo() const
+{
+	for (const Term& term : _model->terms())
+	{
+		if (!_model->getInfo(term.asQString()).isEmpty())
+			return true;
+	}
+
+	return false;
+}
+
+bool ComboBoxBase::hasInfo() const
+{
+	return !info().isEmpty() || _hasOptionInfo();
 }
