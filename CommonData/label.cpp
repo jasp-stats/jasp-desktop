@@ -3,7 +3,6 @@
 #include <sstream>
 #include "databaseinterface.h"
 
-
 const int Label::MAX_LABEL_DISPLAY_LENGTH	= 64; //we can store the rest in description if necessary
 const int Label::DOUBLE_LABEL_VALUE			= -1; 
 

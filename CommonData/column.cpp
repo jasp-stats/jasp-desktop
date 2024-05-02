@@ -1,6 +1,6 @@
-﻿#include "column.h"
+﻿#include "log.h"
+#include "column.h"
 #include "dataset.h"
-#include "log.h"
 #include "columnutils.h"
 #include "databaseinterface.h"
 
@@ -457,64 +457,15 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	bool	onlyDoubles = true, 
 			onlyInts	= true;
 	
+	
+	//Make sure we have only 1 label per value and display combo, because otherwise this will get too complicated
+	if(labelsMergeDuplicates() && aChange)
+		(*aChange) = true;
+	
 	intset ints;  // to suggest whether this is a scalar or not we need to know whether we have more than treshold ints or not.
 	
 	for(size_t i=0; i<values.size(); i++)
-	{
-		const std::string	&	value	= values[i],
-							&	labelT	= labels[i];
-		double					dblVal	= EmptyValues::missingValueDouble;
-		int						intVal	= EmptyValues::missingValueInteger;
-		
-		//all integers are also doubles, so we need not make Labels for them immediately.
-		//At least, if the labelT is the same as the value!
-		if((value.empty() || ColumnUtils::getDoubleValue(value, dblVal)) && value == labelT)
-		{
-			if(aChange && !Utils::isEqual(_dbls[i], dblVal))
-				(*aChange) = true;
-			
-			_ints[i] = Label::DOUBLE_LABEL_VALUE;	//Just use whatever is in the dbl
-			_dbls[i] = dblVal;
-			
-			if(ColumnUtils::getIntValue(value, intVal))			ints.insert(intVal);
-			else if(!value.empty())								onlyInts = false;
-		}
-		else //Not integer or double, or has a different label than value, so make or find a Label
-		{
-			Json::Value originalValue = value;
-
-			if(ColumnUtils::getIntValue(value, intVal))
-			{
-				originalValue = intVal;
-				ints.insert(intVal);
-			}
-
-			else if(ColumnUtils::getDoubleValue(value, dblVal))
-				originalValue = dblVal;
-
-
-			Label * label		= labelByValue(value);
-					label		= label ? label : labelByDisplay(labelT); // If we didnt find it by value maybe try by display? Not sure if this is a good idea though
-					_ints[i]	= label ? label->intsId() : labelsAdd(labelT, "", originalValue); // if we still didnt find a label we create it, and we write the intsId of whatever label we now have to _ints
-					_dbls[i]	= originalValue.isInt() ? originalValue.asInt() : originalValue.isDouble() ? originalValue.asDouble() : EmptyValues::missingValueDouble;
-			Label * newLabel	= labelByIntsId(_ints[i]);
-			
-			if(aChange && label != newLabel)
-				(*aChange) = true;
-			
-			//	We should register that we found something not double or int, unless there is no label.
-			//	Because then it is a bona fida missing value (as in actually missing)
-			//	Otherwise check with the label whether it is an empty value, to ignore when determining the best columnType
-			if(newLabel && !newLabel->isEmptyValue()) 
-			{
-				if(!originalValue.isDouble())
-					onlyDoubles = false;
-
-				if(!originalValue.isInt())
-					onlyInts	= false;
-			}
-		}
-	}
+		setValue(i, values[i], labels[i]);
 	
 	dbUpdateValues(false);
 	
@@ -566,7 +517,7 @@ bool Column::setDescriptions(strstrmap labelToDescriptionMap)
 	
 	for(const auto & labelDesc : labelToDescriptionMap)
 	{
-		Label * label = labelByDisplay(labelDesc.first);
+		Label * label = labelsByDisplay(labelDesc.first);
 		
 		if(label)
 		{
@@ -715,7 +666,7 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 	return label->intsId();
 }
 
-void Column::labelsRemoveValues(std::set<int> valuesToRemove)
+void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove)
 {
 	if (valuesToRemove.empty()) return;
 
@@ -1245,7 +1196,7 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered)
 	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
 			nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
 							&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
-	Label * newLabel		= labelByDisplay(userEntered);
+	Label * newLabel		= labelsByDisplay(userEntered);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
 	
 	if(nothingThereYet)
@@ -1390,40 +1341,84 @@ Label *Column::labelByIntsId(int value) const
 {
 	JASPTIMER_SCOPE(Column::labelByValue);
 
-	return _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
+	return value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
 }
 
-Label *Column::labelByDisplay(const std::string & display) const
+Labelset Column::labelsByDisplay(const std::string & display) const
 {
 	JASPTIMER_SCOPE(Column::labelByDisplay);
 
-	for(Label * label : _labels)
-		if(label->label() == display)
-			return label;
-
-	return nullptr;
+	Labels found;
+	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&display](Label * label)
+	{
+		return label->label() == display;
+	});
+	
+	return Labelset(found.begin(), found.end());
 }
 
-Label *Column::labelByValue(const std::string & value) const
+Labelset Column::labelsByValue(const std::string & value) const
 {
 	JASPTIMER_SCOPE(Column::labelByValue);
 
-	for(Label * label : _labels)
-		if(label->originalValueAsString() == value)
-			return label;
-
-	return nullptr;
+	Labels found;
+	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&value](Label * label)
+	{
+		return label->originalValueAsString() == value;
+	});
+	
+	return Labelset(found.begin(), found.end());
 }
 
-Label *Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
+Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
 {
-	JASPTIMER_SCOPE(Column::labelByValueAndDisplay);
+	JASPTIMER_SCOPE(Column::labelsByValueAndDisplay);
 
+	Labels found;
 	for(Label * label : _labels)
 		if(label->originalValueAsString() == value && label->label() == labelText)
 			return label;
-
+	
+	
 	return nullptr;
+}
+
+bool Column::labelsMergeDuplicates()
+{
+	bool thereWasDuplication = false;
+	
+	beginBatchedLabelsDB();
+	
+	for(size_t labelIndex=0; labelIndex < _labels.size(); labelIndex++)
+	{
+		const std::string	value		= _labels[labelIndex]->originalValueAsString(),
+							labelText	= _labels[labelIndex]->label();
+		Labels found;
+		std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&value, &labelText](Label * label)
+		{
+			return label->originalValueAsString() == value && label->label() == labelText;
+		});
+		
+		if(found.size() > 1)
+		{
+			thereWasDuplication = true;
+		
+			//First one wins
+			for(size_t f=1; f<found.size(); f++)
+				for(int & anInt : _ints)
+					if(anInt == found[f]->intsId())
+						anInt = found[0]->intsId();
+		
+			found.erase(found.begin());
+			intset ids;
+			
+			std::transform(found.begin(), found.end(), ids.begin(), [](Label * label){ return label->intsId(); });
+			labelsRemoveByIntsId(ids);
+	}
+	
+	endBatchedLabelsDB();
+	
+	return thereWasDuplication;
 }
 
 int Column::labelIndex(const Label *label) const

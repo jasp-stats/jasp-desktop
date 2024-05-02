@@ -5,6 +5,7 @@
 #include <json/json.h>
 #include "datasetbasenode.h"
 
+
 class Column;
 class DatabaseInterface;
 
@@ -78,5 +79,6 @@ private:
 };
 
 typedef std::vector<Label*> Labels;
+typedef std::set<Label*>	Labelset;
 
 #endif // LABEL_H
