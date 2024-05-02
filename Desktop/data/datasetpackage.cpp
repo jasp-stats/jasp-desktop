@@ -1405,12 +1405,12 @@ stringvec DataSetPackage::getColumnNames()
 	return names;
 }
 
-bool DataSetPackage::isColumnDifferentFromStringValues(const std::string & columnName, const stringvec & strVals)
+bool DataSetPackage::isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals)
 {
 	Column * col = _dataSet->column(columnName);
 	
 	if(col)
-		return col->isColumnDifferentFromStringValues(strVals);
+		return col->isColumnDifferentFromStringValues(title, strVals, strLabs, strEmptyVals);
 
 	return true;
 }

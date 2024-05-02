@@ -82,7 +82,7 @@ public:
 			void					incRevision(bool labelsTempCanBeMaintained = true);
 			bool					checkForUpdates();
 
-			bool					isColumnDifferentFromStringValues(const stringvec & strVals) const;
+			bool					isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const;
 
 			columnType				type()					const	{ return _type;				}
 			int						id()					const	{ return _id;				}

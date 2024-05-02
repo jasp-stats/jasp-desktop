@@ -199,7 +199,7 @@ public:
 				bool						columnExists(			Column				* column);
 
 				stringvec					getColumnNames();
-				bool						isColumnDifferentFromStringValues(const std::string & columnName, const stringvec & strVals);
+				bool						isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals);
 				int							findIndexByName(const std::string & name)	const;
 
 				bool						getRowFilter(				int						row)		const;

@@ -1618,9 +1618,9 @@ bool Column::checkForUpdates()
 	return true;
 }
 
-bool Column::isColumnDifferentFromStringValues(const stringvec & strVals) const 
+bool Column::isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const 
 {
-	return strVals == valuesAsStrings();
+	return !(title == _title && strEmptyVals == emptyValues()->emptyStrings() && strVals == valuesAsStrings() && strLabs == labelsAsStrings());
 }
 
 void Column::upgradeSetDoubleLabelsInInts()
