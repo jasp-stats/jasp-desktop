@@ -107,7 +107,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void setChosenColumn(int chosenColumn);
-	void setChosenColumn(const QString & chosenName);
+	void setChosenColumnByName(const QString & chosenName);
 	void columnAddedManuallyHandler(const QString & chosenName);
 	void setSelected(int row, int modifier);
 	void setColumnNameQ(QString newColumnName);

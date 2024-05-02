@@ -428,15 +428,12 @@ void ComputedColumnModel::datasetChanged(	QStringList				changedColumns,
 
 Column * ComputedColumnModel::createComputedColumn(const std::string & name, int colType, computedColumnType computeType, Analysis * analysis)
 {
-	bool success			= false;
-
-	bool	createActualComputedColumn	= computeType != computedColumnType::analysisNotComputed,
+	bool	success						= false,
+			createActualComputedColumn	= computeType != computedColumnType::analysisNotComputed,
 			showComputedColumn			= computeType != computedColumnType::analysis			&& createActualComputedColumn;
 
-	if (createActualComputedColumn)
-		DataSetPackage::pkg()->undoStack()->pushCommand(new CreateComputedColumnCommand(DataSetPackage::pkg(), tq(name), colType, int(computeType)));
-	else
-		DataSetPackage::pkg()->createColumn(name, columnType(colType));
+	if (createActualComputedColumn)	DataSetPackage::pkg()->undoStack()->pushCommand(new CreateComputedColumnCommand(tq(name), colType, int(computeType)));
+	else							DataSetPackage::pkg()->createColumn(name, columnType(colType));
 
 	Column  * createdColumn = DataSetPackage::pkg()->getColumn(name);
 
@@ -447,7 +444,10 @@ Column * ComputedColumnModel::createComputedColumn(const std::string & name, int
 		emit dataColumnAdded(tq(name));
 
 	if(showComputedColumn)
+	{
 		selectColumn(createdColumn);
+		emit chooseColumn(tq(createdColumn->name()));
+	}
 
 	return createdColumn;
 }

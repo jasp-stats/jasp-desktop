@@ -80,8 +80,8 @@ signals:
 				void	refreshData();
 				void	computeColumnForceTypeChanged();
 				void	columnTypeChanged();
-				
-				void computeColumnIconSourceChanged();
+				void	chooseColumn(QString colId);
+				void	computeColumnIconSourceChanged();
 				
 public slots:
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);

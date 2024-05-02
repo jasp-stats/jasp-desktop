@@ -413,7 +413,7 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 	runStatements(alterDatasetPrefix + addColumnFragment + "_DBL REAL NULL;");
 	runStatements(alterDatasetPrefix + addColumnFragment + "_INT INT  NULL;");
 
-	//The labels will be added separately later? Probably
+	//The labels will be added separately later
 
 	transactionWriteEnd();
 	return columnId;
@@ -446,8 +446,6 @@ void DatabaseInterface::columnIndexDecrements(int dataSetId, int index)
 	JASPTIMER_SCOPE(DatabaseInterface::columnIndexDecrements);
 	if(columnIdForIndex(dataSetId, index) == -1)
 		runStatements("UPDATE Columns SET colIdx=colIdx-1 WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx > " + std::to_string(index) +";");
-//	else
-//		throw std::runtime_error("columnIndexDecrements has a problem: colIdx " + std::to_string(index) + " in dataSet " + std::to_string(dataSetId) + " still exists!");
 }
 
 int DatabaseInterface::columnIdForIndex(int dataSetId, int index)
@@ -476,12 +474,12 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 	transactionWriteBegin();
 
 	//Clear the entire dataset, then insert each row, including filter.
-	//Bear in mind that this will also erase any scalar values that a column mightve converted from earlier.
+	// But maybe we should update instead, maybe it speeds up the application?
 	//As this data isnt synced anyway this shouldnt be a problem because it'd be invalidated after a single edit anyway
 	runStatements("DELETE FROM " + dataSetName(data->id()));
 
 	std::stringstream statement;
-
+	
 	statement << "INSERT INTO " << dataSetName(data->id()) << " (";
 
 	//Add columnnames for data we want to insert

@@ -169,7 +169,7 @@ private:
 class CreateComputedColumnCommand: public UndoModelCommand
 {
 public:
-	CreateComputedColumnCommand(QAbstractItemModel *model, const QString& name, int columnType, int computedColumnType);
+	CreateComputedColumnCommand(const QString& name, int columnType, int computedColumnType);
 
 	void undo()					override;
 	void redo()					override;
