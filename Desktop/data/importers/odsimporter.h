@@ -32,13 +32,13 @@ class ODSImportDataSet;
 class ODSImporter : public Importer
 {
 public:
-    ODSImporter()  : Importer() {	DataSetPackage::pkg()->setIsJaspFile(false); }
+    ODSImporter();
 	virtual ~ODSImporter() {}
 
 protected:
 	// Implmemtation of Inporter base class.
-	virtual ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback);
-
+	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
+	
 private:
 	static const std::string _contentFile;
 

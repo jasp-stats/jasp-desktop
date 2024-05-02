@@ -9,7 +9,7 @@
 namespace ods
 {
 
-class XmlContentsHandler : public XmlHandler
+class ODSXmlContentsHandler : public XmlHandler
 {
 	// Depth in XML document.
 	typedef enum e_docDepth
@@ -21,11 +21,13 @@ class XmlContentsHandler : public XmlHandler
 		table,
 		table_row,
 		table_cell,
+		annotation,
+		text_annotation,
 		text			// Only for string cells.
 	} DocDepth;
 
 public:
-	XmlContentsHandler(ODSImportDataSet *dta);
+	ODSXmlContentsHandler(ODSImportDataSet *dta);
 
 	/**
 	 * @brief startElement Called on the start of an element.
@@ -66,28 +68,30 @@ public:
 	void resetDocument();
 
 private:
-	DocDepth 		_docDepth;			///< Current depth of document.
-	int				_row;				///< Current row in document/table.
-	int				_column;			///< Current column in document/table.
-	int				_lastNotEmptyColumn;
-	bool			_tableRead;			///< True if first table read.
-	XmlDatatype		_lastType;		///< The last type we found in a opening tag.
-	int				_colRepeat;			///< Number cells this XML element spans.
-	int				_rowRepeat;
-	QString			_currentCell;
+	DocDepth 		_docDepth			= DocDepth::not_in_doc;		///< Current depth of document.
+	size_t			_row				= 0;						///< Current row in document/table.
+	int				_column				= 0,						///< Current column in document/table.
+					_lastNotEmptyColumn	= -1;
+	bool			_tableRead			= false;					///< True if first table read.
+	XmlDatatype		_lastType			= odsType_unknown;			///< The last type we found in a opening tag.
+	int				_colRepeat			= 1,						///< Number cells this XML element spans.
+					_rowRepeat			= 1;
+	QString			_currentCell,
+					_currentComment;
 
 	// Names we search for.
-	static const QString _nameDocContent;
 	static const QString _nameBody;
-	static const QString _nameSpreadsheet;
 	static const QString _nameTable;
 	static const QString _nameTableRow;
+	static const QString _nameDocContent;
+	static const QString _nameSpreadsheet;
+	static const QString _nameAnnotation;
 	static const QString _nameTableCell;
 	static const QString _nameText;
 
 	// Attribute names we search for.
-	static const QString _attValueType;
 	static const QString _attValue;
+	static const QString _attValueType;
 	static const QString _attDateValue;
 	static const QString _attTimeValue;
 	static const QString _attBoolValue;
@@ -95,13 +99,21 @@ private:
 	static const QString _attRowRepeatCount;
 
 	// Values of the attribute attValueType.
-	static const QString _typeFloat;
 	static const QString _typeCurrency;
 	static const QString _typePercent;
 	static const QString _typeBoolean;
 	static const QString _typeString;
+	static const QString _typeFloat;
 	static const QString _typeDate;
 	static const QString _typeTime;
+	
+	// Excel sometimes exports too many "repeat columns/row" elements, only to make sure that it looks the same as in excel.
+	// In the sense of looking the same as the entire editable table in excel...
+	// It then wants you to repeat empty cells that many times.
+	// This is of course not very sensible so instead we detect that and ignore such cells.
+	// To do this we need to know the maximum size of an excelspreadsheet and it is:
+	const int				_excelMaxRows = 1048576, 
+							_excelMaxCols = 16384;
 
 
 	/**

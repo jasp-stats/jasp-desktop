@@ -20,7 +20,6 @@
 */
 
 #include "odsimportdataset.h"
-#include "log.h"
 #include "../importdataset.h"
 #include "odsimportcolumn.h"
 #include "../odsimporter.h"
@@ -52,6 +51,12 @@ ODSImportColumn & ODSImportDataSet::createColumn(string name)
 	return *column;
 }
 
+void ODSImportDataSet::createSpace(size_t row)
+{
+	for(ImportColumn * colBase : _columns)
+		static_cast<ODSImportColumn*>(colBase)->createSpace(row);
+}
+
 
 /**
  * @brief operator [] Exposes the underlying vector of the ImportDataSet.
@@ -73,17 +78,9 @@ ODSImportColumn & ODSImportDataSet::getOrCreate (const int index)
 	if (index < columnCount())
 		return static_cast<ODSImportColumn &>(*(_columns[index]));
 	else
-	{
-		stringstream ss;
-		ss << "_col" << columnCount() + 1;
-		return createColumn(ss.str());
-	}
+		return createColumn("");
 }
 
-
-/**
- * @brief postLoadProcess Performs post load processing.
- */
 void ODSImportDataSet::postLoadProcess()
 {
 	size_t numRows = 0;
@@ -91,7 +88,6 @@ void ODSImportDataSet::postLoadProcess()
 	for (ImportColumns::iterator colI = begin(); colI != end(); ++colI)
 	{
 		ODSImportColumn * col = static_cast<ODSImportColumn *>(*colI);
-		col->postLoadProcess();
 		numRows = max(numRows, col->size());
 	}
 

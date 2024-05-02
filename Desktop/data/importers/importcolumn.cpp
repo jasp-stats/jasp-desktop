@@ -1,11 +1,8 @@
 #include "importcolumn.h"
-#include <cmath>
-#include "utils.h"
-#include "columnutils.h"
 #include "log.h"
 
-ImportColumn::ImportColumn(ImportDataSet* importDataSet, std::string name)
-	: _importDataSet(importDataSet), _name(name)
+ImportColumn::ImportColumn(ImportDataSet* importDataSet,  const std::string & name,  const std::string & title)
+	: _importDataSet(importDataSet), _name(name), _title(title)
 {
 }
 
@@ -15,14 +12,27 @@ ImportColumn::~ImportColumn()
 }
 
 
-std::string ImportColumn::name() const
+const std::string & ImportColumn::name() const
 {
 	return _name;
 }
 
-void ImportColumn::changeName(const std::string & name)
+
+
+const std::string & ImportColumn::title() const
 {
-	Log::log() << "Changing name of column from '" << _name << "' to '" << name << "'\n." << std::endl;
+	return _title;
+}
+
+void ImportColumn::setName(const std::string & name)
+{
+	if(!_name.empty())
+		Log::log() << "Changing name of column from '" << _name << "' to '" << name << "'\n." << std::endl;
 
 	_name = name;
+}
+
+void ImportColumn::setTitle(const std::string & title)
+{
+	_title = title;
 }

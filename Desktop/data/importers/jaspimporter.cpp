@@ -32,7 +32,6 @@
 #include "../exporters/jaspexporter.h"
 
 #include "resultstesting/compareresults.h"
-#include "log.h"
 
 void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {	

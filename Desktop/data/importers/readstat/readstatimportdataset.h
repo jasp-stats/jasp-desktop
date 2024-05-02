@@ -45,7 +45,7 @@ public:
 	void						addNote(int note_index, const std::string & note);
 	const std::string		&	description() const override;
 
-	void						addColumn(int index, ReadStatImportColumn * col); //Calls hidden virtual function addColumn(ImportColumn*)
+	void						addColumn(int index, ReadStatImportColumn * col); ///<Calls hidden virtual function addColumn(ImportColumn*)
 	ReadStatImportColumn	*	column(int index);
 	ReadStatImportColumn	*	operator[](int index) { return column(index); };
 

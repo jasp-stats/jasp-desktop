@@ -2,14 +2,11 @@
 #define IMPORTER_H
 
 #include <boost/function.hpp>
-#include "../datasetpackage.h"
 #include "importdataset.h"
-#include "timers.h"
 
 class ImportDataSet;
 class ImportColumn;
 #include <QCoreApplication>
-#include "utilities/qutils.h"
 
 ///
 /// Base class for all importers
@@ -18,7 +15,7 @@ class Importer
 {
 	Q_DECLARE_TR_FUNCTIONS(Importer)
 public:
-	Importer() {}
+	Importer();
 	virtual ~Importer();
     void loadDataSet(const std::string &locator, std::function<void (int)> progressCallback);
     void syncDataSet(const std::string &locator, std::function<void (int)> progressCallback);
@@ -29,7 +26,7 @@ protected:
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	virtual void initColumn(QVariant colId, ImportColumn *importColumn);
 
-	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values, const std::vector<std::string> & labels=stringvec()) { DataSetPackage::pkg()->initColumnWithStrings(colId, newName, values, labels); }
+	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values, const std::vector<std::string> & labels=stringvec(), const std::string & title="", columnType desiredTyp = columnType::unknown, const stringset & emptyValues = {});
 
 private:
 	void _syncPackage(

@@ -90,17 +90,24 @@ void ImportDataSet::buildDictionary()
 		if(col->name() != "")
 			_nameToColMap[col->name()] = col;
 
-	size_t unnamedColumns = 0;
+	//Lets name the unnamed columns the same way csv does
+	size_t curCol = 0;
 
 	for(ImportColumn * col : *this)
+	{
+		curCol++;
+		
 		if(col->name() == "")
 		{
-			std::string newName = "";
-			while(newName == "" || _nameToColMap.count(newName) > 0)
-				newName = "Unnamed Column #" + std::to_string(++unnamedColumns);
-			col->changeName(newName);
+			std::string newName;
+			do
+				newName = "V" + std::to_string(curCol);
+			while(_nameToColMap.count(newName) > 0);
+				
+			col->setName(newName);
 
 			_nameToColMap[col->name()] = col;
 		}
+	}
 }
 

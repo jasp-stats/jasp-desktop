@@ -1,8 +1,14 @@
 #include "importer.h"
 #include "utilities/qutils.h"
-#include "utilities/settings.h"
 #include "log.h"
 #include <QVariant>
+#include "../datasetpackage.h"
+
+Importer::Importer() 
+{
+	//Turns out that jasp importer and jaspiporter old are not Importers... Great...
+	DataSetPackage::pkg()->setIsJaspFile(false);
+}
 
 Importer::~Importer() {}
 
@@ -48,7 +54,12 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 {
 	JASPTIMER_SCOPE(Importer::initColumn);
-	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings());
+	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings(), importColumn->allLabelsAsStrings(), importColumn->title(), importColumn->getColumnType(), importColumn->allEmptyValuesAsStrings());
+}
+
+void Importer::initColumnWithStrings(QVariant colId, const std::string &newName, const std::vector<std::string> &values, const std::vector<std::string> &labels, const std::string & title, columnType desiredType, const stringset & emptyValues) 
+{ 
+	DataSetPackage::pkg()->initColumnWithStrings(colId, newName, values, labels, title, desiredType, emptyValues); 																																							 
 }
 
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)

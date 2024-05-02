@@ -19,10 +19,12 @@ public:
 				~ReadStatImportColumn()							override;
 
 			size_t						size()									const	override;
-			columnType					getColumnType()							const				{ return _type; }
-			const stringvec		&		allValuesAsStrings()					const	override;	///< Reference returned only valid till the next time this function is called. (static stringvec)
-			bool						hasLabels()								const				{ return _labelsID != ""; }
-			const std::string	&		labelsID()								const				{ return  _labelsID;	}
+			columnType					getColumnType()							const	override	{ return _type; }
+			const stringvec		&		allValuesAsStrings()					const	override;
+			const stringvec		&		allLabelsAsStrings()					const	override	{ return labels();			}
+			const stringset		&		allEmptyValuesAsStrings()				const	override	{ return emptyValues();		}
+			bool						hasLabels()								const				{ return _labelsID != "";	}
+			const std::string	&		labelsID()								const				{ return  _labelsID;		}
 
 			void						addValue(const readstat_value_t & val);
 			
@@ -45,8 +47,7 @@ public:
 private:
     ReadStatImportDataSet   *   _readstatDataSet    = nullptr;
     readstat_variable_t		*	_readstatVariable   = nullptr;
-	std::string					_labelsID,
-								_title;
+	std::string					_labelsID;
 	columnType					_type;
 	stringvec					_values;
 	stringset					_missing;

@@ -20,15 +20,17 @@
 #include "ods/odsxmlmanifesthandler.h"
 #include "ods/odsxmlcontentshandler.h"
 #include "archivereader.h"
-
 #include <QXmlInputSource>
-
+#include "log.h"
 #include "timers.h"
 
 namespace ods
 {
 
 // Implmemtation of Inporter base class.
+ODSImporter::ODSImporter()  : Importer() 
+{}
+
 ImportDataSet* ODSImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(ODSImporter::loadFile);
@@ -91,11 +93,12 @@ void ODSImporter::readContents(const std::string &path, ODSImportDataSet *datase
 		int errorCode = 0;
 		if (((tmp = contents.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
 			throw std::runtime_error("Error reading contents in ODS.");
+		Log::log() << tmp << std::endl;
 		src.setData(QString::fromStdString(tmp));
 	}
 
 	{
-		XmlContentsHandler * contentsHandler = new XmlContentsHandler(dataset);
+		ODSXmlContentsHandler * contentsHandler = new ODSXmlContentsHandler(dataset);
 		QXmlSimpleReader reader;
 		reader.setContentHandler(contentsHandler);
 		reader.setErrorHandler(contentsHandler);
