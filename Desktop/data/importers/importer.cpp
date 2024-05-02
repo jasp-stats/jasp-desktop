@@ -120,7 +120,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 
-	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
+	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
 			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged);
 
 	DataSetPackage::pkg()->setManualEdits(false);
