@@ -150,7 +150,7 @@ public:
 			void					labelValueChanged(Label * label, int	anInteger) { labelValueChanged(label, double(anInteger)); }
 			void					labelDisplayChanged(Label * label);
 			
-			bool					setStringValueToRow(size_t row, const std::string & value);
+			bool					setStringValueToRow(		size_t row, const std::string & value,								bool writeToDBAndSetType = true);
 			bool					setValue(					size_t row, const std::string & value, const std::string & label,	bool writeToDB = true);
 			bool					setValue(					size_t row, int					value,								bool writeToDB = true);
 			bool					setValue(					size_t row, double				value,								bool writeToDB = true);
@@ -165,8 +165,10 @@ public:
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
 			bool					labelsMergeDuplicates();
+			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
+			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
 			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
-			Labelset				labelsByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label
+			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
 			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
 			Label				*	labelByRow(				int						row)									const; ///< 

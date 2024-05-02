@@ -215,7 +215,7 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 				else if(columnNameToMissingData.count(column->name()) && columnNameToMissingData[column->name()].count(r))
 				{
 					const std::string & missingValue = columnNameToMissingData[column->name()][r];
-                                        label = column->labelsByDisplay(missingValue);
+                                        label = column->labelByDisplay(missingValue);
 					
 					if(!label)
 						label = column->labelByIntsId(column->labelsAdd(missingValue));
