@@ -733,7 +733,6 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				return false;
 
 			setManualEdits(true);
-			
 			return setLabelAllowFilter(index, value.toBool());
 
 		case int(specialRoles::description):
@@ -812,7 +811,13 @@ bool DataSetPackage::setLabelDisplay(const QModelIndex &index, const QString &ne
 		aChange = true;
 	}
 	
-	aChange = label->setLabel(newLabel.toStdString()) || aChange;
+	if(label->setLabel(newLabel.toStdString()))
+	{
+		aChange = true;
+		
+		if(dataFileCanHaveLabels())
+			setManualEdits(true);
+	}
 	
 	if(aChange)
 		changedCols = {column->name()};
@@ -1020,10 +1025,15 @@ QString DataSetPackage::description() const
 	return tq(_dataSet ? _dataSet->description() : "");
 }
 
+bool DataSetPackage::dataFileCanHaveLabels() const
+{ 
+	return _dataSet && !tq(_dataSet->dataFilePath()).endsWith(".csv");  
+}
+
 void DataSetPackage::setDescription(const QString &description)
 {
 	if (!_dataSet) return;
-
+	
 	_dataSet->setDescription(fq(description));
 
 	emit descriptionChanged();

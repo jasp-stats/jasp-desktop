@@ -148,6 +148,7 @@ public:
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
 				bool				synchingData()						const	{ return _synchingData;								}
 				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
+				bool				dataFileCanHaveLabels()				const;
 				bool				isDatabase()						const	{ return _database != Json::nullValue;				}
 		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}

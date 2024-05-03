@@ -265,12 +265,6 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 	return true;
 }
 
-
-/**
- * @brief characters Called when char data found.
- * @param ch The found data.
- * @return true on no error.
- */
 bool ODSXmlContentsHandler::characters(const QString &ch)
 {
 
