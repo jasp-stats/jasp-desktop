@@ -19,6 +19,8 @@ public:
 	virtual ~Importer();
     void loadDataSet(const std::string &locator, std::function<void (int)> progressCallback);
     void syncDataSet(const std::string &locator, std::function<void (int)> progressCallback);
+	
+	virtual bool importerDeliversLabels() const { return true; } //They all do except csv, so for synchronization to work we want labels to be ignored for csv when synching, this to allow people to enter better labels and not lose them on every sync
 
 protected:
     virtual ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;
@@ -27,6 +29,8 @@ protected:
 	virtual void initColumn(QVariant colId, ImportColumn *importColumn);
 
 	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values, const std::vector<std::string> & labels=stringvec(), const std::string & title="", columnType desiredTyp = columnType::unknown, const stringset & emptyValues = {});
+	
+	bool	_synching = false;
 
 private:
 	void _syncPackage(

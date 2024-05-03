@@ -20,9 +20,7 @@
 
 #include "importer.h"
 #include <QCoreApplication>
-#include "utilities/qutils.h"
 
-///
 /// This description is never going to be more useful than the name of the class
 class CSVImporter : public Importer
 {
@@ -30,6 +28,8 @@ class CSVImporter : public Importer
 public:
 	CSVImporter();
 
+	bool importerDeliversLabels() const override { return false; } 
+	
 protected:
 	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
 

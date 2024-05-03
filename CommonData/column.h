@@ -155,9 +155,8 @@ public:
 			bool					setValue(					size_t row, int					value,								bool writeToDB = true);
 			bool					setValue(					size_t row, double				value,								bool writeToDB = true);
 			bool					setValue(					size_t row, int					valueInt, double valueDbl,			bool writeToDB = true);
-			columnType				setValues(	const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
-			columnType				setValues(	const stringvec &	values,								int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
-			bool					setDescriptions(			strstrmap labelToDescriptionMap); ///<Returns any changes
+			columnType				setValues(			const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
+			bool					setDescriptions(	strstrmap labelToDescriptionMap); ///<Returns any changes
 			void					rowInsertEmptyVal(size_t row);
 			void					rowDelete(size_t row);
 			void					setRowCount(size_t row);

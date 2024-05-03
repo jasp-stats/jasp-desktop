@@ -15,6 +15,8 @@ Importer::~Importer() {}
 void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	DataSetPackage::pkg()->beginLoadingData();
+	
+	_synching = false;
 
 	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
@@ -54,7 +56,12 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 {
 	JASPTIMER_SCOPE(Importer::initColumn);
-	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings(), importColumn->allLabelsAsStrings(), importColumn->title(), importColumn->getColumnType(), importColumn->allEmptyValuesAsStrings());
+	
+	bool doLabels = !_synching || importerDeliversLabels();
+	
+	static stringvec dummyLabels;
+	
+	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings(), doLabels ? importColumn->allLabelsAsStrings() : dummyLabels, importColumn->title(), importColumn->getColumnType(), importColumn->allEmptyValuesAsStrings());
 }
 
 void Importer::initColumnWithStrings(QVariant colId, const std::string &newName, const std::vector<std::string> &values, const std::vector<std::string> &labels, const std::string & title, columnType desiredType, const stringset & emptyValues) 
@@ -64,6 +71,8 @@ void Importer::initColumnWithStrings(QVariant colId, const std::string &newName,
 
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
+	_synching = true;
+	
 	ImportDataSet *	importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
 	int				syncColNo		= 0;

@@ -437,11 +437,6 @@ stringset Column::mergeOldMissingDataMap(const Json::Value &missingData)
 	return foundEmpty;
 }
 
-columnType Column::setValues(const stringvec & values, int thresholdScale, bool * aChange)
-{
-	return setValues(values, values, thresholdScale, aChange);
-}
-
 columnType Column::setValues(const stringvec & values, const stringvec & labels, int thresholdScale, bool * aChange)
 {
 	JASPTIMER_SCOPE(Column::setValues);
@@ -449,10 +444,18 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	if(aChange && _dbls.size() != values.size())
 		(*aChange) = true;
 
-	assert(values.size() == labels.size());
+	assert(values.size() == labels.size() || labels.size() == 0);
 
+	size_t prevSize = _ints.size();
+	
 	_dbls.resize(values.size());
 	_ints.resize(values.size());
+	
+	for(size_t resetRow=prevSize; resetRow<_ints.size(); resetRow++)
+	{
+		_ints[resetRow]	= EmptyValues::missingValueInteger;
+		_dbls[resetRow] = EmptyValues::missingValueDouble;
+	}
 	
 	bool	onlyDoubles = true, 
 			onlyInts	= true;
@@ -467,9 +470,10 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	
 	for(size_t i=0; i<values.size(); i++)
 	{
-		setValue(i, values[i], labels[i], false);
+		setValue(i, values[i], labels.size() ? labels[i] : "", false);
 		
-		if(values[i] != "" || labels[i] != "")
+		
+		if(values[i] != "" || (labels.size() && labels[i] != ""))
 		{
 			if(ColumnUtils::getIntValue(values[i], tmpInt))
 				ints.insert(tmpInt);
@@ -574,7 +578,7 @@ bool Column::overwriteDataAndType(stringvec data, columnType colType)
 		data.resize(_data->rowCount());
 
 	bool changes = _type != colType;
-	setValues(data,0, & changes);
+	setValues(data, data, 0, &changes);
 	setType(colType);
 	
 	return changes;
@@ -1259,18 +1263,19 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	if(value == "" && label == "")
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
-	if(label == "")
-		return setStringValueToRow(row, value, writeToDB);
-	
-	bool	labelIsValue	= value == label;
+	bool	labelIsValue	= value == label,
+			justAValue		= label == "";			///< To help us handle updates from synchronistion from csv (users might have added different label-texts
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];	
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
-	Label * newLabel		= labelByValueAndDisplay(value, label);
+	Label * newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
 	
-	if(!newLabel && value != label) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
-		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
+	if(justAValue && !newLabel && !itsADouble)
+		newLabel = labelByValueAndDisplay(value, value);
+	
+	if(!newLabel && !labelIsValue) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
+		newLabel = labelByIntsId( labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 		
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
 		return setValue(row, newDoubleToSet, writeToDB);
@@ -1278,7 +1283,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	if(newLabel)
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 		
-	if(itsADouble && labelIsValue)
+	if(itsADouble && (labelIsValue || justAValue))
 	{
 		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
 		//This should mean that the label has this old double as a original value!
@@ -1293,7 +1298,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	}
 	else
 		//there is no new label yet for this and it is not a double so we need to make a label
-		return setValue(row, labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
+		return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
 }
 
 bool Column::setValue(size_t row, int value, bool writeToDB)

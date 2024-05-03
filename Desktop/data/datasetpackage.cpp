@@ -798,7 +798,8 @@ bool DataSetPackage::setLabelDisplay(const QModelIndex &index, const QString &ne
 	Column			*	column		= dynamic_cast<Column*>(label->parent());
 	QModelIndex			parent		= index.parent();
 	stringvec			changedCols	;
-	bool				aChange		= false;
+	bool				aChange		= false,
+						setManual	= false;
 	
 	if(!column || index.row() > rowCount(parent))
 		return false;
@@ -816,13 +817,16 @@ bool DataSetPackage::setLabelDisplay(const QModelIndex &index, const QString &ne
 		aChange = true;
 		
 		if(dataFileCanHaveLabels())
-			setManualEdits(true);
+			setManual = true;
 	}
 	
 	if(aChange)
 		changedCols = {column->name()};
 	
 	endSynchingDataChangedColumns(changedCols, false, false);
+	
+	if(setManual)
+		setManualEdits(true);
 
 	return aChange;
 }
@@ -866,9 +870,9 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 			if(replaceTill < 0 && column->replaceDoubleLabelFromRowWithDouble(index.row(), aDouble))
 			{
 				changedCols = {column->name()};
-				setManualEdits(true); //A value change is a manual edit for sure as that changes the data itself
 				endSynchingDataChangedColumns(changedCols, false, false);
 				
+				setManualEdits(true); //A value change is a manual edit for sure as that changes the data itself
 				return true;
 			}
 		}
@@ -885,12 +889,12 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 	aChange = label->setOriginalValue(originalValue) || aChange;
 	
 	if(aChange)
-	{
 		changedCols = {column->name()};
-		setManualEdits(true); //A value change is a manual edit for sure as that changes the data itself
-	}
 
 	endSynchingDataChangedColumns(changedCols, false, false);
+	
+	if(aChange)
+		setManualEdits(true); //A value change is a manual edit for sure as that changes the data itself
 
 	return aChange;
 }
@@ -1388,9 +1392,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				column			->	beginBatchedLabelsDB();
 	bool		anyChanges		=	title != column->title() || newName != column->name();
 	columnType	prevType		=	column->type(),
-				suggestedType	=	labels.size() == 0
-					? column	->	setValues(values,			threshold, &anyChanges)
-					: column	->	setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				suggestedType	=	column->setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
 	
