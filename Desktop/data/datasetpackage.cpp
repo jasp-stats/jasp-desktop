@@ -655,6 +655,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
 						setManualEdits(true); //Don't synch with external file after editing
+						
+						column->labelsRemoveOrphans();
 
 						stringvec	changedCols = {column->name()};
 	
