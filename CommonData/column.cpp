@@ -457,15 +457,29 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	bool	onlyDoubles = true, 
 			onlyInts	= true;
 	
-	
 	//Make sure we have only 1 label per value and display combo, because otherwise this will get too complicated
 	if(labelsMergeDuplicates() && aChange)
 		(*aChange) = true;
 	
-	intset ints;  // to suggest whether this is a scalar or not we need to know whether we have more than treshold ints or not.
+	intset	ints;  // to suggest whether this is a scalar or not we need to know whether we have more than treshold ints or not.
+	int		tmpInt;
+	double	tmpDbl;
 	
 	for(size_t i=0; i<values.size(); i++)
-		setValue(i, values[i], labels[i]);
+	{
+		setValue(i, values[i], labels[i], false);
+		
+		if(values[i] != "" || labels[i] != "")
+		{
+			if(ColumnUtils::getIntValue(values[i], tmpInt))
+				ints.insert(tmpInt);
+			else
+				onlyInts = false;
+			
+			if(!ColumnUtils::getDoubleValue(values[i], tmpDbl))
+				onlyDoubles = false;
+		}
+	}
 	
 	dbUpdateValues(false);
 	
@@ -1181,14 +1195,14 @@ Label * Column::labelByRow(int row) const
 	return nullptr;
 }
 
-bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bool writeToDBAndSetType)
+bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bool writeToDB)
 {
     JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
     
 	if(userEntered == "")
 	{
 		if (getValue(row) == "")	return false;
-		else						return setValue(row, EmptyValues::missingValueDouble, writeToDBAndSetType);
+		else						return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	}
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
@@ -1199,7 +1213,7 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 	Label * newLabel		= labelByDisplay(userEntered);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
 	
-	if(nothingThereYet && writeToDBAndSetType)
+	if(nothingThereYet)
 	{
 		if(itsADouble)
 		{
@@ -1211,10 +1225,10 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 	}
 		
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
-		return setValue(row, newDoubleToSet, writeToDBAndSetType);
+		return setValue(row, newDoubleToSet, writeToDB);
 
 	if(newLabel)
-		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDBAndSetType);
+		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 	
 		
 	if(itsADouble)
@@ -1228,11 +1242,11 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 				))
 			Log::log() << "bool Column::setStringValueToRowIfItFits(" << row << ", '" << userEntered << "', ...) had differences between _dbls[" << row << "](" << _dbls[row] << ") and oldLabel originalValue: '" << oldLabel->originalValueAsString() << "'" << std::endl;
 		
-		return setValue(row, newDoubleToSet, writeToDBAndSetType);
+		return setValue(row, newDoubleToSet, writeToDB);
 	}
 	else
 		//there is no new label yet for this and it is not a double so we need to make a label
-		return setValue(row, labelsAdd(userEntered), writeToDBAndSetType);
+		return setValue(row, labelsAdd(userEntered), writeToDB);
 }
 
 bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
@@ -1306,7 +1320,7 @@ bool Column::setValue(size_t row, int valueInt, double valueDbl, bool writeToDB)
 	_dbls[row] = valueDbl;
 	_ints[row] = valueInt;
 	
-	if(writeToDB)
+	if(writeToDB && !_data->writeBatchedToDB())
 	{
 		db().columnSetValue(_id, row, valueInt, valueDbl);
 		incRevision(false);
