@@ -662,7 +662,6 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 	
 						refresh();
 						emit datasetChanged(tq(changedCols), {}, {}, false, false);
-
 						emit labelsReordered(tq(column->name()));
 						
 						if(column->hasFilter())

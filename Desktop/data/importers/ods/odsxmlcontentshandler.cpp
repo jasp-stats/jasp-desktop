@@ -209,7 +209,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 						if(!_currentComment.isEmpty())
 							col.setTitle(fq(_currentComment));
 						
-						_lastNotEmptyColumn = _column;	
+						_lastNotEmptyColumn = _column;
 					}
 					
 					_column += _colRepeat;
@@ -220,7 +220,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 					for (int i = _lastNotEmptyColumn+1; i < _column; i++)
 						_dataSet->getOrCreate(i).setValue(_row - 1, "");
 					
-					if(_column + _colRepeat != _excelMaxCols)
+					if((!_currentCell.isEmpty() || !_currentComment.isEmpty()) && _column + _colRepeat != _excelMaxCols)
 					{
 						for (int i = 0; i < _colRepeat; i++)
 						{
@@ -231,8 +231,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 								col.setComment(_row - 1, fq(_currentComment));
 						}
 					
-						if(!_currentCell.isEmpty())
-							_lastNotEmptyColumn = _column + _colRepeat - 1;
+						_lastNotEmptyColumn = _column + _colRepeat - 1;
 					}
 					
 					_column += _colRepeat;
