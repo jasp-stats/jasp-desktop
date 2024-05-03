@@ -92,8 +92,8 @@ void ODSImporter::readContents(const std::string &path, ODSImportDataSet *datase
 		std::string tmp;
 		int errorCode = 0;
 		if (((tmp = contents.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
-			throw std::runtime_error("Error reading contents in ODS.");
-		Log::log() << tmp << std::endl;
+			throw std::runtime_error("Error reading contents in ODS.");	
+		//Log::log() << tmp << std::endl;
 		src.setData(QString::fromStdString(tmp));
 	}
 
