@@ -485,6 +485,10 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 		}
 	}
 	
+	if(labelsRemoveOrphans() && aChange)
+		(*aChange) = true;
+	
+	
 	dbUpdateValues(false);
 	
 	//Now determine what the most logical columntype would be given the current values AND empty values!
@@ -1456,6 +1460,21 @@ bool Column::labelsMergeDuplicates()
 	}
 	
 	return thereWasDuplication;
+}
+
+bool Column::labelsRemoveOrphans()
+{
+	intset idsNotUsed;
+	
+	for(size_t labelIndex=0; labelIndex < _labels.size(); labelIndex++)
+		idsNotUsed.insert(_labels[labelIndex]->intsId());
+	
+	for(int anInt : _ints)
+		idsNotUsed.erase(anInt);
+	
+	labelsRemoveByIntsId(idsNotUsed);
+	
+	return idsNotUsed.size();
 }
 
 int Column::labelIndex(const Label *label) const

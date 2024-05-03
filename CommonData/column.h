@@ -164,6 +164,7 @@ public:
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
 			bool					labelsMergeDuplicates();
+			bool					labelsRemoveOrphans();
 			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
 			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
 			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
