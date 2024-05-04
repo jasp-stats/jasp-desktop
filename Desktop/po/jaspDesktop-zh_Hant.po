@@ -2452,10 +2452,6 @@ msgid "Integer Field"
 msgstr "整數欄位"
 
 msgctxt "TextInputBase|"
-msgid "Number Field"
-msgstr "數位欄位"
-
-msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "百分比欄位"
 
@@ -3681,10 +3677,6 @@ msgstr "R 已停止"
 msgctxt "RCommander|"
 msgid "R awaits commands"
 msgstr "R 等待命令"
-
-msgctxt "AnalysisForm|"
-msgid "Options"
-msgstr "選項"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
@@ -4995,4 +4987,33 @@ msgstr ""
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Mutinomial Chi2 Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "JAGS Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Custom Contrasts Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Filterd Data Entry Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Grid Table"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableViewBase|"
+msgid "Table"
+msgstr "表"
+
+msgctxt "TextInputBase|"
+msgid "Double Field"
 msgstr ""

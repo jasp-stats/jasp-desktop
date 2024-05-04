@@ -2534,10 +2534,6 @@ msgid "Integer Field"
 msgstr "整数フィールド"
 
 msgctxt "TextInputBase|"
-msgid "Number Field"
-msgstr "数値フィールド"
-
-msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "パーセンテージフィールド"
 
@@ -3816,10 +3812,6 @@ msgstr "Rが停止しました"
 msgctxt "RCommander|"
 msgid "R awaits commands"
 msgstr "Rがコマンドを待っています"
-
-msgctxt "AnalysisForm|"
-msgid "Options"
-msgstr "オプション"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
@@ -5137,4 +5129,33 @@ msgstr ""
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Mutinomial Chi2 Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "JAGS Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Custom Contrasts Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Filterd Data Entry Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Grid Table"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableViewBase|"
+msgid "Table"
+msgstr "表"
+
+msgctxt "TextInputBase|"
+msgid "Double Field"
 msgstr ""

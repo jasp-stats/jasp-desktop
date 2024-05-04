@@ -2392,10 +2392,6 @@ msgid "Integer Field"
 msgstr ""
 
 msgctxt "TextInputBase|"
-msgid "Number Field"
-msgstr ""
-
-msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr ""
 
@@ -3539,10 +3535,6 @@ msgstr ""
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
-
-msgctxt "AnalysisForm|"
-msgid "Options"
 msgstr ""
 
 msgctxt "JASPControl|"
@@ -4845,4 +4837,32 @@ msgstr ""
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Mutinomial Chi2 Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "JAGS Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Custom Contrasts Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Filterd Data Entry Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Grid Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Table"
+msgstr ""
+
+msgctxt "TextInputBase|"
+msgid "Double Field"
 msgstr ""

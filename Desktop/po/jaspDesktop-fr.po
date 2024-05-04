@@ -2581,10 +2581,6 @@ msgid "Integer Field"
 msgstr "Champ entier"
 
 msgctxt "TextInputBase|"
-msgid "Number Field"
-msgstr "Champ numérique"
-
-msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "Champ de pourcentage"
 
@@ -3910,10 +3906,6 @@ msgstr "R s'est arrêté"
 msgctxt "RCommander|"
 msgid "R awaits commands"
 msgstr "R attend les instructions"
-
-msgctxt "AnalysisForm|"
-msgid "Options"
-msgstr "Options"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
@@ -5250,4 +5242,33 @@ msgstr ""
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Mutinomial Chi2 Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "JAGS Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Custom Contrasts Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Filterd Data Entry Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Grid Table"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableViewBase|"
+msgid "Table"
+msgstr "Tableau"
+
+msgctxt "TextInputBase|"
+msgid "Double Field"
 msgstr ""

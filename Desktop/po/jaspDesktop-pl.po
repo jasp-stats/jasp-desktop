@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-01 13:07+0000\n"
-"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"pl/>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5.3-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -2554,10 +2548,6 @@ msgid "Integer Field"
 msgstr "Pole liczb całkowitych"
 
 msgctxt "TextInputBase|"
-msgid "Number Field"
-msgstr "Pole numeryczne"
-
-msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "Pole wartości procentowych"
 
@@ -3848,10 +3838,6 @@ msgstr "Aby zsynchronizować z plikiem, kliknij na jego nazwę lub użyj "
 msgctxt "OSF|"
 msgid "Unknown error"
 msgstr "Nieznany błąd"
-
-msgctxt "AnalysisForm|"
-msgid "Options"
-msgstr "Opcje"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -5183,8 +5169,8 @@ msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
-"JASP jest otwartym projektem wspieranym przez <a href=\"dummyLink\""
-">Universitet Amsterdamski &amp; others</a>."
+"JASP jest otwartym projektem wspieranym przez <a "
+"href=\"dummyLink\">Universitet Amsterdamski &amp; others</a>."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
@@ -5211,4 +5197,33 @@ msgstr ""
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Mutinomial Chi2 Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "JAGS Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Custom Contrasts Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Filterd Data Entry Table"
+msgstr ""
+
+msgctxt "TableViewBase|"
+msgid "Grid Table"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableViewBase|"
+msgid "Table"
+msgstr "Tabela"
+
+msgctxt "TextInputBase|"
+msgid "Double Field"
 msgstr ""
