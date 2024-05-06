@@ -122,7 +122,6 @@ target_link_libraries(
     $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6WebEngineCore.so>
     $<$<BOOL:${FLATPAK_USED}>:/app/qml/QtWebEngine/libqtwebenginequickplugin.so>
     Qt::WebChannel
-    Qt::WebChannelQuick
     Qt::Svg
     Qt::Network
 	#? Qt::PrintSupport
