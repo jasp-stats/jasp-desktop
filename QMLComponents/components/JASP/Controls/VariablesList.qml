@@ -488,7 +488,7 @@ VariablesListBase
 					id:						colName
 					anchors.left:			variablesList.showVariableTypeIcon ? icon.right : itemRectangle.left
 					anchors.leftMargin:		jaspTheme.generalAnchorMargin
-					text:					model.name
+					text:					model.name.trim()
 					width:					itemRectangle.width - x - (itemRectangle.extraItem ? itemRectangle.extraItem.width : 0)
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
