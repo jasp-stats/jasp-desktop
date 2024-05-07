@@ -26,9 +26,9 @@ class GroupBoxBase : public JASPControl
 	Q_OBJECT
 
 public:
-	GroupBoxBase(QQuickItem* parent = nullptr) : JASPControl(parent) { _controlType = JASPControl::ControlType::GroupBox; }
+	GroupBoxBase(QQuickItem* parent = nullptr);
 
-	bool infoLabelIsHeader()	const	override { return true; }
+	bool infoLabelIsHeader()	const	override;
 
 };
 
