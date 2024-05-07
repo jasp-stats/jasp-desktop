@@ -761,7 +761,6 @@ std::string Engine::createColumn(const std::string &columnName)
 
 	col->setAnalysisId(_analysisId);
 	col->setCodeType(computedColumnType::analysisNotComputed);
-	data->db().columnSetIndex(col->id(), data->columnCount() - 1);
 
 	reloadColumnNames();
 

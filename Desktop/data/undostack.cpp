@@ -664,8 +664,8 @@ void SetRFilterCommand::redo()
 	_filterModel->setRFilter(_newRFilter);
 }
 
-CreateComputedColumnCommand::CreateComputedColumnCommand(QAbstractItemModel *model, const QString &name, int columnType, int computedColumnType)
-	: UndoModelCommand(model), _name{name}, _columnType{columnType}, _computedColumnType{computedColumnType}
+CreateComputedColumnCommand::CreateComputedColumnCommand(const QString &name, int columnType, int computedColumnType)
+	: UndoModelCommand(DataSetPackage::pkg()), _name{name}, _columnType{columnType}, _computedColumnType{computedColumnType}
 {
 	setText(QObject::tr("Create a computed column with name '%1'").arg(name));
 }

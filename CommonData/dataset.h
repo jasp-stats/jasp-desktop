@@ -47,6 +47,7 @@ public:
 			Column		*	newColumn(		const	std::string &	name);
 			int				getColumnIndex(	const	std::string &	name	) const;
 			int				columnIndex(	const	Column		*	col		) const;
+			void			columnsReorder(	const	stringvec	&	order	); ///< Expects a sane order vector
 
 			bool			allColumnsPassFilter()					const;
 

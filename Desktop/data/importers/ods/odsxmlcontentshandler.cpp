@@ -209,7 +209,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 						if(!_currentComment.isEmpty())
 							col.setTitle(fq(_currentComment));
 						
-						_lastNotEmptyColumn = _column;	
+						_lastNotEmptyColumn = _column;
 					}
 					
 					_column += _colRepeat;
@@ -220,7 +220,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 					for (int i = _lastNotEmptyColumn+1; i < _column; i++)
 						_dataSet->getOrCreate(i).setValue(_row - 1, "");
 					
-					if(_column + _colRepeat != _excelMaxCols)
+					if((!_currentCell.isEmpty() || !_currentComment.isEmpty()) && _column + _colRepeat != _excelMaxCols)
 					{
 						for (int i = 0; i < _colRepeat; i++)
 						{
@@ -231,8 +231,7 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 								col.setComment(_row - 1, fq(_currentComment));
 						}
 					
-						if(!_currentCell.isEmpty())
-							_lastNotEmptyColumn = _column + _colRepeat - 1;
+						_lastNotEmptyColumn = _column + _colRepeat - 1;
 					}
 					
 					_column += _colRepeat;
@@ -265,12 +264,6 @@ bool ODSXmlContentsHandler::endElement(const QString &namespaceURI, const QStrin
 	return true;
 }
 
-
-/**
- * @brief characters Called when char data found.
- * @param ch The found data.
- * @return true on no error.
- */
 bool ODSXmlContentsHandler::characters(const QString &ch)
 {
 
@@ -282,7 +275,8 @@ bool ODSXmlContentsHandler::characters(const QString &ch)
 			switch(_docDepth)
 			{
 			case text:
-				_currentCell.push_back(ch);
+				if(_currentCell != ch)
+					_currentCell.push_back(ch);
 				break;
 			
 			case text_annotation:
@@ -318,31 +312,18 @@ void ODSXmlContentsHandler::resetDocument()
 	_dataSet->clear();
 }
 
-/**
- * @brief XmlContentsHandler::setLastType Sets the lastType value, and gets value
- * @param QValue value OUTPIT value found.
- * @param QXmlAttributes atts Attriutes to find.
- * @return value of lastType;
- */
 XmlDatatype ODSXmlContentsHandler::_setLastTypeGetValue(QString &value, const QXmlAttributes &atts)
 {
 	_lastType = odsType_unknown;
 	QString fromfile = atts.value(_attValueType);
 
-	if (fromfile == _typeFloat)
-		_lastType = odsType_float;
-	else if (fromfile == _typeCurrency)
-		_lastType = odsType_currency;
-	else if (fromfile == _typePercent)
-		_lastType = odsType_percent;
-	else if (fromfile == _typeBoolean)
-		_lastType = odsType_boolean;
-	else if (fromfile == _typeDate)
-		_lastType = odsType_date;
-	else if (fromfile == _typeTime)
-		_lastType = odsType_time;
-	else if (fromfile == _typeString)
-		_lastType = odsType_string;
+	if (fromfile == _typeFloat)				_lastType = odsType_float;
+	else if (fromfile == _typeCurrency)		_lastType = odsType_currency;
+	else if (fromfile == _typePercent)		_lastType = odsType_percent;
+	else if (fromfile == _typeBoolean)		_lastType = odsType_boolean;
+	else if (fromfile == _typeDate)			_lastType = odsType_date;
+	else if (fromfile == _typeTime)			_lastType = odsType_time;
+	else if (fromfile == _typeString)		_lastType = odsType_string;
 
 	switch(_lastType)
 	{
@@ -351,15 +332,19 @@ XmlDatatype ODSXmlContentsHandler::_setLastTypeGetValue(QString &value, const QX
 	case odsType_percent:
 		value = atts.value(_attValue);
 		break;
+		
 	case odsType_boolean:
 		value = atts.value(_attBoolValue);
 		break;
+	
 	case odsType_date:
 		value = atts.value(_attDateValue);
 		break;
+	
 	case odsType_time:
 		value = atts.value(_attTimeValue);
 		break;
+	
 	case odsType_string:
 	case odsType_unknown:
 		value.clear();

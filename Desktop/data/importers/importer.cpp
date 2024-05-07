@@ -15,6 +15,8 @@ Importer::~Importer() {}
 void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
 	DataSetPackage::pkg()->beginLoadingData();
+	
+	_synching = false;
 
 	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
@@ -54,7 +56,12 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 {
 	JASPTIMER_SCOPE(Importer::initColumn);
-	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings(), importColumn->allLabelsAsStrings(), importColumn->title(), importColumn->getColumnType(), importColumn->allEmptyValuesAsStrings());
+	
+	bool doLabels = !_synching || importerDeliversLabels();
+	
+	static stringvec dummyLabels;
+	
+	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings(), doLabels ? importColumn->allLabelsAsStrings() : dummyLabels, importColumn->title(), importColumn->getColumnType(), importColumn->allEmptyValuesAsStrings());
 }
 
 void Importer::initColumnWithStrings(QVariant colId, const std::string &newName, const std::vector<std::string> &values, const std::vector<std::string> &labels, const std::string & title, columnType desiredType, const stringset & emptyValues) 
@@ -64,6 +71,8 @@ void Importer::initColumnWithStrings(QVariant colId, const std::string &newName,
 
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
+	_synching = true;
+	
 	ImportDataSet *	importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
 	int				syncColNo		= 0;
@@ -71,7 +80,8 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	std::vector<std::pair<std::string, int> >	newColumns;
 	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
 	strstrmap									changeNameColumns; //origname -> newname
-	stringvec									orgColumnNames(DataSetPackage::pkg()->getColumnNames());
+	stringvec									orgColumnNames(DataSetPackage::pkg()->getColumnNames()),
+												newOrder;
 	stringset									missingColumns(orgColumnNames.begin(), orgColumnNames.end());
 
 	//If the following gives errors trhen it probably should be somewhere else:
@@ -82,6 +92,8 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	for (ImportColumn *syncColumn : *importDataSet)
 	{
 		std::string syncColumnName = syncColumn->name();
+		
+		newOrder.push_back(syncColumnName);
 
 		if (missingColumns.count(syncColumnName) == 0)
 			newColumns.push_back(std::pair<std::string, int>(syncColumnName, syncColNo));
@@ -89,7 +101,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		{
 			missingColumns.erase(syncColumnName);
 
-			if(DataSetPackage::pkg()->isColumnDifferentFromStringValues(syncColumnName, syncColumn->allValuesAsStrings()))
+			if(DataSetPackage::pkg()->isColumnDifferentFromStringValues(syncColumnName, syncColumn->title(), syncColumn->allValuesAsStrings(), syncColumn->allLabelsAsStrings(), syncColumn->allEmptyValuesAsStrings()))
 			{
 				Log::log() << "Something changed in column: " << syncColumnName << std::endl;
 				changedColumns.push_back(std::pair<int, std::string>(syncColNo, syncColumnName));
@@ -103,10 +115,10 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		for (const std::string & nameMissing : missingColumns)
 			for (auto newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
 			{
-				const std::string & newColName	= newColIt->first;
-				ImportColumn *newValues = importDataSet->getColumn(newColName);
+				const std::string	& newColName	= newColIt->first;
+				ImportColumn		* newColumn		= importDataSet->getColumn(newColName);
 
-				if(!DataSetPackage::pkg()->isColumnDifferentFromStringValues(nameMissing, newValues->allValuesAsStrings()))
+				if(!DataSetPackage::pkg()->isColumnDifferentFromStringValues(nameMissing, newColumn->title(), newColumn->allValuesAsStrings(), newColumn->allLabelsAsStrings(), newColumn->allEmptyValuesAsStrings()))
 				{
 					changeNameColumns[nameMissing] = newColName;
 					newColumns.erase(newColIt);
@@ -117,19 +129,20 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 
-	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
-			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
+			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged);
 
 	DataSetPackage::pkg()->setManualEdits(false);
 	delete importDataSet;
 }
 
 void Importer::_syncPackage(
-		ImportDataSet								*	syncDataSet,
-		std::vector<std::pair<std::string, int>>	&	newColumns,
-		std::vector<std::pair<int, std::string>>	&	changedColumns, // import col index and original (old) col name
-		std::set<std::string>						&	missingColumns,
-		std::map<std::string, std::string>			&	changeNameColumns, //origname -> newname
+		ImportDataSet									*	syncDataSet,
+		const std::vector<std::pair<std::string, int>>	&	newColumns,
+		const std::vector<std::pair<int, std::string>>	&	changedColumns, // import col index and original (old) col name
+		const stringset									&	missingColumns,
+		const strstrmap									&	changeNameColumns, //origname -> newname
+		const stringvec									&	newColumnOrder,
 		bool											rowCountChanged)
 
 {
@@ -138,19 +151,16 @@ void Importer::_syncPackage(
 
 	DataSetPackage::pkg()->beginSynchingData();
 
-	std::vector<std::string>			_changedColumns;
-	std::vector<std::string>			_missingColumns;
-	std::map<std::string, std::string>	_changeNameColumns;
+	stringvec		_changedColumns,
+					_missingColumns;
 
 	for (const auto & changeNameColumnIt : changeNameColumns)
 	{
-		std::string oldColName = changeNameColumnIt.first,
-					newColName = changeNameColumnIt.second;
+		const std::string	& oldColName = changeNameColumnIt.first,
+							& newColName = changeNameColumnIt.second;
 
 		Log::log() << "Column name changed, from: " << oldColName << " to " << newColName << std::endl;
 
-
-		_changeNameColumns[oldColName] = newColName;
 		DataSetPackage::pkg()->renameColumn(oldColName, newColName);
 	}
 
@@ -159,7 +169,7 @@ void Importer::_syncPackage(
 
 	for (const auto & indexColChanged : changedColumns)
 	{
-		Log::log() << "Column changed " << indexColChanged.first << std::endl;
+		Log::log() << "Column changed " << indexColChanged.second << std::endl;
 
 		std::string colName	= indexColChanged.second;
 		_changedColumns.push_back(colName);
@@ -187,6 +197,8 @@ void Importer::_syncPackage(
 				DataSetPackage::pkg()->removeColumn(columnName);
 			}
 
-
-	DataSetPackage::pkg()->endSynchingData(_changedColumns, _missingColumns, _changeNameColumns, rowCountChanged, newColumns.size() > 0);
+	DataSetPackage::pkg()->endSynchingData(_changedColumns, _missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
+	
+	if(newColumnOrder.size() > 0)
+		DataSetPackage::pkg()->columnsReorder(newColumnOrder);
 }

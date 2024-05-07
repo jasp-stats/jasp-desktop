@@ -454,7 +454,7 @@ void ColumnModel::setChosenColumn(int chosenColumn)
 		_dataSetTableModel->removeColumn(deleteMe);
 }
 
-void ColumnModel::setChosenColumn(const QString & chosenName)
+void ColumnModel::setChosenColumnByName(const QString & chosenName)
 {
 	DataSet * data	= DataSetPackage::pkg()->dataSet();
 	Column	* col	= data->column(fq(chosenName));
@@ -464,7 +464,7 @@ void ColumnModel::setChosenColumn(const QString & chosenName)
 
 void ColumnModel::columnAddedManuallyHandler(const QString &chosenName) 
 { 
-	setChosenColumn(chosenName); 
+	setChosenColumnByName(chosenName); 
 	setVisible(true);
 }
 
@@ -575,7 +575,7 @@ void ColumnModel::checkRemovedColumns(int columnIndex, int count)
 
 void ColumnModel::openComputedColumn(const QString & name)
 {
-	setChosenColumn(name);
+	setChosenColumnByName(name);
 	setVisible(true);
 }
 

@@ -66,6 +66,7 @@ public:
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAnalysisId(		int					analysisId		);
+			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
 			void					setForceType(		bool				force		);
 			void					setCompColStuff(bool   invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
@@ -82,7 +83,7 @@ public:
 			void					incRevision(bool labelsTempCanBeMaintained = true);
 			bool					checkForUpdates();
 
-			bool					isColumnDifferentFromStringValues(const stringvec & strVals) const;
+			bool					isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const;
 
 			columnType				type()					const	{ return _type;				}
 			int						id()					const	{ return _id;				}
@@ -111,7 +112,7 @@ public:
 			int						labelsAdd(			const std::string & display);
 			int						labelsAdd(			const std::string & display, const std::string & description, const Json::Value & originalValue);
 			int						labelsAdd(			int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
-			void					labelsRemoveValues(	intset valuesToRemove);
+			void					labelsRemoveByIntsId(	intset valuesToRemove);
 			strintmap				labelsResetValues(	int & maxValue);
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
@@ -149,25 +150,28 @@ public:
 			void					labelValueChanged(Label * label, int	anInteger) { labelValueChanged(label, double(anInteger)); }
 			void					labelDisplayChanged(Label * label);
 			
-			bool					setStringValueToRow(size_t row, const std::string & value);
-			bool					setValue(					size_t row, const std::string & value, const std::string & label);
-			bool					setValue(					size_t row, int					value, bool writeToDB = true);
-			bool					setValue(					size_t row, double				value, bool writeToDB = true);
-			bool					setValue(					size_t row, int					valueInt, double valueDbl, bool writeToDB = true);
-			columnType				setValues(	const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
-			columnType				setValues(	const stringvec &	values,								int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
-			bool					setDescriptions(			strstrmap labelToDescriptionMap); ///<Returns any changes
+			bool					setStringValueToRow(		size_t row, const std::string & value,								bool writeToDBAndSetType = true);
+			bool					setValue(					size_t row, const std::string & value, const std::string & label,	bool writeToDB = true);
+			bool					setValue(					size_t row, int					value,								bool writeToDB = true);
+			bool					setValue(					size_t row, double				value,								bool writeToDB = true);
+			bool					setValue(					size_t row, int					valueInt, double valueDbl,			bool writeToDB = true);
+			columnType				setValues(			const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
+			bool					setDescriptions(	strstrmap labelToDescriptionMap); ///<Returns any changes
 			void					rowInsertEmptyVal(size_t row);
 			void					rowDelete(size_t row);
 			void					setRowCount(size_t row);
 
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
+			bool					labelsMergeDuplicates();
+			bool					labelsRemoveOrphans();
+			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
+			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
 			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
-			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label
-			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label
-			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label
-			Label				*	labelByRow(				int						row)									const; ///< Might be nullptr for missing label
+			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
+			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
+			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
+			Label				*	labelByRow(				int						row)									const; ///< 
 			int						labelIndex(				const Label			*	label)									const;
 
 			bool					isValueEqual(size_t row, double value)				 const;

@@ -98,9 +98,9 @@ public:
 		void				endLoadingData(		bool informEngines = true);
 		void				beginSynchingData(	bool informEngines = true);
 		void				endSynchingDataChangedColumns(stringvec	&	changedColumns,		bool hasNewColumns = false, bool informEngines = true);
-		void				endSynchingData(stringvec				&	changedColumns,
-											stringvec				&	missingColumns,
-											std::map<std::string, std::string>		&	changeNameColumns,  //origname -> newname
+		void				endSynchingData(const stringvec		&	changedColumns,
+											const stringvec		&	missingColumns,
+											const strstrmap		&	changeNameColumns,  //origname -> newname
 											bool										rowCountChanged,
 											bool										hasNewColumns,		bool informEngines = true);
 
@@ -148,6 +148,7 @@ public:
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
 				bool				synchingData()						const	{ return _synchingData;								}
 				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
+				bool				dataFileCanHaveLabels()				const;
 				bool				isDatabase()						const	{ return _database != Json::nullValue;				}
 		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}
@@ -197,9 +198,10 @@ public:
 				void						renameColumn(			const std::string	& oldColumnName, const std::string & newColumnName);
 				void						removeColumn(			const std::string	& name);
 				bool						columnExists(			Column				* column);
+				void						columnsReorder(			const stringvec		& order);
 
 				stringvec					getColumnNames();
-				bool						isColumnDifferentFromStringValues(const std::string & columnName, const stringvec & strVals);
+				bool						isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals);
 				int							findIndexByName(const std::string & name)	const;
 
 				bool						getRowFilter(				int						row)		const;
@@ -217,6 +219,7 @@ public:
 
 				bool						setColumnType(int		columnIndex,	columnType newColumnType);
 				bool						setColumnTypes(intset	columnIndexes,	columnType newColumnType);
+				
 
 				int							columnsFilteredCount();
 
