@@ -16,6 +16,7 @@
 //
 
 #include "columnencoder.h"
+#include "stringutils.h"
 #include <regex>
 #ifdef BUILDING_JASP
 #include "log.h"
