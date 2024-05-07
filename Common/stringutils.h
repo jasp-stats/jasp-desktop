@@ -181,6 +181,12 @@ public:
 		rtrim(s);
 		return s;
 	}
+	
+	static inline std::string trimAndRemoveEscapes(std::string s) {
+		ltrim(s);
+		rtrim(s);
+		return replaceBy(s, "\n", " ");
+	}
 
 	// trim from start (copying)
 	static inline std::string ltrim_copy(std::string s) {
