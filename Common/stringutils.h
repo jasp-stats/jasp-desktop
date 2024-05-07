@@ -118,19 +118,25 @@ public:
 		return input;
 	}
 
-	inline static std::string escapeHtmlStuff(std::string input)
+	inline static std::string escapeHtmlStuff(std::string input, bool doSquareBrackets = false)
 	{
-		input = replaceBy(input,	"&", 				"&amp;"	);
-		input = replaceBy(input,	"<", 				"&lt;"	);
-		input = replaceBy(input,	">", 				"&gt;"	);
-		input = replaceBy(input,	"&lt;sub&gt;",		"<sub>"	);
-		input = replaceBy(input,	"&lt;/sub&gt;",		"</sub>");
-		input = replaceBy(input,	"&lt;sup&gt;",		"<sup>"	);
-		input = replaceBy(input,	"&lt;/sup&gt;",		"</sup>");
-		input = replaceBy(input,	"&lt;b&gt;",		"<b>"	);
-		input = replaceBy(input,	"&lt;/b&gt;",		"</b>"	);
-		input = replaceBy(input,	"&lt;i&gt;",		"<i>"	);
-		input = replaceBy(input,	"&lt;/i&gt;",		"</i>"	);
+		input		= replaceBy(input,	"&", 				"&amp;"	);
+		input		= replaceBy(input,	"<", 				"&lt;"	);
+		input		= replaceBy(input,	">", 				"&gt;"	);
+		input		= replaceBy(input,	"&lt;sub&gt;",		"<sub>"	);
+		input		= replaceBy(input,	"&lt;/sub&gt;",		"</sub>");
+		input		= replaceBy(input,	"&lt;sup&gt;",		"<sup>"	);
+		input		= replaceBy(input,	"&lt;/sup&gt;",		"</sup>");
+		input		= replaceBy(input,	"&lt;b&gt;",		"<b>"	);
+		input		= replaceBy(input,	"&lt;/b&gt;",		"</b>"	);
+		input		= replaceBy(input,	"&lt;i&gt;",		"<i>"	);
+		input		= replaceBy(input,	"&lt;/i&gt;",		"</i>"	);
+		
+		if(doSquareBrackets)
+		{
+			input	= replaceBy(input,	"[", 				"&#x5B;"	);
+			input	= replaceBy(input,	"]", 				"&#x5D;"	);
+		}
 
 		return input;
 	}

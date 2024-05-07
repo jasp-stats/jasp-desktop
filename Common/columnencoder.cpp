@@ -31,6 +31,7 @@ ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
 std::set<ColumnEncoder*>	*	ColumnEncoder::_otherEncoders				= nullptr;
 bool							ColumnEncoder::_encodingMapInvalidated		= true;
 bool							ColumnEncoder::_decodingMapInvalidated		= true;
+bool							ColumnEncoder::_decoSafeMapInvalidated		= true;
 bool							ColumnEncoder::_originalNamesInvalidated	= true;
 bool							ColumnEncoder::_encodedNamesInvalidated		= true;
 
@@ -47,6 +48,7 @@ void ColumnEncoder::invalidateAll()
 {
 	_encodingMapInvalidated		= true;
 	_decodingMapInvalidated		= true;
+	_decoSafeMapInvalidated		= true;
 	_originalNamesInvalidated	= true;
 	_encodedNamesInvalidated	= true;
 }
@@ -190,6 +192,31 @@ const ColumnEncoder::colMap	&	ColumnEncoder::decodingMap()
 						map[keyVal.first] = keyVal.second;
 
 		_decodingMapInvalidated = false;
+	}
+
+	return map;
+}
+
+
+const ColumnEncoder::colMap	&	ColumnEncoder::decodingMapSafeHtml()
+{
+	static ColumnEncoder::colMap map;
+
+	if(_decoSafeMapInvalidated)
+	{
+		map.clear();
+		
+		for(const auto & keyVal : _columnEncoder->_decodingMap)
+			if(map.count(keyVal.first) == 0)
+				map[keyVal.first] = stringUtils::escapeHtmlStuff(keyVal.second, true);
+
+		if(_otherEncoders)
+			for(const ColumnEncoder * other : *_otherEncoders)
+				for(const auto & keyVal : other->_decodingMap)
+					if(map.count(keyVal.first) == 0)
+						map[keyVal.first] = stringUtils::escapeHtmlStuff(keyVal.second, true); // replace square brackets for https://github.com/jasp-stats/jasp-issues/issues/2625
+
+		_decoSafeMapInvalidated = false;
 	}
 
 	return map;
@@ -378,6 +405,11 @@ void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames)
 	//std::cout << "Json before encoding:\n" << json.toStyledString();
 	replaceAll(json, decodingMap(), encodedNames(), replaceNames, false);
 	//std::cout << "Json after encoding:\n" << json.toStyledString() << std::endl;
+}
+
+void ColumnEncoder::decodeJsonSafeHtml(Json::Value & json)
+{
+	replaceAll(json, decodingMapSafeHtml(), encodedNames(), true, false);
 }
 
 

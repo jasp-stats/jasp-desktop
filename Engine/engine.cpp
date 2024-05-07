@@ -589,7 +589,7 @@ void Engine::sendString(std::string message)
 
 	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		ColumnEncoder::columnEncoder()->decodeJson(msgJson); // decode all columnnames as far as you can
+		ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(msgJson); // decode all columnnames as far as you can
 		_channel->send(msgJson.toStyledString());
 	}
 	else
