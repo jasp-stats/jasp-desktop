@@ -1099,6 +1099,13 @@
 			"associated_datafile": "Climate Change Disasters.csv"
 		  },
 		  {
+			"name": "Imagery and Memory",
+			"path": "Imagery and Memory.jasp",
+			"description": "Der Einfluss von mentaler Veranschaulichung auf Gedächtnisprozesse. <br><br> Die JASP-Beispieldatei veranschaulicht die Verwendung einer einfachen Bayes'schen Mediationsanalyse. <br><br> <i>Daten aus MacKinnon et al. (2014).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Imagery and Memory.csv"
+		  },
+		  {
 			"name": "Presumed Media Influence",
 			"path": "Presumed Media Influence.jasp",
 			"description": "Der Einfluss von Nachrichtenplatzierungen auf die (vermutete) Intentionsbildung. <br><br> Die JASP-Beispieldatei veranschaulicht die Verwendung einer einfachen Mediationsanalyse. <br><br> <i>Daten aus Tal-Or et al. (2010).<\/i>",

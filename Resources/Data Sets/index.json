@@ -1099,6 +1099,13 @@
 			"associated_datafile": "Climate Change Disasters.csv"
 		  },
 		  {
+			"name": "Imagery and Memory",
+			"path": "Imagery and Memory.jasp",
+			"description": "The effect of mental imagery on memory. <br><br> The example JASP file demonstrates the use of simple Bayesian mediation analysis. <br><br> <i>Data from MacKinnon et al. (2014).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Imagery and Memory.csv"
+		  },
+		  {
 			"name": "Presumed Media Influence",
 			"path": "Presumed Media Influence.jasp",
 			"description": "The effect of news placement on (presumed) intention formation. <br><br> The example JASP file demonstrates the use of simple mediation analysis. <br><br> <i>Data from Tal-Or et al. (2010).<\/i>",
