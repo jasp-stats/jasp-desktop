@@ -1477,18 +1477,24 @@ void DataSetView::columnsDeleteSelected()
 
 void DataSetView::columnsDelete(int col)
 {
-	if(_model->columnCount(false) <= 1 || (selectionMin().x() == -1))
+	if(_model->columnCount(false) <= 1 || (selectionMin().x() == -1 && col == -1))
 		return;
-
-	destroyEditItem(false);
 
 	int columnA	= selectionMin().x(),
 		columnB	= selectionMax().x();
+	
+	destroyEditItem(false);
 
 	if(columnA > columnB)
 		std::swap(columnA, columnB);
+	
+	if(col == -1)
+		col = columnA;
+	
+	if(col == -1)
+		col = _model->columnCount(false) - 1;
 
-	if(columnA == -1 || columnA > col || columnB < col)
+	if(columnA == -1 || columnA > col || columnB < col || (columnA == col && columnB == col))
 		_model->removeColumns(col, 1);
 	else
 	{
@@ -1544,15 +1550,21 @@ void DataSetView::rowsDelete(int row)
 	if(_model->rowCount(false) <= 1 || (selectionMin().y() == -1 && row == -1))
 		return;
 
-	destroyEditItem();
-
 	int rowA	= selectionMin().y(),
 		rowB	= selectionMax().y();
+	
+	destroyEditItem();	
 
 	if(rowA > rowB)
 		std::swap(rowA, rowB);
 	
-	if(rowA == -1 || rowA > row || rowB < row)
+	if(row == -1)
+		row = rowA;
+	
+	if(row == -1)
+		row = _model->rowCount(false) - 1;
+	
+	if(rowA == -1 || rowA > row || rowB < row || (rowA == row && rowB == row))
 		_model->removeRows(row, 1);
 	else
 	{
