@@ -88,7 +88,7 @@ const Settings::Setting Settings::Values[] = {
 	{"showAllROptions",				false	},
 	{"showRSyntaxInResults",		false	},
 	{"ALTNavModeActive",			true	},
-	{"guiQtTextRender",				true	}
+	{"orderByValueOnImport",		true	}
 };	
 
 QVariant Settings::value(Settings::Type key)

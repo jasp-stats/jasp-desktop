@@ -1396,6 +1396,9 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				suggestedType	=	column->setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
+				
+	if(PreferencesModel::prefs()->orderByValueOnImport())
+		column->labelsOrderByValue();
 	
 	return anyChanges || column->type() != prevType;
 }

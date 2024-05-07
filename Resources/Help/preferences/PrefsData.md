@@ -22,7 +22,16 @@ In JASP you can open the datafile by double clicking the data pane.
 This opens your data file in your preferred editor which you can specify here
 or the default editor chosen by your operating system.
 
-### Import threshold between Categorical or Scale
+### Import settings
+
+#### Order by values
+
+This will make sure labels are always sorted by their value on import and synchronisation.
+It does however incur a slowdown that is usually negligible, but for certain cases quite a large one.
+This would be the case for large, >500k rows of different scalar values (for instance, random ones).
+In such a scenario you might consider disabling this, but for most people the default *on* setting is fine.
+
+#### Threshold for Scale
 
 Importing data in JASP has a threshold value that determines if a column should be treated
 as a Scale type or as a Categorical (Nominal or Ordinal) type. The default value of this parameter is 10.

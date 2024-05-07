@@ -72,7 +72,8 @@ public:
 		SHOW_RSYNTAX,
 		SHOW_ALL_R_OPTIONS,
 		SHOW_RSYNTAX_IN_RESULTS,
-		ALTNAVMODE_ACTIVE
+		ALTNAVMODE_ACTIVE,
+		ORDER_BY_VALUE_ON_IMPORT
 	};
 
 	static QVariant value(Settings::Type key);

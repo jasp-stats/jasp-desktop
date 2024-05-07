@@ -128,14 +128,28 @@ QTC.ScrollView
 			}
 		}
 
+		
 		PrefsGroupRect
 		{
-			id:				thresholdScaleSetting
-			title:			qsTr("Import threshold between Categorical or Scale")
-
+			id:				importRect
+			title:			qsTr("Import settings")
+		
+			CheckBox
+			{
+				id:					orderOnImport
+				label:				qsTr("Order labels by value")
+				checked:			preferencesModel.orderByValueOnImport
+				onCheckedChanged:	preferencesModel.orderByValueOnImport = checked
+				toolTip:			qsTr("This might incur a slowdown while loading very large datasets with lots of scalars. Think 1 million+ rows of random floating point numbers.\nIf you find that loading of such a file is slow you can disable this option.")
+	
+				KeyNavigation.tab:	thresholdScale
+			}
+		
+		
 			SpinBox
 			{
 				id:					thresholdScale
+				text:				qsTr("Threshold for Scale")
 				value:				preferencesModel.thresholdScale
 				onValueChanged:		preferencesModel.thresholdScale = value
 
@@ -160,6 +174,7 @@ QTC.ScrollView
 				}
 			}
 		}
+		
 
 		PrefsGroupRect
 		{
