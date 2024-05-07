@@ -186,13 +186,12 @@ Item
 				control.padding:	3 * jaspTheme.uiScale
 
 				text:				columnModel.columnDescription
+				wrapMode:           TextEdit.Wrap
 				onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
 				applyScriptInfo:	""
 				placeholderText:	"..."
 				undoModel:			columnModel
 				useTabAsSpaces:		false
-
-
 
 			}
 		}
