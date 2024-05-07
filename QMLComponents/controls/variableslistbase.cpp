@@ -374,7 +374,7 @@ void VariablesListBase::_setRelations()
 				setContainsInteractions();
 
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
-				if (_listViewType == ListViewType::Interaction || columns() > 1)
+				if (_listViewType == ListViewType::Interaction || (columns() > 1 && _listViewType != ListViewType::RepeatedMeasures))
 					availableModel->setKeepTerms(true);
 			}
 		}
