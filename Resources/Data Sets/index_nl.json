@@ -1099,6 +1099,13 @@
 			"associated_datafile": "Climate Change Disasters.csv"
 		  },
 		  {
+			"name": "Imagery and Memory",
+			"path": "Imagery and Memory.jasp",
+			"description": "Het effect van mentale beelden op het geheugen. <br><br> Het voorbeeld van een JASP-bestand demonstreert het gebruik van eenvoudige Bayesiaanse mediatieanalyse. <br><br> <i>Data van MacKinnon et al. (2014).<\/i>",
+			"kind": "file",
+			"associated_datafile": "Imagery and Memory.csv"
+		  },
+		  {
 			"name": "Presumed Media Influence",
 			"path": "Presumed Media Influence.jasp",
 			"description": "Het effect van nieuwsplaatsing op (veronderstelde) intentievorming. <br><br> Het voorbeeld van een JASP-bestand demonstreert het gebruik van een eenvoudige mediatieanalyse. <br><br> <i>Data van Tal-Or et al. (2010).<\/i>",
