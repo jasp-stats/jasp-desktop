@@ -216,9 +216,6 @@ ScrollView
 				{
 					id:							languages
 					source:						languageModel
-					addEmptyValue:				true
-					showEmptyValueAsNormal:		true
-					addLineAfterEmptyValue:		true
 					startValue: 				languageModel.currentLanguage
 					onValueChanged: 			languageModel.currentLanguage = (currentIndex <= 0 ? "" : value)
 
