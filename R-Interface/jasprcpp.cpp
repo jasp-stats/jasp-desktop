@@ -902,7 +902,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 					columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
 
 				else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
-					Rf_error(("You've specified column '" + tmp + "' for more than one columntype!!!\nNo clue which one we should give back...").c_str());
+                    Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
 
 		}
 	};
