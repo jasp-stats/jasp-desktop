@@ -26,7 +26,7 @@
 
 JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)
 {
-	QTimer::singleShot(500, this, &JASPVersionChecker::checkForJaspUpdate);
+	QTimer::singleShot(500000, this, &JASPVersionChecker::checkForJaspUpdate);
 }
 
 void JASPVersionChecker::checkForJaspUpdate()
