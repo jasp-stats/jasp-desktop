@@ -58,9 +58,13 @@ if(WIN32)
 
   # This is a variable and it's provided by the main CMakeFiles.txt.
   # It is here only if we someone wants to build the R-Interface separately.
-  if(${R_VERSION} VERSION_GREATER_EQUAL "4.3.0")
+  if(${R_VERSION} VERSION_GREATER_EQUAL "4.4.0")
     set(RTOOLS_PATH
-      "C:/rtools43/ucrt64"
+      "C:/rtools44/ucrt64"
+       CACHE PATH "Path to Rtools44 ucrt64 folder")
+  elseif(${R_VERSION} VERSION_GREATER_EQUAL "4.3.0")
+    set(RTOOLS_PATH
+       "C:/rtools43/ucrt64"
        CACHE PATH "Path to Rtools43 ucrt64 folder")
   elseif(${R_VERSION} VERSION_GREATER_EQUAL "4.2.0")
     set(RTOOLS_PATH

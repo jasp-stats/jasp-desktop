@@ -140,6 +140,7 @@ set(R_BINARY_HASHES
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
+# dont forget check and upgrande Rtools version if major_minor version changed.
 set(R_VERSION "4.4.0")
 set(R_VERSION_MAJOR_MINOR "4.4")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})

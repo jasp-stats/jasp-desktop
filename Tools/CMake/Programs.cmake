@@ -146,9 +146,15 @@ if(WIN32)
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_PATH}")
 
-    message(CHECK_START "Looking for Rtools42 legacy")
-    if(DEFINED RTOOLS42_HOME)
-        unset(RTOOLS42_HOME)
+    message(CHECK_START 
+            "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS43_HOME` manually from Windows environment settings."
+    )
+    if(DEFINED ENV{RTOOLS42_HOME})
+        unset(ENV{RTOOLS42_HOME})
+    elseif(DEFINED ENV{RTOOLS43_HOME})
+        unset(ENV{RTOOLS43_HOME})
+    else()
+        message(CHECK_START "No Rtools legacy found")
     endif()
 
 
