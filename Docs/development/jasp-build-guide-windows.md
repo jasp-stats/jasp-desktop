@@ -79,6 +79,7 @@ wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1
 tar xvf readstat-1.1.9.tar.gz
 cd readstat-1.1.9
 export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
+autoreconf -i -f
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install
