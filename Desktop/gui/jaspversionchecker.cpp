@@ -26,6 +26,8 @@
 
 JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)
 {
+    std::cout << "Checking JASP update" << std::endl;
+
 	QTimer::singleShot(500000, this, &JASPVersionChecker::checkForJaspUpdate);
 }
 

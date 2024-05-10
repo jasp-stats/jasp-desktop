@@ -4,6 +4,7 @@
 #include <QWebEngineUrlRequestJob>
 #include <QFile>
 #include <QIODevice>
+#include <iostream>
 #include "modules/dynamicmodules.h"
 #include "log.h"
 
@@ -12,6 +13,8 @@ using namespace Modules;
 ImgSchemeHandler::ImgSchemeHandler(QObject *parent)
 	: QWebEngineUrlSchemeHandler{parent}
 {
+    std::cout << "ImgSchemeHandler for QtWebengine" << std::endl;
+
 	QQuickWebEngineProfile::defaultProfile()->installUrlSchemeHandler("img", this);
 }
 

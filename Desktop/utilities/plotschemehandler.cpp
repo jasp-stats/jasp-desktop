@@ -1,8 +1,11 @@
+#include <iostream>
 #include "plotschemehandler.h"
 #include "tempfiles.h"
 
 PlotSchemeHandler::PlotSchemeHandler(QObject *parent) : QWebEngineUrlSchemeHandler(parent)
 {
+    std::cout << "PlotSchemeHandler for QtWebengine" << std::endl;
+
 	QQuickWebEngineProfile::defaultProfile()->installUrlSchemeHandler("plot", this);
 }
 
