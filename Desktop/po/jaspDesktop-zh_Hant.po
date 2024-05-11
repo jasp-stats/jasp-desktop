@@ -668,10 +668,6 @@ msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "選擇自訂編輯器"
 
-msgctxt "PrefsData|"
-msgid "Import threshold between Categorical or Scale"
-msgstr "匯入資料欄位屬於類別或連續的自訂值閾數"
-
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
 msgstr "遺漏值清單"
@@ -5016,4 +5012,23 @@ msgstr "表"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Import settings"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Order labels by value"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"This might incur a slowdown while loading very large datasets with lots of "
+"scalars. Think 1 million+ rows of random floating point numbers.\n"
+"If you find that loading of such a file is slow you can disable this option."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Threshold for Scale"
 msgstr ""

@@ -707,10 +707,6 @@ msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "Kies andere editor"
 
-msgctxt "PrefsData|"
-msgid "Import threshold between Categorical or Scale"
-msgstr "Grenswaarde bij import tussen categorisch en continu"
-
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
 msgstr "Lijst met ontbrekende waarden"
@@ -5213,4 +5209,23 @@ msgstr "Tabel"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Import settings"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Order labels by value"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"This might incur a slowdown while loading very large datasets with lots of "
+"scalars. Think 1 million+ rows of random floating point numbers.\n"
+"If you find that loading of such a file is slow you can disable this option."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Threshold for Scale"
 msgstr ""
