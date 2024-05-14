@@ -102,8 +102,8 @@ VariablesFormBase
 			control.anchors.right		= variablesForm.right;
 			control.visibleChanged.connect(setControlsSize)
 
-			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
-			var isControlComboBox	= (control instanceof ComboBox)
+			var isControlList		= ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
+			var isControlComboBox	= (control.controlType === JASPControl.ComboBox)
 
 			if (isControlList && widthSetByForm(control))
 				// Change the width of the VariablesList only if was not set explicitely
@@ -159,7 +159,7 @@ VariablesFormBase
 		for (var key in allJASPControls)
 		{
 			var control				= allJASPControls[key]
-			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
+			var isControlList		= ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
 
 			if (removeInvisibles && !control.visible)
 				control.height = 0
