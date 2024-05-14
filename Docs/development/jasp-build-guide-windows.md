@@ -7,7 +7,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
     - Qt Creator 7
-- [RTools43](https://cran.r-project.org/bin/windows/Rtools/rtools43/rtools.html), for building R modules
+- [RTools44](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html), for building R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
