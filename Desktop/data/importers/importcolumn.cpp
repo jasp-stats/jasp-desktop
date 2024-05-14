@@ -1,4 +1,5 @@
 #include "importcolumn.h"
+#include "timers.h"
 #include "log.h"
 
 ImportColumn::ImportColumn(ImportDataSet* importDataSet,  const std::string & name,  const std::string & title)

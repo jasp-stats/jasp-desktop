@@ -1,5 +1,5 @@
 #include "labelfiltergenerator.h"
-#include "filtermodel.h"
+#include "timers.h"
 
 labelFilterGenerator::labelFilterGenerator(ColumnModel *columnModel, QObject *parent)
 	: QObject(parent), _columnModel(columnModel)

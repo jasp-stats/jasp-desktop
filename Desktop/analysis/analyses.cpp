@@ -17,21 +17,14 @@
 //
 
 #include "analyses.h"
-#include "utilities/appdirs.h"
 #include "utilities/settings.h"
-#include "processinfo.h"
 #include "modules/ribbonmodel.h"
 #include "analysisform.h"
-
-#include <QFile>
-#include <QTimer>
-
-
-#include "utils.h"
-#include "tempfiles.h"
-#include "log.h"
-
 #include "knownissues.h"
+#include "timers.h"
+#include <QTimer>
+#include <QFile>
+#include "log.h"
 
 using namespace std;
 using Modules::Upgrader;
@@ -414,7 +407,7 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 				}
 			}
 
-			JASPTIMER_START(Analyses::loadAnalysesFromDatasetPackage for analysisData : analysesDataList);
+			JASPTIMER_START(Analyses::loadAnalysesFromDatasetPackage f-o-r analysisData in analysesDataList);
 
 			Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
 			

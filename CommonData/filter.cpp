@@ -1,6 +1,7 @@
 #include "filter.h"
-#include "databaseinterface.h"
+#include "timers.h"
 #include "dataset.h"
+#include "databaseinterface.h"
 
 Filter::Filter(DataSet *data)
 	: DataSetBaseNode(dataSetBaseNodeType::filter, data), _data(data)

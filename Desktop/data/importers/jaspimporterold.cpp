@@ -31,6 +31,7 @@
 #include "columnutils.h"
 #include "tempfiles.h"
 #include "resultstesting/compareresults.h"
+#include "timers.h"
 
 const Version JASPImporterOld::maxSupportedJaspArchiveVersion = Version("3.1.0");
 

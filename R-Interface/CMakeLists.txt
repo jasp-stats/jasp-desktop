@@ -38,7 +38,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/json/*.cpp")
+file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json/*.cpp")
 list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
@@ -153,41 +153,42 @@ if(WIN32)
   target_include_directories(
     R-Interface
     PUBLIC # JASP
-           ${CMAKE_CURRENT_LIST_DIR}
-           ${PROJECT_SOURCE_DIR}/../Common
-           ${PROJECT_SOURCE_DIR}/../CommonData
-           # R
-           ${R_INCLUDE_PATH}
-           ${RCPP_PATH}/include
-           ${RINSIDE_PATH}/include
-           # Boost and jsoncpp
-           ${RTOOLS_PATH}/include)
+	${CMAKE_CURRENT_LIST_DIR}
+	${PROJECT_SOURCE_DIR}/../Common
+	${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
+	${PROJECT_SOURCE_DIR}/../CommonData
+	# R
+	${R_INCLUDE_PATH}
+	${RCPP_PATH}/include
+	${RINSIDE_PATH}/include
+	# Boost and jsoncpp
+	${RTOOLS_PATH}/include)
 
   target_link_libraries(
     R-Interface
     PUBLIC # RInside
-           ${_LIB_RINSIDE}
-           # R
-           ${_LIB_R}
-           #
-           #${RTOOLS_LIB_JSONCPP_DLL}
-           #
-           $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+	${_LIB_RINSIDE}
+	# R
+	${_LIB_R}
+	#
+	#${RTOOLS_LIB_JSONCPP_DLL}
+	#
+	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
   target_compile_definitions(
     R-Interface
     PUBLIC JASP_R_INTERFACE_LIBRARY
-           QT_NO_DEPRECATED_WARNINGS
-           $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
-           $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
+	QT_NO_DEPRECATED_WARNINGS
+	$<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+	$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
   target_compile_definitions(
     R-Interface
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-           BOOST_USE_WINDOWS_H
-           NOMINMAX
-		   RCPP_NO_SUGAR
-           WIN32_LEAN_AND_MEAN)
+	BOOST_USE_WINDOWS_H
+	NOMINMAX
+	RCPP_NO_SUGAR
+	WIN32_LEAN_AND_MEAN)
 
 else()
   # Linux and macOS
@@ -200,7 +201,8 @@ else()
     PUBLIC # JASP
            ${PROJECT_SOURCE_DIR}/Common
            ${PROJECT_SOURCE_DIR}/CommonData
-           ${PROJECT_SOURCE_DIR}/Common/json
+		   ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
            #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
            # R
            ${R_INCLUDE_PATH}

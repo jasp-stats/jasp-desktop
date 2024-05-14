@@ -25,30 +25,24 @@ if(LINUX)
 endif()
 
 target_include_directories(
-  CommonData
-  PUBLIC # JASP
-         ${PROJECT_SOURCE_DIR}/Common
-         # R
-         ${R_INCLUDE_PATH}
-         ${R_HOME_PATH}/include
-         ${RCPP_PATH}/include
-		 
-         #
-		# $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
+	CommonData
+	PUBLIC # JASP
+	${PROJECT_SOURCE_DIR}/Common
+	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+	# R
+	${R_INCLUDE_PATH}
+	${R_HOME_PATH}/include
+	${RCPP_PATH}/include
 	)
 
 target_link_libraries(
-  CommonData
-  PUBLIC # jsoncpp
-         #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
-		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-		 #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-         #
-         Common
-         LibArchive::LibArchive
-		 SQLite::SQLite3
-         #
-         $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+	CommonData
+	PUBLIC
+	Common
+	LibArchive::LibArchive
+	SQLite::SQLite3
+	#
+	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(
   CommonData PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>

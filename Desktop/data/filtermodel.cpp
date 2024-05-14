@@ -1,6 +1,7 @@
 #include "filtermodel.h"
 #include "jsonutilities.h"
 #include "columnencoder.h"
+#include "timers.h"
 
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)

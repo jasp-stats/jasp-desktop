@@ -3,6 +3,7 @@
 #include "log.h"
 #include <QVariant>
 #include "../datasetpackage.h"
+#include "timers.h"
 
 Importer::Importer() 
 {

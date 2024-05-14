@@ -34,11 +34,12 @@ add_executable(
 add_dependencies(JASPEngine R-Interface)
 
 target_include_directories(
-  JASPEngine
-  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
-         ${PROJECT_SOURCE_DIR}/CommonData
-         ${PROJECT_SOURCE_DIR}/Common
-         ${Boost_INCLUDE_DIRS})
+	JASPEngine
+	PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
+	${PROJECT_SOURCE_DIR}/CommonData
+	${PROJECT_SOURCE_DIR}/Common
+	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+	${Boost_INCLUDE_DIRS})
 
 if(WIN32)
 

@@ -1,3 +1,4 @@
+#include "timers.h"
 #include "columnmodel.h"
 #include "jasptheme.h"
 #include "utilities/qutils.h"
