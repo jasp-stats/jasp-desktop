@@ -1,7 +1,7 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4 as QTC
-import QtQuick.Layouts	1.3
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
+import JASP
 
 
 ComboBoxBase
@@ -178,8 +178,10 @@ ComboBoxBase
 
 		popup: QTC.Popup
 		{
-			y:				control.height - 1
-			width:			comboBoxBackground.width
+			id:				popupRoot
+			y:				control.y + jaspTheme.comboBoxHeight
+			width:			comboBoxBackground.width + scrollBar.width
+			height:			Math.min(popupView.contentHeight + (padding*2), mainWindowRoot !== undefined ?  mainWindowRoot.height : form.height)
 			padding:		1
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
@@ -203,76 +205,81 @@ ComboBoxBase
 
 			contentItem: ListView
 			{
-				id: popupView
+				id:				popupView
 				width:			comboBoxBackground.width
-				implicitHeight: contentHeight
+				height:			popupRoot.height
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
 				clip:			true
 
 				Rectangle
 				{
-					anchors.centerIn: parent
-					width: parent.width + 4
-					height: parent.height + 4
-					border.color:	jaspTheme.focusBorderColor
-					border.width:	2
-					color: "transparent"
+					anchors.centerIn:	parent
+					width:				parent.width + 4
+					height:				parent.height + 4
+					border.color:		jaspTheme.focusBorderColor
+					border.width:		2
+					color:				"transparent"
 				}
+			}
+			
+			background: Rectangle
+			{
+				color:								jaspTheme.white
 			}
 		}
 
 		delegate: QTC.ItemDelegate
 		{
-			height:								jaspTheme.comboBoxHeight
-			width:								comboBoxBackground.width
-			enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
+			height:									jaspTheme.comboBoxHeight
+			implicitWidth:							comboBoxBackground.width
+			enabled:								comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
 
 			contentItem: Rectangle
 			{
-				id:								itemRectangle
-				anchors.fill:					parent
-				anchors.rightMargin:			scrollBar.visible ? scrollBar.width + 2 : 0
-				color:							comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
+				id:									itemRectangle
+				anchors.fill:						parent
+				anchors.rightMargin:				scrollBar.visible ? scrollBar.width + 2 : 0
+				color:								comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
 
-				property bool isEmptyValue:		comboBox.addEmptyValue && index === 0
+				property bool isEmptyValue:			comboBox.addEmptyValue && index === 0
 				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
-				property bool showLine:			comboBox.addLineAfterEmptyValue && index === 0
+				property bool showLine:				comboBox.addLineAfterEmptyValue && index === 0
 
 
 				Image
 				{
-					id:							delegateIcon
-					x:							1 * preferencesModel.uiScale
-					height:						15 * preferencesModel.uiScale
-					width:						15 * preferencesModel.uiScale
-					source:						visible ? (comboBox.isBound ? model.columnTypeIcon : comboBox.values[index].columnTypeIcon) : ""
-					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
+					id:								delegateIcon
+					x:								1 * preferencesModel.uiScale
+					height:							15 * preferencesModel.uiScale
+					width:							15 * preferencesModel.uiScale
+					source:							visible ? (comboBox.isBound ? model.columnTypeIcon : comboBox.values[index].columnTypeIcon) : ""
+					visible:						comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
-					anchors.verticalCenter:		parent.verticalCenter
+					anchors.verticalCenter:			parent.verticalCenter
 				}
 
 				Text
 				{
-					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
-					font:						jaspTheme.font
-					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
-					anchors.verticalCenter:		parent.verticalCenter
-					anchors.horizontalCenter:	itemRectangle.showEmptyValueStyle ? parent.horizontalCenter : undefined
+					x:								(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
+					text:							itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
+					font:							jaspTheme.font
+					color:							itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
+					anchors.verticalCenter:			parent.verticalCenter
+					anchors.horizontalCenter:		itemRectangle.showEmptyValueStyle ? parent.horizontalCenter : undefined
 				}
 
 				Rectangle
 				{
 					anchors
 					{
-						left: parent.left
-						right: parent.right
-						bottom: parent.bottom
+						left:						parent.left
+						right:						parent.right
+						bottom:						parent.bottom
 					}
-					visible:	itemRectangle.showLine
-					height:		1
-					color:		jaspTheme.focusBorderColor
+					visible:						itemRectangle.showLine
+					height:							1
+					color:							jaspTheme.focusBorderColor
 				}
 			}
 		}

@@ -23,8 +23,8 @@ import QtQml	2
 Item
 {
 									id							: scrollbar
-									width						: vertical ? breadth   : undefined
-									height						: vertical ? undefined : breadth
+									width						: vertical ? breadth		: implicitWidth
+									height						: vertical ? implicitHeight : breadth
 									visible						: flickable.visible && ((vertical ? heightRatio : widthRatio ) < 1.0)
 
 	readonly	property int		visibleBreadth				: bigBar ? jaspTheme.scrollbarBoxWidthBig : jaspTheme.scrollbarBoxWidth
