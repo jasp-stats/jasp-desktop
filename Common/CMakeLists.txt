@@ -25,7 +25,7 @@ endif()
 target_include_directories(
 	Common
 	PUBLIC # JASP
-	${CMAKE_SOURCE_DIR}/Common/jaspColumnEncoder
+	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 	 # R
 	 ${R_INCLUDE_PATH}
 	 ${R_HOME_PATH}/include
