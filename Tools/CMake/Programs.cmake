@@ -136,10 +136,10 @@ if(WIN32)
     PATHS ${Qt6_DIR}/bin)
 
   # look for Rtools from most newest to oldest
-  message(CHECK_START "Looking for Rtools43")
+  message(CHECK_START "Looking for Rtools")
   set(RTOOLS_PATH
-      "C:/rtools43/ucrt64"
-      CACHE PATH "Path to Rtools43 x64 folder, e.g., C:/rtools43/ucrt64")
+      "C:/rtools44/ucrt64"
+      CACHE PATH "Path to Rtools43 x64 folder, e.g., C:/rtools44/ucrt64")
 
   if(EXISTS ${RTOOLS_PATH})
 
@@ -157,44 +157,11 @@ if(WIN32)
         message(CHECK_START "No Rtools legacy found")
     endif()
 
-
   else()
-
-    # @todo, apparently, Rtool42 registers an environment variable called
-    # RTOOLS42_HOME, so if you want, you can replace part of this by reading
-    # that variable.
-    message(CHECK_START "Looking for Rtools42")
-    set(RTOOLS_PATH
-        "C:/rtools42/ucrt64"
-        CACHE PATH "Path to Rtools42 x64 folder, e.g., C:/rtools42/ucrt64")
-
-    if(EXISTS ${RTOOLS_PATH})
-
-      message(CHECK_PASS "found")
-      message(STATUS "  ${RTOOLS_PATH}")
-
-    else()
-
-      # I don't think R would like this, but I leave the option mainly for Joris, if
-      # he wants to install the Rtools somewhere else in the system.
-      set(RTOOLS_PATH "D:/rtools42/ucrt64")
-
-      if(EXISTS ${RTOOLS_PATH})
-
-        message(CHECK_PASS "found")
-        message(STATUS "  ${RTOOLS_PATH}")
-
-      else()
-
-        message(CHECK_FAIL "not found")
-        message(
-          FATAL_ERROR
-            "Rtools42 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools42/ucrt64"
-        )
-
-      endif()
-
-    endif()
+    message(
+      FATAL_ERROR
+        "Rtools not found. Rtools is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools44/ucrt64"
+    )
   endif()
 
   set(WIX_PATH
