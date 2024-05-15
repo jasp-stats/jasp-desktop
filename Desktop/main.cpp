@@ -19,6 +19,7 @@
 
 #include <QDir>
 
+#include "qquickwindow.h"
 #include "utilities/application.h"
 #include "utilities/settings.h"
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
