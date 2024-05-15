@@ -862,11 +862,16 @@ QString AnalysisForm::helpMD() const
 	QStringList markdown =
 	{
 		"# ", title(), "\n",
-		_info, "\n\n---\n"
+		_info, "\n"
 	};
 
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
+	orderedControls.removeIf([](JASPControl* c) { return c->helpMD().isEmpty(); });
+
+	if (orderedControls.length() > 0 && orderedControls[0]->controlType() != JASPControl::ControlType::Expander)
+		// If the first control is an ExpanderButton, then it adds already a line
+		markdown << "\n---\n";
 
 	for(JASPControl * control : orderedControls)
 		markdown << control->helpMD() << "\n";
@@ -915,7 +920,7 @@ QString AnalysisForm::metaHelpMD() const
 		return markdown.join("");
 	};
 
-	QString meta = metaMDer(_analysis->resultsMeta(), 2);
+	QString meta = metaMDer(_analysis->resultsMeta(), 2).trimmed();
 	return meta.isEmpty() ? "" : "---\n# " + tr("Output") + "\n\n" + meta;
 }
 
