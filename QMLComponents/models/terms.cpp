@@ -325,7 +325,7 @@ Terms Terms::sortComponents(const Terms &terms) const
 Terms Terms::crossCombinations() const
 {
 	if (_terms.size() <= 1)
-		return Terms(asVector());
+		return *this;
 
 	Terms t;
 
@@ -340,7 +340,10 @@ Terms Terms::crossCombinations() const
 
 			for (uint i = 0; i < _terms.size(); i++) {
 				if (!v[i])
-					combination.push_back(_terms.at(i).asString());
+				{
+					vector<string> components = _terms.at(i).scomponents();
+					combination.insert(combination.end(), components.begin(), components.end());
+				}
 			}
 
 			t.add(Term(combination));
@@ -366,7 +369,10 @@ Terms Terms::wayCombinations(int ways) const
 
 			for (uint i = 0; i < _terms.size(); ++i) {
 				if (!v[i])
-					combination.push_back(_terms.at(i).asString());
+				{
+					vector<string> components = _terms.at(i).scomponents();
+					combination.insert(combination.end(), components.begin(), components.end());
+				}
 			}
 
 			t.add(Term(combination));
