@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 				QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
 				args.push_back("--disable-gpu");
 				char dst[] = "LIBGL_ALWAYS_SOFTWARE=1";
-				_putenv(dst);
+				putenv(dst);
 			}
 
 			if(hideJASP)
