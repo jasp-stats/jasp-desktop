@@ -28,6 +28,8 @@ JASPControl
 	shouldStealHover:	false
 	innerControl:		control
 	focusIndicator:		focusIndicator
+	title:				text
+
 	
 	readonly	property alias control:		control
 				property alias text:		control.text

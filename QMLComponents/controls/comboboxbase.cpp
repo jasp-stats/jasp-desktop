@@ -289,5 +289,5 @@ bool ComboBoxBase::_hasOptionInfo() const
 
 bool ComboBoxBase::hasInfo() const
 {
-	return !info().isEmpty() || _hasOptionInfo();
+	return JASPControl::hasInfo() || _hasOptionInfo();
 }
