@@ -136,10 +136,12 @@ if(WIN32)
     PATHS ${Qt6_DIR}/bin)
 
   # look for Rtools from most newest to oldest
-  message(CHECK_START "Looking for Rtools")
-  set(RTOOLS_PATH
-      "C:/rtools44/ucrt64"
-      CACHE PATH "Path to Rtools43 x64 folder, e.g., C:/rtools44/ucrt64")
+    message(CHECK_START "Looking for Rtools $ENV{RTOOLS44_HOME}")
+    if(DEFINED ENV{RTOOLS44_HOME})
+		set(RTOOLS_PATH "$ENV{RTOOLS44_HOME}/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools44/ucrt64")
+	else()
+		set(RTOOLS_PATH "C:/rtools44/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools44/ucrt64")
+	endif()
 
   if(EXISTS ${RTOOLS_PATH})
 
