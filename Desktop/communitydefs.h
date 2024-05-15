@@ -13,7 +13,7 @@ const QStringList & goldTier()
 	static QStringList list =
 	{
 		"University of Amsterdam",
-		"M&S / Faculty of Social Sciences / Utrecht University",
+		"M&S - Faculty of Social Sciences - Utrecht University",
 		"Nyenrode Business University",
 		"KU Leuven",
 		"Tilburg University",
@@ -29,7 +29,7 @@ const QStringList & silverTier()
 	static QStringList list =
 	{
 		"The College of Arts and Sciences and the Department of Statistics at Texas A&M University",
-		"Department of Pediatrics, MosaKids Children’s Hospital, Maastricht University Medical Centre (MUMC+)",
+		"Department of Pediatrics - MosaKids Children’s Hospital - Maastricht University Medical Centre (MUMC+)",
 	};
 
 	return list;
