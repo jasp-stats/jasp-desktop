@@ -5,10 +5,10 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 ## Requirements
 
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
-- [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
-    - Qt Creator 7
+- [Qt Creator](https://www.qt.io/download) / Qt >= 6.7
+    - Qt Creator 13
 - [RTools44](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html), for building R modules
-- [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
+- [Conan](https://github.com/conan-io/conan/releases) > 2.0.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
 ### Installing Visual Studio
@@ -37,7 +37,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 - Make sure you scroll all the way down to where the FAQ starts and find the button "Download the Qt online installer". This gives access to both proprietary and open-source installs. They want to hide the open-source installs real bad to get people to buy a developer license but it isn't necessary for us. You *do* need a Qt account but you can signup straight from the installer.
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
-		- **Qt 6.3.1** (or newest stable Qt)
+		- **Qt 6.7.0** (or newest stable Qt)
 			- [x] MSVC 2019 64-bit
 			- [x] MSVC 2019 ARM64 (Optional)
 			- [x] Qt 5 Compatibility Module
@@ -47,9 +47,9 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 				- [x] Qt Web Channel
 				- [x] Qt Positioning
 		- **Developer and Designer Tools**
-			- **Qt Creator 7**
-			- [x] Qt Creator 7 CDB Debugger Support 
-			- [x] Qt Creator 7 Debug Symbols
+			- **Qt Creator 13**
+			- [x] Qt Creator 13 CDB Debugger Support 
+			- [x] Qt Creator 13 Debug Symbols
 			- [x] Debugging Tools for Windows
 			- [x] CMake
 			- [x] Ninja
@@ -75,7 +75,7 @@ pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp 
 In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the command line.
 
 ```
-git clone https://github.com/WizardMac/ReadStat.git
+git clone -b v1.1.9 https://github.com/WizardMac/ReadStat.git
 cd ReadStat
 export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
 autoreconf -i -f

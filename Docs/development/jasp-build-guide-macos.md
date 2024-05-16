@@ -29,7 +29,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 - Make sure you scroll all the way down to where the FAQ starts and find the button "Download the Qt online installer". This gives access to both proprietary and open-source installs. They want to hide the open-source installs real bad to get people to buy a developer license but it isn't necessary for us. You *do* need a Qt account but you can signup straight from the installer.
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
-		- **Qt 6.3.1** (or newest stable Qt)
+		- **Qt 6.7.0** (or newest stable Qt)
 			- [x] macOS
 			- [x] Qt 5 Compatibility Module
 			- [x] Qt Shader Tools 
@@ -38,8 +38,8 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 				- [x] Qt Web Channel
 				- [x] Qt Positioning
 		- **Developer and Designer Tools**
-			- **Qt Creator 7**
-			- [x] Qt Creator 7 Debug Symbols
+			- **Qt Creator 13**
+			- [x] Qt Creator 13 Debug Symbols
 			- [x] CMake
 			- [x] Ninja
 
