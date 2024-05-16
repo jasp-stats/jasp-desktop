@@ -27,9 +27,9 @@
 #include <map>
 #include <set>
 #include <regex>
-#include "dataset.h"
 #include "jasprcpp_interface.h"
 #include "columnencoder.h"
+#include "columntype.h"
 
 class Engine;
 
