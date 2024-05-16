@@ -49,14 +49,17 @@ else()
     set(GFORTRAN_REPOSITORY "${STATIC_DEVELOPMENT_REPOSITORY}")
 
     if(APPLE)
-            if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-                    set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/")
-            else()
-                    set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/big-sur-x86_64/base/")
-            endif()
-            set(XQUARTZ_REPOSITORY "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-${XQUARTZ_VERSION}/")
+		set(R_BINARY_ARCH "x86_64")
+		if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+			set(R_BINARY_ARCH "arm64")
+		endif()
+		
+		set(R_BINARY_REPOSITORY		"${R_REPOSITORY}/bin/macosx/big-sur-${R_BINARY_ARCH}/base/")
+        set(XQUARTZ_REPOSITORY		"https://github.com/XQuartz/XQuartz/releases/download/XQuartz-${XQUARTZ_VERSION}/")
+		set(R_BINARY_TYPE			"mac.binary.${R_BINARY_ARCH}")
     elseif(WINDOWS)
-            set(R_BINARY_REPOSITORY "https://cran.r-project.org/bin/macosx/windows/base/")
+		set(R_BINARY_REPOSITORY		"${R_REPOSITORY}/bin/windows/base/")
+		set(R_BINARY_TYPE			"win.binary")
     endif()
 endif()
 
@@ -93,6 +96,7 @@ set(AVAILABLE_R_VERSIONS
 	"R-4.4.0-arm64"
 	"R-4.4.0-win"
 )
+
 set(R_BINARY_HASHES
     # sha1sums
     # 4.1.2

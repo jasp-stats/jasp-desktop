@@ -1,5 +1,4 @@
 #include "knownissues.h"
-#include "utilities/messageforwarder.h"
 #include "appinfo.h"
 #include "jsonutilities.h"
 #include "log.h"
