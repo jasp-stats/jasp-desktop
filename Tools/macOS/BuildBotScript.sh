@@ -15,6 +15,7 @@ cmake -E remove_directory build
 cmake -E make_directory build
 
 source ../env
+export QT_DIR="~/Qt/6.7.0/macos"
 export PATH="$QT_DIR/../../Tools/Ninja:$PATH"
 
 cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$QT_DIR -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang 
