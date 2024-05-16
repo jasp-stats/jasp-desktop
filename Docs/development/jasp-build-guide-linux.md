@@ -20,10 +20,11 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 	- `openssl (1.1.1m)`^1
 	- `patchelf`^1
 	- `readstat`^2
+	- `sqlite`^1
 	- `V8` (for `jaspProcess`)
 	- `zlib`^1
-- Qt (>= 6.2)
-	- Qt Creator 7
+- Qt (>= 6.7)
+	- Qt Creator 13
 
 *1: make dependencies (i.e., required for building but not for running JASP)*
 
@@ -71,7 +72,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 - You need to download and install the Qt installer from [Qt website](https://www.qt.io/download).
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
-		- **Qt 6.2.4** (or newest stable Qt)
+		- **Qt 6.7.0** (or newest stable Qt)
 			- [x] Desktop gcc 64-bit
 			- [x] Qt 5 Compatibility Module
 			- [x] Qt Shader Tools 
@@ -80,8 +81,8 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 				- [x] Qt Web Channel
 				- [x] Qt Positioning
 		- **Developer and Designer Tools**
-			- **Qt Creator 7**
-			- [x] Qt Creator 7 Debug Symbols
+			- **Qt Creator 13**
+			- [x] Qt Creator 13 Debug Symbols
 			- [x] CMake
 			- [x] Ninja
 
