@@ -225,7 +225,9 @@ ComboBoxBase
 			
 			background: Rectangle
 			{
-				color:								jaspTheme.white
+				border.color:			jaspTheme.borderColor
+				border.width:			1
+				color:					jaspTheme.white
 			}
 		}
 
