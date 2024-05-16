@@ -356,6 +356,7 @@ FocusScope
 				width:		jaspLogo.width  * 2
 				height:		jaspLogo.height * 2
 			}
+			scale:			logoMouse.containsMouse ? 1.05 : 1
 
 			anchors
 			{
@@ -366,6 +367,7 @@ FocusScope
 			
 			MouseArea
 			{
+				id:						logoMouse
 				hoverEnabled:			true
 				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
 				anchors.fill:			parent

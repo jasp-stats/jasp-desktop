@@ -252,7 +252,7 @@ Window
 				}
 			}
 
-			JC.RoundedButton
+			JC.RectangularButton
 			{
 				id:				runButton
 				text:			qsTr("Run code")
@@ -291,7 +291,7 @@ Window
 				}
 			}
 
-			JC.RoundedButton
+			JC.RectangularButton
 			{
 				id:			addAnalysisItem
 				text:		qsTr("Add analysis")
@@ -310,7 +310,7 @@ Window
 				function addAnalysis() { if(addAnalysisItem.enabled && rCmd.addAnalysis(codeEntry.text)) codeEntry.text = ""; }
 			}
 
-			JC.RoundedButton
+			JC.RectangularButton
 			{
 				id:			clearOutput
 				text:		qsTr("Clear output")
@@ -330,9 +330,10 @@ Window
 			{
 				id:							selectModule
 				values:		 				dynamicModules.loadedModulesTitles
-				//startValue:				 	"Module selection"
+				//startValue:			 	"Module selection"
 				onValueChanged:				rCmd.loadModule(dynamicModules.loadedModules[currentIndex])
-				control.height:						runButton.height
+				control.height:				runButton.height
+				control.width:				clearOutput.width
 
 				anchors
 				{

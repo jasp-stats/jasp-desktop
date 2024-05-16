@@ -1,15 +1,16 @@
 # Generated from install-module.R.in
 #
-Sys.setenv(PATH=paste0("@R_HOME_PATH@/bin", .Platform$path.sep, Sys.getenv("PATH"))) #Make sure any Rscript calls use ours
-Sys.setenv(RHOME="@R_HOME_PATH@") #Rscript looks for RHOME not R_HOME
-Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
-Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
-Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
-Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
-Sys.setenv(JAGS_PREFIX="@jags_HOME@")
-Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
-Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
-Sys.setenv(JASP_R_INTERFACE_LIBRARY="Yes, do it")
+Sys.setenv(PATH						=paste0("@R_HOME_PATH@/bin", .Platform$path.sep, Sys.getenv("PATH"))) #Make sure any Rscript calls use ours
+Sys.setenv(RHOME					="@R_HOME_PATH@") #Rscript looks for RHOME not R_HOME
+Sys.setenv(R_HOME					="@R_HOME_PATH@") #Some configure scripts need R_HOME (Im looking at you blavaan)
+Sys.setenv(GITHUB_PAT				="@GITHUB_PAT@")
+Sys.setenv(RENV_PATHS_ROOT			="@MODULES_RENV_ROOT_PATH@")
+Sys.setenv(RENV_PATHS_CACHE			="@MODULES_RENV_CACHE_PATH@")
+Sys.setenv(JASPENGINE_LOCATION		="@JASP_ENGINE_PATH@/JASPEngine")
+Sys.setenv(JAGS_PREFIX				="@jags_HOME@")
+Sys.setenv(JAGS_INCLUDEDIR			="@jags_INCLUDE_DIRS@")
+Sys.setenv(JAGS_LIBDIR				="@jags_LIBRARY_DIRS@")
+Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
 
 options(renv.config.install.verbose = TRUE)
 
@@ -32,10 +33,8 @@ options(
   configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
 )
 
-if (jaspBase::getOS() == "osx") {
-  options(pkgType = "mac.binary")
-} else if (jaspBase::getOS() == "windows") {
-  options(pkgType = "win.binary")
+if (jaspBase::getOS() == "osx" || jaspBase::getOS() == "windows") {
+  options(pkgType = "@R_BINARY_TYPE@")
 }
 
 # Related to the comment above, there is variable here called, 
