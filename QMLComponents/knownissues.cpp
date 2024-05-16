@@ -1,4 +1,7 @@
 #include "knownissues.h"
+#if JASP_DEBUG
+#include "utilities/messageforwarder.h"
+#endif
 #include "appinfo.h"
 #include "jsonutilities.h"
 #include "log.h"
