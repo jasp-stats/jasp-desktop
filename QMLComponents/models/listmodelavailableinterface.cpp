@@ -182,10 +182,9 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	if (keepTerms())
 		return;
 
-	beginResetModel();
-	
-	Terms newTerms = _allSortedTerms;
-	
+	Terms	oldTerms = terms(),
+			newTerms = _allSortedTerms;
+
 	for (ListModelAssignedInterface* modelAssign : assignedModels())
 	{
 		Terms assignedTerms = modelAssign->terms();
@@ -193,6 +192,11 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 			modelAssign->initTerms(assignedTerms, RowControlsValues(), true); // initTerms call removeTermsInAssignedList
 		newTerms.remove(assignedTerms);
 	}
+
+	if (oldTerms == newTerms)
+		return;
+
+	beginResetModel();
 
 	_setTerms(newTerms, _allSortedTerms);
 	
