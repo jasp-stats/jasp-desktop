@@ -181,7 +181,7 @@ ComboBoxBase
 			id:				popupRoot
 			y:				control.y + jaspTheme.comboBoxHeight
 			width:			comboBoxBackground.width + scrollBar.width
-			height:			mainWindowRoot === undefined ? popupView.contentHeight + (padding*2) : Math.min(popupView.contentHeight + (padding*2), mainWindowRoot.height)
+			height:			mainWindowRoot === undefined && rcmdRoot === undefined ? popupView.contentHeight + (padding*2) : Math.min(popupView.contentHeight + (padding*2), mainWindowRoot !== undefined ? mainWindowRoot.height : rcmdRoot.height)
 			padding:		1
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }

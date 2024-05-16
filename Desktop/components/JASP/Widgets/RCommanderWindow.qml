@@ -315,7 +315,7 @@ Window
 				id:			clearOutput
 				text:		qsTr("Clear output")
 				onClicked:	rCmd.output = qsTr("Cleared...");
-				width:		Math.max(clearOutput.implicitWidth, Math.max(selectModule.implicitWidth, runButton.implicitWidth))
+				width:		selectModule.control.width
 				height:		runButton.height
 
 				anchors
@@ -333,7 +333,6 @@ Window
 				//startValue:			 	"Module selection"
 				onValueChanged:				rCmd.loadModule(dynamicModules.loadedModules[currentIndex])
 				control.height:				runButton.height
-				control.width:				clearOutput.width
 
 				anchors
 				{
