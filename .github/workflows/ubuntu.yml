@@ -23,7 +23,7 @@ jobs:
       - name: Install Qt6
         uses: jurplel/install-qt-action@v3
         with:
-            version: 6.7.*
+            version: 6.7.0
             aqtversion: '==3.1.*'
             host: 'linux'
             target: 'desktop'
