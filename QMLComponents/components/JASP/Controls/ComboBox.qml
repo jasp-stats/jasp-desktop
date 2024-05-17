@@ -181,7 +181,12 @@ ComboBoxBase
 			id:				popupRoot
 			y:				control.y + jaspTheme.comboBoxHeight
 			width:			comboBoxBackground.width + scrollBar.width
-			height:			mainWindowRoot === undefined && rcmdRoot === undefined ? popupView.contentHeight + (padding*2) : Math.min(popupView.contentHeight + (padding*2), mainWindowRoot !== undefined ? mainWindowRoot.height : rcmdRoot.height)
+
+			property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
+																			 : (typeof rcmdRoot !== 'undefined' ? rcmdRoot.height // Case Dropdown used in R Command
+																												: (typeof backgroundForms !== 'undefined' ? backgroundForms.height // Case Dropdowns used in Analysis forms
+																																						  : Infinity))
+			height:			Math.min(popupView.contentHeight + (padding*2), maxHeight)
 			padding:		1
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
