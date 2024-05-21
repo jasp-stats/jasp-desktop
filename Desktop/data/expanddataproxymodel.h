@@ -12,33 +12,35 @@ class ExpandDataProxyModel : public QObject
 public:
 	explicit					ExpandDataProxyModel(QObject *parent);
 
-	int							rowCount(bool includeVirtuals = true)														const;
-	int							columnCount(bool includeVirtuals = true)													const;
-	QVariant					headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const;
-	void						setData(	int row, int col, const QVariant &value, int role);
-	Qt::ItemFlags				flags(int row, int column)																	const;
-	QModelIndex					index(int row, int column, const QModelIndex &parent = QModelIndex())						const;
-	QVariant					data(int row, int column, int role = Qt::DisplayRole)										const;
-	bool						filtered(int row, int column)																const;
-	bool						isRowVirtual(int row)																		const;
-	bool						isColumnVirtual(int col)																	const;
-	bool						expandDataSet()																				const { return _expandDataSet; }
-	void						setExpandDataSet(bool expand)																{ _expandDataSet = expand; }
+	int							rowCount(			bool includeVirtuals = true)													const;
+	int							columnCount(		bool includeVirtuals = true)													const;
+	QVariant					headerData(			int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const;
+	void						setData(			int row, int col, const QVariant &value, int role);
+	Qt::ItemFlags				flags(				int row, int column)															const;
+	QModelIndex					index(				int row, int column, const QModelIndex &parent = QModelIndex())					const;
+	QVariant					data(				int row, int column, int role = Qt::DisplayRole)								const;
+	bool						filtered(			int row, int column)															const;
+	bool						isRowVirtual(		int row)																		const;
+	bool						isColumnVirtual(	int col)																		const;
+	bool						expandDataSet()																						const { return _expandDataSet; }
+	void						setExpandDataSet(	bool expand)																			{ _expandDataSet = expand; }
 
-	void						setSourceModel(QAbstractItemModel* model);
-	QAbstractItemModel*			sourceModel()																				const { return _sourceModel; }
+	void						setSourceModel(		QAbstractItemModel* model);
+	QAbstractItemModel*			sourceModel()																						const { return _sourceModel; }
 
-	void						removeRows(int start, int count);
-	void						removeColumns(int start, int count);
-	void						insertRows(int row, int count = 1);
-	void						insertColumns(int col, int count = 1);
-	void						insertColumn(int col, bool computed, bool R);
-	void						pasteSpreadsheet(int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {}, const std::vector<boolvec> & selected = {});
-	int							setColumnType(intset columnIndex, int columnType);
+	void						removeRows(			int start, int count);
+	void						removeColumns(		int start, int count);
+	void						removeRowGroups(	std::vector<std::pair<int,int>> groups);
+	void						removeColumnGroups(	std::vector<std::pair<int,int>> groups);
+	void						insertRows(			int row, int count = 1);
+	void						insertColumns(		int col, int count = 1);
+	void						insertColumn(		int col, bool computed, bool R);
+	void						pasteSpreadsheet(	int row, int col, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const QStringList& colNames = {}, const std::vector<boolvec> & selected = {});
+	int							setColumnType(		intset columnIndex, int columnType);
 	void						columnReverseValues(intset columnIndexes);
 	void						columnOrderByValues(intset columnIndexes);
-	void						copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns);
-	Json::Value					serializedColumn(int col);
+	void						copyColumns(		int startCol, const std::vector<Json::Value>& copiedColumns);
+	Json::Value					serializedColumn(	int col);
 
 	int							getRole(const std::string& roleName)														const;
 

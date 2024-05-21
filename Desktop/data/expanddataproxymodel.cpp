@@ -173,6 +173,22 @@ void ExpandDataProxyModel::removeRows(int start, int count)
 	_undoStack->pushCommand(new RemoveRowsCommand(_sourceModel, start, count));
 }
 
+void ExpandDataProxyModel::removeRowGroups(std::vector<std::pair<int, int> > groups)
+{
+	int rows = 0;
+	for(const auto & startCount : groups)
+		rows += startCount.second; 
+	
+	if(!rows)
+		return;
+	
+	_undoStack->startMacro(tr("Remove %1 rows").arg(rows));
+	for(const auto & startCount : groups)
+		_undoStack->pushCommand(new RemoveRowsCommand(_sourceModel, startCount.first, startCount.second));
+	
+	_undoStack->endMacro();
+}
+
 void ExpandDataProxyModel::removeColumns(int start, int count)
 {
 	if (!_sourceModel || count <= 0 || start < 0 || start >= _sourceModel->columnCount())
@@ -182,6 +198,22 @@ void ExpandDataProxyModel::removeColumns(int start, int count)
 		count = _sourceModel->columnCount() - start;
 	
 	_undoStack->pushCommand(new RemoveColumnsCommand(_sourceModel, start, count));
+}
+
+void ExpandDataProxyModel::removeColumnGroups(std::vector<std::pair<int, int> > groups)
+{
+	int cols = 0;
+	for(const auto & startCount : groups)
+		cols += startCount.second; 
+	
+	if(!cols)
+		return;
+	
+	_undoStack->startMacro(tr("Remove %1 columns").arg(cols));
+	for(const auto & startCount : groups)
+		new RemoveColumnsCommand(_sourceModel, startCount.first, startCount.second);
+	
+	_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::insertRows(int row, int count)

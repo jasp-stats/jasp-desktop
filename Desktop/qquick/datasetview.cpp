@@ -1349,8 +1349,8 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 				maxOldSelection = selectionMax();
 		
 		if(minOldSelection != QPoint{-1, -1} && minNewSelection != QPoint{-1, -1})
-				selection		= QItemSelection(	_model->index(std::min(minNewSelection.y(), minOldSelection.y()), std::min(minNewSelection.x(), minOldSelection.x())), 
-													_model->index(std::max(maxNewSelection.y(), maxOldSelection.y()), std::max(maxNewSelection.x(), maxOldSelection.x())));
+			selection = QItemSelection(	_model->index(std::min(minNewSelection.y(), minOldSelection.y()), std::min(minNewSelection.x(), minOldSelection.x())), 
+										_model->index(std::max(maxNewSelection.y(), maxOldSelection.y()), std::max(maxNewSelection.x(), maxOldSelection.x())));
 	}
 	
 	//Reset edit if we are selecting things with shift or ctrl/cmd, or when the last clicked place is not the same as the editthing
@@ -1479,7 +1479,7 @@ void DataSetView::columnsDelete(int col)
 {
 	if(_model->columnCount(false) <= 1 || (selectionMin().x() == -1 && col == -1))
 		return;
-
+	
 	int columnA	= selectionMin().x(),
 		columnB	= selectionMax().x();
 	
@@ -1505,17 +1505,18 @@ void DataSetView::columnsDelete(int col)
 		for(c=columnA; c<=columnB; c++)
 			if(!_selectionModel->columnIntersectsSelection(c))
 			{
-				removals.push_back(std::make_pair(lastStart, (c - lastStart))); //Dont do +1 because c is not contiguous with lastStart!
+				if(lastStart > -1)
+					removals.push_back(std::make_pair(lastStart, (c - lastStart))); //Dont do +1 because c is not selected, so not contiguous with the selected columns from lastStart!
+				
 				lastStart = -1;
 			}
 			else if(lastStart == -1)
 				lastStart = c;
 				
 		
-		removals.push_back(std::make_pair(lastStart, 1 + (c - lastStart)));
+		removals.push_back(std::make_pair(lastStart, (c - lastStart)));
 		std::reverse(removals.begin(), removals.end());
-		for(auto & removal : removals)
-			_model->removeColumns(removal.first, removal.second);
+		_model->removeColumnGroups(removals);
 	}
 
 	_selectionModel->clear();
@@ -1570,22 +1571,22 @@ void DataSetView::rowsDelete(int row)
 	{
 		//Go through all rows and make separate removals for each contiguously selected set of rows	
 		std::vector<std::pair<int, int>> removals;
-		int lastStart = rowA,
-			r;
-		for(r=rowA; r<=rowB; r++)
+		int lastStart	= rowA,
+			r			= rowA + 1;
+		for(; r<=rowB; r++)
 			if(!_selectionModel->rowIntersectsSelection(r))
 			{
-				removals.push_back(std::make_pair(lastStart, (r - lastStart))); //Dont do +1 because r is not contiguous with lastStart!
+				if(lastStart != -1)
+					removals.push_back(std::make_pair(lastStart, (r - lastStart))); //Dont do +1 because r is not contiguous with lastStart!
 				lastStart = -1;
 			}
 			else if(lastStart == -1)
 				lastStart = r;
 				
 		
-		removals.push_back(std::make_pair(lastStart, 1 + (r - lastStart)));
+		removals.push_back(std::make_pair(lastStart, (r - lastStart)));
 		std::reverse(removals.begin(), removals.end());
-		for(auto & removal : removals)
-			_model->removeRows(removal.first, removal.second);
+		_model->removeRowGroups(removals);
 	}
 
 	_selectionModel->clear();
