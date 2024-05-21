@@ -20,9 +20,7 @@
 
 void ListModelTermsAvailable::resetTermsFromSources()
 {
-	
-	beginResetModel();
-
+	Terms oldTerms = terms();
 	Terms termsAvailable = getSourceTerms();
 	Terms removedTerms, addedTerms;
 	
@@ -34,8 +32,11 @@ void ListModelTermsAvailable::resetTermsFromSources()
 		if (!_allTerms.contains(term))
 			addedTerms.add(term);
 
-	initTerms(termsAvailable);
+	if (oldTerms == termsAvailable)
+		return;
 
+	beginResetModel();
+	initTerms(termsAvailable);
 	endResetModel();
 
 	emit availableTermsReset(addedTerms, removedTerms);
