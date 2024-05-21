@@ -35,6 +35,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList		allowedColumns					READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
 	Q_PROPERTY( QStringList		suggestedColumns				READ suggestedColumns				WRITE setSuggestedColumns				NOTIFY suggestedColumnsChanged				)
 	Q_PROPERTY(	QStringList		suggestedColumnsIcons			READ suggestedColumnsIcons													NOTIFY suggestedColumnsIconsChanged			)
+	Q_PROPERTY(	QStringList		allowedColumnsIcons				READ allowedColumnsIcons													NOTIFY allowedColumnsIconsChanged			)
 	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes															NOTIFY columnsTypesChanged					)
 	Q_PROPERTY( QStringList		columnsNames					READ columnsNames															NOTIFY columnsNamesChanged					)
 	Q_PROPERTY( QStringList		dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
@@ -65,6 +66,7 @@ public:
 	const QStringList&			allowedColumns()							const				{ return _allowedColumns;							}
 	const QStringList&			suggestedColumns()							const				{ return _suggestedColumns;							}
 	const QStringList&			suggestedColumnsIcons()						const				{ return _suggestedColumnsIcons;					}
+	const QStringList&			allowedColumnsIcons()						const				{ return _allowedColumnsIcons;						}
 	const QStringList&			columnsTypes()								const				{ return _columnsTypes;								}
 	const QStringList&			columnsNames()								const				{ return _columnsNames;								}
 	const QStringList&			dropKeys()									const				{ return _dropKeys;									}
@@ -78,6 +80,7 @@ signals:
 	void allowedColumnsChanged();
 	void suggestedColumnsChanged();
 	void suggestedColumnsIconsChanged();
+	void allowedColumnsIconsChanged();
 	void columnsTypesChanged();
 	void columnsNamesChanged();
 	void dropKeysChanged();
@@ -89,6 +92,7 @@ protected:
 	GENERIC_SET_FUNCTION(AllowedColumns,				_allowedColumns,				allowedColumnsChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumns,				_suggestedColumns,				suggestedColumnsChanged,				QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,			_suggestedColumnsIcons,			suggestedColumnsIconsChanged,			QStringList		)
+	GENERIC_SET_FUNCTION(AllowedColumnsIcons,			_allowedColumnsIcons,			allowedColumnsIconsChanged,				QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsNames,					_columnsNames,					columnsNamesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
@@ -109,7 +113,7 @@ protected slots:
 	void interactionHighOrderHandler(JASPControl* checkBoxControl);
 
 private:
-	void						_setAllowedVariables();
+	void						_setAllowedAndSuggestedVariables();
 	void						_setRelations();
 
 	int							_columns				= 1;
@@ -121,6 +125,7 @@ private:
 	QStringList					_allowedColumns,
 								_suggestedColumns,
 								_suggestedColumnsIcons,
+								_allowedColumnsIcons,
 								_columnsTypes,
 								_columnsNames,
 								_dropKeys;
