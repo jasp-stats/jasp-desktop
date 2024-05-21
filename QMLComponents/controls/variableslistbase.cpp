@@ -349,7 +349,7 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 			suggestedTypes.push_back(type);
 	}
 
-	for (const QString& columnTypeStr : implicitAllowedTypes)
+	for (const QString& columnTypeStr : allowedColumns())
 	{
 		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
 		if (type != columnType::unknown)
