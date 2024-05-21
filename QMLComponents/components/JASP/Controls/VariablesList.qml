@@ -238,7 +238,7 @@ VariablesListBase
 		
 	Repeater
 	{
-		model: allowedColumnsIcons.length > 0 ? allowedColumnsIcons : suggestedColumnsIcons
+		model: allowedColumnsIcons
 
 		Image
 		{
@@ -248,7 +248,7 @@ VariablesListBase
 			z:			2
 			mipmap:		true
 			smooth:		true
-			opacity:	allowedColumnsIcons.length > 0 ? 1.0 : 0.4
+			opacity:	1.0
 			anchors
 			{
 				bottom:			itemRectangle.bottom;
@@ -256,20 +256,6 @@ VariablesListBase
 				right:			itemRectangle.right;
 				rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 			}
-			
-			MouseArea
-			{
-				id:					iconImageMouseArea
-				anchors.fill:		parent
-				acceptedButtons:	Qt.NoButtons
-				hoverEnabled:		true
-				z:					3
-			}
-			
-			QTCONTROLS.ToolTip.delay:		jaspTheme.toolTipDelay
-			QTCONTROLS.ToolTip.timeout:		jaspTheme.toolTipTimeout
-			QTCONTROLS.ToolTip.visible:		iconImageMouseArea.containsMouse
-			QTCONTROLS.ToolTip.text:		allowedColumnsIcons.length > 0 ? qsTr("Only these types are allowed") : qsTr("These types are suggested")
 		}
 	}
 

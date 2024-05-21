@@ -339,33 +339,22 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 
 	// The suggectedColumnsIcons indicates which columns are suggested in the VariableList view.
 	// The allowedColumnsIcons indicate which columns are allowed in the view
-	QStringList				suggestedIcons, allowedIcons;
-	std::vector<columnType> suggestedTypes, allowedTypes;
+	QStringList				allowedIcons;
+	std::vector<columnType> allowedTypes;
 	
-	for (const QString& columnTypeStr : suggestedColumns())
-	{
-		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
-		if (type != columnType::unknown)
-			suggestedTypes.push_back(type);
-	}
 
-	for (const QString& columnTypeStr : allowedColumns())
+	for (const QString& columnTypeStr : implicitAllowedTypes)
 	{
 		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
 		if (type != columnType::unknown)
 			allowedTypes.push_back(type);
 	}
 	
-	std::sort(suggestedTypes.begin(),	suggestedTypes.end());
 	std::sort(allowedTypes.begin(),		allowedTypes.end());
-	
-	for(columnType type : suggestedTypes)
-		suggestedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::DefaultIconType));
 	
 	for(columnType type : allowedTypes)
 		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::DefaultIconType));
 	
-	setSuggestedColumnsIcons(suggestedIcons);
 	setAllowedColumnsIcons(allowedIcons);
 
 	if (form() && form()->initialized())

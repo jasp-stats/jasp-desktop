@@ -34,7 +34,6 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( int				columns							READ columns						WRITE setColumns						NOTIFY columnsChanged						)
 	Q_PROPERTY( QStringList		allowedColumns					READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
 	Q_PROPERTY( QStringList		suggestedColumns				READ suggestedColumns				WRITE setSuggestedColumns				NOTIFY suggestedColumnsChanged				)
-	Q_PROPERTY(	QStringList		suggestedColumnsIcons			READ suggestedColumnsIcons													NOTIFY suggestedColumnsIconsChanged			)
 	Q_PROPERTY(	QStringList		allowedColumnsIcons				READ allowedColumnsIcons													NOTIFY allowedColumnsIconsChanged			)
 	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes															NOTIFY columnsTypesChanged					)
 	Q_PROPERTY( QStringList		columnsNames					READ columnsNames															NOTIFY columnsNamesChanged					)
@@ -65,7 +64,6 @@ public:
 	int							columns()									const				{ return _columns;									}
 	const QStringList&			allowedColumns()							const				{ return _allowedColumns;							}
 	const QStringList&			suggestedColumns()							const				{ return _suggestedColumns;							}
-	const QStringList&			suggestedColumnsIcons()						const				{ return _suggestedColumnsIcons;					}
 	const QStringList&			allowedColumnsIcons()						const				{ return _allowedColumnsIcons;						}
 	const QStringList&			columnsTypes()								const				{ return _columnsTypes;								}
 	const QStringList&			columnsNames()								const				{ return _columnsNames;								}
@@ -79,7 +77,6 @@ signals:
 	void columnsChanged();
 	void allowedColumnsChanged();
 	void suggestedColumnsChanged();
-	void suggestedColumnsIconsChanged();
 	void allowedColumnsIconsChanged();
 	void columnsTypesChanged();
 	void columnsNamesChanged();
@@ -91,7 +88,6 @@ protected:
 	GENERIC_SET_FUNCTION(Columns,						_columns,						columnsChanged,							int				)
 	GENERIC_SET_FUNCTION(AllowedColumns,				_allowedColumns,				allowedColumnsChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumns,				_suggestedColumns,				suggestedColumnsChanged,				QStringList		)
-	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,			_suggestedColumnsIcons,			suggestedColumnsIconsChanged,			QStringList		)
 	GENERIC_SET_FUNCTION(AllowedColumnsIcons,			_allowedColumnsIcons,			allowedColumnsIconsChanged,				QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsNames,					_columnsNames,					columnsNamesChanged,					QStringList		)
