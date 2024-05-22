@@ -30,7 +30,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
 		- **Qt 6.7.0** (or newest stable Qt)
-			- [x] macOS
+			- [x] Desktop
 			- [x] Qt 5 Compatibility Module
 			- [x] Qt Shader Tools 
 			- **Additional Libraries**
