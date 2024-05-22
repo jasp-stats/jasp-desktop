@@ -5082,3 +5082,13 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
 msgstr "连续变量的阈值"
+
+#, qt-format
+msgctxt "ExpandDataProxyModel|"
+msgid "Remove %1 rows"
+msgstr ""
+
+#, qt-format
+msgctxt "ExpandDataProxyModel|"
+msgid "Remove %1 columns"
+msgstr ""

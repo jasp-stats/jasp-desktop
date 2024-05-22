@@ -5289,3 +5289,13 @@ msgstr ""
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
 msgstr "Limiar para a escala"
+
+#, qt-format
+msgctxt "ExpandDataProxyModel|"
+msgid "Remove %1 rows"
+msgstr ""
+
+#, qt-format
+msgctxt "ExpandDataProxyModel|"
+msgid "Remove %1 columns"
+msgstr ""
