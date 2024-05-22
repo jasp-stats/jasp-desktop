@@ -22,6 +22,7 @@ void HelpModel::runJavaScript(QString renderFunc, QString content)
 	Log::log() << "Help is sending content: '" << content << "'" << std::endl;
 #endif
 
+	content.replace("\\", "\\\\");  //The order here is important, replace the escape characters first.
 	content.replace("\"", "\\\"");
 	content.replace("\r\n", "\\n");
 	content.replace("\r", "\\n");
