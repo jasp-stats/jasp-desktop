@@ -238,16 +238,17 @@ VariablesListBase
 		
 	Repeater
 	{
-		model: suggestedColumnsIcons
+		model: allowedColumnsIcons
 
 		Image
 		{
-			source: modelData
-			height: 16 * preferencesModel.uiScale
-			width:	16 * preferencesModel.uiScale
-			z:		2
-			mipmap:	true
-			smooth:	true
+			source:		modelData
+			height:		16 * preferencesModel.uiScale
+			width:		16 * preferencesModel.uiScale
+			z:			2
+			mipmap:		true
+			smooth:		true
+			opacity:	0.5
 			anchors
 			{
 				bottom:			itemRectangle.bottom;
