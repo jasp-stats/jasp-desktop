@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:15+0000\n"
+"PO-Revision-Date: 2024-05-22 16:16+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4905,16 +4905,16 @@ msgstr ""
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Geen gegevens geladen!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Gegevens hebben %1 rijen, %2 (%3%4%) door filter gehaald"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "Externe spreadsheet-editor (voor gegevenssynchronisatie)"
 
 msgctxt "PrefsData|"
 msgid ""
