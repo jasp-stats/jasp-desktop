@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-05-22 15:57+0000\n"
+"Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.6-dev\n"
 "X-Language: nl\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -3796,10 +3802,10 @@ msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
 msgstr "Optienaam '%1' is een gereserveerd woord"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
-msgstr "Twee controles hebben dezelfde naam: %1"
+msgstr "2 controles hebben dezelfde naam: %1"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3861,12 +3867,10 @@ msgctxt "Form|"
 msgid "Show all options"
 msgstr "Toon alle opties"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "R console"
 msgstr "R-console"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " en "
@@ -3924,10 +3928,9 @@ msgctxt "Computer|"
 msgid "JASP Files"
 msgstr "JASP-bestanden"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr "Exporteer het resultaat als HTML of PDF"
+msgstr "Exporteer Resultaat als HTML of PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
@@ -3953,27 +3956,23 @@ msgctxt "Computer|"
 msgid "Data Files"
 msgstr "Data Bestanden"
 
-#, fuzzy
 msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr "<geen keuze>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr "Nieuwe waarde"
+msgstr "Nieuwe Waarde"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr "Rij %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
 msgstr "Overige opties"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
 msgstr "Toon R syntax"
@@ -4083,10 +4082,9 @@ msgctxt "MainPage|"
 msgid "Blockquote"
 msgstr "Blockquote"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr "Indent toevoegen"
+msgstr "Inspringing Toevoegen"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
@@ -4136,10 +4134,9 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr "Selecteer alle"
+msgstr "Selecteer Alle"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4155,7 +4152,6 @@ msgctxt "DataTableView|"
 msgid "%1+X"
 msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Kopieer"
@@ -4251,12 +4247,10 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "Sluit variabel venster"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Waarde"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "Label"
@@ -4421,7 +4415,6 @@ msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr "Legen rijen of kolommen invoegen"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "Verwijder"
@@ -4520,37 +4513,35 @@ msgstr "Opnieuw uitvoeren %2 (%1+shift+Z or %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Open gegevensbestand met standaard spreadsheet-editor"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "Verwijder %1 kolommen uit '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "Verwijder rijen %1 tot %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "Kopieer kolommen '%1' tot '%2'"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Neem contact op met JASP"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP wordt ondersteund door de volgende instellingen:"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "Over JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "Sluit"
@@ -4558,30 +4549,33 @@ msgstr "Sluit"
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "Kopieer kolom '%1' naar kolomnummer '%2'"
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"Dit programma wordt geleverd in de staat waarin het zich bevindt, zonder "
+"enige vorm van garantie, inclusief de garantie op ontwerp, verkoopbaarheid "
+"en geschiktheid voor een bepaald doel."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "en %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Terugzetten met standaardwaarden"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "Reset ontbrekende waarden met de standaard JASP ontbrekende waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
