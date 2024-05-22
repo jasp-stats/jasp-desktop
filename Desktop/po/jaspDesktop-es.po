@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 17:18+0000\n"
+"PO-Revision-Date: 2024-05-22 17:19+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -4958,7 +4958,7 @@ msgstr "¡No hay datos subidos!"
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr "Los datos tienen %1 filas, %2 (%3%4%) pasadas por el filtro"
+msgstr "Los datos que tienen %1 filas, %2 (%3%4%) pasaron por el filtrado"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
