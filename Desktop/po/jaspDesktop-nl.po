@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-05-22 16:43+0000\n"
+"Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.6-dev\n"
 "X-Language: nl\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -3796,10 +3802,10 @@ msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
 msgstr "Optienaam '%1' is een gereserveerd woord"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
-msgstr "Twee controles hebben dezelfde naam: %1"
+msgstr "2 controles hebben dezelfde naam: %1"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3861,12 +3867,10 @@ msgctxt "Form|"
 msgid "Show all options"
 msgstr "Toon alle opties"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "R console"
 msgstr "R-console"
 
-#, fuzzy
 msgctxt "RCommander|"
 msgid " and "
 msgstr " en "
@@ -3924,10 +3928,9 @@ msgctxt "Computer|"
 msgid "JASP Files"
 msgstr "JASP-bestanden"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr "Exporteer het resultaat als HTML of PDF"
+msgstr "Exporteer Resultaat als HTML of PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
@@ -3953,27 +3956,23 @@ msgctxt "Computer|"
 msgid "Data Files"
 msgstr "Data Bestanden"
 
-#, fuzzy
 msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr "<geen keuze>"
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr "Nieuwe waarde"
+msgstr "Nieuwe Waarde"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr "Rij %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
 msgstr "Overige opties"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
 msgstr "Toon R syntax"
@@ -4083,10 +4082,9 @@ msgctxt "MainPage|"
 msgid "Blockquote"
 msgstr "Blockquote"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr "Indent toevoegen"
+msgstr "Inspringing Toevoegen"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
@@ -4136,10 +4134,9 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr "Selecteer alle"
+msgstr "Selecteer Alle"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4155,7 +4152,6 @@ msgctxt "DataTableView|"
 msgid "%1+X"
 msgstr "%1+X"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Kopieer"
@@ -4251,12 +4247,10 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "Sluit variabel venster"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Waarde"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "Label"
@@ -4421,7 +4415,6 @@ msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr "Legen rijen of kolommen invoegen"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "Verwijder"
@@ -4520,37 +4513,35 @@ msgstr "Opnieuw uitvoeren %2 (%1+shift+Z or %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Open gegevensbestand met standaard spreadsheet-editor"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "Verwijder %1 kolommen uit '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "Verwijder rijen %1 tot %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "Kopieer kolommen '%1' tot '%2'"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Neem contact op met JASP"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP wordt ondersteund door de volgende instellingen:"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "Over JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "Sluit"
@@ -4558,103 +4549,95 @@ msgstr "Sluit"
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "Kopieer kolom '%1' naar kolomnummer '%2'"
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"Dit programma wordt geleverd in de staat waarin het zich bevindt, zonder "
+"enige vorm van garantie, inclusief de garantie op ontwerp, verkoopbaarheid "
+"en geschiktheid voor een bepaald doel."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "en %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Terugzetten met standaardwaarden"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "Reset ontbrekende waarden met de standaard JASP ontbrekende waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Voeg een ontbrekende waarde toe"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Stel de huidige werkruimte in met deze waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "Stel de missende waarden van de huidige werkruimte in met deze waarden"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
-"Bewerk hier de labels of kies welke waarden uitgefilterd moeten worden."
+msgstr "Bewerk hier de labels of kies welke waarden uitgefilterd moeten worden."
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "Filter"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "Waarde"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "Label"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "Verplaats geselecteerde labels omhoog"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "Verplaats geselecteerde labels omlaag"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr "Draai volgorde alle labels om"
+msgstr "Draai volgorde van alle labels om"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr "Reset alle filtervinkjes voor deze kolom"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr "Reset alle filtervinkjes voor alle kolommen"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Afbeelding"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Werkruimte-instellingen"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Naam: %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "Beschrijving: "
@@ -4662,142 +4645,145 @@ msgstr "Beschrijving: "
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
 msgstr ""
+"Zet ontbrekende waarden terug met de waarden die zijn ingesteld in "
+"Voorkeuren voor Gegevens"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Werkruimte-instellingen weergeven"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Gebruik aangepaste waarden"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
+"Zet ontbrekende waarden terug met de waarden die zijn ingesteld in je "
+"werkruimte"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "Niet berekend"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "Berekend met R-code"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "Berekend met slepen en neerzetten"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Kolom gegenereerd door analyse"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Kolom toegevoegd door analyse"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Schaal"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Ordinal"
 msgstr "Ordinaal"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Nominal"
 msgstr "Nominaal"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Definitie van berekende kolom"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Label-editor"
 
 msgctxt "ColumnModel|"
 msgid "Missing Values"
-msgstr ""
+msgstr "Ontbrekende Waarden"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Wijzig de kolomnaam van '%1' van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Wijzig de kolomtitel van '%1' van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Wijzig de kolombeschrijving van '%1' van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Stel berekend type van '%1' in van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Wijzig werkruimtebeschrijving van '%1' naar '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "Gebruik aangepaste lege waarden voor kolom '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "Gebruik standaard lege waarden voor kolom '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Lege waarden instellen voor kolom '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Werkruimte lege waarden instellen"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Werkruimte ontbrekende waarden tonen"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Opent de instellingen voor ontbrekende waarden in de werkruimte"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Webvideo insluiten"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Niet-ondersteunde videoservices"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP staat alleen de volgende videoservices toe:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"Neem contact op met het JASP-team om een andere videoservice aan de lijst "
+"toe te voegen."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP-gemeenschap"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Community"
-msgstr ""
+msgstr "Stel voor dat uw instelling zich aansluit bij de JASP-gemeenschap"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4820,64 +4806,80 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>Contact</h3>\n"
+"Voor <a href=\"%1\">functieverzoeken</a> en <a href=\"%2\">bugrapporten</a>: "
+"plaats een probleem op onze GitHub-pagina, <a href=\"%3\">zoals hier "
+"uitgelegd.</a>\n"
+"Hierdoor komt u in direct contact met de JASP-softwareontwikkelaars.\n"
+"\n"
+"Voor statistische vragen: plaats een probleem <a href=\"%4\">op het JASP-"
+"forum.</a>\n"
+"\n"
+"Voor informatie over de JASP-gemeenschap: lees <a href=\"%5\">de informatie "
+"op de JASP-website</a>\n"
+"\n"
+"Als u suggesties wilt doen om uw instelling toe te voegen aan de <a href=\"%"
+"6\">JASP-wereldkaart</a>, kunt u een e-mail sturen naar <a href=\"%7\""
+">communications@jasp-stats.org</a>.\n"
+"\n"
+"Voor individuele donaties: bezoek <a href=\"%8\">de JASP-website</a>.\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Gemeenschap"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
-msgstr ""
+msgstr "<Vul de naam van de kolom in>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "Naam: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Kolomtype: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Berekend type: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "Toon bovenliggende analyse"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
 msgstr "Lange naam: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Vul een meer beschrijvende naam van de kolom in>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr "Sluit variabel venster"
+msgstr "Sluit variabelenvenster"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "Beschrijving: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Kolomdefinitie"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr ""
+"retourneert een booleaanse vector met TRUE voor elke ontbrekende waarde in y"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"Combineer met not-operator om rijen met ontbrekende waarden (NA) voor een "
+"kolom uit te filteren."
 
 msgctxt "FilterModel|"
 msgid ""
@@ -4891,156 +4893,163 @@ msgid ""
 "\n"
 "generatedFilter\n"
 msgstr ""
+"# Hierboven zie je de code die JASP genereert voor zowel het filteren op "
+"waarde als het slepen en neerzetten filter.\n"
+"# Dit standaardresultaat wordt opgeslagen in 'gegenereerdFilter' en kan "
+"worden vervangen of gecombineerd met een aangepast filter.\n"
+"# Om te combineren kun je clausules toevoegen met '&': 'gegenereerdFilter & "
+"aangepastFilter & misschienAnderFilter'.\n"
+"# Klik op het pictogram (i) in de rechterbenedenhoek voor meer hulp.\n"
+"\n"
+"gegenereerdFilter\n"
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Geen gegevens geladen!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Gegevens hebben %1 rijen, %2 (%3%4%) door filter gehaald"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "Externe spreadsheet-editor (voor gegevenssynchronisatie)"
 
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
+"Als een variabele meer verschillende gehele getallen heeft dan dit, zal het "
+"geïnterpreteerd worden als schaal."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Typen geladen variabelen terugzetten"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "Instelling ontbrekende waarden"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
 msgstr "Gekopieerd naar het klembord"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "Debug-informatie kopiëren"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "Zoek in resultaten:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "Zoekbalk sluiten"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Letterkleur"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "Voer hier LaTeX in:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "Druk op `Cmd/Ctrl + Enter` om toe te passen;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Klik om formule toe te passen"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Klik om deze formule te bewerken"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Voeg een %1 toe"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Verwijder laatste %1"
 
-#, fuzzy
 msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "Factor"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Constructorkolom invoegen voor"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Constructorkolom invoegen na"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "R-kolom invoegen voor"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "R-kolom invoegen na"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "Klik hier om kolomtype te veranderen"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "Voeg kolom toe"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "Berekend door een analyse"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr "Dubbelklik hier om variabel instellingen te veranderen"
+msgstr "Dubbelklik hier om instellingen voor variabelen te veranderen"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr "Dubbelklik hier om variabel venster te sluiten"
+msgstr "Dubbelklik hier om variabelenvenster te sluiten"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Klik hier om de geselecteerde variabele te wijzigen"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
-"Klik hier om de rij te selecteren, hou de Shift-knop ingedrukt om meerdere "
+"Klik hier om de rij te selecteren, hou de shift-knop ingedrukt om meerdere "
 "rijen te selecteren."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"Stel oorspronkelijke  waarde in van '%3' naar '%4' voor label '%1' van kolom "
+"'%2'"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Constructorkolom invoegen voor"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Constructorkolom invoegen na"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "R-kolom invoegen voor"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "R-kolom invoegen na"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5051,74 +5060,80 @@ msgid ""
 "The button displays the *current setting*, not what will happen when you "
 "press it!"
 msgstr ""
+"- Types behouden: gebruik kolommen met hun gedefinieerde kolomtype.\n"
+"- Types converteren: converteer alle gebruikte kolommen voor gebruik naar "
+"het kolomtype van deze berekende kolom.\n"
+"\n"
+"De knop geeft de *huidige instelling* weer, niet wat er gebeurt als je op de "
+"knop drukt!"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Keeping types"
-msgstr ""
+msgstr "Types behouden"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Converting types"
-msgstr ""
+msgstr "Types converteren"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "Draai waarden om"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "Berekende kolom heeft fout:<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "Keer volgorde van alle numerieke waarden om"
 
 msgctxt "LabelEditorWindow|"
 msgid "Order labels by their numeric value"
-msgstr ""
+msgstr "Labels ordenen op hun numerieke waarde"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "Kolomtype wijzigen mislukt"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "De kolom '%1' is gegenereerd door een analyse en het type staat vast."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "Stel type in op '%1' voor kolom(men) '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for %2 columns from '%3'"
-msgstr ""
+msgstr "Stel type in op '%1' voor %2 kolommen van '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr ""
+msgstr "Keer waarden om van kolom(men) '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values for %1 columns from '%2'"
-msgstr ""
+msgstr "Keer waarden om voor %1 kolommen van '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Order labels by values for column(s) '%1'"
-msgstr ""
+msgstr "Sorteer labels op waarden voor kolom(men) '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Order labels by values for %1 columns from '%2'"
-msgstr ""
+msgstr "Sorteer labels op waarden voor %1 kolommen uit '%2'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr "Labels van kolom '%2' omkeren {1'?}"
+msgstr "Labels van kolom '%1' omkeren"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -5144,80 +5159,101 @@ msgid ""
 "\n"
 "<a href=\"%6\">Click here for the current list of educators</a>\n"
 msgstr ""
+"<h3>Gemeenschap</h3>\n"
+"De instellingen voor hoger onderwijs die deelnemen aan de JASP-gemeenschap "
+"ondersteunen gezamenlijk het onderhoud en de verdere ontwikkeling van JASP, "
+"waardoor ze een educatieve dienst van onschatbare waarde bieden aan hun "
+"eigen studenten en aan die van andere instellingen over de hele wereld.\n"
+"\n"
+"Als uw instelling nog geen deel uitmaakt van de JASP-gemeenschap, kunt u <a "
+"href=\"%1\">voorstellen dat zij lid worden</a>.\n"
+"Hieronder de opleiders die deze release mede mogelijk hebben gemaakt:\n"
+"\n"
+"<i><b>Gouden Opleiders:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Zilveren Opleiders:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Bronzen Opleiders:</b></i>\n"
+"%4\n"
+"\n"
+"<a href=\"%6\">Klik hier voor de huidige lijst met opleiders</a>\n"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "Sorteer labels op waarden"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
+"JASP is een open-source project met structurele steun van de <a href="
+"\"dummyLink\">Universiteit van Amsterdam &amp; anderen</a>."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "Bugs rapporteren"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "Functies aanvragen"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "Voeg %2 kolommen in bij %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "Voeg %2 rijen in bij %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr ""
+msgstr "Waarden plakken bij rij '%1' kolom '%2'"
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
-msgstr ""
+msgstr "Alle gegevens knippen"
 
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
-msgstr ""
+msgstr "Mutinomiale Chi2-tabel"
 
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
-msgstr ""
+msgstr "JAGS-tabel"
 
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
-msgstr ""
+msgstr "Aangepaste Contrasttabel"
 
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
-msgstr ""
+msgstr "Tabel voor Gefilterde Gegevensinvoer"
 
 msgctxt "TableViewBase|"
 msgid "Grid Table"
-msgstr ""
+msgstr "Roostertabel"
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Table"
 msgstr "Tabel"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "Dubbelveld"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "Instellingen importeren"
 
 msgctxt "PrefsData|"
 msgid "Order labels by value"
-msgstr ""
+msgstr "Sorteer labels op waarde"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5225,7 +5261,11 @@ msgid ""
 "scalars. Think 1 million+ rows of random floating point numbers.\n"
 "If you find that loading of such a file is slow you can disable this option."
 msgstr ""
+"Dit kan een vertraging opleveren bij het laden van zeer grote datasets met "
+"veel scalars. Denk aan 1 miljoen+ rijen met willekeurige "
+"zwevendekommagetallen.\n"
+"Als het laden van zo'n bestand traag is, kun je deze optie uitschakelen."
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "Drempel voor Schaal"
