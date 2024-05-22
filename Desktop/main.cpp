@@ -81,6 +81,8 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 	if (removeJunctions)
 	{
 		std::cout << "Junctions removal " << (!modulesDir.exists() ? "succeeded" : "failed") << std::endl;
+		if(exitAfterwards)
+			exit(!modulesDir.exists());
 		return !modulesDir.exists();
 	}
 	else
