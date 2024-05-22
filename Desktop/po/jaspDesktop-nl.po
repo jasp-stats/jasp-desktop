@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:03+0000\n"
+"PO-Revision-Date: 2024-05-22 16:04+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4696,15 +4696,15 @@ msgstr "Nominaal"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Definitie van berekende kolom"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Label-editor"
 
 msgctxt "ColumnModel|"
 msgid "Missing Values"
-msgstr ""
+msgstr "Ontbrekende Waarden"
 
 #, qt-format
 msgctxt "QObject|"
