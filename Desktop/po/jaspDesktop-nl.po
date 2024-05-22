@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 15:59+0000\n"
+"PO-Revision-Date: 2024-05-22 16:00+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4627,18 +4627,17 @@ msgstr "Reset alle filtervinkjes voor alle kolommen"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Afbeelding"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Werkruimte-instellingen"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Naam: %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "Beschrijving: "
