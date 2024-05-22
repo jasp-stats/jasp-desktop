@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:06+0000\n"
+"PO-Revision-Date: 2024-05-22 16:12+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4724,64 +4724,66 @@ msgstr "Wijzig de kolombeschrijving van '%1' van '%2' naar '%3'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Stel berekend type van '%1' in van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Wijzig werkruimtebeschrijving van '%1' naar '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "Gebruik aangepaste lege waarden voor kolom '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "Gebruik standaard lege waarden voor kolom '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Lege waarden instellen voor kolom '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Werkruimte lege waarden instellen"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Werkruimte ontbrekende waarden tonen"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Opent de instellingen voor ontbrekende waarden in de werkruimte"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Webvideo insluiten"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Niet-ondersteunde videoservices"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP staat alleen de volgende videoservices toe:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"Neem contact op met het JASP-team om een andere videoservice aan de lijst "
+"toe te voegen."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP-gemeenschap"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Community"
-msgstr ""
+msgstr "Stel voor dat uw instelling zich aansluit bij de JASP-gemeenschap"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4804,27 +4806,43 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>Contact</h3>\n"
+"Voor <a href=\"%1\">functieverzoeken</a> en <a href=\"%2\">bugrapporten</a>: "
+"plaats een probleem op onze GitHub-pagina, <a href=\"%3\">zoals hier "
+"uitgelegd.</a>\n"
+"Hierdoor komt u in direct contact met de JASP-softwareontwikkelaars.\n"
+"\n"
+"Voor statistische vragen: plaats een probleem <a href=\"%4\">op het JASP-"
+"forum.</a>\n"
+"\n"
+"Voor informatie over de JASP-gemeenschap: lees <a href=\"%5\">de informatie "
+"op de JASP-website</a>\n"
+"\n"
+"Als u suggesties wilt doen om uw instelling toe te voegen aan de <a href=\"%"
+"6\">JASP-wereldkaart</a>, kunt u een e-mail sturen naar <a href=\"%7\""
+">communications@jasp-stats.org</a>.\n"
+"\n"
+"Voor individuele donaties: bezoek <a href=\"%8\">de JASP-website</a>.\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Gemeenschap"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
-msgstr ""
+msgstr "<Vul de naam van de kolom in>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "Naam: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Kolomtype: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Berekend type: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
