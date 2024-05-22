@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:13+0000\n"
+"PO-Revision-Date: 2024-05-22 16:14+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4856,23 +4856,22 @@ msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr "<Vul een meer beschrijvende naam van de kolom in>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr "Sluit variabel venster"
+msgstr "Sluit variabelenvenster"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "Beschrijving: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Kolomdefinitie"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr ""
+"retourneert een booleaanse vector met TRUE voor elke ontbrekende waarde in y"
 
 msgctxt "FilterWindow|"
 msgid ""
