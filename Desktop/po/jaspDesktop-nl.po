@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 15:58+0000\n"
+"PO-Revision-Date: 2024-05-22 15:59+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4597,37 +4597,30 @@ msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "Filter"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "Waarde"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "Label"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "Verplaats geselecteerde labels omhoog"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "Verplaats geselecteerde labels omlaag"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr "Draai volgorde alle labels om"
+msgstr "Draai volgorde van alle labels om"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr "Reset alle filtervinkjes voor deze kolom"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr "Reset alle filtervinkjes voor alle kolommen"
