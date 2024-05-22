@@ -594,19 +594,15 @@ QString JASPControl::helpMD(int depth) const
 	}
 
 	bool hasLabel = printLabelMD(markdown, depth);
-	markdown << info();
+	markdown << info() << "\n";
 
 	if (infoLabelIsHeader() && !info().isEmpty())
-		markdown << "\n\n";
+		markdown << "\n"; // Special case when a header has no info (a Section without info eg).
 
-	if (childMDs.length() == 0)
-		markdown << "\n";
-
-	else if (childMDs.length() == 1)
+	if (childMDs.length() == 1)
 		markdown << QString{depth * 2, ' '} << childMDs[0];
 	else
 	{
-		markdown << "\n";
 		for (const QString& childMD : childMDs)
 		{
 			markdown << QString{depth * 2, ' '};
