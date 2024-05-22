@@ -82,6 +82,7 @@ QString AboutModel::systemInfo()
 		info += "Kernel Version: "   + QSysInfo::kernelVersion() + "\n";
 		info += "Architecture: "     + QSysInfo::currentCpuArchitecture() + "\n";
 		info += "Install Path: "     + QCoreApplication::applicationDirPath() + "\n";
+		info += "Platfotm Name: "    + QGuiApplication::platformName() + "\n";
 		info += "System Local: "     + QLocale::system().name() + "\n\n";
 
 		process.start(command, arguments);
