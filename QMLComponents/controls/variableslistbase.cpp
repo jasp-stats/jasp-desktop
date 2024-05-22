@@ -310,7 +310,8 @@ void VariablesListBase::termsChangedHandler()
 
 void VariablesListBase::_setAllowedAndSuggestedVariables()
 {
-	QSet<QString> implicitAllowedTypes;
+	QSet<QString>			implicitAllowedTypes;
+	std::set<columnType>	showTheseAsInactive;
 
 	// The implicitAllowedTypes is either the allowedColumns if they are explicitely defined
 	// or the suggestedColumns with extra permitted types, with these rules:
@@ -318,6 +319,7 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 	// . if suggestedType contains the nominal type, then ordinal types are also allowed.
 
 	auto listToSet = [](QStringList l) { return QSet<QString> (l.constBegin(), l.constEnd()); };
+	
 	if (!allowedColumns().empty())
 		implicitAllowedTypes = listToSet(allowedColumns());
 	else if (!suggestedColumns().empty())
@@ -331,6 +333,10 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 		
 		if (suggestedColumns().contains("nominal"))
 			implicitAllowedTypes.insert("ordinal");
+		
+		showTheseAsInactive = { columnType::scale, columnType::ordinal, columnType::nominal };
+		for (const QString& typeStr: suggestedColumns())
+			showTheseAsInactive.erase(columnTypeFromString(fq(typeStr), columnType::unknown));
 	}
 
 	_variableTypesAllowed.clear();
@@ -353,7 +359,7 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 	std::sort(allowedTypes.begin(),		allowedTypes.end());
 	
 	for(columnType type : allowedTypes)
-		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::DefaultIconType));
+		allowedIcons.push_back(VariableInfo::getIconFile(type, !showTheseAsInactive.count(type) ? VariableInfo::DefaultIconType : VariableInfo::TransparentIconType));
 	
 	setAllowedColumnsIcons(allowedIcons);
 

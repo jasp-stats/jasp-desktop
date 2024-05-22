@@ -78,9 +78,9 @@ QVariantList ColumnModel::columnTypeValues() const
 	typedef QMap<QString, QVariant> localMap;
 	
 	return {
-		localMap({ std::make_pair("value", columnTypeToQString(columnType::scale)),				std::make_pair("label", QObject::tr("Scale")),		std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-scale.png")	}),
-		localMap({ std::make_pair("value", columnTypeToQString(columnType::ordinal)),			std::make_pair("label", QObject::tr("Ordinal")),	std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-ordinal.png")	}),
-		localMap({ std::make_pair("value", columnTypeToQString(columnType::nominal)),			std::make_pair("label", QObject::tr("Nominal")),	std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-nominal.png")	})
+		localMap({ std::make_pair("value", columnTypeToQString(columnType::scale)),				std::make_pair("label", QObject::tr("Scale")),		std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-scale.svg")	}),
+		localMap({ std::make_pair("value", columnTypeToQString(columnType::ordinal)),			std::make_pair("label", QObject::tr("Ordinal")),	std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-ordinal.svg")	}),
+		localMap({ std::make_pair("value", columnTypeToQString(columnType::nominal)),			std::make_pair("label", QObject::tr("Nominal")),	std::make_pair("columnTypeIcon", JaspTheme::currentIconPath() + "variable-nominal.svg")	})
 	};
 }
 

@@ -248,7 +248,7 @@ VariablesListBase
 			z:			2
 			mipmap:		true
 			smooth:		true
-			opacity:	0.5
+			//opacity:	1
 			anchors
 			{
 				bottom:			itemRectangle.bottom;

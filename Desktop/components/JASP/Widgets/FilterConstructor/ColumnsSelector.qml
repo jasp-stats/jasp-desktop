@@ -16,10 +16,10 @@ Rectangle
 
 		model: ListModel
 		{
-			ListElement { name: "dummyNominalText";	type: jaspTheme.iconPath + "/variable-nominal-text.png";	}
-			ListElement { name: "dummyNominal";		type: jaspTheme.iconPath + "/variable-nominal.png";		}
-			ListElement { name: "dummyOrdinal";		type: jaspTheme.iconPath + "/variable-ordinal.png";		}
-			ListElement { name: "dummyScale";		type: jaspTheme.iconPath + "/variable-scale.png";			}
+			ListElement { name: "dummyNominalText";	type: jaspTheme.iconPath + "/variable-nominal-text.svg";	}
+			ListElement { name: "dummyNominal";		type: jaspTheme.iconPath + "/variable-nominal.svg";			}
+			ListElement { name: "dummyOrdinal";		type: jaspTheme.iconPath + "/variable-ordinal.svg";			}
+			ListElement { name: "dummyScale";		type: jaspTheme.iconPath + "/variable-scale.svg";			}
 		}
 
 		delegate: MouseArea

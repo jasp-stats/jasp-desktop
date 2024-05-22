@@ -1131,10 +1131,10 @@ QVariant DataSetPackage::getColumnTypesWithIcons() const
 	if(ColumnTypeAndIcons.size() == 0)
 	{
 		ColumnTypeAndIcons.push_back("");
-		ColumnTypeAndIcons.push_back("variable-nominal.png");
-		ColumnTypeAndIcons.push_back("variable-nominal-text.png");
-		ColumnTypeAndIcons.push_back("variable-ordinal.png");
-		ColumnTypeAndIcons.push_back("variable-scale.png");
+		ColumnTypeAndIcons.push_back("variable-nominal.svg");
+		ColumnTypeAndIcons.push_back("variable-nominal-text.svg");
+		ColumnTypeAndIcons.push_back("variable-ordinal.svg");
+		ColumnTypeAndIcons.push_back("variable-scale.svg");
 	}
 
 	return QVariant(ColumnTypeAndIcons);
