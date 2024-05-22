@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 15:57+0000\n"
+"PO-Revision-Date: 2024-05-22 15:58+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4583,19 +4583,16 @@ msgstr "Voeg een ontbrekende waarde toe"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Stel de huidige werkruimte in met deze waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "Stel de missende waarden van de huidige werkruimte in met deze waarden"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
-"Bewerk hier de labels of kies welke waarden uitgefilterd moeten worden."
+msgstr "Bewerk hier de labels of kies welke waarden uitgefilterd moeten worden."
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "Filter"
