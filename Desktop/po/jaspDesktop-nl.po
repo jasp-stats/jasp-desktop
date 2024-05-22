@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:05+0000\n"
+"PO-Revision-Date: 2024-05-22 16:06+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4714,12 +4714,12 @@ msgstr "Wijzig de kolomnaam van '%1' van '%2' naar '%3'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Wijzig de kolomtitel van '%1' van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Wijzig de kolombeschrijving van '%1' van '%2' naar '%3'"
 
 #, qt-format
 msgctxt "QObject|"
