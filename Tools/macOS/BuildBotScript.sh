@@ -14,8 +14,7 @@ cd ../../
 cmake -E remove_directory build
 cmake -E make_directory build
 
-source ../env
-# export QT_DIR="~/Qt/6.7.1/macos" #value is written in .zhsrc but can be overwritten with this (though it doesnt show in builbot env log)
+export QT_DIR="~/Qt/6.7.1/macos" #value is written in .zhsrc but can be overwritten with this (though it doesnt show in builbot env log)
 export PATH="$QT_DIR/../../Tools/Ninja:$PATH"
 
 cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$QT_DIR -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_C_COMPILER=/usr/bin/clang 
