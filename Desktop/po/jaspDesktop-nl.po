@@ -4579,7 +4579,7 @@ msgstr "Reset ontbrekende waarden met de standaard JASP ontbrekende waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Voeg een ontbrekende waarde toe"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
