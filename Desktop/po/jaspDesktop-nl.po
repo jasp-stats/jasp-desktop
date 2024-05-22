@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-05-22 16:02+0000\n"
+"PO-Revision-Date: 2024-05-22 16:03+0000\n"
 "Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "nl/>\n"
@@ -4680,19 +4680,16 @@ msgstr "Kolom gegenereerd door analyse"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Kolom toegevoegd door analyse"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
-msgstr "Schaal"
+msgstr "Ratio"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Ordinal"
 msgstr "Ordinaal"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Nominal"
 msgstr "Nominaal"
