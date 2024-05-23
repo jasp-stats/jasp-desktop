@@ -17,7 +17,7 @@
 #include <QItemSelection>
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
-//#define DATASETVIEW_DEBUG_CREATION
+#define DATASETVIEW_DEBUG_CREATION
 
 #define SHOW_ITEMS_PLEASE
 #define ADD_LINES_PLEASE
@@ -260,7 +260,7 @@ protected:
 	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		determineCurrentViewPortIndices();
-	void		storeOutOfViewItems();
+	void		storeAllItems();
 	void		buildNewLinesAndCreateNewItems();
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);

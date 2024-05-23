@@ -321,7 +321,7 @@ void DataSetView::viewportChanged()
 #endif
 
 	determineCurrentViewPortIndices();
-	storeOutOfViewItems();
+	storeAllItems();
 	buildNewLinesAndCreateNewItems();
 
 	JASPTIMER_RESUME(DataSetView::updateCalledForRender);
@@ -375,42 +375,42 @@ void DataSetView::determineCurrentViewPortIndices()
 	JASPTIMER_STOP(DataSetView::determineCurrentViewPortIndices);
 }
 
-void DataSetView::storeOutOfViewItems()
+void DataSetView::storeAllItems()
 {
-	JASPTIMER_RESUME(DataSetView::storeOutOfViewItems);
-
-	int maxRows = _model->rowCount(), maxCols = _model->columnCount();
-	if(
-			_previousViewportRowMin >= 0		&& _previousViewportRowMax >= 0			&& _previousViewportColMin >= 0			&& _previousViewportColMax >= 0 &&
-			_previousViewportRowMin < maxRows	&& _previousViewportRowMax <= maxRows	&& _previousViewportColMin < maxCols	&& _previousViewportColMax <= maxCols
-	)
+	JASPTIMER_RESUME(DataSetView::storeAllItems);
+	
+	for(auto & subVec : _cellTextItems)
+		for(auto & intTextItem : subVec.second)
+		{
+			intTextItem.second->item->setVisible(false);
+		
+			if (_cacheItems)		_textItemStorage.push(intTextItem.second);
+			else					delete intTextItem.second;
+		}
+	
+	_cellTextItems.clear();
+	
+	for(auto & intItem : _columnHeaderItems)
 	{
-		for(int col=_previousViewportColMin; col<_previousViewportColMax; col++)
-		{
-			for(int row=_previousViewportRowMin; row < _currentViewportRowMin; row++)
-				storeTextItem(row, col);
-
-			for(int row=_currentViewportRowMax; row < _previousViewportRowMax; row++)
-				storeTextItem(row, col);
-		}
-
-		for(int row=_previousViewportRowMin; row<_previousViewportRowMax; row++)
-		{
-			for(int col=_previousViewportColMin; col < _currentViewportColMin; col++)
-				storeTextItem(row, col);
-
-			for(int col=_currentViewportColMax; col < _previousViewportColMax; col++)
-				storeTextItem(row, col);
-		}
-
-		for(int row=_previousViewportRowMin; row < _currentViewportRowMin; row++)
-			storeRowNumber(row);
-
-		for(int row=_currentViewportRowMax; row < _previousViewportRowMax; row++)
-			storeRowNumber(row);
+		intItem.second->item->setVisible(false);
+	
+		if (_cacheItems)		_columnHeaderStorage.push(intItem.second);
+		else					delete intItem.second;
 	}
-
-	JASPTIMER_STOP(DataSetView::storeOutOfViewItems);
+	
+	_columnHeaderItems.clear();
+	
+	for(auto & intItem : _rowNumberItems)
+	{
+		intItem.second->item->setVisible(false);
+	
+		if (_cacheItems)		_rowNumberStorage.push(intItem.second);
+		else					delete intItem.second;
+	}
+		
+	_rowNumberItems.clear();
+	
+	JASPTIMER_STOP(DataSetView::storeAllItems);
 }
 
 void DataSetView::addLine(float x0, float y0, float x1, float y1)
