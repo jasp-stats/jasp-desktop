@@ -140,9 +140,9 @@ void DataSetView::clearCaches()
 
 void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
-	const int	colMin = std::max(0,								topLeft.column()),
+	const int	colMin = std::max(0,						topLeft.column()),
 				colMax = std::min(_model->columnCount(),	bottomRight.column()),
-				rowMin = std::max(0,								topLeft.row()),
+				rowMin = std::max(0,						topLeft.row()),
 				rowMax = std::min(_model->rowCount(),		bottomRight.row());
 
 	QSizeF calcSize = getColumnSize(colMin);
@@ -235,29 +235,10 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	_storedLineFlags.clear();
 	_storedDisplayText.clear();
 
-	for(auto & col : _cellTextItems)
-	{
-		for(auto row : col.second)
-			storeTextItem(row.first, col.first, false);
-		col.second.clear();
-	}
-
-	std::list<int> cols, rows;
-
-	for(auto col : _columnHeaderItems)
-		cols.push_back(col.first);
-
-	for(auto col : cols)
-		storeColumnHeader(col);
-
-	for(auto row : _rowNumberItems)
-		rows.push_back(row.first);
-
-	for(auto row : rows)
-		storeRowNumber(row);
-
-	if(clearStorage)
-		clearCaches();
+	storeAllItems();
+	
+	//if(clearStorage)
+	//	clearCaches();
 
 	if(_model == nullptr) return;
 
