@@ -24,10 +24,21 @@
 
 struct ItemContextualized
 {
-	ItemContextualized(QQmlContext * context = nullptr, QQuickItem * item = nullptr) : item(item), context(context) {}
-
-	QQuickItem * item;
-	QQmlContext * context;
+	ItemContextualized(QQmlContext * context = nullptr, QQuickItem * item = nullptr) 
+	: item(item), context(context) 
+	{}
+	
+	~ItemContextualized()
+	{
+		if(context)	context	-> deleteLater();
+		//if(item)	item	-> deleteLater(); Probably deleted through its context
+		
+		context =  nullptr;
+		item	=  nullptr;
+	}
+	
+	QQuickItem	* item		= nullptr;
+	QQmlContext * context	= nullptr;
 };
 
 /// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
@@ -284,6 +295,7 @@ protected:
 	QSizeF			getTextSize(const QString& text)	const;
 	QSizeF			getColumnSize(int col);
 	QSizeF			getRowHeaderSize();
+	void			clearCaches();
 
 protected:
 	QItemSelectionModel									*	_selectionModel			= nullptr;

@@ -120,6 +120,24 @@ QSizeF DataSetView::getRowHeaderSize()
 	return getTextSize(text);
 }
 
+void DataSetView::clearCaches()
+{
+	JASPTIMER_SCOPE(DataSetView::clearCaches);
+	Log::log() << "DataSetView::clearCaches\n" << std::flush;
+	
+	for(auto storage : {_textItemStorage, _rowNumberStorage, _columnHeaderStorage})
+		while(storage.size() > 0)
+		{
+			const ItemContextualized * ic = storage.top();	
+			storage.pop();
+			delete ic;
+		}
+	
+	_textItemStorage		= {};
+	_rowNumberStorage		= {};
+	_columnHeaderStorage	= {};
+}
+
 void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
 	const int	colMin = std::max(0,								topLeft.column()),
@@ -239,11 +257,7 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 		storeRowNumber(row);
 
 	if(clearStorage)
-	{
-		_rowNumberStorage		= {};
-		_columnHeaderStorage	= {};
-		_textItemStorage		= {};
-	}
+		clearCaches();
 
 	if(_model == nullptr) return;
 
@@ -1915,11 +1929,11 @@ void DataSetView::setCacheItems(bool cacheItems)
 	if(cacheItems == _cacheItems)
 		return;
 
-
 	_cacheItems = cacheItems;
+		
 	emit cacheItemsChanged();
 
-	calculateCellSizesAndClear(true);
+	calculateCellSizesAndClear(!_cacheItems);
 }
 
 void DataSetView::setExpandDataSet(bool expand)
