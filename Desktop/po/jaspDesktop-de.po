@@ -4731,7 +4731,7 @@ msgid "Label editor"
 msgstr "Beschriftungs-Editor"
 
 msgctxt "ColumnModel|"
-msgid "Missing Values"
+msgid "Missing values"
 msgstr "Fehlende Werte"
 
 #, qt-format

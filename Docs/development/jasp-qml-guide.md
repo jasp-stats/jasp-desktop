@@ -751,7 +751,7 @@ Properties
 
     RadioButtonGroup
     {
-      title: qsTr("Missing Values")
+      title: qsTr("Missing values")
       name: "missingValues"
       RadioButton { value: "excludeCasesListwise"; label: qsTr("Exclude cases listwise"); checked: true }
       RadioButton { value: "excludeCasesPairwise"; label: qsTr("Exclude cases pairwise") }

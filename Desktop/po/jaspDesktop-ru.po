@@ -4716,7 +4716,7 @@ msgid "Label editor"
 msgstr ""
 
 msgctxt "ColumnModel|"
-msgid "Missing Values"
+msgid "Missing values"
 msgstr ""
 
 #, qt-format

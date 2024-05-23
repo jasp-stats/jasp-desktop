@@ -4698,8 +4698,8 @@ msgid "Label editor"
 msgstr "Label-editor"
 
 msgctxt "ColumnModel|"
-msgid "Missing Values"
-msgstr "Ontbrekende Waarden"
+msgid "Missing values"
+msgstr "Ontbrekende waarden"
 
 #, qt-format
 msgctxt "QObject|"

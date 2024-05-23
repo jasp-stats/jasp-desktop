@@ -4658,7 +4658,7 @@ msgid "Label editor"
 msgstr "ラベルエディタ"
 
 msgctxt "ColumnModel|"
-msgid "Missing Values"
+msgid "Missing values"
 msgstr "欠測値"
 
 #, qt-format

@@ -199,7 +199,7 @@ QVariantList ColumnModel::tabs() const
 			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "label"), std::make_pair("title", tr("Label editor"))}));
 	}
 
-	QMap<QString, QVariant> misingValues =	{  std::make_pair("name", "missingValues"), std::make_pair("title", tr("Missing Values"))};
+	QMap<QString, QVariant> misingValues =	{  std::make_pair("name", "missingValues"), std::make_pair("title", tr("Missing values"))};
 	tabs.push_back(misingValues);
 
 	return tabs;
