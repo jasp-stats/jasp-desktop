@@ -30,8 +30,8 @@ struct ItemContextualized
 	
 	~ItemContextualized()
 	{
+		if(item)	item	-> deleteLater();
 		if(context)	context	-> deleteLater();
-		//if(item)	item	-> deleteLater(); Probably deleted through its context
 		
 		context =  nullptr;
 		item	=  nullptr;
