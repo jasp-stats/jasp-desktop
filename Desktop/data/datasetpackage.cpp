@@ -1980,7 +1980,7 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 	{
 		_dataSet->insertColumn(c);
 		const std::string & name = freeNewColumnName(c);
-		setColumnName(c, name, false);
+		_dataSet->column(c)->setName(name);
 		_dataSet->column(c)->setDefaultValues(columnType::scale);
 
 		changed.push_back(name);

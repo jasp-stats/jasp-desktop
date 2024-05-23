@@ -24,10 +24,21 @@
 
 struct ItemContextualized
 {
-	ItemContextualized(QQmlContext * context = nullptr, QQuickItem * item = nullptr) : item(item), context(context) {}
-
-	QQuickItem * item;
-	QQmlContext * context;
+	ItemContextualized(QQmlContext * context = nullptr, QQuickItem * item = nullptr) 
+	: item(item), context(context) 
+	{}
+	
+	~ItemContextualized()
+	{
+		if(item)	item	-> deleteLater();
+		if(context)	context	-> deleteLater();
+		
+		context =  nullptr;
+		item	=  nullptr;
+	}
+	
+	QQuickItem	* item		= nullptr;
+	QQmlContext * context	= nullptr;
 };
 
 /// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
@@ -249,7 +260,7 @@ protected:
 	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		determineCurrentViewPortIndices();
-	void		storeOutOfViewItems();
+	void		storeAllItems();
 	void		buildNewLinesAndCreateNewItems();
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);
@@ -284,6 +295,7 @@ protected:
 	QSizeF			getTextSize(const QString& text)	const;
 	QSizeF			getColumnSize(int col);
 	QSizeF			getRowHeaderSize();
+	void			clearCaches();
 
 protected:
 	QItemSelectionModel									*	_selectionModel			= nullptr;
