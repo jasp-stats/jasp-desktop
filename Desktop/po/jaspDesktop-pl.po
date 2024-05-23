@@ -4760,7 +4760,7 @@ msgid "Label editor"
 msgstr "Edytor etykiet"
 
 msgctxt "ColumnModel|"
-msgid "Missing Values"
+msgid "Missing values"
 msgstr "Braki danych"
 
 #, qt-format
