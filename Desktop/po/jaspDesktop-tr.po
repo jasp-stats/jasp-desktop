@@ -4397,10 +4397,6 @@ msgctxt "ColumnModel|"
 msgid "Label editor"
 msgstr ""
 
-msgctxt "ColumnModel|"
-msgid "Missing Values"
-msgstr ""
-
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
@@ -4904,4 +4900,8 @@ msgstr ""
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
+msgstr ""
+
+msgctxt "ColumnModel|"
+msgid "Missing values"
 msgstr ""
