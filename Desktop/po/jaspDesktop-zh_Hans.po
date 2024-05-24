@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-05-25 02:09+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.6-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5086,9 +5092,9 @@ msgstr "连续变量的阈值"
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
-msgstr ""
+msgstr "移除 %1 行"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
-msgstr ""
+msgstr "移除 %1 列"
