@@ -1225,8 +1225,12 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
     
 	if(userEntered == "")
 	{
-		if (getValue(row) == "")	return false;
-		else						return setValue(row, EmptyValues::missingValueDouble, writeToDB);
+		const auto	cur = type() == columnType::scale ?  getValue(row, false, false) : getLabel(row, false, false);
+		Label	*	label = labelByRow(row);
+		
+		if(label && label->isEmptyValue())	return false;
+		if (cur == "")						return false;
+		else								return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	}
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
