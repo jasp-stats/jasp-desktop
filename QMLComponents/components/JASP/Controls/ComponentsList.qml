@@ -189,7 +189,8 @@ ComponentsListBase
 				anchors
 				{
 					top				: itemGrid.bottom
-					horizontalCenter: parent.horizontalCenter
+					left			: parent.left
+					leftMargin		: (itemRectangle.width - width) / 2
 				}
 			}
 		}
