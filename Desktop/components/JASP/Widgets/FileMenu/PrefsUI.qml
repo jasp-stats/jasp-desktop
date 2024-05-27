@@ -217,7 +217,7 @@ ScrollView
 					id:							languages
 					source:						languageModel
 					startValue: 				languageModel.currentLanguage
-					onValueChanged: 			languageModel.currentLanguage = (currentIndex <= 0 ? "" : value)
+					onValueChanged: 			languageModel.currentLanguage = value
 
 					KeyNavigation.tab: 			altnavcheckbox
 					
