@@ -823,13 +823,26 @@ std::string Column::labelsTempDisplay(size_t tempLabelIndex)
 	return _labelsTemp[tempLabelIndex];
 }
 
+Label * Column::labelByIndexNotEmpty(size_t index)
+{
+	size_t	nonEmpty = 0;
+	
+	for(size_t l=0; l<_labels.size(); l++)
+		if(!_labels[l]->isEmptyValue() && nonEmpty++ == index)
+			return _labels[l];
+	
+	return nullptr;
+}
+
 std::string Column::labelsTempValue(size_t tempLabelIndex, bool fancyEmptyValue)
 {
 	if(labelsTempCount() <= tempLabelIndex)
 		return "";
 	
-	if(tempLabelIndex < _labels.size())
-		return _labels[tempLabelIndex]->originalValueAsString(fancyEmptyValue);
+	Label * label = labelByIndexNotEmpty(tempLabelIndex);
+	
+	if(label)
+		return label->originalValueAsString(fancyEmptyValue);
 	
 	//So its not from a Label, this means its from _dbls
 	//So that means the display value is actually the same as the value so:
@@ -841,8 +854,10 @@ double Column::labelsTempValueDouble(size_t tempLabelIndex)
 	if(labelsTempCount() <= tempLabelIndex)
 		return EmptyValues::missingValueDouble;
 	
-	if(tempLabelIndex < _labels.size())
-		return _labels[tempLabelIndex]->originalValue().isDouble() ? _labels[tempLabelIndex]->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	Label * label = labelByIndexNotEmpty(tempLabelIndex);
+	
+	if(label)
+		return label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
 	
 	//So its not from a Label, this means its from _dbls
 	return _labelsTempDbls[tempLabelIndex];
