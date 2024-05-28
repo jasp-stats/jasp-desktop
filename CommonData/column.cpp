@@ -1244,15 +1244,13 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 		else								return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	}
 	
-	double	newDoubleToSet	= EmptyValues::missingValueDouble,
-			oldDouble		= _dbls[row];	
-	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
-			nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
-							&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
-	Label * newLabel		= labelByDisplay(userEntered);
-	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
+	double		newDoubleToSet	= EmptyValues::missingValueDouble;
+	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
+				itsMissingVal	= isEmptyValue(userEntered),
+				nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+								&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	
-	if(nothingThereYet)
+	if(nothingThereYet && !itsMissingVal)
 	{
 		if(itsADouble)
 		{
@@ -1263,29 +1261,7 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 			setType(columnType::nominal);
 	}
 		
-	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
-		return setValue(row, newDoubleToSet, writeToDB);
-
-	if(newLabel)
-		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
-	
-		
-	if(itsADouble)
-	{
-		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
-		//This should mean that the label has this old double as a original value!
-		if(	oldLabel
-			&& !std::isnan(oldDouble)
-			&& (	!oldLabel->originalValue().isDouble()
-				|| !Utils::isEqual(_dbls[row], oldLabel->originalValue().asDouble())
-				))
-			Log::log() << "bool Column::setStringValueToRowIfItFits(" << row << ", '" << userEntered << "', ...) had differences between _dbls[" << row << "](" << _dbls[row] << ") and oldLabel originalValue: '" << oldLabel->originalValueAsString() << "'" << std::endl;
-		
-		return setValue(row, newDoubleToSet, writeToDB);
-	}
-	else
-		//there is no new label yet for this and it is not a double so we need to make a label
-		return setValue(row, labelsAdd(userEntered), writeToDB);
+	return setValue(row, userEntered, "", writeToDB);
 }
 
 bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
@@ -1323,7 +1299,14 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		return setValue(row, newDoubleToSet, writeToDB);
 
 	if(newLabel)
+	{
+		if(newLabel->originalValue().isDouble())
+			newDoubleToSet = newLabel->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(value, newDoubleToSet);
+		
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
+	}
 		
 	if(itsADouble && (labelIsValue || justAValue))
 	{
