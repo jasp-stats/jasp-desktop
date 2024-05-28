@@ -593,7 +593,7 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 {
 	JASPTIMER_SCOPE(Column::_dbUpdateLabelOrder);
 	
-	if(batchedLabel())
+	if(batchedLabelDepth())
 	{
 		if(!noIncRevisionWhenBatchedPlease)
 			incRevision();
@@ -629,25 +629,25 @@ void Column::labelsClear()
 
 void Column::beginBatchedLabelsDB()
 {
-	assert(!_batchedLabel);
-	_batchedLabel = true;
+	_batchedLabelDepth++;
 }
 
 void Column::endBatchedLabelsDB(bool wasWritingBatch)
 {
-	assert(_batchedLabel);
-	_batchedLabel = false;
+	assert(_batchedLabelDepth > 0);
+	_batchedLabelDepth--;
 	
 	for(size_t i=0; i<_labels.size(); i++)
 		_labels[i]->setOrder(i);
-
-	if(wasWritingBatch)
+	
+	if(_batchedLabelDepth == 0)
 	{
-		db().labelsWrite(this);
-		incRevision(); //Should trigger reload at engine end
-	}
-	else
-		_sortLabelsByOrder();
+		if(wasWritingBatch)
+		{
+			db().labelsWrite(this);
+			incRevision(); //Should trigger reload at engine end
+		}
+	}	
 }
 
 int Column::labelsAdd(int display)
@@ -673,7 +673,14 @@ int Column::labelsAdd(const std::string &display)
 
 int Column::labelsAdd(const std::string & display, const std::string & description, const Json::Value & originalValue)
 {
-	return labelsAdd(_labels.size(), display, true, description, originalValue);
+	sizetset intIds;
+	
+	for(Label * label : _labels)
+		intIds.insert(label->intsId());
+		
+	for(size_t newIntId = 0; ; newIntId++)
+		if(intIds.count(newIntId) == 0)
+			return labelsAdd(newIntId, display, true, description, originalValue);
 }
 
 int Column::labelsAdd(int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
@@ -718,10 +725,7 @@ strintmap Column::labelsResetValues(int & maxValue)
 {
 	JASPTIMER_SCOPE(Column::labelsResetValues);
 	
-	bool wasBatching = batchedLabel();
-	
-	if(!wasBatching)
-		beginBatchedLabelsDB();
+	beginBatchedLabelsDB();
 
 	strintmap result;
 	int labelValue = 0;
@@ -741,8 +745,7 @@ strintmap Column::labelsResetValues(int & maxValue)
 
 	maxValue = labelValue;
 
-	if(!wasBatching)
-		endBatchedLabelsDB();
+	endBatchedLabelsDB();
 
 	return result;
 }
@@ -823,13 +826,37 @@ std::string Column::labelsTempDisplay(size_t tempLabelIndex)
 	return _labelsTemp[tempLabelIndex];
 }
 
+Label * Column::labelByIndexNotEmpty(size_t index) const
+{
+	size_t	nonEmpty = 0;
+	
+	for(size_t l=0; l<_labels.size(); l++)
+		if(!_labels[l]->isEmptyValue() && nonEmpty++ == index)
+			return _labels[l];
+	
+	return nullptr;
+}
+
+size_t Column::labelCountNotEmpty() const
+{
+	size_t	nonEmpty = 0;
+	
+	for(size_t l=0; l<_labels.size(); l++)
+		if(!_labels[l]->isEmptyValue())
+			nonEmpty++;
+	
+	return nonEmpty;
+}
+
 std::string Column::labelsTempValue(size_t tempLabelIndex, bool fancyEmptyValue)
 {
 	if(labelsTempCount() <= tempLabelIndex)
 		return "";
 	
-	if(tempLabelIndex < _labels.size())
-		return _labels[tempLabelIndex]->originalValueAsString(fancyEmptyValue);
+	Label * label = labelByIndexNotEmpty(tempLabelIndex);
+	
+	if(label)
+		return label->originalValueAsString(fancyEmptyValue);
 	
 	//So its not from a Label, this means its from _dbls
 	//So that means the display value is actually the same as the value so:
@@ -841,8 +868,10 @@ double Column::labelsTempValueDouble(size_t tempLabelIndex)
 	if(labelsTempCount() <= tempLabelIndex)
 		return EmptyValues::missingValueDouble;
 	
-	if(tempLabelIndex < _labels.size())
-		return _labels[tempLabelIndex]->originalValue().isDouble() ? _labels[tempLabelIndex]->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	Label * label = labelByIndexNotEmpty(tempLabelIndex);
+	
+	if(label)
+		return label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
 	
 	//So its not from a Label, this means its from _dbls
 	return _labelsTempDbls[tempLabelIndex];
@@ -1087,6 +1116,8 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 {
 	JASPTIMER_SCOPE(Column::replaceDoubleWithLabel);
 	
+	std::sort(dbls.begin(), dbls.end());
+	
 	std::map<double, Label*	>	doubleLabelMap;
 	std::map<double, int	>	doubleIntIdMap;
 	
@@ -1112,14 +1143,14 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 {
 	//row here is in the label editor, not in the data!	
-	if(row < _labels.size())
-		return _labels[row];
+	if(labelByIndexNotEmpty(row))
+		return labelByIndexNotEmpty(row);
 	
 	bool		labelsTempUpToDate = _revision == _labelsTempRevision; //If so we can just update it at the end. We dont not yet need to recreate them
 	doublevec	dbls;
 	double		dbl;
 	
-	for(size_t r=_labels.size()			;
+	for(size_t r=labelCountNotEmpty()	;
 		r<=row && r<_labelsTemp.size()	;
 		r++						
 	)
@@ -1210,19 +1241,21 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
     
 	if(userEntered == "")
 	{
-		if (getValue(row) == "")	return false;
-		else						return setValue(row, EmptyValues::missingValueDouble, writeToDB);
+		const auto	cur = type() == columnType::scale ?  getValue(row, false, false) : getLabel(row, false, false);
+		Label	*	label = labelByRow(row);
+		
+		if(label && label->isEmptyValue())	return false;
+		if (cur == "")						return false;
+		else								return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	}
 	
-	double	newDoubleToSet	= EmptyValues::missingValueDouble,
-			oldDouble		= _dbls[row];	
-	bool	itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
-			nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
-							&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
-	Label * newLabel		= labelByDisplay(userEntered);
-	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
+	double		newDoubleToSet	= EmptyValues::missingValueDouble;
+	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
+				itsMissingVal	= isEmptyValue(userEntered),
+				nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+								&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	
-	if(nothingThereYet)
+	if(nothingThereYet && !itsMissingVal)
 	{
 		if(itsADouble)
 		{
@@ -1233,29 +1266,7 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 			setType(columnType::nominal);
 	}
 		
-	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
-		return setValue(row, newDoubleToSet, writeToDB);
-
-	if(newLabel)
-		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
-	
-		
-	if(itsADouble)
-	{
-		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
-		//This should mean that the label has this old double as a original value!
-		if(	oldLabel
-			&& !std::isnan(oldDouble)
-			&& (	!oldLabel->originalValue().isDouble()
-				|| !Utils::isEqual(_dbls[row], oldLabel->originalValue().asDouble())
-				))
-			Log::log() << "bool Column::setStringValueToRowIfItFits(" << row << ", '" << userEntered << "', ...) had differences between _dbls[" << row << "](" << _dbls[row] << ") and oldLabel originalValue: '" << oldLabel->originalValueAsString() << "'" << std::endl;
-		
-		return setValue(row, newDoubleToSet, writeToDB);
-	}
-	else
-		//there is no new label yet for this and it is not a double so we need to make a label
-		return setValue(row, labelsAdd(userEntered), writeToDB);
+	return setValue(row, userEntered, "", writeToDB);
 }
 
 bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
@@ -1293,7 +1304,14 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		return setValue(row, newDoubleToSet, writeToDB);
 
 	if(newLabel)
+	{
+		if(newLabel->originalValue().isDouble())
+			newDoubleToSet = newLabel->originalValue().asDouble();
+		else 
+			ColumnUtils::getDoubleValue(value, newDoubleToSet);
+		
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
+	}
 		
 	if(itsADouble && (labelIsValue || justAValue))
 	{

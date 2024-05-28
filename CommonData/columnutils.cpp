@@ -64,6 +64,8 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 
 bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 {
+	doubleValue = EmptyValues::missingValueDouble;
+	
 	if(value == "∞" || value == "-∞")
 	{
 		doubleValue = std::numeric_limits<double>::infinity() * (value == "-∞" ? -1 : 1);

@@ -165,14 +165,16 @@ public:
 			const Labels		&	labels()																				const	{ return _labels; }
 			bool					labelsMergeDuplicates();
 			bool					labelsRemoveOrphans();
-			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
-			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
-			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
 			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
 			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
-			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
-			Label				*	labelByRow(				int						row)									const; ///< 
 			int						labelIndex(				const Label			*	label)									const;
+			Label				*	labelByRow(				int						row)									const; ///< 
+			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
+			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
+			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
+			Label				*	labelByIndexNotEmpty(	size_t					index)									const;
+			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
+			size_t					labelCountNotEmpty()																	const;
 
 			bool					isValueEqual(size_t row, double value)				 const;
 			bool					isValueEqual(size_t row, int value)					 const;
@@ -182,7 +184,7 @@ public:
 			
 			void					beginBatchedLabelsDB();
 			void					endBatchedLabelsDB(bool wasWritingBatch = true);
-			bool					batchedLabel()	{ return _batchedLabel; }
+			bool					batchedLabelDepth()	{ return _batchedLabelDepth; }
 			
 			DataSet				*	data() const { return _data; }
 
@@ -215,8 +217,6 @@ public:
 			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
-			
-			
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
@@ -243,7 +243,6 @@ private:
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
-									_batchedLabel		= false,
 									_forceTypes			= true; ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
@@ -256,6 +255,7 @@ private:
 			intvec					_ints;
 			stringset				_dependsOnColumns;
 			std::map<int, Label*>	_labelByIntsIdMap;
+			int						_batchedLabelDepth	= 0;
 			
 			
 };
