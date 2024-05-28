@@ -38,7 +38,7 @@ Below the educators that helped make this release possible:
 <i><b>Silver Educators:</b></i>
 %3
 
-<i><b>Bronze Educator:</b></i>
+<i><b>Bronze Educators:</b></i>
 %4
 
 <a href=\"%6\">Click here for the current list of educators</a>
