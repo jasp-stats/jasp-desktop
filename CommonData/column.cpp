@@ -637,19 +637,17 @@ void Column::endBatchedLabelsDB(bool wasWritingBatch)
 	assert(_batchedLabelDepth > 0);
 	_batchedLabelDepth--;
 	
+	for(size_t i=0; i<_labels.size(); i++)
+		_labels[i]->setOrder(i);
+	
 	if(_batchedLabelDepth == 0)
 	{
-		for(size_t i=0; i<_labels.size(); i++)
-			_labels[i]->setOrder(i);
-	
 		if(wasWritingBatch)
 		{
 			db().labelsWrite(this);
 			incRevision(); //Should trigger reload at engine end
 		}
-		else
-			_sortLabelsByOrder();
-	}
+	}	
 }
 
 int Column::labelsAdd(int display)
@@ -675,7 +673,14 @@ int Column::labelsAdd(const std::string &display)
 
 int Column::labelsAdd(const std::string & display, const std::string & description, const Json::Value & originalValue)
 {
-	return labelsAdd(_labels.size(), display, true, description, originalValue);
+	sizetset intIds;
+	
+	for(Label * label : _labels)
+		intIds.insert(label->intsId());
+		
+	for(size_t newIntId = 0; ; newIntId++)
+		if(intIds.count(newIntId) == 0)
+			return labelsAdd(newIntId, display, true, description, originalValue);
 }
 
 int Column::labelsAdd(int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
