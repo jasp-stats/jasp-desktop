@@ -11,6 +11,7 @@ Sys.setenv(JAGS_PREFIX				="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR			="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR				="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
+Sys.setenv(MAKEFLAGS				="-j")
 
 options(renv.config.install.verbose = TRUE)
 
