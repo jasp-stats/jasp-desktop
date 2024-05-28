@@ -593,7 +593,7 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 {
 	JASPTIMER_SCOPE(Column::_dbUpdateLabelOrder);
 	
-	if(batchedLabel())
+	if(batchedLabelDepth())
 	{
 		if(!noIncRevisionWhenBatchedPlease)
 			incRevision();
@@ -629,25 +629,27 @@ void Column::labelsClear()
 
 void Column::beginBatchedLabelsDB()
 {
-	assert(!_batchedLabel);
-	_batchedLabel = true;
+	_batchedLabelDepth++;
 }
 
 void Column::endBatchedLabelsDB(bool wasWritingBatch)
 {
-	assert(_batchedLabel);
-	_batchedLabel = false;
+	assert(_batchedLabelDepth > 0);
+	_batchedLabelDepth--;
 	
-	for(size_t i=0; i<_labels.size(); i++)
-		_labels[i]->setOrder(i);
-
-	if(wasWritingBatch)
+	if(_batchedLabelDepth == 0)
 	{
-		db().labelsWrite(this);
-		incRevision(); //Should trigger reload at engine end
+		for(size_t i=0; i<_labels.size(); i++)
+			_labels[i]->setOrder(i);
+	
+		if(wasWritingBatch)
+		{
+			db().labelsWrite(this);
+			incRevision(); //Should trigger reload at engine end
+		}
+		else
+			_sortLabelsByOrder();
 	}
-	else
-		_sortLabelsByOrder();
 }
 
 int Column::labelsAdd(int display)
@@ -718,10 +720,7 @@ strintmap Column::labelsResetValues(int & maxValue)
 {
 	JASPTIMER_SCOPE(Column::labelsResetValues);
 	
-	bool wasBatching = batchedLabel();
-	
-	if(!wasBatching)
-		beginBatchedLabelsDB();
+	beginBatchedLabelsDB();
 
 	strintmap result;
 	int labelValue = 0;
@@ -741,8 +740,7 @@ strintmap Column::labelsResetValues(int & maxValue)
 
 	maxValue = labelValue;
 
-	if(!wasBatching)
-		endBatchedLabelsDB();
+	endBatchedLabelsDB();
 
 	return result;
 }
@@ -823,7 +821,7 @@ std::string Column::labelsTempDisplay(size_t tempLabelIndex)
 	return _labelsTemp[tempLabelIndex];
 }
 
-Label * Column::labelByIndexNotEmpty(size_t index)
+Label * Column::labelByIndexNotEmpty(size_t index) const
 {
 	size_t	nonEmpty = 0;
 	
@@ -832,6 +830,17 @@ Label * Column::labelByIndexNotEmpty(size_t index)
 			return _labels[l];
 	
 	return nullptr;
+}
+
+size_t Column::labelCountNotEmpty() const
+{
+	size_t	nonEmpty = 0;
+	
+	for(size_t l=0; l<_labels.size(); l++)
+		if(!_labels[l]->isEmptyValue())
+			nonEmpty++;
+	
+	return nonEmpty;
 }
 
 std::string Column::labelsTempValue(size_t tempLabelIndex, bool fancyEmptyValue)
@@ -1102,6 +1111,8 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 {
 	JASPTIMER_SCOPE(Column::replaceDoubleWithLabel);
 	
+	std::sort(dbls.begin(), dbls.end());
+	
 	std::map<double, Label*	>	doubleLabelMap;
 	std::map<double, int	>	doubleIntIdMap;
 	
@@ -1127,14 +1138,14 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 {
 	//row here is in the label editor, not in the data!	
-	if(row < _labels.size())
-		return _labels[row];
+	if(labelByIndexNotEmpty(row))
+		return labelByIndexNotEmpty(row);
 	
 	bool		labelsTempUpToDate = _revision == _labelsTempRevision; //If so we can just update it at the end. We dont not yet need to recreate them
 	doublevec	dbls;
 	double		dbl;
 	
-	for(size_t r=_labels.size()			;
+	for(size_t r=labelCountNotEmpty()	;
 		r<=row && r<_labelsTemp.size()	;
 		r++						
 	)

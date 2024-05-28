@@ -37,7 +37,7 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 
 void Label::dbDelete()
 {
-	if(_column->batchedLabel())
+	if(_column->batchedLabelDepth())
 		return;
 	
 	assert(_dbId != -1);
@@ -49,7 +49,7 @@ void Label::dbCreate()
 {
 	JASPTIMER_SCOPE(Label::dbCreate);
 
-	if(_column->batchedLabel())
+	if(_column->batchedLabelDepth())
 		return;
 	
 	assert(_dbId == -1);
@@ -58,7 +58,7 @@ void Label::dbCreate()
 
 void Label::dbLoad(int labelId)
 {
-	if(_column->batchedLabel())
+	if(_column->batchedLabelDepth())
 		return;
 	
 	assert(_dbId != -1 || labelId != -1);
@@ -80,7 +80,7 @@ void Label::dbUpdate()
 {
 	JASPTIMER_SCOPE(Label::dbUpdate);
 
-	if(_column->batchedLabel())
+	if(_column->batchedLabelDepth())
 		return;
 	
 	if(_dbId == -1)
