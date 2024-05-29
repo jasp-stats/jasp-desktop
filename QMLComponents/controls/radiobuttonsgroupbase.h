@@ -29,9 +29,10 @@ class RadioButtonsGroupBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 	
-	Q_PROPERTY( QString					value			READ value				NOTIFY valueChanged		)
-	Q_PROPERTY( RadioButtonBase*		checkedButton	READ checkedButton		NOTIFY valueChanged		)
-	Q_PROPERTY( QList<RadioButtonBase*>	buttons			READ buttons			NOTIFY buttonsChanged	)
+	Q_PROPERTY( QString					value			READ value										NOTIFY valueChanged			)
+	Q_PROPERTY( RadioButtonBase*		checkedButton	READ checkedButton								NOTIFY valueChanged			)
+	Q_PROPERTY( QList<RadioButtonBase*>	buttons			READ buttons									NOTIFY buttonsChanged		)
+	Q_PROPERTY( QString					defaultValue	READ defaultValue		WRITE setDefaultValue	NOTIFY defaultValueChanged	)
 
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
@@ -47,12 +48,16 @@ public:
 
 	void clickHandler(RadioButtonBase* button);
     
-	const QString	value()	const;
+	const QString	value()			const;
+
+	QString	defaultValue()	const	{ return _defaultValue; }
+	void	setDefaultValue(const QString& defaultValue);
 
 signals:
 	void valueChanged();
 	void clicked();
 	void buttonsChanged();
+	void defaultValueChanged();
 
 protected:
 
@@ -65,6 +70,7 @@ protected:
 
 	QSet<RadioButtonBase*>					_buttons;
 	RadioButtonBase*						_selectedButton = nullptr;
+	QString									_defaultValue;
 };
 
 #endif // RADIOBUTTONSGROUPBASE_H
