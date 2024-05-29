@@ -16,14 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "boundcontrollavaantextarea.h"
+#include "boundcontrolrlangtextarea.h"
 #include "controls/textareabase.h"
 #include "log.h"
 #include "columnencoder.h"
 #include "analysisform.h"
 #include <QQuickTextDocument>
 
-BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
+BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea)
 	: BoundControlTextArea(textArea)
 {
 
@@ -32,14 +32,14 @@ BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-        _lavaanHighlighter = new RlangSyntaxHighlighter(doc);
+        _rLangHighlighter = new RlangSyntaxHighlighter(doc);
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}
 	else
 		Log::log()  << "No document object found!" << std::endl;
 }
 
-void BoundControlLavaanTextArea::bindTo(const Json::Value &value)
+void BoundControlRlangTextArea::bindTo(const Json::Value &value)
 {
 	if (value.type() != Json::objectValue)	return;
 	BoundControlBase::bindTo(value);
@@ -50,7 +50,7 @@ void BoundControlLavaanTextArea::bindTo(const Json::Value &value)
 
 }
 
-Json::Value BoundControlLavaanTextArea::createJson() const
+Json::Value BoundControlRlangTextArea::createJson() const
 {
 	Json::Value result;
 	std::string text = _textArea->text().toStdString();
@@ -62,7 +62,7 @@ Json::Value BoundControlLavaanTextArea::createJson() const
 	return result;
 }
 
-bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value) const
+bool BoundControlRlangTextArea::isJsonValid(const Json::Value &value) const
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;
@@ -73,7 +73,7 @@ bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value) const
 	return true;
 }
 
-void BoundControlLavaanTextArea::checkSyntax()
+void BoundControlRlangTextArea::checkSyntax()
 {
 	QString text = _textArea->text();
 
@@ -103,7 +103,7 @@ void BoundControlLavaanTextArea::checkSyntax()
 
 }
 
-QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
+QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 {
 	if (!result.isEmpty())
 		return result;

@@ -1,12 +1,12 @@
 #ifndef BOUNDCONTROLCSEMTEXTAREA_H
 #define BOUNDCONTROLCSEMTEXTAREA_H
 
-#include "boundcontrollavaantextarea.h"
+#include "boundcontrolrlangtextarea.h"
 
-class BoundControlCSemTextArea : public BoundControlLavaanTextArea
+class BoundControlCSemTextArea : public BoundControlRlangTextArea
 {
 public:
-	using BoundControlLavaanTextArea::BoundControlLavaanTextArea;    
+    using BoundControlRlangTextArea::BoundControlRlangTextArea;
 
 protected:
 	const char * _checkSyntaxRFunctionName() override { return "jaspSem:::checkCSemModel"; }

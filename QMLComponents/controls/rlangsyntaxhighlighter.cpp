@@ -44,7 +44,7 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     // keyword
-    keywordFormat.setForeground(Qt::cyan);
+    keywordFormat.setForeground(Qt::darkCyan);
     rule.pattern = QRegularExpression(R"(\b(?:NA|NA_character_|NA_complex_|NA_integer_|NA_real_|NULL|break|else|for|function|if|in|next|repeat|while)\b)");
     rule.format = keywordFormat;
     highlightingRules.append(rule);
@@ -63,7 +63,7 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     // punctuation
-    punctuationFormat.setForeground(Qt::cyan);
+    punctuationFormat.setForeground(Qt::darkCyan);
     rule.pattern = QRegularExpression(R"([(){}\[\],;])");
     rule.format = punctuationFormat;
     highlightingRules.append(rule);
