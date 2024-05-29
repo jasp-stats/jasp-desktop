@@ -76,6 +76,14 @@ set(RPKG_DOWNLOAD_ONLY
   OFF
   CACHE BOOL "If enabled renv will not install JASP module deps but just download them. Usefull to make a cellar for Flatpak")
 
+set(REGENERATE_LOCKFILE
+  OFF
+  CACHE BOOL "If enabled jaspModuleInstaller will generate a fresh lockfile")
+
+set(MODULE_INSTALL_MODE
+  "localizeAll"
+  CACHE STRING "identicalToLockfile or localizeModuleOnly or localizeAll. Sets how much is pulled remote or from source folder")
+
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
 #       Qt Creator can categorize them nicely in its CMake configurator
