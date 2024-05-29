@@ -51,11 +51,13 @@ FocusScope
 				{ 
 					target:		columnModel
 					property:	"rowWidth"
-					value:		Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
+					value:		Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+				}
 
 				property real filterColWidth:	60  * jaspTheme.uiScale
-				property real valueColWidth:	(columnModel.valueMaxWidth + 10) * jaspTheme.uiScale
-				property real labelColMinWidth:	(columnModel.labelMaxWidth + 10) * jaspTheme.uiScale
+				property real remainingWidth:	width - filterColWidth
+				property real valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real labelColMinWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
 
 				columnHeaderDelegate:	Item
 				{
