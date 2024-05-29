@@ -49,11 +49,21 @@ void RadioButtonsGroupBase::_setCheckedButtonHandler()
 {
 	if (checkedButton()) return;
 
-	for (auto* button : _buttons)
-	{
-		if (button->property("checked").toBool())
-			_setCheckedButton(button);
-	}
+	// Use first the defaultValue if exists
+	if (!_defaultValue.isEmpty())
+		for (auto* button : _buttons)
+		{
+			if (button->property("value").toString() == _defaultValue)
+				_setCheckedButton(button);
+		}
+
+	if (!checkedButton())
+		for (auto* button : _buttons)
+		{
+			if (button->property("checked").toBool())
+				_setCheckedButton(button);
+		}
+
 	if (!checkedButton() && _buttons.size() > 0)
 		_setCheckedButton(*(_buttons.begin()));
 
@@ -98,6 +108,17 @@ void RadioButtonsGroupBase::radioButtonValueChanged(RadioButtonBase *button)
 const QString RadioButtonsGroupBase::value() const
 {
 	return _selectedButton ? _selectedButton->name() : "";
+}
+
+void RadioButtonsGroupBase::setDefaultValue(const QString &defaultValue)
+{
+	if (defaultValue == _defaultValue) return;
+
+	// Cannot check here whether the default Value correspond to a real Radio Buton value, since we are not sure that all Radio Buttons are initialized.
+	// only during the setup, this check can be done.
+
+	_defaultValue = defaultValue;
+	emit defaultValueChanged();
 }
 
 void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
