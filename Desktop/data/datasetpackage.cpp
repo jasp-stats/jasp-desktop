@@ -604,7 +604,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 
 			return dummyText;
 		}
-		case int(specialRoles::maxColumnHeaderString):			return headerData(section, orientation, Qt::DisplayRole).toString() + "XX";
+		case int(specialRoles::maxColumnHeaderString):			return headerData(section, orientation, Qt::DisplayRole).toString() + "XXX";
 		case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet ? _dataSet->rowCount() : 0 )		+ "XXX";
 		case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
 		case int(specialRoles::filter):							return		!col ? false							: col->hasFilter() || isColumnUsedInEasyFilter(col->name());
