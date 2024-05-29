@@ -481,11 +481,42 @@ FocusScope
 		
 		Text
 		{
-			id:						jaspUrl
-			text:					"www.jasp-stats.org"
+			id:						jaspUrlQuestions
+			text:					qsTr("Ask a question")
 			color:					jaspTheme.white
 			font.family:			jaspTheme.font.family
-			font.pixelSize:			20 * welcomeRoot.scaler
+			font.pixelSize:			jaspUrlBug.font.pixelSize
+			font.weight:			Font.Normal
+			font.underline:			jaspQuestionsMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				right:				parent.right
+				bottom:				jaspUrl.top
+				rightMargin:		10 * welcomeRoot.scaler
+				bottomMargin:		4 * welcomeRoot.scaler
+			}
+			
+			MouseArea
+			{
+				id:						jaspQuestionsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally("https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor");
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+			}
+		}
+		
+		Text
+		{
+			id:						jaspUrl
+			text:					qsTr("Visit the website")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			jaspUrlBug.font.pixelSize
 			font.weight:			Font.Normal
 			font.underline:			jaspStatsMouseArea.containsMouse
 			renderType:				Text.QtRendering
@@ -508,6 +539,8 @@ FocusScope
 				cursorShape:			Qt.PointingHandCursor
 			}
 		}
+		
+
 	}
 
 	AnimatedImage
