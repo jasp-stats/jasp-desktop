@@ -514,8 +514,8 @@ int main(int argc, char *argv[])
 
 				QMessageBox *msgBox = new QMessageBox(nullptr);
 				msgBox->setIcon( QMessageBox::Information );
-				msgBox->setText("JASP is setting a few things up. Just a moment please");
-				QPushButton *btn =  msgBox->addButton( "Ok", QMessageBox::AcceptRole );
+				msgBox->setText("JASP is setting a few things up. Just a moment please.");
+				QPushButton *btn =  msgBox->addButton( "OK", QMessageBox::AcceptRole );
 				msgBox->setAttribute(Qt::WA_DeleteOnClose); // delete pointer after close
 				msgBox->setModal(false);
 				msgBox->show();
