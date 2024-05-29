@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LAVAANSYNTAXHIGHLIGHTER_H
-#define LAVAANSYNTAXHIGHLIGHTER_H
+#ifndef RLANGSYNTAXHIGHLIGHTER_H
+#define RLANGSYNTAXHIGHLIGHTER_H
 
 #include <QSyntaxHighlighter>
 #include <QTextCursor>
 #include <QRegularExpression>
 
-class LavaanSyntaxHighlighter : public QSyntaxHighlighter
+class RlangSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
-	LavaanSyntaxHighlighter(QTextDocument *parent);
+    RlangSyntaxHighlighter(QTextDocument *parent);
 	virtual void highlightBlock(const QString &text) override;
 private:
 	struct HighlightingRule
@@ -37,7 +37,12 @@ private:
 	QVector<HighlightingRule> highlightingRules;
 	QTextCharFormat operatorFormat;
 	QTextCharFormat variableFormat;
-	QTextCharFormat commentFormat;
+    QTextCharFormat commentFormat;
+    QTextCharFormat keywordFormat;
+    QTextCharFormat stringFormat;
+    QTextCharFormat booleanFormat;
+    QTextCharFormat numberFormat;
+    QTextCharFormat punctuationFormat;
 };
 
-#endif // LAVAANSYNTAXHIGHLIGHTER_H
+#endif // RLANGSYNTAXHIGHLIGHTER_H

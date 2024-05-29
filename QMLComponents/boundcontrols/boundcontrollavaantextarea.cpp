@@ -32,7 +32,7 @@ BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-		_lavaanHighlighter = new LavaanSyntaxHighlighter(doc);
+        _lavaanHighlighter = new RlangSyntaxHighlighter(doc);
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}
 	else

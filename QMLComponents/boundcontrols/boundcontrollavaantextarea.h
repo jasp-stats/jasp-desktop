@@ -20,7 +20,7 @@
 #define BOUNDCONTROLLAVAANTEXTAREA_H
 
 #include "boundcontroltextarea.h"
-#include "controls/lavaansyntaxhighlighter.h"
+#include "controls/rlangsyntaxhighlighter.h"
 
 class BoundControlLavaanTextArea : public BoundControlTextArea
 {
@@ -35,7 +35,7 @@ public:
 	QString		rScriptDoneHandler(const QString &result)				override;
 
 protected:
-	LavaanSyntaxHighlighter*	_lavaanHighlighter		= nullptr;
+    RlangSyntaxHighlighter*	_lavaanHighlighter		= nullptr;
 
 	std::set<std::string>		_usedColumnNames;
 	QString						_textEncoded;
