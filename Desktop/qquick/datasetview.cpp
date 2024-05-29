@@ -1123,13 +1123,16 @@ void DataSetView::_copy(QPoint where, bool clear)
 
 	if(isColumnHeader(where))
 	{
-		rows.insert(rows.begin(), {});
+		QStringList headerRow;
+		
 		for(int c=minIdx.x(); c<=maxIdx.x(); c++)
 			if(_selectionModel->columnIntersectsSelection(c))
 			{
 				_copiedColumns.push_back(_model->serializedColumn(c));
-				rows[0].push_back(_model->headerData(c, Qt::Horizontal).toString());
+				headerRow.push_back(_model->headerData(c, Qt::Horizontal).toString());
 			}
+		
+		rows.insert(rows.begin(), headerRow);
 	}
 	
 	_lastJaspCopyValues.clear();
