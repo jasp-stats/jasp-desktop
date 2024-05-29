@@ -14,6 +14,10 @@ Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
 Sys.setenv(MAKEFLAGS				="-j")
 Sys.setenv(RENV_PATHS_CELLAR        = "@R_PKG_CELLAR_PATH@")
 Sys.setenv(RPKG_DOWNLOAD_ONLY       = "@RPKG_DOWNLOAD_ONLY@")
+Sys.setenv(REGENERATE_LOCKFILE      = "@REGENERATE_LOCKFILE@")
+Sys.setenv(MODULE_INSTALL_MODE      = "@MODULE_INSTALL_MODE@")
+
+
 
 if("@R_PKG_CELLAR_PATH@" != "")
 	Sys.setenv(RENV_PATHS_CELLAR   = "@R_PKG_CELLAR_PATH@")
