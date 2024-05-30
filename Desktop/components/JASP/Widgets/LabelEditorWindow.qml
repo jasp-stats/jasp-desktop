@@ -51,7 +51,7 @@ FocusScope
 				{ 
 					target:		columnModel
 					property:	"rowWidth"
-					value:		Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+					value:		levelsTableView.width; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
 				}
 
 				property real filterColWidth:	60  * jaspTheme.uiScale
@@ -119,7 +119,7 @@ FocusScope
 				itemDelegate: Item
 				{
 					id:						backgroundItem
-					
+
 					MouseArea
 					{
 						width:				levelsTableView.width
@@ -159,9 +159,9 @@ FocusScope
 							top:			parent.top
 							left:			parent.left
 							bottom:			parent.bottom
-							topMargin:		-levelsTableView.itemVerticalPadding
+							topMargin:		0.5-levelsTableView.itemVerticalPadding
 							leftMargin:		-levelsTableView.itemHorizontalPadding
-							bottomMargin:	-levelsTableView.itemVerticalPadding
+							bottomMargin:	0.5-levelsTableView.itemVerticalPadding
 						}
 						z:					-10
 					}	

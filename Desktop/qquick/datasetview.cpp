@@ -361,13 +361,19 @@ void DataSetView::storeAllItems()
 	JASPTIMER_RESUME(DataSetView::storeAllItems);
 	
 	for(auto & subVec : _cellTextItems)
+	{
 		for(auto & intTextItem : subVec.second)
 		{
-			intTextItem.second->item->setVisible(false);
+			if(intTextItem.second)
+			{
+				intTextItem.second->item->setVisible(false);
 		
-			if (_cacheItems)		_textItemStorage.push(intTextItem.second);
-			else					delete intTextItem.second;
+				if (_cacheItems)		_textItemStorage.push(intTextItem.second);
+				else					delete intTextItem.second;
+			}
 		}
+		subVec.second.clear();
+	}
 	
 	_cellTextItems.clear();
 	

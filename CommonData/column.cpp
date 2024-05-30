@@ -1668,6 +1668,9 @@ void Column::valuesReverse()
 		if(!std::isnan(aValue))
 			label->setOriginalValue(flipIt[aValue]);
 	}
+	
+	labelsTempReset();
+	_dbUpdateLabelOrder();
 }
 
 
