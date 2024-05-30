@@ -65,12 +65,13 @@ public:
 			void					setDescription(		const std::string & description		);
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
+			void					setAutoSortByValue(	bool				sort			);
 			void					setAnalysisId(		int					analysisId		);
 			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
 			void					setForceType(		bool				force		);
-			void					setCompColStuff(bool   invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
-			void					setDefaultValues(enum columnType columnType = columnType::unknown);
+			void					setCompColStuff(	bool				invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
+			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
@@ -90,13 +91,14 @@ public:
 			int						analysisId()			const	{ return _analysisId;		}
 			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
 			bool					invalidated()			const	{ return _invalidated;		}
+			bool					autoSortByValue()		const	{ return _autoSortByValue;	}
 			bool					forceTypes()			const	{ return _forceTypes;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
 			const std::string	&	title()					const	{ return _title.empty() ? _name : _title;	}
-			const std::string	&	description()			const	{ return _description;		}
 			const std::string	&	error()					const	{ return _error;			}
 			const std::string	&	rCode()					const	{ return _rCode;			}
+			const std::string	&	description()			const	{ return _description;		}
 				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
 				  std::string		constructorJsonStr()	const	{ return _constructorJson.toStyledString();	}
 			const Json::Value	&	constructorJson()		const	{ return _constructorJson;	}
@@ -128,7 +130,7 @@ public:
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
 			void					valuesReverse();
-			void					labelsOrderByValue();
+			void					labelsOrderByValue(bool doDbUpdateEtc=true);
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
 			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
@@ -174,6 +176,7 @@ public:
 			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
 			Label				*	labelByIndexNotEmpty(	size_t					index)									const;
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
+			void					labelsHandleAutoSort(	bool					doDbUpdateEtc = true);
 			size_t					labelCountNotEmpty()																	const;
 
 			bool					isValueEqual(size_t row, double value)				 const;
@@ -243,7 +246,8 @@ private:
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
-									_forceTypes			= true; ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
+									_forceTypes			= true, ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
+									_autoSortByValue	= true;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,

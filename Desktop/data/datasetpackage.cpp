@@ -31,6 +31,7 @@
 #include "utilities/settings.h"
 #include "modules/ribbonmodel.h"
 #include "filtermodel.h"
+#include <ranges>
 
 //Im having problems getting the proxy models to play nicely with beginRemoveRows etc
 //So just reset the whole thing as that is what happens in datasetview
@@ -657,6 +658,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						setManualEdits(true); //Don't synch with external file after editing
 						
 						column->labelsRemoveOrphans();
+						column->labelsHandleAutoSort();
 
 						stringvec	changedCols = {column->name()};
 	
@@ -1397,7 +1399,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
 				
-	if(PreferencesModel::prefs()->orderByValueOnImport())
+                                if(PreferencesModel::prefs()->orderByValueByDefault())
 		column->labelsOrderByValue();
 	
 	return anyChanges || column->type() != prevType;
@@ -1629,16 +1631,20 @@ void DataSetPackage::columnsReverseValues(intset columnIndexes)
 	});
 }
 
-void DataSetPackage::columnsOrderByValues(intset columnIndexes)
+void DataSetPackage::columnsSetAutoSortForColumns(std::map<int,bool> sortPerColumn)
 {
-	columnsApply(columnIndexes, [&](Column * column) 
+	intset cols;
+	for(auto colSort : sortPerColumn)
+		cols.insert(colSort.first);
+	
+	columnsApply(cols, [&](Column * column, int colIdx) 
 	{ 
-		column->labelsOrderByValue();
+		column->setAutoSortByValue(sortPerColumn[colIdx]);
 		return true;
 	});
 }
 
-void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column)> applyThis)
+void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column, int col)> applyThis)
 {
 	if(!_dataSet)
 		return;
@@ -1651,7 +1657,7 @@ void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Colum
 	
 		if(column)
 		{
-			if(applyThis(column))
+			if(applyThis(column, columnIndex))
 				changedCols << tq(column->name());
 		}	
 	}
@@ -1661,6 +1667,11 @@ void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Colum
 		refresh();
 		emit datasetChanged(changedCols, {}, {}, false, false);
 	}
+}
+
+void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column)> applyThis)
+{
+	columnsApply(columnIndexes, [&](Column * column, int){ return applyThis(column); });
 }
 
 bool DataSetPackage::setFilterData(const std::string & rFilter, const boolvec & filterResult)

@@ -4,6 +4,7 @@
 #include "utilities/qutils.h"
 #include "datasettablemodel.h"
 #include "computedcolumnmodel.h"
+#include "gui/preferencesmodel.h"
 
 ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	: DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel()),
@@ -134,6 +135,25 @@ QString ColumnModel::columnDescription() const
 	if (_virtual) return _dummyColumn.description;
 
 	return QString::fromStdString(column() ? column()->description() : "");
+}
+
+
+bool ColumnModel::autoSort() const
+{
+	if (_virtual) 
+		return PreferencesModel::prefs()->orderByValueByDefault();
+	
+	return column() && column()->autoSortByValue();
+}
+
+void ColumnModel::setAutoSort(bool newAutoSort)
+{
+	if (!column() || column()->autoSortByValue() == newAutoSort)
+		return;
+	
+	column()->setAutoSortByValue(newAutoSort);
+	
+	emit autoSortChanged();
 }
 
 bool ColumnModel::useCustomEmptyValues() const
@@ -353,10 +373,10 @@ void ColumnModel::reverseValues()
 	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, {chosenColumn()}));
 }
 
-void ColumnModel::orderByValues()
+void ColumnModel::toggleAutoSortByValues()
 {
 	_lastSelected = -1;
-	_undoStack->pushCommand(new ColumnOrderByValuesCommand(this, {chosenColumn()}));
+	_undoStack->pushCommand(new ColumnToggleAutoSortByValuesCommand(this, {chosenColumn()}));
 }
 
 bool ColumnModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -531,6 +551,7 @@ void ColumnModel::refresh()
 	beginResetModel();
 	endResetModel();
 
+	emit autoSortChanged();
 	emit columnNameChanged();
 	emit nameEditableChanged();
 	emit columnTitleChanged();
@@ -748,3 +769,4 @@ void ColumnModel::languageChangedHandler()
 	emit computedTypeValuesChanged();
 	emit tabsChanged();
 }
+

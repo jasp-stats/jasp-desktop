@@ -257,8 +257,7 @@ SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset col
 	for(int col : _cols)
 		columnNames.push_back(columnName(col));
 		
-	if(columnNames.size() <= 3)	setText(QObject::tr("Set type to '%1' for column(s) '%2'")		.arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
-	else						setText(QObject::tr("Set type to '%1' for %2 columns from '%3'").arg(columnTypeToQString(columnType(colType)), QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Set type to '%1' for column(s) '%2'").arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
 }
 
 void SetColumnTypeCommand::redo()
@@ -275,8 +274,7 @@ ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model
 	for(int col : _cols)
 		columnNames.push_back(columnName(col));
 	
-	if(columnNames.size() <= 3)		setText(QObject::tr("Reverse values of column(s) '%1'")			.arg(columnNames.join(", ")));
-	else							setText(QObject::tr("Reverse values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Reverse values of column(s) '%1'").arg(columnNames.join(", ")));
 }
 
 void ColumnReverseValuesCommand::redo()
@@ -284,21 +282,31 @@ void ColumnReverseValuesCommand::redo()
 	DataSetPackage::pkg()->columnsReverseValues(_cols);
 }
 
-ColumnOrderByValuesCommand::ColumnOrderByValuesCommand(QAbstractItemModel *model, intset cols)
-: UndoModelCommandMultipleColumns(model, cols)
+ColumnToggleAutoSortByValuesCommand::ColumnToggleAutoSortByValuesCommand(QAbstractItemModel *model, intset cols)
+: UndoModelCommand(model)
 {
 	QStringList columnNames;
 	
-	for(int col : _cols)
+	for(int col : cols)
+	{
+		_colsOldAutoSort[col] = DataSetPackage::pkg()->dataSet()->column(col) && DataSetPackage::pkg()->dataSet()->column(col)->autoSortByValue();
+		_colsNewAutoSort[col] = !_colsOldAutoSort[col];
+				
 		columnNames.push_back(columnName(col));
+	}
 	
-	if(columnNames.size() <= 3)		setText(QObject::tr("Order labels by values for column(s) '%1'")			.arg(columnNames.join(", ")));
-	else							setText(QObject::tr("Order labels by values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Toggle autosorting labels by values for column(s) '%1'").arg(columnNames.join(", ")));
 }
 
-void ColumnOrderByValuesCommand::redo()
+void ColumnToggleAutoSortByValuesCommand::redo()
 {
-	DataSetPackage::pkg()->columnsOrderByValues(_cols);
+	DataSetPackage::pkg()->columnsSetAutoSortForColumns(_colsNewAutoSort);
+}
+
+
+void ColumnToggleAutoSortByValuesCommand::undo()
+{
+	DataSetPackage::pkg()->columnsSetAutoSortForColumns(_colsOldAutoSort);
 }
 
 

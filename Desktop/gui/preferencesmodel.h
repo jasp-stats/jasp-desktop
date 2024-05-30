@@ -66,7 +66,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
 	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
 	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
-	Q_PROPERTY(bool			orderByValueOnImport	READ orderByValueOnImport		WRITE setOrderByValueOnImport		NOTIFY orderByValueOnImportChanged		)
+	Q_PROPERTY(bool			orderByValueByDefault	READ orderByValueByDefault		WRITE setOrderByValueByDefault		NOTIFY orderByValueByDefaultChanged		)
 
 
 public:
@@ -131,7 +131,7 @@ public:
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
 	bool		ALTNavModeActive()						const;
-	bool		orderByValueOnImport()					const;
+    bool		orderByValueByDefault()					const;
 
 public slots:
 	bool useNativeFileDialog()					const;
@@ -189,7 +189,7 @@ public slots:
 	void setShowRSyntaxInResults(		bool		showRSyntax);
 	void currentThemeNameHandler();
 	void setALTNavModeActive(			bool		ALTNavModeActive);
-	void setOrderByValueOnImport(		bool		orderByValueOnImport);
+	void setOrderByValueByDefault(		bool		orderByValueByDefault);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -239,7 +239,7 @@ signals:
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
 	void ALTNavModeActiveChanged(		bool		ALTNavModeActive);
 	void aboutToChangeEmptyValues(		QStringList newValues);
-	void orderByValueOnImportChanged(	bool		orderByValueOnImport);
+	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);

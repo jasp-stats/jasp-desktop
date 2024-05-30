@@ -37,6 +37,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(QVariantList	tabs						READ tabs														NOTIFY tabsChanged						)
 	Q_PROPERTY(bool 		isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
 	Q_PROPERTY(bool			compactMode					READ compactMode				WRITE setCompactMode			NOTIFY compactModeChanged				)
+	Q_PROPERTY(bool			autoSort					READ autoSort					WRITE setAutoSort				NOTIFY autoSortChanged					)
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -70,7 +71,7 @@ public:
 	
 	Q_INVOKABLE void reverse();
 	Q_INVOKABLE void reverseValues();
-	Q_INVOKABLE void orderByValues();
+	Q_INVOKABLE void toggleAutoSortByValues();
 	Q_INVOKABLE void moveSelectionUp();
 	Q_INVOKABLE void moveSelectionDown();
 	Q_INVOKABLE void resetFilterAllows();
@@ -103,6 +104,9 @@ public:
 	bool compactMode()		const;
 	
 	
+	bool autoSort() const;
+	void setAutoSort(bool newAutoSort);
+	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -116,7 +120,6 @@ public slots:
 	void setRowWidth(double len);
 	void onChosenColumnChanged();
 	void refresh();
-	//void changeSelectedColumn(QPoint selectionStart);
 	void checkRemovedColumns(int columnIndex, int count);
 	void checkInsertedColumns(const QModelIndex & parent, int first, int last);
 	void openComputedColumn(const QString & name);
@@ -149,6 +152,7 @@ signals:
 	void emptyValuesChanged();
 	void isVirtualChanged();
 	void compactModeChanged();
+	void autoSortChanged();
 	
 private:
 	std::vector<qsizetype>	getSortedSelection()					const;

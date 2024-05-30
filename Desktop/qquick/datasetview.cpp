@@ -1435,9 +1435,9 @@ void DataSetView::columnReverseValues(int columnIndex)
 	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnReverseValues(col);  });
 }
 
-void DataSetView::columnOrderByValues(int columnIndex)
+void DataSetView::columnautoSortByValues(int columnIndex)
 {
-	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnOrderByValues(col);  });
+	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnautoSortByValues(col);  });
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)

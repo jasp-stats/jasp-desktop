@@ -41,7 +41,7 @@ void Column::dbLoad(int id, bool getValues)
 	
 	Json::Value emptyVals;
 	
-	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals);
+	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue);
 	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, _constructorJson);
 	
 	_emptyValues->fromJson(emptyVals);
@@ -243,6 +243,22 @@ bool Column::setConstructorJson(const std::string & constructorJson)
 	Json::Reader().parse(constructorJson, parsed);
 	
 	return setConstructorJson(parsed);
+}
+
+void Column::setAutoSortByValue(bool sort)
+{
+	JASPTIMER_SCOPE(Column::setAutoSortByValue);
+
+	if(sort == _autoSortByValue)
+		return;
+	
+	_autoSortByValue = sort;
+	
+	db().columnSetAutoSort(_id, _autoSortByValue);
+	
+	labelsHandleAutoSort();
+	
+	return;	
 }
 
 bool Column::setConstructorJson(const Json::Value &constructorJson)
@@ -599,6 +615,8 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 			incRevision();
 		return;
 	}
+	
+	labelsHandleAutoSort(false);
 
 	intintmap orderPerDbIds;
 
@@ -1210,7 +1228,14 @@ void Column::labelValueChanged(Label *label, double aDouble)
 			_dbls[r] = aDouble;
 		}
 	
+	labelsHandleAutoSort();
 	dbUpdateValues();
+}
+
+void Column::labelsHandleAutoSort(bool doDbUpdateEtc)
+{
+	if(_autoSortByValue)
+		labelsOrderByValue(doDbUpdateEtc);	
 }
 
 void Column::labelDisplayChanged(Label *label)
@@ -1549,7 +1574,7 @@ void Column::labelsReverse()
 }
 
 
-void Column::labelsOrderByValue()
+void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 	
@@ -1577,7 +1602,8 @@ void Column::labelsOrderByValue()
 	
 	_sortLabelsByOrder();
 	labelsTempReset();
-	_dbUpdateLabelOrder();
+	if(doDbUpdateEtc)
+		_dbUpdateLabelOrder();
 }
 
 doublevec Column::valuesNumericOrdered()

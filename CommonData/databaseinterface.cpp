@@ -21,14 +21,17 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 
 	if(originalVersion < "0.18.2")
 		runStatements(
-			"ALTER TABLE DataSets ADD COLUMN description     TEXT;"			"\n");
+			"ALTER TABLE DataSets ADD COLUMN description     TEXT;");
 
 	
 	if(originalVersion < "0.19.0")
 		runStatements(		
-			"ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson TEXT;"		"\n"
-			"ALTER TABLE Columns  ADD 	COLUMN forceSourceColType INT NULL;""\n"
-			"ALTER TABLE Columns  DROP 	COLUMN isComputed;"					"\n"); // was removed in 0.18.3
+			R"C++20IsGreat(
+				ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;
+				ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;
+				ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;
+				ALTER TABLE Columns  DROP 	COLUMN isComputed;				# was removed in 0.18.3
+			)C++20IsGreat"); 
 	
 
 	transactionWriteEnd();
@@ -861,6 +864,16 @@ void DatabaseInterface::columnSetType(int columnId, columnType colType)
 	});
 }
 
+void DatabaseInterface::columnSetAutoSort(int columnId, bool sort)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::columnSetAutoSort);
+	runStatements("UPDATE Columns SET autoSortByValue=? WHERE id=?;", [&](sqlite3_stmt * stmt)
+	{
+		sqlite3_bind_int(stmt,	1,	sort);
+		sqlite3_bind_int(stmt,	2,	columnId);
+	});
+}
+
 void DatabaseInterface::columnSetInvalidated(int columnId, bool invalidated)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetInvalidated);
@@ -977,7 +990,7 @@ void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool
 	});
 }
 
-void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std::string &title, std::string &description, columnType &colType, int & revision, Json::Value & emptyValuesJson)
+void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std::string &title, std::string &description, columnType &colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetBasicInfo);
 	
@@ -992,20 +1005,21 @@ void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std:
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 6);
+		assert(colCount == 7);
 					name			= _wrap_sqlite3_column_text(stmt, 0);
 					title			= _wrap_sqlite3_column_text(stmt, 1);
 					description		= _wrap_sqlite3_column_text(stmt, 2);
 		std::string colTypeStr		= _wrap_sqlite3_column_text(stmt, 3);
-		revision					= sqlite3_column_int(		stmt, 4);
+					revision		= sqlite3_column_int(		stmt, 4);
 		std::string	emptyValuesStr	= _wrap_sqlite3_column_text(stmt, 5);
+					revision		= sqlite3_column_int(		stmt, 6);
 
 		colType = colTypeStr.empty() ? columnType::unknown : columnTypeFromString(colTypeStr);
 		
 		Json::Reader().parse(emptyValuesStr, emptyValuesJson);
 	};
 
-	runStatements("SELECT name, title, description, columnType, revision, emptyValuesJson FROM Columns WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT name, title, description, columnType, revision, emptyValuesJson, autoSortByValue FROM Columns WHERE id = ?;", prepare, processRow);
 }
 
 
