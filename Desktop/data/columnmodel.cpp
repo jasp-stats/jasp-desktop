@@ -176,6 +176,23 @@ QStringList ColumnModel::emptyValues() const
 	return (_virtual || !column()) ? QStringList() : tql(column()->emptyValues()->emptyStringsColumnModel());
 }
 
+int ColumnModel::firstNonNumericRow() const
+{
+	if(!column() || !column()->autoSortByValue())
+		return -1;
+	
+	int nonEmptyNonNumerics = 0;
+	for(Label * label : column()->labels())	
+		if(!label->isEmptyValue())
+		{
+			if(!label->originalValue().isDouble())
+				return nonEmptyNonNumerics;
+			nonEmptyNonNumerics++;
+		}
+	
+	return nonEmptyNonNumerics;	
+}
+
 void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
 {
 	if (_virtual || !column() || column()->emptyValues()->emptyStrings() == fql(customEmptyValues)) return;
@@ -558,6 +575,7 @@ void ColumnModel::refresh()
 	emit columnTitleChanged();
 	emit columnDescriptionChanged();
 	emit computedTypeValuesChanged();
+	emit firstNonNumericRowChanged();
 	emit columnTypeValuesChanged();
 	emit computedTypeChanged();
 	emit computedTypeEditableChanged();
