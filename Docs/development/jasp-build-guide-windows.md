@@ -64,7 +64,7 @@ Download the Rtools44 from [here](https://cran.r-project.org/bin/windows/Rtools/
 
 After installing Rtools44, you will find a new program in your Start Menu. Search for "Rtools44" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools44 installed, so, to make sure that you are running the right console, you can navigate to your Rtools44 installation folder, and find the `ucrt64` executable.
 
-Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
+Copy and paste the following line into the `ucrt64` command line and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP. Run this command at least twice to make sure all required packages are installed.
 
 ```bash
 pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
@@ -72,10 +72,10 @@ pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp 
 
 #### Downloading and Building ReadStat (on Rtools44)
 
-In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the command line.
+In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the `ucrt64` command line.
 
 ```
-git clone -b v1.1.9 https://github.com/WizardMac/ReadStat.git
+git clone https://github.com/WizardMac/ReadStat.git
 cd ReadStat
 export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
 autoreconf -i -f
