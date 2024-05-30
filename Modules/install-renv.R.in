@@ -1,6 +1,0 @@
-# Generated from install-renv.R.in
-# 
-.libPaths(c("@R_LIBRARY_PATH@"))
-
-install.packages(c('renv'), lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
-#remotes::install_github("vandenman/renv", ref="fix_multiple_cache_error", lib='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@', INSTALL_opts='--no-multiarch --no-docs --no-test-load')
