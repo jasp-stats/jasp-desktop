@@ -206,19 +206,18 @@ private:
 class SetDataCommand : public UndoModelCommand
 {
 public:
-	SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &value, int role);
+	SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &newData, int role);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
 	QVariant				_oldValue,
-							_newValue;
+							_oldLabel,
+							_newData;
 	int						_row		= -1,
 							_col		= -1,
-							_role		= -1,
-							_newColType = -1,
-							_oldColType = -1;
+							_role		= -1;
 };
 
 class UndoModelCommandMultipleColumns : public UndoModelCommand

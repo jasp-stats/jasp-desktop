@@ -51,29 +51,24 @@ void UndoStack::endMacro(UndoModelCommand *command)
 }
 
 SetDataCommand::SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &value, int role)
-	: UndoModelCommand(model), _newValue{value}, _row{row}, _col{col}, _role{role}
+	: UndoModelCommand(model), _newData{value}, _row{row}, _col{col}, _role{role}
 {
-	setText(QObject::tr("Set value to '%1' at row %2 column '%3'").arg(_newValue.toString()).arg(rowName(_row)).arg(columnName(_col)));
+	setText(QObject::tr("Set value to '%1' at row %2 column '%3'").arg(_newData.toString()).arg(rowName(_row)).arg(columnName(_col)));
 }
 
 void SetDataCommand::undo()
 {
 	_model->setData(_model->index(_row, _col), _oldValue, _role);
-	if (_oldColType != _newColType)
-		_model->setData(_model->index(0, _col), _oldColType, int(dataPkgRoles::columnType));
+	
 }
 
 void SetDataCommand::redo()
 {
-	_oldValue = _model->data(_model->index(_row, _col));
-	if(fq(_oldValue.toString()) == EmptyValues::displayString())
-		_oldValue = "";
+	_oldValue = _model->data(_model->index(_row, _col), _role);
+	_oldLabel = _model->data(_model->index(_row, _col), int(dataPkgRoles::label));
 
-	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
+	_model->setData(_model->index(_row, _col), _newData, _role);
 
-	_model->setData(_model->index(_row, _col), _newValue, _role);
-
-	_newColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
 }
 
 InsertColumnCommand::InsertColumnCommand(QAbstractItemModel *model, int column, const QMap<QString, QVariant>& props)
