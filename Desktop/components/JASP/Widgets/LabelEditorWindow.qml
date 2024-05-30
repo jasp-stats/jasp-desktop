@@ -424,41 +424,17 @@ FocusScope
 				property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 				
-	
 				RoundedButton
 				{
-					iconSource:		jaspTheme.iconPath + "arrow-up.png"
+					iconSource:		jaspTheme.iconPath +  "menu-column-order-by-values.svg"
+					onClicked:		{ forceActiveFocus(); columnModel.toggleAutoSortByValues(); }
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); }
-					toolTip:		qsTr("Move selected labels up")
+					toolTip:		qsTr("Automatically order labels by their numeric value")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-				}
-	
-				RoundedButton
-				{
-					iconSource:		jaspTheme.iconPath + "arrow-down.png"
-	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); }
-					toolTip:		qsTr("Move selected labels down")
-	
-					height:			buttonColumnVariablesWindow.buttonHeight
-					implicitHeight: buttonColumnVariablesWindow.buttonHeight
-					width:			height
-				}
-	
-				RoundedButton
-				{
-					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
-	
-					toolTip:		qsTr("Reverse order of all labels")
-	
-					height:			buttonColumnVariablesWindow.buttonHeight
-					implicitHeight: buttonColumnVariablesWindow.buttonHeight
-					width:			height
+					color:			columnModel.autoSort ? jaspTheme.jaspBlue : jaspTheme.buttonColor
 				}
 				
 				RoundedButton
@@ -475,16 +451,45 @@ FocusScope
 				
 				RoundedButton
 				{
-					iconSource:		jaspTheme.iconPath +  "menu-column-order-by-values.svg"
-					onClicked:		{ forceActiveFocus(); columnModel.toggleAutoSortByValues(); }
+					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
+					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
-					toolTip:		qsTr("Automatically order labels by their numeric value")
+					toolTip:		columnModel.autoSort ? qsTr("Reverse order of the labels with non-numeric values") : qsTr("Reverse order of all labels")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					color:			columnModel.autoSort ? jaspTheme.jaspBlue : jaspTheme.buttonColor
 				}
+				
+				
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-up.png"
+	
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); }
+					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels up") : qsTr("Move selected labels up") 
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-down.png"
+	
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); }
+					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels down") : qsTr("Move selected labels down")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+				}
+	
+				
+				
+				
 	
 				RoundedButton
 				{
