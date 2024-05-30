@@ -1838,10 +1838,6 @@ Json::Value Column::serialize() const
 	json["error"]			= _error;
 	json["type"]			= int(_type);
 
-	Json::Value jsonLabels(Json::arrayValue);
-	for (const Label* label : _labels)
-		jsonLabels.append(label->serialize());
-
 	Json::Value jsonDbls(Json::arrayValue);
 	for (double dbl : _dbls)
 		jsonDbls.append(dbl);
@@ -1852,11 +1848,37 @@ Json::Value Column::serialize() const
 
 	json["customEmptyValues"]	= _emptyValues->toJson();
 
-	json["labels"]				= jsonLabels;
+	json["labels"]				= serializeLabels();
 	json["dbls"]				= jsonDbls;
 	json["ints"]				= jsonInts;
 
 	return json;
+}
+
+Json::Value	Column::serializeLabels() const
+{
+	Json::Value jsonLabels(Json::arrayValue);
+	for (const Label* label : _labels)
+		jsonLabels.append(label->serialize());
+	
+	return jsonLabels;
+}
+
+void Column::deserializeLabels(const Json::Value & labels)
+{
+	for (Label* label : _labels)
+	{
+		_labelByIntsIdMap.erase(label->intsId());
+		label->dbDelete();
+		delete label;
+	}
+	_labelByIntsIdMap.clear();
+	_labels.clear();
+	labelsTempReset();
+
+	if (labels.isArray())
+		for (const Json::Value& labelJson : labels)
+			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), -1);
 }
 
 void Column::deserialize(const Json::Value &json)
@@ -1891,21 +1913,7 @@ void Column::deserialize(const Json::Value &json)
 
 	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	
-	for (Label* label : _labels)
-	{
-		_labelByIntsIdMap.erase(label->intsId());
-		label->dbDelete();
-		delete label;
-	}
-	_labelByIntsIdMap.clear();
-	_labels.clear();
-
-	const Json::Value& labels = json["labels"];
-	if (labels.isArray())
-	{
-		for (const Json::Value& labelJson : labels)
-			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), -1);
-	}
+	deserializeLabels(json["labels"]);
 
 	_emptyValues->fromJson(json["customEmptyValues"]);
 	

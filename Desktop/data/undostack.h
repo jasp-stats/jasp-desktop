@@ -58,35 +58,44 @@ private:
 							_oldValue;
 };
 
+class UndoModelCommandLabelChange: public UndoModelCommand
+{
+public:
+	UndoModelCommandLabelChange(QAbstractItemModel *model);
+	
+	void undo()					override;
+	void redo()					override;
+	
+	
+protected:
+	ColumnModel*			_columnModel = nullptr;
+	int						_colId		= -1;
+	Json::Value				_oldLabels	= Json::nullValue;
+};
 
-class SetLabelCommand: public UndoModelCommand
+
+class SetLabelCommand: public UndoModelCommandLabelChange
 {
 public:
 	SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel);
 	
-	void undo()					override;
 	void redo()					override;
 	
 private:
-	ColumnModel*			_columnModel = nullptr;
-	int						_colId		= -1,
-							_labelIndex = -1;
+	int						_labelIndex = -1;
 	QString					_newLabel,
 							_oldLabel;
 };
 
-class SetLabelOriginalValueCommand: public UndoModelCommand
+class SetLabelOriginalValueCommand: public UndoModelCommandLabelChange
 {
 public:
 	SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue);
 	
-	void undo()					override;
 	void redo()					override;
 	
 private:
-	ColumnModel*			_columnModel = nullptr;
-	int						_colId		= -1,
-							_labelIndex = -1;
+	int						_labelIndex = -1;
 	QString					_newOriginalValue,
 							_oldOriginalValue,
 							_oldLabel;
@@ -97,8 +106,8 @@ class FilterLabelCommand: public UndoModelCommand
 public:
 	FilterLabelCommand(QAbstractItemModel *model, int labelIndex, bool checked);
 
-	void undo()					override;
 	void redo()					override;
+	void undo()					override;
 
 private:
 	ColumnModel*			_columnModel = nullptr;
@@ -107,20 +116,17 @@ private:
 	bool					_checked	= false;
 };
 
-class MoveLabelCommand: public UndoModelCommand
+class MoveLabelCommand: public UndoModelCommandLabelChange
 {
 public:
 	MoveLabelCommand(QAbstractItemModel *model, const std::vector<qsizetype>& indexes, bool up);
 
-	void undo()					override;
 	void redo()					override;
 
 private:
 	std::vector<qsizetype>	_getIndexes();
 	void					_moveLabels(bool up);
-	
-	ColumnModel*			_columnModel = nullptr;
-	int						_colId		= -1;
+
 	QStringList				_labels;
 	bool					_up			= false;
 };
@@ -130,9 +136,9 @@ class ReverseLabelCommand: public UndoModelCommand
 public:
 	ReverseLabelCommand(QAbstractItemModel *model);
 
-	void undo()					override;
 	void redo()					override;
-
+	void undo()					override;
+	
 private:
 	ColumnModel*			_columnModel = nullptr;
 	int						_colId		= -1;

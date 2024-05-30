@@ -205,7 +205,9 @@ public:
 			void					checkForLoopInDependencies(std::string code);
 			const	stringset	 &	dependsOnColumns(bool refresh = true);
 			Json::Value				serialize()																const;
+			Json::Value				serializeLabels()														const;
 			void					deserialize(const Json::Value& info);
+			void					deserializeLabels(const Json::Value& info);
 			std::string				getUniqueName(const std::string& name)									const;
 			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false)					const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
 			bool					hasCustomEmptyValues()													const;

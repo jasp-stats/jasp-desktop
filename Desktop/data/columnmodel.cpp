@@ -26,6 +26,7 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::datasetChanged,				this, &ColumnModel::checkCurrentColumn			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &ColumnModel::emptyValuesChanged			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAddedManually,			this, &ColumnModel::columnAddedManuallyHandler,	Qt::QueuedConnection);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::chooseColumn,					this, &ColumnModel::setChosenColumn				);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }

@@ -1651,6 +1651,9 @@ void DataSetPackage::columnsSetAutoSortForColumns(std::map<int,bool> sortPerColu
 		column->setAutoSortByValue(sortPerColumn[colIdx]);
 		return true;
 	});
+	
+	if(cols.size() == 1)
+		emit chooseColumn(*cols.begin());
 }
 
 void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column, int col)> applyThis)
