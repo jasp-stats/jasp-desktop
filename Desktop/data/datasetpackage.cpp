@@ -884,10 +884,17 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		aChange = true;
 	}
 	
-	//If the user is changing the value of a column with a integer/double value we want the display/label to also change
-	//But only if its the same
-	if(	label->originalValueAsString(false) == label->labelDisplay() && label->originalValue().isDouble() && originalValue.isDouble())
-		aChange = label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false)) || aChange;
+	//If the user is changing the value of a column to a string we want the display/label to also change if its the same
+	//to a double/int however might mean recoding so it would be a bit impractical to have the label dissappear
+	if(	label->originalValueAsString(false) == label->labelDisplay())
+	{
+		if(!originalValue.isDouble())
+			aChange = label->setLabel(originalValue.asString()) || aChange;
+		
+		else if(label->originalValue().isDouble())
+				label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false));
+		
+	}
 	
 	aChange = label->setOriginalValue(originalValue) || aChange;
 	
