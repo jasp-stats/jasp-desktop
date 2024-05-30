@@ -898,6 +898,8 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 	
 	aChange = label->setOriginalValue(originalValue) || aChange;
 	
+	column->labelsHandleAutoSort();
+	
 	if(aChange)
 		changedCols = {column->name()};
 

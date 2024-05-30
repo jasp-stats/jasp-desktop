@@ -1241,7 +1241,6 @@ void Column::labelValueChanged(Label *label, double aDouble)
 			_dbls[r] = aDouble;
 		}
 	
-	labelsHandleAutoSort();
 	dbUpdateValues();
 }
 
@@ -1550,7 +1549,7 @@ std::set<size_t> Column::labelsMoveRows(std::vector<qsizetype> rows, bool up)
 
 	std::sort(rows.begin(), rows.end(), [&](const auto & l, const auto & r) { return up ? l < r : r < l; });
 	
-	replaceDoublesTillLabelsRowWithLabels(std::min(qsizetype(labelsTempCount() - 1), rows.back() + 1));
+	replaceDoublesTillLabelsRowWithLabels(std::min(qsizetype(labelsTempCount()), rows.back() + 1));
 	
 	std::vector<Label*> new_labels(_labels.begin(), _labels.end());
 
@@ -1579,7 +1578,7 @@ void Column::labelsReverse()
 {
 	JASPTIMER_SCOPE(Column::labelsReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	std::reverse(_labels.begin(), _labels.end());
 	
 	labelsTempReset();
@@ -1591,14 +1590,14 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	size_t					curMax		= asc.size()+1;
 	std::map<double, int>	orderMap;
 	
 	for(size_t i=0; i<asc.size(); i++)
-		orderMap[asc[i]] = i+1;
+		orderMap[asc[i]] = i;
 	
 	//and now to write them back into the data
 	for(Label * label : _labels)
@@ -1643,7 +1642,7 @@ void Column::valuesReverse()
 {
 	JASPTIMER_SCOPE(Column::valuesReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec	asc = valuesNumericOrdered(),
 				dsc	= asc;
