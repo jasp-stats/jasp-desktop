@@ -220,6 +220,9 @@ public:
 			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
+			
+	static	void					setAutoSortByValuesByDefault(bool autoSort);
+	static	bool					autoSortByValuesByDefault();
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
@@ -247,7 +250,7 @@ private:
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
 									_forceTypes			= true, ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
-									_autoSortByValue	= true;
+									_autoSortByValue;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
@@ -260,6 +263,7 @@ private:
 			stringset				_dependsOnColumns;
 			std::map<int, Label*>	_labelByIntsIdMap;
 			int						_batchedLabelDepth	= 0;
+	static	bool					_autoSortByValuesByDefault;
 			
 			
 };

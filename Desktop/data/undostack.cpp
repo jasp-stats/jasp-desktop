@@ -283,14 +283,13 @@ void ColumnReverseValuesCommand::redo()
 }
 
 ColumnToggleAutoSortByValuesCommand::ColumnToggleAutoSortByValuesCommand(QAbstractItemModel *model, intset cols)
-: UndoModelCommand(model)
+: UndoModelCommandMultipleColumns(model, cols)
 {
 	QStringList columnNames;
 	
 	for(int col : cols)
 	{
-		_colsOldAutoSort[col] = DataSetPackage::pkg()->dataSet()->column(col) && DataSetPackage::pkg()->dataSet()->column(col)->autoSortByValue();
-		_colsNewAutoSort[col] = !_colsOldAutoSort[col];
+		_colsNewAutoSort[col] = DataSetPackage::pkg()->dataSet()->column(col) && !DataSetPackage::pkg()->dataSet()->column(col)->autoSortByValue();
 				
 		columnNames.push_back(columnName(col));
 	}
@@ -302,14 +301,6 @@ void ColumnToggleAutoSortByValuesCommand::redo()
 {
 	DataSetPackage::pkg()->columnsSetAutoSortForColumns(_colsNewAutoSort);
 }
-
-
-void ColumnToggleAutoSortByValuesCommand::undo()
-{
-	DataSetPackage::pkg()->columnsSetAutoSortForColumns(_colsOldAutoSort);
-}
-
-
 
 UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemModel *model, intset cols)
 : UndoModelCommand(model), _cols{cols}
@@ -328,7 +319,6 @@ void UndoModelCommandMultipleColumns::undo()
 
 	
 	DataSetPackage::pkg()->refresh();
-	
 }
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)

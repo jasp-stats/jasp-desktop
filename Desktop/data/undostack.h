@@ -262,17 +262,15 @@ private:
 	int							_newColType = -1;
 };
 
-class ColumnToggleAutoSortByValuesCommand : public UndoModelCommand
+class ColumnToggleAutoSortByValuesCommand : public UndoModelCommandMultipleColumns
 {
 public:
 	ColumnToggleAutoSortByValuesCommand(QAbstractItemModel *model, intset cols);
 
-	void undo()					override;
 	void redo()					override;
 	
 private:
-	std::map<int, bool>			_colsOldAutoSort,
-								_colsNewAutoSort;
+	std::map<int, bool>			_colsNewAutoSort;
 };
 
 class ColumnReverseValuesCommand : public UndoModelCommand

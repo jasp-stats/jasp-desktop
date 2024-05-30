@@ -5,12 +5,25 @@
 #include "columnutils.h"
 #include "databaseinterface.h"
 
+bool Column::_autoSortByValuesByDefault = true;
+
+bool Column::autoSortByValuesByDefault()
+{
+	return _autoSortByValuesByDefault;	
+}
+
+void Column::setAutoSortByValuesByDefault(bool autoSort)
+{
+	_autoSortByValuesByDefault = autoSort;
+}
+
 Column::Column(DataSet * data, int id)
-	: DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
-	_data(data),
-	_id(id),
-	_emptyValues(new EmptyValues(data->emptyValues())),
-	_doubleDummy(new Label(this))
+:	DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
+	_data(				data),
+	_id(				id),
+	_emptyValues(		new EmptyValues(data->emptyValues())),
+	_doubleDummy(		new Label(this)),
+	_autoSortByValue(	_autoSortByValuesByDefault)
 {}
 
 Column::~Column()
@@ -1812,16 +1825,16 @@ Json::Value Column::serialize() const
 
 	json["name"]			= _name;
 	json["title"]			= _title;
-	json["description"]		= _description;
 	json["rCode"]			= _rCode;
-	json["type"]			= int(_type);
 	json["analysisId"]		= _analysisId;
 	json["invalidated"]		= _invalidated;
+	json["constructorJson"] = _constructorJson;
+	json["autoSortByValue"] = _autoSortByValue;
+	json["description"]		= _description;
 	json["forceTypes"]		= _forceTypes;
 	json["codeType"]		= int(_codeType);
 	json["error"]			= _error;
-	json["rCode"]			= _rCode;
-	json["constructorJson"] = _constructorJson;
+	json["type"]			= int(_type);
 
 	Json::Value jsonLabels(Json::arrayValue);
 	for (const Label* label : _labels)
@@ -1870,8 +1883,9 @@ void Column::deserialize(const Json::Value &json)
 	_codeType			= computedColumnType(json["codeType"].asInt());
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
-	_constructorJson	= json["constructorJson"];
 	_analysisId			= json["analysisId"].asInt();
+	_constructorJson	= json["constructorJson"];
+	_autoSortByValue	= json["autoSortByValue"].asBool();
 
 	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	
@@ -1905,7 +1919,7 @@ void Column::deserialize(const Json::Value &json)
 	
 	assert(_ints.size() == _dbls.size());
 	
-	dbUpdateValues();
+	dbUpdateValues(false);
 }
 
 std::string Column::getUniqueName(const std::string &name) const
