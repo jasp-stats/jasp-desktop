@@ -33,7 +33,7 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
 	
 	// variables
 	variableFormat.setToolTip("variable");
-	rule.pattern = QRegularExpression("\\b\\w*\\b");
+	rule.pattern = QRegularExpression(R"(\b\w*\b)");
 	rule.format = variableFormat;
 	highlightingRules.append(rule);
 
@@ -50,9 +50,9 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
 
-    // boolean
+    // boolean and special number
     booleanFormat.setForeground(Qt::magenta);
-    rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE)\b)");
+    rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE|Inf|NaN)\b)");
     rule.format = booleanFormat;
     highlightingRules.append(rule);
 
@@ -63,7 +63,7 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     // punctuation
-    punctuationFormat.setForeground(Qt::darkCyan);
+    punctuationFormat.setForeground(Qt::blue);
     rule.pattern = QRegularExpression(R"([(){}\[\],;])");
     rule.format = punctuationFormat;
     highlightingRules.append(rule);
