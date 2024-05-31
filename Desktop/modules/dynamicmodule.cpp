@@ -427,7 +427,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
 	}
 	setInstallLog("Installing module " + _name + ".\n");
-	return "tmp <- .libPaths(); .libPaths(\"" + AppDirs::bundledModulesDir().toStdString() + "Tools/jaspModuleInstaller_library/" + "\"); Sys.setenv(MODULE_INSTALL_MODE=\"localizeModuleOnly\");options(\"renv.config.install.verbose\" = TRUE, \"PKGDEPENDS_LIBRARY\"=\"" + AppDirs::bundledModulesDir().toStdString() + "Tools/pkgdepends_library/" + "\"); result <- jaspModuleInstaller::installJaspModule(modulePkg='" + _modulePackage + "', moduleLibrary='" + moduleRLibrary().toStdString() +
+	return "tmp <- .libPaths(); .libPaths(\"" + AppDirs::bundledModulesDir().toStdString() + "Tools/jaspModuleInstaller_library" + "\"); Sys.setenv(MODULE_INSTALL_MODE=\"localizeModuleOnly\");options(\"renv.config.install.verbose\" = TRUE, \"PKGDEPENDS_LIBRARY\"=\"" + AppDirs::bundledModulesDir().toStdString() + "Tools/pkgdepends_library/" + "\"); result <- jaspModuleInstaller::installJaspModule(modulePkg='" + _modulePackage + "', moduleLibrary='" + moduleRLibrary().toStdString() +
 		"', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") +
 	 	", force=TRUE, frameworkLibrary='"+fq(AppDirs::rHome())+"/library'); .libPaths(tmp); result";
 }
