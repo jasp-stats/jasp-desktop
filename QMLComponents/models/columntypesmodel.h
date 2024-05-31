@@ -21,6 +21,7 @@
 
 #include <QAbstractListModel>
 #include <QStringList>
+#include "columntype.h"
 
 ///
 /// A simple qt model with the columntypes, their respective icons and names
@@ -38,11 +39,17 @@ public:
 		IsEnabledRole
 	};
 
-	ColumnTypesModel(QObject *parent) : QAbstractListModel(parent) {}
+	typedef std::vector<columnType> VectorType;
 
-	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return 3;	}
+	ColumnTypesModel(QObject *parent, VectorType types = { columnType::scale, columnType::ordinal, columnType::nominal }) : QAbstractListModel(parent), _types{types} {}
+
+	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _types.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>			roleNames()													const override;
+
+private:
+
+	VectorType _types;
 
 };
 

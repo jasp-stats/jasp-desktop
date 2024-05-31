@@ -25,6 +25,7 @@
 
 class ListModelDraggable;
 class CheckBoxBase;
+class ColumnTypesModel;
 
 class VariablesListBase : public JASPListControl, public BoundControl
 {
@@ -39,7 +40,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList		columnsNames					READ columnsNames															NOTIFY columnsNamesChanged					)
 	Q_PROPERTY( QStringList		dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
 	Q_PROPERTY( QString			interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
-
+	Q_PROPERTY( QAbstractListModel* allowedTypesModel			READ allowedTypesModel														NOTIFY allowedTypesModelChanged				)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
@@ -71,6 +72,7 @@ public:
 	const QString&				interactionHighOrderCheckBox()				const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control) override;
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
+	QAbstractListModel*			allowedTypesModel();
 
 signals:
 	void listViewTypeChanged();
@@ -82,6 +84,7 @@ signals:
 	void columnsNamesChanged();
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
+	void allowedTypesModelChanged();
 
 protected:
 	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
@@ -126,6 +129,8 @@ private:
 								_columnsNames,
 								_dropKeys;
 	QString						_interactionHighOrderCheckBox;
+
+	ColumnTypesModel *			_allowedTypesModel = nullptr;
 	
 };
 

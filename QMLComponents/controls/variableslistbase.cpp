@@ -36,6 +36,7 @@
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
+#include "models/columntypesmodel.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -269,6 +270,11 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	if (form()) form()->blockValueChangeSignal(false);
 }
 
+QAbstractListModel *VariablesListBase::allowedTypesModel()
+{
+	return _allowedTypesModel;
+}
+
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	Log::log() << "LOG setDropKeys " << name() << ": " << dropKeys.join('/') << std::endl;
@@ -362,6 +368,9 @@ void VariablesListBase::_setAllowedAndSuggestedVariables()
 		allowedIcons.push_back(VariableInfo::getIconFile(type, !showTheseAsInactive.count(type) ? VariableInfo::DefaultIconType : VariableInfo::TransparentIconType));
 	
 	setAllowedColumnsIcons(allowedIcons);
+
+	delete _allowedTypesModel;
+	_allowedTypesModel = allowedTypes.size() > 0 ? new ColumnTypesModel(this, allowedTypes) : new ColumnTypesModel(this);
 
 	if (form() && form()->initialized())
 		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.

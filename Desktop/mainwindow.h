@@ -37,7 +37,7 @@
 #include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"
-#include "gui/columntypesmodel.h"
+#include "models/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonbutton.h"

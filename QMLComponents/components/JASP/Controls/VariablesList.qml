@@ -17,10 +17,10 @@
 //
 
 
-import QtQuick			2.11
-import QtQuick.Controls 2.4 as QTCONTROLS
-import QtQml.Models		2.2
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls  as QTCONTROLS
+import QtQml.Models
+import JASP
 
 VariablesListBase
 {
@@ -238,7 +238,8 @@ VariablesListBase
 		
 	Repeater
 	{
-		model: allowedColumnsIcons
+		id:		allowedColumnsId
+		model:	allowedColumnsIcons
 
 		Image
 		{
@@ -482,6 +483,9 @@ VariablesListBase
 
 					//So Im pushing this through a property because it seems to results in "undefined" during loading and this adds a ton of warnings to the output which is not helpful. I tried less heavyhanded approaches first but this works perfectly fine.
 					property var sourceVar:	variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
+
+					function setColumnType(t) { console.log("Type: " + t) }
+
 				}
 
 				Text
@@ -546,8 +550,46 @@ VariablesListBase
 				
 				MouseArea
 				{
+					id:				iconMouseArea
+					enabled:		(variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1)
+					anchors.fill:	icon
+
+					onClicked:
+					{
+						var functionCall      = function (index)
+						{
+							var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
+
+							if (columnType !== undefined)
+								icon.setColumnType(columnType);
+
+							customMenu.hide()
+						}
+
+						var props = {
+							"model":		variablesList.allowedTypesModel,
+							"functionCall": functionCall
+						};
+
+						customMenu.toggle(itemRectangle, props);
+
+					}
+
+					hoverEnabled:		true
+					cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+				}
+
+				MouseArea
+				{
 					id:				mouseArea
-					anchors.fill:	parent
+					anchors
+					{
+						top:		parent.top
+						bottom:		parent.bottom
+						left:		iconMouseArea.enabled ? iconMouseArea.right : parent.left
+						right:		parent.right
+					}
+
 					drag.target:	itemRectangle.draggable ? parent : null
 					hoverEnabled:	true
 					cursorShape:	Qt.PointingHandCursor

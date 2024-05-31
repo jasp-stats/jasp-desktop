@@ -17,8 +17,6 @@
 //
 
 #include "columntypesmodel.h"
-#include "utilities/qutils.h"
-#include "utilities/settings.h"
 #include "jasptheme.h"
 
 QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
@@ -26,13 +24,24 @@ QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 	if (index.row() >= rowCount())
 		return QVariant();
 
-			QStringList displayTexts		= { tr("Scale"),			tr("Ordinal"),			tr("Nominal")			};
-	static	QStringList menuImageSources	= { "variable-scale.svg",	"variable-ordinal.svg", "variable-nominal.svg"	};
+	static std::map<columnType, QString> displayTexts =
+	{
+		std::make_pair ( columnType::scale,		QObject::tr("Scale")	) ,
+		std::make_pair ( columnType::ordinal,	QObject::tr("Ordinal")	) ,
+		std::make_pair ( columnType::nominal,	QObject::tr("Nominal")	)
+	};
+
+	static	std::map<columnType, QString> menuImageSources =
+	{
+		std::make_pair ( columnType::scale,		"variable-scale.svg"	),
+		std::make_pair ( columnType::ordinal,	"variable-ordinal.svg"	),
+		std::make_pair ( columnType::nominal,	"variable-nominal.svg"	)
+	};
 
 	switch(role)
 	{
-	case DisplayRole:			return displayTexts[index.row()];
-	case MenuImageSourceRole:	return JaspTheme::currentIconPath() + menuImageSources[index.row()];
+	case DisplayRole:			return displayTexts[_types[index.row()]];
+	case MenuImageSourceRole:	return JaspTheme::currentIconPath() + menuImageSources[_types[index.row()]];
 	case IsEnabledRole:			return true;
 	case IsSeparatorRole:		return false;
 	case JSFunctionRole:
