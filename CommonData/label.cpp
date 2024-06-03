@@ -110,7 +110,7 @@ Json::Value Label::serialize() const
 	json["id"]				= _dbId;
 	json["order"]			= _order;
 	json["label"]			= _label;
-	json["value"]			= _intsId;
+	json["intsId"]			= _intsId;
 	json["filterAllows"]	= _filterAllows;
 	json["description"]		= _description;
 	json["originalValue"]	= _originalValue;

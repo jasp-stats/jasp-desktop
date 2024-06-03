@@ -1889,7 +1889,15 @@ void Column::deserializeLabels(const Json::Value & labels)
 
 	if (labels.isArray())
 		for (const Json::Value& labelJson : labels)
-			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), -1);
+			labelsAdd(
+						labelJson["intsId"]			.asInt(), 
+						labelJson["label"]			.asString(), 
+						labelJson["filterAllows"]	.asBool(), 
+						labelJson["description"]	.asString(), 
+						labelJson["originalValue"], 
+						labelJson["order"]			.asInt(), 
+						-1
+			);
 }
 
 void Column::deserialize(const Json::Value &json)
@@ -1897,8 +1905,8 @@ void Column::deserialize(const Json::Value &json)
 	if (json.isNull())
 		return;
 
-	std::string name = json["name"].asString(),
-				title = json["title"].asString();
+	std::string name	= json["name"].asString(),
+				title	= json["title"].asString();
 
 	_name				= getUniqueName(name);
 	db().columnSetName(_id, _name);
