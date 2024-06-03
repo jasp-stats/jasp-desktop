@@ -88,10 +88,6 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		switch(info)
 		{
 		case VariableInfo::VariableType:				return	colTypeInt;
-		case VariableInfo::VariableTypeName:			return	columnTypeToQString(colTypeHere);
-		case VariableInfo::VariableTypeIcon:			return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DefaultIconType);
-		case VariableInfo::VariableTypeDisabledIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::DisabledIconType);
-		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::InactiveIconType);
 		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::TotalNumericValues:			return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::totalNumericValues));

@@ -567,7 +567,7 @@ VariablesListBase
 					{
 						var functionCall = function (index)
 						{
-							icon.source = variablesList.allowedTypesModel.getIconSource(index)
+							variablesList.setVariableType(itemRectangle.rank, variablesList.allowedTypesModel.getType(index))
 							customMenu.hide()
 						}
 

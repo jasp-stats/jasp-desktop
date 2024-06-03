@@ -75,7 +75,7 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 		QList<QPair<QString, int> > termsTypeList;
 
 		for (const QString& term : termsList)
-			termsTypeList.push_back(QPair<QString, int>(term, requestInfo(VariableInfo::VariableType, term).toInt()));
+			termsTypeList.push_back(QPair<QString, int>(term, (int)getVariableType(term)));
 
 		std::sort(termsTypeList.begin(), termsTypeList.end(),
 				  [&](const QPair<QString, int>& a, const QPair<QString, int>& b) {

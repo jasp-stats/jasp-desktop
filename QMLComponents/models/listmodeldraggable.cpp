@@ -134,7 +134,5 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 	if (variableTypesAllowed.empty() || term.size() > 1)
 		return true;
 	
-	columnType	variableType = (columnType)requestInfo(VariableInfo::VariableType, term.asQString()).toInt();
-
-	return variableTypesAllowed.contains(variableType);
+	return variableTypesAllowed.contains(getVariableType(term.asQString()));
 }

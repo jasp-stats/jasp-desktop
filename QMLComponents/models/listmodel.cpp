@@ -245,12 +245,33 @@ QStringList ListModel::termsTypes()
 
 	for (const Term& term : terms())
 	{
-		columnType type = columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt());
+		columnType type = getVariableType(term.asQString());
 		if (type != columnType::unknown)
 			types.insert(tq(columnTypeToString(type)));
 	}
 
 	return types.values();
+}
+
+void ListModel::setVariableType(int ind, columnType type)
+{
+	if (ind < 0 || ind > _terms.size())
+		return;
+
+	QString name = _terms.at(ind).asQString();
+	if (getVariableType(name) == type)
+		return;
+
+	_tempTermTypes[name] = type;
+	emit dataChanged(index(ind, 0), index(ind, 0));
+}
+
+columnType ListModel::getVariableType(const QString& name) const
+{
+	if (_tempTermTypes.find(name) != _tempTermTypes.end())
+		return _tempTermTypes.at(name);
+
+	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
 }
 
 int ListModel::searchTermWith(QString searchString)
@@ -420,9 +441,10 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	case ListModel::ColumnTypeDisabledIconRole:
 	{
 		if (!listView()->containsVariables() || term.size() != 1)	return "";
-		if (role == ListModel::ColumnTypeRole)						return requestInfo(VariableInfo::VariableTypeName, term.asQString());
-		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(VariableInfo::VariableTypeIcon, term.asQString());
-		else if (role == ListModel::ColumnTypeDisabledIconRole)		return requestInfo(VariableInfo::VariableTypeDisabledIcon, term.asQString());
+		columnType colType = getVariableType(term.asQString());
+		if (role == ListModel::ColumnTypeRole)						return columnTypeToQString(colType);
+		else if (role == ListModel::ColumnTypeIconRole)				return VariableInfo::info()->getIconFile(colType, VariableInfo::DefaultIconType);
+		else if (role == ListModel::ColumnTypeDisabledIconRole)		return VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType);
 		break;
 	}
 	}
@@ -523,7 +545,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		QStringList rightValues;
 		for (const QString& value : values)
 		{
-			columnType type = columnType(requestInfo(VariableInfo::VariableType, value).toInt());
+			columnType type = columnType(getVariableType(value));
 			if (types.contains(type))
 				rightValues.append(value);
 		}

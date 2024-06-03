@@ -86,6 +86,8 @@ public:
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 			QStringList				termsTypes();
+			void					setVariableType(int index, columnType type);
+			columnType				getVariableType(const QString& name)						const;
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -147,6 +149,7 @@ private:
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
+			std::map<QString, columnType>	_tempTermTypes;	// If the type of a term is changed by the user, store this change here.
 
 };
 

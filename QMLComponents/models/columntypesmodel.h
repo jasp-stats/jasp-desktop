@@ -49,7 +49,6 @@ public:
 	virtual QHash<int, QByteArray>			roleNames()													const override;
 
 	Q_INVOKABLE	int							getType(int index)											const;
-	Q_INVOKABLE	QString						getIconSource(int index)									const;
 
 private:
 

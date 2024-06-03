@@ -104,6 +104,9 @@ protected:
 	ListViewType				_listViewType	= ListViewType::AssignedVariables;
 	BoundControl*				_boundControl	= nullptr;
 
+public slots:
+	void setVariableType(int index, int type);
+
 protected slots:
 	void termsChangedHandler()		override;
 	void moveItemsDelayedHandler();

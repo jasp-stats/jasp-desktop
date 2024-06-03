@@ -258,7 +258,7 @@ bool JASPListControl::areTypesAllowed(QStringList types)
 
 columnType JASPListControl::getVariableType(const QString &name)
 {
-	return columnType(model()->requestInfo(VariableInfo::VariableType, name).toInt());
+	return model()->getVariableType(name);
 }
 
 int JASPListControl::count()

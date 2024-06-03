@@ -82,8 +82,4 @@ int ColumnTypesModel::getType(int i) const
 {
 	return data(index(i, 0), TypeRole).toInt();
 }
-QString ColumnTypesModel::getIconSource(int i) const
-{
-	return data(index(i, 0), MenuImageSourceRole).toString();
-}
 

@@ -305,6 +305,11 @@ ListModel *VariablesListBase::getRelatedModel()
 	return result;
 }
 
+void VariablesListBase::setVariableType(int index, int type)
+{
+	model()->setVariableType(index, columnType(type));
+}
+
 void VariablesListBase::termsChangedHandler()
 {
 	setColumnsTypes(model()->termsTypes());
