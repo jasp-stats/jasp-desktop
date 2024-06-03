@@ -666,7 +666,8 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 			_cellTextItems.erase(col);
 	}
 
-	textItem->item->setVisible(false);
+	textItem->item->setFocus(	false);
+	textItem->item->setVisible(	false);
 
 	if (_cacheItems)		_textItemStorage.push(textItem);
 	else					delete textItem;
@@ -1362,6 +1363,9 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	//Reset edit if we are selecting things with shift or ctrl/cmd, or when the last clicked place is not the same as the editthing
 	if(shiftPressed || ctrlCmdPressed || row != _prevEditRow || col != _prevEditCol)
 		clearEdit();
+	
+	if(!shiftPressed && !ctrlCmdPressed && ( row != _prevEditRow || col != _prevEditCol) )
+		edit(row, col);
 
 	
 /* //Even if you reenable this we prob dont want this in release par accident
