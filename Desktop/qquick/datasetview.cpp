@@ -993,6 +993,8 @@ void DataSetView::positionEditItem(int row, int col)
 		storeTextItem(row, col, true);
 		_prevEditRow = row; //Store info to recreate it later
 		_prevEditCol = col;
+		
+		emit editCoordinatesChanged();
 
 		QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 		_editDelegate->create(localIncubator, _editItemContextual->context);
@@ -2092,4 +2094,9 @@ void DataSetView::setMainData(bool newMainData)
 	else if(_mainDataSetView == this)	_mainDataSetView = nullptr;
 	
 	emit mainDataChanged();
+}
+
+QPoint DataSetView::editCoordinates() const
+{
+	return QPoint(_prevEditCol, _prevEditRow);
 }

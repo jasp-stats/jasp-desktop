@@ -1,6 +1,7 @@
 #include "timers.h"
-#include "columnmodel.h"
 #include "jasptheme.h"
+#include "columnmodel.h"
+#include "columnutils.h"
 #include "utilities/qutils.h"
 #include "datasettablemodel.h"
 #include "computedcolumnmodel.h"
@@ -27,6 +28,7 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &ColumnModel::emptyValuesChanged			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAddedManually,			this, &ColumnModel::columnAddedManuallyHandler,	Qt::QueuedConnection);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::chooseColumn,					this, &ColumnModel::setChosenColumn				);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::rowsTotalChanged,			Qt::QueuedConnection);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
@@ -176,16 +178,23 @@ QStringList ColumnModel::emptyValues() const
 	return (_virtual || !column()) ? QStringList() : tql(column()->emptyValues()->emptyStringsColumnModel());
 }
 
+int ColumnModel::rowsTotal() const
+{
+	return rowCount();	
+}
+
 int ColumnModel::firstNonNumericRow() const
 {
 	if(!column() || !column()->autoSortByValue())
 		return -1;
 	
-	int nonEmptyNonNumerics = 0;
+	int nonEmptyNonNumerics = 0; //We do not need to take any "double-labels" into account, because we require autoSortByValue() to be true before continuing, which means everything got a label 
 	for(Label * label : column()->labels())	
 		if(!label->isEmptyValue())
 		{
-			if(!label->originalValue().isDouble())
+			static double dummy;
+			
+			if(!(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
 				return nonEmptyNonNumerics;
 			nonEmptyNonNumerics++;
 		}
@@ -571,17 +580,18 @@ void ColumnModel::refresh()
 
 	emit autoSortChanged();
 	emit columnNameChanged();
-	emit nameEditableChanged();
 	emit columnTitleChanged();
+	emit nameEditableChanged();
 	emit columnDescriptionChanged();
 	emit computedTypeValuesChanged();
 	emit firstNonNumericRowChanged();
+	emit computedTypeEditableChanged();
+	emit useCustomEmptyValuesChanged();
+	emit firstNonNumericRowChanged();
 	emit columnTypeValuesChanged();
 	emit computedTypeChanged();
-	emit computedTypeEditableChanged();
-	emit columnTypeChanged();
-	emit useCustomEmptyValuesChanged();
 	emit emptyValuesChanged();
+	emit columnTypeChanged();
 
 	emit tabsChanged();
 

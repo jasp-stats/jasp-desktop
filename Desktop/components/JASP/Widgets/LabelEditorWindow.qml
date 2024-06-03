@@ -53,11 +53,22 @@ FocusScope
 					property:	"rowWidth"
 					value:		levelsTableView.width; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
 				}
+				
+				Connections
+				{
+					target:		columnModel
+					function	onChosenColumnChanged()
+					{
+						levelsTableView.lastRow = -1;
+					}
+				}
 
-				property real filterColWidth:	60  * jaspTheme.uiScale
-				property real remainingWidth:	width - filterColWidth
-				property real valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property real labelColWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	filterColWidth:	60  * jaspTheme.uiScale
+				property real	remainingWidth:	width - filterColWidth
+				property real	valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	labelColWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property int	lastRow:		-1
+				
 
 				columnHeaderDelegate:	Item
 				{
@@ -116,9 +127,11 @@ FocusScope
 
 				rowNumberDelegate:	Item { width: 0; height: 0; }
 
-				itemDelegate: Item
+				itemDelegate: FocusScope
 				{
 					id:						backgroundItem
+					
+					onActiveFocusChanged:	if(activeFocus)	levelsTableView.lastRow = rowIndex
 
 					MouseArea
 					{
@@ -271,7 +284,7 @@ FocusScope
 		
 										verticalAlignment:	Text.AlignVCenter
 		
-										property int chosenColumnWas: -1
+										property int	chosenColumnWas: -1
 										property string lastActiveText: ""
 										property int	lastActiveRow:	-1
 										
@@ -447,6 +460,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		!columnModel.autoSort || columnModel.firstNonNumericRow > 1 //if there are at least 2 numerics we have something to reverse
 				}
 				
 				RoundedButton
@@ -459,9 +473,9 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to reverse
+					
 				}
-				
-				
 	
 				RoundedButton
 				{
@@ -473,6 +487,8 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					enabled:		levelsTableView.lastRow == -1 ? false : columnModel.firstNonNumericRow < levelsTableView.lastRow
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move up
 				}
 	
 				RoundedButton
@@ -485,11 +501,9 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					enabled:		levelsTableView.lastRow == -1  ? false :  ((columnModel.firstNonNumericRow <= levelsTableView.lastRow) && ( levelsTableView.lastRow < columnModel.rowsTotal - 1 ))
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move down
 				}
-	
-				
-				
-				
 	
 				RoundedButton
 				{

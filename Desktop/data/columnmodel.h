@@ -39,6 +39,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool			compactMode					READ compactMode				WRITE setCompactMode			NOTIFY compactModeChanged				)
 	Q_PROPERTY(bool			autoSort					READ autoSort					WRITE setAutoSort				NOTIFY autoSortChanged					)
 	Q_PROPERTY(int			firstNonNumericRow			READ firstNonNumericRow											NOTIFY firstNonNumericRowChanged		) //Only works when autosort is on
+	Q_PROPERTY(int			rowsTotal					READ rowsTotal													NOTIFY rowsTotalChanged					)
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -58,6 +59,7 @@ public:
 	bool			useCustomEmptyValues()			const;
 	QStringList		emptyValues()					const;
 	int				firstNonNumericRow()			const;
+	int				rowsTotal()						const;
 
 
 	bool			setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
@@ -152,6 +154,7 @@ signals:
 	void tabsChanged();
 	void useCustomEmptyValuesChanged();
 	void emptyValuesChanged();
+	void rowsTotalChanged();
 	void isVirtualChanged();
 	void compactModeChanged();
 	void autoSortChanged();
