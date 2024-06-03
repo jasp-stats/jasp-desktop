@@ -481,7 +481,7 @@ FocusScope
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); }
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.lastRow--; }
 					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels up") : qsTr("Move selected labels up") 
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
@@ -495,7 +495,7 @@ FocusScope
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); }
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.lastRow++; }
 					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels down") : qsTr("Move selected labels down")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight

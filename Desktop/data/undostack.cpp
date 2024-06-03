@@ -596,16 +596,11 @@ std::vector<qsizetype> MoveLabelCommand::_getIndexes()
 	return indexes;
 }
 
-void MoveLabelCommand::_moveLabels(bool up)
+void MoveLabelCommand::redo()
 {
 	_columnModel->setChosenColumn(_colId);
 	std::vector<qsizetype> indexes = _getIndexes(); // The indexes must be recalculated each time
-	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, up); //through DataSetPackage to make sure signals get sent
-}
-
-void MoveLabelCommand::redo()
-{
-	_moveLabels(_up);
+	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, _up); //through DataSetPackage to make sure signals get sent
 }
 
 ReverseLabelCommand::ReverseLabelCommand(QAbstractItemModel *model)
