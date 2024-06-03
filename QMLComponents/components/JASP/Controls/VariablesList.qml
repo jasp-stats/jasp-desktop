@@ -483,9 +483,6 @@ VariablesListBase
 
 					//So Im pushing this through a property because it seems to results in "undefined" during loading and this adds a ton of warnings to the output which is not helpful. I tried less heavyhanded approaches first but this works perfectly fine.
 					property var sourceVar:	variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
-
-					function setColumnType(t) { console.log("Type: " + t) }
-
 				}
 
 				Text
@@ -550,63 +547,41 @@ VariablesListBase
 				
 				MouseArea
 				{
-					id:				iconMouseArea
-					enabled:		(variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1)
-					anchors.fill:	icon
-
-					onClicked:
-					{
-						var functionCall      = function (index)
-						{
-							var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
-
-							if (columnType !== undefined)
-								icon.setColumnType(columnType);
-
-							customMenu.hide()
-						}
-
-						var props = {
-							"model":		variablesList.allowedTypesModel,
-							"functionCall": functionCall
-						};
-
-						customMenu.toggle(itemRectangle, props);
-
-					}
-
-					hoverEnabled:		true
-					cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-				}
-
-				MouseArea
-				{
 					id:				mouseArea
-					anchors
-					{
-						top:		parent.top
-						bottom:		parent.bottom
-						left:		iconMouseArea.enabled ? iconMouseArea.right : parent.left
-						right:		parent.right
-					}
+					anchors.fill:	parent
 
 					drag.target:	itemRectangle.draggable ? parent : null
 					hoverEnabled:	true
 					cursorShape:	Qt.PointingHandCursor
-					
+
 					onDoubleClicked: (mouse)=>
 					{
 						if (itemRectangle.draggable)
 						{
 							variablesList.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 							itemDoubleClicked(index);
-						}
+						}										 
 					}
 					
 					onClicked: (mouse)=>
 					{
+						var functionCall = function (index)
+						{
+							icon.source = variablesList.allowedTypesModel.getIconSource(index)
+							customMenu.hide()
+						}
+
+						var props =
+						{
+							"model":		variablesList.allowedTypesModel,
+							"functionCall":	functionCall
+						};
+
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
+
+						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && mouse.x < icon.width)
+							customMenu.toggle(itemRectangle, props, 0, parent.height);
 					}
 					
 					onPressed: (mouse)=>

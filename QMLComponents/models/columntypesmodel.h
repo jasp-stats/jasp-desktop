@@ -36,16 +36,20 @@ public:
 		MenuImageSourceRole,
 		JSFunctionRole,
 		IsSeparatorRole,
-		IsEnabledRole
+		IsEnabledRole,
+		TypeRole
 	};
 
 	typedef std::vector<columnType> VectorType;
 
-	ColumnTypesModel(QObject *parent, VectorType types = { columnType::scale, columnType::ordinal, columnType::nominal }) : QAbstractListModel(parent), _types{types} {}
+	ColumnTypesModel(QObject *parent, VectorType types = {});
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _types.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>			roleNames()													const override;
+
+	Q_INVOKABLE	int							getType(int index)											const;
+	Q_INVOKABLE	QString						getIconSource(int index)									const;
 
 private:
 

@@ -19,6 +19,16 @@
 #include "columntypesmodel.h"
 #include "jasptheme.h"
 
+ColumnTypesModel::ColumnTypesModel(QObject *parent, VectorType types) : QAbstractListModel(parent), _types{types}
+{
+	if (types.empty())
+	{
+		_types =  columnTypeToVector(); // If other types are added, they will be automatically included here.
+		_types.erase(std::remove(_types.begin(), _types.end(), columnType::unknown), _types.end() );
+		_types.erase(std::remove(_types.begin(), _types.end(), columnType::nominalText), _types.end() ); // Should be removed when nominalText is completely removed
+	}
+}
+
 QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 {
 	if (index.row() >= rowCount())
@@ -40,6 +50,7 @@ QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 
 	switch(role)
 	{
+	case TypeRole:				return int(_types[index.row()]);
 	case DisplayRole:			return displayTexts[_types[index.row()]];
 	case MenuImageSourceRole:	return JaspTheme::currentIconPath() + menuImageSources[_types[index.row()]];
 	case IsEnabledRole:			return true;
@@ -60,9 +71,19 @@ QHash<int, QByteArray> ColumnTypesModel::roleNames() const
 		{	MenuImageSourceRole,	"menuImageSource"	},
 		{	JSFunctionRole,			"jsFunction"		},
 		{	IsSeparatorRole,		"isSeparator"		},
-		{	IsEnabledRole,			"isEnabled"			}
+		{	IsEnabledRole,			"isEnabled"			},
+		{	TypeRole,				"typeRole"			}
 	};
 
 	return roles;
+}
+
+int ColumnTypesModel::getType(int i) const
+{
+	return data(index(i, 0), TypeRole).toInt();
+}
+QString ColumnTypesModel::getIconSource(int i) const
+{
+	return data(index(i, 0), MenuImageSourceRole).toString();
 }
 
