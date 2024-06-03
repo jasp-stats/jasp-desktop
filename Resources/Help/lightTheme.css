@@ -60,6 +60,11 @@ li
   padding: 4px
 }
 
+pre code
+{
+  display: block;
+}
+
 body code 
 {
   font-family: "Courier New", Courier, monospace;
