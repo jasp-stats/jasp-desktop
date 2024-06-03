@@ -798,6 +798,7 @@ void Column::labelsTempReset()
 	_labelsTempToIndex	. clear();
 	_labelsTempRevision = -1;
 	_labelsTempMaxWidth = 0;
+	_labelsTempNumerics = 0;
 }
 
 int Column::labelsTempCount()
@@ -805,12 +806,9 @@ int Column::labelsTempCount()
 	if(_revision != _labelsTempRevision)
 	{
 		//first collect the labels that are actually Label
-		_labelsTemp			. clear();
-		_labelsTempDbls		. clear();
+		labelsTempReset();
 		_labelsTemp			. reserve(_labels.size());
 		_labelsTempDbls		. reserve(_labels.size());
-		_labelsTempToIndex	. clear();
-		_labelsTempMaxWidth = 0;
 		
 		for(size_t r=0; r<_labels.size(); r++)
 			if(!_labels[r]->isEmptyValue())
@@ -818,6 +816,9 @@ int Column::labelsTempCount()
 				_labelsTemp												. push_back(_labels[r]->label());
 				_labelsTempDbls											. push_back(_labels[r]->originalValue().isDouble() ? _labels[r]->originalValue().asDouble() : EmptyValues::missingValueDouble);
 				_labelsTempToIndex[_labelsTemp[_labelsTemp.size()-1]]	= _labelsTemp.size()-1; //We store the index in _labelsTemp in a map.
+				
+				if(!std::isnan(*_labelsTempDbls.rbegin()))
+					_labelsTempNumerics++;
 			}
 		
 		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
@@ -832,6 +833,9 @@ int Column::labelsTempCount()
 					_labelsTempDbls					. push_back(_dbls[r]);
 					_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
 					_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
+					
+					if(!std::isnan(*_labelsTempDbls.rbegin()))
+						_labelsTempNumerics++;
 				}
 			}
 
@@ -840,6 +844,13 @@ int Column::labelsTempCount()
 	}
 	
 	return _labelsTemp.size();
+}
+
+int Column::labelsTempNumerics()
+{
+	labelsTempCount(); //generate the list if need be
+	
+	return _labelsTempNumerics;
 }
 
 const stringvec &Column::labelsTemp()

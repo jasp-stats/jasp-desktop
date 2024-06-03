@@ -94,6 +94,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		case VariableInfo::VariableTypeInactiveIcon:	return	VariableInfo::getIconFile(colTypeHere, VariableInfo::InactiveIconType);
 		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::valuesDblList));
+		case VariableInfo::TotalNumericValues:			return	QTransposeProxyModel::data(qColIndex, int(DataSetPackage::specialRoles::totalNumericValues));
 		case VariableInfo::NameRole:					return	data(qColIndex, ColumnsModel::NameRole);
 		case VariableInfo::DataSetRowCount:				return  QTransposeProxyModel::columnCount();
 		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::data(qValIndex, int(DataSetPackage::specialRoles::value));

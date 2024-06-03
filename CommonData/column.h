@@ -119,6 +119,7 @@ public:
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
 			int						labelsTempCount(); ///< Generates the labelsTemp also!
+			int						labelsTempNumerics(); ///< Also calls labelsTempCount() to be sure it has some info
 			const stringvec		&	labelsTemp();
 			void					labelsTempReset();
 			std::string				labelsTempDisplay(		size_t tempLabelIndex);
@@ -245,7 +246,8 @@ private:
 			columnType				_type				= columnType::unknown;
 			int						_id					= -1,
 									_analysisId			= -1,	// Actually initialized in DatabaseInterface::columnInsert
-									_labelsTempRevision	= -1;	///< When were the "temporary labels" created?
+									_labelsTempRevision	= -1,	///< When were the "temporary labels" created?
+									_labelsTempNumerics = 0;	///< Use the labelsTemp step to calculate the amount of numeric labels
 			qsizetype				_labelsTempMaxWidth = 0;
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
