@@ -647,11 +647,18 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
 
-			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value))
+			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value) || role == int(specialRoles::valueLabelPair))
 			{				
-				const std::string val = fq(value.toString());
+				bool				isPair	= role == int(specialRoles::valueLabelPair);
+				QVariantList		listVar	= isPair	? value.toList()		: QVariantList{ value };
+				const std::string	val		= fq(listVar[0].toString()),
+									label	= fq(isPair ? listVar[1].toString() : "");
+				
+				bool	somethingChanged	= !isPair
+											? column->setStringValueToRow(index.row(), val == EmptyValues::displayString() ? "" : val)
+											: column->setValue(index.row(), val, label);
 
-				if(column->setStringValueToRow(index.row(), val == EmptyValues::displayString() ? "" : val))
+				if(somethingChanged)
 				{
 						JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 

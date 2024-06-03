@@ -1317,7 +1317,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
 	bool	labelIsValue	= value == label,
-			justAValue		= label == "";			///< To help us handle updates from synchronistion from csv (users might have added different label-texts
+			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];	
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);

@@ -186,7 +186,7 @@ int ColumnModel::rowsTotal() const
 int ColumnModel::firstNonNumericRow() const
 {
 	if(!column() || !column()->autoSortByValue())
-		return -1;
+		return 0;
 	
 	int nonEmptyNonNumerics = 0; //We do not need to take any "double-labels" into account, because we require autoSortByValue() to be true before continuing, which means everything got a label 
 	for(Label * label : column()->labels())	

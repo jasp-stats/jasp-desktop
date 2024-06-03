@@ -58,13 +58,13 @@ SetDataCommand::SetDataCommand(QAbstractItemModel *model, int row, int col, cons
 
 void SetDataCommand::undo()
 {
-	_model->setData(_model->index(_row, _col), _oldValue, _role);
+	_model->setData(_model->index(_row, _col), QVariantList({_oldValue, _oldLabel}), int(dataPkgRoles::valueLabelPair));
 	
 }
 
 void SetDataCommand::redo()
 {
-	_oldValue = _model->data(_model->index(_row, _col), _role);
+	_oldValue = _model->data(_model->index(_row, _col), int(dataPkgRoles::value));
 	_oldLabel = _model->data(_model->index(_row, _col), int(dataPkgRoles::label));
 
 	_model->setData(_model->index(_row, _col), _newData, _role);
