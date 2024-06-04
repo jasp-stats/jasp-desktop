@@ -453,8 +453,8 @@ void UndoModelCommandLabelChange::undo()
 	
 	if(col)
 	{
-		col->deserializeLabels(_oldLabels);
-		_columnModel->refresh();
+		col->deserializeLabelsForRevert(_oldLabels);
+		DataSetPackage::pkg()->refresh();
 	}
 }
 

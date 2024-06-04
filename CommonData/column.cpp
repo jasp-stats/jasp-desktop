@@ -1875,17 +1875,14 @@ Json::Value	Column::serializeLabels() const
 	return jsonLabels;
 }
 
-void Column::deserializeLabels(const Json::Value & labels)
+void Column::deserializeLabelsForCopy(const Json::Value & labels)
 {
-	for (Label* label : _labels)
-	{
-		_labelByIntsIdMap.erase(label->intsId());
-		label->dbDelete();
-		delete label;
-	}
+	
+	labelsTempReset();
+
+	beginBatchedLabelsDB();
 	_labelByIntsIdMap.clear();
 	_labels.clear();
-	labelsTempReset();
 
 	if (labels.isArray())
 		for (const Json::Value& labelJson : labels)
@@ -1898,6 +1895,73 @@ void Column::deserializeLabels(const Json::Value & labels)
 						labelJson["order"]			.asInt(), 
 						-1
 			);
+	
+	endBatchedLabelsDB();
+}
+
+void Column::deserializeLabelsForRevert(const Json::Value & labels)
+{
+ 	labelsTempReset();
+	
+	beginBatchedLabelsDB();
+	
+	//intset	updatedLbls;
+
+	if (labels.isArray())
+		for (const Json::Value& labelJson : labels)
+		{
+			int					intsId		= labelJson["intsId"]		.asInt(),
+								order		= labelJson["order"]		.asInt();
+			const std::string	labelStr	= labelJson["label"]		.asString(),
+								description	= labelJson["description"]	.asString();
+			bool				filterAllow = labelJson["filterAllows"]	.asBool();
+			
+			
+			if(_labelByIntsIdMap.count(intsId))
+			{
+				Label * label = _labelByIntsIdMap[intsId];
+				
+				label->setOrder(			order						);
+				label->setLabel(			labelStr					);
+				label->setDescription(		description					);
+				label->setFilterAllows(		filterAllow					);
+				label->setOriginalValue(	labelJson["originalValue"]	);
+				
+				//updatedLbls.insert(intsId);
+			}
+			else
+			{
+				labelsAdd(intsId, labelStr, filterAllow, description, labelJson["originalValue"], order, -1);
+							
+				//updatedLbls.insert(intsId);
+			}
+		}
+	
+	
+	_sortLabelsByOrder();
+	
+	/*intset missingLbls;
+	for(auto & idLabel : _labelByIntsIdMap)
+		if(!updatedLbls.count(idLabel.first))
+			missingLbls.insert(idLabel.first);*/
+	
+	endBatchedLabelsDB();
+	
+	/* The following is already implied by endBatchedLabelsDB because it deletes all labels first anyway
+	for(int id : missingLbls)
+	{
+		Label * deleteMe = 	_labelByIntsIdMap[id];
+		
+		for(size_t i=0;i<_labels.size(); i++)
+			if(_labels[i] == deleteMe)
+				_labels.erase(_labels.begin() + i);
+		
+		_labelByIntsIdMap.erase(id);
+		deleteMe->dbDelete();
+		delete deleteMe;	
+	}*/
+	
+	incRevision();
 }
 
 void Column::deserialize(const Json::Value &json)
@@ -1932,7 +1996,7 @@ void Column::deserialize(const Json::Value &json)
 
 	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	
-	deserializeLabels(json["labels"]);
+	deserializeLabelsForCopy(json["labels"]);
 
 	_emptyValues->fromJson(json["customEmptyValues"]);
 	
