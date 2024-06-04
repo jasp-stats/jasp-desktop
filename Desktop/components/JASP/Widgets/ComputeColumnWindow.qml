@@ -163,7 +163,7 @@ FocusScope
 												? "ordinal" 
 												: computedColumnsInterface.columnType === columnTypeNominal 
 													? "nominal" 
-													: "unknown"
+													: "scale"
 
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton

@@ -12,11 +12,9 @@ Item
 					height:			filterConstructor.blockDim
 					implicitWidth:	colName.x + colName.width
                     width:          implicitWidth
-	property bool	isNumerical:	(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "scale")		|| columnIcon.indexOf("scale")		>= 0
-	property bool	isOrdinal:		(filterConstructor.forceColumnInputs !== "" && filterConstructor.forceColumnInputs === "ordinal")	|| columnIcon.indexOf("ordinal")	>= 0
-
-
-	property var	dragKeys:		isOrdinal ? ["string", "ordered"] : isNumerical ? ["number"] : ["string"]
+	property bool	isNumerical:	filterConstructor.forceColumnInputs === "scale"		|| (filterConstructor.forceColumnInputs === "" && columnIcon.indexOf("scale")		>= 0 )
+	property bool	isOrdinal:		filterConstructor.forceColumnInputs === "ordinal"	|| (filterConstructor.forceColumnInputs === "" && columnIcon.indexOf("ordinal")		>= 0 )
+	property var	dragKeys:		isNumerical ? ["number"] : isOrdinal ? ["string", "ordered"] : ["string"]
 
 	Image
 	{
