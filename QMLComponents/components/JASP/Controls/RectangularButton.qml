@@ -20,9 +20,11 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 
 
-Item
+Rectangle
 {
-	id: filterButtonRoot
+	id:				filterButtonRoot
+
+	
 
 	property string	text:				""
 	property string	toolTip:			""
@@ -40,9 +42,6 @@ Item
 
 	property real	_scaledDim:			Math.max(jaspTheme.defaultRectangularButtonHeight, buttonText.height + 2 * buttonPadding)
 	property alias	_pressed:			buttonMouseArea.pressed
-	property alias  color:				rect.color
-	property alias	border:				rect.border
-	property alias	radius:				rect.radius
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 	property real	centerParentX:		(parent.width / 2) - x
@@ -56,6 +55,13 @@ Item
 	implicitHeight:						_scaledDim
 	width:								implicitWidth
 	height:								implicitHeight
+	color:								!enabled ? jaspTheme.buttonColorDisabled
+												 : _pressed ? jaspTheme.buttonColorPressed
+															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
+																															: jaspTheme.buttonColor
+	border.color:						(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered
+																			   : jaspTheme.buttonBorderColor
+	border.width:						1
 
 
 	ToolTip.text:						toolTip
@@ -69,77 +75,65 @@ Item
 
 	signal clicked()
 
-	Rectangle
+
+
+	MouseArea
 	{
-		id: rect
+		id:							buttonMouseArea
+		anchors.fill:				parent
+		acceptedButtons:			Qt.LeftButton
+		hoverEnabled:				true
+		cursorShape:				Qt.PointingHandCursor
+		onClicked:					filterButtonRoot.clicked();
+		visible:					filterButtonRoot.enabled
+		//propagateComposedEvents:	true
+	}
 
-		color:			!enabled ? jaspTheme.buttonColorDisabled
-								 : _pressed ? jaspTheme.buttonColorPressed
-											: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
-																											: jaspTheme.buttonColor
-		border.color:	(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered
-															   : jaspTheme.buttonBorderColor
-		border.width:	1
-		width:			parent.width
-		height:			parent.height
+	Image
+	{
+		id:					buttonIcon
+		x:					!filterButtonRoot.showIconAndText 
+							?	(parent.width / 2) - (width / 2) 
+							:	filterButtonRoot.iconLeft 
+							?	filterButtonRoot.buttonWidthPadding 
+							:	parent.width - (width + filterButtonRoot.buttonWidthPadding)
+		y:					(parent.height / 2) - (height / 2)
 
-		MouseArea
-		{
-			id:							buttonMouseArea
-			anchors.fill:				parent
-			acceptedButtons:			Qt.LeftButton
-			hoverEnabled:				true
-			cursorShape:				Qt.PointingHandCursor
-			onClicked:					filterButtonRoot.clicked();
-			visible:					filterButtonRoot.enabled
-			//propagateComposedEvents:	true
-		}
+		width:				Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
+		height:				filterButtonRoot.height - (2 * buttonPadding)
 
-		Image
-		{
-			id:					buttonIcon
-			x:					!filterButtonRoot.showIconAndText 
-								?	(parent.width / 2) - (width / 2) 
-								:	filterButtonRoot.iconLeft 
-								?	filterButtonRoot.buttonWidthPadding 
-								:	parent.width - (width + filterButtonRoot.buttonWidthPadding)
-			y:					(parent.height / 2) - (height / 2)
+		visible:			filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
+		source:				filterButtonRoot.iconSource
+		sourceSize.width:	width  * 2
+		sourceSize.height:	height * 2
+		mipmap:				true
+		smooth:				true
+	}
 
-			width:				Math.min(filterButtonRoot.width - (2 * buttonWidthPadding), height)
-			height:				filterButtonRoot.height - (2 * buttonPadding)
+	Text
+	{
+		id: buttonText
+		x:	!filterButtonRoot.centerText 
+			?	filterButtonRoot.buttonPadding
+			:	filterButtonRoot.centerTextParent
+				? (centerParentX - (contentWidth / 2))
+				: ((parent.width / 2) - (contentWidth / 2) )
 
-			visible:			filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
-			source:				filterButtonRoot.iconSource
-			sourceSize.width:	width  * 2
-			sourceSize.height:	height * 2
-			mipmap:				true
-			smooth:				true
-		}
+		y:	(parent.height / 2) - (height / 2)
 
-		Text
-		{
-			id: buttonText
-			x:	!filterButtonRoot.centerText 
-				?	filterButtonRoot.buttonPadding
-				:	filterButtonRoot.centerTextParent
-					? (centerParentX - (contentWidth / 2))
-					: ((parent.width / 2) - (contentWidth / 2) )
-
-			y:	(parent.height / 2) - (height / 2)
-
-			text:		filterButtonRoot.text
-			wrapMode:	Text.NoWrap
-			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-			color:		isLink
-							? (enabled ? jaspTheme.blueDarker : jaspTheme.textDisabled)
-							: (textColor == "default"
-								? (filterButtonRoot.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled)
-								: textColor)
+		text:		filterButtonRoot.text
+		wrapMode:	Text.NoWrap
+		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
+		color:		isLink
+						? (enabled ? jaspTheme.blueDarker : jaspTheme.textDisabled)
+						: (textColor == "default"
+							? (filterButtonRoot.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled)
+							: textColor)
 
 
-			font:	isLink ? jaspTheme.fontLink : jaspTheme.font
-			width:	filterButtonRoot.width - (!filterButtonRoot.centerText ?	filterButtonRoot.buttonPadding : 0)
-			elide:	Text.ElideMiddle
-		}
+		font:	isLink ? jaspTheme.fontLink : jaspTheme.font
+		width:	filterButtonRoot.width - (!filterButtonRoot.centerText ?	filterButtonRoot.buttonPadding : 0)
+		elide:	Text.ElideMiddle
 	}
 }
+

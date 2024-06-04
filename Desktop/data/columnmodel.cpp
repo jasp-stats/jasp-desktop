@@ -1,9 +1,11 @@
 #include "timers.h"
-#include "columnmodel.h"
 #include "jasptheme.h"
+#include "columnmodel.h"
+#include "columnutils.h"
 #include "utilities/qutils.h"
 #include "datasettablemodel.h"
 #include "computedcolumnmodel.h"
+#include "gui/preferencesmodel.h"
 
 ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	: DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel()),
@@ -25,6 +27,8 @@ ColumnModel::ColumnModel(DataSetTableModel* dataSetTableModel)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::datasetChanged,				this, &ColumnModel::checkCurrentColumn			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &ColumnModel::emptyValuesChanged			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAddedManually,			this, &ColumnModel::columnAddedManuallyHandler,	Qt::QueuedConnection);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::chooseColumn,					this, &ColumnModel::setChosenColumn				);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &ColumnModel::rowsTotalChanged,			Qt::QueuedConnection);
 
 	_undoStack = DataSetPackage::pkg()->undoStack();
 }
@@ -136,6 +140,25 @@ QString ColumnModel::columnDescription() const
 	return QString::fromStdString(column() ? column()->description() : "");
 }
 
+
+bool ColumnModel::autoSort() const
+{
+	if (_virtual) 
+		return PreferencesModel::prefs()->orderByValueByDefault();
+	
+	return column() && column()->autoSortByValue();
+}
+
+void ColumnModel::setAutoSort(bool newAutoSort)
+{
+	if (!column() || column()->autoSortByValue() == newAutoSort)
+		return;
+	
+	column()->setAutoSortByValue(newAutoSort);
+	
+	emit autoSortChanged();
+}
+
 bool ColumnModel::useCustomEmptyValues() const
 {
 	if (_virtual || !column()) return false;
@@ -153,6 +176,30 @@ void ColumnModel::setUseCustomEmptyValues(bool useCustom)
 QStringList ColumnModel::emptyValues() const
 {
 	return (_virtual || !column()) ? QStringList() : tql(column()->emptyValues()->emptyStringsColumnModel());
+}
+
+int ColumnModel::rowsTotal() const
+{
+	return rowCount();	
+}
+
+int ColumnModel::firstNonNumericRow() const
+{
+	if(!column() || !column()->autoSortByValue())
+		return 0;
+	
+	int nonEmptyNonNumerics = 0; //We do not need to take any "double-labels" into account, because we require autoSortByValue() to be true before continuing, which means everything got a label 
+	for(Label * label : column()->labels())	
+		if(!label->isEmptyValue())
+		{
+			static double dummy;
+			
+			if(!(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+				return nonEmptyNonNumerics;
+			nonEmptyNonNumerics++;
+		}
+	
+	return nonEmptyNonNumerics;	
 }
 
 void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
@@ -353,10 +400,10 @@ void ColumnModel::reverseValues()
 	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, {chosenColumn()}));
 }
 
-void ColumnModel::orderByValues()
+void ColumnModel::toggleAutoSortByValues()
 {
 	_lastSelected = -1;
-	_undoStack->pushCommand(new ColumnOrderByValuesCommand(this, {chosenColumn()}));
+	_undoStack->pushCommand(new ColumnToggleAutoSortByValuesCommand(this, {chosenColumn()}));
 }
 
 bool ColumnModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -531,17 +578,20 @@ void ColumnModel::refresh()
 	beginResetModel();
 	endResetModel();
 
+	emit autoSortChanged();
 	emit columnNameChanged();
-	emit nameEditableChanged();
 	emit columnTitleChanged();
+	emit nameEditableChanged();
 	emit columnDescriptionChanged();
 	emit computedTypeValuesChanged();
+	emit firstNonNumericRowChanged();
+	emit computedTypeEditableChanged();
+	emit useCustomEmptyValuesChanged();
+	emit firstNonNumericRowChanged();
 	emit columnTypeValuesChanged();
 	emit computedTypeChanged();
-	emit computedTypeEditableChanged();
-	emit columnTypeChanged();
-	emit useCustomEmptyValuesChanged();
 	emit emptyValuesChanged();
+	emit columnTypeChanged();
 
 	emit tabsChanged();
 
@@ -748,3 +798,4 @@ void ColumnModel::languageChangedHandler()
 	emit computedTypeValuesChanged();
 	emit tabsChanged();
 }
+

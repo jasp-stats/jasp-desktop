@@ -51,29 +51,37 @@ FocusScope
 				{ 
 					target:		columnModel
 					property:	"rowWidth"
-					value:		Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+					value:		levelsTableView.width; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+				}
+				
+				Connections
+				{
+					target:		columnModel
+					function	onChosenColumnChanged()
+					{
+						levelsTableView.lastRow = -1;
+					}
 				}
 
-				property real filterColWidth:	60  * jaspTheme.uiScale
-				property real remainingWidth:	width - filterColWidth
-				property real valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property real labelColMinWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	filterColWidth:	60  * jaspTheme.uiScale
+				property real	remainingWidth:	width - filterColWidth
+				property real	valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	labelColWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property int	lastRow:		-1
+				
 
 				columnHeaderDelegate:	Item
 				{
-						z: -4
+						z: -2
 						Rectangle
 						{
 							color:						jaspTheme.uiBackground
-							anchors.left:				parent.left
-							anchors.rightMargin:		1
 							height:						parent.height
-							width:						levelsTableView.contentWidth
+							width:						levelsTableView.width
 						}
 
 						Row
 						{
-							anchors.left:				parent.left
 							height:						parent.height
 							Text
 							{
@@ -112,69 +120,104 @@ FocusScope
 								color:					jaspTheme.textEnabled
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
+								width:					levelsTableView.labelColWidth;
 							}
 						}
 				}
 
 				rowNumberDelegate:	Item { width: 0; height: 0; }
 
-				itemDelegate: Item
+				itemDelegate: FocusScope
 				{
-					id: backroundItem
-					z:	-4
+					id:						backgroundItem
+					
+					onActiveFocusChanged:	if(activeFocus)	levelsTableView.lastRow = rowIndex
+
+					MouseArea
+					{
+						width:				levelsTableView.width
+						anchors
+						{
+							top:			parent.top
+							left:			parent.left
+							bottom:			parent.bottom
+							topMargin:		-levelsTableView.itemVerticalPadding
+							leftMargin:		-levelsTableView.itemHorizontalPadding
+							bottomMargin:	-levelsTableView.itemVerticalPadding
+						}
+						
+						acceptedButtons:	Qt.LeftButton
+						cursorShape:		Qt.DragHandCursor	
+						z:					0
+
+						onClicked:			(mouse)=>
+						{
+							columnModel.setSelected(rowIndex, mouse.modifiers);
+							parent.forceActiveFocus(); //To take focus out of some TextInput
+						}
+						
+						onDoubleClicked:	(mouse)=>
+						{
+							labelInput.forceActiveFocus()
+						}
+					}
 
 					Rectangle
 					{
-						id:				selectionRectangle
-						color:			itemSelected ? jaspTheme.itemHighlight : "transparent"
+						id:					selectionRectangle
+						color:				itemSelected ? jaspTheme.itemHighlight : "transparent"
+						width:				levelsTableView.width
 						anchors
 						{
-							fill:			parent
+							top:			parent.top
+							left:			parent.left
+							bottom:			parent.bottom
+							topMargin:		0.5-levelsTableView.itemVerticalPadding
+							leftMargin:		-levelsTableView.itemHorizontalPadding
+							bottomMargin:	0.5-levelsTableView.itemVerticalPadding
+						}
+						z:					-10
+					}	
+						
+					Item
+					{
+						z:					100
+						width:				levelsTableView.width
+						anchors
+						{
+							top:			parent.top
+							left:			parent.left
+							bottom:			parent.bottom
 							topMargin:		-levelsTableView.itemVerticalPadding
 							leftMargin:		-levelsTableView.itemHorizontalPadding
-							rightMargin:	-levelsTableView.itemHorizontalPadding
 							bottomMargin:	-levelsTableView.itemVerticalPadding
 						}
-						z:	-10
 
-						MouseArea
-						{
-							anchors.fill:		selectionRectangle
-							acceptedButtons:	Qt.LeftButton
-							cursorShape:		Qt.DragHandCursor	
-							z:					0
-							hoverEnabled: 		true
-
-							onClicked:			(mouse)=>
-							{
-								columnModel.setSelected(rowIndex, mouse.modifiers);
-								selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
-							}
-							onDoubleClicked:	(mouse)=>
-							{
-								labelInput.forceActiveFocus()
-							}
-						}
-
+						
+					
+					
+					
 						Row
 						{
+							id:					itemRow
+							height:				parent.height
+							z:					1
+							
 							MouseArea
 							{
 								id:						filterCheckButton
-								height:					backroundItem.height
 								width:					levelsTableView.filterColWidth;
-								anchors.top:			parent.top
-								anchors.topMargin:		levelsTableView.itemVerticalPadding
+								height:					parent.height
 								z:						-1
 								cursorShape:			Qt.PointingHandCursor
 								
-
+	
 								onClicked:				
 								{
 									columnModel.setChecked(rowIndex, !itemFiltered); // Case when all labels are unchecked.
 									columnModel.setSelected(rowIndex,true);
 								}
-
+	
 								Image
 								{
 									source:					jaspTheme.iconPath + (itemFiltered ? "check-mark.png" : "cross.png")
@@ -184,144 +227,182 @@ FocusScope
 									anchors
 									{
 										top:				filterCheckButton.top
-										bottom:				filterCheckButton.bottom										
+										bottom:				filterCheckButton.bottom
+										margins:			levelsTableView.itemVerticalPadding
 										horizontalCenter:	filterCheckButton.horizontalCenter
 									}
 								}
 							}
-
-							Rectangle
+	
+							Item
 							{
 								width:					1
-								height:					selectionRectangle.height
-								color:					jaspTheme.uiBorder
+								height:					parent.height
+								
+								Rectangle
+								{
+									x:						0.5
+									width:					1
+									height:					parent.height
+									color:					jaspTheme.uiBorder
+								}
 							}
 							
-							TextInput
+							Item
 							{
-								id:					valueInput
-								color:				jaspTheme.textEnabled
-
-								text:				itemValue
-								font:				jaspTheme.font
-								clip:				true
-								selectByMouse:		true
-								autoScroll:			true
-								z:					1
-
-								leftPadding:		3 * jaspTheme.uiScale
 								width:				levelsTableView.valueColWidth;
-								//width:				Math.min(Math.max(contentWidth, 20), parent.width + 20) + 3 * jaspTheme.uiScale//Minimal contentWidth to allow editing after label set to ""
-								anchors.top:		parent.top
-								anchors.topMargin:	levelsTableView.itemVerticalPadding
-
-								verticalAlignment:	Text.AlignVCenter
-
-								property int chosenColumnWas: -1
-								property string lastActiveText: ""
-								property int	lastActiveRow:	-1
-								
-								onEditingFinished:
-								{
-									messages.log("Label value editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
-									
-									//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
-									//To ignore this here some ugly faintly persistent memory
-									var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
-									
-									if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
-									{
-										columnModel.setValue(rowIndex, text)
-										
-										lastActiveRow  = activeFocus ? rowIndex		:	-1
-										lastActiveText = activeFocus ? text			:	""
-									}
-								}
-								onActiveFocusChanged:
-								{
-									if (activeFocus)
-									{
-										chosenColumnWas = columnModel.chosenColumn
-										columnModel.removeAllSelected()
-										columnModel.setSelected(rowIndex,true);
-									}
-								}
-
+								height:				parent.height
+								clip:				true
+							
 								MouseArea
 								{
-									anchors.fill:		parent
-									acceptedButtons:	Qt.NoButton
+									acceptedButtons:	Qt.LeftButton
 									cursorShape:		Qt.IBeamCursor
-									hoverEnabled:		true
 									z:					3
+									onClicked:			valueInput.forceActiveFocus()
+									anchors
+									{
+										fill:			parent
+										topMargin:		levelsTableView.itemVerticalPadding
+										bottomMargin:	levelsTableView.itemVerticalPadding
+									}
+									
+									TextInput
+									{
+										id:					valueInput
+										color:				jaspTheme.textEnabled
+		
+										text:				itemValue
+										font:				jaspTheme.font
+										selectByMouse:		true
+										autoScroll:			true
+										z:					1
+		
+										leftPadding:		3 * jaspTheme.uiScale
+										anchors.fill:		parent
+										
+		
+										verticalAlignment:	Text.AlignVCenter
+		
+										property int	chosenColumnWas: -1
+										property string lastActiveText: ""
+										property int	lastActiveRow:	-1
+										
+										onEditingFinished:
+										{
+											messages.log("Label value editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
+											
+											//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
+											//To ignore this here some ugly faintly persistent memory
+											var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
+											
+											if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
+											{
+												columnModel.setValue(rowIndex, text)
+												
+												lastActiveRow  = activeFocus ? rowIndex		:	-1
+												lastActiveText = activeFocus ? text			:	""
+											}
+										}
+										
+										onActiveFocusChanged:
+										{
+											if (activeFocus)
+											{
+												chosenColumnWas = columnModel.chosenColumn
+												columnModel.removeAllSelected()
+												columnModel.setSelected(rowIndex,true);
+											}
+										}
+									}
 								}
 							}
-
-							Rectangle
+							
+							Item
 							{
 								width:					1
-								height:					selectionRectangle.height
-								color:					jaspTheme.uiBorder
+								height:					parent.height
+								
+								Rectangle
+								{
+									x:						0.5
+									width:					1
+									height:					parent.height
+									color:					jaspTheme.uiBorder
+								}
 							}
-
-							TextInput
+	
+							Item
 							{
-								id:					labelInput
-								color:				jaspTheme.textEnabled
-
-								text:				itemText
-								font:				jaspTheme.font
+								
+								width:				levelsTableView.remainingWidth - (levelsTableView.valueColWidth + 2 + (2 * levelsTableView.itemHorizontalPadding)) //+2 for line-rectangles!
+								height:				parent.height
 								clip:				true
-								selectByMouse:		true
-								autoScroll:			true
-								z:					1
-
-								leftPadding:		3 * jaspTheme.uiScale
-								width:				Math.min(Math.max(contentWidth, 20), parent.width + 20) + 3 * jaspTheme.uiScale//Minimal contentWidth to allow editing after label set to ""
-								anchors.top:		parent.top
-								anchors.topMargin:	levelsTableView.itemVerticalPadding
-
-								verticalAlignment:	Text.AlignVCenter
-
-								property int chosenColumnWas: -1
 								
-								property string lastActiveText: ""
-								property int	lastActiveRow:	-1
-								
-								onEditingFinished:
-								{
-									messages.log("Label label editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
-									
-									//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
-									//To ignore this here some ugly faintly persistent memory
-									var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
-									
-									if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
-									{
-										columnModel.setLabel(rowIndex, text)
-										
-										lastActiveRow  = activeFocus ? rowIndex		:	-1
-										lastActiveText = activeFocus ? text			:	""
-									}
-								}
-
-								onActiveFocusChanged:
-								{
-									if (activeFocus)
-									{
-										chosenColumnWas = columnModel.chosenColumn
-										columnModel.removeAllSelected()
-										columnModel.setSelected(rowIndex,true);
-									}
-								}
-
 								MouseArea
 								{
-									anchors.fill:		parent
-									acceptedButtons:	Qt.NoButton
+									acceptedButtons:	Qt.LeftButton
 									cursorShape:		Qt.IBeamCursor
-									hoverEnabled:		true
 									z:					3
+									onClicked:			labelInput.forceActiveFocus()
+									
+									anchors
+									{
+										fill:			parent
+										topMargin:		levelsTableView.itemVerticalPadding
+										bottomMargin:	levelsTableView.itemVerticalPadding
+									}
+									
+									TextInput
+									{
+										id:					labelInput
+										color:				jaspTheme.textEnabled
+		
+										text:				itemText
+										font:				jaspTheme.font
+										selectByMouse:		true
+										autoScroll:			true
+										z:					1
+										//width:				contentWidth
+										leftPadding:		3 * jaspTheme.uiScale
+										
+										anchors.fill:		parent
+										
+		
+										verticalAlignment:	Text.AlignVCenter
+		
+										property int chosenColumnWas: -1
+										
+										property string lastActiveText: ""
+										property int	lastActiveRow:	-1
+										
+										onEditingFinished:
+										{
+											messages.log("Label label editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
+											
+											//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
+											//To ignore this here some ugly faintly persistent memory
+											var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
+											
+											if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
+											{
+												columnModel.setLabel(rowIndex, text)
+												
+												lastActiveRow  = activeFocus ? rowIndex		:	-1
+												lastActiveText = activeFocus ? text			:	""
+											}
+										}
+		
+										onActiveFocusChanged:
+										{
+											if (activeFocus)
+											{
+												chosenColumnWas = columnModel.chosenColumn
+												columnModel.removeAllSelected()
+												columnModel.setSelected(rowIndex,true);
+											}
+										}	
+									}
 								}
 							}
 						}
@@ -356,41 +437,17 @@ FocusScope
 				property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 				
-	
 				RoundedButton
 				{
-					iconSource:		jaspTheme.iconPath + "arrow-up.png"
+					iconSource:		jaspTheme.iconPath +  "menu-column-order-by-values.svg"
+					onClicked:		{ forceActiveFocus(); columnModel.toggleAutoSortByValues(); }
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); }
-					toolTip:		qsTr("Move selected labels up")
+					toolTip:		qsTr("Automatically order labels by their numeric value")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-				}
-	
-				RoundedButton
-				{
-					iconSource:		jaspTheme.iconPath + "arrow-down.png"
-	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); }
-					toolTip:		qsTr("Move selected labels down")
-	
-					height:			buttonColumnVariablesWindow.buttonHeight
-					implicitHeight: buttonColumnVariablesWindow.buttonHeight
-					width:			height
-				}
-	
-				RoundedButton
-				{
-					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
-	
-					toolTip:		qsTr("Reverse order of all labels")
-	
-					height:			buttonColumnVariablesWindow.buttonHeight
-					implicitHeight: buttonColumnVariablesWindow.buttonHeight
-					width:			height
+					color:			columnModel.autoSort ? jaspTheme.jaspBlue : jaspTheme.buttonColor
 				}
 				
 				RoundedButton
@@ -403,18 +460,49 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		!columnModel.autoSort || columnModel.firstNonNumericRow > 1 //if there are at least 2 numerics we have something to reverse
 				}
 				
 				RoundedButton
 				{
-					iconSource:		jaspTheme.iconPath + "menu-column-order-by-values.svg"
-					onClicked:		{ forceActiveFocus(); columnModel.orderByValues(); }
+					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
+					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
-					toolTip:		qsTr("Order labels by their numeric value")
+					toolTip:		columnModel.autoSort ? qsTr("Reverse order of the labels with non-numeric values") : qsTr("Reverse order of all labels")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to reverse
+					
+				}
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-up.png"
+	
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.lastRow--; }
+					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels up") : qsTr("Move selected labels up") 
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+					enabled:		levelsTableView.lastRow == -1 ? false : columnModel.firstNonNumericRow < levelsTableView.lastRow
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move up
+				}
+	
+				RoundedButton
+				{
+					iconSource:		jaspTheme.iconPath + "arrow-down.png"
+	
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.lastRow++; }
+					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels down") : qsTr("Move selected labels down")
+	
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+					width:			height
+					enabled:		levelsTableView.lastRow == -1  ? false :  ((columnModel.firstNonNumericRow <= levelsTableView.lastRow) && ( levelsTableView.lastRow < columnModel.rowsTotal - 1 ))
+					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move down
 				}
 	
 				RoundedButton

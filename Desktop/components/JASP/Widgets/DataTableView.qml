@@ -136,7 +136,7 @@ FocusScope
 						{ text: qsTr("Insert R column after"),										func: function() { dataTableView.view.columnInsertAfter(	columnIndex, true, true)	},	icon: "menu-column-insert-after"	},
 						{ text:	"---" },
 						{ text: qsTr("Reverse values"),												func: function() { dataTableView.view.columnReverseValues(	columnIndex)				},	icon: "menu-column-reverse-values"	},
-						{ text: qsTr("Order labels by values"),										func: function() { dataTableView.view.columnOrderByValues(	columnIndex)				},	icon: "menu-column-order-by-values"	}
+						{ text: qsTr("Order labels by values"),										func: function() { dataTableView.view.columnautoSortByValues(	columnIndex)				},	icon: "menu-column-order-by-values"	}
 						)
 
 				 }

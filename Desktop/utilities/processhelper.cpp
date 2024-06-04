@@ -1,9 +1,10 @@
 #include "processhelper.h"
 #include "utilities/appdirs.h"
-#include "tempfiles.h"
+
+#ifdef _WIN32
 #include "utilities/qutils.h"
-#include "utils.h"
 #include "log.h"
+#endif
 
 QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 {

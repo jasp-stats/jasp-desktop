@@ -240,7 +240,7 @@ public:
 				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
 				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
 				void						columnsReverseValues(				intset				columnIndex);
-				void						columnsOrderByValues(				intset				columnIndex);
+				void						columnsSetAutoSortForColumns(		std::map<int,bool>	columnutoSort);
 				qsizetype					getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
 				QStringList					getColumnLabelsAsStringList(		const std::string & columnName)					const;
 				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;
@@ -289,6 +289,7 @@ signals:
 				void				columnDataTypeChanged(	QString columnName);
 				void				labelsReordered(		QString columnName);
 				void				columnAddedManually(	QString columnName);
+				void				chooseColumn(			int		colId);
 				void				isModifiedChanged();
 				void				enginesPrepareForDataSignal();
 				void				enginesReceiveNewDataSignal();
@@ -341,6 +342,7 @@ private:
 				QModelIndex			lastCurrentCell();
 				int					getColIndex(QVariant colID);
 				void				columnsApply(intset columnIndexes, std::function<bool (Column *)> applyThis);
+				void				columnsApply(intset columnIndexes, std::function<bool (Column *, int)> applyThis);
 
 private:
 	static DataSetPackage	*	_singleton;

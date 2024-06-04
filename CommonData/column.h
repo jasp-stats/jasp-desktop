@@ -65,12 +65,13 @@ public:
 			void					setDescription(		const std::string & description		);
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
+			void					setAutoSortByValue(	bool				sort			);
 			void					setAnalysisId(		int					analysisId		);
 			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
 			void					setForceType(		bool				force		);
-			void					setCompColStuff(bool   invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
-			void					setDefaultValues(enum columnType columnType = columnType::unknown);
+			void					setCompColStuff(	bool				invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
+			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
@@ -90,13 +91,14 @@ public:
 			int						analysisId()			const	{ return _analysisId;		}
 			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
 			bool					invalidated()			const	{ return _invalidated;		}
+			bool					autoSortByValue()		const	{ return _autoSortByValue;	}
 			bool					forceTypes()			const	{ return _forceTypes;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
 			const std::string	&	title()					const	{ return _title.empty() ? _name : _title;	}
-			const std::string	&	description()			const	{ return _description;		}
 			const std::string	&	error()					const	{ return _error;			}
 			const std::string	&	rCode()					const	{ return _rCode;			}
+			const std::string	&	description()			const	{ return _description;		}
 				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
 				  std::string		constructorJsonStr()	const	{ return _constructorJson.toStyledString();	}
 			const Json::Value	&	constructorJson()		const	{ return _constructorJson;	}
@@ -117,6 +119,7 @@ public:
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
 			int						labelsTempCount(); ///< Generates the labelsTemp also!
+			int						labelsTempNumerics(); ///< Also calls labelsTempCount() to be sure it has some info
 			const stringvec		&	labelsTemp();
 			void					labelsTempReset();
 			std::string				labelsTempDisplay(		size_t tempLabelIndex);
@@ -128,7 +131,7 @@ public:
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
 			void					valuesReverse();
-			void					labelsOrderByValue();
+			void					labelsOrderByValue(bool doDbUpdateEtc=true);
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
 			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
@@ -174,6 +177,7 @@ public:
 			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
 			Label				*	labelByIndexNotEmpty(	size_t					index)									const;
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
+			void					labelsHandleAutoSort(	bool					doDbUpdateEtc = true);
 			size_t					labelCountNotEmpty()																	const;
 
 			bool					isValueEqual(size_t row, double value)				 const;
@@ -202,7 +206,10 @@ public:
 			void					checkForLoopInDependencies(std::string code);
 			const	stringset	 &	dependsOnColumns(bool refresh = true);
 			Json::Value				serialize()																const;
-			void					deserialize(const Json::Value& info);
+			Json::Value				serializeLabels()														const;
+			void					deserialize(				const Json::Value & info);
+			void					deserializeLabelsForCopy(	const Json::Value & info);
+			void					deserializeLabelsForRevert(	const Json::Value & info);
 			std::string				getUniqueName(const std::string& name)									const;
 			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false)					const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
 			bool					hasCustomEmptyValues()													const;
@@ -217,6 +224,9 @@ public:
 			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
+			
+	static	void					setAutoSortByValuesByDefault(bool autoSort);
+	static	bool					autoSortByValuesByDefault();
 
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
@@ -237,13 +247,15 @@ private:
 			columnType				_type				= columnType::unknown;
 			int						_id					= -1,
 									_analysisId			= -1,	// Actually initialized in DatabaseInterface::columnInsert
-									_labelsTempRevision	= -1;	///< When were the "temporary labels" created?
+									_labelsTempRevision	= -1,	///< When were the "temporary labels" created?
+									_labelsTempNumerics = 0;	///< Use the labelsTemp step to calculate the amount of numeric labels
 			qsizetype				_labelsTempMaxWidth = 0;
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
-									_forceTypes			= true; ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
+									_forceTypes			= true, ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
+									_autoSortByValue;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
@@ -256,6 +268,7 @@ private:
 			stringset				_dependsOnColumns;
 			std::map<int, Label*>	_labelByIntsIdMap;
 			int						_batchedLabelDepth	= 0;
+	static	bool					_autoSortByValuesByDefault;
 			
 			
 };

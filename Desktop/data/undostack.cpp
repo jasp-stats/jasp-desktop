@@ -51,29 +51,24 @@ void UndoStack::endMacro(UndoModelCommand *command)
 }
 
 SetDataCommand::SetDataCommand(QAbstractItemModel *model, int row, int col, const QVariant &value, int role)
-	: UndoModelCommand(model), _newValue{value}, _row{row}, _col{col}, _role{role}
+	: UndoModelCommand(model), _newData{value}, _row{row}, _col{col}, _role{role}
 {
-	setText(QObject::tr("Set value to '%1' at row %2 column '%3'").arg(_newValue.toString()).arg(rowName(_row)).arg(columnName(_col)));
+	setText(QObject::tr("Set value to '%1' at row %2 column '%3'").arg(_newData.toString()).arg(rowName(_row)).arg(columnName(_col)));
 }
 
 void SetDataCommand::undo()
 {
-	_model->setData(_model->index(_row, _col), _oldValue, _role);
-	if (_oldColType != _newColType)
-		_model->setData(_model->index(0, _col), _oldColType, int(dataPkgRoles::columnType));
+	_model->setData(_model->index(_row, _col), QVariantList({_oldValue, _oldLabel}), int(dataPkgRoles::valueLabelPair));
+	
 }
 
 void SetDataCommand::redo()
 {
-	_oldValue = _model->data(_model->index(_row, _col));
-	if(fq(_oldValue.toString()) == EmptyValues::displayString())
-		_oldValue = "";
+	_oldValue = _model->data(_model->index(_row, _col), int(dataPkgRoles::value));
+	_oldLabel = _model->data(_model->index(_row, _col), int(dataPkgRoles::label));
 
-	_oldColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
+	_model->setData(_model->index(_row, _col), _newData, _role);
 
-	_model->setData(_model->index(_row, _col), _newValue, _role);
-
-	_newColType = _model->data(_model->index(0, _col), int(dataPkgRoles::columnType)).toInt();
 }
 
 InsertColumnCommand::InsertColumnCommand(QAbstractItemModel *model, int column, const QMap<QString, QVariant>& props)
@@ -257,8 +252,7 @@ SetColumnTypeCommand::SetColumnTypeCommand(QAbstractItemModel *model, intset col
 	for(int col : _cols)
 		columnNames.push_back(columnName(col));
 		
-	if(columnNames.size() <= 3)	setText(QObject::tr("Set type to '%1' for column(s) '%2'")		.arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
-	else						setText(QObject::tr("Set type to '%1' for %2 columns from '%3'").arg(columnTypeToQString(columnType(colType)), QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Set type to '%1' for column(s) '%2'").arg(columnTypeToQString(columnType(colType)), columnNames.join(", ")));
 }
 
 void SetColumnTypeCommand::redo()
@@ -275,8 +269,7 @@ ColumnReverseValuesCommand::ColumnReverseValuesCommand(QAbstractItemModel *model
 	for(int col : _cols)
 		columnNames.push_back(columnName(col));
 	
-	if(columnNames.size() <= 3)		setText(QObject::tr("Reverse values of column(s) '%1'")			.arg(columnNames.join(", ")));
-	else							setText(QObject::tr("Reverse values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Reverse values of column(s) '%1'").arg(columnNames.join(", ")));
 }
 
 void ColumnReverseValuesCommand::redo()
@@ -284,24 +277,25 @@ void ColumnReverseValuesCommand::redo()
 	DataSetPackage::pkg()->columnsReverseValues(_cols);
 }
 
-ColumnOrderByValuesCommand::ColumnOrderByValuesCommand(QAbstractItemModel *model, intset cols)
+ColumnToggleAutoSortByValuesCommand::ColumnToggleAutoSortByValuesCommand(QAbstractItemModel *model, intset cols)
 : UndoModelCommandMultipleColumns(model, cols)
 {
 	QStringList columnNames;
 	
-	for(int col : _cols)
+	for(int col : cols)
+	{
+		_colsNewAutoSort[col] = DataSetPackage::pkg()->dataSet()->column(col) && !DataSetPackage::pkg()->dataSet()->column(col)->autoSortByValue();
+				
 		columnNames.push_back(columnName(col));
+	}
 	
-	if(columnNames.size() <= 3)		setText(QObject::tr("Order labels by values for column(s) '%1'")			.arg(columnNames.join(", ")));
-	else							setText(QObject::tr("Order labels by values for %1 columns from '%2'")	.arg(QString::number(columnNames.size()), columnNames[0]));
+	setText(QObject::tr("Toggle autosorting labels by values for column(s) '%1'").arg(columnNames.join(", ")));
 }
 
-void ColumnOrderByValuesCommand::redo()
+void ColumnToggleAutoSortByValuesCommand::redo()
 {
-	DataSetPackage::pkg()->columnsOrderByValues(_cols);
+	DataSetPackage::pkg()->columnsSetAutoSortForColumns(_colsNewAutoSort);
 }
-
-
 
 UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemModel *model, intset cols)
 : UndoModelCommand(model), _cols{cols}
@@ -320,7 +314,6 @@ void UndoModelCommandMultipleColumns::undo()
 
 	
 	DataSetPackage::pkg()->refresh();
-	
 }
 
 SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop)
@@ -431,13 +424,51 @@ void SetWorkspacePropertyCommand::redo()
 }
 
 
-SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel)
-	: UndoModelCommand(model), _labelIndex{labelIndex}, _newLabel{newLabel}
+UndoModelCommandLabelChange::UndoModelCommandLabelChange(QAbstractItemModel *model)
+	: UndoModelCommand(model)
 {
 	_columnModel = qobject_cast<ColumnModel*>(model);
 	if (_columnModel)
 	{
-		_colId = _columnModel->chosenColumn();
+		_colId			= _columnModel->chosenColumn();
+		Column * col	= _columnModel->column();
+		_oldLabels		= col ? col->serializeLabels() : Json::nullValue;
+	}
+	else
+	{
+		Log::log() << "Try to set a label name with a wrong model!" << std::endl;
+		setObsolete(true);
+	}
+}
+
+void UndoModelCommandLabelChange::undo()
+{
+	if(_oldLabels.isNull())
+		return;
+	
+	assert(_columnModel && _model);
+	_columnModel->setChosenColumn(_colId);
+	
+	Column * col = _columnModel->column();
+	
+	if(col)
+	{
+		col->deserializeLabelsForRevert(_oldLabels);
+		DataSetPackage::pkg()->refresh();
+	}
+}
+
+void UndoModelCommandLabelChange::redo()
+{
+	if(_columnModel && (!_columnModel->column() || _columnModel->column()->id() != _colId))
+		_columnModel->setChosenColumn(_colId);	
+}
+
+SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel)
+	: UndoModelCommandLabelChange(model), _labelIndex{labelIndex}, _newLabel{newLabel}
+{
+	if (_columnModel)
+	{
 		_oldLabel = _model->data(_model->index(_labelIndex, 0)).toString();
 		QString value = _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
 		setText(QObject::tr("Set label for value '%1' of column '%2' from '%3' to '%4'").arg(value).arg(columnName()).arg(_oldLabel).arg(_newLabel));
@@ -449,29 +480,18 @@ SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QStr
 	}
 }
 
-void SetLabelCommand::undo()
-{
-	assert(_columnModel && _model);
-	_columnModel->setChosenColumn(_colId);
-	_model->setData(_model->index(_labelIndex, 0), _oldLabel, int(DataSetPackage::specialRoles::label));
-	_columnModel->setLabelMaxWidth();
-}
-
 void SetLabelCommand::redo()
 {
-	assert(_columnModel && _model);
-	_columnModel->setChosenColumn(_colId);
+	UndoModelCommandLabelChange::redo();
 	_model->setData(_model->index(_labelIndex, 0), _newLabel, int(DataSetPackage::specialRoles::label));
 	_columnModel->setLabelMaxWidth();
 }
 
 SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue)
-	: UndoModelCommand(model), _labelIndex{labelIndex}, _newOriginalValue{originalValue}
+	: UndoModelCommandLabelChange(model), _labelIndex{labelIndex}, _newOriginalValue{originalValue}
 {
-	_columnModel = qobject_cast<ColumnModel*>(model);
 	if (_columnModel)
 	{
-		_colId				= _columnModel->chosenColumn();
 		_oldOriginalValue	= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::value)).toString();
 		_oldLabel			= _model->data(_model->index(_labelIndex, 0), int(DataSetPackage::specialRoles::label)).toString();
 		setText(QObject::tr("Set original value  from '%3' to '%4' for label '%1' of column '%2'").arg(_oldLabel).arg(columnName()).arg(_oldOriginalValue).arg(_newOriginalValue));
@@ -483,17 +503,9 @@ SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *m
 	}
 }
 
-void SetLabelOriginalValueCommand::undo()
-{
-	_columnModel->setChosenColumn(_colId);
-	_model->setData(_model->index(_labelIndex, 0), _oldOriginalValue,	int(DataSetPackage::specialRoles::value));
-	_model->setData(_model->index(_labelIndex, 0), _oldLabel,			int(DataSetPackage::specialRoles::label));
-	_columnModel->setLabelMaxWidth();
-}
-
 void SetLabelOriginalValueCommand::redo()
 {
-	_columnModel->setChosenColumn(_colId);
+	UndoModelCommandLabelChange::redo();
 	_model->setData(_model->index(_labelIndex, 0), _newOriginalValue, int(DataSetPackage::specialRoles::value));
 	_columnModel->setLabelMaxWidth();
 }
@@ -534,12 +546,10 @@ void FilterLabelCommand::redo()
 }
 
 MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<qsizetype> &indexes, bool up)
-	: UndoModelCommand(model), _up{up}
+	: UndoModelCommandLabelChange(model), _up{up}
 {
-	_columnModel = qobject_cast<ColumnModel*>(model);
 	if (_columnModel)
 	{
-		_colId = _columnModel->chosenColumn();
 		_labels.clear();
 
 		QStringList allLabels = DataSetPackage::pkg()->getColumnLabelsAsStringList(_colId);
@@ -586,21 +596,11 @@ std::vector<qsizetype> MoveLabelCommand::_getIndexes()
 	return indexes;
 }
 
-void MoveLabelCommand::_moveLabels(bool up)
+void MoveLabelCommand::redo()
 {
 	_columnModel->setChosenColumn(_colId);
 	std::vector<qsizetype> indexes = _getIndexes(); // The indexes must be recalculated each time
-	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, up); //through DataSetPackage to make sure signals get sent
-}
-
-void MoveLabelCommand::undo()
-{
-	_moveLabels(!_up);
-}
-
-void MoveLabelCommand::redo()
-{
-	_moveLabels(_up);
+	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, _up); //through DataSetPackage to make sure signals get sent
 }
 
 ReverseLabelCommand::ReverseLabelCommand(QAbstractItemModel *model)
@@ -859,3 +859,4 @@ QString UndoModelCommand::rowName(int rowIndex) const
 
 	return result;
 }
+

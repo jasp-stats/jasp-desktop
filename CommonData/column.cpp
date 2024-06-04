@@ -5,12 +5,25 @@
 #include "columnutils.h"
 #include "databaseinterface.h"
 
+bool Column::_autoSortByValuesByDefault = true;
+
+bool Column::autoSortByValuesByDefault()
+{
+	return _autoSortByValuesByDefault;	
+}
+
+void Column::setAutoSortByValuesByDefault(bool autoSort)
+{
+	_autoSortByValuesByDefault = autoSort;
+}
+
 Column::Column(DataSet * data, int id)
-	: DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
-	_data(data),
-	_id(id),
-	_emptyValues(new EmptyValues(data->emptyValues())),
-	_doubleDummy(new Label(this))
+:	DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
+	_data(				data),
+	_id(				id),
+	_emptyValues(		new EmptyValues(data->emptyValues())),
+	_doubleDummy(		new Label(this)),
+	_autoSortByValue(	_autoSortByValuesByDefault)
 {}
 
 Column::~Column()
@@ -41,7 +54,7 @@ void Column::dbLoad(int id, bool getValues)
 	
 	Json::Value emptyVals;
 	
-	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals);
+	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue);
 	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, _constructorJson);
 	
 	_emptyValues->fromJson(emptyVals);
@@ -243,6 +256,22 @@ bool Column::setConstructorJson(const std::string & constructorJson)
 	Json::Reader().parse(constructorJson, parsed);
 	
 	return setConstructorJson(parsed);
+}
+
+void Column::setAutoSortByValue(bool sort)
+{
+	JASPTIMER_SCOPE(Column::setAutoSortByValue);
+
+	if(sort == _autoSortByValue)
+		return;
+	
+	_autoSortByValue = sort;
+	
+	db().columnSetAutoSort(_id, _autoSortByValue);
+	
+	labelsHandleAutoSort();
+	
+	return;	
 }
 
 bool Column::setConstructorJson(const Json::Value &constructorJson)
@@ -599,6 +628,8 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 			incRevision();
 		return;
 	}
+	
+	labelsHandleAutoSort(false);
 
 	intintmap orderPerDbIds;
 
@@ -767,6 +798,7 @@ void Column::labelsTempReset()
 	_labelsTempToIndex	. clear();
 	_labelsTempRevision = -1;
 	_labelsTempMaxWidth = 0;
+	_labelsTempNumerics = 0;
 }
 
 int Column::labelsTempCount()
@@ -774,12 +806,9 @@ int Column::labelsTempCount()
 	if(_revision != _labelsTempRevision)
 	{
 		//first collect the labels that are actually Label
-		_labelsTemp			. clear();
-		_labelsTempDbls		. clear();
+		labelsTempReset();
 		_labelsTemp			. reserve(_labels.size());
 		_labelsTempDbls		. reserve(_labels.size());
-		_labelsTempToIndex	. clear();
-		_labelsTempMaxWidth = 0;
 		
 		for(size_t r=0; r<_labels.size(); r++)
 			if(!_labels[r]->isEmptyValue())
@@ -787,6 +816,9 @@ int Column::labelsTempCount()
 				_labelsTemp												. push_back(_labels[r]->label());
 				_labelsTempDbls											. push_back(_labels[r]->originalValue().isDouble() ? _labels[r]->originalValue().asDouble() : EmptyValues::missingValueDouble);
 				_labelsTempToIndex[_labelsTemp[_labelsTemp.size()-1]]	= _labelsTemp.size()-1; //We store the index in _labelsTemp in a map.
+				
+				if(!std::isnan(*_labelsTempDbls.rbegin()))
+					_labelsTempNumerics++;
 			}
 		
 		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
@@ -801,6 +833,9 @@ int Column::labelsTempCount()
 					_labelsTempDbls					. push_back(_dbls[r]);
 					_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
 					_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
+					
+					if(!std::isnan(*_labelsTempDbls.rbegin()))
+						_labelsTempNumerics++;
 				}
 			}
 
@@ -809,6 +844,13 @@ int Column::labelsTempCount()
 	}
 	
 	return _labelsTemp.size();
+}
+
+int Column::labelsTempNumerics()
+{
+	labelsTempCount(); //generate the list if need be
+	
+	return _labelsTempNumerics;
 }
 
 const stringvec &Column::labelsTemp()
@@ -1213,6 +1255,12 @@ void Column::labelValueChanged(Label *label, double aDouble)
 	dbUpdateValues();
 }
 
+void Column::labelsHandleAutoSort(bool doDbUpdateEtc)
+{
+	if(_autoSortByValue)
+		labelsOrderByValue(doDbUpdateEtc);	
+}
+
 void Column::labelDisplayChanged(Label *label)
 {
 	if(_labelsTempRevision < _revision)
@@ -1280,7 +1328,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
 	bool	labelIsValue	= value == label,
-			justAValue		= label == "";			///< To help us handle updates from synchronistion from csv (users might have added different label-texts
+			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];	
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
@@ -1512,7 +1560,7 @@ std::set<size_t> Column::labelsMoveRows(std::vector<qsizetype> rows, bool up)
 
 	std::sort(rows.begin(), rows.end(), [&](const auto & l, const auto & r) { return up ? l < r : r < l; });
 	
-	replaceDoublesTillLabelsRowWithLabels(std::min(qsizetype(labelsTempCount() - 1), rows.back() + 1));
+	replaceDoublesTillLabelsRowWithLabels(std::min(qsizetype(labelsTempCount()), rows.back() + 1));
 	
 	std::vector<Label*> new_labels(_labels.begin(), _labels.end());
 
@@ -1541,7 +1589,7 @@ void Column::labelsReverse()
 {
 	JASPTIMER_SCOPE(Column::labelsReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	std::reverse(_labels.begin(), _labels.end());
 	
 	labelsTempReset();
@@ -1549,18 +1597,18 @@ void Column::labelsReverse()
 }
 
 
-void Column::labelsOrderByValue()
+void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	size_t					curMax		= asc.size()+1;
 	std::map<double, int>	orderMap;
 	
 	for(size_t i=0; i<asc.size(); i++)
-		orderMap[asc[i]] = i+1;
+		orderMap[asc[i]] = i;
 	
 	//and now to write them back into the data
 	for(Label * label : _labels)
@@ -1577,7 +1625,8 @@ void Column::labelsOrderByValue()
 	
 	_sortLabelsByOrder();
 	labelsTempReset();
-	_dbUpdateLabelOrder();
+	if(doDbUpdateEtc)
+		_dbUpdateLabelOrder();
 }
 
 doublevec Column::valuesNumericOrdered()
@@ -1604,7 +1653,7 @@ void Column::valuesReverse()
 {
 	JASPTIMER_SCOPE(Column::valuesReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount()-1);
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec	asc = valuesNumericOrdered(),
 				dsc	= asc;
@@ -1629,6 +1678,9 @@ void Column::valuesReverse()
 		if(!std::isnan(aValue))
 			label->setOriginalValue(flipIt[aValue]);
 	}
+	
+	labelsTempReset();
+	_dbUpdateLabelOrder();
 }
 
 
@@ -1786,20 +1838,16 @@ Json::Value Column::serialize() const
 
 	json["name"]			= _name;
 	json["title"]			= _title;
-	json["description"]		= _description;
 	json["rCode"]			= _rCode;
-	json["type"]			= int(_type);
 	json["analysisId"]		= _analysisId;
 	json["invalidated"]		= _invalidated;
+	json["constructorJson"] = _constructorJson;
+	json["autoSortByValue"] = _autoSortByValue;
+	json["description"]		= _description;
 	json["forceTypes"]		= _forceTypes;
 	json["codeType"]		= int(_codeType);
 	json["error"]			= _error;
-	json["rCode"]			= _rCode;
-	json["constructorJson"] = _constructorJson;
-
-	Json::Value jsonLabels(Json::arrayValue);
-	for (const Label* label : _labels)
-		jsonLabels.append(label->serialize());
+	json["type"]			= int(_type);
 
 	Json::Value jsonDbls(Json::arrayValue);
 	for (double dbl : _dbls)
@@ -1811,11 +1859,109 @@ Json::Value Column::serialize() const
 
 	json["customEmptyValues"]	= _emptyValues->toJson();
 
-	json["labels"]				= jsonLabels;
+	json["labels"]				= serializeLabels();
 	json["dbls"]				= jsonDbls;
 	json["ints"]				= jsonInts;
 
 	return json;
+}
+
+Json::Value	Column::serializeLabels() const
+{
+	Json::Value jsonLabels(Json::arrayValue);
+	for (const Label* label : _labels)
+		jsonLabels.append(label->serialize());
+	
+	return jsonLabels;
+}
+
+void Column::deserializeLabelsForCopy(const Json::Value & labels)
+{
+	
+	labelsTempReset();
+
+	beginBatchedLabelsDB();
+	_labelByIntsIdMap.clear();
+	_labels.clear();
+
+	if (labels.isArray())
+		for (const Json::Value& labelJson : labels)
+			labelsAdd(
+						labelJson["intsId"]			.asInt(), 
+						labelJson["label"]			.asString(), 
+						labelJson["filterAllows"]	.asBool(), 
+						labelJson["description"]	.asString(), 
+						labelJson["originalValue"], 
+						labelJson["order"]			.asInt(), 
+						-1
+			);
+	
+	endBatchedLabelsDB();
+}
+
+void Column::deserializeLabelsForRevert(const Json::Value & labels)
+{
+ 	labelsTempReset();
+	
+	beginBatchedLabelsDB();
+	
+	//intset	updatedLbls;
+
+	if (labels.isArray())
+		for (const Json::Value& labelJson : labels)
+		{
+			int					intsId		= labelJson["intsId"]		.asInt(),
+								order		= labelJson["order"]		.asInt();
+			const std::string	labelStr	= labelJson["label"]		.asString(),
+								description	= labelJson["description"]	.asString();
+			bool				filterAllow = labelJson["filterAllows"]	.asBool();
+			
+			
+			if(_labelByIntsIdMap.count(intsId))
+			{
+				Label * label = _labelByIntsIdMap[intsId];
+				
+				label->setOrder(			order						);
+				label->setLabel(			labelStr					);
+				label->setDescription(		description					);
+				label->setFilterAllows(		filterAllow					);
+				label->setOriginalValue(	labelJson["originalValue"]	);
+				
+				//updatedLbls.insert(intsId);
+			}
+			else
+			{
+				labelsAdd(intsId, labelStr, filterAllow, description, labelJson["originalValue"], order, -1);
+							
+				//updatedLbls.insert(intsId);
+			}
+		}
+	
+	
+	_sortLabelsByOrder();
+	
+	/*intset missingLbls;
+	for(auto & idLabel : _labelByIntsIdMap)
+		if(!updatedLbls.count(idLabel.first))
+			missingLbls.insert(idLabel.first);*/
+	
+	endBatchedLabelsDB();
+	
+	/* The following is already implied by endBatchedLabelsDB because it deletes all labels first anyway
+	for(int id : missingLbls)
+	{
+		Label * deleteMe = 	_labelByIntsIdMap[id];
+		
+		for(size_t i=0;i<_labels.size(); i++)
+			if(_labels[i] == deleteMe)
+				_labels.erase(_labels.begin() + i);
+		
+		_labelByIntsIdMap.erase(id);
+		deleteMe->dbDelete();
+		delete deleteMe;	
+	}*/
+	
+	incRevision();
 }
 
 void Column::deserialize(const Json::Value &json)
@@ -1823,8 +1969,8 @@ void Column::deserialize(const Json::Value &json)
 	if (json.isNull())
 		return;
 
-	std::string name = json["name"].asString(),
-				title = json["title"].asString();
+	std::string name	= json["name"].asString(),
+				title	= json["title"].asString();
 
 	_name				= getUniqueName(name);
 	db().columnSetName(_id, _name);
@@ -1844,26 +1990,13 @@ void Column::deserialize(const Json::Value &json)
 	_codeType			= computedColumnType(json["codeType"].asInt());
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
-	_constructorJson	= json["constructorJson"];
 	_analysisId			= json["analysisId"].asInt();
+	_constructorJson	= json["constructorJson"];
+	_autoSortByValue	= json["autoSortByValue"].asBool();
 
 	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _forceTypes, _codeType, _rCode, _error, constructorJsonStr());
 	
-	for (Label* label : _labels)
-	{
-		_labelByIntsIdMap.erase(label->intsId());
-		label->dbDelete();
-		delete label;
-	}
-	_labelByIntsIdMap.clear();
-	_labels.clear();
-
-	const Json::Value& labels = json["labels"];
-	if (labels.isArray())
-	{
-		for (const Json::Value& labelJson : labels)
-			labelsAdd(labelJson["value"].asInt(), labelJson["label"].asString(), labelJson["filterAllows"].asBool(), labelJson["description"].asString(), labelJson["originalValue"].asString(), labelJson["order"].asInt(), -1);
-	}
+	deserializeLabelsForCopy(json["labels"]);
 
 	_emptyValues->fromJson(json["customEmptyValues"]);
 	
@@ -1879,7 +2012,7 @@ void Column::deserialize(const Json::Value &json)
 	
 	assert(_ints.size() == _dbls.size());
 	
-	dbUpdateValues();
+	dbUpdateValues(false);
 }
 
 std::string Column::getUniqueName(const std::string &name) const

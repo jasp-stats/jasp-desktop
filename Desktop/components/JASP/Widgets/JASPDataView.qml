@@ -16,6 +16,7 @@ FocusScope
 				property alias mouseArea:				wheelCatcher
 				property bool  doubleClickWorkaround:	true
 				property alias isMainDataViewer:		theView.mainData
+	readonly	property alias editCoordinates:			theView.editCoordinates
 
 				property alias itemDelegate:			theView.itemDelegate
 				property alias rowNumberDelegate:		theView.rowNumberDelegate

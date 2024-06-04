@@ -361,13 +361,19 @@ void DataSetView::storeAllItems()
 	JASPTIMER_RESUME(DataSetView::storeAllItems);
 	
 	for(auto & subVec : _cellTextItems)
+	{
 		for(auto & intTextItem : subVec.second)
 		{
-			intTextItem.second->item->setVisible(false);
+			if(intTextItem.second)
+			{
+				intTextItem.second->item->setVisible(false);
 		
-			if (_cacheItems)		_textItemStorage.push(intTextItem.second);
-			else					delete intTextItem.second;
+				if (_cacheItems)		_textItemStorage.push(intTextItem.second);
+				else					delete intTextItem.second;
+			}
 		}
+		subVec.second.clear();
+	}
 	
 	_cellTextItems.clear();
 	
@@ -660,7 +666,8 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 			_cellTextItems.erase(col);
 	}
 
-	textItem->item->setVisible(false);
+	textItem->item->setFocus(	false);
+	textItem->item->setVisible(	false);
 
 	if (_cacheItems)		_textItemStorage.push(textItem);
 	else					delete textItem;
@@ -987,6 +994,8 @@ void DataSetView::positionEditItem(int row, int col)
 		storeTextItem(row, col, true);
 		_prevEditRow = row; //Store info to recreate it later
 		_prevEditCol = col;
+		
+		emit editCoordinatesChanged();
 
 		QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 		_editDelegate->create(localIncubator, _editItemContextual->context);
@@ -1354,6 +1363,9 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	//Reset edit if we are selecting things with shift or ctrl/cmd, or when the last clicked place is not the same as the editthing
 	if(shiftPressed || ctrlCmdPressed || row != _prevEditRow || col != _prevEditCol)
 		clearEdit();
+	
+	if(!shiftPressed && !ctrlCmdPressed && ( row != _prevEditRow || col != _prevEditCol) )
+		edit(row, col);
 
 	
 /* //Even if you reenable this we prob dont want this in release par accident
@@ -1435,9 +1447,9 @@ void DataSetView::columnReverseValues(int columnIndex)
 	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnReverseValues(col);  });
 }
 
-void DataSetView::columnOrderByValues(int columnIndex)
+void DataSetView::columnautoSortByValues(int columnIndex)
 {
-	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnOrderByValues(col);  });
+	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnautoSortByValues(col);  });
 }
 
 QString DataSetView::columnInsertBefore(int col, bool computed, bool R)
@@ -2086,4 +2098,9 @@ void DataSetView::setMainData(bool newMainData)
 	else if(_mainDataSetView == this)	_mainDataSetView = nullptr;
 	
 	emit mainDataChanged();
+}
+
+QPoint DataSetView::editCoordinates() const
+{
+	return QPoint(_prevEditCol, _prevEditRow);
 }

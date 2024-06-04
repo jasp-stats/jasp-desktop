@@ -68,10 +68,6 @@ Item
 					dataTableView.view.clearEdit()
 					dataTableView.showPopupMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 				}
-							
-				if(!shiftPressed && !controlPressed && !rightPressed)
-					dataTableView.view.edit(rowIndex, columnIndex)
-
 			}
 			
 			if (columnModel.visible)

@@ -31,6 +31,7 @@
 #include "utilities/settings.h"
 #include "modules/ribbonmodel.h"
 #include "filtermodel.h"
+#include <ranges>
 
 //Im having problems getting the proxy models to play nicely with beginRemoveRows etc
 //So just reset the whole thing as that is what happens in datasetview
@@ -504,9 +505,9 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:						return tq(column->getDisplay(index.row()));
-		case int(specialRoles::shadowDisplay):		return tq(column->getShadow(index.row()));
 		case int(specialRoles::label):				return tq(column->getLabel(index.row(), false, true));
 		case int(specialRoles::description):		return tq(column->description());
+		case int(specialRoles::shadowDisplay):		return tq(column->getShadow(index.row()));
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::inEasyFilter):		return isColumnUsedInEasyFilter(column->name());
@@ -515,6 +516,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::title):				return tq(column->title());
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(column->type());
+		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();	
 		case int(specialRoles::computedColumnType):	return int(column->codeType());
 		case int(specialRoles::columnPkgIndex):		return index.column();
 		case int(specialRoles::lines):
@@ -550,10 +552,11 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row()));
 		case int(specialRoles::description):		return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
+		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();	
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
-		case Qt::DisplayRole:
-		case int(specialRoles::label):				return tq(column->labelsTempDisplay(index.row()));
+		case int(specialRoles::label):				[[fallthrough]];
+		case Qt::DisplayRole:						return tq(column->labelsTempDisplay(index.row()));
 		default:									return QVariant();
 		}
 	}
@@ -646,17 +649,25 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
 
-			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value))
+			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value) || role == int(specialRoles::valueLabelPair))
 			{				
-				const std::string val = fq(value.toString());
+				bool				isPair	= role == int(specialRoles::valueLabelPair);
+				QVariantList		listVar	= isPair	? value.toList()		: QVariantList{ value };
+				const std::string	val		= fq(listVar[0].toString()),
+									label	= fq(isPair ? listVar[1].toString() : "");
+				
+				bool	somethingChanged	= !isPair
+											? column->setStringValueToRow(index.row(), val == EmptyValues::displayString() ? "" : val)
+											: column->setValue(index.row(), val, label);
 
-				if(column->setStringValueToRow(index.row(), val == EmptyValues::displayString() ? "" : val))
+				if(somethingChanged)
 				{
 						JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
 						setManualEdits(true); //Don't synch with external file after editing
 						
 						column->labelsRemoveOrphans();
+						column->labelsHandleAutoSort();
 
 						stringvec	changedCols = {column->name()};
 	
@@ -882,12 +893,21 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		aChange = true;
 	}
 	
-	//If the user is changing the value of a column with a integer/double value we want the display/label to also change
-	//But only if its the same
-	if(	label->originalValueAsString(false) == label->labelDisplay() && label->originalValue().isDouble() && originalValue.isDouble())
-		aChange = label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false)) || aChange;
+	//If the user is changing the value of a column to a string we want the display/label to also change if its the same
+	//to a double/int however might mean recoding so it would be a bit impractical to have the label dissappear
+	if(	label->originalValueAsString(false) == label->labelDisplay())
+	{
+		if(!originalValue.isDouble())
+			aChange = label->setLabel(originalValue.asString()) || aChange;
+		
+		else if(label->originalValue().isDouble())
+				label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false));
+		
+	}
 	
 	aChange = label->setOriginalValue(originalValue) || aChange;
+	
+	column->labelsHandleAutoSort();
 	
 	if(aChange)
 		changedCols = {column->name()};
@@ -1397,7 +1417,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
 				
-	if(PreferencesModel::prefs()->orderByValueOnImport())
+                                if(PreferencesModel::prefs()->orderByValueByDefault())
 		column->labelsOrderByValue();
 	
 	return anyChanges || column->type() != prevType;
@@ -1629,16 +1649,23 @@ void DataSetPackage::columnsReverseValues(intset columnIndexes)
 	});
 }
 
-void DataSetPackage::columnsOrderByValues(intset columnIndexes)
+void DataSetPackage::columnsSetAutoSortForColumns(std::map<int,bool> sortPerColumn)
 {
-	columnsApply(columnIndexes, [&](Column * column) 
+	intset cols;
+	for(auto colSort : sortPerColumn)
+		cols.insert(colSort.first);
+	
+	columnsApply(cols, [&](Column * column, int colIdx) 
 	{ 
-		column->labelsOrderByValue();
+		column->setAutoSortByValue(sortPerColumn[colIdx]);
 		return true;
 	});
+	
+	if(cols.size() == 1)
+		emit chooseColumn(*cols.begin());
 }
 
-void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column)> applyThis)
+void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column, int col)> applyThis)
 {
 	if(!_dataSet)
 		return;
@@ -1651,7 +1678,7 @@ void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Colum
 	
 		if(column)
 		{
-			if(applyThis(column))
+			if(applyThis(column, columnIndex))
 				changedCols << tq(column->name());
 		}	
 	}
@@ -1661,6 +1688,11 @@ void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Colum
 		refresh();
 		emit datasetChanged(changedCols, {}, {}, false, false);
 	}
+}
+
+void DataSetPackage::columnsApply(intset columnIndexes, std::function<bool(Column * column)> applyThis)
+{
+	columnsApply(columnIndexes, [&](Column * column, int){ return applyThis(column); });
 }
 
 bool DataSetPackage::setFilterData(const std::string & rFilter, const boolvec & filterResult)

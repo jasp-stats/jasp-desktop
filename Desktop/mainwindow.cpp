@@ -504,6 +504,9 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::developerFolderChanged,			_dynamicModules,		&DynamicModules::uninstallJASPDeveloperModule				);
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
 	connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
+	connect(_preferences,			&PreferencesModel::orderByValueByDefaultChanged,	[&](){	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault()); });
+	
+	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
 

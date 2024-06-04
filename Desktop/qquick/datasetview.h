@@ -71,6 +71,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QItemSelectionModel *	selection				READ selectionModel											NOTIFY selectionModelChanged		)
 	Q_PROPERTY(	QPoint					selectionMin			READ selectionMin											NOTIFY selectionMinChanged			)
 	Q_PROPERTY(	QPoint					selectionMax			READ selectionMax											NOTIFY selectionMaxChanged			)
+	Q_PROPERTY(	QPoint					editCoordinates			READ editCoordinates										NOTIFY editCoordinatesChanged		)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
 	Q_PROPERTY( bool					mainData				READ mainData				WRITE setMainData				NOTIFY mainDataChanged				)
 	
@@ -141,6 +142,8 @@ public:
 	
 	void setMainData(bool newMainData);
 	
+	QPoint editCoordinates() const;
+	
 signals:
 	void		modelChanged();
 	void		selectionModelChanged();
@@ -182,6 +185,8 @@ signals:
 	
 	void		mainDataChanged();
 	
+	void		editCoordinatesChanged();
+	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
 	void		aContentSizeChanged()	{ _recalculateCellSizes = true; }
@@ -222,7 +227,7 @@ public slots:
 	void		columnsDeleteSelected();
 	void		columnsDelete(				int col);
 	void		columnReverseValues(		int col = -1);
-	void		columnOrderByValues(		int col = -1);
+	void		columnautoSortByValues(		int col = -1);
 	void		rowInsertBefore(			int row = -1);
 	void		rowInsertAfter(				int row = -1);
 	void		rowsDelete(					int row);
@@ -357,7 +362,6 @@ protected:
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
 	std::vector<boolvec>									_lastJaspCopySelect;
-
 };
 
 

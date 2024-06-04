@@ -136,10 +136,10 @@ QTC.ScrollView
 		
 			CheckBox
 			{
-				id:					orderOnImport
-				label:				qsTr("Order labels by value")
-				checked:			preferencesModel.orderByValueOnImport
-				onCheckedChanged:	preferencesModel.orderByValueOnImport = checked
+				id:					orderByDefault
+				label:				qsTr("Order labels by value by default")
+				checked:			preferencesModel.orderByValueByDefault
+				onCheckedChanged:	preferencesModel.orderByValueByDefault = checked
 				toolTip:			qsTr("This might incur a slowdown while loading very large datasets with lots of scalars. Think 1 million+ rows of random floating point numbers.\nIf you find that loading of such a file is slow you can disable this option.")
 	
 				KeyNavigation.tab:	thresholdScale

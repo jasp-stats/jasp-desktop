@@ -305,9 +305,9 @@ void ExpandDataProxyModel::columnReverseValues(intset columnIndexes)
 	_undoStack->pushCommand(new ColumnReverseValuesCommand(_sourceModel, columnIndexes));
 }
 
-void ExpandDataProxyModel::columnOrderByValues(intset columnIndexes)
+void ExpandDataProxyModel::columnautoSortByValues(intset columnIndexes)
 {
-	_undoStack->pushCommand(new ColumnOrderByValuesCommand(_sourceModel, columnIndexes));
+    _undoStack->pushCommand(new ColumnToggleAutoSortByValuesCommand(_sourceModel, columnIndexes));
 }
 
 void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Value>& copiedColumns)

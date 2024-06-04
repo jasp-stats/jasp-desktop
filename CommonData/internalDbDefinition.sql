@@ -33,6 +33,7 @@ CREATE TABLE Columns
 	columnType			TEXT, 
 	colIdx				INT, 
 	isComputed			INT, 
+	autoSortByValue		INT,	
 	invalidated			INT		NULL,
 	forceSourceColType	INT		NULL,
 	codeType			TEXT	NULL, 
