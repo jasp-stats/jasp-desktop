@@ -440,7 +440,7 @@ DropArea
 				{
 					id:					copyButton
 					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.png" : jaspTheme.iconPath + "/duplicate_disabled.png"
+					iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.svg" : jaspTheme.iconPath + "/duplicate_disabled.svg"
 					enabled:			expanderButton.expanded
 					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
 					toolTip:			qsTr("Duplicate this analysis")

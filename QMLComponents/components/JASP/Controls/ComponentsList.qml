@@ -46,7 +46,7 @@ ComponentsListBase
 	property alias	addIconItem			: addIconItem
 	property bool	showAddIcon			: addItemManually
 	property string	removeIcon			: "cross.png"
-	property string	addIcon				: "duplicate.png"
+	property string	addIcon				: "round_addition.png"
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
     property bool   addBorder           : true
