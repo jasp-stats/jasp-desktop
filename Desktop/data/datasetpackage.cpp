@@ -657,7 +657,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 									label	= fq(isPair ? listVar[1].toString() : "");
 				
 				bool	somethingChanged	= !isPair
-											? column->setStringValueToRow(index.row(), val == EmptyValues::displayString() ? "" : val)
+						? column->setStringValue(index.row(), val == EmptyValues::displayString() ? "" : val)
 											: column->setValue(index.row(), val, label);
 
 				if(somethingChanged)
@@ -1916,13 +1916,16 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	{
 		Column	*	column		= _dataSet->column(c + col);
 		columnType	desiredType	= coltypes.size() > c ? columnType(coltypes[c]) : column->type();
+		bool		noType		= desiredType == columnType::unknown;
 					desiredType = desiredType == columnType::unknown ? columnType::scale : desiredType;
 		std::string colName		= (colNames.size() > c && !colNames[c].isEmpty()) ? fq(colNames[c]) : column->name();
+		
+		column->setType(desiredType);
 
 		bool aChange = false;
 		for(int r=0; r<rowMax; r++)
 			if(isSelected(r, c))
-				aChange = column->setValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
+				aChange = column->setStringValue(r+row, fq(values[c][r]), labels.size() <= c || labels[c].size() <= r ? "" : fq(labels[c][r])) || aChange;
 			
 		aChange = aChange || colName != column->name() || desiredType != column->type();
 		
@@ -1930,7 +1933,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			changeNameColumns[column->name()] = colName;
 		
 		column->setName(colName);
-		column->setType(desiredType);
 
 		if(aChange)
 		{
