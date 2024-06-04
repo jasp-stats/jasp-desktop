@@ -64,7 +64,8 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 
 	//remove any leftover ModuleDir 
 	QDir modulesDir(AppDirs::bundledModulesDir());
-	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != DynamicRuntimeInfo::ZIP)	{
+	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != DynamicRuntimeInfo::ZIP)
+	{
 		std::function<void(QDir)> removeDir = [&](QDir x) -> void {
 			for(const auto& entry : x.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files))
 			{
