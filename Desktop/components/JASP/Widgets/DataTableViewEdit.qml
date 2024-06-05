@@ -4,22 +4,27 @@ import JASP.Controls		as JaspControls
 import QtQml.Models
 
 
-TextInput
+Item
 {
-	id:						editItem
-	text:					itemText
-	color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-	font:					jaspTheme.font
-	verticalAlignment:		Text.AlignVCenter
-	onEditingFinished:		dataTableView.view.commitEdit(rowIndex, columnIndex, text);
-	z:						10
-	readOnly:				!itemEditable
-	clip:					true
+	id:							editItemRoot
+	z:							10
+	onVisibleChanged:			{ isEditing = false; keyPressed = false }
+	property bool isEditing:	false
+	property bool keyPressed:	false
 
-	onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
-	onVisibleChanged:		{ isEditing = false; keyPressed = false }
-	property bool isEditing: false
-	property bool keyPressed: false
+	TextInput
+	{
+		id:						editItem
+		text:					itemText
+		color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		font:					jaspTheme.font
+		clip:						true
+		verticalAlignment:		Text.AlignVCenter
+		onEditingFinished:		dataTableView.view.commitEdit(rowIndex, columnIndex, text);
+		readOnly:				!itemEditable
+		onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
+		anchors.fill:			parent
+	}
 
 	Component.onCompleted:	{ focusTimer.start(); }
 	Timer
@@ -30,7 +35,7 @@ TextInput
 		onTriggered:
 		{
 			editItem.forceActiveFocus()
-			dataTableView.moveItemIntoView(editItem);
+			dataTableView.moveItemIntoView(editItemRoot);
 		}
 	}
 
@@ -130,16 +135,16 @@ TextInput
 
 		case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 
-		case Qt.Key_Up:		if(rowI > 0)										{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);		} break;
-		case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
-		case Qt.Key_Left:	if(colI	> 0 && (editItem.cursorPosition <= 0 || !itemEditable))		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);		} break;
+		case Qt.Key_Up:		if(rowI > 0)														{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI - 1);							} break;
+		case Qt.Key_Down:	if(rowI	< dataTableView.view.rowCount()    - 1)						{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);							} break;
+		case Qt.Key_Left:	if(colI	> 0 && (editItem.cursorPosition <= 0 || !itemEditable))		{ arrowPressed = true; arrowIndex   = Qt.point(colI - 1, rowI);							} break;
 		case Qt.Key_Right:	if(colI	< dataTableView.view.columnCount() - 1 &&
-							   editItem.cursorPosition >= editItem.text.length)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
-		case Qt.Key_Backtab: if(colI > 0)										{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false; } break;
-		case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)	{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);		} break;
+							   editItem.cursorPosition >= editItem.text.length)					{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);							} break;
+		case Qt.Key_Backtab: if(colI > 0)														{ arrowPressed = true; arrowIndex = Qt.point(colI - 1, rowI);	shiftPressed = false;	} break;
+		case Qt.Key_Tab:	 if(colI < dataTableView.view.columnCount() - 1)					{ arrowPressed = true; arrowIndex = Qt.point(colI + 1, rowI);							} break;
 
 		case Qt.Key_Return:
-		case Qt.Key_Enter:	if(rowI	< dataTableView.view.rowCount()    - 1)		{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);		} break;
+		case Qt.Key_Enter:	if(rowI	< dataTableView.view.rowCount()    - 1)						{ arrowPressed = true; arrowIndex   = Qt.point(colI, rowI + 1);							} break;
 
 
 		}
@@ -185,7 +190,7 @@ TextInput
 			onPressed: (mouse) =>
 			{
 				if(mouse.buttons & Qt.RightButton)
-					dataTableView.showPopupMenu(editItem, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
+					dataTableView.showPopupMenu(editItemRoot, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 			}
 		}
 	}
