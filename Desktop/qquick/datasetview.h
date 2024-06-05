@@ -74,6 +74,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY(	QPoint					editCoordinates			READ editCoordinates										NOTIFY editCoordinatesChanged		)
 	Q_PROPERTY(	bool					editing					READ editing				WRITE setEditing				NOTIFY editingChanged				)
 	Q_PROPERTY( bool					mainData				READ mainData				WRITE setMainData				NOTIFY mainDataChanged				)
+	Q_PROPERTY( int						maxColWidth				READ maxColWidth			WRITE setMaxColWidth			NOTIFY maxColWidthChanged			)
 	
 public:
 	friend ExpandDataProxyModel;
@@ -115,6 +116,7 @@ public:
 	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)					{ return _columnHeaderItems.count(col) 	> 0	? _columnHeaderItems[col]->item : nullptr;	}
 	Q_INVOKABLE QQuickItem*	getRowHeader(	int row)					{ return _rowNumberItems.count(row) 	> 0 ? _rowNumberItems[row]->item	: nullptr;	}
 
+	Q_INVOKABLE	bool		clipBoardPasteIsCells()				const;
 	
 	GENERIC_SET_FUNCTION(ViewportX,		_viewportX,		viewportXChanged,	double	)
 	GENERIC_SET_FUNCTION(ViewportY,		_viewportY,		viewportYChanged,	double	)
@@ -143,6 +145,9 @@ public:
 	void setMainData(bool newMainData);
 	
 	QPoint editCoordinates() const;
+	
+	int maxColWidth() const;
+	void setMaxColWidth(int newMaxColWidth);
 	
 signals:
 	void		modelChanged();
@@ -186,6 +191,8 @@ signals:
 	void		mainDataChanged();
 	
 	void		editCoordinatesChanged();
+	
+	void		maxColWidthChanged();
 	
 public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
@@ -354,7 +361,8 @@ protected:
 															_currentViewportRowMin	= -1,
 															_currentViewportRowMax	= -1,
 															_prevEditRow			= -1,
-															_prevEditCol			= -1;
+															_prevEditCol			= -1,
+															_maxColWidth			= -1;
 	size_t													_linesActualSize		= 0;
 	long													_selectScrollMs			= 0;
 	std::vector<Json::Value>								_copiedColumns;

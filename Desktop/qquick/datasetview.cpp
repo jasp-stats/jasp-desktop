@@ -98,19 +98,22 @@ void DataSetView::setModel(QAbstractItemModel * model)
 QSizeF DataSetView::getColumnSize(int col)
 {
 	QVariant maxColStringVar = _model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("maxColString"));
+	
+	QSizeF colSize;
+	
 	if(!maxColStringVar.isNull())
-		return getTextSize(maxColStringVar.toString());
+		colSize = getTextSize(maxColStringVar.toString());
 	else
 	{
 		QVariant columnWidthFallbackVar = _model->headerData(col, Qt::Orientation::Horizontal, _model->getRole("columnWidthFallback"));
 
-		QSizeF columnSize = getTextSize("??????");
+		colSize = getTextSize("??????");
 
 		if(!columnWidthFallbackVar.isNull())
-			columnSize.setWidth(columnWidthFallbackVar.toFloat() - itemHorizontalPadding() * 2);
-
-		return columnSize;
+			colSize.setWidth(columnWidthFallbackVar.toFloat() - itemHorizontalPadding() * 2);
 	}
+	
+	return  QSizeF(_maxColWidth <= 0 ? colSize.width() : std::min(colSize.width(), double(_maxColWidth)), colSize.height());
 }
 
 QSizeF DataSetView::getRowHeaderSize()
@@ -1220,6 +1223,16 @@ void DataSetView::_copy(QPoint where, bool clear)
 	}
 }
 
+bool DataSetView::clipBoardPasteIsCells() const
+{
+	QString clipboardStr = QGuiApplication::clipboard()->text();
+
+	if (_lastJaspCopyIntoClipboard != clipboardStr)
+		return clipboardStr.contains("\n");
+	
+	return !(_lastJaspCopyValues.size() == 1 && _lastJaspCopyValues[0].size() == 1);
+}
+
 void DataSetView::paste(QPoint where)
 {
 	if (where == QPoint(-1, -1))
@@ -2103,4 +2116,17 @@ void DataSetView::setMainData(bool newMainData)
 QPoint DataSetView::editCoordinates() const
 {
 	return QPoint(_prevEditCol, _prevEditRow);
+}
+
+int DataSetView::maxColWidth() const
+{
+	return _maxColWidth;
+}
+
+void DataSetView::setMaxColWidth(int newMaxColWidth)
+{
+	if (_maxColWidth == newMaxColWidth)
+		return;
+	_maxColWidth = newMaxColWidth;
+	emit maxColWidthChanged();
 }

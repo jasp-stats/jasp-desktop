@@ -3,6 +3,7 @@ import QtQuick.Controls
 import JASP.Controls		as JaspControls
 import QtQml.Models
 
+
 TextInput
 {
 	id:						editItem
@@ -13,6 +14,7 @@ TextInput
 	onEditingFinished:		dataTableView.view.commitEdit(rowIndex, columnIndex, text);
 	z:						10
 	readOnly:				!itemEditable
+	clip:					true
 
 	onTextChanged:			isEditing = keyPressed // The text is changed when the edit item is made visible, so we have to wait that a key is pressed before setting the isEditing to true
 	onVisibleChanged:		{ isEditing = false; keyPressed = false }
@@ -48,7 +50,10 @@ TextInput
 		case Qt.Key_C:
 			if(controlPressed)
 			{
-				theView.copy(Qt.point(colI, rowI));
+				if(editItem.activeFocus && editItem.selectedText !== "")
+					editItem.copy();
+				else				
+					theView.copy(Qt.point(colI, rowI));
 				event.accepted = true;
 			}
 			break;
@@ -56,7 +61,10 @@ TextInput
 		case Qt.Key_X:
 			if(controlPressed)
 			{
-				theView.cut(Qt.point(colI, rowI));
+				if(editItem.activeFocus && editItem.selectedText !== "")
+					editItem.cut();
+				else	
+					theView.cut(Qt.point(colI, rowI));
 				event.accepted = true;
 			}
 			break;
@@ -64,7 +72,10 @@ TextInput
 		case Qt.Key_V:
 			if(controlPressed)
 			{
-				theView.paste(Qt.point(colI, rowI));
+				if(editItem.activeFocus && !dataTableView.view.clipBoardPasteIsCells())
+					editItem.paste();
+				else	
+					theView.paste(Qt.point(colI, rowI));
 				event.accepted = true;
 			}
 			break;
@@ -83,17 +94,39 @@ TextInput
 		case Qt.Key_Z:
 			if(controlPressed)
 			{
+				event.accepted = true;
 				if (shiftPressed)
-					theView.redo();
+				{
+					if(editItem.activeFocus && editItem.canRedo)
+						editItem.redo();
+					else
+						theView.redo();
+					return;
+				}
 				else
-					theView.undo();
+				{
+					if(editItem.activeFocus && editItem.canUndo)
+						editItem.undo();
+					else
+						theView.undo();
+					return;
+				}
 			}
 			break;
 
 		case Qt.Key_Y:
+		{
 			if(controlPressed && !shiftPressed)
-				theView.redo();
-				break;
+			{
+				if(editItem.activeFocus && editItem.canRedo)
+					editItem.redo();
+				else
+					theView.redo();
+			}
+			event.accepted = true;
+			break;
+							
+		}
 
 		case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
 

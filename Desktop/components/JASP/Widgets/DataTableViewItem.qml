@@ -7,50 +7,65 @@ Item
 {
 	id:			itemDelegateItem
 	
-	
-	Text
+	Item
 	{
-		id:					itemDelegateText
-		text:				itemText
-		textFormat:			Text.RichText
-		color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-		font:				jaspTheme.font
-		verticalAlignment:	Text.AlignVCenter
-		width:				Math.min(contentWidth, itemDelegateItem.width)
-		anchors
+		anchors.fill:	parent
+		
+		Text
 		{
-			top:			parent.top
-			left:			parent.left
-			bottom:			parent.bottom
+			id:						itemDelegateText
+			text:					itemText
+			textFormat:				Text.PlainText
+			color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			font:					jaspTheme.font
+			verticalAlignment:		Text.AlignVCenter
+			elide:					Text.ElideRight
+			anchors
+			{
+				top:				parent.top
+				left:				parent.left
+				right:				itemDelegateLabel.visible ? itemDelegateLabel.left : parent.right
+				bottom:				parent.bottom
+			}
 		}
-	}
-	
-	Text
-	{
-		id:						itemDelegateLabel
-		text:					itemShadowText ? itemShadowText : ""
-		textFormat:				Text.RichText
-		color:					jaspTheme.textDisabled
-		font:					jaspTheme.font
-		verticalAlignment:		Text.AlignVCenter
-		horizontalAlignment:	Text.AlignRight
-		elide:					Text.ElideRight
-		visible:				itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
-		width:					Math.max(0, parent.width - itemDelegateText.width)
-		anchors
+		
+		TextMetrics
 		{
-			top:				parent.top
-			right:				parent.right
-			bottom:				parent.bottom
+			id:		itemDelegateLabelMetrics
+			font:	itemDelegateLabel.font
+			text:	itemShadowText === undefined ? "" : itemShadowText
+		}
+		
+		Text
+		{
+			id:						itemDelegateLabel
+			text:					itemShadowText ? itemShadowText : ""
+			textFormat:				Text.PlainText
+			color:					jaspTheme.textDisabled
+			font:					jaspTheme.font
+			verticalAlignment:		Text.AlignVCenter
+			horizontalAlignment:	Text.AlignRight
+			elide:					Text.ElideLeft
+			visible:				itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
+			anchors
+			{
+				top:				parent.top
+				left:				itemDelegateLabelMetrics.width < itemDelegateItem.width/2 ? undefined : parent.horizontalCenter
+				right:				parent.right
+				bottom:				parent.bottom
+			}
 		}
 	}
 
-	MouseArea
+	JASPMouseAreaToolTipped
 	{
 		z:					1234
 		hoverEnabled:		true
 		anchors.fill:		itemHighlight
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
+		
+		toolTipText:		itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText ? "%1 %2".arg(itemText).arg(itemShadowText) : itemText
+		toolTipTimeOut:		10000
 
 		onPressed:	(mouse) =>
 		{
