@@ -1916,7 +1916,6 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	{
 		Column	*	column		= _dataSet->column(c + col);
 		columnType	desiredType	= coltypes.size() > c ? columnType(coltypes[c]) : column->type();
-		bool		noType		= desiredType == columnType::unknown;
 					desiredType = desiredType == columnType::unknown ? columnType::scale : desiredType;
 		std::string colName		= (colNames.size() > c && !colNames[c].isEmpty()) ? fq(colNames[c]) : column->name();
 		
