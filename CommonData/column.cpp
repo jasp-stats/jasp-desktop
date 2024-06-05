@@ -1283,11 +1283,11 @@ Label * Column::labelByRow(int row) const
 	return nullptr;
 }
 
-bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bool writeToDB)
+bool Column::setStringValue(size_t row, const std::string & userEntered, const std::string & labelButOnlyFromSpreadsheetPaste, bool writeToDB)
 {
-    JASPTIMER_SCOPE(Column::setStringValueToRowIfItFits);
+    JASPTIMER_SCOPE(Column::setStringValue);
     
-	if(userEntered == "")
+	if(userEntered == "" && labelButOnlyFromSpreadsheetPaste == "")
 	{
 		const auto	cur = type() == columnType::scale ?  getValue(row, false, false) : getLabel(row, false, false);
 		Label	*	label = labelByRow(row);
@@ -1314,7 +1314,7 @@ bool Column::setStringValueToRow(size_t row, const std::string & userEntered, bo
 			setType(columnType::nominal);
 	}
 		
-	return setValue(row, userEntered, "", writeToDB);
+	return setValue(row, userEntered, labelButOnlyFromSpreadsheetPaste, writeToDB);
 }
 
 bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
