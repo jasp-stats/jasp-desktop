@@ -2,58 +2,72 @@ import QtQuick
 import QtQuick.Controls
 import JASP.Controls		as JaspControls
 import QtQml.Models
-
+import QtQuick.Layouts
 Item
 {
-	id:			itemDelegateItem
+					id:			itemDelegateItem
+	property bool	showShadow:	itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
 	
-	Item
+	TextMetrics
 	{
-		anchors.fill:	parent
+		id:		itemDelegateTextMetrics
+		font:	itemDelegateText.font
+		text:	itemText === undefined ? "" : itemText
+		
+		
+		property real specialWidth:				! showShadow
+												? itemDelegateItem.width 
+												: Math.max(
+													Math.min(itemDelegateTextMetrics.width, itemDelegateItem.width / 2), 
+													itemDelegateItem.width
+												)
+	}
+	
+	TextMetrics
+	{
+		id:		itemDelegateLabelMetrics
+		font:	itemDelegateLabel.font
+		text:	itemShadowText === undefined ? "" : itemShadowText
+	}
+
+	RowLayout
+	{
+		anchors.fill:				parent
+		spacing:					jaspTheme.itemPadding
 		
 		Text
 		{
 			id:						itemDelegateText
-			text:					itemText
+			text:					itemText === undefined ? "" : itemText
 			textFormat:				Text.PlainText
 			color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			font:					jaspTheme.font
 			verticalAlignment:		Text.AlignVCenter
 			elide:					Text.ElideRight
-			anchors
-			{
-				top:				parent.top
-				left:				parent.left
-				right:				itemDelegateLabel.visible ? itemDelegateLabel.left : parent.right
-				bottom:				parent.bottom
-			}
+			horizontalAlignment:	Text.AlignLeft
+			height:					parent.height
+			padding:				0
+			Layout.maximumWidth:	! showShadow 
+									? parent.width 
+									: itemDelegateLabelMetrics.width > parent.width / 2
+									? parent.width / 2
+									: parent.width - ( itemDelegateLabelMetrics.width + 2*jaspTheme.itemPadding)
 		}
-		
-		TextMetrics
-		{
-			id:		itemDelegateLabelMetrics
-			font:	itemDelegateLabel.font
-			text:	itemShadowText === undefined ? "" : itemShadowText
-		}
-		
+			
 		Text
 		{
 			id:						itemDelegateLabel
-			text:					itemShadowText ? itemShadowText : ""
+			text:					itemShadowText === undefined ? "" : itemShadowText
 			textFormat:				Text.PlainText
 			color:					jaspTheme.textDisabled
 			font:					jaspTheme.font
 			verticalAlignment:		Text.AlignVCenter
 			horizontalAlignment:	Text.AlignRight
 			elide:					Text.ElideLeft
-			visible:				itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
-			anchors
-			{
-				top:				parent.top
-				left:				itemDelegateLabelMetrics.width < itemDelegateItem.width/2 ? undefined : parent.horizontalCenter
-				right:				parent.right
-				bottom:				parent.bottom
-			}
+			visible:				showShadow
+			height:					parent.height
+			padding:				0
+			Layout.fillWidth:		true
 		}
 	}
 
@@ -64,8 +78,9 @@ Item
 		anchors.fill:		itemHighlight
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
 		
-		toolTipText:		itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText ? "%1 %2".arg(itemText).arg(itemShadowText) : itemText
+		toolTipText:		itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText ? "%1 - %2".arg(itemText).arg(itemShadowText) : itemText
 		toolTipTimeOut:		10000
+		toolTipDelay:		400
 
 		onPressed:	(mouse) =>
 		{

@@ -1790,7 +1790,6 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("itemSelected",		_model->data(row, col, _model->getRole("selected")));
 	previousContext->setContextProperty("itemFiltered",		_model->filtered(row, col));
-	previousContext->setContextProperty("itemValue",		_model->data(row, col, _model->getRole("value")));
 	previousContext->setContextProperty("itemInputType",	_model->data(row, col, _model->getRole("itemInputValue")));
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));

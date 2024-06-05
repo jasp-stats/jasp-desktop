@@ -22,7 +22,6 @@ class DatabaseInterface;
 class Label : public DataSetBaseNode
 {
 public:	
-	static const int MAX_LABEL_DISPLAY_LENGTH;
 	static const int DOUBLE_LABEL_VALUE;
 
 								Label(Column * column);
@@ -38,7 +37,7 @@ public:
 			
 			int					dbId()						const	{ return _dbId;				}
 	const	std::string		&	description()				const	{ return _description;		}
-			std::string			label(bool shorten = false)	const	{ return !shorten || _label.size() <= MAX_LABEL_DISPLAY_LENGTH ? _label : _label.substr(0, MAX_LABEL_DISPLAY_LENGTH) + "...";	}
+			std::string			label()						const	{ return _label;			}
 			std::string			labelDisplay()				const;
 			std::string			labelIgnoreEmpty()			const;
 			int					intsId()					const	{ return _intsId;			}

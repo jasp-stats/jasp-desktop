@@ -2070,7 +2070,7 @@ qsizetype Column::getMaximumWidthInCharactersIncludingShadow()
 	
 	//If there are no labels there no shadows? 
 	for(Label * label : labels())
-		if(label->originalValueAsString(true) != label->label(true))
+		if(label->originalValueAsString(true) != label->label())
 		{
 			thereIsAShadow = true;
 			break;
@@ -2083,7 +2083,7 @@ qsizetype Column::getMaximumWidthInCharactersIncludingShadow()
 }
 
 
-qsizetype Column::getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad)
+qsizetype Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlease, qsizetype	extraPad)
 {
 	qsizetype	maxWidth	= 0;
 	std::string takeWidth;
@@ -2094,7 +2094,7 @@ qsizetype Column::getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bo
 	if(thereAreLabels)
 		for(Label * label : labels())
 		{
-			takeWidth	= !valuesPlease ? label->label(shortenAndFancyEmptyValue) : label->originalValueAsString(shortenAndFancyEmptyValue);
+			takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
 			maxWidth	= std::max(maxWidth, qsizetype(stringUtils::approximateVisualLength(takeWidth)));
 		}
 	
