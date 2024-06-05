@@ -70,8 +70,6 @@ GroupBoxBase
 		anchors.leftMargin: groupBox.title ? jaspTheme.groupContentPadding : 0
 		rowSpacing:			groupBox.rowSpacing
 		columnSpacing:		groupBox.columnSpacing
-
-		checkFormOverflowWhenLanguageChanged: false // the checkFormOverflow is done with the alignment.
     }
 
 	Connections
@@ -98,7 +96,7 @@ GroupBoxBase
 	{
 		id: checkFormOverflowAndAlignTimer
 		interval: 50
-		onTriggered: _checkFormOverflowAndAlign()
+		onTriggered: _alignTextFields()
 	}
 
 	Component.onCompleted:
@@ -181,11 +179,4 @@ GroupBoxBase
 
 		_childrenConnected = true;
     }
-
-	function _checkFormOverflowAndAlign()
-	{
-		_alignTextFields();
-		if (contentArea.checkFormOverflow())
-			_alignTextFields();
-	}
 }

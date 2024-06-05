@@ -29,11 +29,33 @@ GridLayout
 	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
 	
 	property int count									: children.length
-	property bool checkFormOverflowWhenLanguageChanged	: true
 
 	property int _initialColumns	: 2
+	property bool _initialized		: false
 
-	Component.onCompleted: _initialColumns = columns; // Do not bind it!
+	Component.onCompleted:
+	{
+		_initialized = true;
+		_initialColumns = columns; // Do not bind it!
+		_checkColumns()
+	}
+
+	onImplicitWidthChanged:
+	{
+		_checkColumns()
+	}
+
+	function _checkColumns()
+	{
+		if (!_initialized || (width === 0)) return;
+
+		if (width < implicitWidth && gridLayout.columns >= 2)
+		{
+			console.log("Content of the GridLayout is too large, decrease the number of columns to " + gridLayout.columns - 1 + ". width: " + width + ", implicitWidth: " + implicitWidth)
+			gridLayout.columns--;
+			columnDecreasedDoneTimer.restart();
+		}
+	}
 
 	onCountChanged:
 	{
@@ -42,49 +64,5 @@ GridLayout
 			if (typeof children[i].alignment !== "undefined")
 				children[i].Layout.alignment = children[i].alignment;
 		}
-	}
-
-	Connections
-	{
-		enabled:					checkFormOverflowWhenLanguageChanged
-		target:						preferencesModel
-		function onLanguageCodeChanged()		{ checkFormOverflowTimer.restart(); }
-		function onInterfaceFontChanged(font)	{ checkFormOverflowTimer.restart(); }
-	}
-
-	Timer
-	{
-		id: checkFormOverflowTimer
-		interval: 50
-		onTriggered: checkFormOverflow()
-	}
-
-
-	function checkFormOverflow()
-	{
-		if ((typeof jaspForm === 'undefined') || !jaspForm) return false;
-
-		var startColumns = gridLayout.columns;
-
-		if (gridLayout.columns !== gridLayout._initialColumns)
-			gridLayout.columns = gridLayout._initialColumns;
-
-		var decrementColumns = true;
-
-		while (decrementColumns && gridLayout.columns >= 2)
-		{
-			decrementColumns = false;
-			for (var i = 0; i < gridLayout.children.length; i++)
-			{
-				var child = gridLayout.children[i];
-				if (child.mapToItem(jaspForm, child.width, 0).x > jaspForm.width)
-					decrementColumns = true;
-			}
-
-			if (decrementColumns)
-				gridLayout.columns--;
-		}
-
-		return startColumns !== gridLayout.columns;
 	}
 }
