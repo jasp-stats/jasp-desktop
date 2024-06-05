@@ -43,7 +43,7 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),		"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
 		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImg",				"editImage.png",			"window.editImageClicked();")		},
 		{	"hasNotes",					ResultMenuEntry(tr("Add Note"),				"hasNotes",					"",							"")									},
-		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.png",			"window.duplicateMenuClicked();")	},
+		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.svg",			"window.duplicateMenuClicked();")	},
 		{	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
 		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
 		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},

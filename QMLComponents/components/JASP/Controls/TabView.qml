@@ -40,7 +40,7 @@ ComponentsListBase
 	property bool	showRemoveIcon		: addItemManually
 	property bool	tabNameEditable		: addItemManually
 	property string	removeIcon			: "cross.png"
-	property string	addIcon				: "duplicate.png"
+	property string	addIcon				: "round_addition.png"
 	property string addTooltip			: qsTr("Add a tab")
 	property string removeTooltip		: qsTr("Remove this tab")
 	property alias	newTabName			: tabView.newItemName

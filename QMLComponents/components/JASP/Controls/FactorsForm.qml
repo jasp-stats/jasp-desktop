@@ -114,7 +114,7 @@ FactorsFormBase
 			{
 				id:					copyButton
 				width:				height
-				iconSource:			jaspTheme.iconPath + "/duplicate.png"
+				iconSource:			jaspTheme.iconPath + "/round_addition.png"
 				onClicked:			factorsForm.addFactor()
 				toolTip:			qsTr("Add a %1").arg(baseTitle)
 				radius:				height

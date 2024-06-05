@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="32" cy="32" r="32" fill="#000" mask="url(#gat)" />
+
+	<mask id="gat">
+		<circle cx="32" cy="32" r="32" fill="#fff" />
+		<g transform="translate(20, 19)">
+			<rect x="-5" y="-5" width="22" height="27" fill="#fff" stroke="#000" stroke-width="6" rx="6" ry="6"/>
+			<rect x="5" y="5" width="22" height="27" fill="#fff" stroke="#000" stroke-width="6" rx="6" ry="6"/>
+        </g>
+	</mask>
+</svg>
+  
