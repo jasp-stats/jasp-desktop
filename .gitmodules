@@ -150,3 +150,7 @@
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
 	branch = master
+[submodule "Modules/jaspRem"]
+	path = Modules/jaspRem
+	url = https://github.com/juliuspfadt/jaspRem
+	branch = newRemModule

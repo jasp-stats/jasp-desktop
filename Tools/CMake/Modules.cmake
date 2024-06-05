@@ -53,6 +53,7 @@ if(NOT JASP_TEST_BUILD)
 		"jaspProphet"
 		"jaspQualityControl"
 		"jaspReliability"
+                "jaspRem"
 		"jaspRobustTTests"
 		"jaspSem"
 		"jaspSurvival"
