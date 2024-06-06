@@ -17,16 +17,33 @@
 //
 
 #include "columntypesmodel.h"
-#include "jasptheme.h"
+#include "variableinfo.h"
 
-ColumnTypesModel::ColumnTypesModel(QObject *parent, VectorType types) : QAbstractListModel(parent), _types{types}
+ColumnTypesModel::ColumnTypesModel(QObject *parent, columnTypeVec types) : QAbstractListModel(parent)
 {
-	if (types.empty())
+	setTypes(types);
+}
+
+void ColumnTypesModel::setTypes(columnTypeSet types)
+{
+	columnTypeVec typesSorted(types.begin(), types.end());
+	std::sort(typesSorted.begin(), typesSorted.end());
+	setTypes(typesSorted);	
+}
+
+void ColumnTypesModel::setTypes(columnTypeVec types)
+{
+	beginResetModel();
+	_types = types;
+	
+	if (_types.empty())
 	{
-		_types =  columnTypeToVector(); // If other types are added, they will be automatically included here.
-		_types.erase(std::remove(_types.begin(), _types.end(), columnType::unknown), _types.end() );
+		_types =  columnTypeToVector();		// If other types are added, they will be automatically included here.
+		_types.erase(std::remove(_types.begin(), _types.end(), columnType::unknown),	 _types.end() );
 		_types.erase(std::remove(_types.begin(), _types.end(), columnType::nominalText), _types.end() ); // Should be removed when nominalText is completely removed
 	}
+	
+	endResetModel();
 }
 
 QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
@@ -34,25 +51,11 @@ QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 	if (index.row() >= rowCount())
 		return QVariant();
 
-	static std::map<columnType, QString> displayTexts =
-	{
-		std::make_pair ( columnType::scale,		QObject::tr("Scale")	) ,
-		std::make_pair ( columnType::ordinal,	QObject::tr("Ordinal")	) ,
-		std::make_pair ( columnType::nominal,	QObject::tr("Nominal")	)
-	};
-
-	static	std::map<columnType, QString> menuImageSources =
-	{
-		std::make_pair ( columnType::scale,		"variable-scale.svg"	),
-		std::make_pair ( columnType::ordinal,	"variable-ordinal.svg"	),
-		std::make_pair ( columnType::nominal,	"variable-nominal.svg"	)
-	};
-
 	switch(role)
 	{
 	case TypeRole:				return int(_types[index.row()]);
-	case DisplayRole:			return displayTexts[_types[index.row()]];
-	case MenuImageSourceRole:	return JaspTheme::currentIconPath() + menuImageSources[_types[index.row()]];
+	case DisplayRole:			return VariableInfo::getTypeFriendly(_types[index.row()]);
+	case MenuImageSourceRole:	return VariableInfo::getIconFile(_types[index.row()], VariableInfo::IconType::DefaultIconType);
 	case IsEnabledRole:			return true;
 	case IsSeparatorRole:		return false;
 	case JSFunctionRole:
@@ -82,4 +85,6 @@ int ColumnTypesModel::getType(int i) const
 {
 	return data(index(i, 0), TypeRole).toInt();
 }
+
+
 

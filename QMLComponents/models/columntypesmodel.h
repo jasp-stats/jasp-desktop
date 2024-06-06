@@ -40,19 +40,19 @@ public:
 		TypeRole
 	};
 
-	typedef std::vector<columnType> VectorType;
-
-	ColumnTypesModel(QObject *parent, VectorType types = {});
+	ColumnTypesModel(QObject *parent, columnTypeVec types = {});
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _types.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>			roleNames()													const override;
 
 	Q_INVOKABLE	int							getType(int index)											const;
+	void									setTypes(columnTypeVec types);
+	void									setTypes(columnTypeSet types);
 
 private:
 
-	VectorType _types;
+	columnTypeVec								_types;
 
 };
 

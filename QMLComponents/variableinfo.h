@@ -48,6 +48,7 @@ public:
 
 	static VariableInfo*		info();
 	static QString				getIconFile(columnType colType, IconType type);
+	static QString				getTypeFriendly(columnType colType);
 
 	VariableInfoProvider*		provider()	{ return _provider; }
 

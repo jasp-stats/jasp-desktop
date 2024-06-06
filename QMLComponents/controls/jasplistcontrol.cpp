@@ -250,7 +250,7 @@ bool JASPListControl::areTypesAllowed(QStringList types)
 
 	if (!_variableTypesAllowed.empty())
 		for (const QString& type : types)
-			if (!_variableTypesAllowed.contains(columnTypeFromQString(type)))
+			if (!_variableTypesAllowed.count(columnTypeFromQString(type)))
 				result = false;
 
 	return result;

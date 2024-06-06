@@ -43,6 +43,7 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 {
 	_controlType			= ControlType::VariablesListView;
 	_useControlMouseArea	= false;
+	_allowedTypesModel		= new ColumnTypesModel(this);
 }
 
 void VariablesListBase::setUp()
@@ -75,9 +76,9 @@ void VariablesListBase::setUp()
 		setProperty("sortMenuModel", QVariant::fromValue(sortedMenuModel));
 	}
 
-	_setAllowedAndSuggestedVariables();
+	_setAllowedVariables();
 
-	connect(DesktopCommunicator::singleton(), &DesktopCommunicator::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedAndSuggestedVariables);
+	connect(DesktopCommunicator::singleton(), &DesktopCommunicator::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
 
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
@@ -86,8 +87,7 @@ void VariablesListBase::setUp()
 	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
-	connect(this,	&VariablesListBase::allowedColumnsChanged,						this, &VariablesListBase::_setAllowedAndSuggestedVariables);
-	connect(this,	&VariablesListBase::suggestedColumnsChanged,					this, &VariablesListBase::_setAllowedAndSuggestedVariables);
+	connect(this,	&VariablesListBase::allowedColumnsChanged,						this, &VariablesListBase::_setAllowedVariables);
 }
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
@@ -319,63 +319,24 @@ void VariablesListBase::termsChangedHandler()
 	else JASPListControl::termsChangedHandler();
 }
 
-void VariablesListBase::_setAllowedAndSuggestedVariables()
+void VariablesListBase::_setAllowedVariables()
 {
-	QSet<QString>			implicitAllowedTypes;
-	std::set<columnType>	showTheseAsInactive;
-
-	// The implicitAllowedTypes is either the allowedColumns if they are explicitely defined
-	// or the suggestedColumns with extra permitted types, with these rules:
-	// . if suggestedType contains the scale type, then nominal & ordinal types are then also allowed.
-	// . if suggestedType contains the nominal type, then ordinal types are also allowed.
-
-	auto listToSet = [](QStringList l) { return QSet<QString> (l.constBegin(), l.constEnd()); };
-	
-	if (!allowedColumns().empty())
-		implicitAllowedTypes = listToSet(allowedColumns());
-	else if (!suggestedColumns().empty())
-	{
-		implicitAllowedTypes = listToSet(suggestedColumns());
-		if (suggestedColumns().contains("scale"))
-		{
-			implicitAllowedTypes.insert("nominal");
-			implicitAllowedTypes.insert("ordinal");
-		}
-		
-		if (suggestedColumns().contains("nominal"))
-			implicitAllowedTypes.insert("ordinal");
-		
-		showTheseAsInactive = { columnType::scale, columnType::ordinal, columnType::nominal };
-		for (const QString& typeStr: suggestedColumns())
-			showTheseAsInactive.erase(columnTypeFromString(fq(typeStr), columnType::unknown));
-	}
-
 	_variableTypesAllowed.clear();
-	for (const QString& typeStr: implicitAllowedTypes)
-		_variableTypesAllowed.insert(columnTypeFromString(fq(typeStr), columnType::unknown));
-
-	// The suggectedColumnsIcons indicates which columns are suggested in the VariableList view.
-	// The allowedColumnsIcons indicate which columns are allowed in the view
-	QStringList				allowedIcons;
-	std::vector<columnType> allowedTypes;
-	
-
-	for (const QString& columnTypeStr : implicitAllowedTypes)
+	for (const QString& typeStr: allowedColumns())
 	{
-		columnType type = columnTypeFromString(fq(columnTypeStr), columnType::unknown);
-		if (type != columnType::unknown)
-			allowedTypes.push_back(type);
+		columnType typeCol = columnTypeFromString(fq(typeStr), columnType::unknown);
+		
+		if(typeCol != columnType::unknown)
+			_variableTypesAllowed.insert(typeCol);
 	}
 	
-	std::sort(allowedTypes.begin(),		allowedTypes.end());
-	
-	for(columnType type : allowedTypes)
-		allowedIcons.push_back(VariableInfo::getIconFile(type, !showTheseAsInactive.count(type) ? VariableInfo::DefaultIconType : VariableInfo::TransparentIconType));
+	QStringList allowedIcons;
+	for(columnType type : _variableTypesAllowed)
+		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::TransparentIconType));
 	
 	setAllowedColumnsIcons(allowedIcons);
 
-	delete _allowedTypesModel;
-	_allowedTypesModel = allowedTypes.size() > 0 ? new ColumnTypesModel(this, allowedTypes) : new ColumnTypesModel(this);
+	_allowedTypesModel->setTypes(_variableTypesAllowed);
 
 	if (form() && form()->initialized())
 		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.

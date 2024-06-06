@@ -42,6 +42,20 @@ QString VariableInfo::getIconFile(columnType colType, VariableInfo::IconType typ
 	return QString("%1variable-%2%3.svg").arg(JaspTheme::currentIconPath()).arg(columnTypeToQString(colType)).arg(iconType);
 }
 
+QString VariableInfo::getTypeFriendly(columnType colType)
+{
+	switch(colType)
+	{
+	case columnType::scale:			return tr("Scale");
+	case columnType::ordinal:		return tr("Ordinal");
+	case columnType::nominal:		return tr("Nominal");
+	default:						break;
+	}
+	
+	return tr("Unknown");
+}
+
+
 int VariableInfo::rowCount()
 {
 	return _provider ? _provider->provideInfo(VariableInfo::DataSetRowCount).toInt() : 0;
