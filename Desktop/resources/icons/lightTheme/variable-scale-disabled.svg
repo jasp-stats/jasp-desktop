@@ -15,6 +15,7 @@
    y="0px"
    width="40px"
    height="40px"
+   transform="rotate(270)"
    viewBox="0 0 40 40"
    enable-background="new 0 0 40 40"
    xml:space="preserve"

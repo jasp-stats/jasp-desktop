@@ -15,6 +15,7 @@
    y="0px"
    width="40px"
    height="40px"
+   transform="rotate(270)"
    viewBox="0 0 40 40"
    enable-background="new 0 0 40 40"
    xml:space="preserve"
@@ -46,6 +47,7 @@
    inkscape:window-y="-12"
    inkscape:window-maximized="1"
    inkscape:current-layer="Layer_1" />
+   <g >
 <rect
    x="-8.0703058"
    y="-48.9244"
@@ -128,4 +130,5 @@
    points="11.076,-0.024 1.128,9.363 29.503,39.432 39.449,30.046 "
    id="polyline22"
    style="stroke:#5d5d5d;stroke-opacity:1" />
+   </g>
 </svg>

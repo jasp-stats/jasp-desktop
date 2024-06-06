@@ -38,7 +38,7 @@ class VariableInfo : public QObject
 	Q_OBJECT
 public:
 	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues };
-	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransparentIconType };
+	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransformedIconType };
 
 public:
 	VariableInfo(VariableInfoProvider* provider);
