@@ -148,6 +148,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);
 	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),				"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),			false, false, false);
 	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit genShowEmptyData();	 },							fq(tr("Open a workspace without data")),			true, false, false);
+	_dataResizeButton		= new RibbonButton(this, "Data-Resize", fq(tr("Resize Data")), "data-button-resize.svg", false, [&](){ emit resizeData(); }, fq(tr("Resize your dataset")), false);
 	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
 	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
 	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
@@ -163,7 +164,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 	connect(this, &RibbonModel::dataLoadedChanged,		_insertButton,			&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::dataLoadedChanged,		_removeButton,			&RibbonButton::setEnabled);
-
+	connect(this, &RibbonModel::dataLoadedChanged,		_dataResizeButton,		&RibbonButton::setEnabled);
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOnButton,	[=](bool synching){ _synchroniseOnButton->setEnabled(!synching); });
 	connect(this, &RibbonModel::synchronisationChanged, _synchroniseOffButton,	[=](bool synching){ _synchroniseOffButton->setEnabled(synching); });
 
@@ -197,6 +198,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Data));
 	addRibbonButtonModel(_synchroniseOnButton,		size_t(RowType::Data));
 	addRibbonButtonModel(_synchroniseOffButton,		size_t(RowType::Data));
+	addRibbonButtonModel(_dataResizeButton,			size_t(RowType::Data));
 	addRibbonButtonModel(_insertButton,				size_t(RowType::Data));
 	addRibbonButtonModel(_removeButton,				size_t(RowType::Data));
 	addRibbonButtonModel(_undoButton,				size_t(RowType::Data));

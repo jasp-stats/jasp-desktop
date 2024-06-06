@@ -247,6 +247,7 @@ signals:
 	void contactVisibleChanged();
 	void communityVisibleChanged();
 	void contactTextChanged();
+	void resizeData(int row, int col);
 
 private slots:
 	void resultsPageLoaded();

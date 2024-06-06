@@ -245,15 +245,21 @@ void ExpandDataProxyModel::insertColumn(int col, bool computed, bool R)
 	_undoStack->pushCommand(new InsertColumnCommand(_sourceModel, col, props));
 }
 
-void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
+void ExpandDataProxyModel::resize(int row, int col, bool onlyExpand, const QString& undoText)
 {
-	QUndoCommand* parentCommand = nullptr;
-
 	if (!_sourceModel || row < 0 || col < 0)
 		return;
 
-	if (col >= _sourceModel->columnCount() || row >= _sourceModel->rowCount())
-		_undoStack->startMacro();
+	if (onlyExpand)
+	{
+		if (col < _sourceModel->columnCount() && row < _sourceModel->rowCount()) return;
+	}
+	else
+	{
+		if (col == (_sourceModel->columnCount() - 1) && row == (_sourceModel->rowCount() - 1)) return;
+	}
+
+	_undoStack->startMacro(undoText);
 
 	if(col >= _sourceModel->columnCount())
 	{	
@@ -263,8 +269,9 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 		if(colC > 0)
 			insertColumns(colNr, colC);
 	}
-	
-	
+	else if (!onlyExpand && col < (_sourceModel->columnCount() - 1))
+		removeColumns(col + 1, _sourceModel->columnCount() - col - 1);
+
 	if(row >= _sourceModel->rowCount())
 	{	
 		int rowNr = _sourceModel->rowCount(),
@@ -273,6 +280,11 @@ void ExpandDataProxyModel::_expandIfNecessary(int row, int col)
 		if(rowC > 0)
 			insertRows(rowNr, rowC);
 	}
+	else if (!onlyExpand && row < (_sourceModel->rowCount() - 1))
+		removeRows(row + 1, _sourceModel->rowCount() - row - 1);
+
+	if (!undoText.isEmpty())
+		_undoStack->endMacro();
 }
 
 void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int role)
@@ -280,7 +292,7 @@ void ExpandDataProxyModel::setData(int row, int col, const QVariant &value, int 
 	if (!_sourceModel || row < 0 || col < 0)
 		return;
 
-	_expandIfNecessary(row, col);
+	resize(row, col);
 	_undoStack->endMacro(new SetDataCommand(_sourceModel, row, col, value, role));
 }
 
@@ -289,7 +301,7 @@ void ExpandDataProxyModel::pasteSpreadsheet(int row, int col, const std::vector<
 	if (!_sourceModel || row < 0 || col < 0 || values.size() == 0 || values[0].size() == 0 )
 		return;
 
-	_expandIfNecessary(row + values[0].size() - 1, col + values.size() - 1);
+	resize(row + values[0].size() - 1, col + values.size() - 1);
 	_undoStack->endMacro(new PasteSpreadsheetCommand(_sourceModel, row, col, values, labels, selected, colNames));
 }
 
@@ -315,7 +327,7 @@ void ExpandDataProxyModel::copyColumns(int startCol, const std::vector<Json::Val
 	if (!_sourceModel || startCol < 0 || copiedColumns.size() == 0)
 		return;
 
-	_expandIfNecessary(0, startCol + copiedColumns.size() - 1);
+	resize(0, startCol + copiedColumns.size() - 1);
 	_undoStack->endMacro(new CopyColumnsCommand(_sourceModel, startCol, copiedColumns));
 }
 

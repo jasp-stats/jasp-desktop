@@ -261,6 +261,8 @@ public slots:
 	void		commitLastEdit();
 
 	void		setColumnType(int columnIndex, int newColumnType);
+	void		resizeData(int rows, int columns);
+
 protected:
 	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);

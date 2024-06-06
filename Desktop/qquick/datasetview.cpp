@@ -1442,6 +1442,12 @@ void DataSetView::setColumnType(int columnIndex, int newColumnType)
 	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->setColumnType(col, newColumnType);  });
 }
 
+void DataSetView::resizeData(int rows, int columns)
+{
+	// Argument row and column of the resize method are indices
+	_model->resize(rows - 1, columns - 1, false, tr("Resize data to %1 rows and %2 columns").arg(rows).arg(columns));
+}
+
 void DataSetView::columnReverseValues(int columnIndex)
 {
 	columnIndexSelectedApply(columnIndex, [&](intset col) { _model->columnReverseValues(col);  });

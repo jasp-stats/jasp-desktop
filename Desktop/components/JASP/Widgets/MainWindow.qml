@@ -237,6 +237,7 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
+		ResizeDataDialog			{ id: resizeDataDialog		}
 		RenameColumnDialog			{ id: renameColumnDialog	}
 		PlotEditor					{ id: plotEditingDialog		}
 

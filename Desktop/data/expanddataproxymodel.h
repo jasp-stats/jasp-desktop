@@ -48,13 +48,13 @@ public:
 	void						redo()				{ _undoStack->redo(); }
 	QString						undoText()			{ return _undoStack->undoText(); }
 	QString						redoText()			{ return _undoStack->redoText(); }
+	void						resize(int row, int col, bool onlyExpand = true, const QString& undoText = QString());
 
 signals:
 	void						undoChanged();
 
 protected:
 	void						_setRolenames();
-	void						_expandIfNecessary(int row, int col);
 
 	QAbstractItemModel*			_sourceModel			= nullptr;
 	bool						_expandDataSet			= false;
