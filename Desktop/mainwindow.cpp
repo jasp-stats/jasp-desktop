@@ -699,7 +699,8 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::cellsClear,						DataSetView::mainDataViewer(),	&DataSetView::cellsClear);
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::mainDataViewer(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::mainDataViewer(),	&DataSetView::redo);
-	
+	connect(this,		  &MainWindow::resizeData,						DataSetView::mainDataViewer(),	&DataSetView::resizeData);
+
 
 	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
