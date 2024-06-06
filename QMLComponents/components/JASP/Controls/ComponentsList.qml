@@ -51,6 +51,11 @@ ComponentsListBase
 	property string removeTooltip		: qsTr("Remove a row")
     property bool   addBorder           : true
 
+	function rowAt(rowIndex)
+	{
+		return itemRepeater.itemAt(rowIndex).rowComponentItem
+	}
+
 	Text
 	{
 		id				: itemTitle
