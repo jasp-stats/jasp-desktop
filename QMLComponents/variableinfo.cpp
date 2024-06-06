@@ -36,7 +36,7 @@ QString VariableInfo::getIconFile(columnType colType, VariableInfo::IconType typ
 	case VariableInfo::DefaultIconType:		iconType = "";				break;
 	case VariableInfo::DisabledIconType:	iconType = "-disabled";		break;
 	case VariableInfo::InactiveIconType:	iconType = "-inactive";		break;		
-	case VariableInfo::TransparentIconType:	iconType = "-transparent";	break;
+	case VariableInfo::TransformedIconType:	iconType = "-transformed";	break;
 	}
 	
 	return QString("%1variable-%2%3.svg").arg(JaspTheme::currentIconPath()).arg(columnTypeToQString(colType)).arg(iconType);
