@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Layouts 1.3
+import QtQuick
+import QtQuick.Layouts as QT
 
 
-GridLayout
+QT.GridLayout
 {
 	id:						gridLayout
 	rowSpacing:				jaspTheme.rowGridSpacing
 	columnSpacing:			jaspTheme.columnGridSpacing
 	columns:				2
-	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
+	QT.Layout.alignment:	Qt.AlignTop | Qt.AlignLeft
 	
-	property int count									: children.length
+	property int count				: children.length
 
 	property int _initialColumns	: 2
 	property bool _initialized		: false
@@ -42,7 +42,15 @@ GridLayout
 
 	onImplicitWidthChanged:
 	{
-		_checkColumns()
+		// Wait a little bit, in case width is not yet updated.
+		checkFormOverflowTimer.restart()
+	}
+
+	Timer
+	{
+		id: checkFormOverflowTimer
+		interval: 50
+		onTriggered: _checkColumns()
 	}
 
 	function _checkColumns()
@@ -51,9 +59,8 @@ GridLayout
 
 		if (width < implicitWidth && gridLayout.columns >= 2)
 		{
-			console.log("Content of the GridLayout is too large, decrease the number of columns to " + gridLayout.columns - 1 + ". width: " + width + ", implicitWidth: " + implicitWidth)
+			console.log("Content of the GridLayout is too large, decrease the number of columns to " + (gridLayout.columns - 1) + ". width: " + width + ", implicitWidth: " + implicitWidth)
 			gridLayout.columns--;
-			columnDecreasedDoneTimer.restart();
 		}
 	}
 
@@ -62,7 +69,7 @@ GridLayout
 		for (var i = 0; i < children.length; i++)
 		{
 			if (typeof children[i].alignment !== "undefined")
-				children[i].Layout.alignment = children[i].alignment;
+				children[i].QT.Layout.alignment = children[i].alignment;
 		}
 	}
 }
