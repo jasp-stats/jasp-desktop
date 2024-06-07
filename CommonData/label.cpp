@@ -4,7 +4,6 @@
 #include "timers.h"
 #include "databaseinterface.h"
 
-const int Label::MAX_LABEL_DISPLAY_LENGTH	= 64; //we can store the rest in description if necessary
 const int Label::DOUBLE_LABEL_VALUE			= -1; 
 
 Label::Label(Column * column)
@@ -27,7 +26,7 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 	_label			= label;
 	_intsId			= value;
 	_filterAllows	= filterAllows;
-	_description	= description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
+	_description	= description;//description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
 	_originalValue	= originalValue;
 	_order			= order;
 
@@ -213,12 +212,12 @@ Label &Label::operator=(const Label &label)
 
 std::string Label::labelDisplay() const
 {
-	return isEmptyValue() ? EmptyValues::displayString() : label(true);
+	return isEmptyValue() ? EmptyValues::displayString() : label();
 }
 
 std::string Label::labelIgnoreEmpty() const
 {
-	return label(true);
+	return label();
 }
 
 bool Label::isEmptyValue() const

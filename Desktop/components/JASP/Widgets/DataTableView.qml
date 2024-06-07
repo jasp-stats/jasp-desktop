@@ -79,6 +79,7 @@ FocusScope
 
 			model:					dataSetModel
 			cacheItems:				true //!ribbonModel.dataMode
+			maxColWidth:			250 * jaspTheme.uiScale
 			expandDataSet:			ribbonModel.dataMode
 
 			doubleClickWorkaround:	!ribbonModel.dataMode

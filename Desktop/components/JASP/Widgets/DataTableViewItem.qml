@@ -2,55 +2,88 @@ import QtQuick
 import QtQuick.Controls
 import JASP.Controls		as JaspControls
 import QtQml.Models
-
+import QtQuick.Layouts
 Item
 {
-	id:			itemDelegateItem
+					id:			itemDelegateItem
+	property bool	showShadow:	itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
 	
-	
-	Text
+	TextMetrics
 	{
-		id:					itemDelegateText
-		text:				itemText
-		textFormat:			Text.RichText
-		color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-		font:				jaspTheme.font
-		verticalAlignment:	Text.AlignVCenter
-		width:				Math.min(contentWidth, itemDelegateItem.width)
-		anchors
-		{
-			top:			parent.top
-			left:			parent.left
-			bottom:			parent.bottom
-		}
+		id:		itemDelegateTextMetrics
+		font:	itemDelegateText.font
+		text:	itemText === undefined ? "" : itemText
+		
+		
+		property real specialWidth:				! showShadow
+												? itemDelegateItem.width 
+												: Math.max(
+													Math.min(itemDelegateTextMetrics.width, itemDelegateItem.width / 2), 
+													itemDelegateItem.width
+												)
 	}
 	
-	Text
+	TextMetrics
 	{
-		id:						itemDelegateLabel
-		text:					itemShadowText ? itemShadowText : ""
-		textFormat:				Text.RichText
-		color:					jaspTheme.textDisabled
-		font:					jaspTheme.font
-		verticalAlignment:		Text.AlignVCenter
-		horizontalAlignment:	Text.AlignRight
-		elide:					Text.ElideRight
-		visible:				itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
-		width:					Math.max(0, parent.width - itemDelegateText.width)
-		anchors
+		id:		itemDelegateLabelMetrics
+		font:	itemDelegateLabel.font
+		text:	itemShadowText === undefined ? "" : itemShadowText
+	}
+
+	RowLayout
+	{
+		anchors.fill:				parent
+		spacing:					jaspTheme.itemPadding
+		
+		Text
 		{
-			top:				parent.top
-			right:				parent.right
-			bottom:				parent.bottom
+			id:						itemDelegateText
+			text:					itemText === undefined ? "" : itemText
+			textFormat:				Text.PlainText
+			color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			font:					jaspTheme.font
+			verticalAlignment:		Text.AlignVCenter
+			elide:					Text.ElideRight
+			horizontalAlignment:	Text.AlignLeft
+			height:					parent.height
+			padding:				0
+			Layout.maximumWidth:	! showShadow 
+									? parent.width 
+									: itemDelegateLabelMetrics.width > parent.width / 2
+									? parent.width / 2
+									: parent.width - ( itemDelegateLabelMetrics.width + 2*jaspTheme.itemPadding)
+		}
+			
+		Text
+		{
+			id:						itemDelegateLabel
+			text:					itemShadowText === undefined ? "" : itemShadowText
+			textFormat:				Text.PlainText
+			color:					jaspTheme.textDisabled
+			font:					jaspTheme.font
+			verticalAlignment:		Text.AlignVCenter
+			horizontalAlignment:	Text.AlignRight
+			elide:					Text.ElideLeft
+			visible:				showShadow
+			height:					parent.height
+			padding:				0
+			Layout.fillWidth:		true
 		}
 	}
 
-	MouseArea
+	JASPMouseAreaToolTipped
 	{
 		z:					1234
 		hoverEnabled:		true
 		anchors.fill:		itemHighlight
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
+		
+		toolTipText:		(itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText)
+								? ((itemDelegateText.truncated || itemDelegateLabel.truncated) ? "%1 - %2".arg(itemText).arg(itemShadowText) : "")
+								: (itemDelegateText.truncated ? itemText : "")
+
+		toolTipTimeOut:		10000
+		toolTipDelay:		400
 
 		onPressed:	(mouse) =>
 		{

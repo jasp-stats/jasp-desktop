@@ -602,7 +602,7 @@ char** rbridge_getLabels(const Labels & levels, size_t &nbLevels)
 		int i = 0;
 		for (const Label * level: levels)
 		if(!level->isEmptyValue())
-			results[i++] = strdup(level->label(false).c_str());
+			results[i++] = strdup(level->label().c_str());
 		nbLevels = i;
 	}
 
