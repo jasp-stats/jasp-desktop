@@ -392,6 +392,7 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loading);
 	requestJson["moduleName"]		= _name;
+	requestJson["moduleLibPaths"]   =  getLibPathsToUse();
 	requestJson["moduleCode"]		= generateModuleLoadingR();
 
 	return requestJson;
@@ -436,7 +437,6 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 {
 	std::stringstream R;
 
-	R << ".libPaths(" << getLibPathsToUse() <<");\n";
 	R << standardRIndent << "library('" << _name << "');\n";
 
 	if(shouldReturnSucces)
