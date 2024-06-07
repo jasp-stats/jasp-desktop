@@ -77,7 +77,7 @@
    points="37.836,5.65 38.127,39 29,39 "
    id="polyline12" />
 
-   <g transform="translate(5,2)">
+   <g transform="translate(5,2)  scale(2,2)">
    <rect
    x="0"
    y="0"
