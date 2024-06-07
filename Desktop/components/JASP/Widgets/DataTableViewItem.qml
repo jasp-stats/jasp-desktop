@@ -78,7 +78,10 @@ Item
 		anchors.fill:		itemHighlight
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
 		
-		toolTipText:		itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText ? "%1 - %2".arg(itemText).arg(itemShadowText) : itemText
+		toolTipText:		(itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText)
+								? ((itemDelegateText.truncated || itemDelegateLabel.truncated) ? "%1 - %2".arg(itemText).arg(itemShadowText) : "")
+								: (itemDelegateText.truncated ? itemText : "")
+
 		toolTipTimeOut:		10000
 		toolTipDelay:		400
 
