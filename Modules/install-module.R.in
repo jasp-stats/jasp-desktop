@@ -38,6 +38,7 @@ configureVars = NULL
 if (@IS_LINUX_LOCAL_BUILD@) {
   # Only set when building using LINUX_LOCAL_BUILD. This is to help jags finds its libraries
   Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
+  configureVars = c(V8 = 'DOWNLOAD_STATIC_LIBV8=1')
 } 
 if(@IS_FLATPAK_USED@) {
   configureVars = c(V8 = "V8_PKG_LIBS='-L/app/lib64/v8/lib -lv8_monolith' V8_PKG_CFLAGS=-I/app/lib64/v8/include")
