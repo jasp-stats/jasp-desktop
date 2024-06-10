@@ -1,10 +1,7 @@
 #include "processhelper.h"
 #include "utilities/appdirs.h"
-
-#ifdef _WIN32
 #include "utilities/qutils.h"
 #include "log.h"
-#endif
 
 QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootStrap)
 {
