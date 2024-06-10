@@ -67,6 +67,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
 	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
 	Q_PROPERTY(bool			orderByValueByDefault	READ orderByValueByDefault		WRITE setOrderByValueByDefault		NOTIFY orderByValueByDefaultChanged		)
+	Q_PROPERTY(bool			checkUpdatesAskUser		READ checkUpdatesAskUser		WRITE setCheckUpdatesAskUser		NOTIFY checkUpdatesAskUserChanged		)
+	Q_PROPERTY(bool			checkUpdates			READ checkUpdates				WRITE setCheckUpdates				NOTIFY checkUpdatesChanged				)
 
 
 public:
@@ -132,7 +134,13 @@ public:
 	bool		developerMode()							const;
 	bool		ALTNavModeActive()						const;
     bool		orderByValueByDefault()					const;
-
+	
+	bool checkUpdatesAskUser() const;
+	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
+	
+	bool checkUpdates() const;
+	void setCheckUpdates(bool newCheckUpdates);
+	
 public slots:
 	bool useNativeFileDialog()					const;
 	void setUiScale(					double		uiScale);
@@ -240,7 +248,9 @@ signals:
 	void ALTNavModeActiveChanged(		bool		ALTNavModeActive);
 	void aboutToChangeEmptyValues(		QStringList newValues);
 	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
-
+	void checkUpdatesAskUserChanged(	bool		checkAsk);
+	void checkUpdatesChanged(			bool		check);
+	
 private slots:
 	void dataLabelNAChangedSlot(QString label);
 	

@@ -34,6 +34,8 @@ class JASPVersionChecker : public QObject
 
 public:
 	explicit JASPVersionChecker(QObject *parent);
+	
+	static bool timeForDailyCheck();
 
 signals:
 	void showDownloadButton(QString downloadUrl);

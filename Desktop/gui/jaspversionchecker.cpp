@@ -17,16 +17,27 @@
 //
 
 #include "jaspversionchecker.h"
-
-#include "utilities/qutils.h"
-#include "gui/aboutmodel.h"
-#include "appinfo.h"
 #include "knownissues.h"
+#include "appinfo.h"
 #include "log.h"
+#include "utilities/settings.h"
 
 JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)
 {
+	Log::log() << "JASP check for updates started." << std::endl;
+	
 	QTimer::singleShot(500, this, &JASPVersionChecker::checkForJaspUpdate);
+}
+
+//Check every day?
+#define EXPIRATION_TIME_SEC 60 * 60 * 24
+
+bool JASPVersionChecker::timeForDailyCheck()
+{
+	long	lastTime	= Settings::value(Settings::LAST_CHECK).toInt(),
+			curTime		= Utils::currentSeconds();
+	
+	return lastTime == -1 || curTime - lastTime > EXPIRATION_TIME_SEC;
 }
 
 void JASPVersionChecker::checkForJaspUpdate()
@@ -45,6 +56,8 @@ void JASPVersionChecker::downloadKnownIssues()
 
 void JASPVersionChecker::downloadVersionFinished()
 {
+	Settings::setValue(Settings::LAST_CHECK, int(Utils::currentSeconds()));
+	
 	QString version			= _networkReply->readAll().trimmed(),
 			downloadfile	= "https://jasp-stats.org/download/";
 

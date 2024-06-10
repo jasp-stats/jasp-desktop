@@ -27,7 +27,7 @@ class CheckBoxBase : public JASPControl, public BoundControlBase
 	Q_OBJECT
 	
 public:
-	CheckBoxBase(QQuickItem* parent = nullptr);
+				CheckBoxBase(QQuickItem* parent = nullptr);
 	
 	bool		isJsonValid(const Json::Value& value)		const	override;
 	Json::Value createJson()								const	override;
@@ -38,10 +38,10 @@ public:
 	bool		checked()									const;
 
 signals:
-	void clicked();
+	void		clicked();
 
 protected slots:
-	void clickedSlot();
+	void		clickedSlot();
 
 };
 

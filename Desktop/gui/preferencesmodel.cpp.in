@@ -122,7 +122,8 @@ GET_PREF_FUNC_BOOL( showAllROptions,			Settings::SHOW_ALL_R_OPTIONS						)
 GET_PREF_FUNC_BOOL( showRSyntaxInResults,		Settings::SHOW_RSYNTAX_IN_RESULTS					)
 GET_PREF_FUNC_BOOL( ALTNavModeActive,			Settings::ALTNAVMODE_ACTIVE							)
 GET_PREF_FUNC_BOOL( orderByValueByDefault,		Settings::ORDER_BY_VALUE_BY_DEFAULT					)
-
+GET_PREF_FUNC_BOOL( checkUpdatesAskUser,		Settings::CHECK_UPDATES_ASK_USER					)
+GET_PREF_FUNC_BOOL( checkUpdates,				Settings::CHECK_UPDATES								)
 
 int PreferencesModel::maxEngines() const
 {
@@ -302,6 +303,9 @@ SET_PREF_FUNCTION_EMIT_NO_ARG(	bool,		setShowAllROptions,			showAllROptions,			s
 SET_PREF_FUNCTION(				bool,		setShowRSyntaxInResults,	showRSyntaxInResults,		showRSyntaxInResultsChanged,	Settings::SHOW_RSYNTAX_IN_RESULTS					)
 SET_PREF_FUNCTION(				bool,		setALTNavModeActive,		ALTNavModeActive,			ALTNavModeActiveChanged,		Settings::ALTNAVMODE_ACTIVE							)
 SET_PREF_FUNCTION(				bool,		setOrderByValueByDefault,	orderByValueByDefault,		orderByValueByDefaultChanged,	Settings::ORDER_BY_VALUE_BY_DEFAULT					)
+SET_PREF_FUNCTION(				bool,		setCheckUpdatesAskUser,		checkUpdatesAskUser,		checkUpdatesAskUserChanged,		Settings::CHECK_UPDATES_ASK_USER					)
+SET_PREF_FUNCTION(				bool,		setCheckUpdates,			checkUpdates,				checkUpdatesChanged,			Settings::CHECK_UPDATES								)
+
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

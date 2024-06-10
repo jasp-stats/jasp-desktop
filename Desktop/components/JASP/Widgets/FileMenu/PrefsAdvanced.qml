@@ -299,7 +299,7 @@ ScrollView
 				id:					showEnginesWindow
 				text:				qsTr("Show engines")
 				onClicked:			mainWindow.showEnginesWindow()
-				activeFocusOnTab:			true
+				activeFocusOnTab:		true
 			}
 		}
 	}

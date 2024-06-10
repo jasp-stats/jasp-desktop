@@ -204,13 +204,35 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_languageModel->setApplicationEngine(_qml);
 
 	_engineSync->start(_preferences->plotPPI());
+	
+	checkForUpdates();
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
 
-	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
-	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
-
 	JASPTIMER_FINISH(MainWindowConstructor);
+}
+
+
+void MainWindow::checkForUpdates()
+{
+	if(PreferencesModel::prefs()->checkUpdatesAskUser())
+	{
+		bool answer = MessageForwarder::showYesNo(
+					tr("Check for updates"), 
+					tr("Should JASP check for updates at our server and let you know if there is a new version?\n\nYou can always change this setting in the Advanced Preferences."), 
+					tr("Yes"), 
+					tr("No"));
+		
+		PreferencesModel::prefs()->setCheckUpdatesAskUser(false);
+		PreferencesModel::prefs()->setCheckUpdates(answer);
+	}
+	
+	if(PreferencesModel::prefs()->checkUpdates() && JASPVersionChecker::timeForDailyCheck())
+	{
+		JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
+		
+		connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
+	}
 }
 
 MainWindow::~MainWindow()

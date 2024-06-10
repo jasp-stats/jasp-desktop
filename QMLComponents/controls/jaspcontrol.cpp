@@ -12,7 +12,7 @@ const QStringList JASPControl::_optionReservedNames = {"data", "version"};
 
 QMap<QQmlEngine*, QQmlComponent*> JASPControl::_mouseAreaComponentMap;
 QByteArray JASPControl::_mouseAreaDef = "\
-	import QtQuick 2.9\n\
+	import QtQuick\n\
 	MouseArea {\n\
 	z:					5\n\
 	anchors.fill:		parent\n\

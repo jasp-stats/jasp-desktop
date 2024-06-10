@@ -10,6 +10,7 @@ ScrollView
 	focus:					true
 	onActiveFocusChanged:	if(activeFocus) interfaceFonts.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
+	hoverEnabled:			false
 
 	function resetMe()
 	{
@@ -33,6 +34,7 @@ ScrollView
 	{
 		width:			scrollPrefs.width
 		spacing:		jaspTheme.rowSpacing
+		z:				100
 
 		MenuHeader
 		{
@@ -260,8 +262,26 @@ ScrollView
 				onCheckedChanged:	preferencesModel.ALTNavModeActive = checked
 				toolTip:			qsTr("Whether ALT-Navigation mode is active or not.")
 
-				KeyNavigation.tab:	uiScaleSpinBox
+				KeyNavigation.tab:	checkForUpdates
 			}
+		}
+		
+		PrefsGroupRect
+		{
+			title: qsTr("Check for updates")
+			
+			CheckBox
+			{
+				id:					checkForUpdates
+				label:				qsTr("Daily automatic check for updates & known issues")
+				checked:			preferencesModel.checkUpdates
+				onCheckedChanged:	preferencesModel.checkUpdates = checked
+				toolTip:			qsTr("JASP doesn't share any of your data when it gets updates, not even which version of JASP you are using.\nIt does share your IP-address with the server but that is required for internet to function.\n\nThe list of known issues it downloads is rarely used, mostly the issues are at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). However if we realize a terrible error has slipped into an analysis this will show you *in the analysis* that there is something you should take into account. Luckily we almost never need to use it.")
+
+				KeyNavigation.tab:	uiScaleSpinBox
+
+			}
+
 		}
 
 		PrefsGroupRect
