@@ -81,6 +81,7 @@ protected:
 								_currentValue,
 								_startValue,
 								_currentColumnType,
+								_currentColumnRealType,
 								_currentColumnTypeIcon;
 	int							_currentIndex			= -1;
 

@@ -45,6 +45,7 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
+		ColumnRealTypeRole,
 		ColumnTypeIconRole,
 		ColumnTypeDisabledIconRole,
 		RowComponentRole,
@@ -88,6 +89,7 @@ public:
 			QStringList				termsTypes();
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(const QString& name)						const;
+			columnType				getVariableRealType(const QString& name)					const;
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);

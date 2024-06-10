@@ -332,7 +332,7 @@ void VariablesListBase::_setAllowedVariables()
 	
 	QStringList allowedIcons;
 	for(columnType type : _variableTypesAllowed)
-		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::TransformedIconType)); //InactiveIconType
+		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
 	
 	setAllowedColumnsIcons(allowedIcons);
 

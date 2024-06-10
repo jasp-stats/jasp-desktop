@@ -49,6 +49,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectedRole]					= "selected";
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
+		roles[ColumnRealTypeRole]			= "columnRealType";
 		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
 		roles[NameRole]						= "name";
@@ -274,6 +275,11 @@ columnType ListModel::getVariableType(const QString& name) const
 	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
 }
 
+columnType ListModel::getVariableRealType(const QString& name) const
+{
+	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
+}
+
 int ListModel::searchTermWith(QString searchString)
 {
 	int result = -1;
@@ -437,16 +443,24 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	}
 	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
 	case ListModel::ColumnTypeRole:
+	case ListModel::ColumnRealTypeRole:
 	case ListModel::ColumnTypeIconRole:
 	case ListModel::ColumnTypeDisabledIconRole:
-	{
-		if (!listView()->containsVariables() || term.size() != 1)	return "";
-		columnType colType = getVariableType(term.asQString());
-		if (role == ListModel::ColumnTypeRole)						return columnTypeToQString(colType);
-		else if (role == ListModel::ColumnTypeIconRole)				return VariableInfo::info()->getIconFile(colType, VariableInfo::DefaultIconType);
-		else if (role == ListModel::ColumnTypeDisabledIconRole)		return VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType);
-		break;
-	}
+		if (!listView()->containsVariables() || term.size() != 1)	
+			return "";
+		else
+		{
+			columnType	colType		= getVariableType(term.asQString()),
+						colRealType = getVariableRealType(term.asQString());
+			
+			switch(role)
+			{
+			case ListModel::ColumnTypeRole:								return columnTypeToQString(colType);
+			case ListModel::ColumnRealTypeRole:							return columnTypeToQString(colRealType);
+			case ListModel::ColumnTypeIconRole:							return VariableInfo::info()->getIconFile(colType, colType == colRealType ? VariableInfo::DefaultIconType : VariableInfo::TransformedIconType);
+			case ListModel::ColumnTypeDisabledIconRole:					return VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType);
+			}
+		}
 	}
 
 	return QVariant();
