@@ -5118,10 +5118,6 @@ msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
 msgstr "Reihenfolge aller Zahlenwerte umkehren"
 
-msgctxt "LabelEditorWindow|"
-msgid "Order labels by their numeric value"
-msgstr "Beschriftungen nach deren numerischen Werten sortieren"
-
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
 msgstr "Spaltentyp-Änderung fehlgeschlagen"
@@ -5137,11 +5133,6 @@ msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
 msgstr "Typ auf '%1' für Spalte(n) '%2' setzen"
 
-#, qt-format
-msgctxt "QObject|"
-msgid "Set type to '%1' for %2 columns from '%3'"
-msgstr "Typ auf '%1' für %2 Spalten aus '%3' setzen"
-
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
@@ -5149,69 +5140,8 @@ msgstr "Werte von Spalte(n) '%1' umdrehen"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
-msgid "Reverse values for %1 columns from '%2'"
-msgstr "Werte für %1 Spalten von '%2' umdrehen"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Order labels by values for column(s) '%1'"
-msgstr "Beschriftungen nach Werten für Spalte(n) '%1' sortieren"
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Order labels by values for %1 columns from '%2'"
-msgstr "Beschriftungen nach Werten für Spalten %1 aus '%2 ' sortieren"
-
-#, fuzzy, qt-format
-msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
 msgstr "Beschriftungen von Spalte '%1' umdrehen"
-
-#, qt-format
-msgctxt "CommunityWindow|"
-msgid ""
-"<h3>Community</h3>\n"
-"The institutions of higher learning that participate in the JASP community "
-"jointly support the maintenance and further development of JASP, therefore "
-"providing an invaluable educational service to their own students and to "
-"those of other institutions worldwide.\n"
-"\n"
-"If your institution is not yet part of the JASP community, you can <a "
-"href=\"%1\">suggest that they join</a>.\n"
-"Below the educators that helped make this release possible:\n"
-"\n"
-"<i><b>Gold Educators:</b></i>\n"
-"%2\n"
-"                 \n"
-"<i><b>Silver Educators:</b></i>\n"
-"%3\n"
-"\n"
-"<i><b>Bronze Educator:</b></i>\n"
-"%4\n"
-"\n"
-"<a href=\"%6\">Click here for the current list of educators</a>\n"
-msgstr ""
-"<h3>Gemeinschaft</h3>\n"
-"Die höheren Bildungseinrichtungen, die an der JASP-Gemeinschaft teilnehmen, "
-"unterstützen gemeinsam die Aufrechterhaltung und Weiterentwicklung von JASP "
-"und bieten daher einen unschätzbaren Bildungsdienst für ihre eigenen "
-"Studierenden und für die von anderen Institutionen weltweit.\n"
-"\n"
-"Wenn Ihre Institution noch nicht Teil der JASP-Gemeinschaft ist, können Sie "
-"<a href=\"%1\">ihr vorschlagen, beizutreten</a>.\n"
-"Unter den Ausbildern, die geholfen haben, diese Veröffentlichung möglich zu "
-"machen:\n"
-"\n"
-"<i><b>Gold-Ausbilder:</b></i>\n"
-"%2\n"
-"\n"
-"<i><b>Silber-Ausbilder:</b></i>\n"
-"%3\n"
-"\n"
-"<i><b>Bronze-Ausbilder:</b></i>\n"
-"%4\n"
-"\n"
-"<a href=\"%6\">Klicken Sie hier für die aktuelle Liste der Ausbilder</a>\n"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
@@ -5287,11 +5217,6 @@ msgctxt "PrefsData|"
 msgid "Import settings"
 msgstr "Import-Einstellungen"
 
-#, fuzzy
-msgctxt "PrefsData|"
-msgid "Order labels by value"
-msgstr "Beschriftungen nach Wert sortieren"
-
 msgctxt "PrefsData|"
 msgid ""
 "This might incur a slowdown while loading very large datasets with lots of "
@@ -5317,3 +5242,98 @@ msgstr "%1 Zeilen entfernen"
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
 msgstr "%1 Spalten entfernen"
+
+#, qt-format
+msgctxt "CommunityWindow|"
+msgid ""
+"<h3>Community</h3>\n"
+"The institutions of higher learning that participate in the JASP community "
+"jointly support the maintenance and further development of JASP, therefore "
+"providing an invaluable educational service to their own students and to "
+"those of other institutions worldwide.\n"
+"\n"
+"If your institution is not yet part of the JASP community, you can <a "
+"href=\"%1\">suggest that they join</a>.\n"
+"Below the educators that helped make this release possible:\n"
+"\n"
+"<i><b>Gold Educators:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Silver Educators:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Bronze Educators:</b></i>\n"
+"%4\n"
+"\n"
+"<a href=\"%6\">Click here for the current list of educators</a>\n"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Order labels by value by default"
+msgstr ""
+
+msgctxt "LabelEditorWindow|"
+msgid "Automatically order labels by their numeric value"
+msgstr ""
+
+msgctxt "LabelEditorWindow|"
+msgid "Reverse order of the labels with non-numeric values"
+msgstr ""
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected non-numeric labels up"
+msgstr ""
+
+msgctxt "LabelEditorWindow|"
+msgid "Move selected non-numeric labels down"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Resize Data"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Columns"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Rows"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Resize"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Resize data to set values"
+msgstr ""
+
+msgctxt "ResizeDataDialog|"
+msgid "Close without resizing data"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Ask a question"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Visit the website"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Toggle autosorting labels by values for column(s) '%1'"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Resize Data"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Resize your dataset"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetView|"
+msgid "Resize data to %1 rows and %2 columns"
+msgstr ""
