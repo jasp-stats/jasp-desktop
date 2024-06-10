@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-06-11 16:58+0000\n"
+"Last-Translator: robachowyk <kaya.robach@gmail.com>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.6-dev\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4200,7 +4206,7 @@ msgstr "Tout sélectionner"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
@@ -4218,7 +4224,7 @@ msgstr "Copier"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
@@ -4310,7 +4316,6 @@ msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "Valeur"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "Étiquette"
@@ -4403,6 +4408,8 @@ msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP a un fichier de données associé mais vous l'avez modifié. Souhaitez "
+"vous recharger à partir de ce fichier ou en générer un nouveau ?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
@@ -4413,27 +4420,22 @@ msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr "Insérer une colonne avant"
+msgstr "Insérer une colonne à gauche"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr "Insérer une colonne après"
+msgstr "Insérer une colonne à droite"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete column"
 msgstr "Supprimer la colonne"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete row"
 msgstr "Supprimer la ligne"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Clear cells"
 msgstr "Effacer les cellules"
@@ -4468,7 +4470,7 @@ msgstr "Nouvelles données"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Ouvrir un nouvel espace de travail vide"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
@@ -4478,7 +4480,6 @@ msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr "Insérer des colonnes ou des lignes vides"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "Supprimer"
@@ -4513,23 +4514,23 @@ msgstr "Palette de couleurs"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Palette Daltonienne"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "Palette Daltonienne #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "Palette Daltonienne #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Viridis"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
@@ -4541,13 +4542,12 @@ msgstr "Bleu"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Equipe : NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Grand Budapest"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert row above"
 msgstr "Insérer une ligne au-dessus"
@@ -4559,26 +4559,26 @@ msgstr "Insérer une colonne en-dessous"
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Annuler les modifications, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Rétablir les modifications, %1+maj+Z ou %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Annuler %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "Rétablir %2 (%1+maj+Z ou %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Ouvrir le fichier de données avec l'éditeur par défaut"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4597,18 +4597,16 @@ msgstr ""
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Contacter JASP"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP est soutenu par les institutions suivantes :"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "À propos de JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "Fermer"
@@ -4620,119 +4618,113 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Contacter"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"Ce programme est fourni EN L'ETAT, SANS GARANTIE D'AUCUNE SORTE, NI DE "
+"CONCEPTION, NI DE QUALITE MARCHANDE OU D'ADEQUATION A UN USAGE PARTICULIER."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "et %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Réinitialiser avec les valeurs par défaut"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
 msgstr ""
+"Réinitialiser les valeurs manquantes avec les valeurs par défaut de JASP"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Ajouter une valeur manquante"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Définir l'espace de travail actuel avec ces valeurs"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr ""
+"Définir les valeurs manquantes de l'espace de travail actuel avec ces valeurs"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr ""
 "Modifiez les étiquettes ici ou choisissez les valeurs qui doivent être "
 "filtrées."
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
-msgstr "Filtre"
+msgstr "Filtrer"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "Valeur"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "Étiquette"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "Déplacer les étiquettes sélectionnées vers le haut"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "Déplacer les étiquettes sélectionnées vers le bas"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr "Ordre inversé de toutes les étiquettes"
+msgstr "Inverser l'ordre des étiquettes"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr "Réinitialiser toutes les coches de filtre pour cette colonne"
+msgstr "Réinitialiser tous les filtres pour cette colonne"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr "Réinitialiser toutes les coches de filtre pour toutes les colonnes"
+msgstr "Réinitialiser tous les filtres pour toutes les colonnes"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Image"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Réglages de l'espace de travail"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Nom : %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr "Description: "
+msgstr "Description : "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr ""
+msgstr "Réinitialiser les valeurs manquantes avec celles des préférences"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Afficher les réglages de l'espace de travail"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Utiliser les valeurs personnalisées"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr ""
+msgstr "Réinitialiser les valeurs manquantes avec celles de l'espace de travail"
 
 msgctxt "QObject|"
 msgid "Not computed"
@@ -4771,11 +4763,11 @@ msgstr "Nominal"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Définition de la nouvelle colonne"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Editeur d'étiquettes"
 
 msgctxt "ColumnModel|"
 msgid "Missing values"
@@ -4827,36 +4819,38 @@ msgstr ""
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Afficher les valeurs manquantes de l'espace de travail"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Ouvrir les réglages des valeurs manquantes de l'espace de travail"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Intégrer une vidéo d'internet"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Services vidéo non supportés"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP n'autorise que les services vidéo suivants :"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"Contactez l'équipe JASP pour demander l'ajout d'un autre service vidéo à la "
+"liste."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "Communauté JASP"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Community"
-msgstr ""
+msgstr "Proposez à votre institution de rejoindre la communauté JASP"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4879,27 +4873,44 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>Contact</h3>\n"
+"Pour <a href=\"%1\">les demandes de fonctionnalités</a> et <a href=\"%2\""
+">reporter des bogues</a> : publiez un problème sur notre page GitHub <a href="
+"\"%3\">comme expliqué ici</a> s'il vous plaît.\n"
+"Cela vous permettra d'entrer en contact avec les développeurs JASP.\n"
+"\n"
+"Pour les questions statistiques : publiez un problème <a href=\"%4\">sur le "
+"forum JASP</a>.\n"
+"\n"
+"Vous pouvez obtenir des informations à propos de la Communauté JASP <a href="
+"\"%5\">sur le site internet</a>.\n"
+"\n"
+"Pour suggérer l'ajout de votre institution à <a href=\"%6\">la mappemonde "
+"JASP</a> envoyez un email à <a href=\"%7\">communications@jasp-stats.org</a>."
+"\n"
+"\n"
+"Pour les dons individuels allez <a href=\"%8\">sur le site internet</a> s'il "
+"vous plaît.\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Communauté"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in the name of the column>"
-msgstr ""
+msgstr "<Entrer le nom de la colonne>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
-msgstr "Nom: "
+msgstr "Nom : "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Type de la colonne : "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Type créé : "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
@@ -4911,32 +4922,35 @@ msgstr "Nom long: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Donner un nom plus descriptif à la colonne>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr "Fermer la fenêtre variable"
+msgstr "Fermer la fenêtre de la variable"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
-msgstr "Description: "
+msgstr "Description : "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Définition de la colonne"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr ""
+"Retourne un vecteur booléen avec TRUE (VRAI) pour chaque valeur manquante "
+"dans y"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"Utiliser l'opérateur de négation pour filtrer les lignes avec des valeurs "
+"manquantes (NA) d'une colonne."
 
+#, fuzzy
 msgctxt "FilterModel|"
 msgid ""
 "# Above you see the code that JASP generates for both value filtering and "
@@ -4949,15 +4963,26 @@ msgid ""
 "\n"
 "generatedFilter\n"
 msgstr ""
+"# Ci-dessus le code généré par JASP pour le filtrage de valeurs et le filtre "
+"glisser-déposer.\n"
+"# Ce résultat par défaut est enregistré dans 'generatedFilter' "
+"('filtreGénéré') et peut être remplacé ou combiné avec des filtres "
+"personnalisés.\n"
+"# Pour combiner vous pouvez ajouter des conditions en utilisant '&' : "
+"'generatedFilter & customFilter & perhapsAnotherFilter' ('filtreGénéré & "
+"filtrePersonnalisé & unAutreFiltre')\n"
+"# Cliquer sur l'icône (i) dans le coin en bas à droite pour plus d'aide.\n"
+"\n"
+"generatedFilter (filtreGénéré)\n"
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Aucune donnée chargée !"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Les données ont %1 lignes, il en reste %2 (%3%4%) après le filtre"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
@@ -4971,60 +4996,58 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Réinitialiser le type des variables chargées"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "Réglages des variables manquantes"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr "Copier dans le presse-papier"
+msgstr "Copié dans le presse-papier"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "Copier les informations de débogage"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "Chercher dans les résultats :"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "Fermer la barre de recherche"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Couleur de police"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "Entrer du LaTeX ici :"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "Appuyer sur `Cmd/Ctrl + Entrer` pour appliquer ;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Cliquer pour appliquer la formule"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Cliquer pour éditer la formule"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Ajouter un %1"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "Facteur"
