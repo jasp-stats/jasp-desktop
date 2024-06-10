@@ -61,6 +61,11 @@ options(
 .libPaths(RENV_LIBRARY)
 sandboxPaths <- renv:::renv_sandbox_activate()
 
+#to fix flatpak issue cleaning up on interrupt
+if (@IS_FLATPAK_USED@) {
+  system2(command="chmod", args=c("-R", "777", "@RENV_LIBRARY@/../"))
+}
+
 cat("Using sandbox paths:\n")
 for (path in sandboxPaths)
   cat("    ", path, "\n", sep = "")
