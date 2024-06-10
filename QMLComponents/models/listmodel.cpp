@@ -49,6 +49,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectedRole]					= "selected";
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
+		roles[ColumnPreviewRole]			= "preview";
 		roles[ColumnRealTypeRole]			= "columnRealType";
 		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
@@ -280,6 +281,26 @@ columnType ListModel::getVariableRealType(const QString& name) const
 	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
 }
 
+QString ListModel::getVariablePreview(const QString& name) const
+{
+	columnType	chosenType	= getVariableType(name),
+				realType	= getVariableRealType(name);
+	
+	if(chosenType == realType)
+		return "";
+	
+	VariableInfo::InfoType		previewType;
+	
+	switch(chosenType)
+	{
+	default:					previewType = VariableInfo::PreviewScale;		break;
+	case columnType::ordinal:	previewType	= VariableInfo::PreviewOrdinal;		break;
+	case columnType::nominal:	previewType	= VariableInfo::PreviewNominal;		break;
+	}
+	
+	return requestInfo(previewType, name).toString();
+}
+
 int ListModel::searchTermWith(QString searchString)
 {
 	int result = -1;
@@ -436,12 +457,17 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	case ListModel::NameRole:			return QVariant(term.asQString());
 	case ListModel::SelectableRole:		return !term.asQString().isEmpty() && term.isDraggable();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);
+	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
+	
 	case ListModel::RowComponentRole:
 	{
 		QString termStr = term.asQString();
 		return _rowControlsMap.contains(termStr) ? QVariant::fromValue(_rowControlsMap[termStr]->getRowObject()) : QVariant();
 	}
-	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
+		
+	case ListModel::ColumnPreviewRole:
+		return (!listView()->containsVariables() || term.size() != 1) ? "" : getVariablePreview(term.asQString());
+	
 	case ListModel::ColumnTypeRole:
 	case ListModel::ColumnRealTypeRole:
 	case ListModel::ColumnTypeIconRole:

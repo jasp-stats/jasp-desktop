@@ -45,6 +45,7 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
+		ColumnPreviewRole,
 		ColumnRealTypeRole,
 		ColumnTypeIconRole,
 		ColumnTypeDisabledIconRole,
@@ -88,8 +89,9 @@ public:
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 			QStringList				termsTypes();
 			void					setVariableType(int index, columnType type);
-			columnType				getVariableType(const QString& name)						const;
+			columnType				getVariableType(	const QString& name)					const;
 			columnType				getVariableRealType(const QString& name)					const;
+			QString					getVariablePreview(	const QString& name)					const;
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);

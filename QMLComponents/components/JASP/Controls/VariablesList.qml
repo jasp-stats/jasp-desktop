@@ -413,20 +413,21 @@ VariablesListBase
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
 				radius:			jaspTheme.borderRadius
 				
-				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				model.selected
-				property bool isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
-				property bool dragging:				false
-				property int offsetX:				0
-				property int offsetY:				0
-				property int rank:					index
-				property bool containsDragItem:		variablesList.itemContainingDrag === itemRectangle
-				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
-				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
-				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool draggable:			variablesList.draggable && model.selectable
-				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
-				property var extraItem:				model.rowComponent
+				property bool	clearOtherSelectedItemsWhenClicked: false
+				property bool	selected:				model.selected
+				property bool	isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
+				property bool	dragging:				false
+				property int	offsetX:				0
+				property int	offsetY:				0
+				property int	rank:					index
+				property bool	containsDragItem:		variablesList.itemContainingDrag === itemRectangle
+				property bool	isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
+				property bool	isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
+				property string	preview:			!isVariable ? "" : model.preview
+				property bool	isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
+				property bool	draggable:			variablesList.draggable && model.selectable
+				property string	columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
+				property var	extraItem:				model.rowComponent
 
 				enabled: (variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])) && (!variablesList.draggable || model.selectable)
 				
@@ -454,9 +455,9 @@ VariablesListBase
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem && colName.truncated
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && !itemRectangle.containsDragItem && (preview != "" ||  (model.name && colName.truncated))
 				QTCONTROLS.ToolTip.delay: 300
-				QTCONTROLS.ToolTip.text: model.name
+				QTCONTROLS.ToolTip.text: colName.truncated ? (model.name + (preview != "" ? "\n\n" + preview : "")) : preview
 				
 				Component.onCompleted:
 				{

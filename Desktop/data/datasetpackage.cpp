@@ -32,6 +32,7 @@
 #include "modules/ribbonmodel.h"
 #include "filtermodel.h"
 #include <ranges>
+#include "variableinfo.h"
 
 //Im having problems getting the proxy models to play nicely with beginRemoveRows etc
 //So just reset the whole thing as that is what happens in datasetview
@@ -621,6 +622,44 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 		case int(specialRoles::computedColumnType):				return int(	!col ? computedColumnType::notComputed	: col->codeType());
 		case int(specialRoles::description):					return tq(	!col ? "?"								: col->description());
 		case int(specialRoles::title):							return tq(	!col ? "?"								: col->title());
+		case int(specialRoles::previewScale):
+		case int(specialRoles::previewOrdinal):					
+		case int(specialRoles::previewNominal):					
+		{
+			columnType colTypeWanted = 
+					role == int(specialRoles::previewNominal) 
+					? columnType::nominal 
+					: role == int(specialRoles::previewOrdinal)
+					? columnType::ordinal
+					: columnType::scale;
+			
+			stringvec preview = !col ? stringvec() : col->previewTransform(colTypeWanted);
+			
+			if(preview.size() != 4)
+				return QVariant();
+			
+			QString	levelsTotal		= tq(preview[0]),
+					levelsNums		= tq(preview[1]),
+					vals			= tq(preview[2]),
+					empties			= tq(preview[3]);
+			
+			if(colTypeWanted == columnType::scale)
+				return	tr("There are %1 total levels, of which %2 have a numeric value.\nAs a '%3' it looks like: %4\n%5")
+						.arg(levelsTotal)
+						.arg(levelsNums)
+						.arg(VariableInfo::getTypeFriendly(colTypeWanted))
+						.arg(vals)
+						.arg(
+							empties == "" 
+							? "" 
+							: tr("Implicit missing values: %1").arg(empties)
+						);
+			else
+				return tr("There are %1 total levels.\nAs a '%2' it looks like: %3")
+					.arg(levelsTotal)
+					.arg(VariableInfo::getTypeFriendly(colTypeWanted))
+					.arg(vals);
+		}
 		}
 	}
 
