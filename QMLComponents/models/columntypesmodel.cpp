@@ -19,30 +19,30 @@
 #include "columntypesmodel.h"
 #include "variableinfo.h"
 
+columnTypeVec ColumnTypesModel::_allTypes;
+
 ColumnTypesModel::ColumnTypesModel(QObject *parent, columnTypeVec types) : QAbstractListModel(parent)
 {
-	setTypes(types);
-}
+	if (_allTypes.empty())
+	{
+		_allTypes =  columnTypeToVector();		// If other types are added, they will be automatically included here.
+		_allTypes.erase(std::remove(_allTypes.begin(), _allTypes.end(), columnType::unknown),	 _allTypes.end() );
+		_allTypes.erase(std::remove(_allTypes.begin(), _allTypes.end(), columnType::nominalText), _allTypes.end() ); // Should be removed when nominalText is completely removed
+	}
 
-void ColumnTypesModel::setTypes(columnTypeSet types)
-{
-	columnTypeVec typesSorted(types.begin(), types.end());
-	std::sort(typesSorted.begin(), typesSorted.end());
-	setTypes(typesSorted);	
+	setTypes(types);
 }
 
 void ColumnTypesModel::setTypes(columnTypeVec types)
 {
+	if (types.empty())
+		types = _allTypes;
+
+	if (types == _types)
+		return;
+
 	beginResetModel();
-	_types = types;
-	
-	if (_types.empty())
-	{
-		_types =  columnTypeToVector();		// If other types are added, they will be automatically included here.
-		_types.erase(std::remove(_types.begin(), _types.end(), columnType::unknown),	 _types.end() );
-		_types.erase(std::remove(_types.begin(), _types.end(), columnType::nominalText), _types.end() ); // Should be removed when nominalText is completely removed
-	}
-	
+	_types = types;	
 	endResetModel();
 }
 
@@ -84,6 +84,31 @@ QHash<int, QByteArray> ColumnTypesModel::roleNames() const
 int ColumnTypesModel::getType(int i) const
 {
 	return data(index(i, 0), TypeRole).toInt();
+}
+
+bool ColumnTypesModel::hasType(columnType type) const
+{
+	return std::find(_types.begin(), _types.end(), type) != _types.end();
+}
+
+columnType ColumnTypesModel::firstType() const
+{
+	if (_types.size() > 0)
+		return _types[0];
+	else
+		return columnType::unknown;
+}
+
+QStringList ColumnTypesModel::iconList() const
+{
+	QStringList result;
+	if (_types == _allTypes)
+		return result;
+
+	for (columnType type : _types)
+		result.push_back(VariableInfo::getIconFile(type, VariableInfo::IconType::InactiveIconType));
+
+	return result;
 }
 
 

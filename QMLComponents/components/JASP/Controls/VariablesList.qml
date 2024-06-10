@@ -76,16 +76,6 @@ VariablesListBase
 
 	onModelChanged: if (model) model.selectedItemsChanged.connect(selectedItemsChanged);
 
-	function setEnabledState(source, dragging)
-	{
-		var result = !dragging || areTypesAllowed(source.model.selectedItemsTypes());
-
-		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
-		itemRectangle.enabled = result
-		itemTitle.enabled = result
-	}
-
-
 	function moveSelectedItems(target)
 	{
 		var selectedItems = variablesList.model.selectedItems()
@@ -94,8 +84,6 @@ VariablesListBase
 		itemsDropped(selectedItems, target, -1);
 		variablesList.clearSelectedItems();
 	}
-
-
 
 	function getExistingItems()
 	{
@@ -235,27 +223,31 @@ VariablesListBase
 			}
 		}
 	}
-		
-	Repeater
-	{
-		id:		allowedColumnsId
-		model:	allowedColumnsIcons
 
-		Image
+	Row
+	{
+		anchors
 		{
-			source:		modelData
-			height:		16 * preferencesModel.uiScale
-			width:		16 * preferencesModel.uiScale
-			z:			2
-			mipmap:		true
-			smooth:		true
-			//opacity:	1
-			anchors
+			bottom:			itemRectangle.bottom;
+			bottomMargin:	jaspTheme.contentMargin
+			right:			itemRectangle.right
+			rightMargin:	jaspTheme.contentMargin + (scrollBar.visible ? scrollBar.width : 0)
+		}
+		spacing: jaspTheme.contentMargin
+
+		Repeater
+		{
+			id:		allowedColumnsId
+			model:	allowedColumnsIcons
+
+			Image
 			{
-				bottom:			itemRectangle.bottom;
-				bottomMargin:	4  * preferencesModel.uiScale
-				right:			itemRectangle.right;
-				rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+				source:		modelData
+				height:		16 * preferencesModel.uiScale
+				width:		16 * preferencesModel.uiScale
+				z:			2
+				mipmap:		true
+				smooth:		true
 			}
 		}
 	}
@@ -429,8 +421,6 @@ VariablesListBase
 				property string	columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var	extraItem:				model.rowComponent
 
-				enabled: (variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])) && (!variablesList.draggable || model.selectable)
-				
 				function setRelative(draggedRect)
 				{
 					x = Qt.binding(function (){ return draggedRect.x + offsetX; })
@@ -581,7 +571,7 @@ VariablesListBase
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
 
-						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && mouse.x < icon.width)
+						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== "" && mouse.x < icon.width)
 							customMenu.toggle(itemRectangle, props, 0, parent.height);
 					}
 					

@@ -275,6 +275,16 @@ QAbstractListModel *VariablesListBase::allowedTypesModel()
 	return _allowedTypesModel;
 }
 
+bool VariablesListBase::isTypeAllowed(columnType type) const
+{
+	return _allowedTypesModel->hasType(type);
+}
+
+columnType VariablesListBase::defaultType() const
+{
+	return _allowedTypesModel->firstType();
+}
+
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	Log::log() << "LOG setDropKeys " << name() << ": " << dropKeys.join('/') << std::endl;
@@ -321,27 +331,30 @@ void VariablesListBase::termsChangedHandler()
 
 void VariablesListBase::_setAllowedVariables()
 {
-	_variableTypesAllowed.clear();
+	columnTypeVec allowedTypes;
+
 	for (const QString& typeStr: allowedColumns())
 	{
 		columnType typeCol = columnTypeFromString(fq(typeStr), columnType::unknown);
 		
-		if(typeCol != columnType::unknown)
-			_variableTypesAllowed.insert(typeCol);
+		if (typeCol != columnType::unknown)
+			allowedTypes.push_back(typeCol);
 	}
 	
-	QStringList allowedIcons;
-	for(columnType type : _variableTypesAllowed)
-		allowedIcons.push_back(VariableInfo::getIconFile(type, VariableInfo::InactiveIconType));
-	
-	setAllowedColumnsIcons(allowedIcons);
+	_allowedTypesModel->setTypes(allowedTypes);
 
-	_allowedTypesModel->setTypes(_variableTypesAllowed);
+	emit allowedColumnsIconsChanged();
 
 	if (form() && form()->initialized())
 		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
 		model()->refresh();
 }
+
+QStringList VariablesListBase::allowedColumnsIcons() const
+{
+	return _allowedTypesModel->iconList();
+}
+
 
 void VariablesListBase::_setRelations()
 {

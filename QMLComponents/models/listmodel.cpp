@@ -101,6 +101,26 @@ void ListModel::_connectAllSourcesControls()
 		_connectSourceControls(sourceItem);
 }
 
+void ListModel::_checkTermsType(const QString &term)
+{
+	columnType type = getVariableType(term);
+	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
+		_tempTermTypes[term] = _listView->defaultType();
+
+}
+
+void ListModel::_checkTermsTypes(const Terms &terms)
+{
+	for (const Term& term : terms)
+		_checkTermsType(term.asQString());
+}
+
+void ListModel::_checkTermsTypes(const std::vector<Term> &terms)
+{
+	for (const Term& term : terms)
+		_checkTermsType(term.asQString());
+}
+
 void ListModel::_connectSourceControls(SourceItem* sourceItem)
 {
 	// Connect option changes from controls in sourceModel that influence the terms of this model:
@@ -265,7 +285,9 @@ void ListModel::setVariableType(int ind, columnType type)
 		return;
 
 	_tempTermTypes[name] = type;
+
 	emit dataChanged(index(ind, 0), index(ind, 0));
+	emit columnTypeChanged(name);
 }
 
 columnType ListModel::getVariableType(const QString& name) const
@@ -331,13 +353,6 @@ int ListModel::searchTermWith(QString searchString)
 	return result;
 }
 
-void ListModel::_addSelectedItemType(int _index)
-{
-	QString type = data(index(_index, 0), ListModel::ColumnTypeRole).toString();
-	if (!type.isEmpty())
-		_selectedItemsTypes.insert(type);
-}
-
 void ListModel::selectItem(int _index, bool _select)
 {
 	bool changed = false;
@@ -353,7 +368,6 @@ void ListModel::selectItem(int _index, bool _select)
 				else if (_selectedItems[i] > _index)
 				{
 					_selectedItems.insert(i, _index);
-					_addSelectedItemType(_index);
 					changed = true;
 					break;
 				}
@@ -361,7 +375,6 @@ void ListModel::selectItem(int _index, bool _select)
 			if (i == _selectedItems.length())
 			{
 				_selectedItems.append(_index);
-				_addSelectedItemType(_index);
 				changed = true;
 			}
 		}
@@ -369,16 +382,7 @@ void ListModel::selectItem(int _index, bool _select)
 	else
 	{
 		if (_selectedItems.removeAll(_index) > 0)
-		{
-			_selectedItemsTypes.clear();
-			for (int i : _selectedItems)
-			{
-				QString type = data(index(i, 0), ListModel::ColumnTypeRole).toString();
-				if (!type.isEmpty())
-					_selectedItemsTypes.insert(type);
-			}
 			changed = true;
-		}
 	}
 
 	if (changed)
@@ -393,7 +397,6 @@ void ListModel::clearSelectedItems(bool emitSelectedChange)
 	QList<int> selected = _selectedItems;
 
 	_selectedItems.clear();
-	_selectedItemsTypes.clear();
 
 	for (int i : selected)
 		emit dataChanged(index(i,0), index(i,0), { ListModel::SelectedRole });
@@ -416,15 +419,11 @@ void ListModel::selectAllItems()
 	if (nbTerms == 0) return;
 
 	_selectedItems.clear();
-	_selectedItemsTypes.clear();
 
 	for (int i = 0; i < nbTerms; i++)
 	{
 		if (data(index(i, 0), ListModel::SelectableRole).toBool())
-		{
 			_selectedItems.append(i);
-			_addSelectedItemType(i);
-		}
 	}
 
 	emit dataChanged(index(0, 0), index(nbTerms - 1, 0), { ListModel::SelectedRole });
@@ -649,15 +648,6 @@ int ListModel::sourceColumnTypeChanged(QString name)
 	{
 		QModelIndex ind = index(i, 0);
 
-		//keep selected item types up to date
-		if(_selectedItems.contains(i))
-		{
-			_selectedItemsTypes.clear();
-			for(int item : _selectedItems)
-				_addSelectedItemType(item);
-			emit selectedItemsTypesChanged();
-		}
-
 		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
 		emit columnTypeChanged(name);
 	}
@@ -756,12 +746,14 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 
 void ListModel::_setTerms(const std::vector<Term> &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
 
 void ListModel::_setTerms(const Terms &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
@@ -792,18 +784,21 @@ void ListModel::_removeLastTerm()
 
 void ListModel::_addTerms(const Terms &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.add(terms);
 	setUpRowControls();
 }
 
 void ListModel::_addTerm(const QString &term, bool isUnique)
 {
+	_checkTermsType(term);
 	_terms.add(term, isUnique);
 	setUpRowControls();
 }
 
 void ListModel::_replaceTerm(int index, const Term &term)
 {
+	_checkTermsType(term.asQString());
 	_terms.replace(index, term);
 	setUpRowControls();
 }

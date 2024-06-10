@@ -129,10 +129,5 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 			return false;
 	}
 
-	const std::set<columnType>& variableTypesAllowed = listView()->variableTypesAllowed();
-
-	if (variableTypesAllowed.empty() || term.size() > 1)
-		return true;
-	
-	return variableTypesAllowed.count(getVariableType(term.asQString()));
+	return true;
 }

@@ -32,21 +32,8 @@ Button
 
 	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
-
-	Connections
-	{
-		target: sourceM && sourceM.model? sourceM.model : null
-		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
-	}
-
-	Connections
-	{
-		target: targetM && targetM.model ? targetM.model : null
-		function onSelectedItemsTypesChanged() { Qt.callLater(setState); }
-	}
 	
 	text:			""
-	enabled:		false
 	visible:		sourceM.visible && targetM.visible
 
 	iconSource:		leftToRight ? iconToRight : iconToLeft
@@ -57,12 +44,7 @@ Button
 
 	onClicked:			sourceM.moveSelectedItems(targetM)
 
-	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true; setState(); }
-	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false; setState(); }
-	function setState()
-	{
-		enabled = sourceM.enabled && targetM.enabled && sourceM.model && sourceM.model.selectedItems().length > 0 && targetM.areTypesAllowed(sourceM.model.selectedItemsTypes());
-	}
-
+	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true;		}
+	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false;	}
 
 }

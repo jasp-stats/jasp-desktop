@@ -63,8 +63,6 @@ public:
 			void					setUp()						override;
 			void					cleanUp()					override;
 	
-	const std::set<columnType>	&	variableTypesAllowed()		const			{ return _variableTypesAllowed; }
-
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
@@ -79,7 +77,6 @@ public:
 			JASPControl			*	getChildControl(QString key, QString name) override;
 
 	Q_INVOKABLE QString				getSourceType(QString name);
-	Q_INVOKABLE bool				areTypesAllowed(QStringList types);
 	Q_INVOKABLE columnType			getVariableType(const QString& name);
 
 			const QVariant		&	source()					const			{ return _source;				}
@@ -99,6 +96,9 @@ public:
 	virtual stringvec				usedVariables()				const;
 			bool					addAvailableVariablesToAssigned()	const	{ return _addAvailableVariablesToAssigned;	}
 			bool					allowAnalysisOwnComputedColumns()	const	{ return _allowAnalysisOwnComputedColumns;	}
+			virtual bool			isTypeAllowed(columnType type)		const	{ return true;								}
+			virtual columnType		defaultType()						const	{ return columnType::unknown;				}
+			columnTypeVec			valueTypes()						const;
 
 signals:
 			void					modelChanged();
@@ -144,7 +144,6 @@ private:
 			
 protected:
 	QVector<SourceItem*>	_sourceItems;
-	std::set<columnType>	_variableTypesAllowed;
 	QString					_optionKey							= "value";
 	QVariant				_source;
 	QVariant				_rSource;

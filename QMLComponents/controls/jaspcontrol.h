@@ -260,7 +260,6 @@ signals:
 
 protected:
 	void				componentComplete()									override;
-	void				_setType();
 	void				setCursorShape(int shape);
 	void				setParentDebugToChildren(bool debug);
 	void				focusInEvent(QFocusEvent* event)					override;

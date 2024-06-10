@@ -88,8 +88,6 @@ VariablesFormBase
 			{
 				allAssignedVariablesList[index]	.activeFocusChanged		.connect(setIconToLeft	);
 				availableVariablesList			.activeFocusChanged		.connect(setIconToRight	);
-				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(setState		);
-				availableVariablesList			.selectedItemsChanged	.connect(setState		);
 			}
 		}
 	}
@@ -123,15 +121,10 @@ VariablesFormBase
 			var assignedList = allAssignedVariablesList[key]
 			var assignedDropKeys = [];
 			availableDropKeys.push(assignedList.name);
-			availableVariablesList.draggingChanged.connect(assignedList.setEnabledState);
 			assignedDropKeys.push(availableVariablesList.name);
 
 			for (var key2 in allAssignedVariablesList)
-			{
 				assignedDropKeys.push(allAssignedVariablesList[key2].name);
-				if (assignedList !== allAssignedVariablesList[key2])
-					assignedList.draggingChanged.connect(allAssignedVariablesList[key2].setEnabledState);
-			}
 
 			assignedList.dropKeys = assignedDropKeys;
 		}

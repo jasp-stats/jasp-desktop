@@ -244,18 +244,6 @@ QString JASPListControl::getSourceType(QString name)
 	return model() ? model()->getItemType(name) : "";
 }
 
-bool JASPListControl::areTypesAllowed(QStringList types)
-{
-	bool result = true;
-
-	if (!_variableTypesAllowed.empty())
-		for (const QString& type : types)
-			if (!_variableTypesAllowed.count(columnTypeFromQString(type)))
-				result = false;
-
-	return result;
-}
-
 columnType JASPListControl::getVariableType(const QString &name)
 {
 	return model()->getVariableType(name);
@@ -282,6 +270,16 @@ std::vector<std::string> JASPListControl::usedVariables() const
 {
 	if (containsVariables() && isBound() && model())	return model()->terms().asVector();
 	else												return {};
+}
+
+columnTypeVec JASPListControl::valueTypes() const
+{
+	columnTypeVec types;
+
+	for (const Term& term : model()->terms())
+		types.push_back(model()->getVariableType(term.asQString()));
+
+	return types;
 }
 
 void JASPListControl::sourceChangedHandler()
