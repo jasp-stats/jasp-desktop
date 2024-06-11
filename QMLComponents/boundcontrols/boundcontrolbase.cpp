@@ -98,18 +98,12 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 {
 	AnalysisForm* form = _control->form();
 
-	if (!form || !_control->isBound()) return;
+	if (!form || !_control->isBound() || value == boundValue()) return;
 
-	bool hasChanges = setValueType();
+	handleComputedColumn(value);
+	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 
-	if (value != boundValue())
-	{
-		hasChanges = true;
-		handleComputedColumn(value);
-		form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
-	}
-
-	if (emitChange && hasChanges)
+	if (emitChange)
 		emit _control->boundValueChanged(_control);
 }
 

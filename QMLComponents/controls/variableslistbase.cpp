@@ -325,12 +325,13 @@ void VariablesListBase::termsChangedHandler()
 	setColumnsTypes(model()->termsTypes());
 	setColumnsNames(model()->terms().asQList());
 
-	if (_minLevels >= 0 || _maxLevels >= 0)
+	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0)
 	{
 		bool hasError = false;
 		for (const Term& term : model()->terms())
 		{
 			int nbLevels = model()->requestInfo(VariableInfo::TotalLevels, term.asQString()).toInt();
+			int nbNumValues = model()->requestInfo(VariableInfo::TotalNumericValues, term.asQString()).toInt();
 			if (_minLevels >= 0 && nbLevels < _minLevels)
 			{
 				addControlError(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(term.asQString()).arg(nbLevels));
@@ -341,6 +342,17 @@ void VariablesListBase::termsChangedHandler()
 				addControlError(tr("Maximum number of levels is %1. Variable %2 has %3 levels").arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
 				hasError = true;
 			}
+			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
+			{
+				addControlError(tr("Minumum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				hasError = true;
+			}
+			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
+			{
+				addControlError(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				hasError = true;
+			}
+
 			if (hasError)
 				break;
 		}
