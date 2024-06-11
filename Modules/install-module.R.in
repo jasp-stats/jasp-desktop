@@ -47,7 +47,7 @@ if(@IS_FLATPAK_USED@) {
 .libPaths("@JASPMODULEINSTALLER_LIBRARY@")
 sandboxPaths <- renv:::renv_sandbox_activate()
 
-configure.vars = c(jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
+configureVars = c(configureVars, jaspBase = "INCLUDE_DIR='@PROJECT_SOURCE_DIR@/Common/jaspColumnEncoder'") #Needed for flatpak build as it keeps recompiling jaspBase (which it shouldnt of course but I dont know why) and this is an easy fix to get it to work now
 options(
   configure.vars = configureVars,
   PKGDEPENDS_LIBRARY = "@PKGDEPENDS_LIBRARY@"
