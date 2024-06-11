@@ -25,6 +25,7 @@ DECLARE_ENUM(
 		columnWidthFallback, 
 		computedColumnType, 
 		totalNumericValues,
+		totalLevels,
 		columnIsComputed, 
 		labelsHasFilter, 
 		columnPkgIndex, 

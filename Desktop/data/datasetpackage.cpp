@@ -518,6 +518,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(column->type());
 		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();	
+		case int(specialRoles::totalLevels):		return int(column->labelsTemp().size());
 		case int(specialRoles::computedColumnType):	return int(column->codeType());
 		case int(specialRoles::columnPkgIndex):		return index.column();
 		case int(specialRoles::lines):
@@ -553,7 +554,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row()));
 		case int(specialRoles::description):		return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::labelsStrList):		return getColumnLabelsAsStringList(column->name());
-		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();	
+		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();
+		case int(specialRoles::totalLevels):		return int(column->labelsTemp().size());
 		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
 		case int(specialRoles::label):				[[fallthrough]];

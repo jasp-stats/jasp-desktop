@@ -325,6 +325,30 @@ void VariablesListBase::termsChangedHandler()
 	setColumnsTypes(model()->termsTypes());
 	setColumnsNames(model()->terms().asQList());
 
+	if (_minLevels >= 0 || _maxLevels >= 0)
+	{
+		bool hasError = false;
+		for (const Term& term : model()->terms())
+		{
+			int nbLevels = model()->requestInfo(VariableInfo::TotalLevels, term.asQString()).toInt();
+			if (_minLevels >= 0 && nbLevels < _minLevels)
+			{
+				addControlError(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(term.asQString()).arg(nbLevels));
+				hasError = true;
+			}
+			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
+			{
+				addControlError(tr("Maximum number of levels is %1. Variable %2 has %3 levels").arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
+				hasError = true;
+			}
+			if (hasError)
+				break;
+		}
+
+		if (!hasError)
+			clearControlError();
+	}
+
 	if (_boundControl)	_boundControl->resetBoundValue();
 	else JASPListControl::termsChangedHandler();
 }
