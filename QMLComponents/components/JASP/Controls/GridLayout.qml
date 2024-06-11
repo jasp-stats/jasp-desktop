@@ -59,7 +59,7 @@ QT.GridLayout
 
 		if (width < implicitWidth && gridLayout.columns >= 2)
 		{
-			console.log("Content of the GridLayout is too large, decrease the number of columns to " + (gridLayout.columns - 1) + ". width: " + width + ", implicitWidth: " + implicitWidth)
+			messages.log("Content of the GridLayout is too large, decrease the number of columns to " + (gridLayout.columns - 1) + ". width: " + width + ", implicitWidth: " + implicitWidth)
 			gridLayout.columns--;
 		}
 	}
