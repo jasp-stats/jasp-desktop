@@ -16,75 +16,60 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Layouts 1.3
+import QtQuick
+import QtQuick.Layouts as QT
 
 
-GridLayout
+QT.GridLayout
 {
 	id:						gridLayout
 	rowSpacing:				jaspTheme.rowGridSpacing
 	columnSpacing:			jaspTheme.columnGridSpacing
 	columns:				2
-	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
+	QT.Layout.alignment:	Qt.AlignTop | Qt.AlignLeft
 	
-	property int count									: children.length
-	property bool checkFormOverflowWhenLanguageChanged	: true
+	property int count				: children.length
 
 	property int _initialColumns	: 2
+	property bool _initialized		: false
 
-	Component.onCompleted: _initialColumns = columns; // Do not bind it!
-
-	onCountChanged:
+	Component.onCompleted:
 	{
-		for (var i = 0; i < children.length; i++)
-		{
-			if (typeof children[i].alignment !== "undefined")
-				children[i].Layout.alignment = children[i].alignment;
-		}
+		_initialized = true;
+		_initialColumns = columns; // Do not bind it!
+		_checkColumns()
 	}
 
-	Connections
+	onImplicitWidthChanged:
 	{
-		enabled:					checkFormOverflowWhenLanguageChanged
-		target:						preferencesModel
-		function onLanguageCodeChanged()		{ checkFormOverflowTimer.restart(); }
-		function onInterfaceFontChanged(font)	{ checkFormOverflowTimer.restart(); }
+		// Wait a little bit, in case width is not yet updated.
+		checkFormOverflowTimer.restart()
 	}
 
 	Timer
 	{
 		id: checkFormOverflowTimer
 		interval: 50
-		onTriggered: checkFormOverflow()
+		onTriggered: _checkColumns()
 	}
 
-
-	function checkFormOverflow()
+	function _checkColumns()
 	{
-		if ((typeof jaspForm === 'undefined') || !jaspForm) return false;
+		if (!_initialized || (width === 0)) return;
 
-		var startColumns = gridLayout.columns;
-
-		if (gridLayout.columns !== gridLayout._initialColumns)
-			gridLayout.columns = gridLayout._initialColumns;
-
-		var decrementColumns = true;
-
-		while (decrementColumns && gridLayout.columns >= 2)
+		if (width < implicitWidth && gridLayout.columns >= 2)
 		{
-			decrementColumns = false;
-			for (var i = 0; i < gridLayout.children.length; i++)
-			{
-				var child = gridLayout.children[i];
-				if (child.mapToItem(jaspForm, child.width, 0).x > jaspForm.width)
-					decrementColumns = true;
-			}
-
-			if (decrementColumns)
-				gridLayout.columns--;
+			messages.log("Content of the GridLayout is too large, decrease the number of columns to " + (gridLayout.columns - 1) + ". width: " + width + ", implicitWidth: " + implicitWidth)
+			gridLayout.columns--;
 		}
+	}
 
-		return startColumns !== gridLayout.columns;
+	onCountChanged:
+	{
+		for (var i = 0; i < children.length; i++)
+		{
+			if (typeof children[i].alignment !== "undefined")
+				children[i].QT.Layout.alignment = children[i].alignment;
+		}
 	}
 }
