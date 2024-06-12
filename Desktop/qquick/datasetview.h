@@ -198,6 +198,7 @@ public slots:
 	void		calculateCellSizes()	{ calculateCellSizesAndClear(false); }
 	void		aContentSizeChanged()	{ _recalculateCellSizes = true; }
 	void		viewportChanged();
+	void		viewportChangedDelayed();
 	void		myParentChanged(QQuickItem *);
 
 	void		reloadTextItems();
@@ -372,6 +373,7 @@ protected:
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
 	std::vector<boolvec>									_lastJaspCopySelect;
+	QTimer												*	_delayViewportChangedTimer	= nullptr;
 };
 
 

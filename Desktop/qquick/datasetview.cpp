@@ -27,13 +27,18 @@ DataSetView::DataSetView(QQuickItem *parent)
 	//setFlag(QQuickItem::ItemIsFocusScope);
 
 	_material.setColor(Qt::gray);
+	
+	_delayViewportChangedTimer = new QTimer(this);
+	_delayViewportChangedTimer->setInterval(0);
+	_delayViewportChangedTimer->setSingleShot(true);
 
 	connect(this,						&DataSetView::parentChanged,					this, &DataSetView::myParentChanged);
 	
-	connect(this,						&DataSetView::viewportXChanged,					this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportYChanged,					this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportWChanged,					this, &DataSetView::viewportChanged);
-	connect(this,						&DataSetView::viewportHChanged,					this, &DataSetView::viewportChanged);
+	connect(this,						&DataSetView::viewportXChanged,					this, &DataSetView::viewportChangedDelayed);
+	connect(this,						&DataSetView::viewportYChanged,					this, &DataSetView::viewportChangedDelayed);
+	connect(this,						&DataSetView::viewportWChanged,					this, &DataSetView::viewportChangedDelayed);
+	connect(this,						&DataSetView::viewportHChanged,					this, &DataSetView::viewportChangedDelayed);
+	connect(_delayViewportChangedTimer, &QTimer::timeout,								this, &DataSetView::viewportChanged);
 
 	connect(this,						&DataSetView::itemDelegateChanged,				this, &DataSetView::reloadTextItems);
 	connect(this,						&DataSetView::rowNumberDelegateChanged,			this, &DataSetView::reloadRowNumbers);
@@ -57,6 +62,10 @@ DataSetView::DataSetView(QQuickItem *parent)
 	connect(_model,						&ExpandDataProxyModel::undoChanged,				this, &DataSetView::undoChanged);
 	
 	setZ(10);
+	
+	
+
+	
 }
 
 void DataSetView::setModel(QAbstractItemModel * model)
@@ -288,6 +297,11 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	viewportChanged();
 
 	JASPTIMER_STOP(DataSetView::calculateCellSizes);
+}
+
+void DataSetView::viewportChangedDelayed()
+{
+	_delayViewportChangedTimer->start();	
 }
 
 void DataSetView::viewportChanged()
