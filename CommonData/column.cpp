@@ -821,23 +821,29 @@ int Column::labelsTempCount()
 					_labelsTempNumerics++;
 			}
 		
-		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
+		doubleset dblset;
+		
 		for(size_t r=0; r<rowCount(); r++)
-			if(_ints[r] == Label::DOUBLE_LABEL_VALUE)
+			if(_ints[r] == Label::DOUBLE_LABEL_VALUE && !std::isnan(_dbls[r]))
+				dblset.insert(_dbls[r]);
+		
+		doublevec dbls(dblset.begin(), dblset.end());
+		std::sort(dbls.begin(), dbls.end());
+		
+		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
+		for(double dbl : dbls)
+		{
+			const std::string doubleLabel = doubleToDisplayString(dbl, false);
+			
+			if(!doubleLabel.empty() && !_labelsTempToIndex.count(doubleLabel))
 			{
-				const std::string doubleLabel = doubleToDisplayString(_dbls[r], false);
-				
-				if(!doubleLabel.empty() && !_labelsTempToIndex.count(doubleLabel))
-				{
-					_labelsTemp						. push_back(doubleLabel);
-					_labelsTempDbls					. push_back(_dbls[r]);
-					_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
-					_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
-					
-					if(!std::isnan(*_labelsTempDbls.rbegin()))
-						_labelsTempNumerics++;
-				}
+				_labelsTemp						. push_back(doubleLabel);
+				_labelsTempDbls					. push_back(dbl);
+				_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
+				_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
+				_labelsTempNumerics				++;
 			}
+		}
 
 		//Make sure we dont do this too often be remembering at which revision we created the temp values:
 		_labelsTempRevision = _revision;
@@ -1043,11 +1049,14 @@ stringvec Column::displaysAsStrings() const
 	return returnMe;
 }
 
-stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels ) const
+stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels )
 {
 	stringvec	levels;
 	stringset	levelsIncluded,
 				levelsAdded;
+	
+	
+	labelsTempCount();
 	
 	auto _addLabel = [&](const std::string & display, bool fromData)
 	{
