@@ -707,8 +707,8 @@ void MainWindow::loadQML()
 
 	
 	//To make sure we connect to the "main datasetview":
-	connect(_preferences, &PreferencesModel::uiScaleChanged,			DataSetView::mainDataViewer(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
-	connect(_preferences, &PreferencesModel::interfaceFontChanged,		DataSetView::mainDataViewer(),	&DataSetView::viewportChanged, Qt::QueuedConnection);
+	connect(_preferences, &PreferencesModel::uiScaleChanged,			DataSetView::mainDataViewer(),	&DataSetView::viewportChangedDelayed);
+	connect(_preferences, &PreferencesModel::interfaceFontChanged,		DataSetView::mainDataViewer(),	&DataSetView::viewportChangedDelayed);
 	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnBefore,	DataSetView::mainDataViewer(),	&DataSetView::columnComputedInsertBefore);
 	connect(_ribbonModel, &RibbonModel::dataInsertComputedColumnAfter,	DataSetView::mainDataViewer(),	&DataSetView::columnComputedInsertAfter);
 	connect(_ribbonModel, &RibbonModel::dataInsertColumnBefore,			DataSetView::mainDataViewer(),	&DataSetView::columnInsertBefore);

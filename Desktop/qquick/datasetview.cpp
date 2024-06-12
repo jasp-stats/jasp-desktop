@@ -240,7 +240,7 @@ void DataSetView::resetItems()
 
 void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 {
-	JASPTIMER_RESUME(DataSetView::calculateCellSizes);
+	JASPTIMER_SCOPE(DataSetView::calculateCellSizes);
 
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
@@ -294,14 +294,13 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 
 	//emit itemSizeChanged(); //This calls reloadTextItems, reloadRowNumbers and reloadColumnHeaders and those all call viewPortChanged. Which recreates them all every time if necessary... Nobody else seems to emit this signal anywhere so I dont see the point. Ill replace it with viewPortChanged
 
-	viewportChanged();
-
-	JASPTIMER_STOP(DataSetView::calculateCellSizes);
+	viewportChangedDelayed();
 }
 
 void DataSetView::viewportChangedDelayed()
 {
 	_delayViewportChangedTimer->start();	
+	//viewportChanged();
 }
 
 void DataSetView::viewportChanged()
@@ -375,7 +374,7 @@ void DataSetView::determineCurrentViewPortIndices()
 
 void DataSetView::storeAllItems()
 {
-	JASPTIMER_RESUME(DataSetView::storeAllItems);
+	JASPTIMER_SCOPE(DataSetView::storeAllItems);
 	
 	for(auto & subVec : _cellTextItems)
 	{
@@ -413,8 +412,6 @@ void DataSetView::storeAllItems()
 	}
 		
 	_rowNumberItems.clear();
-	
-	JASPTIMER_STOP(DataSetView::storeAllItems);
 }
 
 void DataSetView::addLine(float x0, float y0, float x1, float y1)
@@ -1980,7 +1977,7 @@ void DataSetView::reloadTextItems()
 		for(int row=_previousViewportRowMin; row<_previousViewportRowMax; row++)
 			storeTextItem(row, col);
 
-	viewportChanged(); //rerun to get new items
+	viewportChangedDelayed(); //rerun to get new items
 }
 
 void DataSetView::reloadRowNumbers()
@@ -1989,7 +1986,7 @@ void DataSetView::reloadRowNumbers()
 	for(int row=_previousViewportRowMin; row<_previousViewportRowMax; row++)
 		storeRowNumber(row);
 
-	viewportChanged(); //rerun to get new items
+	viewportChangedDelayed(); //rerun to get new items
 }
 
 void DataSetView::reloadColumnHeaders()
@@ -1998,7 +1995,7 @@ void DataSetView::reloadColumnHeaders()
 	for(int col=_previousViewportColMin; col< _previousViewportColMax; col++)
 		storeColumnHeader(col);
 
-	viewportChanged(); //rerun to get new items
+	viewportChangedDelayed(); //rerun to get new items
 }
 
 
