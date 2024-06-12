@@ -21,6 +21,14 @@ If you would like to improve our translations, or to add a new language, please 
 ### ALT-Navigation mode
 Turn the ALT activated navigation mode on or off.
 
+### Check for updates
+JASP doesn't share any of your data when it gets updates, not even which version of JASP you are using.
+It does share your IP-address with the server but that is required for internet to function.
+
+The list of known issues it downloads is rarely used, mostly the issues are at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). 
+However if we realize a terrible error has slipped into an analysis this will show you *in the analysis* that there is something you should take into account. 
+Luckily we almost never need to use it.
+
 ### Zoom
 This number specifies how the JASP interface will be scaled.
 All menus and results are scaled by this factor.

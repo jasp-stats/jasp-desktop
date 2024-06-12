@@ -286,6 +286,7 @@ private:
 	void makeAppleMenu();
 	void qmlLoaded();
 	void handleDeferredFileLoad();
+	void checkForUpdates();
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;

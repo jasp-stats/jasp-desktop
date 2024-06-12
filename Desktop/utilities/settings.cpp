@@ -88,7 +88,11 @@ const Settings::Setting Settings::Values[] = {
 	{"showAllROptions",				false	},
 	{"showRSyntaxInResults",		false	},
 	{"ALTNavModeActive",			true	},
-	{"orderByValueByDefault",		true	}
+	{"orderByValueByDefault",		true	},
+	{"checkUpdatesAskUser",			true	},
+	{"checkUpdates",				false	},
+	{"checkUpdatesLastTime",		-1		}
+	
 };	
 
 QVariant Settings::value(Settings::Type key)
