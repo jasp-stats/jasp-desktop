@@ -195,8 +195,14 @@ bool Engine::receiveMessages(int timeout)
 			// Log::log() << "Parsing request failed on:\n" << err << std::endl;
 		}
 
-		//Clear send buffer
-		Log::log() << "Received: '" << data << "' so now clearing my send buffer" << std::endl;
+		//Clear send buffer and anonymized log
+		Json::Value printData;
+		bool parsed = jsonReader.parse(data, printData);
+		if (parsed && printData.isMember("GITHUB_PAT")) {
+			printData["GITHUB_PAT"] = "********";
+		}
+		
+		Log::log() << "Received: '" << printData.toStyledString() << "' so now clearing my send buffer" << std::endl;
 
 		sendString("");
 
