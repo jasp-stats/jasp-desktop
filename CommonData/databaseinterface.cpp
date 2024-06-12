@@ -1012,7 +1012,7 @@ void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std:
 		std::string colTypeStr		= _wrap_sqlite3_column_text(stmt, 3);
 					revision		= sqlite3_column_int(		stmt, 4);
 		std::string	emptyValuesStr	= _wrap_sqlite3_column_text(stmt, 5);
-					revision		= sqlite3_column_int(		stmt, 6);
+					autoSort		= sqlite3_column_int(		stmt, 6);
 
 		colType = colTypeStr.empty() ? columnType::unknown : columnTypeFromString(colTypeStr);
 		
