@@ -889,6 +889,10 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 			}
 		}
 		
+		//if no a number then we will have to replace everything anyway because we wont be able to sort otherwise
+		if(replaceTill == -1 && column->autoSortByValue())
+				replaceTill = column->labelsTempCount();
+		
 		label = column->replaceDoublesTillLabelsRowWithLabels(replaceTill > -1 ? replaceTill : index.row());
 		aChange = true;
 	}

@@ -1019,6 +1019,8 @@ std::string Column::operator[](size_t row)
 
 stringvec Column::valuesAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::valuesAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1030,6 +1032,8 @@ stringvec Column::valuesAsStrings() const
 
 stringvec Column::labelsAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::labelsAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1041,6 +1045,8 @@ stringvec Column::labelsAsStrings() const
 
 stringvec Column::displaysAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::displaysAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1052,6 +1058,8 @@ stringvec Column::displaysAsStrings() const
 
 stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels )
 {
+	JASPTIMER_SCOPE(Column::dataAsRLevels);
+	
 	stringvec	levels;
 	stringset	levelsIncluded,
 				levelsAdded;
@@ -1153,6 +1161,9 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 
 doublevec Column::dataAsRDoubles(const boolvec &filter) const
 {
+	JASPTIMER_SCOPE(Column::dataAsRDoubles);
+
+	
 	doublevec doubles;
 		
 	assert(filter.size() == rowCount() || filter.size() == 0);
@@ -1202,6 +1213,8 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 
 Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 {
+	JASPTIMER_SCOPE(Column::replaceDoublesTillLabelsRowWithLabels);
+	
 	//row here is in the label editor, not in the data!	
 	if(labelByIndexNotEmpty(row))
 		return labelByIndexNotEmpty(row);
@@ -1614,10 +1627,22 @@ void Column::labelsReverse()
 	_dbUpdateLabelOrder();
 }
 
-
 void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
+
+	bool replaceAllDoubles = false;
+	static double dummy;
+	
+	for(Label * label : labels())	
+		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+		{
+				replaceAllDoubles = true;
+				break;
+		}
+	
+	if(replaceAllDoubles)
+		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	size_t					curMax		= asc.size()+1;
