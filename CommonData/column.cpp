@@ -828,6 +828,7 @@ int Column::labelsTempCount()
 				dblset.insert(_dbls[r]);
 		
 		doublevec dbls(dblset.begin(), dblset.end());
+		
 		std::sort(dbls.begin(), dbls.end());
 		
 		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
@@ -1056,7 +1057,7 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 				levelsAdded;
 	
 	
-	labelsTempCount();
+	
 	
 	auto _addLabel = [&](const std::string & display, bool fromData)
 	{
@@ -1070,10 +1071,21 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 			levelsIncluded.insert(display);
 	};
 	
+	//make sure we have temp labels for any doubles/ints outside of labels
+	labelsTempCount();
+	size_t nonEmpty = 0;
+		
 	//First we try to find all levels, start with the known labels and then add any  doubles as labels.
 	for(Label * label : _labels)
 		if(!label->isEmptyValue())
+		{
 			_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), false);
+			nonEmpty++;
+		}
+	
+	//Now we add the sorted temp dbl labels, so that we get the same order as shown in the variableswindow
+	for(size_t lti=nonEmpty; lti<_labelsTempDbls.size(); lti++)
+		_addLabel(doubleToDisplayString(_labelsTempDbls[lti], false), false);
 	
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
