@@ -219,7 +219,7 @@ void MainWindow::checkForUpdates()
 	{
 		bool answer = MessageForwarder::showYesNo(
 					tr("Check for updates"), 
-					tr("Should JASP check for updates at our server and let you know if there is a new version?\n\nYou can always change this setting in the Advanced Preferences."), 
+					tr("Should JASP check for updates at our server and let you know if there is a new version?\n\nYou can always change this setting in the Interface Preferences."), 
 					tr("Yes"), 
 					tr("No"));
 		
