@@ -1055,10 +1055,7 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	stringvec	levels;
 	stringset	levelsIncluded,
 				levelsAdded;
-	
-	
-	
-	
+		
 	auto _addLabel = [&](const std::string & display, bool fromData)
 	{
 		if(!levelsAdded.count(display))
@@ -1621,8 +1618,6 @@ void Column::labelsReverse()
 void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
-	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	size_t					curMax		= asc.size()+1;
