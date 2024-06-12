@@ -30,7 +30,7 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 				ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;
 				ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;
 				ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;
-				ALTER TABLE Columns  DROP 	COLUMN isComputed;				# was removed in 0.18.3
+				ALTER TABLE Columns  DROP 	COLUMN isComputed;			-- was removed in 0.18.3
 			)ModernC++IsGreat"); 
 	
 
