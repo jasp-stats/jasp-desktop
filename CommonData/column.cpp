@@ -821,23 +821,30 @@ int Column::labelsTempCount()
 					_labelsTempNumerics++;
 			}
 		
-		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
+		doubleset dblset;
+		
 		for(size_t r=0; r<rowCount(); r++)
-			if(_ints[r] == Label::DOUBLE_LABEL_VALUE)
+			if(_ints[r] == Label::DOUBLE_LABEL_VALUE && !std::isnan(_dbls[r]))
+				dblset.insert(_dbls[r]);
+		
+		doublevec dbls(dblset.begin(), dblset.end());
+		
+		std::sort(dbls.begin(), dbls.end());
+		
+		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
+		for(double dbl : dbls)
+		{
+			const std::string doubleLabel = doubleToDisplayString(dbl, false);
+			
+			if(!doubleLabel.empty() && !_labelsTempToIndex.count(doubleLabel))
 			{
-				const std::string doubleLabel = doubleToDisplayString(_dbls[r], false);
-				
-				if(!doubleLabel.empty() && !_labelsTempToIndex.count(doubleLabel))
-				{
-					_labelsTemp						. push_back(doubleLabel);
-					_labelsTempDbls					. push_back(_dbls[r]);
-					_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
-					_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
-					
-					if(!std::isnan(*_labelsTempDbls.rbegin()))
-						_labelsTempNumerics++;
-				}
+				_labelsTemp						. push_back(doubleLabel);
+				_labelsTempDbls					. push_back(dbl);
+				_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
+				_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
+				_labelsTempNumerics				++;
 			}
+		}
 
 		//Make sure we dont do this too often be remembering at which revision we created the temp values:
 		_labelsTempRevision = _revision;
@@ -1015,6 +1022,8 @@ std::string Column::operator[](size_t row)
 
 stringvec Column::valuesAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::valuesAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1026,6 +1035,8 @@ stringvec Column::valuesAsStrings() const
 
 stringvec Column::labelsAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::labelsAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1037,6 +1048,8 @@ stringvec Column::labelsAsStrings() const
 
 stringvec Column::displaysAsStrings() const
 {
+	JASPTIMER_SCOPE(Column::displaysAsStrings);
+	
 	stringvec returnMe;
 	returnMe.resize(_dbls.size());
 	
@@ -1046,12 +1059,14 @@ stringvec Column::displaysAsStrings() const
 	return returnMe;
 }
 
-stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels ) const
+stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels )
 {
+	JASPTIMER_SCOPE(Column::dataAsRLevels);
+	
 	stringvec	levels;
 	stringset	levelsIncluded,
 				levelsAdded;
-	
+		
 	auto _addLabel = [&](const std::string & display, bool fromData)
 	{
 		if(!levelsAdded.count(display))
@@ -1064,10 +1079,21 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 			levelsIncluded.insert(display);
 	};
 	
+	//make sure we have temp labels for any doubles/ints outside of labels
+	labelsTempCount();
+	size_t nonEmpty = 0;
+		
 	//First we try to find all levels, start with the known labels and then add any  doubles as labels.
 	for(Label * label : _labels)
 		if(!label->isEmptyValue())
+		{
 			_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), false);
+			nonEmpty++;
+		}
+	
+	//Now we add the sorted temp dbl labels, so that we get the same order as shown in the variableswindow
+	for(size_t lti=nonEmpty; lti<_labelsTempDbls.size(); lti++)
+		_addLabel(doubleToDisplayString(_labelsTempDbls[lti], false), false);
 	
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
@@ -1138,6 +1164,9 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 
 doublevec Column::dataAsRDoubles(const boolvec &filter) const
 {
+	JASPTIMER_SCOPE(Column::dataAsRDoubles);
+
+	
 	doublevec doubles;
 		
 	assert(filter.size() == rowCount() || filter.size() == 0);
@@ -1187,6 +1216,8 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 
 Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 {
+	JASPTIMER_SCOPE(Column::replaceDoublesTillLabelsRowWithLabels);
+	
 	//row here is in the label editor, not in the data!	
 	if(labelByIndexNotEmpty(row))
 		return labelByIndexNotEmpty(row);
@@ -1599,12 +1630,22 @@ void Column::labelsReverse()
 	_dbUpdateLabelOrder();
 }
 
-
 void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
+
+	bool replaceAllDoubles = false;
+	static double dummy;
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
+	for(Label * label : labels())	
+		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+		{
+				replaceAllDoubles = true;
+				break;
+		}
+	
+	if(replaceAllDoubles)
+		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	size_t					curMax		= asc.size()+1;

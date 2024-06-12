@@ -188,7 +188,7 @@ int ColumnModel::firstNonNumericRow() const
 	if(!column() || !column()->autoSortByValue())
 		return 0;
 	
-	int nonEmptyNonNumerics = 0; //We do not need to take any "double-labels" into account, because we require autoSortByValue() to be true before continuing, which means everything got a label 
+	int nonEmptyNonNumerics = 0;
 	for(Label * label : column()->labels())	
 		if(!label->isEmptyValue())
 		{
@@ -198,6 +198,10 @@ int ColumnModel::firstNonNumericRow() const
 				return nonEmptyNonNumerics;
 			nonEmptyNonNumerics++;
 		}
+	
+	//If we have more temporary labels then normal ones then those afterwards are all numeric (or something wouldve been replaced/sorted) so we can return labelsTempCount()
+	if(column()->labelsTempCount() > nonEmptyNonNumerics)
+		return column()->labelsTempCount();
 	
 	return nonEmptyNonNumerics;	
 }
@@ -733,7 +737,9 @@ void ColumnModel::setValue(int rowIndex, const QString &value)
 {
 	JASPTIMER_SCOPE(ColumnModel::setValue);
 	
-	if(value == data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString() || value == data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString())
+	QString originalValue = data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString();
+	
+	if(value == originalValue)
 		return; //Its already that value
 	
 	_editing = true;
@@ -745,7 +751,9 @@ void ColumnModel::setLabel(int rowIndex, QString label)
 {
 	JASPTIMER_SCOPE(ColumnModel::setLabel);
 	
-	if(label == data(index(rowIndex,0), int(DataSetPackage::specialRoles::label)).toString())
+	QString originalLabel = data(index(rowIndex,0), int(DataSetPackage::specialRoles::label)).toString();
+	
+	if(label == originalLabel)
 		return; //Its already that value
 	
 	_editing = true;
