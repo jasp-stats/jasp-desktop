@@ -43,6 +43,7 @@ void ColumnTypesModel::setTypes(columnTypeVec types)
 
 	beginResetModel();
 	_types = types;	
+	std::sort(_types.begin(), _types.end());
 	endResetModel();
 }
 
