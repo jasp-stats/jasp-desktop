@@ -471,6 +471,7 @@ VariablesListBase
 					visible:				source
 					mipmap:					true
 					smooth:					true
+					scale:					mouseArea.containsMouse && mouseArea.mouseX < icon.width ? 1.2 : 1
 
 					//So Im pushing this through a property because it seems to results in "undefined" during loading and this adds a ton of warnings to the output which is not helpful. I tried less heavyhanded approaches first but this works perfectly fine.
 					property var sourceVar:	variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
@@ -571,7 +572,7 @@ VariablesListBase
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
 
-						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== "" && mouse.x < icon.width)
+						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== "" && mouse.x < icon.x + icon.width )
 							customMenu.toggle(itemRectangle, props, 0, parent.height);
 					}
 					
