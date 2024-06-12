@@ -951,11 +951,14 @@ std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue
 	return std::to_string(key);
 }
 
-std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue) const
+std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue, columnType asType) const
 {
+	if(asType == columnType::unknown)
+		asType = _type;
+	
 	if (row < rowCount())
 	{
-		if (_type == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
+		if (asType == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
 			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue);
 
 		else if (_ints[row] != EmptyValues::missingValueInteger)
@@ -2100,6 +2103,47 @@ qsizetype Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesP
 	
 	
 	return std::max(maxWidth, _labelsTempMaxWidth) + extraPad;
+}
+
+stringvec Column::previewTransform(columnType transformType)
+{
+	const int showThisMany = 16;
+	stringvec out;
+	
+	out.push_back(std::to_string(labelsTempCount()));
+	out.push_back(std::to_string(_labelsTempNumerics));
+	
+	{
+		std::stringstream someValues;
+		
+		
+		for(int count = 0; count < _ints.size() && count < showThisMany; count++)
+			someValues << (count++ > 0 ? ", " : "") << (transformType == columnType::scale ? getValue(count, true, false, transformType) : '"' + getLabel(count, true) + '"');
+		
+		if(_ints.size() > showThisMany)
+			someValues << ", ...";
+		
+		out.push_back(someValues.str());
+	}
+	
+	{
+		std::stringstream someEmptyValues;
+		
+		if(transformType == columnType::scale && labelsTempCount() > _labelsTempNumerics)
+		{
+			int count = 0;
+			
+			for(Label * label : _labels)
+				if(!label->isEmptyValue() && count < showThisMany)
+					someEmptyValues << (count++ > 0 ? ", " : "") << '"' << label->originalValueAsString() << '"';
+				else if(!label->isEmptyValue() && count++ == showThisMany)
+					someEmptyValues << ", ...";
+		}
+		
+		out.push_back(someEmptyValues.str());
+	}
+	
+	return out;
 }
 
 

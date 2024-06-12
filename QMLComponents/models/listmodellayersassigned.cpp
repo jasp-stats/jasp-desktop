@@ -259,7 +259,7 @@ QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const
 		if (layer >= 0 && layer < _variables.length() && indexInLayer >= 0 && indexInLayer < _variables[layer].length())
 		{
 			QString variable = _variables[layer][indexInLayer];
-			result = requestInfo(VariableInfo::VariableTypeName, variable).toString();
+			result = columnTypeToQString(getVariableType(variable));
 		}
 	}
 	else

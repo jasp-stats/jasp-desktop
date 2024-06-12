@@ -21,6 +21,7 @@
 
 #include <QAbstractListModel>
 #include <QStringList>
+#include "columntype.h"
 
 ///
 /// A simple qt model with the columntypes, their respective icons and names
@@ -35,14 +36,26 @@ public:
 		MenuImageSourceRole,
 		JSFunctionRole,
 		IsSeparatorRole,
-		IsEnabledRole
+		IsEnabledRole,
+		TypeRole
 	};
 
-	ColumnTypesModel(QObject *parent) : QAbstractListModel(parent) {}
+	ColumnTypesModel(QObject *parent, columnTypeVec types = {});
 
-	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return 3;	}
+	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _types.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>			roleNames()													const override;
+
+	Q_INVOKABLE	int							getType(int index)											const;
+	void									setTypes(columnTypeVec types);
+	bool									hasType(columnType type)									const;
+	columnType								firstType()													const;
+	QStringList								iconList()													const;
+
+private:
+	static columnTypeVec						_allTypes;
+
+	columnTypeVec								_types;
 
 };
 

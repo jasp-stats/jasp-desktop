@@ -203,7 +203,7 @@ void ComboBoxBase::setCurrentIndex(int index)
 
 void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 {
-	QString currentColumnType, currentValue, currentText, currentColumnTypeIcon;
+	QString currentColumnType, currentColumnRealType, currentValue, currentText, currentColumnTypeIcon;
 
 	if (index >= _model->rowCount())	
 		index = 0;
@@ -213,6 +213,7 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 		QModelIndex modelIndex(_model->index(index, 0));
 		
 		currentColumnType		= _model->data(modelIndex, ListModel::ColumnTypeRole	).toString();
+		currentColumnRealType	= _model->data(modelIndex, ListModel::ColumnRealTypeRole).toString();
 		currentColumnTypeIcon	= _model->data(modelIndex, ListModel::ColumnTypeIconRole).toString();
 		currentText				= _model->data(modelIndex, ListModel::NameRole			).toString();
 		currentValue			= _model->data(modelIndex, ListModel::ValueRole			).toString();
@@ -224,13 +225,15 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 			emitCurrentValueSignal				= _currentValue				!= currentValue,
 			emitCurrentIndexSignal				= _currentIndex				!= index,
 			emitCurrentColumnTypeSignal			= _currentColumnType		!= currentColumnType,
+			emitCurrentColumnRealTypeSignal		= _currentColumnRealType	!= currentColumnRealType,
 			emitCurrentColumnTypeIconSignal		= _currentColumnTypeIcon	!= currentColumnTypeIcon;
 
 			_currentText						= currentText;
 			_currentValue						= currentValue;
-			_currentColumnType					= currentColumnType;
-			_currentColumnTypeIcon				= currentColumnTypeIcon;
 			_currentIndex						= index;
+			_currentColumnType					= currentColumnType;
+			_currentColumnRealType				= currentColumnRealType;
+			_currentColumnTypeIcon				= currentColumnTypeIcon;
 
 	if (emitCurrentTextSignal)				emit currentTextChanged();
 	if (emitCurrentValueSignal)				emit currentValueChanged();

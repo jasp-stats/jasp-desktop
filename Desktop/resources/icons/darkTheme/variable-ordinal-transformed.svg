@@ -50,7 +50,6 @@
    x="28"
    y="2"
    fill="#5DB6D7"
-   opacity="0.3"
    width="11"
    height="38"
    id="rect2" />
@@ -58,31 +57,57 @@
    x="2"
    y="21"
    fill="#919191"
-   opacity="0.3"
    width="11"
    height="19"
    id="rect4" />
 <polygon
    fill="#FB8C00"
-   opacity="0.3"
    points="15,12 15,20.951 15,40 26,40 26,12 "
    id="polygon6" />
 <polyline
    fill="#6B767E"
-   opacity="0.3"
-   stroke-opacity="0.5"
    points="12,22 12,39 3.169,38.918 "
    id="polyline8" />
 <polyline
    fill="#FB7A00"
-   opacity="0.3"
-   stroke-opacity="0.5"
    points="25,13 25,39 16,39 "
    id="polyline10" />
 <polyline
    fill="#3CAAE7"
-   opacity="0.3"
-   stroke-opacity="0.5"
    points="37.836,5.65 38.127,39 29,39 "
    id="polyline12" />
+
+   <g transform="translate(5,2)  scale(2,2)">
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   transform="rotate(0) translate(0, -50%)"
+   fill="#FFFFFF"
+   width="2"
+   height="8"
+   id="asterisk1" />
+
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   transform="rotate(120, 1, 4)"
+   fill="#FFFFFF"
+   width="2"
+   height="8"
+   id="asterisk2" />
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   transform="rotate(240, 1, 4)"
+   fill="#FFFFFF"
+   width="2"
+   height="8"
+   id="asterisk3" />
+</g>
 </svg>

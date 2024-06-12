@@ -129,12 +129,5 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 			return false;
 	}
 
-	const QSet<columnType>& variableTypesAllowed = listView()->variableTypesAllowed();
-
-	if (variableTypesAllowed.empty() || term.size() > 1)
-		return true;
-	
-	columnType	variableType = (columnType)requestInfo(VariableInfo::VariableType, term.asQString()).toInt();
-
-	return variableTypesAllowed.contains(variableType);
+	return true;
 }

@@ -69,7 +69,7 @@ void ListModelCustomContrasts::getVariablesAndLabels(QStringList& variables, QVe
 			labels = _factors[newVariable];
 		else
 		{
-			columnType colType = columnType(requestInfo(VariableInfo::VariableType, newVariable).toInt());
+			columnType colType = getVariableType(newVariable);
 			if (colType == columnType::scale)
 			{
 				if (_scaleFactor == 0)
@@ -368,7 +368,7 @@ void ListModelCustomContrasts::scaleFactorChanged()
 	QVector<QString> scaleVariables;
 	for (const QString& variable : _tableTerms.variables)
 	{
-		if (requestInfo(VariableInfo::VariableType, variable).toInt() == int(columnType::scale))
+		if (getVariableType(variable) == columnType::scale)
 			scaleVariables.push_back(variable);
 	}
 

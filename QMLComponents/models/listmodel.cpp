@@ -49,6 +49,8 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectedRole]					= "selected";
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
+		roles[ColumnPreviewRole]			= "preview";
+		roles[ColumnRealTypeRole]			= "columnRealType";
 		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
 		roles[NameRole]						= "name";
@@ -97,6 +99,26 @@ void ListModel::_connectAllSourcesControls()
 {
 	for (SourceItem* sourceItem : listView()->sourceItems())
 		_connectSourceControls(sourceItem);
+}
+
+void ListModel::_checkTermsType(const QString &term)
+{
+	columnType type = getVariableType(term);
+	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
+		_tempTermTypes[term] = _listView->defaultType();
+
+}
+
+void ListModel::_checkTermsTypes(const Terms &terms)
+{
+	for (const Term& term : terms)
+		_checkTermsType(term.asQString());
+}
+
+void ListModel::_checkTermsTypes(const std::vector<Term> &terms)
+{
+	for (const Term& term : terms)
+		_checkTermsType(term.asQString());
 }
 
 void ListModel::_connectSourceControls(SourceItem* sourceItem)
@@ -245,12 +267,60 @@ QStringList ListModel::termsTypes()
 
 	for (const Term& term : terms())
 	{
-		columnType type = columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt());
+		columnType type = getVariableType(term.asQString());
 		if (type != columnType::unknown)
 			types.insert(tq(columnTypeToString(type)));
 	}
 
 	return types.values();
+}
+
+void ListModel::setVariableType(int ind, columnType type)
+{
+	if (ind < 0 || ind > _terms.size())
+		return;
+
+	QString name = _terms.at(ind).asQString();
+	if (getVariableType(name) == type)
+		return;
+
+	_tempTermTypes[name] = type;
+
+	emit dataChanged(index(ind, 0), index(ind, 0));
+	emit columnTypeChanged(name);
+}
+
+columnType ListModel::getVariableType(const QString& name) const
+{
+	if (_tempTermTypes.find(name) != _tempTermTypes.end())
+		return _tempTermTypes.at(name);
+
+	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
+}
+
+columnType ListModel::getVariableRealType(const QString& name) const
+{
+	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
+}
+
+QString ListModel::getVariablePreview(const QString& name) const
+{
+	columnType	chosenType	= getVariableType(name),
+				realType	= getVariableRealType(name);
+	
+	if(chosenType == realType)
+		return "";
+	
+	VariableInfo::InfoType		previewType;
+	
+	switch(chosenType)
+	{
+	default:					previewType = VariableInfo::PreviewScale;		break;
+	case columnType::ordinal:	previewType	= VariableInfo::PreviewOrdinal;		break;
+	case columnType::nominal:	previewType	= VariableInfo::PreviewNominal;		break;
+	}
+	
+	return requestInfo(previewType, name).toString();
 }
 
 int ListModel::searchTermWith(QString searchString)
@@ -283,13 +353,6 @@ int ListModel::searchTermWith(QString searchString)
 	return result;
 }
 
-void ListModel::_addSelectedItemType(int _index)
-{
-	QString type = data(index(_index, 0), ListModel::ColumnTypeRole).toString();
-	if (!type.isEmpty())
-		_selectedItemsTypes.insert(type);
-}
-
 void ListModel::selectItem(int _index, bool _select)
 {
 	bool changed = false;
@@ -305,7 +368,6 @@ void ListModel::selectItem(int _index, bool _select)
 				else if (_selectedItems[i] > _index)
 				{
 					_selectedItems.insert(i, _index);
-					_addSelectedItemType(_index);
 					changed = true;
 					break;
 				}
@@ -313,7 +375,6 @@ void ListModel::selectItem(int _index, bool _select)
 			if (i == _selectedItems.length())
 			{
 				_selectedItems.append(_index);
-				_addSelectedItemType(_index);
 				changed = true;
 			}
 		}
@@ -321,16 +382,7 @@ void ListModel::selectItem(int _index, bool _select)
 	else
 	{
 		if (_selectedItems.removeAll(_index) > 0)
-		{
-			_selectedItemsTypes.clear();
-			for (int i : _selectedItems)
-			{
-				QString type = data(index(i, 0), ListModel::ColumnTypeRole).toString();
-				if (!type.isEmpty())
-					_selectedItemsTypes.insert(type);
-			}
 			changed = true;
-		}
 	}
 
 	if (changed)
@@ -345,7 +397,6 @@ void ListModel::clearSelectedItems(bool emitSelectedChange)
 	QList<int> selected = _selectedItems;
 
 	_selectedItems.clear();
-	_selectedItemsTypes.clear();
 
 	for (int i : selected)
 		emit dataChanged(index(i,0), index(i,0), { ListModel::SelectedRole });
@@ -368,15 +419,11 @@ void ListModel::selectAllItems()
 	if (nbTerms == 0) return;
 
 	_selectedItems.clear();
-	_selectedItemsTypes.clear();
 
 	for (int i = 0; i < nbTerms; i++)
 	{
 		if (data(index(i, 0), ListModel::SelectableRole).toBool())
-		{
 			_selectedItems.append(i);
-			_addSelectedItemType(i);
-		}
 	}
 
 	emit dataChanged(index(0, 0), index(nbTerms - 1, 0), { ListModel::SelectedRole });
@@ -409,22 +456,36 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	case ListModel::NameRole:			return QVariant(term.asQString());
 	case ListModel::SelectableRole:		return !term.asQString().isEmpty() && term.isDraggable();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);
+	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
+	
 	case ListModel::RowComponentRole:
 	{
 		QString termStr = term.asQString();
 		return _rowControlsMap.contains(termStr) ? QVariant::fromValue(_rowControlsMap[termStr]->getRowObject()) : QVariant();
 	}
-	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
+		
+	case ListModel::ColumnPreviewRole:
+		return (!listView()->containsVariables() || term.size() != 1) ? "" : getVariablePreview(term.asQString());
+	
 	case ListModel::ColumnTypeRole:
+	case ListModel::ColumnRealTypeRole:
 	case ListModel::ColumnTypeIconRole:
 	case ListModel::ColumnTypeDisabledIconRole:
-	{
-		if (!listView()->containsVariables() || term.size() != 1)	return "";
-		if (role == ListModel::ColumnTypeRole)						return requestInfo(VariableInfo::VariableTypeName, term.asQString());
-		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(VariableInfo::VariableTypeIcon, term.asQString());
-		else if (role == ListModel::ColumnTypeDisabledIconRole)		return requestInfo(VariableInfo::VariableTypeDisabledIcon, term.asQString());
-		break;
-	}
+		if (!listView()->containsVariables() || term.size() != 1)	
+			return "";
+		else
+		{
+			columnType	colType		= getVariableType(term.asQString()),
+						colRealType = getVariableRealType(term.asQString());
+			
+			switch(role)
+			{
+			case ListModel::ColumnTypeRole:								return columnTypeToQString(colType);
+			case ListModel::ColumnRealTypeRole:							return columnTypeToQString(colRealType);
+			case ListModel::ColumnTypeIconRole:							return VariableInfo::info()->getIconFile(colType, colType == colRealType ? VariableInfo::DefaultIconType : VariableInfo::TransformedIconType);
+			case ListModel::ColumnTypeDisabledIconRole:					return VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType);
+			}
+		}
 	}
 
 	return QVariant();
@@ -523,7 +584,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		QStringList rightValues;
 		for (const QString& value : values)
 		{
-			columnType type = columnType(requestInfo(VariableInfo::VariableType, value).toInt());
+			columnType type = columnType(getVariableType(value));
 			if (types.contains(type))
 				rightValues.append(value);
 		}
@@ -586,15 +647,6 @@ int ListModel::sourceColumnTypeChanged(QString name)
 	if (i >= 0)
 	{
 		QModelIndex ind = index(i, 0);
-
-		//keep selected item types up to date
-		if(_selectedItems.contains(i))
-		{
-			_selectedItemsTypes.clear();
-			for(int item : _selectedItems)
-				_addSelectedItemType(item);
-			emit selectedItemsTypesChanged();
-		}
 
 		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
 		emit columnTypeChanged(name);
@@ -694,12 +746,14 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 
 void ListModel::_setTerms(const std::vector<Term> &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
 
 void ListModel::_setTerms(const Terms &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
@@ -730,18 +784,21 @@ void ListModel::_removeLastTerm()
 
 void ListModel::_addTerms(const Terms &terms)
 {
+	_checkTermsTypes(terms);
 	_terms.add(terms);
 	setUpRowControls();
 }
 
 void ListModel::_addTerm(const QString &term, bool isUnique)
 {
+	_checkTermsType(term);
 	_terms.add(term, isUnique);
 	setUpRowControls();
 }
 
 void ListModel::_replaceTerm(int index, const Term &term)
 {
+	_checkTermsType(term.asQString());
 	_terms.replace(index, term);
 	setUpRowControls();
 }

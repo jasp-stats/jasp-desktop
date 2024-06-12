@@ -11,7 +11,7 @@
    viewBox="0 0 40 40"
    enable-background="new 0 0 40 40"
    xml:space="preserve"
-   sodipodi:docname="variable-scale.svg"
+   sodipodi:docname="variable-scale-transformed.svg"
    inkscape:export-filename="E:\Broncode\jasp-desktop\JASP-Desktop\resources\icons\darkTheme\variable-scale.png"
    inkscape:export-xdpi="312.108"
    inkscape:export-ydpi="312.108"
@@ -49,10 +49,10 @@
    inkscape:showpageshadow="2"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1" />
-   <g
-   id="g238"
-   transform="matrix(-1,0,0,1,40.469348,0)"> 
-<rect
+<g
+   id="g516"
+   transform="matrix(-1,0,0,1,40.469348,0)">
+   <rect
    x="13.579"
    y="-0.96799999"
    transform="matrix(-0.7273,0.6863,-0.6863,-0.7273,48.7898,20.0219)"
@@ -130,5 +130,40 @@
    stroke-miterlimit="10"
    points="11.204,-0.024 1.256,9.363 29.631,39.432 39.577,30.046 "
    id="polyline22" />
+
+  <g
+   transform="translate(31,1)  scale(2,2)"
+   id="g514">
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   fill="#ffffff"
+   width="2"
+   height="8"
+   id="asterisk1" />
+
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   transform="rotate(120,1,4)"
+   fill="#ffffff"
+   width="2"
+   height="8"
+   id="asterisk2" />
+   <rect
+   x="0"
+   y="0"
+   rx="4"
+   ry="4"
+   transform="rotate(-120,1,4)"
+   fill="#ffffff"
+   width="2"
+   height="8"
+   id="asterisk3" />
+</g>
 </g>
 </svg>

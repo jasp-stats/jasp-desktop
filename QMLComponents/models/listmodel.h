@@ -45,6 +45,8 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
+		ColumnPreviewRole,
+		ColumnRealTypeRole,
 		ColumnTypeIconRole,
 		ColumnTypeDisabledIconRole,
 		RowComponentRole,
@@ -86,6 +88,10 @@ public:
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 			QStringList				termsTypes();
+			void					setVariableType(int index, columnType type);
+			columnType				getVariableType(	const QString& name)					const;
+			columnType				getVariableRealType(const QString& name)					const;
+			QString					getVariablePreview(	const QString& name)					const;
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -93,7 +99,6 @@ public:
 	Q_INVOKABLE void				setSelectedItem(int _index);
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
-    Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return QList<QString>(_selectedItemsTypes.begin(), _selectedItemsTypes.end()); }
 
 
 signals:
@@ -105,7 +110,6 @@ signals:
 			void columnsChanged(QStringList columns);
 			void selectedItemsChanged();
 			void oneTermChanged(const QString& oldName, const QString& newName);
-			void selectedItemsTypesChanged();
 
 public slots:	
 	virtual void sourceTermsReset();
@@ -129,6 +133,10 @@ protected:
 			void	_addTerm(const QString& term, bool isUnique = true);
 			void	_replaceTerm(int index, const Term& term);
 			void	_connectAllSourcesControls();
+			void	_checkTermsTypes(const Terms& terms);
+			void	_checkTermsTypes(const std::vector<Term>& terms);
+			void	_checkTermsType(const QString& terms);
+
 
 			QString							_itemType;
 			bool							_needsSource			= true;
@@ -137,16 +145,15 @@ protected:
 			RowControlsValues				_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;
 			QList<int>						_selectedItems;
-			QSet<QString>					_selectedItemsTypes;
 			QStringList						_columnsUsedForLabels;
 
 private:
-			void	_addSelectedItemType(int _index);
 			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool initRowControls = true);
 			void	_connectSourceControls(SourceItem* sourceItem);
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
+			std::map<QString, columnType>	_tempTermTypes;	// If the type of a term is changed by the user, store this change here.
 
 };
 

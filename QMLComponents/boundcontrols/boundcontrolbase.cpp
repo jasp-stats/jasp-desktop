@@ -43,12 +43,37 @@ Json::Value BoundControlBase::createMeta()  const
 	return meta;
 }
 
-void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
+bool BoundControlBase::setValueType()
 {
+	bool hasChanges = false;
 	AnalysisForm* form = _control->form();
 
-	if (!form || !_control->isBound() || value == boundValue()) return;
+	if (_control->encodeValue())
+	{
+		JASPListControl* listControl = qobject_cast<JASPListControl*>(_control);
+		if (listControl)
+		{
+			Json::Value jsonTypesOrg = form->boundValue(getName() + ".types", _control->getParentKeys());
 
+			columnTypeVec types = listControl->valueTypes();
+			Json::Value jsonTypes(Json::arrayValue);
+
+			for (columnType type : types)
+				jsonTypes.append(columnTypeToString(type));
+
+			if (jsonTypes != jsonTypesOrg)
+			{
+				form->setBoundValue(getName() + ".types", jsonTypes, Json::nullValue, _control->getParentKeys());
+				hasChanges = true;
+			}
+		}
+	}
+
+	return hasChanges;
+}
+
+void BoundControlBase::handleComputedColumn(const Json::Value& value)
+{
 	if (_isColumn && value.isString())
 	{
 		const Json::Value & orgValue = boundValue();
@@ -67,10 +92,18 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 				emit _control->requestComputedColumnDestruction(orgName);
 		}
 	}
+}
 
+void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
+{
+	AnalysisForm* form = _control->form();
+
+	if (!form || !_control->isBound() || value == boundValue()) return;
+
+	handleComputedColumn(value);
 	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
-	
-	if (emitChange)	
+
+	if (emitChange)
 		emit _control->boundValueChanged(_control);
 }
 

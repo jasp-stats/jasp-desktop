@@ -45,6 +45,8 @@ public:
 
 protected:
 	std::string					getName()													const;
+	bool						setValueType();
+	void						handleComputedColumn(const Json::Value& value);
 
 	Json::Value					_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms);
 	void						_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms);

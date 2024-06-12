@@ -37,8 +37,8 @@ class VariableInfo : public QObject
 {
 	Q_OBJECT
 public:
-	enum InfoType { VariableType, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues };
-	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransparentIconType };
+	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues, TotalLevels, PreviewScale, PreviewOrdinal, PreviewNominal };
+	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransformedIconType };
 
 public:
 	VariableInfo(VariableInfoProvider* provider);
@@ -48,6 +48,7 @@ public:
 
 	static VariableInfo*		info();
 	static QString				getIconFile(columnType colType, IconType type);
+	static QString				getTypeFriendly(columnType colType);
 
 	VariableInfoProvider*		provider()	{ return _provider; }
 

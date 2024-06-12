@@ -75,12 +75,7 @@ Rectangle
 			{
 				var functionCall      = function (index)
 				{
-					// FIXME:
-					var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
-
-					if (columnType !== undefined)
-						colIcon.setColumnType(columnType);
-
+					colIcon.setColumnType(columnTypesModel.getType(index));
 					customMenu.hide()
 				}
 

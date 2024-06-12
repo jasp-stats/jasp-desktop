@@ -28,18 +28,20 @@ class BoundControlTerms : public BoundControlBase
 public:
 	BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow = false);
 	
-	bool		isJsonValid(const Json::Value& value)		const	override;
-	Json::Value	createJson()								const	override;
-	void		bindTo(const Json::Value &value)					override;
-	void		resetBoundValue()									override;
+	bool		isJsonValid(const Json::Value& value)										const	override;
+	Json::Value	createJson()																const	override;
+	void		bindTo(const Json::Value &value)													override;
+	void		resetBoundValue()																	override;
+	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
 	
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
-	bool		areTermsInOption(const Json::Value& option,	Terms& terms)	const;
+	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
 
 private:
-	Terms		_getValuesFromOptions(const Json::Value& option)	const;
-	Json::Value	_adjustBindingValue(const Json::Value &value)		const;
-
+	Terms		_getValuesFromOptions(const Json::Value& option)							const;
+	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
+	Json::Value _getTypes()																	const;
+	bool		_isValueWithTypes(const Json::Value &value)									const;
 
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;

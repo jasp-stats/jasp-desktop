@@ -17,10 +17,10 @@
 //
 
 
-import QtQuick			2.11
-import QtQuick.Controls 2.4 as QTCONTROLS
-import QtQml.Models		2.2
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls  as QTCONTROLS
+import QtQml.Models
+import JASP
 
 VariablesListBase
 {
@@ -76,16 +76,6 @@ VariablesListBase
 
 	onModelChanged: if (model) model.selectedItemsChanged.connect(selectedItemsChanged);
 
-	function setEnabledState(source, dragging)
-	{
-		var result = !dragging || areTypesAllowed(source.model.selectedItemsTypes());
-
-		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
-		itemRectangle.enabled = result
-		itemTitle.enabled = result
-	}
-
-
 	function moveSelectedItems(target)
 	{
 		var selectedItems = variablesList.model.selectedItems()
@@ -94,8 +84,6 @@ VariablesListBase
 		itemsDropped(selectedItems, target, -1);
 		variablesList.clearSelectedItems();
 	}
-
-
 
 	function getExistingItems()
 	{
@@ -235,26 +223,31 @@ VariablesListBase
 			}
 		}
 	}
-		
-	Repeater
-	{
-		model: allowedColumnsIcons
 
-		Image
+	Row
+	{
+		anchors
 		{
-			source:		modelData
-			height:		16 * preferencesModel.uiScale
-			width:		16 * preferencesModel.uiScale
-			z:			2
-			mipmap:		true
-			smooth:		true
-			//opacity:	1
-			anchors
+			bottom:			itemRectangle.bottom;
+			bottomMargin:	jaspTheme.contentMargin
+			right:			itemRectangle.right
+			rightMargin:	jaspTheme.contentMargin + (scrollBar.visible ? scrollBar.width : 0)
+		}
+		spacing: jaspTheme.contentMargin
+
+		Repeater
+		{
+			id:		allowedColumnsId
+			model:	allowedColumnsIcons
+
+			Image
 			{
-				bottom:			itemRectangle.bottom;
-				bottomMargin:	4  * preferencesModel.uiScale
-				right:			itemRectangle.right;
-				rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+				source:		modelData
+				height:		16 * preferencesModel.uiScale
+				width:		16 * preferencesModel.uiScale
+				z:			2
+				mipmap:		true
+				smooth:		true
 			}
 		}
 	}
@@ -412,23 +405,22 @@ VariablesListBase
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
 				radius:			jaspTheme.borderRadius
 				
-				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				model.selected
-				property bool isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
-				property bool dragging:				false
-				property int offsetX:				0
-				property int offsetY:				0
-				property int rank:					index
-				property bool containsDragItem:		variablesList.itemContainingDrag === itemRectangle
-				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
-				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
-				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool draggable:			variablesList.draggable && model.selectable
-				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
-				property var extraItem:				model.rowComponent
+				property bool	clearOtherSelectedItemsWhenClicked: false
+				property bool	selected:				model.selected
+				property bool	isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
+				property bool	dragging:				false
+				property int	offsetX:				0
+				property int	offsetY:				0
+				property int	rank:					index
+				property bool	containsDragItem:		variablesList.itemContainingDrag === itemRectangle
+				property bool	isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
+				property bool	isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
+				property string	preview:			!isVariable ? "" : model.preview
+				property bool	isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
+				property bool	draggable:			variablesList.draggable && model.selectable
+				property string	columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
+				property var	extraItem:				model.rowComponent
 
-				enabled: (variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.areTypesAllowed([columnType])) && (!variablesList.draggable || model.selectable)
-				
 				function setRelative(draggedRect)
 				{
 					x = Qt.binding(function (){ return draggedRect.x + offsetX; })
@@ -453,9 +445,9 @@ VariablesListBase
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem && colName.truncated
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && !itemRectangle.containsDragItem && (preview != "" ||  (model.name && colName.truncated))
 				QTCONTROLS.ToolTip.delay: 300
-				QTCONTROLS.ToolTip.text: model.name
+				QTCONTROLS.ToolTip.text: colName.truncated ? (model.name + (preview != "" ? "\n\n" + preview : "")) : preview
 				
 				Component.onCompleted:
 				{
@@ -548,23 +540,39 @@ VariablesListBase
 				{
 					id:				mouseArea
 					anchors.fill:	parent
+
 					drag.target:	itemRectangle.draggable ? parent : null
 					hoverEnabled:	true
 					cursorShape:	Qt.PointingHandCursor
-					
+
 					onDoubleClicked: (mouse)=>
 					{
 						if (itemRectangle.draggable)
 						{
 							variablesList.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 							itemDoubleClicked(index);
-						}
+						}										 
 					}
 					
 					onClicked: (mouse)=>
 					{
+						var functionCall = function (index)
+						{
+							variablesList.setVariableType(itemRectangle.rank, variablesList.allowedTypesModel.getType(index))
+							customMenu.hide()
+						}
+
+						var props =
+						{
+							"model":		variablesList.allowedTypesModel,
+							"functionCall":	functionCall
+						};
+
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
+
+						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== "" && mouse.x < icon.width)
+							customMenu.toggle(itemRectangle, props, 0, parent.height);
 					}
 					
 					onPressed: (mouse)=>
