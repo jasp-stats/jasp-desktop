@@ -418,53 +418,78 @@ void DataSetView::storeOutOfViewItems()
 {
     JASPTIMER_SCOPE(DataSetView::storeOutOfViewItems);
 
-    ItemCxsByColRow cleanList;
-
-    for(auto & subVec : _cellTextItems)
     {
-        for(auto & intTextItem : subVec.second)
+        ItemCxsByColRow cleanList;
+
+        for(auto & subVec : _cellTextItems)
         {
-            if(intTextItem.second)
+            for(auto & intTextItem : subVec.second)
             {
-                int col = subVec.first,
-                    row = intTextItem.first;
-
-                if(col < _currentViewportColMin || col > _currentViewportColMax || row < _currentViewportRowMin || row > _currentViewportRowMax)
+                if(intTextItem.second)
                 {
-                    intTextItem.second->item->setVisible(false);
+                    int col = subVec.first,
+                        row = intTextItem.first;
 
-                    if (_cacheItems)		_textItemStorage.push(intTextItem.second);
-                    else					delete intTextItem.second;
-                }
-                else
-                {
-                    cleanList[col][row] = intTextItem.second;
+                    if(col < _currentViewportColMin || col > _currentViewportColMax || row < _currentViewportRowMin || row > _currentViewportRowMax)
+                    {
+                        intTextItem.second->item->setVisible(false);
+
+                        if (_cacheItems)		_textItemStorage.push(intTextItem.second);
+                        else					delete intTextItem.second;
+                    }
+                    else
+                    {
+                        cleanList[col][row] = intTextItem.second;
+                    }
                 }
             }
         }
+
+       _cellTextItems = cleanList ;
     }
 
-    _cellTextItems = cleanList  ;
-
-    for(auto & intItem : _columnHeaderItems)
     {
-        intItem.second->item->setVisible(false);
+        ItemCxsByIndex cleanList;
 
-        if (_cacheItems)		_columnHeaderStorage.push(intItem.second);
-        else					delete intItem.second;
+        for(auto & intItem : _columnHeaderItems)
+        {
+            int col = intItem.first;
+
+            if(col < _currentViewportColMin || col > _currentViewportColMax)
+            {
+                intItem.second->item->setVisible(false);
+
+                if (_cacheItems)		_columnHeaderStorage.push(intItem.second);
+                else					delete intItem.second;
+            }
+            else
+                cleanList[col]  = intItem.second;
+        }
+
+        _columnHeaderItems = cleanList;
     }
 
-    _columnHeaderItems.clear();
 
-    for(auto & intItem : _rowNumberItems)
     {
-        intItem.second->item->setVisible(false);
+        ItemCxsByIndex cleanList;
 
-        if (_cacheItems)		_rowNumberStorage.push(intItem.second);
-        else					delete intItem.second;
+        for(auto & intItem : _rowNumberItems)
+        {
+            int row = intItem.first;
+
+            if(row < _currentViewportRowMin || row > _currentViewportRowMax)
+            {
+                intItem.second->item->setVisible(false);
+
+                if (_cacheItems)		_rowNumberStorage.push(intItem.second);
+                else					delete intItem.second;
+            }
+            else
+                cleanList[row] = intItem.second;
+        }
+
+        _rowNumberItems = cleanList;
     }
-
-    _rowNumberItems.clear();
 }
 
 void DataSetView::addLine(float x0, float y0, float x1, float y1)

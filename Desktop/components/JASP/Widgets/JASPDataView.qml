@@ -121,6 +121,7 @@ FocusScope
 		contentHeight:	theView.height
 		contentWidth:	theView.width
 
+
 		DataSetView
 		{
 			z:			-10
@@ -147,21 +148,21 @@ FocusScope
 			onSelectionBudgesRight:	__JASPDataViewRoot.budgeRight()
 		}
 	}
-	/*
+
 	MouseArea
 	{
 		id:					wheelCatcher
 		anchors.fill:		myFlickable
 		acceptedButtons:	Qt.NoButton 
 		cursorShape:		Qt.PointingHandCursor
-		z:					1000
+        z:					-1000
 		
 	}
-	*/
+
 
 	signal doubleClicked()
 
-	JASPMouseAreaToolTipped
+    /*JASPMouseAreaToolTipped
 	{
 		id:					wheelCatcher
 		z:					1000
@@ -218,7 +219,7 @@ FocusScope
 			else
 				wheel.accepted = false;
 		}
-	}
+    }*/
 	
 	JASPScrollBar
 	{

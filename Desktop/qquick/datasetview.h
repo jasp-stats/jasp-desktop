@@ -41,7 +41,8 @@ struct ItemContextualized
 	QQmlContext * context	= nullptr;
 };
 
-typedef std::map<int, std::map<int, ItemContextualized *>> ItemCxsByColRow;
+typedef std::map<int, std::map<int, ItemContextualized *>>  ItemCxsByColRow;
+typedef std::map<int, ItemContextualized *>                 ItemCxsByIndex;
 
 /// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
 /// Supports scaling the data into millions of columns and rows without any noticable slowdowns (the model could slow it down though)
@@ -324,7 +325,7 @@ protected:
 	std::stack<ItemContextualized*>							_textItemStorage,
 															_rowNumberStorage,
 															_columnHeaderStorage;
-	std::map<int, ItemContextualized *>						_rowNumberItems,
+    ItemCxsByIndex                  						_rowNumberItems,
 															_columnHeaderItems;
     ItemCxsByColRow                                 		_cellTextItems;						//[col][row]
 	std::vector<float>										_lines;
