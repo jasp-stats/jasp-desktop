@@ -64,7 +64,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 
 	//remove any leftover ModuleDir 
 	QDir modulesDir(AppDirs::bundledModulesDir());
-	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive))
+	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != DynamicRuntimeInfo::ZIP)	{
 	{
 		std::function<void(QDir)> removeDir = [&](QDir x) -> void {
 			for(const auto& entry : x.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files))
@@ -499,8 +499,6 @@ int main(int argc, char *argv[])
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
 			ImgSchemeHandler  imgSchemeHandler;
 
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
-
 #ifdef _WIN32
 			auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();
 			Log::log() << "Runtime Environment: " << runtimeEnv << std::endl;
@@ -528,7 +526,7 @@ int main(int argc, char *argv[])
 				msgBox->hide();
 			}
 #endif
-
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 
 			try
 			{
