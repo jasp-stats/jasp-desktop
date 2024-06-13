@@ -81,9 +81,6 @@ FocusScope
 			cacheItems:				true //!ribbonModel.dataMode
 			maxColWidth:			250 * jaspTheme.uiScale
 			expandDataSet:			ribbonModel.dataMode
-
-			doubleClickWorkaround:	!ribbonModel.dataMode
-			//flickableInteractive:	!ribbonModel.dataMode
 			onDoubleClicked:		__myRoot.doubleClicked()
 
 			function showPopupMenu(fromItem, globalPos, rowIndex, columnIndex)

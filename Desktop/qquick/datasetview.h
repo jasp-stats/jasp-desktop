@@ -41,6 +41,9 @@ struct ItemContextualized
 	QQmlContext * context	= nullptr;
 };
 
+typedef std::map<int, std::map<int, ItemContextualized *>>  ItemCxsByColRow;
+typedef std::map<int, ItemContextualized *>                 ItemCxsByIndex;
+
 /// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
 /// Supports scaling the data into millions of columns and rows without any noticable slowdowns (the model could slow it down though)
 /// Contains custom rendering code for the lines to make sure they are always a single pixel wide.
@@ -275,7 +278,8 @@ protected:
 	void		_copy(QPoint where, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		determineCurrentViewPortIndices();
-	void		storeAllItems();
+    void		storeAllItems();
+    void		storeOutOfViewItems();
 	void		buildNewLinesAndCreateNewItems();
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);
@@ -321,9 +325,9 @@ protected:
 	std::stack<ItemContextualized*>							_textItemStorage,
 															_rowNumberStorage,
 															_columnHeaderStorage;
-	std::map<int, ItemContextualized *>						_rowNumberItems,
+    ItemCxsByIndex                  						_rowNumberItems,
 															_columnHeaderItems;
-	std::map<int, std::map<int, ItemContextualized *>>		_cellTextItems;						//[col][row]
+    ItemCxsByColRow                                 		_cellTextItems;						//[col][row]
 	std::vector<float>										_lines;
 	QQuickItem											*	_leftTopItem			= nullptr,
 														*	_extraColumnItem		= nullptr,

@@ -14,7 +14,6 @@ FocusScope
 				property string toolTip:				""
 				property alias cursorShape:				wheelCatcher.cursorShape
 				property alias mouseArea:				wheelCatcher
-				property bool  doubleClickWorkaround:	true
 				property alias isMainDataViewer:		theView.mainData
 	readonly	property alias editCoordinates:			theView.editCoordinates
 
@@ -52,6 +51,9 @@ FocusScope
 	readonly	property real  flickableHeight:			myFlickable.height
 
 				property real  contentFlickSize:		100
+
+
+    signal doubleClicked()
 	
 	Keys.onUpPressed:		(event) => { budgeUp();		event.accepted = true; }
 	Keys.onLeftPressed:		(event) => { budgeLeft();	event.accepted = true; }
@@ -121,6 +123,7 @@ FocusScope
 		contentHeight:	theView.height
 		contentWidth:	theView.width
 
+
 		DataSetView
 		{
 			z:			-10
@@ -147,79 +150,17 @@ FocusScope
 			onSelectionBudgesRight:	__JASPDataViewRoot.budgeRight()
 		}
 	}
-	/*
+
 	MouseArea
 	{
 		id:					wheelCatcher
 		anchors.fill:		myFlickable
-		acceptedButtons:	Qt.NoButton 
+        acceptedButtons:	Qt.LeftButton
 		cursorShape:		Qt.PointingHandCursor
-		z:					1000
-		
+        z:					-1000
+        onDoubleClicked:    __JASPDataViewRoot.doubleClicked()
 	}
-	*/
 
-	signal doubleClicked()
-
-	JASPMouseAreaToolTipped
-	{
-		id:					wheelCatcher
-		z:					1000
-		anchors.fill:		myFlickable
-		anchors.leftMargin:	theView.rowNumberWidth
-		anchors.topMargin:	theView.headerHeight
-
-		toolTipText:		__JASPDataViewRoot.doubleClickWorkaround ? qsTr("Double click to edit data") : ""
-
-		acceptedButtons:	__JASPDataViewRoot.doubleClickWorkaround ? Qt.LeftButton : Qt.NoButton
-		dragging:			myFlickable.dragging
-		//hoverEnabled:		!flickableInteractive
-
-		property real	lastTimeClicked:	-1
-		property real	doubleClickTime:	400
-
-		onPressed: (mouse)=>
-		{
-			//console.log("doubleclick workaround pressed")
-			if(!__JASPDataViewRoot.doubleClickWorkaround)
-			{
-				mouse.accepted = false;
-				return;
-			}
-
-			var curTime = new Date().getTime()
-
-			if(lastTimeClicked === -1 || curTime - lastTimeClicked > doubleClickTime)
-			{
-			//	console.log("doubleclick workaround pressed set time")
-				lastTimeClicked = curTime
-				mouse.accepted = false
-			}
-			else
-			{
-			//	console.log("doubleclick workaround activated")
-				lastTimeClicked = -1
-				__JASPDataViewRoot.doubleClicked()
-			}
-		}
-
-		onWheel: (wheel)=>
-		{
-			if(wheel.angleDelta.y == 120)
-			{
-				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollUp()
-				else									vertiScroller.scrollUp()
-			}
-			else if(wheel.angleDelta.y == -120)
-			{
-				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollDown()
-				else									vertiScroller.scrollDown()
-			}
-			else
-				wheel.accepted = false;
-		}
-	}
-	
 	JASPScrollBar
 	{
 		id:				vertiScroller;
