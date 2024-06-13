@@ -153,10 +153,10 @@ FocusScope
 	{
 		id:					wheelCatcher
 		anchors.fill:		myFlickable
-		acceptedButtons:	Qt.NoButton 
+        acceptedButtons:	Qt.LeftButton
 		cursorShape:		Qt.PointingHandCursor
         z:					-1000
-		
+        onDoubleClicked:    __JASPDataViewRoot.doubleClicked()
 	}
 
 
@@ -200,7 +200,7 @@ FocusScope
 			{
 			//	console.log("doubleclick workaround activated")
 				lastTimeClicked = -1
-				__JASPDataViewRoot.doubleClicked()
+
 			}
 		}
 

@@ -192,7 +192,7 @@ Item
 			anchors.fill:		parent
 			acceptedButtons:	Qt.RightButton
 
-			onPressed: (mouse) =>
+            onClicked: (mouse) =>
 			{
 				if(mouse.buttons & Qt.RightButton)
 					dataTableView.showPopupMenu(editItemRoot, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);

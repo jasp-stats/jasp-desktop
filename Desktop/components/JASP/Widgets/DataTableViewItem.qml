@@ -85,7 +85,7 @@ Item
 		toolTipTimeOut:		10000
 		toolTipDelay:		400
 
-		onPressed:	(mouse) =>
+        onClicked:	(mouse) =>
 		{
 			if(ribbonModel.dataMode)
 			{
