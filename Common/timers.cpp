@@ -1,8 +1,9 @@
 #include "timers.h"
 
 #ifdef PROFILE_JASP
-#include  <iostream>
-
+#include <algorithm>
+#include <iostream>
+#include <vector>
 static std::map<std::string, boost::timer::cpu_timer *> * timers = nullptr;
 
 boost::timer::cpu_timer * _getTimer(std::string timerName)
