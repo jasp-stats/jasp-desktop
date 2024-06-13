@@ -318,6 +318,15 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
 }
 
+Json::Value BoundControlTerms::createMeta() const
+{
+	Json::Value meta(BoundControlBase::createMeta());
+	if (_control->encodeValue())
+		meta["hasTypes"] = true;
+
+	return meta;
+}
+
 Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap) const
 {
 	Json::Value result = option;

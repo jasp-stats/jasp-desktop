@@ -25,6 +25,6 @@ VariablesList
 	showElementBorder		: true
 	columns					: 2
 	showVariableTypeIcon	: false
-	suggestedColumns		: ["scale"]
+	allowedColumns			: ["scale"]
 	height					: 140
 }

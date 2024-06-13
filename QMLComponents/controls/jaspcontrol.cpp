@@ -491,19 +491,6 @@ bool JASPControl::checkOptionName(const QString &name)
 			if (!label.isEmpty())	addControlError(tr("Control with label '%1' has no name").arg(label));
 			else					addControlError(tr("A control has no name"));
 		}
-		else
-		{
-			bool hasNonAlphaNum = false;
-			for (const QChar& c : name)
-				if (!c.isLetterOrNumber() && c.toLatin1() != '_')
-					hasNonAlphaNum = true;
-
-			if (hasNonAlphaNum)
-			{
-				if (!label.isEmpty())	addControlError(tr("Name of control with label '%1' contains non alphanumeric characters").arg(label));
-				else					addControlError(tr("Name of control contains non alphanumeric characters"));
-			}
-		}
 		return false;
 	}
 
