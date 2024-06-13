@@ -602,6 +602,8 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 								value = value.toBool() || conditionValues[variable].toBool();
 							conditionValues[variable] = value;
 						}
+						else
+							Log::log() << "When evaluating condition '" << condition << "' the control " << control->name() << " could not be used because it has not a usable option: " << jsonValue.toStyledString() << std::endl;
 					}
 				}
 

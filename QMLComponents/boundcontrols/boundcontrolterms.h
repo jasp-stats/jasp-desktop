@@ -33,7 +33,8 @@ public:
 	void		bindTo(const Json::Value &value)													override;
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
-	
+	Json::Value	createMeta()																const	override;
+
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
 

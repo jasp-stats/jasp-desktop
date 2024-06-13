@@ -75,8 +75,7 @@ FactorsFormBase
 					editableTitle:      factorTitle
 					dropKeys:			availableVariablesListName
 					//dropMode:			JASP.DropReplace
-					suggestedColumns:	allowAll ? [] : ["scale", "ordinal"]
-					allowedColumns:     allowAll ? [] : ["scale", "ordinal"]
+					allowedColumns:     allowAll ? [] : ["scale"]
 					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
 					implicitWidth:		listWidth
 					isBound:			false
