@@ -421,6 +421,8 @@ VariablesListBase
 				property string	columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var	extraItem:				model.rowComponent
 
+				enabled: !variablesList.draggable || model.selectable
+
 				function setRelative(draggedRect)
 				{
 					x = Qt.binding(function (){ return draggedRect.x + offsetX; })
