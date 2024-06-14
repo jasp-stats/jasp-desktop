@@ -11,8 +11,19 @@ Sys.setenv(JAGS_PREFIX				="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR			="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR				="@jags_LIBRARY_DIRS@")
 Sys.setenv(JASP_R_INTERFACE_LIBRARY	="Yes, do it")
-Sys.setenv(MAKEFLAGS				="-j")
 
+defaultMakeFlags  <- function() { Sys.setenv(MAKEFLAGS = "-j" ) }
+setMakeFlagsToOne <- function() { Sys.setenv(MAKEFLAGS = "-j1") }
+defaultMakeFlags()
+
+# everything with precompiled Stan models
+options("JASP_RENV_INSTALL_OPTIONS" = list(
+  blavaan  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  metaBMA  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  rstanarm = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  stanova  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
+
+))
 options(renv.config.install.verbose = TRUE)
 
 if (@IS_LINUX_LOCAL_BUILD@) {
