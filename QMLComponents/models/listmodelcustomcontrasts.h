@@ -38,11 +38,11 @@ public:
 
 	void			reset()												override;
 	void			setup()												override;
-	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _tableTerms.variables.length(); }
+	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _tableTerms.variables.size(); }
 	QString			getItemInputType(const QModelIndex& index)	const	override;
 	QString			colName()									const				{ return _colName;	}
 
-	void			getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);
+	void			getVariablesAndLabels(Terms& variables, QVector<QVector<QVariant> >& allLabels);
 
 public slots:
 	void sourceTermsReset()														override;
@@ -59,18 +59,18 @@ signals:
 protected:
 	int									_variableCount	= 0;
 	double								_scaleFactor	= 1;
-	ListModelFactorLevels*	_factorsSourceModel;
+	ListModelFactorLevels*				_factorsSourceModel;
 	QString								_colName;
 	QMap<QString, QList<QString> >		_factors;
 
 
 private:
 	void		_resetValuesEtc();
-	bool		_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel);
+	bool		_labelChanged(const Term& columnName, const QString& originalLabel, const QString& newLabel);
 	void		_setFactorsSource(ListModelFactorLevels* factorsSourceModel);
 	void		_setFactors();
 	void		_loadColumnInfo();
-	QStringList	_getVariables();
+	Terms		_getVariables();
 
 
 };

@@ -277,7 +277,7 @@ columnTypeVec JASPListControl::valueTypes() const
 	columnTypeVec types;
 
 	for (const Term& term : model()->terms())
-		types.push_back(model()->getVariableType(term.asQString()));
+		types.push_back(term.type());
 
 	return types;
 }

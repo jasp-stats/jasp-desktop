@@ -150,7 +150,10 @@ void Terms::add(const Term &term, bool isUnique)
 		if (result > 0)
 			_terms.insert(itr, term);
 		else if (result == 0)
+		{
 			itr->setDraggable(term.isDraggable());
+			itr->setType(term.type());
+		}
 		else if (result < 0)
 			_terms.push_back(term);
 	}
@@ -160,7 +163,10 @@ void Terms::add(const Term &term, bool isUnique)
 		if (i < 0)
 			_terms.push_back(term);
 		else
+		{
 			_terms.at(i).setDraggable(term.isDraggable());
+			_terms.at(i).setType(term.type());
+		}
 	}
 }
 
@@ -207,6 +213,11 @@ void Terms::add(const Terms &terms)
 }
 
 const Term& Terms::at(size_t index) const
+{
+	return _terms.at(index);
+}
+
+Term &Terms::at(size_t index)
 {
 	return _terms.at(index);
 }
@@ -346,7 +357,10 @@ Terms Terms::crossCombinations() const
 				}
 			}
 
-			t.add(Term(combination));
+			if (combination.size() == 1)
+				t.add(at(indexOf(combination[0])));
+			else
+				t.add(Term(combination));
 
 		} while (std::next_permutation(v.begin(), v.end()));
 	}
@@ -375,7 +389,10 @@ Terms Terms::wayCombinations(int ways) const
 				}
 			}
 
-			t.add(Term(combination));
+			if (combination.size() == 1)
+				t.add(at(indexOf(combination[0])));
+			else
+				t.add(Term(combination));
 
 		} while (std::next_permutation(v.begin(), v.end()));
 	}
@@ -742,6 +759,16 @@ Terms::const_iterator Terms::begin() const
 }
 
 Terms::const_iterator Terms::end() const
+{
+	return _terms.end();
+}
+
+Terms::iterator Terms::begin()
+{
+	return _terms.begin();
+}
+
+Terms::iterator Terms::end()
 {
 	return _terms.end();
 }

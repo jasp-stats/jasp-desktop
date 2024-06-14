@@ -26,6 +26,7 @@ VariablesList
 	name					: "modelTerms"
 	title					: qsTr("Model Terms")
 	listViewType			: JASP.Interaction
+	allowTypeChange			: false
 
 	rowComponentTitle		: qsTr("Add to null model")
 	interactionHighOrderCheckBox : "isNuisance"

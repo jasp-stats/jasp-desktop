@@ -24,6 +24,7 @@
 
 #include <QString>
 #include <QStringList>
+#include "columntype.h"
 
 ///
 /// A term is a basic element of a VariablesList
@@ -45,6 +46,9 @@ public:
 
 	bool						isDraggable()	const			{ return _draggable; }
 	void						setDraggable(bool draggable)	{ _draggable = draggable; }
+
+	columnType					type()			const			{ return _type; }
+	void						setType(columnType type)		{ _type = type; }
 
 	typedef QStringList::const_iterator const_iterator;
 	typedef QStringList::iterator		iterator;
@@ -77,7 +81,7 @@ private:
 	QStringList		_components;
 	QString			_asQString;
 	bool			_draggable = true;
-
+	columnType		_type = columnType::unknown;
 };
 
 #endif // TERM_H

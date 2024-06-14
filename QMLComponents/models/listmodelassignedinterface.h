@@ -36,7 +36,6 @@ public:
 
 public slots:
 	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
-			int  sourceColumnTypeChanged(QString name)												override;
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)		override;
 			bool sourceLabelsReordered(QString columnName)											override;
 

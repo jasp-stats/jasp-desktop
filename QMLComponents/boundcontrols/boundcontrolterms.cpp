@@ -127,7 +127,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	if (!hasTypes)
 	{
 		for (const Term& term : terms)
-			typesPart.append(columnTypeToString(_termsModel->getVariableType(term.asQString())));
+			typesPart.append(columnTypeToString(term.type()));
 	}
 
 	Json::Value newValue = Json::objectValue;

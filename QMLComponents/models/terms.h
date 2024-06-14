@@ -75,6 +75,8 @@ public:
 
 	const_iterator begin() const;
 	const_iterator end() const;
+	iterator begin();
+	iterator end();
 
 	void remove(const Term &term);
 	void remove(const Terms &terms);
@@ -90,6 +92,7 @@ public:
 	void clear();
 
 	const Term &at(size_t index)								const;
+	Term &at(size_t index);
 	bool contains(const Term		&	term)					const;
 	bool contains(const QString		&	component);
 	bool contains(const std::string &	component);

@@ -31,12 +31,12 @@ Json::Value BoundControlContrastsTableView::createJson() const
 	ListModelCustomContrasts* contrastsModel = qobject_cast<ListModelCustomContrasts*>(_tableView->tableModel());
 
 
-	QStringList variables;
+	Terms variables;
 	QVector<QVector<QVariant> > allLables;
 
 	contrastsModel->getVariablesAndLabels(variables, allLables);
 
-	if (variables.length() > 0)
+	if (variables.size() > 0)
 	{
 		Json::Value rowNames(Json::arrayValue);
 
@@ -44,10 +44,10 @@ Json::Value BoundControlContrastsTableView::createJson() const
 			rowNames.append(fq(contrastsModel->getDefaultRowName(size_t(row))));
 
 		int col = 0;
-		for (const QString& variable : variables)
+		for (const Term& variable : variables)
 		{
 			Json::Value row(Json::objectValue);
-			row["name"] = fq(variable);
+			row["name"] = variable.asString();
 			row["levels"] = rowNames;
 			row["isContrast"] = false;
 
@@ -68,7 +68,7 @@ Json::Value BoundControlContrastsTableView::createJson() const
 			for (int colIndex = 0; colIndex < _tableView->initialColumnCount(); colIndex++)
 			{
 				Json::Value row(Json::objectValue);
-				row["name"] = fq(contrastsModel->getDefaultColName(size_t(variables.length() + colIndex)));
+				row["name"] = fq(contrastsModel->getDefaultColName(size_t(variables.size() + colIndex)));
 				row["levels"] = rowNames;
 				row["isContrast"] = true;
 
@@ -93,7 +93,7 @@ void BoundControlContrastsTableView::fillTableTerms(const Json::Value &value, Li
 	for (const Json::Value& row : value)
 	{
 		if (!row["isContrast"].asBool())
-			tableTerms.variables.push_back(tableTerms.colNames[index]);
+			tableTerms.variables.add(tableTerms.colNames[index]);
 		index++;
 	}
 }
@@ -105,7 +105,7 @@ void BoundControlContrastsTableView::fillBoundValue(Json::Value& value, const Li
 	int i = 0;
 	for (Json::Value& row : value)
 	{
-		row["isContrast"] = (i >= tableTerms.variables.length());
+		row["isContrast"] = (i >= tableTerms.variables.size());
 		i++;
 	}
 }

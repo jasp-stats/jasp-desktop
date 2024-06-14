@@ -45,6 +45,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( int					maxNumericLevels				READ maxNumericLevels				WRITE setMaxNumericLevels				NOTIFY maxNumericLevelsChanged				)
 	Q_PROPERTY( int					minLevels						READ minLevels						WRITE setMinLevels						NOTIFY minLevelsChanged						)
 	Q_PROPERTY( int					maxLevels						READ maxLevels						WRITE setMaxLevels						NOTIFY maxLevelsChanged						)
+	Q_PROPERTY( bool				allowTypeChange					READ allowTypeChange				WRITE setAllowTypeChange				NOTIFY allowTypeChangeChanged				)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
@@ -82,6 +83,7 @@ public:
 	int							maxLevels()																				const				{ return _maxLevels;			}
 	int							minNumericLevels()																		const				{ return _minNumericLevels;		}
 	int							maxNumericLevels()																		const				{ return _maxNumericLevels;		}
+	bool						allowTypeChange()																		const				{ return _allowTypeChange;		}
 
 signals:
 	void listViewTypeChanged();
@@ -97,6 +99,7 @@ signals:
 	void maxLevelsChanged();
 	void minNumericLevelsChanged();
 	void maxNumericLevelsChanged();
+	void allowTypeChangeChanged();
 
 public slots:
 	void setVariableType(int index, int type);
@@ -119,6 +122,7 @@ protected:
 	GENERIC_SET_FUNCTION(MaxLevels,						_maxLevels,						maxLevelsChanged,						int				)
 	GENERIC_SET_FUNCTION(MinNumericLevels,				_minNumericLevels,				minNumericLevelsChanged,				int				)
 	GENERIC_SET_FUNCTION(MaxNumericLevels,				_maxNumericLevels,				maxNumericLevelsChanged,				int				)
+	GENERIC_SET_FUNCTION(AllowTypeChange,				_allowTypeChange,				allowTypeChangeChanged,					bool			)
 
 	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 	void						setDropKeys(const QStringList& dropKeys);
@@ -144,6 +148,7 @@ private:
 								_minLevels =			-1,
 								_maxLevels =			-1;
 
+	bool						_allowTypeChange =		true;
 	QStringList					_allowedColumns,
 								_columnsTypes,
 								_columnsNames,

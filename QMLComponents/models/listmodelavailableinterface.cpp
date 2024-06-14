@@ -60,34 +60,19 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 
 	case SortType::SortByName:
 	{
-		QList<QString> sortedTerms = _allSortedTerms.asQList();
-		std::sort(sortedTerms.begin(), sortedTerms.end(),
-				  [&](const QString& a, const QString& b) {
-						return a.compare(b, Qt::CaseInsensitive) < 0;
+		std::sort(_allSortedTerms.begin(), _allSortedTerms.end(),
+				  [&](const Term& a, const Term& b) {
+						return a.asQString().compare(b.asQString(), Qt::CaseInsensitive) < 0;
 					});
-		_allSortedTerms = Terms(sortedTerms);
 		break;
 	}
 
 	case SortType::SortByType:
 	{
-		QList<QString>				termsList = _allSortedTerms.asQList();
-		QList<QPair<QString, int> > termsTypeList;
-
-		for (const QString& term : termsList)
-			termsTypeList.push_back(QPair<QString, int>(term, (int)getVariableType(term)));
-
-		std::sort(termsTypeList.begin(), termsTypeList.end(),
-				  [&](const QPair<QString, int>& a, const QPair<QString, int>& b) {
-						return a.second - b.second > 0;
+		std::sort(_allSortedTerms.begin(), _allSortedTerms.end(),
+				  [&](const Term& a, const Term& b) {
+						return int(a.type()) - int(b.type()) > 0;
 					});
-
-		QList<QString> sortedTerms;
-
-		for (const auto& term : termsTypeList)
-			sortedTerms.push_back(term.first);
-
-		_allSortedTerms = Terms(sortedTerms);
 		break;
 	}
 
@@ -100,6 +85,16 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 	_setTerms(orgTerms); // This will reorder the terms
 
 	endResetModel();
+}
+
+Terms ListModelAvailableInterface::addTerms(const Terms &terms, int dropItemIndex, const RowControlsValues &rowValues)
+{
+	// Reset the real types to the terms, in case they were changed.
+	Terms realTypesTerms = terms;
+	for (Term& term : realTypesTerms)
+		term.setType(getVariableRealType(term.asQString()));
+
+	return ListModelDraggable::addTerms(realTypesTerms, dropItemIndex, rowValues);
 }
 
 void ListModelAvailableInterface::sourceTermsReset()
@@ -147,12 +142,12 @@ void ListModelAvailableInterface::sourceColumnsChanged(QStringList columns)
 		emit columnsChanged(changedColumns);
 }
 
-int ListModelAvailableInterface::sourceColumnTypeChanged(QString name)
+int ListModelAvailableInterface::sourceColumnTypeChanged(Term term)
 {
-	int index = ListModelDraggable::sourceColumnTypeChanged(name);
+	int index = ListModelDraggable::sourceColumnTypeChanged(term);
 
-	if (index == -1 && _allTerms.contains(name))
-		emit columnTypeChanged(name);
+	if (index == -1 && _allTerms.contains(term))
+		emit columnTypeChanged(term);
 
 	return index;
 }
