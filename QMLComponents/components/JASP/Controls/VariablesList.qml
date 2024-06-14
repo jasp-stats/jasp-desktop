@@ -413,13 +413,14 @@ VariablesListBase
 				property int	offsetY:				0
 				property int	rank:					index
 				property bool	containsDragItem:		variablesList.itemContainingDrag === itemRectangle
-				property bool	isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
-				property bool	isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
-				property string	preview:			!isVariable ? "" : model.preview
+				property bool	isVirtual:				(typeof model.type !== "undefined") && model.type.includes("virtual")
+				property bool	isVariable:				(typeof model.type !== "undefined") && model.type.includes("variable")
+				property string	preview:				!isVariable ? "" : model.preview
 				property bool	isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool	draggable:			variablesList.draggable && model.selectable
-				property string	columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
+				property bool	draggable:				variablesList.draggable && model.selectable
+				property string	columnType:				isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var	extraItem:				model.rowComponent
+				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== ""
 
 				enabled: !variablesList.draggable || model.selectable
 
@@ -473,7 +474,7 @@ VariablesListBase
 					visible:				source
 					mipmap:					true
 					smooth:					true
-					scale:					mouseArea.containsMouse && mouseArea.mouseX < icon.width ? 1.2 : 1
+					scale:					itemRectangle.typeChangeable && mouseArea.containsMouse && mouseArea.mouseX < icon.width ? 1.2 : 1
 
 					//So Im pushing this through a property because it seems to results in "undefined" during loading and this adds a ton of warnings to the output which is not helpful. I tried less heavyhanded approaches first but this works perfectly fine.
 					property var sourceVar:	variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
@@ -574,7 +575,7 @@ VariablesListBase
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
 
-						if ((variablesList.listViewType != JASP.AvailableVariables) && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== "" && mouse.x < icon.x + icon.width )
+						if (itemRectangle.typeChangeable && mouse.x < icon.x + icon.width)
 							customMenu.toggle(itemRectangle, props, 0, parent.height);
 					}
 					

@@ -40,6 +40,7 @@ public:
 	virtual void removeTermsInAssignedList();
 	
 			void sortItems(SortType sortType)											override;
+			Terms addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 
 			void										addAssignedModel(ListModelAssignedInterface* model);
 			const QList<ListModelAssignedInterface*>&	assignedModels()	const			{ return _assignedModels; }
@@ -51,7 +52,7 @@ public slots:
 			void sourceTermsReset()															override;
 			void sourceNamesChanged(QMap<QString, QString> map)								override;
 			void sourceColumnsChanged(QStringList columns)									override;
-			int  sourceColumnTypeChanged(QString name)										override;
+			int  sourceColumnTypeChanged(Term name)											override;
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
 			bool sourceLabelsReordered(QString columnName)									override;
 			void removeAssignedModel(ListModelAssignedInterface *assignedModel);

@@ -47,7 +47,7 @@ SourceItem::SourceItem(
 	_sourceFilter					= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
 	_conditionExpression		= map["condition"].toString();
 	_values						= values;
-	_sourceNativeModel				= nativeModel;
+	_sourceNativeModel			= nativeModel;
 	_discardSources				= discardSources;
 	_rSources					= rSources;
 
@@ -123,7 +123,13 @@ void SourceItem::connectModels()
 	{
 		VariableInfo* variableInfo = VariableInfo::info();
 		connect(variableInfo,	&VariableInfo::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
-		connect(variableInfo,	&VariableInfo::columnTypeChanged,	controlModel, &ListModel::sourceColumnTypeChanged );
+		connect(variableInfo,	&VariableInfo::columnTypeChanged,	[this, controlModel] (QString colName)
+		{
+			columnType type = (columnType)requestInfo(VariableInfo::VariableType, colName).toInt();
+			Term term(colName);
+			term.setType(type);
+			controlModel->sourceColumnTypeChanged(term);
+		} );
 		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
 		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
@@ -486,7 +492,15 @@ Terms SourceItem::_readAllTerms()
 			_targetListControl->model()->setColumnsUsedForLabels(_sourceListModel->terms().asQList());
 	}
 	else if (_isDataSetVariables)
-		terms = requestInfo(VariableInfo::VariableNames).toStringList();
+	{
+		QStringList variableNames = requestInfo(VariableInfo::VariableNames).toStringList();
+		for (const QString& name : variableNames)
+		{
+			Term term(name);
+			term.setType(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+			terms.add(term);
+		}
+	}
 	else if (_sourceNativeModel)
 	{
 		int nbRows = _sourceNativeModel->rowCount();
@@ -496,7 +510,9 @@ Terms SourceItem::_readAllTerms()
 			QStringList row;
 			for (int j = 0; j < nbCols; j++)
 				row.append(_sourceNativeModel->data(_sourceNativeModel->index(i, j), _nativeModelRole).toString());
-			terms.add(Term(row), false);
+			Term term(row);
+			term.setType(columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt()));
+			terms.add(term, false);
 		}
 		if (!_sourceFilter.empty())
 			// If the 'use' parameter of the source property asks for the levels, or to filter some types

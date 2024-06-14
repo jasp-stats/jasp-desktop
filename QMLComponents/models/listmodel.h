@@ -104,7 +104,7 @@ public:
 signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
 			void namesChanged(QMap<QString, QString> map);
-			void columnTypeChanged(QString name);
+			void columnTypeChanged(Term term);
 			void labelsChanged(QString columnName, QMap<QString, QString> = {});
 			void labelsReordered(QString columnName);
 			void columnsChanged(QStringList columns);
@@ -114,7 +114,7 @@ signals:
 public slots:	
 	virtual void sourceTermsReset();
 	virtual void sourceNamesChanged(QMap<QString, QString> map);
-	virtual int  sourceColumnTypeChanged(QString colName);
+	virtual int  sourceColumnTypeChanged(Term sourceTerm);
 	virtual bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels = {});
 	virtual bool sourceLabelsReordered(QString columnName);
 	virtual void sourceColumnsChanged(QStringList columns);
@@ -130,12 +130,12 @@ protected:
 			void	_removeTerm(const Term& term);
 			void	_removeLastTerm();
 			void	_addTerms(const Terms& terms);
-			void	_addTerm(const QString& term, bool isUnique = true);
+			void	_addTerm(const Term& term, bool isUnique = true);
 			void	_replaceTerm(int index, const Term& term);
 			void	_connectAllSourcesControls();
-			void	_checkTermsTypes(const Terms& terms);
-			void	_checkTermsTypes(const std::vector<Term>& terms);
-			void	_checkTermsType(const QString& terms);
+			Terms	_checkTermsTypes(const Terms& terms)				const;
+			Terms	_checkTermsTypes(const std::vector<Term>& terms)	const;
+			Term	_checkTermType(const Term& terms)					const;
 
 
 			QString							_itemType;
@@ -153,7 +153,6 @@ private:
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
-			std::map<QString, columnType>	_tempTermTypes;	// If the type of a term is changed by the user, store this change here.
 
 };
 

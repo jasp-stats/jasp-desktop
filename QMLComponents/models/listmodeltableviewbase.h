@@ -34,8 +34,8 @@ public:
 	{
 		QVector<QVector<QVariant> >	values;
 		QStringList					rowNames,
-									colNames,
-									variables;
+									colNames;
+		Terms						variables;
 		QString						colName,
 									extraCol,
 									filter;
@@ -64,7 +64,7 @@ public:
 
 				int					rowCount(	const QModelIndex & = QModelIndex())									const	override { return _tableTerms.rowNames.length();	}
 				int					columnCount(const QModelIndex & = QModelIndex())									const	override { return _tableTerms.colNames.length();	}
-				int					variableCount()																		const			 { return _tableTerms.variables.length();	}
+				int					variableCount()																		const			 { return _tableTerms.variables.size();		}
 				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;
 				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;

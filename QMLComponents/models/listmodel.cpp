@@ -101,24 +101,32 @@ void ListModel::_connectAllSourcesControls()
 		_connectSourceControls(sourceItem);
 }
 
-void ListModel::_checkTermsType(const QString &term)
+Term ListModel::_checkTermType(const Term &term) const
 {
-	columnType type = getVariableType(term);
+	Term checkedTerm(term);
+	columnType type = checkedTerm.type();
 	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
-		_tempTermTypes[term] = _listView->defaultType();
+		checkedTerm.setType(_listView->defaultType());
 
+	return checkedTerm;
 }
 
-void ListModel::_checkTermsTypes(const Terms &terms)
+Terms ListModel::_checkTermsTypes(const Terms &terms) const
 {
+	Terms checkedTerms;
 	for (const Term& term : terms)
-		_checkTermsType(term.asQString());
+		checkedTerms.add(_checkTermType(term));
+
+	return checkedTerms;
 }
 
-void ListModel::_checkTermsTypes(const std::vector<Term> &terms)
+Terms ListModel::_checkTermsTypes(const std::vector<Term> &terms) const
 {
+	Terms checkedTerms;
 	for (const Term& term : terms)
-		_checkTermsType(term.asQString());
+		checkedTerms.add(_checkTermType(term));
+
+	return checkedTerms;
 }
 
 void ListModel::_connectSourceControls(SourceItem* sourceItem)
@@ -267,7 +275,7 @@ QStringList ListModel::termsTypes()
 
 	for (const Term& term : terms())
 	{
-		columnType type = getVariableType(term.asQString());
+		columnType type = term.type();
 		if (type != columnType::unknown)
 			types.insert(tq(columnTypeToString(type)));
 	}
@@ -280,20 +288,21 @@ void ListModel::setVariableType(int ind, columnType type)
 	if (ind < 0 || ind > _terms.size())
 		return;
 
-	QString name = _terms.at(ind).asQString();
-	if (getVariableType(name) == type)
+	Term& term = _terms.at(ind);
+	if (term.type() == type)
 		return;
 
-	_tempTermTypes[name] = type;
+	term.setType(type);
 
 	emit dataChanged(index(ind, 0), index(ind, 0));
-	emit columnTypeChanged(name);
+	emit columnTypeChanged(term);
 }
 
 columnType ListModel::getVariableType(const QString& name) const
 {
-	if (_tempTermTypes.find(name) != _tempTermTypes.end())
-		return _tempTermTypes.at(name);
+	int i = terms().indexOf(name);
+	if (i >= 0)
+		return terms().at(i).type();
 
 	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
 }
@@ -500,11 +509,10 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 {
 	if (filters.empty())	return terms;
 
-	QStringList values = terms.asQList(); // Use QStringList instead of Terms type because Terms eliminates automatically double values and that can generate mistakes expecially when indexes are used with the discard predicate.
+	Terms result = terms;
 
 	const static QString typeIs = "type=";
 	const static QString controlIs = "control=";
-	const static QString discardIs = "discardIndex=";
 
 	QString useTheseVariableTypes, useThisControl, discardIndexes;
 
@@ -512,61 +520,23 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 	{
 		if (filter.startsWith(typeIs))		useTheseVariableTypes	= filter.right(filter.length() - typeIs.length());
 		if (filter.startsWith(controlIs))	useThisControl			= filter.right(filter.length() - controlIs.length());
-		if (filter.startsWith(discardIs))	discardIndexes			= filter.right(filter.length() - discardIs.length());
 	}
 
 	if (!useThisControl.isEmpty())
 	{
-		QStringList controlValues;
-		for (const QString& value : values)
+		Terms controlTerms;
+		for (const Term& term : result)
 		{
-			RowControls* rowControls = _rowControlsMap.value(value);
+			RowControls* rowControls = _rowControlsMap.value(term.asQString());
 			if (rowControls)
 			{
 				JASPControl* control = rowControls->getJASPControl(useThisControl);
 
-				if (control)	controlValues.append(control->property("value").toString());
+				if (control)	controlTerms.add(control->property("value").toString());
 				else			Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
 			}
 		}
-		values = controlValues;
-	}
-
-	if (!discardIndexes.isEmpty())
-	{
-		std::vector<bool> discarded(values.size(), false );
-		QStringList indexes = discardIndexes.split("|");
-		for (const QString& index : indexes)
-		{
-			QString cleanIndex = index;
-			if (index.contains('-'))
-			{
-				bool lowOk = false, highOk = false;
-				int low = index.first(index.indexOf('-')).toInt(&lowOk);
-				int high = index.sliced(index.indexOf('-') + 1).toInt(&highOk);
-				if (lowOk && highOk && low >= 0 && high > low)
-				{
-					for (int i = low; i <= high; i++)
-						if (i < discarded.size())
-							discarded[i] = true;
-				}
-			}
-			else
-			{
-				bool ok = false;
-				int i = index.toInt(&ok);
-				if (ok && i >= 0 && i < discarded.size())
-					discarded[i] = true;
-			}
-		}
-
-		QStringList selectedValues;
-		for (int i = 0; i < discarded.size(); i++)
-		{
-			if (!discarded[i])
-				selectedValues.append(values.at(i));
-		}
-		values = selectedValues;
+		result = controlTerms;
 	}
 
 	if (!useTheseVariableTypes.isEmpty())
@@ -581,31 +551,29 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 				types.push_back(type);
 		}
 
-		QStringList rightValues;
-		for (const QString& value : values)
+		Terms rightValues;
+		for (const Term& term : result)
 		{
-			columnType type = columnType(getVariableType(value));
-			if (types.contains(type))
-				rightValues.append(value);
+			if (types.contains(term.type()))
+				rightValues.add(term);
 		}
-		values = rightValues;
+		result = rightValues;
 	}
 
 	if (filters.contains("levels"))
 	{
-		QStringList allLabels;
-		for (const QString& value : values)
+		Terms allLabels;
+		for (const Term& term : result)
 		{
-			QStringList labels = requestInfo(VariableInfo::Labels, value).toStringList();
-			if (labels.size() > 0)	allLabels.append(labels);
-			else					allLabels.append(value);
+			Terms labels = requestInfo(VariableInfo::Labels, term.asQString()).toStringList();
+			if (labels.size() > 0)	allLabels.add(labels);
+			else					allLabels.add(term);
 		}
 
-		values = allLabels;
+		result = allLabels;
 	}
 
-
-	return values;
+	return result;
 }
 
 Terms ListModel::termsEx(const QStringList &filters)
@@ -641,15 +609,17 @@ void ListModel::sourceNamesChanged(QMap<QString, QString> map)
 		emit namesChanged(changedNamesMap);
 }
 
-int ListModel::sourceColumnTypeChanged(QString name)
+int ListModel::sourceColumnTypeChanged(Term sourceTerm)
 {
-	int i = terms().indexOf(name);
+	int i = _terms.indexOf(sourceTerm);
 	if (i >= 0)
 	{
+		Term& term = _terms.at(i);
+		term.setType(sourceTerm.type());
 		QModelIndex ind = index(i, 0);
 
 		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
-		emit columnTypeChanged(name);
+		emit columnTypeChanged(term);
 	}
 
 	return i;
@@ -753,8 +723,7 @@ void ListModel::_setTerms(const std::vector<Term> &terms)
 
 void ListModel::_setTerms(const Terms &terms)
 {
-	_checkTermsTypes(terms);
-	_terms.set(terms);
+	_terms.set(_checkTermsTypes(terms));
 	setUpRowControls();
 }
 
@@ -784,21 +753,18 @@ void ListModel::_removeLastTerm()
 
 void ListModel::_addTerms(const Terms &terms)
 {
-	_checkTermsTypes(terms);
-	_terms.add(terms);
+	_terms.add(_checkTermsTypes(terms));
 	setUpRowControls();
 }
 
-void ListModel::_addTerm(const QString &term, bool isUnique)
+void ListModel::_addTerm(const Term &term, bool isUnique)
 {
-	_checkTermsType(term);
-	_terms.add(term, isUnique);
+	_terms.add(_checkTermType(term), isUnique);
 	setUpRowControls();
 }
 
 void ListModel::_replaceTerm(int index, const Term &term)
 {
-	_checkTermsType(term.asQString());
-	_terms.replace(index, term);
+	_terms.replace(index, _checkTermType(term));
 	setUpRowControls();
 }
