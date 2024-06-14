@@ -167,6 +167,7 @@ private:
 	void		create();										///< Creates a new sqlite database in sessiondir and loads it
 	void		load();											///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 	void		close();										///< Closes the loaded database and disconnects
+	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
 
 	int			_transactionWriteDepth	= 0,
 				_transactionReadDepth	= 0;

@@ -33,6 +33,11 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 				ALTER TABLE Columns  DROP 	COLUMN isComputed;			-- was removed in 0.18.3
 			)ModernC++IsGreat"); 
 	
+	//Workaround for someone who made a bunch of files during 0.19 development that didnt have the following value:
+	if(originalVersion == "0.19.0" && !tableHasColumn("Columns", "autoSortByValue"))
+	{
+		runStatements("ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;");
+	}
 
 	transactionWriteEnd();
 }
@@ -1594,6 +1599,21 @@ void DatabaseInterface::close()
 		sqlite3_close(_db);
 		_db = nullptr;
 	}
+}
+
+bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::string &columnName)
+{
+	return SQLITE_OK == sqlite3_table_column_metadata(
+	  _db,
+	  NULL,     
+	  tableName.c_str(), 
+	  columnName.c_str(),
+	  NULL,
+	  NULL,
+	  NULL,
+	  NULL,
+	  NULL
+	);
 }
 
 void DatabaseInterface::transactionWriteBegin()
