@@ -2159,7 +2159,7 @@ stringvec Column::previewTransform(columnType transformType)
 		
 		
 		for(int count = 0; count < _ints.size() && count < showThisMany; count++)
-			someValues << (count++ > 0 ? ", " : "") << (transformType == columnType::scale ? getValue(count, true, false, transformType) : '"' + getLabel(count, true) + '"');
+			someValues << (count > 0 ? ", " : "") << (transformType == columnType::scale ? getValue(count, true, false, transformType) : '"' + getLabel(count, true) + '"');
 		
 		if(_ints.size() > showThisMany)
 			someValues << ", ...";
