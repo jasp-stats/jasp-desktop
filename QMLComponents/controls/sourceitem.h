@@ -120,8 +120,9 @@ private:
 	ListModel			*			_sourceListModel			= nullptr;
 	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
 	int								_nativeModelRole			= Qt::DisplayRole;
-	bool							_isDataSetVariables			= false;
-	bool							_combineWithOtherModels		= false;
+	bool							_isDataSetVariables			= false,
+									_combineWithOtherModels		= false,
+									_noInteractions				= false;
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;
 	bool							_connected					= false;

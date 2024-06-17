@@ -44,7 +44,7 @@ SourceItem::SourceItem(
 
 	_sourceName					= map["name"].toString();
 	_rowControlName				= map["controlName"].toString();
-	_sourceFilter					= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
+	_sourceFilter				= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
 	_conditionExpression		= map["condition"].toString();
 	_values						= values;
 	_sourceNativeModel			= nativeModel;
@@ -54,6 +54,7 @@ SourceItem::SourceItem(
 	_isValuesSource				= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
 	_isDataSetVariables			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
 	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
+	_noInteractions				= map.contains("noInteraction")				? map["noInteraction"].toBool()				: false;
 	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt())	: JASPControl::CombinationType::NoCombination;
 	if (isInfoProviderModel(_sourceNativeModel))									_isDataSetVariables = true;
@@ -301,9 +302,15 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 		if (map.contains("use"))
 		{
-			if (!sourceUse.isEmpty())
-				sourceUse += ",";
-			sourceUse += map["use"].toString();
+			QString useAttribute = map["use"].toString();
+			if (useAttribute == "noInteraction")
+				map["noInteraction"] = true;
+			else
+			{
+				if (!sourceUse.isEmpty())
+					sourceUse += ",";
+				sourceUse += map["use"].toString();
+			}
 		}
 
 		if (map.contains("values"))
@@ -490,6 +497,14 @@ Terms SourceItem::_readAllTerms()
 		terms = _sourceListModel->termsEx(_sourceFilter);
 		if (_targetListControl->useSourceLevels())
 			_targetListControl->model()->setColumnsUsedForLabels(_sourceListModel->terms().asQList());
+		if (_noInteractions)
+		{
+			Terms termsWithoutInteraction;
+			for (const Term& term : terms)
+				if (term.components().size() == 1)
+					termsWithoutInteraction.add(term);
+			terms = termsWithoutInteraction;
+		}
 	}
 	else if (_isDataSetVariables)
 	{
