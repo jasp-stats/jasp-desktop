@@ -57,10 +57,19 @@ QT.GridLayout
 	{
 		if (!_initialized || (width === 0)) return;
 
-		if (width < implicitWidth && gridLayout.columns >= 2)
+		if (width < (implicitWidth - 1) && gridLayout.columns >= 2)
 		{
-			messages.log("Content of the GridLayout is too large, decrease the number of columns to " + (gridLayout.columns - 1) + ". width: " + width + ", implicitWidth: " + implicitWidth)
-			gridLayout.columns--;
+			if (columnSpacing > (jaspTheme.columnGridSpacing / 2) && ((implicitWidth - width) < (jaspTheme.columnGridSpacing / 2) * (gridLayout.columns - 1)))
+			{
+				var newMargin = jaspTheme.columnGridSpacing - (implicitWidth - width) / (gridLayout.columns - 1) - 1
+				messages.log("Content of the GridLayout is too large (width: " + width + ", implicitWidth: " + implicitWidth + "): decrease the margin between the columns from " + columnSpacing + " to " + newMargin)
+				columnSpacing = newMargin
+			}
+			else
+			{
+				messages.log("Content of the GridLayout is too large (width: " + width + ", implicitWidth: " + implicitWidth + "): decrease the number of columns to " + (gridLayout.columns - 1))
+				gridLayout.columns--;
+			}
 		}
 	}
 
