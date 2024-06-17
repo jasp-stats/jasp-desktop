@@ -179,7 +179,7 @@ ComboBoxBase
 		popup: QTC.Popup
 		{
 			id:				popupRoot
-			y:				control.y + jaspTheme.comboBoxHeight
+			y:				control.height
 			width:			comboBoxBackground.width + scrollBar.width
 
 			property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
