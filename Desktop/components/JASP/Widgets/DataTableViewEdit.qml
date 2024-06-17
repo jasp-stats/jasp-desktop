@@ -194,7 +194,8 @@ Item
 
             onClicked: (mouse) =>
 			{
-				dataTableView.showPopupMenu(editItemRoot, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
+				if(mouse.button === Qt.RightButton)
+					dataTableView.showPopupMenu(editItemRoot, mapToGlobal(mouse.x, mouse.y), rowIndex, columnIndex);
 			}
 		}
 	}
