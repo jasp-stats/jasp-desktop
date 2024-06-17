@@ -55,6 +55,8 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 
 	QPushButton* yesButton =	box.addButton(YesButtonText,	QMessageBox::ButtonRole::YesRole);
 	QPushButton* noButton =		box.addButton(NoButtonText,		QMessageBox::ButtonRole::NoRole);
+
+	box.setDefaultButton(yesButton);
 	box.exec();
 
 	return box.clickedButton() == yesButton;
