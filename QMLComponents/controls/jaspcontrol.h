@@ -193,6 +193,7 @@ public slots:
 
 	void	addControlError(			QString message);
 	void	addControlErrorTemporary(	QString message);
+	void	addControlErrorPermanent(	QString message);
 	void	addControlWarning(			QString message);
 	void	addControlWarningTemporary(	QString message);
 	void	clearControlError();
