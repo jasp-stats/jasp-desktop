@@ -74,12 +74,6 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-void AnalysisForm::runAnalysis()
-{
-	_analysis->run();
-	refreshTableViewModels();
-}
-
 QString AnalysisForm::generateWrapper() const
 {
 	return _rSyntax->generateWrapper();
@@ -398,7 +392,7 @@ void AnalysisForm::addFormWarning(const QString & warning)
 
 //This should be moved to JASPControl maybe?
 //Maybe even to full QML? Why don't we just use a loader...
-void AnalysisForm::addControlError(JASPControl* control, QString message, bool temporary, bool warning)
+void AnalysisForm::addControlError(JASPControl* control, QString message, bool temporary, bool warning, bool closeable)
 {
 	if (!control)
 	{
@@ -450,6 +444,7 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 
 		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
+		controlErrorMessageItem->setProperty("closeable", closeable);
 		controlErrorMessageItem->setParentItem(container);
 		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
 	}
@@ -465,7 +460,7 @@ bool AnalysisForm::hasError()
 	// Controls handling inside a form must indeed be done in anther way!
 
 	for (QQuickItem* item : _controlErrorMessageCache)
-		if (item->property("control").value<JASPControl*>() != nullptr)
+		if (item->property("control").value<JASPControl*>() != nullptr && !item->property("warning").toBool())
 			return true;
 
 	return false;

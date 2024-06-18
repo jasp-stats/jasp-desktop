@@ -222,6 +222,9 @@ void Analysis::run()
 
 void Analysis::refresh()
 {
+	if (form() && form()->hasError())
+		return;
+
 	TempFiles::deleteAll(int(_id));
 	run();
 

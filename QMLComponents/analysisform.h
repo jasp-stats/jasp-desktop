@@ -143,11 +143,10 @@ public:
 	Q_INVOKABLE void		addFormError(const QString& message);
 	Q_INVOKABLE void		addFormWarning(const QString& message);
 	Q_INVOKABLE void		refreshAnalysis();
-	Q_INVOKABLE void		runAnalysis();
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QString		generateWrapper()		const;
 
-	void			addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
+	void			addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void			clearControlError(JASPControl* control);
 	void			cleanUpForm();
 	bool			hasError();

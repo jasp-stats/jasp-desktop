@@ -274,6 +274,12 @@ void JASPControl::addControlErrorTemporary(QString message)
 		_form->addControlError(this, message, true);
 }
 
+void JASPControl::addControlErrorPermanent(QString message)
+{
+	if (_form && message.size())
+		_form->addControlError(this, message, false, false, false);
+}
+
 void JASPControl::addControlWarning(QString message)
 {
 	if (_form && message.size())
