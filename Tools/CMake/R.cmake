@@ -95,6 +95,10 @@ set(AVAILABLE_R_VERSIONS
 	"R-4.4.0-x86_64"
 	"R-4.4.0-arm64"
 	"R-4.4.0-win"
+  "R-4.4.1"
+	"R-4.4.1-x86_64"
+	"R-4.4.1-arm64"
+	"R-4.4.1-win"
 )
 
 set(R_BINARY_HASHES
@@ -139,13 +143,19 @@ set(R_BINARY_HASHES
 	"13c1ae112666425ddc9bbb6327b66d2bcb26eba8"
 	"45e08d760f10c939b1a341223562bf0ac7051332"
 	"b447e5ad8b87857ec263591b246c19f3271ba7b7"
+
+  # 4.4.1
+  "e66eb09244121d7db7f8fb41d3c06a7579fc93b5"
+  "e66eb09244121d7db7f8fb41d3c06a7579fc93b5"
+  "616560b17092bbdd8b814d9ed92d098e52204830"
+  "2b99600ca0b4280b4439947c6be71f3dff380e15"
 )
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 # dont forget check and upgrande Rtools version if major_minor version changed.
-set(R_VERSION "4.4.0")
+set(R_VERSION "4.4.1")
 set(R_VERSION_MAJOR_MINOR "4.4")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
