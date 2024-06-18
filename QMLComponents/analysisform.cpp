@@ -74,12 +74,6 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-void AnalysisForm::runAnalysis()
-{
-	_analysis->run();
-	refreshTableViewModels();
-}
-
 QString AnalysisForm::generateWrapper() const
 {
 	return _rSyntax->generateWrapper();
@@ -466,7 +460,7 @@ bool AnalysisForm::hasError()
 	// Controls handling inside a form must indeed be done in anther way!
 
 	for (QQuickItem* item : _controlErrorMessageCache)
-		if (item->property("control").value<JASPControl*>() != nullptr)
+		if (item->property("control").value<JASPControl*>() != nullptr && !item->property("warning").toBool())
 			return true;
 
 	return false;
