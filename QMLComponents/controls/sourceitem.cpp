@@ -124,7 +124,7 @@ void SourceItem::connectModels()
 	{
 		VariableInfo* variableInfo = VariableInfo::info();
 		connect(variableInfo,	&VariableInfo::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
-		connect(variableInfo,	&VariableInfo::columnTypeChanged,	[this, controlModel] (QString colName)
+		connect(variableInfo,	&VariableInfo::columnTypeChanged,	controlModel, [this, controlModel] (QString colName)
 		{
 			columnType type = (columnType)requestInfo(VariableInfo::VariableType, colName).toInt();
 			Term term(colName);
