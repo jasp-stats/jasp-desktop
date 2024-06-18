@@ -219,7 +219,12 @@ void MainWindow::checkForUpdates()
 	{
 		bool answer = MessageForwarder::showYesNo(
 					tr("Check for updates"), 
-					tr("Should JASP check for updates at our server and let you know if there is a new version?\n\nYou can always change this setting in the Interface Preferences."), 
+					tr(R"MultiLine(Should JASP check for updates at our server and let you know if there is a new version?
+
+JASP doesn't share any of your data when it gets updates, not even which version of JASP you are using.
+It does share your IP-address with our server but that is required for internet to function.
+
+This setting can always be changed in the Interface Preferences.)MultiLine"), 
 					tr("Yes"), 
 					tr("No"));
 		
