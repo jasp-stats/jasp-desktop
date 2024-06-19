@@ -83,6 +83,7 @@ VariablesFormBase
 			z:				10
 			leftSource:		availableVariablesList
 			rightSource:	allAssignedVariablesList[index]
+			enabled:		allAssignedVariablesList[index].enabled
 
 			Component.onCompleted:
 			{
