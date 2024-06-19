@@ -41,6 +41,7 @@ public:
 private:
 	Terms		_getValuesFromOptions(const Json::Value& option)							const;
 	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
+	Json::Value	_adjustBindingType(const Json::Value &value)								const;
 	Json::Value _getTypes()																	const;
 	bool		_isValueWithTypes(const Json::Value &value)									const;
 

@@ -92,7 +92,11 @@ void ListModelLayersAssigned::_setTerms()
 	{
 		newTerms.add(tr("Layer %1").arg(layer));
 		for (const QString& variable : variables)
-			newTerms.add(variable);
+		{
+			Term term(variable);
+			term.setType(columnType::nominal);
+			newTerms.add(term);
+		}
 		layer++;
 	}
 
