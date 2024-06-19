@@ -438,13 +438,14 @@ FocusScope
 				bottomMargin:		4 * welcomeRoot.scaler
 			}
 			
-			MouseArea
+			JASPMouseAreaToolTipped
 			{
 				id:						bugsMouseArea
 				hoverEnabled:			true
 				onClicked:				Qt.openUrlExternally(mainWindow.contactUrlBugs);
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.contactUrlBugs
 			}
 		}
 		
@@ -469,13 +470,14 @@ FocusScope
 				margins:			10 * welcomeRoot.scaler
 			}
 			
-			MouseArea
+			JASPMouseAreaToolTipped
 			{
 				id:						featureMouseArea
 				hoverEnabled:			true
 				onClicked:				Qt.openUrlExternally(mainWindow.contactUrlFeatures);
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.contactUrlFeatures
 			}
 		}
 		
@@ -500,13 +502,14 @@ FocusScope
 				bottomMargin:		4 * welcomeRoot.scaler
 			}
 			
-			MouseArea
+			JASPMouseAreaToolTipped
 			{
 				id:						jaspQuestionsMouseArea
 				hoverEnabled:			true
-				onClicked:				Qt.openUrlExternally("https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor");
+				onClicked:				Qt.openUrlExternally(mainWindow.questionsUrl);
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.questionsUrl
 			}
 		}
 		
@@ -530,13 +533,14 @@ FocusScope
 				margins:			10 * welcomeRoot.scaler
 			}
 			
-			MouseArea
+			JASPMouseAreaToolTipped
 			{
 				id:						jaspStatsMouseArea
 				hoverEnabled:			true
 				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			"https://www.jasp-stats.org"
 			}
 		}
 		

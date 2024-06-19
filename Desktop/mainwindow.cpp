@@ -338,12 +338,12 @@ const QString MainWindow::commUrlMembers() const
 
 const QString MainWindow::contactUrlFeatures() const
 {
-	return "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Feature+Request&projects=&template=feature-request.yml&title=%5BFeature+Request%5D%3A+";	
+	return "https://jasp-stats.org/request-feature";	
 }
 
 const QString MainWindow::contactUrlBugs() const
 {
-	return "https://github.com/jasp-stats/jasp-issues/issues/new?assignees=&labels=Bug&projects=&template=bug-report.yml&title=%5BBug%5D%3A+";
+	return "https://jasp-stats.org/report-bug";
 }
 
 const QString MainWindow::contactText() const
