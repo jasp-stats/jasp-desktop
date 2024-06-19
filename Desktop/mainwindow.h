@@ -93,7 +93,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
 	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
-
+	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
 
 	friend class FileMenu;
 public:
@@ -129,6 +129,7 @@ public:
 	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlBugs()		const;
 	const QString 		contactText()			const;
+	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
 
 public slots:
 	void setImageBackgroundHandler(QString value);
