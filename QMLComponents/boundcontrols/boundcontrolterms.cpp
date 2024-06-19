@@ -208,22 +208,29 @@ Json::Value BoundControlTerms::createJson() const
 				}
 			}
 			valuePart.append(row);
+			typesPart.append(columnTypeToString(term.type()));
 		}
 	}
 	else if (_isSingleRow)
+	{
 		valuePart = (terms.size() > 0) ? terms.at(0).asString() : "";
+		typesPart = columnTypeToString((terms.size() > 0) ? terms.at(0).type() : columnType::unknown);
+	}
 	else
 	{
 		valuePart = Json::arrayValue;
 		for (const Term& term : terms)
+		{
 			valuePart.append(term.asString());
+			typesPart.append(columnTypeToString(term.type()));
+		}
 	}
 
 
 
 	Json::Value result = Json::objectValue;
 	result["value"] = valuePart;
-	result["types"] = _getTypes();
+	result["types"] = typesPart;
 
 	return result;
 }
