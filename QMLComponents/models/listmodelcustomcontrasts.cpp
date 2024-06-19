@@ -69,7 +69,7 @@ void ListModelCustomContrasts::getVariablesAndLabels(Terms& variables, QVector<Q
 			labels = _factors[newVariable.asQString()];
 		else
 		{
-			if (getVariableRealType(newVariable.asQString()) == columnType::scale)
+			if (newVariable.type() == columnType::scale)
 			{
 				if (_scaleFactor == 0)
 					labels = {"0"};
