@@ -425,9 +425,11 @@ bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms
 	return result;
 }
 
-Terms BoundControlTerms::_getValuesFromOptions(const Json::Value& option) const
+Terms BoundControlTerms::_getValuesFromOptions(const Json::Value& _option) const
 {
 	Terms result;
+
+	Json::Value option = _isValueWithTypes(option) ? _option["value"] : _option;
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
