@@ -6,7 +6,7 @@ import QtQuick.Layouts  1.3
 
 FactorsFormBase
 {
-    id:					    factorsForm
+	id:					   factorsForm
 
 	implicitHeight		: jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
 	implicitWidth		: jaspForm.width
@@ -16,11 +16,11 @@ FactorsFormBase
 	optionKey			: allowInteraction ? "components" : "indicators" // The option has the name, the title and the terms of each VariablesList: optionKey gives the key name for the terms.
 
 
-	property string availableVariablesListName: "allAvailableVariables"
-	property alias	availableVariablesList: availableVariablesList
-    property bool   allowAll: false
-	property int    listWidth:			parent.width * 2 / 5
-	property int    factorListHeight: (jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing
+	property string availableVariablesListName:		"allAvailableVariables"
+	property alias	availableVariablesList:			availableVariablesList
+	property var	allowedColumns:					["scale"]
+	property int    listWidth:						parent.width * 2 / 5
+	property int    factorListHeight:				(jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing
 	property int	assignAvailableVariablesToList:	allowInteraction ? (initNumberFactors - 1) : -1 // If interaction is used, set automatically the available variables to the last assigned variables list
 
 	AvailableVariablesList
@@ -74,7 +74,7 @@ FactorsFormBase
 					editableTitle:      factorTitle
 					dropKeys:			availableVariablesListName
 					//dropMode:			JASP.DropReplace
-					allowedColumns:     allowAll ? [] : ["scale"]
+					allowedColumns:     factorsForm.allowedColumns
 					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
 					implicitWidth:		listWidth
 					isBound:			false
