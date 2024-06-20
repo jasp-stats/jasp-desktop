@@ -694,6 +694,11 @@ void ListModel::sourceColumnsChanged(QStringList columns)
 
 	if (changedColumns.size() > 0)
 	{
+		for (const QString& col : changedColumns)
+		{
+			int i = terms().indexOf(col);
+			emit dataChanged(index(1,0), index(i,0));
+		}
 		emit columnsChanged(changedColumns);
 
 		if (listView()->isBound())
