@@ -107,18 +107,19 @@ Rectangle
 
 	Text
 	{
-		id:				headerTextItem
+		id:							headerTextItem
 
-		text:			headerText
-		font:			jaspTheme.font
-		color:			jaspTheme.textEnabled
-		textFormat:		Text.RichText
-
+		text:						headerText
+		font:						jaspTheme.font
+		color:						jaspTheme.textEnabled
+		textFormat:					Text.Normal
+		elide:						Text.ElideRight
 		horizontalAlignment:		Text.AlignLeft
 
 		anchors.left:				colIcon.right
 		anchors.leftMargin:			colIcon.anchors.margins
 		anchors.verticalCenter:		headerRoot.verticalCenter
+		anchors.right:				colIsComputed.left
 	}
 	
 	DataTableViewColumnHeaderComputedColumnInfo
