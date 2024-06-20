@@ -491,8 +491,8 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 			{
 			case ListModel::ColumnTypeRole:								return columnTypeToQString(colType);
 			case ListModel::ColumnRealTypeRole:							return columnTypeToQString(colRealType);
-			case ListModel::ColumnTypeIconRole:							return VariableInfo::info()->getIconFile(colType, colType == colRealType ? VariableInfo::DefaultIconType : VariableInfo::TransformedIconType);
-			case ListModel::ColumnTypeDisabledIconRole:					return VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType);
+			case ListModel::ColumnTypeIconRole:							return colType == columnType::unknown ? "" : (VariableInfo::info()->getIconFile(colType, colType == colRealType ? VariableInfo::DefaultIconType : VariableInfo::TransformedIconType));
+			case ListModel::ColumnTypeDisabledIconRole:					return colType == columnType::unknown ? "" : (VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType));
 			}
 		}
 	}

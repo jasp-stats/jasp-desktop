@@ -86,7 +86,7 @@ QString ListModelLabelValueTerms::getInfo(const QString &label) const
 
 QString ListModelLabelValueTerms::getLabel(const QString &value) const
 {
-	return _valuesMap.contains(value) ? _labelValues[_valuesMap[value]].label : value;
+	return _valuesMap.contains(value) ? _labelValues[_valuesMap[value]].label.asQString() : value;
 }
 
 int ListModelLabelValueTerms::getIndexOfValue(const QString &value) const
@@ -109,11 +109,11 @@ void ListModelLabelValueTerms::_setLabelValues(const SourceItem::SourceValuesTyp
 	int i = 0;
 	for (const auto& labelValue : labelvalues)
 	{
-		const QString& label = labelValue.label;
+		const Term& label = labelValue.label;
 		const QString& value = labelValue.value;
-		newTerms.add(Term::readTerm(label)); // The string can be an interaction between different variables (eg: a * b)
+		newTerms.add(label);
 		_valuesMap[value] = i;
-		_labelsMap[label] = i;
+		_labelsMap[label.asQString()] = i;
 		i++;
 	}
 
@@ -135,7 +135,7 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 			QString label = term.asQString();
 			QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
 			QString info = labelValueSourceModel ? labelValueSourceModel->getInfo(label) : "";
-			labelValues.push_back(SourceItem::SourceValuesItem(label, value, info));
+			labelValues.push_back(SourceItem::SourceValuesItem(term, value, info));
 		}
 	});
 
@@ -156,12 +156,14 @@ void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
 		QSet<int> indexes = newTerms.replaceVariableName(oldName.toStdString(), newName.toStdString()); // In case of interaction, several terms might change
 		if (indexes.size() > 0)
 		{
-			_setTerms(newTerms);
 			for (int index : indexes)
 			{
-				QString newLabel = newTerms.at(index).asQString();
+				Term& term = newTerms.at(index);
+				QString newLabel = term.asQString();
+				if (term.components().size() == 1)
+					term.setType(columnType(requestInfo(VariableInfo::VariableType, newLabel).toInt()));
 				SourceItem::SourceValuesItem elt = _labelValues.at(index);
-				QString oldLabel = elt.label;
+				QString oldLabel = elt.label.asQString();
 				elt.label = newLabel;
 				_labelValues.replace(index, elt);
 				_labelsMap.remove(oldLabel);
@@ -169,6 +171,7 @@ void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
 				changedNamesMap[oldLabel] = newLabel;
 			}
 			changedIndexes += indexes;
+			_setTerms(newTerms);
 		}
 	}
 
