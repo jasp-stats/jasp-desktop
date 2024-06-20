@@ -148,15 +148,15 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 
 		if (parentBoundValue->isMember(parent.name))
 		{
-			Json::Value& parentBoundValues = (*parentBoundValue)[parent.name];
+			Json::Value* parentBoundValues = &(*parentBoundValue)[parent.name];
 			metaValue = &(*metaValue)[parent.name];
 			bool hasTypes = !metaValue->isNull() && metaValue->isMember("hasTypes") ? (*metaValue)["hasTypes"].asBool() : false;
-			if (hasTypes && parentBoundValues.isObject() && parentBoundValues.isMember("value"))
-				parentBoundValues = parentBoundValues["value"];
+			if (hasTypes && parentBoundValues->isObject() && parentBoundValues->isMember("value"))
+				parentBoundValues = &(*parentBoundValues)["value"];
 
-			if (!parentBoundValues.isNull() && parentBoundValues.isArray())
+			if (!parentBoundValues->isNull() && parentBoundValues->isArray())
 			{
-				for (Json::Value & boundValue : parentBoundValues)
+				for (Json::Value & boundValue : (*parentBoundValues))
 				{
 					if (boundValue.isMember(parent.key))
 					{
@@ -197,8 +197,8 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 							newValue.append(parent.value[i]);
 						row[parent.key] = newValue;
 					}
-					parentBoundValues.append(row);
-					parentBoundValue = &(parentBoundValues[parentBoundValues.size() - 1]);
+					parentBoundValues->append(row);
+					parentBoundValue = &(parentBoundValues[parentBoundValues->size() - 1]);
 					found = true;
 				}
 			}
