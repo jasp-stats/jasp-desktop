@@ -49,8 +49,9 @@ public:
 
 	struct SourceValuesItem
 	{
-		QString label, value, info;
-		SourceValuesItem(const QString& l, const QString& v, const QString& i) : label{l}, value{v}, info{i} {}
+		Term label;
+		QString value, info;
+		SourceValuesItem(const Term& l, const QString& v, const QString& i) : label{l}, value{v}, info{i} {}
 
 	};
 

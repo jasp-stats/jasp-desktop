@@ -126,7 +126,7 @@ ComboBoxBase
 				width:					15 * preferencesModel.uiScale
 				x:						3  * preferencesModel.uiScale
 				anchors.verticalCenter: parent.verticalCenter
-				source:					!visible ? "" : ((comboBox.currentColumnTypeIcon && comboBox.isBound) ? comboBox.currentColumnTypeIcon : comboBox.values[comboBox.currentIndex].columnTypeIcon)
+				source:					!visible ? "" : ((comboBox.currentColumnTypeIcon && comboBox.isBound) ? comboBox.currentColumnTypeIcon : (comboBox.values && comboBox.currentIndex >= 0 && comboBox.currentIndex < comboBox.values.length ? comboBox.values[comboBox.currentIndex].columnTypeIcon : ""))
 				visible:				comboBox.showVariableTypeIcon && !control.isEmptyValue && (comboBox.currentColumnType || !comboBox.isBound)
 			}
 
