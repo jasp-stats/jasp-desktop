@@ -80,6 +80,7 @@ signals:
 
 protected:
 	Json::Value&	_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string>& parentNames, bool & found, bool createAnyway = false);
+	std::string		_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const;
 
 
 	AnalysisForm*	_analysisForm		= nullptr;

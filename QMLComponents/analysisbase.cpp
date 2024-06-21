@@ -187,6 +187,7 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 
 				if (!found && createAnyway)
 				{
+					// A control can be created before the parent control is completed.
 					Json::Value row(Json::objectValue);
 					if (parent.value.size() == 1)
 						row[parent.key] = parent.value[0];
@@ -197,8 +198,7 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 							newValue.append(parent.value[i]);
 						row[parent.key] = newValue;
 					}
-					parentBoundValues->append(row);
-					parentBoundValue = &(parentBoundValues[parentBoundValues->size() - 1]);
+					parentBoundValue = &(parentBoundValues->append(row));
 					found = true;
 				}
 			}
@@ -206,6 +206,29 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 	}
 
 	return *parentBoundValue;
+}
+
+std::string AnalysisBase::_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const
+{
+	std::string keys;
+	bool firstKey = true;
+	for (const auto& parentKey : parentKeys)
+	{
+		std::string parentValue;
+		bool firstValue = true;
+		for (const std::string& v : parentKey.value)
+		{
+			if (!firstValue) parentValue += "*";
+			parentValue += v;
+			firstValue = false;
+		}
+
+		if (!firstKey) keys += " - ";
+		keys += ("key: " + parentKey.key + " name: " + parentKey.name + " value: " + parentValue);
+		firstKey = false;
+	}
+
+	return keys;
 }
 
 void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
@@ -226,6 +249,8 @@ void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &val
 			(*metaBoundValue)[name] = meta;
 		}
 	}
+	else
+		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
 
 	emit boundValuesChanged();
 }
