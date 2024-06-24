@@ -29,8 +29,9 @@ options("JASP_RENV_INSTALL_OPTIONS" = list(
   blavaan  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   metaBMA  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   rstanarm = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
-  stanova  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
-
+  stanova  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  rpf      = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  cubature = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
 ))
 options(renv.config.install.verbose = TRUE)
 configureVars = NULL
