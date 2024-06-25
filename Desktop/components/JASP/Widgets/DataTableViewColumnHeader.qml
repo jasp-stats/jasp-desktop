@@ -128,7 +128,7 @@ Rectangle
 
 		anchors.right:			colFilterOn.left
 		anchors.verticalCenter: parent.verticalCenter
-		anchors.margins:		2 * jaspTheme.uiScale
+		anchors.margins:		columnIsComputed ? 2 * jaspTheme.uiScale : 0
 	}
 
 
