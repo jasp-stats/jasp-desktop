@@ -7,7 +7,7 @@ Image
 {
 	id:			colIsComputed
 
-	width:		headerRoot.__iconDim
+	width:		columnIsComputed ? headerRoot.__iconDim : 0
 	height:		headerRoot.__iconDim
 	visible:	columnIsComputed
 
