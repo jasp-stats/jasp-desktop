@@ -41,6 +41,7 @@ GroupBoxBase
 			property bool	indent:				false
 			property bool	alignTextFields:	true
 			property alias	label:				label
+			property alias	preferredWidth:		contentArea.width
 
 			property var	_allTextFields:		[]
 			property bool	_childrenConnected:	false
@@ -70,7 +71,7 @@ GroupBoxBase
 		anchors.leftMargin: groupBox.title ? jaspTheme.groupContentPadding : 0
 		rowSpacing:			groupBox.rowSpacing
 		columnSpacing:		groupBox.columnSpacing
-    }
+	}
 
 	Connections
 	{
