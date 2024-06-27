@@ -124,6 +124,8 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 			beginRemoveRows(QModelIndex(), maxRows, maxRows + termsToSendBack.size());
 			_setTerms(newTerms);
 			endRemoveRows();
+
+			listView()->addControlWarningTemporary(tr("Only %1 variables are allowed").arg(maxRows));
 		}
 	}
 
