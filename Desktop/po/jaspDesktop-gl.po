@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-06-29 07:30+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.7-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -5306,11 +5312,12 @@ msgstr "Volver dimensionar os datos a %1 filas e %2 columnas"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Comprobar actualizacións"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
 msgstr ""
+"Comprobación automática diaria de actualizacións e incidencias coñecidas"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -5325,6 +5332,16 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP non comparte ningún dos teus datos cando fai actualizacións, nin "
+"sequera que versión de JASP estás utilizando.\n"
+"Comparte a túa dirección IP co servidor, pero iso é necesario para que "
+"funcione internet.\n"
+"\n"
+"A lista de incidencias coñecidas que descarga utilízase raramente; e a "
+"maioría das incidencias están en [jasp-issues](https://github.com/jasp-stats/"
+"jasp-issues/issues). Porén, se caemos na conta de que se deslizou un erro "
+"grave nunha análise, váiseche indicar *na análise* que hai algo que deberías "
+"ter en conta. Afortunadamente, case nunca necesitamos utilizar isto."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5333,11 +5350,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"Hai %1 niveis en total, dos que %2 teñen un valor numérico.\n"
+"Como '%3' semella: %4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Valores ausentes implícitos: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5345,6 +5365,8 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"Hai %1 niveis en total.\n"
+"Como '%2' semella: %3"
 
 #, qt-format
 msgctxt "FilterModel|"
@@ -5359,10 +5381,19 @@ msgid ""
 "\n"
 "%1\n"
 msgstr ""
+"# Máis arriba podes ver o código que xera JASP tanto para o filtrado de "
+"valores como para o filtro de arrastrar e soltar.\n"
+"# Este resultado predeterminado gárdase en 'generatedFilter', e pódese "
+"substituír ou combinar cun filtro personalizado.\n"
+"# Para combinar, podes engadir cláusulas usando '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"# Fai clic na icona (i) do recanto inferior dereito para obter máis axuda.\n"
+"\n"
+"%1\n"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Comprobar actualizacións"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5376,13 +5407,20 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"Debe procurar JASP as actualizacións no noso servidor e comunicarte se hai "
+"unha versión nova?\n"
+"\n"
+"JASP non comparte ningún dos teus datos cando fai actualizacións, nin "
+"sequera que versión de JASP estás utilizando.\n"
+"Comparte a túa dirección IP co noso servidor, pero iso é necesario para que "
+"funcione internet.\n"
+"\n"
+"Esta configuración pode sempre cambiarse nas Preferencias da Interface."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Yes"
 msgstr "Si"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "No"
 msgstr "Non"
@@ -5390,12 +5428,12 @@ msgstr "Non"
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "O número mínimo de niveis é %1. A variable %2 ten só %3 niveis"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
-msgstr ""
+msgstr "O número máximo de niveis é %1. A variable %2 ten %3 niveis"
 
 #, qt-format
 msgctxt "VariablesListBase|"
@@ -5403,6 +5441,8 @@ msgid ""
 "Minumum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
+"O número mínimo de valores numéricos é %1. A variable %2 ten só %3 valores "
+"numéricos diferentes"
 
 #, qt-format
 msgctxt "VariablesListBase|"
@@ -5410,27 +5450,26 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
+"O número máximo de valores numéricos é %1. A variable %2 ten %3 valores "
+"numéricos diferentes"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "Só se admiten %1 variables"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "Escala"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "Nominal"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Descoñecido"
