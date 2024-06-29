@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-12 10:36+0000\n"
+"PO-Revision-Date: 2024-06-26 13:09+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.6-rc\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2580,7 +2580,7 @@ msgstr "Ganzzahliges Feld"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr "Double-Präzisions-Feld"
+msgstr "Doubles-Präzisions-Feld"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
@@ -5217,7 +5217,7 @@ msgstr "Tabelle"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "Double-Präzisions-Feld"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
@@ -5237,7 +5237,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "Schwellwert für Metrisch"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"

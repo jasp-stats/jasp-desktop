@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-16 10:09+0000\n"
+"PO-Revision-Date: 2024-06-25 08:37+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.6-rc\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5073,7 +5073,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "默认按值对标签进行排序"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their numeric value"
@@ -5097,46 +5097,46 @@ msgstr "调整数据大小"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "列"
 
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "行"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "调整"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "将数据调整到设定的范围"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "关闭但不调整数据大小"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "问题咨询"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "访问主页"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
-msgstr ""
+msgstr "切换按列“%1”的值自动排序标签开关"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "调整数据"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "调整数据的行和列数量"
 
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
-msgstr ""
+msgstr "将数据大小调整为 %1 行和 %2 列"
