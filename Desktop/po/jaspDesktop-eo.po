@@ -1158,10 +1158,6 @@ msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr ""
 
-msgctxt "JASPDataView|"
-msgid "Double click to edit data"
-msgstr ""
-
 msgctxt "MainPage|"
 msgid "Hide data"
 msgstr ""
@@ -1712,18 +1708,6 @@ msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
-
-msgctxt "ColumnTypesModel|"
-msgid "Scale"
-msgstr ""
-
-msgctxt "ColumnTypesModel|"
-msgid "Ordinal"
-msgstr ""
-
-msgctxt "ColumnTypesModel|"
-msgid "Nominal"
 msgstr ""
 
 msgctxt "MessageForwarder|"
@@ -4536,19 +4520,6 @@ msgid ""
 msgstr ""
 
 msgctxt "FilterModel|"
-msgid ""
-"# Above you see the code that JASP generates for both value filtering and "
-"the drag&drop filter.\n"
-"# This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"# To combine you can append clauses using '&': 'generatedFilter & "
-"customFilter & perhapsAnotherFilter'\n"
-"# Click the (i) icon in the lower right corner for further help.\n"
-"\n"
-"generatedFilter\n"
-msgstr ""
-
-msgctxt "FilterModel|"
 msgid "No data loaded!"
 msgstr ""
 
@@ -4932,4 +4903,130 @@ msgstr ""
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Daily automatic check for updates & known issues"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid ""
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with the server but that is required for "
+"internet to function.\n"
+"\n"
+"The list of known issues it downloads is rarely used, mostly the issues are "
+"at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). However "
+"if we realize a terrible error has slipped into an analysis this will show "
+"you *in the analysis* that there is something you should take into account. "
+"Luckily we almost never need to use it."
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels, of which %2 have a numeric value.\n"
+"As a '%3' it looks like: %4\n"
+"%5"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Implicit missing values: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels.\n"
+"As a '%2' it looks like: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "FilterModel|"
+msgid ""
+"# Above you see the code that JASP generates for both value filtering and "
+"the drag&drop filter.\n"
+"# This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"# To combine you can append clauses using '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"# Click the (i) icon in the lower right corner for further help.\n"
+"\n"
+"%1\n"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Should JASP check for updates at our server and let you know if there is a "
+"new version?\n"
+"\n"
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with our server but that is required for "
+"internet to function.\n"
+"\n"
+"This setting can always be changed in the Interface Preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Yes"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "No"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minumum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTermsAssigned|"
+msgid "Only %1 variables are allowed"
+msgstr ""
+
+msgctxt "VariableInfo|"
+msgid "Scale"
+msgstr ""
+
+msgctxt "VariableInfo|"
+msgid "Ordinal"
+msgstr ""
+
+msgctxt "VariableInfo|"
+msgid "Nominal"
+msgstr ""
+
+msgctxt "VariableInfo|"
+msgid "Unknown"
 msgstr ""

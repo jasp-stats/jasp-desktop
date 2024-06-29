@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-20 20:09+0000\n"
-"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"pl/>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-rc\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -1214,10 +1208,6 @@ msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Przywróć domyślne"
 
-msgctxt "JASPDataView|"
-msgid "Double click to edit data"
-msgstr "Kliknij dwukrotnie, aby edytować dane"
-
 msgctxt "MainPage|"
 msgid "Hide data"
 msgstr "Ukryj dane"
@@ -1789,18 +1779,6 @@ msgstr ""
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr "Błąd podczas zmiany rozmiaru wykresu"
-
-msgctxt "ColumnTypesModel|"
-msgid "Scale"
-msgstr "Skala"
-
-msgctxt "ColumnTypesModel|"
-msgid "Ordinal"
-msgstr "Porządkowa"
-
-msgctxt "ColumnTypesModel|"
-msgid "Nominal"
-msgstr "Nominalna"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
@@ -4890,29 +4868,6 @@ msgstr ""
 "Połącz z symbolem negacji, aby odfiltrować wiersze z brakami danych (NA)."
 
 msgctxt "FilterModel|"
-msgid ""
-"# Above you see the code that JASP generates for both value filtering and "
-"the drag&drop filter.\n"
-"# This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"# To combine you can append clauses using '&': 'generatedFilter & "
-"customFilter & perhapsAnotherFilter'\n"
-"# Click the (i) icon in the lower right corner for further help.\n"
-"\n"
-"generatedFilter\n"
-msgstr ""
-"# Powyżej znajduje się kod, który JASP generuje zarówno dla filtrowania "
-"poprzez wpisanie wartości, jak i filtrów stworzonych z użyciem kreatora.\n"
-"# Domyślny wynik tego działania jest przechowywany w zmiennej "
-"'generatedFilter' i może być zastąpiony lub połączony z niestandardowym "
-"filtrem.\n"
-"# Aby połączyć, możesz dołączyć warunek za pomocą operatora '&': "
-"'generatedFilter & customFilter & perhapsAnotherFilter'\n"
-"# Kliknij ikonę (i) w prawym dolnym rogu, aby uzyskać dalszą pomoc.\n"
-"\n"
-"generatedFilter\n"
-
-msgctxt "FilterModel|"
 msgid "No data loaded!"
 msgstr "Nie wczytano danych!"
 
@@ -5261,8 +5216,8 @@ msgstr ""
 "<i><b>Brązowe Partnerstwo:</b></i>\n"
 "%4\n"
 "\n"
-"<a href=\"%6\">Kliknij tutaj, aby zobaczyć aktualną listę Partnerów JASP</a>"
-"\n"
+"<a href=\"%6\">Kliknij tutaj, aby zobaczyć aktualną listę Partnerów JASP</"
+"a>\n"
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
@@ -5334,3 +5289,134 @@ msgstr "Zmień rozmiar zbioru danych"
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
 msgstr "Zmień rozmiar danych do %1 wierszy i %2 kolumn"
+
+msgctxt "PrefsUI|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Daily automatic check for updates & known issues"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid ""
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with the server but that is required for "
+"internet to function.\n"
+"\n"
+"The list of known issues it downloads is rarely used, mostly the issues are "
+"at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). However "
+"if we realize a terrible error has slipped into an analysis this will show "
+"you *in the analysis* that there is something you should take into account. "
+"Luckily we almost never need to use it."
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels, of which %2 have a numeric value.\n"
+"As a '%3' it looks like: %4\n"
+"%5"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Implicit missing values: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels.\n"
+"As a '%2' it looks like: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "FilterModel|"
+msgid ""
+"# Above you see the code that JASP generates for both value filtering and "
+"the drag&drop filter.\n"
+"# This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"# To combine you can append clauses using '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"# Click the (i) icon in the lower right corner for further help.\n"
+"\n"
+"%1\n"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Should JASP check for updates at our server and let you know if there is a "
+"new version?\n"
+"\n"
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with our server but that is required for "
+"internet to function.\n"
+"\n"
+"This setting can always be changed in the Interface Preferences."
+msgstr ""
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "Yes"
+msgstr "Tak"
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "No"
+msgstr "Nie"
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minumum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTermsAssigned|"
+msgid "Only %1 variables are allowed"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Scale"
+msgstr "Skala"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Ordinal"
+msgstr "Porządkowa"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Nominal"
+msgstr "Nominalna"
+
+msgctxt "VariableInfo|"
+msgid "Unknown"
+msgstr ""

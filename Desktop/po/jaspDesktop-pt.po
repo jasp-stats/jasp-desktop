@@ -902,10 +902,6 @@ msgctxt "HelpWindow|"
 msgid "Search for:"
 msgstr "Procurar por:"
 
-msgctxt "JASPDataView|"
-msgid "Double click to edit data"
-msgstr "Clique duas vezes para editar dados"
-
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
 msgstr "Recolher"
@@ -2026,18 +2022,6 @@ msgstr ""
 "Atualmente não há ajuda disponível para essa análise :(\n"
 "\n"
 "Documentação adicional estará disponível em versões futuras do JASP."
-
-msgctxt "ColumnTypesModel|"
-msgid "Scale"
-msgstr "Escala"
-
-msgctxt "ColumnTypesModel|"
-msgid "Ordinal"
-msgstr "Ordinal"
-
-msgctxt "ColumnTypesModel|"
-msgid "Nominal"
-msgstr "Nominal"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
@@ -4829,19 +4813,6 @@ msgid ""
 msgstr ""
 
 msgctxt "FilterModel|"
-msgid ""
-"# Above you see the code that JASP generates for both value filtering and "
-"the drag&drop filter.\n"
-"# This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"# To combine you can append clauses using '&': 'generatedFilter & "
-"customFilter & perhapsAnotherFilter'\n"
-"# Click the (i) icon in the lower right corner for further help.\n"
-"\n"
-"generatedFilter\n"
-msgstr ""
-
-msgctxt "FilterModel|"
 msgid "No data loaded!"
 msgstr ""
 
@@ -5223,4 +5194,135 @@ msgstr ""
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Daily automatic check for updates & known issues"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid ""
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with the server but that is required for "
+"internet to function.\n"
+"\n"
+"The list of known issues it downloads is rarely used, mostly the issues are "
+"at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). However "
+"if we realize a terrible error has slipped into an analysis this will show "
+"you *in the analysis* that there is something you should take into account. "
+"Luckily we almost never need to use it."
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels, of which %2 have a numeric value.\n"
+"As a '%3' it looks like: %4\n"
+"%5"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Implicit missing values: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels.\n"
+"As a '%2' it looks like: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "FilterModel|"
+msgid ""
+"# Above you see the code that JASP generates for both value filtering and "
+"the drag&drop filter.\n"
+"# This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"# To combine you can append clauses using '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"# Click the (i) icon in the lower right corner for further help.\n"
+"\n"
+"%1\n"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Should JASP check for updates at our server and let you know if there is a "
+"new version?\n"
+"\n"
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with our server but that is required for "
+"internet to function.\n"
+"\n"
+"This setting can always be changed in the Interface Preferences."
+msgstr ""
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "Yes"
+msgstr "Sim"
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "No"
+msgstr "Não"
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minumum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTermsAssigned|"
+msgid "Only %1 variables are allowed"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Scale"
+msgstr "Escala"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Ordinal"
+msgstr "Ordinal"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Nominal"
+msgstr "Nominal"
+
+msgctxt "VariableInfo|"
+msgid "Unknown"
 msgstr ""

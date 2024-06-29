@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-26 13:09+0000\n"
-"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -1227,10 +1221,6 @@ msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-msgctxt "JASPDataView|"
-msgid "Double click to edit data"
-msgstr "Daten ändern mit Doppelklick"
-
 msgctxt "MainPage|"
 msgid "Hide data"
 msgstr "Daten ausblenden"
@@ -1803,18 +1793,6 @@ msgstr ""
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr "Fehler bei Größenänderung des Diagramms"
-
-msgctxt "ColumnTypesModel|"
-msgid "Scale"
-msgstr "Metrisch"
-
-msgctxt "ColumnTypesModel|"
-msgid "Ordinal"
-msgstr "Ordinal"
-
-msgctxt "ColumnTypesModel|"
-msgid "Nominal"
-msgstr "Nominal"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
@@ -4916,29 +4894,6 @@ msgstr ""
 "Spalte herauszufiltern."
 
 msgctxt "FilterModel|"
-msgid ""
-"# Above you see the code that JASP generates for both value filtering and "
-"the drag&drop filter.\n"
-"# This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"# To combine you can append clauses using '&': 'generatedFilter & "
-"customFilter & perhapsAnotherFilter'\n"
-"# Click the (i) icon in the lower right corner for further help.\n"
-"\n"
-"generatedFilter\n"
-msgstr ""
-"# Oben sehen Sie den Code, den JASP sowohl für die Wertfilterung als auch "
-"für den Drag-&-Drop-Filter generiert.\n"
-"# Dieses Standardergebnis wird in 'generatedFilter' gespeichert und kann "
-"ersetzt oder mit einem eigenen Filter kombiniert werden.\n"
-"# Zum Kombinieren können Sie Klauseln mit '&' anhängen: 'generatedFilter & "
-"eigenerFilter & ggfNochEinFilter'\n"
-"# Für weitere Hilfe, klicken Sie auf das (i)-Symbol in der unteren rechten "
-"Ecke.\n"
-"\n"
-"generatedFilter\n"
-
-msgctxt "FilterModel|"
 msgid "No data loaded!"
 msgstr "Keine Daten geladen!"
 
@@ -5304,7 +5259,8 @@ msgstr "Automatisch Beschriftungen nach deren numerischen Wert sortieren"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of the labels with non-numeric values"
-msgstr "Umdrehen der Sortierung von Beschriftungen mit nicht-numerischen Werten"
+msgstr ""
+"Umdrehen der Sortierung von Beschriftungen mit nicht-numerischen Werten"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected non-numeric labels up"
@@ -5365,3 +5321,134 @@ msgstr "Dimensionen Ihres Datensatzes verändern"
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
 msgstr "Datendimensionen ändern auf %1 Zeilen und %2 Spalten"
+
+msgctxt "PrefsUI|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Daily automatic check for updates & known issues"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid ""
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with the server but that is required for "
+"internet to function.\n"
+"\n"
+"The list of known issues it downloads is rarely used, mostly the issues are "
+"at [jasp-issues](https://github.com/jasp-stats/jasp-issues/issues). However "
+"if we realize a terrible error has slipped into an analysis this will show "
+"you *in the analysis* that there is something you should take into account. "
+"Luckily we almost never need to use it."
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels, of which %2 have a numeric value.\n"
+"As a '%3' it looks like: %4\n"
+"%5"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Implicit missing values: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid ""
+"There are %1 total levels.\n"
+"As a '%2' it looks like: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "FilterModel|"
+msgid ""
+"# Above you see the code that JASP generates for both value filtering and "
+"the drag&drop filter.\n"
+"# This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"# To combine you can append clauses using '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"# Click the (i) icon in the lower right corner for further help.\n"
+"\n"
+"%1\n"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Check for updates"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Should JASP check for updates at our server and let you know if there is a "
+"new version?\n"
+"\n"
+"JASP doesn't share any of your data when it gets updates, not even which "
+"version of JASP you are using.\n"
+"It does share your IP-address with our server but that is required for "
+"internet to function.\n"
+"\n"
+"This setting can always be changed in the Interface Preferences."
+msgstr ""
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "Yes"
+msgstr "Ja"
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "No"
+msgstr "Nein"
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minumum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTermsAssigned|"
+msgid "Only %1 variables are allowed"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Scale"
+msgstr "Metrisch"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Ordinal"
+msgstr "Ordinal"
+
+#, fuzzy
+msgctxt "VariableInfo|"
+msgid "Nominal"
+msgstr "Nominal"
+
+msgctxt "VariableInfo|"
+msgid "Unknown"
+msgstr ""
