@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2024-07-02 15:09+0000\n"
-"Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
+"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/ja/>\n"
 "Language: ja\n"
@@ -109,7 +109,7 @@ msgstr "バージョン："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "構築:"
+msgstr "ビルド:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
