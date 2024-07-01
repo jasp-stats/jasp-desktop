@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-29 07:30+0000\n"
+"PO-Revision-Date: 2024-07-02 15:09+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -5142,7 +5142,7 @@ msgid ""
 "%5"
 msgstr ""
 "总共有 %1 个水平，其中 %2 个水平有数值。\n"
-"作为“%3”，它看起来像：%4\n"
+"被视为为“%3”，它形如：%4\n"
 "%5"
 
 #, qt-format
@@ -5157,7 +5157,7 @@ msgid ""
 "As a '%2' it looks like: %3"
 msgstr ""
 "总共有 %1 个水平。\n"
-"作为“%2”，它看起来像：%3"
+"被视为 “%2”，它形如：%3"
 
 #, qt-format
 msgctxt "FilterModel|"
