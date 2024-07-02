@@ -34,6 +34,9 @@ ComponentsListBase
 	newItemName				: qsTr("New tab")
 	controlType				: JASPControl.TabView
 	focusOnTab				: false
+	Layout.columnSpan		: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
+	preferredWidth			: parent.width
+	preferredHeight			: implicitHeight
 
 	property alias	label				: tabView.title
 	property bool	showAddIcon			: addItemManually

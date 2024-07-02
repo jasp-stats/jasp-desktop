@@ -120,10 +120,7 @@ ComponentsListBase
 			id						: itemFlickable
 			anchors
 			{
-				top					: parent.top
-				left				: parent.left
-				right				: verticalScrollbar.left
-				bottom				: horizontalScrollbar.top
+				fill				: parent
 				margins				: jaspTheme.contentMargin
 			}
 			clip					: true
