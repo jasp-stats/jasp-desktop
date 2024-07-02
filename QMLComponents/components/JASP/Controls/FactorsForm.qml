@@ -22,6 +22,7 @@ FactorsFormBase
 	property int    listWidth:						parent.width * 2 / 5
 	property int    factorListHeight:				(jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing
 	property int	assignAvailableVariablesToList:	allowInteraction ? (initNumberFactors - 1) : -1 // If interaction is used, set automatically the available variables to the last assigned variables list
+	property bool	allowTypeChange:				false
 
 	AvailableVariablesList
 	{
@@ -75,6 +76,7 @@ FactorsFormBase
 					dropKeys:			availableVariablesListName
 					//dropMode:			JASP.DropReplace
 					allowedColumns:     factorsForm.allowedColumns
+					allowTypeChange:	factorsForm.allowTypeChange
 					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
 					implicitWidth:		listWidth
 					isBound:			false
