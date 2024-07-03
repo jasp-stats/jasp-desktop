@@ -25,8 +25,8 @@ ComponentsListBase
 {
 	id						: componentsList
 	background				: itemRectangle
-	implicitWidth 			: itemGrid.width + verticalScrollbar.width
-	implicitHeight			: itemHeaderLabels.height + itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0) + horizontalScrollbar.height
+	implicitWidth 			: itemFlickable.contentWidth + 2 * jaspTheme.contentMargin
+	implicitHeight			: (itemTitle.visible ? itemTitle.height : 0) + itemFlickable.contentHeight + 2 * jaspTheme.contentMargin
 	shouldStealHover		: false
 	innerControl			: itemGrid
 	addItemManually			: !source && !rSource
@@ -49,7 +49,7 @@ ComponentsListBase
 	property string	addIcon				: "round_addition.png"
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
-    property bool   addBorder           : true
+	property bool   addBorder           : true
 
 	function rowAt(rowIndex)
 	{
@@ -79,7 +79,7 @@ ComponentsListBase
 		height			: parent.height - itemTitle.y - itemTitle.height
 		width			: parent.width
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.analysisBackgroundColor
-        border.width	: addBorder ? 1 : 0
+		border.width	: addBorder ? 1 : 0
 		border.color	: jaspTheme.borderColor
 		radius			: jaspTheme.borderRadius
 
@@ -120,16 +120,13 @@ ComponentsListBase
 			id						: itemFlickable
 			anchors
 			{
-				top					: parent.top
-				left				: parent.left
-				right				: verticalScrollbar.left
-				bottom				: horizontalScrollbar.top
+				fill				: parent
 				margins				: jaspTheme.contentMargin
 			}
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds
-			contentWidth			: itemGrid.width
-			contentHeight			: itemHeaderLabels.height + itemGrid.height + addIconItem.height
+			contentWidth			: itemGrid.width + jaspTheme.scrollbarBoxWidth
+			contentHeight			: (addIconItem.visible ? (addIconItem.y + addIconItem.height - 2 * jaspTheme.contentMargin) : itemGrid.y + itemGrid.height) + jaspTheme.scrollbarBoxWidth
 
 			Item
 			{
@@ -234,7 +231,7 @@ ComponentsListBase
 		{
 			id		: itemWrapperWithDelete
 			height	: removeIconID.height
-			width	: removeIconID.width			
+			width	: removeIconID.width
 
 			property var	rowComponentItem	: model.rowComponent
 			property bool	isDeletable			: addItemManually && (!model.type || model.type.includes("deletable"))
