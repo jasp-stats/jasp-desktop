@@ -19,6 +19,8 @@
 #include "listmodelavailableinterface.h"
 #include "listmodelassignedinterface.h"
 #include "controls/jasplistcontrol.h"
+#include "controls/sourceitem.h"
+
 #include "log.h"
 
 void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsValues&, bool)
@@ -89,12 +91,17 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 
 Terms ListModelAvailableInterface::addTerms(const Terms &terms, int dropItemIndex, const RowControlsValues &rowValues)
 {
-	// Reset the real types to the terms, in case they were changed.
-	Terms realTypesTerms = terms;
-	for (Term& term : realTypesTerms)
-		term.setType(getVariableRealType(term.asQString()));
+	if (listView()->sourceItems().length() > 0 && listView()->sourceItems()[0]->isAnalysisDataSet())
+	{
+		// Reset the real types to the terms, in case they were changed.
+		Terms realTypesTerms = terms;
+		for (Term& term : realTypesTerms)
+			term.setType(getVariableRealType(term.asQString()));
+		return ListModelDraggable::addTerms(realTypesTerms, dropItemIndex, rowValues);
 
-	return ListModelDraggable::addTerms(realTypesTerms, dropItemIndex, rowValues);
+	}
+
+	return ListModelDraggable::addTerms(terms, dropItemIndex, rowValues);
 }
 
 void ListModelAvailableInterface::sourceTermsReset()
