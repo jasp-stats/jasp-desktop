@@ -515,6 +515,12 @@ Terms SourceItem::_readAllTerms()
 			term.setType(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
 			terms.add(term);
 		}
+		if (!_sourceFilter.empty())
+			// If the 'use' parameter of the source property asks for the levels, or to filter some types
+			// of the variables of this 'native' model (probably the columnsModel),
+			// then just use the filterTerms method of the model object of the current control.
+			terms = _targetListControl->model()->filterTerms(terms, _sourceFilter);
+
 	}
 	else if (_sourceNativeModel)
 	{
@@ -530,9 +536,6 @@ Terms SourceItem::_readAllTerms()
 			terms.add(term, false);
 		}
 		if (!_sourceFilter.empty())
-			// If the 'use' parameter of the source property asks for the levels, or to filter some types
-			// of the variables of this 'native' model (probably the columnsModel),
-			// then just use the filterTerms method of the model object of the current control.
 			terms = _targetListControl->model()->filterTerms(terms, _sourceFilter);
 	}
 
