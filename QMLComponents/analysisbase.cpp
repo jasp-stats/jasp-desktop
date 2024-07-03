@@ -120,7 +120,6 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 {
 	found = (parentKeys.size() == 0);
 	Json::Value* parentBoundValue = &_boundValues;
-	Json::Value* metaValue = &_boundValues[".meta"];
 
 	// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
 	// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
@@ -149,9 +148,7 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 		if (parentBoundValue->isMember(parent.name))
 		{
 			Json::Value* parentBoundValues = &(*parentBoundValue)[parent.name];
-			metaValue = &(*metaValue)[parent.name];
-			bool hasTypes = !metaValue->isNull() && metaValue->isMember("hasTypes") ? (*metaValue)["hasTypes"].asBool() : false;
-			if (hasTypes && parentBoundValues->isObject() && parentBoundValues->isMember("value"))
+			if (parentBoundValues->isObject() && parentBoundValues->isMember("value") && parentBoundValues->isMember("types"))
 				parentBoundValues = &(*parentBoundValues)["value"];
 
 			if (!parentBoundValues->isNull() && parentBoundValues->isArray())
@@ -184,23 +181,23 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 						}
 					}
 				}
+			}
 
-				if (!found && createAnyway)
+			if (!found && createAnyway && (parentBoundValues->isNull() || parentBoundValues->isArray()))
+			{
+				// A control can be created before the parent control is completed.
+				Json::Value row(Json::objectValue);
+				if (parent.value.size() == 1)
+					row[parent.key] = parent.value[0];
+				else
 				{
-					// A control can be created before the parent control is completed.
-					Json::Value row(Json::objectValue);
-					if (parent.value.size() == 1)
-						row[parent.key] = parent.value[0];
-					else
-					{
-						Json::Value newValue(Json::arrayValue);
-						for (size_t i = 0; i < parent.value.size(); i++)
-							newValue.append(parent.value[i]);
-						row[parent.key] = newValue;
-					}
-					parentBoundValue = &(parentBoundValues->append(row));
-					found = true;
+					Json::Value newValue(Json::arrayValue);
+					for (size_t i = 0; i < parent.value.size(); i++)
+						newValue.append(parent.value[i]);
+					row[parent.key] = newValue;
 				}
+				parentBoundValue = &(parentBoundValues->append(row));
+				found = true;
 			}
 		}
 	}
