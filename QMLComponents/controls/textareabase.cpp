@@ -107,5 +107,19 @@ void TextAreaBase::termsChangedHandler()
 {
 	if ((_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem) && form() && initialized())
 		form()->refreshAnalysis();
+}
 
+void TextAreaBase::_setInitialized(const Json::Value &value)
+{
+	// The text in the TextArea is not stored in the bound value (it is stored only after an applyRequest call)
+	// So if the TextArea is re-initialized, it will lose its current value.
+	// This is the case when a TextArea is used in a TabView: when adding or removing a tab, the TabView may re-initialized its controls.
+	// So in this case, just keep the current text, and reset it after the initialization
+	QString currentText = text();
+	bool keepText = initialized();
+
+	JASPListControl::_setInitialized(value);
+
+	if (keepText)
+		setText(currentText);
 }
