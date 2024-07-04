@@ -136,7 +136,7 @@ protected:
 			Terms	_checkTermsTypes(const Terms& terms)				const;
 			Terms	_checkTermsTypes(const std::vector<Term>& terms)	const;
 			Term	_checkTermType(const Term& terms)					const;
-
+			void	_setAllowedType(Term& term)							const;
 
 			QString							_itemType;
 			bool							_needsSource			= true;
