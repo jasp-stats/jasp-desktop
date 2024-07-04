@@ -82,6 +82,7 @@ protected slots:
 	void	termsChangedHandler()		override;
     
 protected:
+	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 
 	BoundControlTextArea*		_boundControl			= nullptr;
 	TextType					_textType				= TextType::TextTypeDefault;
