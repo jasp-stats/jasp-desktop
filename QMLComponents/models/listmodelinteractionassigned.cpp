@@ -154,14 +154,6 @@ QString ListModelInteractionAssigned::getItemType(const Term &term) const
 	return type;
 }
 
-Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
-{
-	Q_UNUSED(terms);
-
-	return terms;
-}
-
-
 Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const RowControlsValues&)
 {
 	if (terms.size() == 0)

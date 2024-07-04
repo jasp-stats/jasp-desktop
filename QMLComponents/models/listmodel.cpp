@@ -101,17 +101,22 @@ void ListModel::_connectAllSourcesControls()
 		_connectSourceControls(sourceItem);
 }
 
+void ListModel::_setAllowedType(Term& term) const
+{
+	columnType type = term.type();
+	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
+		term.setType(_listView->defaultType());
+}
+
 Term ListModel::_checkTermType(const Term &term) const
 {
 	Term checkedTerm(term);
-	columnType type = checkedTerm.type();
-	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
-		checkedTerm.setType(_listView->defaultType());
+	_setAllowedType(checkedTerm);
 
 	return checkedTerm;
 }
 
-Terms ListModel::_checkTermsTypes(const Terms &terms) const
+Terms ListModel::_checkTermsTypes(const std::vector<Term>& terms) const
 {
 	Terms checkedTerms;
 	for (const Term& term : terms)
@@ -120,12 +125,12 @@ Terms ListModel::_checkTermsTypes(const Terms &terms) const
 	return checkedTerms;
 }
 
-Terms ListModel::_checkTermsTypes(const std::vector<Term> &terms) const
-{
-	Terms checkedTerms;
-	for (const Term& term : terms)
-		checkedTerms.add(_checkTermType(term));
 
+Terms ListModel::_checkTermsTypes(const Terms& terms) const
+{
+	Terms checkedTerms = terms; // Keep terms properties
+	for (Term& term : checkedTerms)
+		_setAllowedType(term);
 	return checkedTerms;
 }
 
