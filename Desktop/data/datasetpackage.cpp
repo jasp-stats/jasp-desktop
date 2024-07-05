@@ -1413,6 +1413,17 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	
 	_dataSet = new DataSet(0);
 	_dataSet->dbLoad(1, progressCallback, do019Upgrade); //Right now there can only be a dataSet with ID==1 so lets keep it simple
+	if (do019Upgrade)
+	{
+		// In 0.18.3 and before, there was a bug with the order of dataFilePath and description in the database.
+		// dataFilePath was set empty and description has dataFilePath.
+		if (dataFilePath().empty())
+		{
+			QFileInfo fileInfo(description());
+			if (fileInfo.isFile())
+				setDataFilePath(fq(description()));
+		}
+	}
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 
@@ -2408,12 +2419,18 @@ bool DataSetPackage::currentFileIsExample() const
 	return currentFile().startsWith(AppDirs::examples());
 }
 
-void DataSetPackage::setDataFilePath(std::string filePath)				
+void DataSetPackage::setDataFilePath(std::string filePath, long timestamp)
 {
 	if(!_dataSet || _dataSet->dataFilePath() == filePath)
-		return;	
+		return;
 
-	_dataSet->setDataFilePath(filePath);
+	if (timestamp == 0 && !filePath.empty())
+	{
+		QFileInfo fileInfo(tq(filePath));
+		timestamp = fileInfo.isFile() ? fileInfo.lastModified().toSecsSinceEpoch() : 0;
+	}
+
+	_dataSet->setDataFile(filePath, timestamp);
 	if (tq(filePath).startsWith(AppDirs::examples()))
 		setDataFileReadOnly(true);
 

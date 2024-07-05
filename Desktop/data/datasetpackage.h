@@ -160,7 +160,7 @@ public:
 				// The data file might be read-only if it comes from the examples or read from an external database
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						}
 				bool				currentFileIsExample()				const;
-				uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					}
+				long				dataFileTimestamp()					const	{ return _dataSet ? _dataSet->dataFileTimestamp() : 0;	}
 				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;					}
 
@@ -171,10 +171,9 @@ public:
 				void				setJaspVersion(Version jaspVersion)					{ _jaspVersion					= jaspVersion;		}
 				void				updateDbToCurrentVersion();							///< Should be ran immediately after loading the jasp file
 				void				setWarningMessage(std::string message)				{ _warningMessage				= message;			}
-				void				setDataFilePath(std::string filePath);
+				void				setDataFilePath(std::string filePath, long timestamp = 0);
 				void				setDatabaseJson(const Json::Value & dbInfo);
 				void				setInitialMD5(std::string initialMD5)				{ _initialMD5					= initialMD5;		}
-				void				setDataFileTimestamp(uint timestamp)				{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
 				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
 				void				setIsJaspFile(bool isJaspFile)						{ _isJaspFile					= isJaspFile;		}
@@ -371,8 +370,6 @@ private:
 								_database					= Json::nullValue;
 	Version						_archiveVersion,
 								_jaspVersion;
-
-	uint						_dataFileTimestamp;
 
 	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
