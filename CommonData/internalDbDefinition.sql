@@ -3,6 +3,7 @@
 CREATE TABLE DataSets ( 
 	id				INTEGER PRIMARY KEY, 
 	dataFilePath	TEXT, 
+	dataFileTimestamp INT DEFAULT 0,
 	description		TEXT,
 	databaseJson	TEXT, 
 	emptyValuesJson TEXT, 

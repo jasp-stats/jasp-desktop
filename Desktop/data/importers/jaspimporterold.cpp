@@ -98,9 +98,8 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 
 	packageData->createDataSet();
 
-	packageData->setDataFilePath(		metaData.get("dataFilePath",		"")				.asString());
+	packageData->setDataFilePath( metaData.get("dataFilePath",	"").asString(), metaData.get("dataFileTimestamp", 0).asUInt());
 	packageData->setDataFileReadOnly(	metaData.get("dataFileReadOnly",	false)			.asBool());
-	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp",	0)				.asUInt());
 	packageData->setDatabaseJson(		metaData.get("database",			Json::nullValue));
 
 	packageData->dataSet()->setDataFileSynch(true);
