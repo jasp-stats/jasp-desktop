@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-07-02 15:09+0000\n"
+"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.7-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -50,8 +56,7 @@ msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr ""
-"ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします"
+msgstr "ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします!"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -104,7 +109,7 @@ msgstr "バージョン："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "構築:"
+msgstr "ビルド:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -274,8 +279,7 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr ""
-"逆フィッシャーのZ変換(すなわち双曲正接)で実数を-1から1の間の数に変換します。"
+msgstr "フィッシャーの逆Z変換(すなわち双曲正接)で実数を-1から1の間の数に変換"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
@@ -305,8 +309,7 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
-msgstr ""
-"自由度dfと非中心性パラメータncpを持つカイ2乗分布からデータを生成します。"
+msgstr "自由度dfと非心パラメータncpを持つカイ2乗分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -320,7 +323,7 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
-msgstr "指定された試行数と確率の二項分布からデータを生成します。"
+msgstr "指定された試行数と確率の二項分布からデータを生成"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -1155,7 +1158,7 @@ msgstr "クリックしてフィルタを適用"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr "フィルタはすでに適用されています。"
+msgstr "フィルタはすでに適用されている"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
@@ -1469,7 +1472,7 @@ msgstr ""
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "それでは、データファイルを開いて、JASPを試してみましょう。"
+msgstr "では、データファイルを開いて、JASPを試してみましょう!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
@@ -2725,7 +2728,7 @@ msgstr "文字列に少なくとも1回は部分文字列が含まれている�
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr "ここをクリックして開発者モジュールを選択します。"
+msgstr "ここをクリックして開発者モジュールを選択します"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
@@ -2946,12 +2949,11 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
-"JASP の始動中にモジュールを初期化できませんでした。メッセージは次の通りで"
-"す。\n"
+"JASP の起動中にモジュールを初期化できませんでした。メッセージは次の通りです:"
 "\n"
 "%1\n"
 "\n"
-"モジュールを削除しますか？"
+"モジュールを削除しますか?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3218,7 +3220,7 @@ msgstr "ソースの列番号が%1の列数よりも大きい"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
+msgstr "変数フォームで設定できる変数リストは 1 つだけです"
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
@@ -3306,7 +3308,7 @@ msgstr "オープンソース要素"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
-msgstr "あなたの言語でのJASPの翻訳や改善にご協力ください。"
+msgstr "あなたの言語のJASPの翻訳や改善にご協力ください"
 
 msgctxt "ModuleInstaller|"
 msgid "Install"
@@ -3649,9 +3651,9 @@ msgid ""
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
 "ここにRコードを入力してください.\n"
-"データは'data'として非フィルタリング状態を使うことが出来て、フィルタリングし"
-"たデータは'filteredData' として利用可能です.\n"
-"ここにシンタックスモードのJASP 解析をペーストすることもできます."
+"データは'data'として非フィルタリング状態を使うことが出来て、\n"
+"フィルタリングしたデータは'filteredData' として利用可能です.\n"
+"ここにシンタックスモードのJASP 分析をペーストすることもできます."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -5235,11 +5237,11 @@ msgstr "%1 行 %2 列にデータを変更する"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "アップデートを確認"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
-msgstr ""
+msgstr "アップデートや既知の問題を毎日自動チェック"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -5254,6 +5256,15 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASPはアップデートの際、あなたのデータを共有することはありません。\n"
+"あなたのIPアドレスはサーバーと共有しますが、それはインターネットが機能するた"
+"めに必要です。\n"
+"\n"
+"ダウンロードされる既知の問題のリストはほとんど使用されません。主な問題は "
+"[jasp-issues](https://github.com/jasp-stats/jasp-issues/issues)に掲載されてい"
+"ます。しかし、もし重大なエラーが分析に含まれていることが判明した場合、そのこ"
+"とが分析内で通知され、対処が必要であることを示します。幸運にも、この機能を使"
+"用することはほとんどありません."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5262,11 +5273,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"全体で %1 のレベルがあり、そのうち %2 が数値です.\n"
+"'%3' としては次のように見えます: %4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "モデルの欠測値: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5291,7 +5305,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "アップデートを確認"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5306,12 +5320,10 @@ msgid ""
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Yes"
 msgstr "はい"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "No"
 msgstr "いいえ"
@@ -5319,47 +5331,44 @@ msgstr "いいえ"
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "水準%1の最小値、変数%2は、%3 水準のみもつ"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
-msgstr ""
+msgstr "水準%1の最大値、変数%2は、%3 水準もつ"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid ""
 "Minumum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
-msgstr ""
+msgstr "数値%1の最小値、変数%2は、%3 の異なる数値のみもつ"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
-msgstr ""
+msgstr "数値%1の最大値、変数%2は、%3 の異なる数値をもつ"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "%1変数のみ許可されている"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "スケール"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "順序"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "名義"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
