@@ -331,7 +331,9 @@ void VariablesListBase::termsChangedHandler()
 	setColumnsTypes(model()->termsTypes());
 	setColumnsNames(model()->terms().asQList());
 
-	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0)
+	int defaultMaxLevels = !_allowedTypesModel->hasType(columnType::scale) ? PreferencesModelBase::preferences()->maxLevels() : -1;
+
+	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || defaultMaxLevels >= 0)
 	{
 		bool hasError = false;
 		for (const Term& term : model()->terms())
@@ -343,13 +345,21 @@ void VariablesListBase::termsChangedHandler()
 				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(term.asQString()).arg(nbLevels));
 				hasError = true;
 			}
-			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
+			else if ((_maxLevels >= 0 || defaultMaxLevels >= 0))
 			{
-				QString msg = tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(term.asQString()).arg(nbLevels);
-				if (_maxLevels == PreferencesModelBase::preferences()->maxLevels())
+				QString msg = tr("Maximum number of levels is %1. Variable %2 has %3 levels.");
+				if (_maxLevels >= 0 && nbLevels > _maxLevels)
+				{
+					addControlErrorPermanent(msg.arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
+					hasError = true;
+				}
+				else if (defaultMaxLevels >= 0 && nbLevels > defaultMaxLevels && model()->getVariableRealType(term.asQString()) == columnType::scale)
+				{
+					// This is the case when a scale variable is set into a non-scale VariablesList, and the variable has more than the default maximum numer of levels
 					msg += "<br>" + tr("You may change this maximum in Preferences / Data menu.");
-				addControlErrorPermanent(msg);
-				hasError = true;
+					addControlErrorPermanent(msg.arg(defaultMaxLevels).arg(term.asQString()).arg(nbLevels));
+					hasError = true;
+				}
 			}
 			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
 			{

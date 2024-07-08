@@ -35,7 +35,6 @@ VariablesListBase
 	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	allowAnalysisOwnComputedColumns	: true
 	minNumericLevels				: allowedColumns.length === 1 && allowedColumns[0] === 'scale' ? 1 : -1
-	maxLevels						: allowedColumns.length > 0 && !allowedColumns.includes('scale') ? preferencesModel.maxLevels : -1
 
 	property alias	label							: variablesList.title
 	property alias	itemGridView					: itemGridView

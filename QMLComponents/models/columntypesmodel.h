@@ -49,6 +49,7 @@ public:
 	Q_INVOKABLE	int							getType(int index)											const;
 	void									setTypes(columnTypeVec types);
 	bool									hasType(columnType type)									const;
+	bool									hasAllTypes()												const;
 	columnType								firstType()													const;
 	QStringList								iconList()													const;
 
