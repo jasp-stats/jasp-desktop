@@ -25,7 +25,7 @@ Item
 									id							: scrollbar
 									width						: vertical ? breadth		: implicitWidth
 									height						: vertical ? implicitHeight : breadth
-									visible						: flickable.visible && ((vertical ? heightRatio : widthRatio ) < 1.0)
+									visible						: flickable.visible && ((vertical ? heightRatio : widthRatio ) < 0.99)
 
 	readonly	property int		visibleBreadth				: bigBar ? jaspTheme.scrollbarBoxWidthBig : jaspTheme.scrollbarBoxWidth
 				property int		breadth						: visible ? visibleBreadth : 0
