@@ -37,6 +37,7 @@
 #include <QQmlProperty>
 #include "log.h"
 #include "models/columntypesmodel.h"
+#include "preferencesmodelbase.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -344,7 +345,10 @@ void VariablesListBase::termsChangedHandler()
 			}
 			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
 			{
-				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels").arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
+				QString msg = tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(term.asQString()).arg(nbLevels);
+				if (_maxLevels == PreferencesModelBase::preferences()->maxLevels())
+					msg += "<br>" + tr("You may change this maximum in Preferences / Data menu.");
+				addControlErrorPermanent(msg);
 				hasError = true;
 			}
 			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
@@ -354,7 +358,7 @@ void VariablesListBase::termsChangedHandler()
 			}
 			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
 			{
-				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				addControlError(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
 				hasError = true;
 			}
 

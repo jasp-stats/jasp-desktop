@@ -170,9 +170,22 @@ QTC.ScrollView
 						leftMargin: jaspTheme.generalAnchorMargin
 					}
 
-					KeyNavigation.tab:	missingValueDataLabelInput
+					KeyNavigation.tab:	maxLevels
 				}
 			}
+
+			SpinBox
+			{
+				id:					maxLevels
+				text:				qsTr("Default maximum levels for nominal or ordinal")
+				value:				preferencesModel.maxLevels
+				onValueChanged:		preferencesModel.maxLevels = value
+
+				KeyNavigation.tab:	missingValueDataLabelInput
+
+				toolTip:	qsTr("For analysis accepting only nominal or ordinal for some variables, this setting prevents from setting a variable having too many levels.")
+			}
+
 		}
 		
 

@@ -69,6 +69,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			orderByValueByDefault	READ orderByValueByDefault		WRITE setOrderByValueByDefault		NOTIFY orderByValueByDefaultChanged		)
 	Q_PROPERTY(bool			checkUpdatesAskUser		READ checkUpdatesAskUser		WRITE setCheckUpdatesAskUser		NOTIFY checkUpdatesAskUserChanged		)
 	Q_PROPERTY(bool			checkUpdates			READ checkUpdates				WRITE setCheckUpdates				NOTIFY checkUpdatesChanged				)
+	Q_PROPERTY(int			maxLevels				READ maxLevels					WRITE setMaxLevels					NOTIFY maxLevelsChanged					)
 
 
 public:
@@ -134,6 +135,7 @@ public:
 	bool		developerMode()							const;
 	bool		ALTNavModeActive()						const;
     bool		orderByValueByDefault()					const;
+	int			maxLevels()								const override;
 	
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
@@ -198,6 +200,7 @@ public slots:
 	void currentThemeNameHandler();
 	void setALTNavModeActive(			bool		ALTNavModeActive);
 	void setOrderByValueByDefault(		bool		orderByValueByDefault);
+	void setMaxLevels(					int			maxLevels);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -250,6 +253,7 @@ signals:
 	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
 	void checkUpdatesAskUserChanged(	bool		checkAsk);
 	void checkUpdatesChanged(			bool		check);
+	void maxLevelsChanged(				int			maxLevels);
 	
 private slots:
 	void dataLabelNAChangedSlot(QString label);

@@ -91,7 +91,8 @@ const Settings::Setting Settings::Values[] = {
 	{"orderByValueByDefault",		true	},
 	{"checkUpdatesAskUser",			true	},
 	{"checkUpdates",				false	},
-	{"checkUpdatesLastTime",		-1		}
+	{"checkUpdatesLastTime",		-1		},
+	{"maxLevels",					100		}
 	
 };	
 
