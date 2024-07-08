@@ -5,10 +5,11 @@ So you want to develop a module for JASP? Great!
 The easiest way to do so is downloading the latest [nightly for your system](http://static.jasp-stats.org/Nightlies/) or (a bit harder) [building jasp yourself](./jasp-building-guide.md). 
 
 ## Linux
-To develop on Linux you currently need to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
+If you are on linux you can add the 'flathub-beta' repository with `flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo`. Then you can install the latest jasp beta as `flatpak install flathub-beta org.jaspstats.JASP` and run it as `flatpak run --branch=beta --devel org.jaspstats.JASP`. It will remember which branch btw, so to go back to the "normal" jasp run `flatpak run --branch=stable org.jaspstats.JASP`.
+The hard way to develop on Linux ist to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
 
 ## Development Process
-Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats).
+Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) (which as of Juli 2024 seems broken on Linux) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
 
 To start developing your own module you should first understand the [structure of a module](jasp-adding-module.md). 
 Initially you do not need to add any of the .qml, .R or icon files, but you should minimally have the Description.qml, DESCRIPTION and NAMESPACE.
@@ -53,12 +54,11 @@ cd /to/your/module/repository/directory
 git tag -a v1.0 #It will open an editor where you can add some information on your release
 git push -u origin v1.0
 ```
-If you now go to your GitHub repository you can select `Releases` and download the generated .tar.gz, see the following, ahum, visual guide for more details:
-![Visual guide to finding a generated .tar.gz on GitHub](/Docs/development/img/FindingModuleTarGz.png)
+If you now go to your GitHub repository you can select `Releases` within the right hand side panel. There you can download the tar.gz.
 
 ##### "Hard" way
 On linux and MacOS this is not so bad: simply open up a terminal and go to the directory containing your module and enter the following: "`tar -czf <ModuleName>.tar.gz <ModuleName>`". 
 
 On Windows this is a bit more complicated but can be done through [7zip](https://www.7-zip.org/), first your select you folder `<ModuleName>` and compress it to a `.tar` file and then you select that file and compress it to a `.gz` or "gzip" file leaving you with `<ModuleName>.tar.gz`. 
 
-As you can see this implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [Description.qml](#Description.qml) or in the `Package` field of [DESCRIPTION](#package-metadata).
+This implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [Description.qml](#Description.qml) or in the `Package` field of [DESCRIPTION](#package-metadata).
