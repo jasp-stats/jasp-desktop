@@ -50,6 +50,8 @@ ComponentsListBase
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
 	property bool   addBorder           : true
+	property double availableWidth		: itemFlickable.width - jaspTheme.scrollbarBoxWidth
+	property double availableHeight		: itemFlickable.height - jaspTheme.scrollbarBoxWidth
 
 	function rowAt(rowIndex)
 	{
