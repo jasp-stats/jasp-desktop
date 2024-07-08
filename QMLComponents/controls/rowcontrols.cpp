@@ -59,13 +59,11 @@ void RowControls::_initializeControls(bool useInitialValue)
 {
 	// The controls (when created or reused) need to be initialized
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
-	AnalysisForm* form = _parentModel->listView()->form();
+	JASPListControl* parentControl = _parentModel->listView();
+	AnalysisForm* form = parentControl->form();
 
 	if (form)
-	{
 		form->sortControls(controls);
-		form->blockValueChangeSignal(true);
-	}
 
 	for (JASPControl* control : controls)
 	{
@@ -90,7 +88,8 @@ void RowControls::_initializeControls(bool useInitialValue)
 	}
 
 	if (form)
-		form->blockValueChangeSignal(false);
+		// setInitialized binds value to the control, but does not signal the change. So we have to manually emit the signal
+		emit parentControl->boundValueChanged(parentControl);
 }
 
 void RowControls::setContext(int row, const QString &key)
