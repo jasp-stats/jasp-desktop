@@ -20,28 +20,24 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 	transactionWriteBegin();
 
 	if(originalVersion < "0.18.2")
-		runStatements(
-			"ALTER TABLE DataSets ADD COLUMN description     TEXT;");
+		runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;");
 
-	
 	if(originalVersion < "0.19.0")
-		runStatements(		
-			R"ModernC++IsGreat(
-				ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;
-				ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;
-				ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;
-				ALTER TABLE Columns  DROP 	COLUMN isComputed;			-- was removed in 0.18.3
-			)ModernC++IsGreat"); 
+		runStatements("ALTER TABLE Columns  DROP 	COLUMN isComputed;");		// was removed in 0.18.3
 	
-	//Workaround for someone who made a bunch of files during 0.19 development that didnt have the following value:
-	if(originalVersion == "0.19.0" && !tableHasColumn("Columns", "autoSortByValue"))
+	if(originalVersion <= "0.19.0")
 	{
-		runStatements("ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;");
-	}
+		if (!tableHasColumn("Columns", "emptyValuesJson"))
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;");
 
-	if(originalVersion <= "0.19.0" && !tableHasColumn("DataSets", "dataFileTimestamp"))
-	{
-		runStatements("ALTER TABLE DataSets  ADD 	COLUMN dataFileTimestamp	INT;");
+		if (!tableHasColumn("Columns", "forceSourceColType"))
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;");
+
+		if (!tableHasColumn("Columns", "autoSortByValue"))
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;");
+
+		if (!tableHasColumn("DataSets", "dataFileTimestamp"))
+			runStatements("ALTER TABLE DataSets  ADD 	COLUMN dataFileTimestamp	INT;");
 	}
 
 	transactionWriteEnd();
