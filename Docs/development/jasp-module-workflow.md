@@ -6,7 +6,7 @@ The easiest way to do so is downloading the latest [nightly for your system](htt
 
 ## Linux
 If you are on linux you can add the 'flathub-beta' repository with `flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo`. Then you can install the latest jasp beta as `flatpak install flathub-beta org.jaspstats.JASP` and run it as `flatpak run --branch=beta --devel org.jaspstats.JASP`. It will remember which branch btw, so to go back to the "normal" jasp run `flatpak run --branch=stable org.jaspstats.JASP`.
-The hard way to develop on Linux ist to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
+The hard way to develop on Linux is to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
 
 ## Development Process
 Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) (which as of Juli 2024 seems broken on Linux) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
