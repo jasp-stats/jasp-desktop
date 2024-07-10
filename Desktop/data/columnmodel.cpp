@@ -111,6 +111,7 @@ void ColumnModel::setColumnNameQ(QString newColumnName)
 		QMap<QString, QVariant> props;
 		props["name"] = newColumnName;
 		props["type"] = int(_dummyColumn.type);
+		props["computed"] = int(_dummyColumn.computedType);
 		_undoStack->endMacro(new InsertColumnCommand(_dataSetTableModel, _currentColIndex, props));
 	}
 	else if(column())
