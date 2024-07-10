@@ -76,7 +76,8 @@ public:
 		ORDER_BY_VALUE_BY_DEFAULT,
 		CHECK_UPDATES_ASK_USER,
 		CHECK_UPDATES,
-		LAST_CHECK
+		LAST_CHECK,
+		MAX_SCALE_LEVELS
 	};
 
 	static QVariant value(Settings::Type key);

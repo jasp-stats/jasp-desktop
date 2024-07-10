@@ -92,6 +92,15 @@ bool ColumnTypesModel::hasType(columnType type) const
 	return std::find(_types.begin(), _types.end(), type) != _types.end();
 }
 
+bool ColumnTypesModel::hasAllTypes() const
+{
+	for (columnType type : _allTypes)
+		if (!hasType(type))
+			return false;
+
+	return true;
+}
+
 columnType ColumnTypesModel::firstType() const
 {
 	if (_types.size() > 0)

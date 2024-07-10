@@ -170,9 +170,22 @@ QTC.ScrollView
 						leftMargin: jaspTheme.generalAnchorMargin
 					}
 
-					KeyNavigation.tab:	missingValueDataLabelInput
+					KeyNavigation.tab:	maxScaleLevels
 				}
 			}
+
+			SpinBox
+			{
+				id:					maxScaleLevels
+				text:				qsTr("Maximum allowed levels for scale when used as nominal/ordinal")
+				value:				preferencesModel.maxScaleLevels
+				onValueChanged:		preferencesModel.maxScaleLevels = value
+
+				KeyNavigation.tab:	missingValueDataLabelInput
+
+				toolTip:	qsTr("For analysis accepting only nominal or ordinal for some variables, if a scale variable is used, JASP checks whether the number of levels of this variable exceeds this maximum.")
+			}
+
 		}
 		
 
