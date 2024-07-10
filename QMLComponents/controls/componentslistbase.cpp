@@ -241,7 +241,12 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 	std::vector<int> xOffsets;
 	QMap<QString, int> nameXOffsetMap;
-	RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
+	QString key = _termsModel->terms().at(0).asQString();
+	auto rowControls = _termsModel->getAllRowControls();
+	if (!rowControls.contains(key))
+		return result;
+
+	RowControls* row = _termsModel->getRowControls(key);
 	QList<JASPControl*> controls = row->getJASPControlsMap().values();
 
 	// By going through the controls of the first row, 2 structures are set:
