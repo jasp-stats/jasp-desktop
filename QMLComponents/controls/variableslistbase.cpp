@@ -368,7 +368,7 @@ void VariablesListBase::termsChangedHandler()
 			}
 			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
 			{
-				addControlError(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
 				hasError = true;
 			}
 
