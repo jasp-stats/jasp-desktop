@@ -17,7 +17,7 @@ void ChangeJS::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
 	if(!_jsFunction.isCallable())
 		throw upgradeError("Could not apply ChangeJS to option '" + name + "' because the function cannot be called...");
 
-	if(!options.isMember(name))
+	if(!_isNewOption && !options.isMember(name))
 		throw upgradeError("Could not apply ChangeJS for option '" + name + "' because options does not contain '" + name + "'", true);
 
 	QJSValue	copyFunc	= _jsFunction, //To avoid const clashing with javascript "flexibility"
@@ -49,4 +49,9 @@ void ChangeJS::setJsFunction(QJSValue jsFunction)
 	emit jsFunctionChanged();
 }
 
+void ChangeJS::setIsNewOption(bool isNewOption)
+{
+	_isNewOption = isNewOption;
+	emit isNewOptionChanged();
+}
 }
