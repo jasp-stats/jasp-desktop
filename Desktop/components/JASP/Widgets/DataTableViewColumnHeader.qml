@@ -148,6 +148,18 @@ Rectangle
 		anchors.verticalCenter:	parent.verticalCenter
 	}
 
+	Image
+	{
+		id:						addIcon
+		source:					jaspTheme.iconPath + "round_addition.png"
+		width:					virtual && dataSetModel.columnCount() === columnIndex ? headerRoot.__iconDim : 0
+		height:					headerRoot.__iconDim
+
+		sourceSize {	width:	width * 2
+						height:	height * 2 }
+
+		anchors.centerIn:		parent
+	}
 
 
 	MouseArea
@@ -192,7 +204,9 @@ Rectangle
 				{
 					dataTableView.view.select(-1, columnIndex, mouseEvent.modifiers & Qt.ShiftModifier, mouseEvent.modifiers & Qt.ControlModifier)
 					columnModel.chosenColumn = columnIndex;
-						
+
+					if (virtual && dataSetModel.columnCount() === columnIndex)
+						columnModel.visible	= true;
 				}
 
 				if(mouseEvent.button === Qt.RightButton)
