@@ -46,32 +46,44 @@ void FactorsFormBase::setUpModel()
 
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
-
 	ListModelFactorsForm::FactorVec factors;
 
 	for (const Json::Value& factor : value)
 	{
+		const Json::Value& types = factor.isMember("types") ? factor["types"] : Json::nullValue;
+		int i = 0;
+
 		Terms initTerms;
 		for (const Json::Value& termsJson : factor[fq(_optionKey)])
 		{
+			std::vector<std::string> components;
+
 			if (allowInteraction())
 			{
 				// For interaction, each term is an array of strings
-				std::vector<std::string> term;
 				for (const Json::Value& elt : termsJson)
 					if (elt.isString())
-						term.push_back(elt.asString());
-				initTerms.add(Term(term));
+						components.push_back(elt.asString());
 			}
 			else
 				// If not, each term is just a string
-				initTerms.add(termsJson.asString());
+				components.push_back(termsJson.asString());
+
+			Term term(components);
+			if (types.size() > i)
+				term.setType(columnTypeFromString(types[i].asString()));
+			else if (components.size() == 1)
+				term.setType(model()->getVariableRealType(tq(components[0])));
+			initTerms.add(term);
+
+			i++;
 		}
 
 		
 		factors.push_back(ListModelFactorsForm::Factor(tq(factor["name"].asString()), tq(factor["title"].asString()), initTerms));
 	}
+
+	BoundControlBase::bindTo(value);
 	
 	_factorsModel->initFactors(factors);
 }
@@ -86,6 +98,7 @@ Json::Value FactorsFormBase::createJson() const
 		row["name"] = fq(baseName() + QString::number(i + startIndex()));
 		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
 		row[fq(_optionKey)] = Json::Value(Json::arrayValue);
+		row["types"] = Json::Value(Json::arrayValue);
 
 		result.append(row);
 	}
@@ -124,6 +137,8 @@ void FactorsFormBase::termsChangedHandler()
 		factorJson["name"] = fq(factor.name);
 		factorJson["title"] = fq(factor.title);
 		Json::Value termsJson(Json::arrayValue);
+		Json::Value typesJson(Json::arrayValue);
+
 		for (const Term &term : factor.listView ? factor.listView->model()->terms() : factor.initTerms)
 		{
 			Json::Value termJson(allowInteraction() ? Json::arrayValue : Json::stringValue);
@@ -135,8 +150,10 @@ void FactorsFormBase::termsChangedHandler()
 			else
 				termJson = term.asString();
 			termsJson.append(termJson);
+			typesJson.append(columnTypeToString(term.type()));
 		}
 		factorJson[fq(_optionKey)] = termsJson;
+		factorJson["types"] = typesJson;
 		boundValue.append(factorJson);
 	}
 	
