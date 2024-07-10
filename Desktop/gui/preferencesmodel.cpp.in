@@ -124,7 +124,7 @@ GET_PREF_FUNC_BOOL( ALTNavModeActive,			Settings::ALTNAVMODE_ACTIVE							)
 GET_PREF_FUNC_BOOL( orderByValueByDefault,		Settings::ORDER_BY_VALUE_BY_DEFAULT					)
 GET_PREF_FUNC_BOOL( checkUpdatesAskUser,		Settings::CHECK_UPDATES_ASK_USER					)
 GET_PREF_FUNC_BOOL( checkUpdates,				Settings::CHECK_UPDATES								)
-GET_PREF_FUNC_INT(	maxLevels,					Settings::MAX_LEVELS								)
+GET_PREF_FUNC_INT(	maxScaleLevels,				Settings::MAX_SCALE_LEVELS							)
 
 int PreferencesModel::maxEngines() const
 {
@@ -306,7 +306,7 @@ SET_PREF_FUNCTION(				bool,		setALTNavModeActive,		ALTNavModeActive,			ALTNavMod
 SET_PREF_FUNCTION(				bool,		setOrderByValueByDefault,	orderByValueByDefault,		orderByValueByDefaultChanged,	Settings::ORDER_BY_VALUE_BY_DEFAULT					)
 SET_PREF_FUNCTION(				bool,		setCheckUpdatesAskUser,		checkUpdatesAskUser,		checkUpdatesAskUserChanged,		Settings::CHECK_UPDATES_ASK_USER					)
 SET_PREF_FUNCTION(				bool,		setCheckUpdates,			checkUpdates,				checkUpdatesChanged,			Settings::CHECK_UPDATES								)
-SET_PREF_FUNCTION(				int,		setMaxLevels,				maxLevels,					maxLevelsChanged,				Settings::MAX_LEVELS								)
+SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)

@@ -77,7 +77,7 @@ public:
 		CHECK_UPDATES_ASK_USER,
 		CHECK_UPDATES,
 		LAST_CHECK,
-		MAX_LEVELS
+		MAX_SCALE_LEVELS
 	};
 
 	static QVariant value(Settings::Type key);

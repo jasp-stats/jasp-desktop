@@ -14,7 +14,7 @@ public:
 	virtual int		maxFlickVelocity()		const	{ return 808;	}
 	virtual bool	showRSyntax()			const	{ return false; }
 	virtual bool	showAllROptions()		const	{ return false; }
-	virtual int		maxLevels()				const	{ return 100;	}
+	virtual int		maxScaleLevels()		const	{ return 100;	}
 
 	static PreferencesModelBase* preferences();
 

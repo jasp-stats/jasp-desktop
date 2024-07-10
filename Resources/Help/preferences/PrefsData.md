@@ -39,11 +39,11 @@ This means that if you have fewer (or equal) than 10 different integers in the d
 gets the Ordinal type (Nominal type if only 2 different integers are found) else it will get the Scale type. Be aware that this value is used when
 importing the data, so data needs to be reloaded (or synchronized) to take effect.
 
-#### Default Maximum levels for nominal or ordinal
+#### Maximum allowed levels for scale when used as nominal/ordinal
 
-Analyses may specify that some variables should be nominal or ordinal. But mostly, the analyses cannot accept too many levels for nominal or ordinal variables.
-This setting specifies what is the default maximum number of levels that will be accepted.
-An analysis may overwrite this setting: i.e. for 'Grouping Variables' in Independent Samples T-Test, the maximun (and minimum) of levels of a variables is set to 2.
+Analyses may specify that some variables should be nominal or ordinal. But a scale variable might be used and interpreted as nominal or ordinal. However many scale variables cannot really be interpreted as nominal or ordinal and will generate too many levels, that most analyses cannot accept.
+To prevent this, this setting specifies what is the maximum number of levels that will be accepted for a scale value to be interpretable as a nominal or ordinal.
+This setting is not used if an analysis specifies explicitly a maximum number of levels: i.e. for 'Grouping Variables' in Independent Samples T-Test, the maximun (and minimum) of levels of a variables is set to 2.
 But for most analyses this default setting is used: this prevent the user from using wrong variables, and make the engine running too long.
 
 ### Show missing values as

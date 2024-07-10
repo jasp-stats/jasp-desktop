@@ -331,35 +331,35 @@ void VariablesListBase::termsChangedHandler()
 	setColumnsTypes(model()->termsTypes());
 	setColumnsNames(model()->terms().asQList());
 
-	int defaultMaxLevels = !_allowedTypesModel->hasType(columnType::scale) ? PreferencesModelBase::preferences()->maxLevels() : -1;
+	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
 
-	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || defaultMaxLevels >= 0)
+	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
 	{
 		bool hasError = false;
+		int maxScaleLevels = PreferencesModelBase::preferences()->maxScaleLevels();
+
 		for (const Term& term : model()->terms())
 		{
-			int nbLevels = model()->requestInfo(VariableInfo::TotalLevels, term.asQString()).toInt();
-			int nbNumValues = model()->requestInfo(VariableInfo::TotalNumericValues, term.asQString()).toInt();
+			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, term.asQString()).toInt(),
+				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, term.asQString()).toInt();
+
 			if (_minLevels >= 0 && nbLevels < _minLevels)
 			{
 				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(term.asQString()).arg(nbLevels));
 				hasError = true;
 			}
-			else if ((_maxLevels >= 0 || defaultMaxLevels >= 0))
+			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
 			{
-				QString msg = tr("Maximum number of levels is %1. Variable %2 has %3 levels.");
-				if (_maxLevels >= 0 && nbLevels > _maxLevels)
-				{
-					addControlErrorPermanent(msg.arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
-					hasError = true;
-				}
-				else if (defaultMaxLevels >= 0 && nbLevels > defaultMaxLevels && model()->getVariableRealType(term.asQString()) == columnType::scale)
-				{
-					// This is the case when a scale variable is set into a non-scale VariablesList, and the variable has more than the default maximum numer of levels
-					msg += "<br>" + tr("You may change this maximum in Preferences / Data menu.");
-					addControlErrorPermanent(msg.arg(defaultMaxLevels).arg(term.asQString()).arg(nbLevels));
-					hasError = true;
-				}
+				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
+				hasError = true;
+			}
+			else if (_maxLevels < 0 && noScaleAllowed && model()->getVariableRealType(term.asQString()) == columnType::scale && nbLevels > maxScaleLevels)
+			{
+				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
+				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
+				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
+										 .arg(term.asQString()).arg(columnTypeToQString(_allowedTypesModel->firstType())).arg(nbLevels).arg(maxScaleLevels));
+				hasError = true;
 			}
 			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
 			{

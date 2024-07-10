@@ -92,7 +92,7 @@ const Settings::Setting Settings::Values[] = {
 	{"checkUpdatesAskUser",			true	},
 	{"checkUpdates",				false	},
 	{"checkUpdatesLastTime",		-1		},
-	{"maxLevels",					100		}
+	{"maxScaleLevels",				100		}
 	
 };	
 
