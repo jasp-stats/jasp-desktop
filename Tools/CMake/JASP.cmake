@@ -52,6 +52,10 @@ set(MSIX_STORE_PUBLISHER
     "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
     CACHE STRING "Publisher set for store msix package")
 
+set(MSIX_STORE_BETA_PUBLISHER
+    "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
+    CACHE STRING "Publisher set for store beta msix package")
+
 set(MSIX_SIDELOAD_PUBLISHER
     "CN=Universiteit van Amsterdam, O=Universiteit van Amsterdam, L=Amsterdam, S=Noord-Holland, C=NL, OID.2.5.4.15=Government Entity, OID.1.3.6.1.4.1.311.60.2.1.3=NL, SERIALNUMBER=34370207"
     CACHE STRING "Publisher set for sideloaded msix package")

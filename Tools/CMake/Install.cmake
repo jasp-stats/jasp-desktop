@@ -342,6 +342,8 @@ if(WIN32)
   #msix stuff
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-store.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store-beta.xml.in
+                ${CMAKE_BINARY_DIR}/AppxManifest-store-beta.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-sideload.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-sideload.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-nightly.xml.in
