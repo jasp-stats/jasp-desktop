@@ -340,35 +340,43 @@ void VariablesListBase::termsChangedHandler()
 
 		for (const Term& term : model()->terms())
 		{
-			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, term.asQString()).toInt(),
-				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, term.asQString()).toInt();
+			QString termStr = term.asQString();
+			if (termStr.isEmpty())
+				continue;
+
+			columnType	termType	= (columnType)model()->requestInfo(VariableInfo::VariableType, termStr).toInt();
+			if (termType == columnType::unknown)
+				continue;
+
+			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, termStr).toInt(),
+				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, termStr).toInt();
 
 			if (_minLevels >= 0 && nbLevels < _minLevels)
 			{
-				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(term.asQString()).arg(nbLevels));
+				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(termStr).arg(nbLevels));
 				hasError = true;
 			}
 			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
 			{
-				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(term.asQString()).arg(nbLevels));
+				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(termStr).arg(nbLevels));
 				hasError = true;
 			}
-			else if (_maxLevels < 0 && noScaleAllowed && model()->getVariableRealType(term.asQString()) == columnType::scale && nbLevels > maxScaleLevels)
+			else if (_maxLevels < 0 && noScaleAllowed && termType == columnType::scale && nbLevels > maxScaleLevels)
 			{
 				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
 				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
 				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
-										 .arg(term.asQString()).arg(columnTypeToQString(_allowedTypesModel->firstType())).arg(nbLevels).arg(maxScaleLevels));
+										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->firstType())).arg(nbLevels).arg(maxScaleLevels));
 				hasError = true;
 			}
 			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
 			{
-				addControlErrorPermanent(tr("Minumum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				addControlErrorPermanent(tr("Minimum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(termStr).arg(nbNumValues));
 				hasError = true;
 			}
 			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
 			{
-				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(term.asQString()).arg(nbNumValues));
+				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(termStr).arg(nbNumValues));
 				hasError = true;
 			}
 
