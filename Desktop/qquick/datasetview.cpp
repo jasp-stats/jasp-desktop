@@ -1466,7 +1466,7 @@ void DataSetView::select(int row, int col, bool shiftPressed, bool ctrlCmdPresse
 	if(shiftPressed || ctrlCmdPressed || row != _prevEditRow || col != _prevEditCol)
 		clearEdit();
 	
-	if(!shiftPressed && !ctrlCmdPressed && ( row != _prevEditRow || col != _prevEditCol) )
+	if(!wholeCol && !shiftPressed && !ctrlCmdPressed && ( row != _prevEditRow || col != _prevEditCol) )
 		edit(row, col);
 
 	
