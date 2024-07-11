@@ -34,6 +34,22 @@ Item
 	property alias columnComputedTypeValue:	computedTypeVariableWindow.value
 	property alias columnTypeValue:			columnTypeVariableWindow.value
 
+	Connections
+	{
+		target: columnModel
+		function onVisibleChanged()
+		{
+			if (visible && columnModel.isVirtual)
+				columnNameVariablesWindow.forceActiveFocus()
+		}
+
+		function onChosenColumnChanged()
+		{
+			if (visible && columnModel.isVirtual)
+				columnNameVariablesWindow.forceActiveFocus()
+		}
+	}
+
 	Column
 	{
 		id:			leftColumn
@@ -57,14 +73,13 @@ Item
 			TextField
 			{
 				id:					columnNameVariablesWindow
-				placeholderText:	qsTr("<Fill in the name of the column>")
+				placeholderText:	qsTr("<First fill in the column name>")
 				value:				columnModel.columnName
 				onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
 				undoModel:			columnModel
 				editable:           columnModel.nameEditable
 				label:				qsTr("Name: ")
 				controlLabel.width:	leftColumn.labelWidth
-
 			}
 		}
 
@@ -81,6 +96,8 @@ Item
 			onValueChanged:		columnModel.currentColumnType = currentValue
 			controlMinWidth:	200 * jaspTheme.uiScale
 			controlLabel.width:	leftColumn.labelWidth
+			enabled:			!columnModel.isVirtual
+
 		}
 
 		DropDown
@@ -95,6 +112,7 @@ Item
 			controlMinWidth:	200 * jaspTheme.uiScale
 
 			controlLabel.width:	leftColumn.labelWidth
+			enabled:			!columnModel.isVirtual
 		}
 
 		Item
@@ -146,7 +164,7 @@ Item
 				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
 				undoModel:			columnModel
 				controlLabel.width:	rightColumn.labelWidth
-
+				enabled:			!columnModel.isVirtual
 			}
 
 			MenuButton
@@ -167,6 +185,7 @@ Item
 			id:					descriptionRow
 			width:				parent.width
 			height:				Math.max(descriptionLabel.height, columnDescriptionVariablesWindow.height)
+			enabled:			!columnModel.isVirtual
 
 			Label
 			{
