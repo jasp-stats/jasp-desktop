@@ -21,59 +21,58 @@
 RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
-	
+
 	HighlightingRule rule;
-    // all these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
+	// all these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
 
 	// operators
-    operatorFormat.setForeground(Qt::red);
-    rule.pattern = QRegularExpression(R"(->?>?|<(?:=|<?-)?|[>=!]=?|::?|&&?|\|\|?|[+*\/^$@~]|%[^%\s]*%)");
-    rule.format = operatorFormat;
-    highlightingRules.append(rule);
-	
+	operatorFormat.setForeground(Qt::red);
+	rule.pattern = QRegularExpression(R"(->?>?|<(?:=|<?-)?|[>=!]=?|::?|&&?|\|\|?|[+*\/^$@~]|%[^%\s]*%)");
+	rule.format = operatorFormat;
+	highlightingRules.append(rule);
+
 	// variables
 	variableFormat.setToolTip("variable");
 	rule.pattern = QRegularExpression(R"(\b\w*\b)");
 	rule.format = variableFormat;
 	highlightingRules.append(rule);
 
-    // string
-    stringFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegularExpression(R"((['"])(?:\\.|(?!\1)[^\\\r\n])*\1)");
-    rule.format = stringFormat;
-    highlightingRules.append(rule);
+	// string
+	stringFormat.setForeground(Qt::darkGreen);
+	rule.pattern = QRegularExpression(R"((['"])(?:\\.|(?!\1)[^\\\r\n])*\1)");
+	rule.format = stringFormat;
+	highlightingRules.append(rule);
 
-    // keyword
-    keywordFormat.setForeground(Qt::darkCyan);
-    rule.pattern = QRegularExpression(R"(\b(?:NA|NA_character_|NA_complex_|NA_integer_|NA_real_|NULL|break|else|for|function|if|in|next|repeat|while)\b)");
-    rule.format = keywordFormat;
-    highlightingRules.append(rule);
+	// keyword
+	keywordFormat.setForeground(Qt::darkCyan);
+	rule.pattern = QRegularExpression(R"(\b(?:NA|NA_character_|NA_complex_|NA_integer_|NA_real_|NULL|break|else|for|function|if|in|next|repeat|while)\b)");
+	rule.format = keywordFormat;
+	highlightingRules.append(rule);
 
+	// boolean and special number
+	booleanFormat.setForeground(Qt::magenta);
+	rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE|Inf|NaN)\b)");
+	rule.format = booleanFormat;
+	highlightingRules.append(rule);
 
-    // boolean and special number
-    booleanFormat.setForeground(Qt::magenta);
-    rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE|Inf|NaN)\b)");
-    rule.format = booleanFormat;
-    highlightingRules.append(rule);
+	// number
+	numberFormat.setForeground(Qt::darkMagenta);
+	rule.pattern = QRegularExpression(R"((?:\b0x[\dA-Fa-f]+(?:\.\d*)?|\b\d+(?:\.\d*)?|\B\.\d+)(?:[EePp][+-]?\d+)?[iL]?)");
+	rule.format = numberFormat;
+	highlightingRules.append(rule);
 
-    // number
-    numberFormat.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegularExpression(R"((?:\b0x[\dA-Fa-f]+(?:\.\d*)?|\b\d+(?:\.\d*)?|\B\.\d+)(?:[EePp][+-]?\d+)?[iL]?)");
-    rule.format = numberFormat;
-    highlightingRules.append(rule);
+	// punctuation
+	punctuationFormat.setForeground(Qt::blue);
+	rule.pattern = QRegularExpression(R"([(){}\[\],;])");
+	rule.format = punctuationFormat;
+	highlightingRules.append(rule);
 
-    // punctuation
-    punctuationFormat.setForeground(Qt::blue);
-    rule.pattern = QRegularExpression(R"([(){}\[\],;])");
-    rule.format = punctuationFormat;
-    highlightingRules.append(rule);
-	
 	// comments
 	commentFormat.setForeground(Qt::darkGray);
 	commentFormat.setFontItalic(true);
-    rule.pattern = QRegularExpression(R"(#.*)");
+	rule.pattern = QRegularExpression(R"(#.*)");
 	rule.format = commentFormat;
-    highlightingRules.append(rule);
+	highlightingRules.append(rule);
 }
 
 void RlangSyntaxHighlighter::highlightBlock(const QString &text)
@@ -81,10 +80,31 @@ void RlangSyntaxHighlighter::highlightBlock(const QString &text)
 	for (const HighlightingRule &rule : highlightingRules)
 	{
 		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+
 		while (matchIterator.hasNext())
 		{
 			QRegularExpressionMatch match = matchIterator.next();
 			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+			setStringsFormat(text, '"');
+			setStringsFormat(text, '\'');
+		}
+	}
+}
+
+void RlangSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
+{
+	int start = -1;
+	for (int i = 0; i < text.size(); ++i)
+	{
+		if (text[i] == c && (i == 0 || text[i - 1] != '\\'))
+		{
+			if (start == -1)
+				start = i;
+			else
+			{
+				setFormat(start, i - start + 1, stringFormat);
+				start = -1;
+			}
 		}
 	}
 }

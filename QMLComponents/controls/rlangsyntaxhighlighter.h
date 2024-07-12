@@ -28,6 +28,7 @@ class RlangSyntaxHighlighter : public QSyntaxHighlighter
 public:
     RlangSyntaxHighlighter(QTextDocument *parent);
 	virtual void highlightBlock(const QString &text) override;
+    void setStringsFormat(const QString &text, QChar c);
 private:
 	struct HighlightingRule
 	{
