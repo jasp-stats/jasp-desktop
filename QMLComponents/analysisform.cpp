@@ -690,8 +690,6 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 
 QString AnalysisForm::rSyntaxText() const
 {
-	Log::log() << "rSyntaxText: " << _rSyntaxText << std::endl;
-
 	return _rSyntaxText;
 }
 

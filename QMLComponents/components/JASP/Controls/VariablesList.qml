@@ -421,7 +421,7 @@ VariablesListBase
 				property bool	draggable:				variablesList.draggable && model.selectable
 				property string	columnType:				isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var	extraItem:				model.rowComponent
-				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.source !== ""
+				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.visible
 
 				enabled: !variablesList.draggable || model.selectable
 
@@ -468,11 +468,11 @@ VariablesListBase
 				{
 					id:						icon
 					height:					16 * preferencesModel.uiScale
-					width:					source === "" ? 0 : 16 * preferencesModel.uiScale
+					width:					variablesList.showVariableTypeIcon ? 16 * preferencesModel.uiScale : 0 // Even if this is not a variable, if showVariableTypeIcon is true means that other items might be variables, so for alighment purpose keep the space for the icon
 					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					sourceVar !== undefined ? sourceVar : ""
-					visible:				source
+					visible:				sourceVar !== ""
 					mipmap:					true
 					smooth:					true
 					scale:					itemRectangle.typeChangeable && mouseArea.containsMouse && mouseArea.mouseX < icon.width ? 1.2 : 1
