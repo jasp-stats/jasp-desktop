@@ -24,10 +24,12 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "zh_Hans"	,	true	},
 	{ "zh_Hant" ,	true	},
 	{ "id"		,	false	},
-	{ "fr"		,	false   },
+	{ "fr"		,	true    },
 	{ "ru"		,	false	},
-	{ "pl"		,	true	}
+	{ "pl"		,	true	},
+	{ "it"		,	false	}
 };
+
 QString LanguageModel::LanguageInfo::_incompleteFlag = "(incomplete)";
 
 QString LanguageModel::LanguageInfo::getLanguageCode(const QLocale& locale)
