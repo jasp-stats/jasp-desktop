@@ -42,7 +42,8 @@ void ColumnTypesModel::setTypes(columnTypeVec types)
 		return;
 
 	beginResetModel();
-	_types = types;	
+	_types = types;
+	_defaultType = _types.size() > 0 ? _types[0] : columnType::unknown;
 	std::sort(_types.begin(), _types.end());
 	endResetModel();
 }
@@ -99,14 +100,6 @@ bool ColumnTypesModel::hasAllTypes() const
 			return false;
 
 	return true;
-}
-
-columnType ColumnTypesModel::firstType() const
-{
-	if (_types.size() > 0)
-		return _types[0];
-	else
-		return columnType::unknown;
 }
 
 QStringList ColumnTypesModel::iconList() const
