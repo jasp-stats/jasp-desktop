@@ -148,7 +148,7 @@ private:
 								_minLevels =			-1,
 								_maxLevels =			-1;
 
-	bool						_allowTypeChange =		true;
+	bool						_allowTypeChange =		false;
 	QStringList					_allowedColumns,
 								_columnsTypes,
 								_columnsNames,
