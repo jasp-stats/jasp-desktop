@@ -47,10 +47,11 @@ void FactorsFormBase::setUpModel()
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
 	ListModelFactorsForm::FactorVec factors;
+	Json::Value updatedValue = value; // If the value has no types, then we need to update it.
 
-	for (const Json::Value& factor : value)
+	for (Json::Value& factor : updatedValue)
 	{
-		const Json::Value& types = factor.isMember("types") ? factor["types"] : Json::nullValue;
+		Json::Value types = factor.isMember("types") ? factor["types"] : Json::arrayValue;
 		int i = 0;
 
 		Terms initTerms;
@@ -70,20 +71,25 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 				components.push_back(termsJson.asString());
 
 			Term term(components);
-			if (types.size() > i)
-				term.setType(columnTypeFromString(types[i].asString()));
-			else if (components.size() == 1)
-				term.setType(model()->getVariableRealType(tq(components[0])));
+			columnType type = columnType::unknown;
+			if (types.size() <= i)
+			{
+				if (components.size() == 1)
+					type = model()->getVariableRealType(tq(components[0]));
+				types.append(columnTypeToString(type));
+			}
+			else
+				type = columnTypeFromString(types[i].asString());
+			term.setType(type);
 			initTerms.add(term);
 
 			i++;
 		}
-
-		
+		factor["types"] = types;
 		factors.push_back(ListModelFactorsForm::Factor(tq(factor["name"].asString()), tq(factor["title"].asString()), initTerms));
 	}
 
-	BoundControlBase::bindTo(value);
+	BoundControlBase::bindTo(updatedValue);
 	
 	_factorsModel->initFactors(factors);
 }
