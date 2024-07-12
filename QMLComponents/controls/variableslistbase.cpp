@@ -288,7 +288,7 @@ bool VariablesListBase::isTypeAllowed(columnType type) const
 
 columnType VariablesListBase::defaultType() const
 {
-	return _allowedTypesModel->firstType();
+	return _allowedTypesModel->defaultType();
 }
 
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
@@ -366,7 +366,7 @@ void VariablesListBase::termsChangedHandler()
 				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
 				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
 				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
-										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->firstType())).arg(nbLevels).arg(maxScaleLevels));
+										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->defaultType())).arg(nbLevels).arg(maxScaleLevels));
 				hasError = true;
 			}
 			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
