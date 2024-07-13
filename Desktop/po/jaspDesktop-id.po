@@ -4536,10 +4536,6 @@ msgid "Community"
 msgstr ""
 
 msgctxt "ColumnBasicInfo|"
-msgid "<Fill in the name of the column>"
-msgstr ""
-
-msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr ""
 
@@ -5059,18 +5055,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "VariablesListBase|"
-msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Minumum number of numeric values is %1. Variable %2 has only %3 different "
-"numeric values"
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
@@ -5098,4 +5082,40 @@ msgstr "Nominal"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
+msgstr ""
+
+msgctxt "ColumnBasicInfo|"
+msgid "<First fill in the column name>"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Maximum allowed levels for scale when used as nominal/ordinal"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"For analysis accepting only nominal or ordinal for some variables, if a "
+"scale variable is used, JASP checks whether the number of levels of this "
+"variable exceeds this maximum."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Attempt to transform scale variable %1 into a %2 variable, but its number of "
+"levels %3 exceeds the maximum %4. If you still want to use this variable, "
+"either change its type, or change 'Maximum allowed levels for scale' in "
+"Preferences / Data menu"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minimum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
 msgstr ""

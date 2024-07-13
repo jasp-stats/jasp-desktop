@@ -4643,10 +4643,6 @@ msgid "Community"
 msgstr "社区"
 
 msgctxt "ColumnBasicInfo|"
-msgid "<Fill in the name of the column>"
-msgstr "<输入变量名称>"
-
-msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "名 称： "
 
@@ -5211,18 +5207,6 @@ msgstr "最小水平数为 %1。变量 %2 仅有 %3 个水平"
 
 #, qt-format
 msgctxt "VariablesListBase|"
-msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
-msgstr "最大水平数为 %1。变量 %2 有 %3 个水平"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Minumum number of numeric values is %1. Variable %2 has only %3 different "
-"numeric values"
-msgstr "数值的最小数量为 %1。变量 %2 仅有 %3 个不同的数值"
-
-#, qt-format
-msgctxt "VariablesListBase|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
@@ -5248,3 +5232,39 @@ msgstr "名义"
 msgctxt "VariableInfo|"
 msgid "Unknown"
 msgstr "未知"
+
+msgctxt "ColumnBasicInfo|"
+msgid "<First fill in the column name>"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Maximum allowed levels for scale when used as nominal/ordinal"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"For analysis accepting only nominal or ordinal for some variables, if a "
+"scale variable is used, JASP checks whether the number of levels of this "
+"variable exceeds this maximum."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Attempt to transform scale variable %1 into a %2 variable, but its number of "
+"levels %3 exceeds the maximum %4. If you still want to use this variable, "
+"either change its type, or change 'Maximum allowed levels for scale' in "
+"Preferences / Data menu"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minimum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""

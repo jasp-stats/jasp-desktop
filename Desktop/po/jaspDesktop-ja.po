@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-07-12 14:09+0000\n"
-"Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/ja/>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -4774,10 +4768,6 @@ msgid "Community"
 msgstr "コミュニティ"
 
 msgctxt "ColumnBasicInfo|"
-msgid "<Fill in the name of the column>"
-msgstr "<列の名前を埋める>"
-
-msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "名前: "
 
@@ -5334,8 +5324,8 @@ msgstr ""
 "JASPのアップデートを私たちのサーバーでチェックし、新しいバージョンがあれば知"
 "らせますか？\n"
 "\n"
-"JASPはアップデートを取得する際に、お客様のデータを共有することはありません。"
-"\n"
+"JASPはアップデートを取得する際に、お客様のデータを共有することはありませ"
+"ん。\n"
 "お客様のIPアドレスは私たちのサーバーと共有されますが、これはインターネットが"
 "機能するために必要なものです。\n"
 "\n"
@@ -5353,18 +5343,6 @@ msgstr "いいえ"
 msgctxt "VariablesListBase|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
 msgstr "水準%1の最小値、変数%2は、%3 水準のみもつ"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Maximum number of levels is %1. Variable %2 has %3 levels"
-msgstr "水準%1の最大値、変数%2は、%3 水準もつ"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Minumum number of numeric values is %1. Variable %2 has only %3 different "
-"numeric values"
-msgstr "数値%1の最小値、変数%2は、%3 の異なる数値のみもつ"
 
 #, qt-format
 msgctxt "VariablesListBase|"
@@ -5393,3 +5371,39 @@ msgstr "名義"
 msgctxt "VariableInfo|"
 msgid "Unknown"
 msgstr "不明"
+
+msgctxt "ColumnBasicInfo|"
+msgid "<First fill in the column name>"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Maximum allowed levels for scale when used as nominal/ordinal"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"For analysis accepting only nominal or ordinal for some variables, if a "
+"scale variable is used, JASP checks whether the number of levels of this "
+"variable exceeds this maximum."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Attempt to transform scale variable %1 into a %2 variable, but its number of "
+"levels %3 exceeds the maximum %4. If you still want to use this variable, "
+"either change its type, or change 'Maximum allowed levels for scale' in "
+"Preferences / Data menu"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid ""
+"Minimum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
