@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-07-13 08:13+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.7-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5235,23 +5241,24 @@ msgstr "未知"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<首先填写列名称>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "当连续型变量被用作名义/有序类型时允许的最大水平"
 
 msgctxt "PrefsData|"
 msgid ""
 "For analysis accepting only nominal or ordinal for some variables, if a "
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
-msgstr ""
+msgstr "对于某些变量仅接受名义或有序的分析，如果使用了连续变量，JASP "
+"会检查该变量的水平数是否超出此最大值。"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "最大水平数仅允许 %1。变量 %2 有 %3 个水平。"
 
 #, qt-format
 msgctxt "VariablesListBase|"
@@ -5261,10 +5268,12 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"尝试将连续变量 %1 转换为 %2 变量，但其水平数 %3 超出最大值 %4。如果您仍想使用"
+"此变量，请更改其度量类型，或在“首选项/数据”菜单中更改“连续变量允许的最大水平”"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
-msgstr ""
+msgstr "数值的最小数量为 %1。变量 %2 仅有 %3 个不同的数值"
