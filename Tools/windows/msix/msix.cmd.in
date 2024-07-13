@@ -18,7 +18,7 @@ copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store-beta.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
-MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
+MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.1000.@JASP_VERSION_TWEAK@.msix"
 
 rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"  
 popd
