@@ -44,6 +44,7 @@ CheckBoxBase
 			property alias	fontInfo:				label.fontInfo
 			property alias	label:					control.text
 			property alias	labelTextFormat:		label.textFormat
+			property string toolTip:                ""
 			property alias	checked:				control.checked
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
@@ -53,6 +54,20 @@ CheckBoxBase
 	function click()	{ control.toggle(); }
 	function toggle()	{ control.toggle(); }
 
+	MouseArea
+	{
+		id:					hoverMe
+		anchors.fill:		parent
+		hoverEnabled:		true
+	}
+
+	ToolTip
+	{
+		text: 		checkBox.toolTip
+		timeout:	jaspTheme.toolTipTimeout
+		delay:		jaspTheme.toolTipDelay
+		visible:	checkBox.toolTip !== "" &&  (hoverMe.containsMouse || control.hovered)
+	}
 
 	CheckBox
 	{
