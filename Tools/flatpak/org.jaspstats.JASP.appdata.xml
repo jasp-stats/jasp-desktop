@@ -34,6 +34,190 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+            <release version="0.19.0" date="2024-07-15">
+                <description>
+<p><b>0.19.0 (July 15th 2024)</b></p>
+<ul>
+  <li>New analyses:
+      <ul>
+        <li>Raincloud Plots</li>
+        <li>Bayesian process analysis</li>
+      </ul>
+  </li>
+  <li>Data Type check improvements
+      <ul>
+         <li>Indicator and tooltip for type conversion</li>
+         <li>Min and max levels constraints for variables</li>
+         <li>When allowed, possibility to change type inside the analysis</li>
+      </ul>
+  </li>
+  <li>Data Editing:
+      <ul>
+         <li>Redesign the Label Editor</li>
+         <li>Possibility to recode value</li>
+         <li>Automatic reorder labels per value</li>
+         <li>Real values in grey when differ from labels</li>
+      </ul>
+  </li>
+  <li>New language: Italian</li>
+  <li>Improve welcome page with reference to bug/feature reports
+  <li>Import Data
+  	<ul>
+    	<li>Better handling of ODS file (<a href="https://github.com/jasp-stats/jasp-issues/issues/352">352</a>, <a href="https://github.com/jasp-stats/jasp-issues/issues/2660">2660</a>)</li>
+        <li>Read missing values from sav/readstat (<a href="https://github.com/jasp-stats/jasp-issues/issues/2500">2500</a>)</li>
+     </ul>
+  </li>
+  <li>Improve Latex editor (<a href="https://github.com/jasp-stats/jasp-desktop/pull/5413">5413</a>)</li>
+  <li>Table title gets APA styles (<a href="https://github.com/jasp-stats/jasp-desktop/pull/5345">5345</a>)</li>
+
+  <li>Modules fixed and new features
+  <ul>
+  <li>Descriptives
+  	<ul>
+        <li>Improve Shapiro-Wilk test (<a href="https://github.com/jasp-stats/jasp-issues/issues/1209">1209</a>)</li>
+        <li>Added bound of Percentiles (<a href="https://github.com/jasp-stats/jaspDescriptives/pull/155">155</a>)</li>
+    </ul>
+  </li>
+  <li>ANOVA:
+      <ul>
+      	<li>Use multivariate as default for follow-up tests RM ANOVA (<a href="https://github.com/jasp-stats/jasp-issues/issues/1221">1221</a>, <a href="https://github.com/jasp-stats/jasp-issues/issues/1642">1642</a>)</li>
+        <li>Letter based posthoc grouping + dunn relocating + allow singular model (<a href="https://github.com/jasp-stats/jaspAnova/pull/321">321</a>)</li>
+        <li>Contrast-specific error term for planned contrats in the context of RM-ANOVA (<a href="https://github.com/jasp-stats/jasp-issues/issues/1642">1642</a>)</li>
+        <li>Request for Letter-Based Representation of All-Pairwise Comparisons in post-hoc testing (<a href="https://github.com/jasp-stats/jasp-issues/issues/342"></a>342)</li>
+        <li>Incorrect CI bars for repeated measures ANOVA (standard and Bayesian) (<a href="https://github.com/jasp-stats/jasp-issues/issues/1187">1187</a>)</li>
+        <li>Effect size for Kruskall Wallis and Dunns test (post hoc) (<a href="https://github.com/jasp-stats/jasp-issues/issues/1905">1905</a>)</li>
+        <li>CI error bars on rm-ANOVA much too small - can the Morey's correction be optional? (<a href="https://github.com/jasp-stats/jasp-issues/issues/1227">1227</a>)</li>
+        <li>RM ANOVA - allow interactions between within/between factors in marginal means (<a href="https://github.com/jasp-stats/jasp-issues/issues/2351">2351</a>)</li>
+        <li>Dunn's post hoc non functional (<a href="https://github.com/jasp-stats/jasp-issues/issues/2678">2678</a>)</li>
+        <li>Option to only compute and display relevant post-hocs (<a href="https://github.com/jasp-stats/jasp-issues/issues/637">637</a>)</li>
+        <li>Presenting the results in post hoc tests for n-factorial ANOVA fixing one of the factors and showing the statistical difference among the levels of the other factor (<a href="https://github.com/jasp-stats/jasp-issues/issues/2696">2696</a>)</li>
+        <li>Error in JASP homogeneity test for repeated measures ANOVA (<a href="https://github.com/jasp-stats/jasp-issues/issues/2711">2711</a>)</li>
+        <li>Can't plot interactions for BANOVAs and RM BANOVAs (<a href="https://github.com/jasp-stats/jasp-issues/issues/2573">2573</a>)</li>
+      </ul>
+  </li>
+  <li>T-Tests
+  	<ul>
+    	<li>Niggling plot differences between classical and Bayesian paired t-test (<a href="https://github.com/jasp-stats/jasp-issues/issues/573">573</a>)</li>
+        <li>Confidence intervals for Wilcoxon signed-rank test are reported even when requested confidence level is not achievable (<a href="https://github.com/jasp-stats/jasp-issues/issues/2037">2037</a>)</li>
+        <li>The abbreviated Mann-Whitney statistics (<a href="https://github.com/jasp-stats/jasp-issues/issues/1735">1735</a>)</li>
+        <li>Bayesian Paired-Samples t-test (Wilcoxon) - Won't run with ordinal data, but will with scale data (<a href="https://github.com/jasp-stats/jasp-issues/issues/2102">2102</a>)</li>
+    </ul>
+  </li>
+  <li>Mixed Models
+  	<ul>
+    	<li>Change comparison group for mixed-models to fit other analyses types (<a href="https://github.com/jasp-stats/jasp-issues/issues/1970">1970</a>)</li>
+        <li>MixedModelsLMM with only ~1 in fixed part (<a href="https://github.com/jasp-stats/jasp-issues/issues/2092">2092</a>)</li>
+        <li>Allow Mixed models to only estimate the random effects (<a href="https://github.com/jasp-stats/jasp-issues/issues/2780">2780</a>)</li>
+    </ul>
+  </li>
+  <li>Process:
+      <ul>
+      	<li>Bootstrap percentile intervals (<a href="https://github.com/jasp-stats/jasp-issues/issues/2657">2657</a>)</li>
+        <li>Fix short variable name (<a href="https://github.com/jasp-stats/jasp-issues/issues/2635">2635</a>)</li>
+        <li>Add covariances between mediators and mediator-interaction terms (<a href="https://github.com/jasp-stats/jaspProcess/pull/86">86</a>)</li>
+        <li>Model fail with Hayes configuaration (<a href="https://github.com/jasp-stats/jasp-test-release/issues/2650">2650</a>)</li>
+        <li>Bayesian Process Model- estimate failed with lavaan things (<a href="https://github.com/jasp-stats/jasp-test-release/issues/2628">2628</a>)</li>
+        <li>Does not perform local tests (<a href="https://github.com/jasp-stats/jasp-issues/issues/2622">2622</a>)</li>
+        <li>Multiple mediated processes become one (<a href="https://github.com/jasp-stats/jasp-issues/issues/2473">2473</a>)</li>
+        <li>Renaming model erases input (<a href="https://github.com/jasp-stats/jasp-issues/issues/2469">2469</a>)</li>
+
+      </ul>
+  </li>
+  <li>Regression
+  	<ul>
+    	<li>Classical Linear Regression: cannot add ordinal variable (<a href="https://github.com/jasp-stats/jasp-issues/issues/2243">2243</a>)</li>
+        <li>Change Bayes factor label according to the hypothesis value (<a href="https://github.com/jasp-stats/jaspRegression/pull/286">286</a>)</li>
+        <li>Error when interaction term is entered in regression (<a href="https://github.com/jasp-stats/jasp-issues/issues/1679">1679</a>)</li>
+        <li>Reintroduce stepwise/forward/backward regression with factors (<a href="https://github.com/jasp-stats/jasp-issues/issues/2597">2597</a>)</li>
+        <li>Block Function for Hierarchical Linear Regression (<a href="https://github.com/jasp-stats/jasp-issues/issues/176">176</a>)</li>
+        <li>Additional statistics for the regression module (<a href="https://github.com/jasp-stats/jasp-issues/issues/1637">1637</a>)</li>
+        <li>Hierarchical logistic regression (entering predictors in blocks (<a href="https://github.com/jasp-stats/jasp-issues/issues/2675">1675</a>)</li>
+        <li>Error when running moderator analysis (<a href="https://github.com/jasp-stats/jasp-issues/issues/2727">2727</a>)</li>
+        <li>linear weighing in Cohen kappa (<a href="https://github.com/jasp-stats/jasp-issues/issues/2175">2175</a>)</li>
+    </ul>
+  </li>
+  <li>Reliability
+  	<ul>
+    	<li>Output factor loadings when computing frequentist McDonald's omega (<a href="https://github.com/jasp-stats/jasp-issues/issues/2525">2525</a>)</li>
+    </ul>
+  </li>
+  <li>Factor
+  	<ul>
+    	<li>Export/Save function for factor scores in EFA and PCA (<a href="https://github.com/jasp-stats/jasp-issues/issues/101">101</a>)</li>
+        <li>CFA error with grouping variable (<a href="https://github.com/jasp-stats/jasp-issues/issues/2182">2182</a>)</li>
+        <li>Unidimensional omega of Relibability/Unidimensional Reliability differs from that of Factor/CFA (<a href="https://github.com/jasp-stats/jasp-issues/issues/2655">2655</a>)</li>
+    </ul>
+  </li>
+  <li>JAGS
+  	<ul>
+    	<li>Error in binamy classification (<a href="https://github.com/jasp-stats/jasp-issues/issues/2537">2537</a>)</li>
+    </ul>
+  </li>
+  <li>AUDIT:
+  	<ul>
+    	<li>Separate the prior most likely misstatement and the expected misstatements in the sample (<a href="https://github.com/jasp-stats/jaspAudit/pull/459">459</a>)</li>
+    </ul>
+  </li>
+  <li>Machine Learning:
+  	<ul>
+    	<li>Transpose confusion matrix, Show training and data validation split options for decision trees, support vector machines, better help (<a href="https://github.com/jasp-stats/jaspMachineLearning/pull/318">318</a>)</li>
+        <li>ROC for Naive Bayes Classification does not work (<a href="https://github.com/jasp-stats/jasp-issues/issues/2794">2794</a>)</li>
+        <li>error while setting test set indicator for Boosting classification (<a href="https://github.com/jasp-stats/jasp-issues/issues/1838">1838</a>)</li>
+        <li>Machine Learning Regression: add scaled MSE in the evaluation metrics (<a href="https://github.com/jasp-stats/jasp-issues/issues/2619">2619</a>)</li>
+        <li>Incorrect test accuracy for decision tree classifier when one class doesn't contain any prediction (<a href="https://github.com/jasp-stats/jasp-issues/issues/2596">2596</a>)</li>
+    </ul>
+  </li>
+  <li>SEM
+  	<ul>
+    	<li>No negative correlation in Partial Least Squared SEM (<a href="https://github.com/jasp-stats/jasp-issues/issues/2086">2086</a>)</li>
+        <li>Error message when trying to perform LGCM (<a href="https://github.com/jasp-stats/jasp-issues/issues/2764">2764</a>)</li>
+        <li>SEM module mislabels models (<a href="https://github.com/jasp-stats/jasp-issues/issues/2690">2690</a>)</li>
+        <li>Latent Growth modeling get error (<a href="https://github.com/jasp-stats/jasp-issues/issues/2510">2510</a>)</li>
+        <li>Equality Constraints in Multigroup SEM have at least 2 bugs (<a href="https://github.com/jasp-stats/jasp-issues/issues/2225">2225</a>)</li>
+        <li>listwise deletion in PCA (<a href="https://github.com/jasp-stats/jasp-issues/issues/2419">2419</a>)</li>
+        <li>Adding estimation of indirect and total effects to SEM module (<a href="https://github.com/jasp-stats/jasp-issues/issues/1980">1980</a>)</li>
+    </ul>
+  </li>
+  <li>Visual Modeling</li>
+  	<ul>
+    	<li>Error in module Visual Modeling / Mixed Modeling (<a href="https://github.com/jasp-stats/jasp-issues/issues/2216">2216</a>)</li>
+        <li>Flexplot with categorial variables shows absolute Differences now (<a href="https://github.com/jasp-stats/jasp-issues/issues/2423">2423</a>)</li>
+        <li>only allow 2 variables in the input boxes (<a href="https://github.com/jasp-stats/jasp-issues/issues/2750">2750</a>)</li>
+    </ul>
+  <li>Equivalence T-Tests
+  	<ul>
+    	<li>Repair Independent Samples T-Test(<a href="https://github.com/jasp-stats/jasp-issues/issues/1940">1940</a>)</li>
+    </ul>
+  </li>
+  <li>Learn Bayes
+  	<ul>
+		<li>Binary Classification: fails to accept continuous and binary discrete variables (<a href="https://github.com/jasp-stats/jasp-issues/issues/2531">2531</a>)</li>
+    </ul>
+  </li>
+   <li>Distribution
+  	<ul>
+		<li>F-Distribution error (<a href="https://github.com/jasp-stats/jasp-issues/issues/2640">2640</a>)</li>
+    </ul>
+  </li>
+   <li>Quality Control
+  	<ul>
+		<li>Control charts adjustable control limits and targets (<a href="https://github.com/jasp-stats/jasp-issues/issues/1790">1790</a>)</li>
+        <li>Add specification limits to x-mR chart in process capability study (<a href="https://github.com/jasp-stats/jasp-issues/issues/2443">2443</a>)</li>
+        <li>nested gauge r and R results differ to other software (<a href="https://github.com/jasp-stats/jasp-issues/issues/2048">2048</a>)</li>
+        <li>Name of the Catagorical variables are being pulled from wrong table (<a href="https://github.com/jasp-stats/jasp-issues/issues/2392">2392</a>)</li>
+        <li>Capability Study: Cannot deal with large values (<a href="https://github.com/jasp-stats/INTERNAL-jasp/issues/2440">2440</a>)</li>
+        <li>out-of-control signals (<a href="https://github.com/jasp-stats/INTERNAL-jasp/issues/2318">2318</a>)</li>
+        <li>Error in tableRListCombined[['test3']]: subscript out of bounds (<a href="https://github.com/jasp-stats/jasp-issues/issues/2674">2674</a>)</li>
+    </ul>
+  </li>
+  </ul>
+  </li>
+
+</li>
+</ul>
+
+                </description>
+        </release>
           <release version="0.18.3" date="2024-01-10">
                 <description>
 Bug fixes:
