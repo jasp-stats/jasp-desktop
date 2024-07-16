@@ -47,7 +47,7 @@ Form
 		{
 			AvailableVariablesList	{ name: "availbleVariables"								}
 			AssignedVariablesList	{ name: "variables";		title: qsTr("Variables")	}
-			AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
+			AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 		}
 
 		//But in most cases you should follow the style documented at "theRightWayForSpecifyingProperties"
