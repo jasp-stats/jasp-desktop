@@ -445,14 +445,7 @@ Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field
 - `columns`: [optional, default: 1] number of columns of the list.
-- `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the allowed column types.
-- `suggestedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the suggested column types. The difference between `allowedColumns` and `suggestedColumns` is that `allowedColumns` sets explicitly the types that are allowed, and `suggestedColumns` sets the allowed types in a looser way, with these rules:
-    * if `suggestedColumns` contains the `scale` type, then `nominal` and `ordinal` types are also allowed
-    * if `suggestedColumns` contains the `nominal` type, then `ordinal` tyes are also allowed
-
-The `suggestedColumns` types are displayed as icons at the bottom-right of the VariablesList, indicating which kind of columns may be added in this VariablesList. If `suggestedColumns` is empty and `allowedColumns` is specified, then the `allowedColumns` is used to display the type icons.
-If `suggestedColumns` and `allowedColumns` are empty, then all column types are allowed.\
-To avoid confusion, use either the `allowedColumns` property or the `suggestedColumns` property, and not both properties, to set which columns might be inserted in the VariablesList. `allowedColumns` sets the types explicitly, `suggestedColumns` indicates more which types should be used, but permits other types that can be converted implicitly to the right type.
+- `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the allowed column types, which displayed as icons at the bottom-right of the VariablesList. Other type of columns can be converted automatically to the right type, all column types would be allowed if set it empty.
 - `maxRows`: [optional, default: `-1`] maximum number of rows the list can accept. -1 means no limit.
 - `singleVariable`: [optional, default: `false`] if true, set the maxRows to 1
 - `listViewType`: [optional] enumerative that specifies the type of `AssignedVariablesList`, when omitted we get a normal list, options are `JASP.Layers` (see Contingency Tables), `JASP.Interaction` (see ANOVA) and `JASP.RepeatedMeasures` (see Repeated Measures ANOVA)
