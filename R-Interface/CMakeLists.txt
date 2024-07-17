@@ -91,9 +91,17 @@ if(WIN32)
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
 
-  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
-  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
-  set(RENV_PATH "${R_LIBRARY_PATH}/renv")
+  set(RENV_PATH      "${JASP_BINARY_DIR}/_cache/R/renv_library/renv")
+
+  set(R_CPP_INCLUDES_LIBRARY      "${JASP_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
+  include(FindRPackagePath)
+
+  find_package_path(RCPP_PATH       ${R_CPP_INCLUDES_LIBRARY} "Rcpp")
+  find_package_path(RINSIDE_PATH    ${R_CPP_INCLUDES_LIBRARY} "RInside")
+
+  message(STATUS "RCPP_PATH    = ${RCPP_PATH}")
+  message(STATUS "RINSIDE_PATH = ${RINSIDE_PATH}")
+  message(STATUS "RENV_PATH    = ${RENV_PATH}")
 
   include(FetchContent)
   include(ExternalProject)

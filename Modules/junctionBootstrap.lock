@@ -1,0 +1,25 @@
+{
+  "R": {
+    "Version": "4.3.3",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cran.rstudio.com"
+      }
+    ]
+  },
+  "Packages": {
+    "RInside": {
+      "Package": "RInside",
+      "Source": "Repository"
+    },
+    "fs": {
+      "Package": "fs",
+      "Source": "Repository"
+    },
+    "Rcpp": {
+      "Package": "Rcpp",
+      "Source": "Repository"
+    }
+  }
+}

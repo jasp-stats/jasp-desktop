@@ -72,6 +72,21 @@ set(MSIX_SIGN_CERT_PASSWORD
   "0000"
   CACHE STRING "Password selfsign cert for Nightlies")
 
+set(R_PKG_CELLAR_PATH
+  ""
+  CACHE STRING "Set the path for an renv package cellar to be used during build phase")
+
+set(RPKG_DOWNLOAD_ONLY
+  OFF
+  CACHE BOOL "If enabled renv will not install JASP module deps but just download them. Usefull to make a cellar for Flatpak")
+
+set(REGENERATE_LOCKFILE
+  OFF
+  CACHE BOOL "If enabled jaspModuleInstaller will generate a fresh lockfile")
+
+set(MODULE_INSTALL_MODE
+  "localizeAll"
+  CACHE STRING "identicalToLockfile or localizeModuleOnly or localizeAll. Sets how much is pulled remote or from source folder")
 
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
@@ -84,8 +99,8 @@ if(NOT R_REPOSITORY)
       "http://cloud.r-project.org"
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
-
 if(FLATPAK_USED AND LINUX)
+  set(R_PKG_CELLAR_PATH "/app/lib64/cellar")
   set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()
 
