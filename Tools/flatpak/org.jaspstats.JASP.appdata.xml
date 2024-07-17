@@ -4,7 +4,7 @@
 	<id>org.jaspstats.JASP</id>
 	<launchable type="desktop-id">org.jaspstats.JASP.desktop</launchable>
 	<name>JASP</name>
-	<summary>Standard statistical analyses, both classical and Bayesian</summary>
+	<summary>Classical and Bayesian Statistics</summary>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>AGPL-3.0+</project_license>
 	<content_rating type="oars-1.1" />
@@ -26,13 +26,17 @@
 	</description>
 	<screenshots>
 		<screenshot type="default">
-			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
-			<image type="source" width="1600" height="900">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot-0.png</image>
+			<caption xml:lang="en-GB">Shows JASP Descriptives</caption>
+			<image type="source" width="965" height="685">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/lockfiletesting/Tools/flatpak/flatpak_screenshot_0_small.png</image>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
+  <branding>
+  <color type="primary" scheme_preference="light">#14a1e3</color>
+  <color type="primary" scheme_preference="dark">#14a1e3</color>
+  </branding>
 	<releases>
             <release version="0.19.0" date="2024-07-15">
                 <description>

@@ -42,8 +42,8 @@ determineOverlap <- function(targetRoot, sourceRoot)
   {
     targetSplit  <- splitPath(target)
     rootToSrc    <- pastePath(sourceSplit[seq(overlap$len + 1, length(sourceSplit))])
-    stepsDown    <- length(targetSplit) - (overlap$len + as.integer(addRootToSource))
-    tgtToSrc     <- pastePath(rep("..", stepsDown)  )
+    stepsDown    <- length(targetSplit) - (overlap$len + as.integer(addRootToSource)) - 1
+    tgtToSrc     <- pastePath(rep("..", max(0, stepsDown)) )
 
     #for debug:
     #tgtToSrc     <- paste0(tgtToSrc, .Platform$file.sep, ".")
@@ -70,7 +70,7 @@ getRelativityFunction <- function(modulesRoot, renvCache)
 {
   
   if (Sys.info()["sysname"] == "Darwin") {
-    modToRenvS <- pastePath(c("..", "renv-cache"))
+    modToRenvS <- "renv-cache"
   } else {
     modToRenvF <- determineOverlap(modulesRoot, renvCache)
     modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
@@ -85,7 +85,11 @@ getRelativityFunction <- function(modulesRoot, renvCache)
       pathToRenv   <- determineOverlap(targetPath,   renvCache)$sourceToTarget
 
       linkToModS   <- linkToMod(linkLocation, FALSE)
-      linkToRenvS  <- modToRenvS #pastePath(c(linkToModS, modToRenvS))
+      if (Sys.info()["sysname"] == "Darwin") {
+        linkToRenvS  <- pastePath(c(linkToModS, modToRenvS))
+      } else {
+        linkToRenvS  <- modToRenvS
+      }
       pathToRenvS  <- pathToRenv(targetPath)
 
       newTarget    <- paste0(linkToRenvS, .Platform$file.sep, pathToRenvS)
@@ -160,7 +164,7 @@ collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
               if(!startsWith(symPath, ".")) #if starts with dot it is already relative
                 symlinks[nrow(symlinks)+1, ] <<- list(linkLocation=path, linkTarget=relativeer(path, symPath), originalTarget=symPath)
             }
-            else if (depth < 2)
+            else if (depth < 6)
             {
               everything  <- list.files(path, recursive=FALSE, include.dirs=TRUE, all.files=FALSE, full.names=TRUE)
       
@@ -247,8 +251,8 @@ collectAndStoreJunctions <- function(buildfolder)
   symlinks    <- collectLinks(modulesRoot, renvCache, isJunction2, normalizePath)
   overlap     <- determineOverlap(modulesRoot, modulesRoot)
   relLink     <- lapply(symlinks$linkLocation, overlap$sourceToTarget)
-  modules     <- lapply(relLink, function(p) splitPath(p)[[1]])
-  links       <- lapply(relLink, function(p) splitPath(p)[[2]])
+  modules     <- lapply(relLink, function(p) { x <- splitPath(p); pastePath(head(x, n=-1)) })
+  links       <- lapply(relLink, function(p) { x <- splitPath(p); tail(x, n=1) })
 
   if(nrow(symlinks) == 0)
     print("No absolute symlinks found, maybe you ran this script already?")
@@ -261,6 +265,10 @@ collectAndStoreJunctions <- function(buildfolder)
 
 restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
 {
+  #copy all the non junction dependencies into the Tools
+  require(utils)
+  file.copy(utils::shortPathName(pastePath(c(modulesFolder, "Tools"))), shortPathName(junctionsFolder), recursive = TRUE, overwrite = FALSE)
+
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
   junctions <- readRDS(junctionRDSPath)
@@ -281,7 +289,7 @@ restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
       modDir  <- pastePath(c(junctionsFolder, module))
 
       if(!file.exists(modDir))
-        dir.create(modDir)
+        dir.create(modDir, recursive = TRUE)
       setwd(modDir)
       # print(paste0("Creating junction '", padToMax(link, 1), "' to '", padToMax(renv, 2), "' in '", padToMax(pastePath(c(modulesRoot, module)), 3), "'"))
 

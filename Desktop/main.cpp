@@ -52,7 +52,7 @@ const std::string	jaspExtension		= ".jasp",
 bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
 {
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
-	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine();
+	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(true);
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
 
 	QProcess engine;
@@ -64,7 +64,8 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 
 	//remove any leftover ModuleDir 
 	QDir modulesDir(AppDirs::bundledModulesDir());
-	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != DynamicRuntimeInfo::ZIP)	{
+	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != DynamicRuntimeInfo::ZIP)
+	{
 		std::function<void(QDir)> removeDir = [&](QDir x) -> void {
 			for(const auto& entry : x.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files))
 			{
