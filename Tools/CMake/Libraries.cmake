@@ -181,7 +181,7 @@ if(LINUX)
     set(LIBREADSTAT_INCLUDE_DIRS /usr/local/include /usr/include)
     # The last two library paths handle the two most common multiarch cases.
     # Other multiarch-compliant paths may come up but should be rare.
-    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
   endif()
 
   message(CHECK_START "Looking for libreadstat.so")
