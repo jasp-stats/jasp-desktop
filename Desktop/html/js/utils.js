@@ -99,6 +99,18 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			log10 = true;
 	}
 
+	for (var rowNo = 0; rowNo < column.length; rowNo++) {
+		var cell = column[rowNo]
+		var content = cell.content
+
+		if (typeof(content) !== "number" || typeof(content) !== "Number") {
+			if (isNaN(parseFloat(content)))  // isn't a number
+				continue
+			console.warn("You are delivering a result that should be a number as a string, We will do our best :(");
+			cell.content = content = parseFloat(content)
+		}
+	}
+
 	if (isFinite(sf)) {
 
 		var upperLimit = 1e6
