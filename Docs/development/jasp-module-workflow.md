@@ -9,7 +9,7 @@ If you are on linux you can add the 'flathub-beta' repository with `flatpak remo
 The hard way to develop on Linux is to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
 
 ## Development Process
-Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) (which as of Juli 2024 seems broken on Linux) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
+Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
 
 To start developing your own module you should first understand the [structure of a module](jasp-adding-module.md). 
 Initially you do not need to add any of the .qml, .R or icon files, but you should minimally have the Description.qml, DESCRIPTION and NAMESPACE.
