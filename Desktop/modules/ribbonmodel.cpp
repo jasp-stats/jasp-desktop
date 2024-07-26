@@ -38,6 +38,7 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel			);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleReplaced,		this, &RibbonModel::dynamicModuleReplaced					);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleChanged,		this, &RibbonModel::dynamicModuleChanged					);
+    connect(PreferencesModel::prefs(), &PreferencesModel::languageCodeChanged,      this, &RibbonModel::reloadModulesMenu   );
 }
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
@@ -108,6 +109,27 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 				_buttonModelsByName[mod]->setEnabled(true);
 		}
 	}
+}
+
+// So we reload the special module to ensure translations can be hot updated.
+void RibbonModel::reloadModulesMenu()
+{
+    std::vector<std::string> allButtons;
+
+    for (const auto& rowButtons : _buttonNames)
+    {
+        for (const auto& button : rowButtons)
+        {
+            allButtons.push_back(button);
+        }
+    }
+
+    for (const auto& button : allButtons)
+    {
+        removeRibbonButtonModel(button);
+    }
+
+    loadModules();
 }
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
@@ -308,7 +330,7 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	if(!isModuleName(moduleName))
 		return;
 
-	for(size_t row=0; row<size_t(RowType::Data); row++)
+    for(size_t row=0; row<=size_t(RowType::Data); row++)
 	{
 		int indexRemoved = -1;
 

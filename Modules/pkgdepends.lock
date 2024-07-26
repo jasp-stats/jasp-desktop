@@ -57,7 +57,7 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.0.2",
+      "Version": "5.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -99,7 +99,7 @@
     },
     "jsonlite": {
       "Package": "jsonlite",
-      "Version": "1.8.7",
+      "Version": "1.8.8",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -109,7 +109,7 @@
     },
     "lpSolve": {
       "Package": "lpSolve",
-      "Version": "5.6.18",
+      "Version": "5.6.20",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "12c7a918599d5700e4265dd8a21f684f"

@@ -66,7 +66,7 @@ public:
 	virtual QHash<int, QByteArray>	roleNames()													const override;
 
 	void						loadModules(std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
-
+    void                        reloadModulesMenu();
 	void						addSpecialRibbonButtonsEarly();
 	void						addSpecialRibbonButtonsLate();
 	void						setDataMode(bool data);
