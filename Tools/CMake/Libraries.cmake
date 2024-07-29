@@ -199,6 +199,26 @@ if(LINUX)
     )
   endif()
 
+  # ---- FreeXL ----
+  message(CHECK_START "Looking for `libfreexl`")
+    set(LIBFREEXL_INCLUDE_DIRS /usr/include)
+    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+
+  message(CHECK_START "Looking for libfreexl.so")
+  find_library(LIBFREEXL_LIBRARIES libfreexl.so
+            HINTS ${LIBFREEXL_LIBRARY_DIRS} REQUIRED)
+
+  if(EXISTS ${LIBFREEXL_LIBRARIES})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${LIBFREEXL_LIBRARIES}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "FreeXl is required for building on Linux, please follow the build instruction before you continue."
+    )
+  endif()
+
   find_package(PkgConfig)
   #pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
 

@@ -25,6 +25,8 @@
 #include "importers/jaspimporterold.h"
 #include "importers/odsimporter.h"
 #include "importers/readstatimporter.h"
+#include "importers/excelimporter.h"
+
 
 #include <QFileInfo>
 
@@ -51,6 +53,8 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 		boost::iequals(ext,".txt") ||
 		boost::iequals(ext,".tsv"))								return new CSVImporter();
 	if(	boost::iequals(ext,".ods"))								return new ODSImporter();
+	if( boost::iequals(ext,".xls") ||
+		boost::iequals(ext,".xlsx"))							return new ExcelImporter();
 	if(	ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)

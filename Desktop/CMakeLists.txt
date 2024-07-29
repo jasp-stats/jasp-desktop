@@ -42,7 +42,13 @@ qt_add_executable(
   ${BUNDLE_RESOURCES}
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>  
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+  data/importers/excel/excel.h
+  data/importers/excel/excel.cpp
+  data/importers/excelimporter.h
+  data/importers/excelimporter.cpp
+  data/importers/excel/excelimportcolumn.h
+  data/importers/excel/excelimportcolumn.cpp
 )
 
 set(
@@ -105,6 +111,8 @@ target_include_directories(
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
+    # FreeXL
+    ${LIBFREEXL_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -145,6 +153,8 @@ target_link_libraries(
     Iconv::Iconv
     OpenSSL::SSL
     OpenSSL::Crypto
+    # FreeXL
+    ${LIBFREEXL_LIBRARIES}
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
     # MinGW's ReadStat
