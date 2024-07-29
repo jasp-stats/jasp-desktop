@@ -22,7 +22,7 @@ function isURLInWhitelist(hostname) {
 if (insideJASP) {
 	var Parchment = Quill.import('parchment');
 
-	var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
+	var LineBreakClass = new Parchment.ClassAttributor('linebreak', 'linebreak', {
 		scope: Parchment.Scope.BLOCK
 	});
 
