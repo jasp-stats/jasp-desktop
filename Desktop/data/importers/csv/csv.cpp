@@ -402,6 +402,7 @@ void CSV::determineNumRows()
 
 		if (i >= _utf8BufferEndPos - 1)
 		{
+			_utf8BufferEndPos = 0;
 			bool success = readUtf8();
 			if (success)
 				i = -1;
