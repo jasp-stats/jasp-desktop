@@ -67,18 +67,26 @@ After installing Rtools44, you will find a new program in your Start Menu. Searc
 Copy and paste the following line into the `ucrt64` command line and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP. Run this command at least twice to make sure all required packages are installed.
 
 ```bash
-pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
+pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp libminizip-ng
 ```
 
-#### Downloading and Building ReadStat (on Rtools44)
+#### Downloading and Building libraries (on Rtools44)
 
-In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the `ucrt64` command line.
+In addition to these libraries, you need to manually download and install the ReadStat and FreeXL libraries. You can do that by typing the following commands into the `ucrt64` command line.
 
 ```
 git clone https://github.com/WizardMac/ReadStat.git
 cd ReadStat
 export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
 autoreconf -i -f
+./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
+make -j
+make install
+```
+
+```
+git clone https://github.com/shun2wang/freexl.git
+cd freexl
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install

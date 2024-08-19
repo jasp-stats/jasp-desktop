@@ -43,12 +43,6 @@ qt_add_executable(
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
-  data/importers/excel/excel.h
-  data/importers/excel/excel.cpp
-  data/importers/excelimporter.h
-  data/importers/excelimporter.cpp
-  data/importers/excel/excelimportcolumn.h
-  data/importers/excel/excelimportcolumn.cpp
 )
 
 set(
@@ -112,6 +106,7 @@ target_include_directories(
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     # FreeXL
+	$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBFREEXL_H}>
     ${LIBFREEXL_INCLUDE_DIRS}
 )
 

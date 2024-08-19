@@ -23,6 +23,8 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 	- `sqlite`^1
 	- `V8` (for `jaspProcess`)
 	- `zlib`^1
+	- `freexl`^1
+
 - Qt (>= 6.7)
 	- Qt Creator 13
 
@@ -38,7 +40,7 @@ Based on your system, you can install the mentioned libraries using your package
 On Ubuntu, you can use `apt`.
 
 ```
-sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxcb-cursor0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev r-base libglpk-dev
+sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxcb-cursor0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev r-base libglpk-dev libminizip-dev
 ```
 
 > ⚠️ Some of these libraries might not be up-to-date and as a result JASP will complain. If this happens, you need to download, make and install those libraries individually. Alternatively, you can use the [Linux version of Homebrew](https://docs.brew.sh/Homebrew-on-Linux) and install the up-to-dated libraries locally.
@@ -86,9 +88,9 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] CMake
 			- [x] Ninja
 
-### ReadStat and JAGS
+### Dependencies
 
-On Linux JASP's CMake script will download and install ReadStat and JAGS for you when necessary.
+On Linux JASP's CMake script will download and install ReadStat, JAGS and FreeXL for you when necessary.
 
 ### Installing Qt Creator / Qt
 

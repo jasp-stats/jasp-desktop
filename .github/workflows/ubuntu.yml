@@ -42,9 +42,9 @@ jobs:
             sudo apt install libmpfr-dev #required by rmpfr packages
             sudo apt install libglpk-dev #required by igraph packages
             sudo apt install jags
-            # build freexl
+            sudo apt install libminizip-dev # required by freexl
             git clone https://github.com/shun2wang/freexl.git
-            cd /freexl && ./configure && make && sudo make install
+            cd freexl && ./configure && make && sudo make install
             
       - name: Install boost
         uses: MarkusJx/install-boost@v2.4.4

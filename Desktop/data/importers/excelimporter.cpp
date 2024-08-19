@@ -56,8 +56,6 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 	cols = excel.countCols();
 	importColumns.reserve(cols);
 
-	std::cout << "importColumns.size()=cols" << importColumns.size() << " the cols= " << cols <<std::endl;
-
 	for (uint32_t row = 0; row < rows; ++row) 
 	{
 		stringvec lineValues;

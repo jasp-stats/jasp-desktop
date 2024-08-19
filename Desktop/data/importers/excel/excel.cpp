@@ -32,7 +32,6 @@ Excel::Excel(const string &locator)
 
 void Excel::open()
 {
-
 	_fileSize = Utils::getFileSize(_path);
 
 	if (_fileSize < 0)
@@ -77,8 +76,6 @@ void Excel::getWorksheetDimensions(uint32_t &rows, uint16_t &cols) {
 	}
 
 	_numCols = cols; //get cols count while read sheet
-
-	std::cout << "cols" << cols <<std::endl;
 }
 
 void Excel::getCellValue(uint32_t &row, uint16_t &col, std::string &cellValue) {
