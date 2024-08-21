@@ -290,8 +290,6 @@ if(WIN32)
   endif()
 
   # FreeXL library ---
-
-  message(CHECK_START "Fetch and build FreeXL")
   message(CHECK_START "Looking for freexl.dll.a")
   find_file(
     RTOOLS_LIBFREEXL_DLL_A

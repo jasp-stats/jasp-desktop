@@ -106,7 +106,7 @@ target_include_directories(
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     # FreeXL
-	$<$<PLATFORM_ID:Windows>:${RTOOLS_LIBFREEXL_H}>
+    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBFREEXL_H}>
     ${LIBFREEXL_INCLUDE_DIRS}
 )
 

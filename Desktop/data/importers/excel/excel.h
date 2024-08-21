@@ -32,15 +32,12 @@ public:
 	void		open();
 	void		close();
 
-	bool		readLine(std::vector<std::string> &items);
-	long		pos();
-	long		size();
-	uint16_t	countCols();
-
 	void		openWorkbook();
 	void		selectActiveWorksheet();
 	void		getWorksheetDimensions(uint32_t &rows, uint16_t &cols);
 	void		getCellValue(uint32_t &row, uint16_t &col, std::string &cellValue);
+	
+	uint16_t	countCols();
 
 private:
 
@@ -51,7 +48,6 @@ private:
 private:
 
 	std::string		_path;
-	unsigned int	_fileInfo;
 	const void		*_handle;
 };
 
