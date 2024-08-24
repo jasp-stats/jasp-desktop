@@ -30,9 +30,6 @@ public:
 	ExcelImporter();
 	virtual ~ExcelImporter() {}
 
-
-	bool importerDeliversLabels() const override { return false; }
-
 protected:
 	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
 
