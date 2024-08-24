@@ -47,10 +47,10 @@ On Manjaro / Arch
 
 ```
 sudo pacman -Syu autoconf bison boost cmake gcc gcc-fortran git glpk flex jags jsoncpp libarchive openssl patchelf r readstat zlib
-# Google's V8 is only available through the aur consider using an aur helper
+# JAGS and Google's V8 are only available through the aur
 # Note that only jaspProcess requires V8 and V8 takes a lot of time to compile
-# To install it using the `yay` aur helper run:
-yay -Syu v8-r
+# To install them using the `yay` aur helper run:
+yay -Syu jags v8-r
 ```
 
 On Fedora/RHEL
