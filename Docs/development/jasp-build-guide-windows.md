@@ -67,7 +67,7 @@ After installing Rtools44, you will find a new program in your Start Menu. Searc
 Copy and paste the following line into the `ucrt64` command line and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP. Run this command at least twice to make sure all required packages are installed.
 
 ```bash
-pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp libminizip-ng
+pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-minizip
 ```
 
 #### Downloading and Building libraries (on Rtools44)
@@ -87,6 +87,7 @@ make install
 ```
 git clone https://github.com/shun2wang/freexl.git
 cd freexl
+autoreconf -i -f
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
 make install
