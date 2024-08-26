@@ -47,10 +47,10 @@ On Manjaro / Arch
 
 ```
 sudo pacman -Syu autoconf bison boost cmake gcc gcc-fortran git glpk flex jags jsoncpp libarchive openssl patchelf r readstat zlib
-# Google's V8 is only available through the aur consider using an aur helper
+# JAGS and Google's V8 are only available through the aur
 # Note that only jaspProcess requires V8 and V8 takes a lot of time to compile
-# To install it using the `yay` aur helper run:
-yay -Syu v8-r
+# To install them using the `yay` aur helper run:
+yay -Syu jags v8-r
 ```
 
 On Fedora/RHEL
@@ -94,7 +94,7 @@ On Linux JASP's CMake script will download and install ReadStat and JAGS for you
 
 Similar to Windows and macOS, you can download and install the Qt Framework from Qt website, [here](https://www.qt.io/download). 
 
-> 💡 Sometimes, dependeing on your Linux distribution, you might be able to get the Qt libraries using your package manger. For instance, if you are running any variant of an Arch Linux, e.g., Manjaro, `pacman` readily offers the latest build of the Qt libraries, and you can download it by running the following command, `pacman -Syu qt6`.
+> 💡 Sometimes, dependeing on your Linux distribution, you might be able to get the Qt libraries using your package manager. For instance, if you are running any variant of an Arch Linux, e.g., Manjaro, `pacman` readily offers the latest build of the Qt libraries, and you can download it by running the following command, `pacman -Syu qt6`.
 
 ### Configuring and Building JASP Desktop
 
