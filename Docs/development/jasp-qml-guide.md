@@ -56,11 +56,14 @@ Table of Contents:
 The components can roughly be divided in three classes. One that deals with general inputs (e.g., checkboxes), one that deals with assigning variables and one that groups components together. Each will be covered in the following section.
 Some remarks about these components:
 - They are all QML items, so they automatically get generic QML properties like `enabled` or `visible`.
-- In several examples you may encounter `qsTr()`, it is important that this function wraps around all user-visible text, this function makes translating the interface possible.
+- In several examples you may encounter `qsTr()`, it is important that this function wraps around all user-visible text, this function makes translating the interface possible. If you use non-latin characters, it is then better to use the `\uXXXX` encoding (XXXX being the Unicode code point of the character), to be sure that that it passes the translation process (avoid the HTML encoding `&#xxx;`).
 - The components described below may generally be nested to an arbitrary level (e.g., a checkbox in a group in a checkbox).
 
 ### Name
 All (well almost all) of these components have a property `name` that is also used in JASP-files to store the value the user selected. That means that whenever you change `name` for a component for a newer version of your analysis/module the stored value will be ignored. To make sure the user entered information isn't lost you can add an [Upgrades.qml to your module](jasp-upgrade-qml.md).
+
+### Label or title
+Most of the components have a label or a title (each word of a title should be capitalized). Unlike the name, the label or title must be translated via the `qsTr()` function. For non-latin characters, use the `\uXXXX` encoding.
 
 ### Info
 Each component also has a field called `info` which is used to generate documentation from. By wrapping the text in the above mentioned `qsTr` this also allows us to translate the documentation for each module in parts. So you would have something like:
