@@ -31,7 +31,8 @@ options("JASP_RENV_INSTALL_OPTIONS" = list(
   rstanarm = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   stanova  = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   rpf      = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
-  cubature = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
+  cubature = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  OpenMx   = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
 ))
 options(renv.config.install.verbose = TRUE)
 configureVars = NULL
