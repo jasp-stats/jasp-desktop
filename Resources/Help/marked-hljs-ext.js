@@ -1,9 +1,15 @@
 /**
- * Edit from marked-highlight at 2023-06-01
+ * Edit from marked-highlight at 2024-08-04
  * MIT Licensed
  * https://github.com/markedjs/marked-highlight
  */
-function markedHighlight(options) {
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.markedHighlight = {}));
+})(this, (function (exports) { 'use strict';
+
+  function markedHighlight(options) {
     if (typeof options === 'function') {
       options = {
         highlight: options
@@ -25,18 +31,28 @@ function markedHighlight(options) {
           return;
         }
 
-        const lang = getLang(token);
+        const lang = getLang(token.lang);
 
         if (options.async) {
-          return Promise.resolve(options.highlight(token.text, lang)).then(updateToken(token));
+          return Promise.resolve(options.highlight(token.text, lang, token.lang || '')).then(updateToken(token));
         }
 
-        const code = options.highlight(token.text, lang);
+        const code = options.highlight(token.text, lang, token.lang || '');
+        if (code instanceof Promise) {
+          throw new Error('markedHighlight is not set to async but the highlight function is async. Set the async option to true on markedHighlight to await the async highlight function.');
+        }
         updateToken(token)(code);
       },
+      useNewRenderer: true,
       renderer: {
         code(code, infoString, escaped) {
-          const lang = (infoString || '').match(/\S*/)[0];
+          // istanbul ignore next
+          if (typeof code === 'object') {
+            escaped = code.escaped;
+            infoString = code.lang;
+            code = code.text;
+          }
+          const lang = getLang(infoString);
           const classAttr = lang
             ? ` class="${options.langPrefix}${escape(lang)}"`
             : '';
@@ -47,8 +63,8 @@ function markedHighlight(options) {
     };
   }
 
-  function getLang(token) {
-    return (token.lang || '').match(/\S*/)[0];
+  function getLang(lang) {
+    return (lang || '').match(/\S*/)[0];
   }
 
   function updateToken(token) {
@@ -86,3 +102,7 @@ function markedHighlight(options) {
 
     return html;
   }
+
+  exports.markedHighlight = markedHighlight;
+
+}));
