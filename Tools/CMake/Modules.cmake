@@ -36,6 +36,7 @@ set(JASP_EXTRA_MODULES
         "jaspAcceptanceSampling"
         "jaspAudit"
         "jaspBain"
+        "jaspBFF"
         "jaspBsts"
         "jaspCircular"
         "jaspCochrane"
