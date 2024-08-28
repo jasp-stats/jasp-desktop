@@ -153,3 +153,6 @@
 [submodule "Engine/jaspModuleInstaller"]
 	path = Engine/jaspModuleInstaller
 	url = https://github.com/jasp-stats/jaspModuleInstaller.git
+[submodule "Modules/jaspBFF"]
+	path = Modules/jaspBFF
+	url = https://github.com/jasp-stats/jaspBFF
