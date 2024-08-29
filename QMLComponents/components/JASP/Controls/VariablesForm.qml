@@ -49,6 +49,7 @@ VariablesFormBase
 			property bool	removeInvisibles	: false
 
 			property double	_lastListWidth		: 0
+			property double _comboBoxHeight		: 0
 
 	Item { id: items }
 
@@ -153,23 +154,21 @@ VariablesFormBase
 		for (var key in allJASPControls)
 		{
 			var control				= allJASPControls[key]
-			var isControlList		= ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
 
 			if (removeInvisibles && !control.visible)
-				control.height = 0
+				control.anchors.top			= variablesForm.top;
 			else
 			{
 				control.anchors.top			= anchorTop;
 				control.anchors.topMargin	= firstControl ? 0 : marginBetweenVariablesLists;
 				anchorTop					= control.bottom;
 
-				if (removeInvisibles && control.visible && control.height == 0) // Reset the height of the control when it bocomes visible again
-					control.height = control.maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-
 				if (!firstControl)
 					minHeightOfAssignedControls += marginBetweenVariablesLists;
 
 				firstControl = false;
+
+				var isControlList = ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
 
 				if (!isControlList)
 					minHeightOfAssignedControls += control.height;
@@ -186,7 +185,7 @@ VariablesFormBase
 				}
 			}
 		}
-		
+
 		// Set the height of controls (that have not singleVariable set or where the height is already specifically set)
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
 		if (changeableHeightControls.length > 0)
