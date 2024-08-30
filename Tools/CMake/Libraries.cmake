@@ -229,6 +229,7 @@ if(APPLE)
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
   find_package(Brotli 1.0.9 REQUIRED)
+  find_package(Freexl 2.0.0 REQUIRED)
 
 endif()
 

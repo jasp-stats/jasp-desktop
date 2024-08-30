@@ -22,7 +22,7 @@
 #include <string>
 #include <stdint.h>
 
-#include "freexl.h"
+#include <freexl.h>
 
 class Excel
 {
