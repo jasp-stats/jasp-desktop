@@ -35,14 +35,14 @@ cmake --build build --target install
 
 cmake --build build --target collect-junctions
 
-robocopy .\build\Install .\build\InstallClean /e
+robocopy .\build\Install .\build\InstallClean /e /nfl
 
 cmake --build build --target wix
 
 cmake --build build --target zip
 
 rmdir .\build\Install /s /q
-robocopy .\build\InstallClean .\build\Install /e
+robocopy .\build\InstallClean .\build\Install /e /nfl
 
 cmake --install build --component MSIX
 
