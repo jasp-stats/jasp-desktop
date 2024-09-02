@@ -18,8 +18,8 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(JASP_TEST_BUILD		OFF					CACHE BOOL		"Do a quick build with just descriptives and testmodule")
-set(JASP_TEST_MODULE	"jaspDescriptives"	CACHE STRING	"Which module other than jaspTestModule would you like to test?")
+set(JASP_TEST_BUILD		ON					CACHE BOOL		"Do a quick build with just descriptives and testmodule")
+set(JASP_TEST_MODULE	"jaspMachineLearning"	CACHE STRING	"Which module other than jaspTestModule would you like to test?")
 
 if(NOT JASP_TEST_BUILD)
 set(JASP_COMMON_MODULES
