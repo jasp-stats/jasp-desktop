@@ -166,12 +166,11 @@ if(WIN32)
     )
   endif()
 
-  set(WIX_PATH
-      "C:/Program Files (x86)/WiX Toolset v3.11/bin"
-      CACHE
-        PATH
-        "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin"
-  )
+  if(DEFINED ENV{WIX})
+    set(WIX_PATH "$ENV{WIX}/bin" CACHE PATH "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin")
+  else()
+    set(WIX_PATH "C:/Program Files (x86)/WiX Toolset v3.11/bin" CACHE PATH "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin")
+  endif()
 
   find_program(
     HEAT_EXECUTABLE
