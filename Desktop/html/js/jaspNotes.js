@@ -30,10 +30,34 @@ if (insideJASP) {
 
 	// using https://github.com/Fandom-OSS/quill-blot-formatter to format image
 	Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+
+	// custom delet behaviors becaus of https://github.com/jasp-stats/jasp-issues/issues/2776
+	class _CustomDeleteAction extends QuillBlotFormatter.DeleteAction {
+		constructor(formatter) {
+			super(formatter);
+		}
+
+		onKeyUp = (e) => {
+			if (!this.formatter.currentSpec)
+				return;
+
+			if (e.key === 'Backspace' || e.key === 'Delete') {
+				const blot = Quill.find(this.formatter.currentSpec.getTargetElement());
+				if (blot) 
+					blot.deleteAt(0);
+				this.formatter.hide();
+			}
+		};
+	}
+
 	class _CustomImageSpec extends QuillBlotFormatter.ImageSpec {
 		constructor(formatter) {
 			super(formatter);
 			this.img = null;
+		}
+
+		getActions() {
+			return [QuillBlotFormatter.AlignAction, QuillBlotFormatter.ResizeAction, _CustomDeleteAction];
 		}
 
 		onClick = (event) => {
@@ -45,6 +69,11 @@ if (insideJASP) {
 
 			this.img = el;
 			this.formatter.show(this);
+
+			const $thisOverlay = $(this.formatter.overlay);
+			// auto show/hide image editor toolbar with mouse action
+			$thisOverlay.on("mouseenter", () => { $thisOverlay.show() }).on("mouseleave", () => { $thisOverlay.hide() });
+			$(this.img).on(	"mouseenter", () => { $thisOverlay.show() }).on("mouseleave", () => { $thisOverlay.hide() });
 		};
 	}
 	var CustomImageSpec = _CustomImageSpec
@@ -490,14 +519,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				self.handleLatexEditor.onEdit(_currentLatex)
 				self.oldBlot = self.formulaBlot // Get legacy formula range to remove while save
 			});
-
-			////--- Image resizer ---////
-			let $imgBlot = this.$el.find('.ql-editor p img');
-			let $blotResizer = this.$el.find('.blot-formatter__overlay');
-			let $resizeHandles = this.$el.find('[class^="blot-formatter"]');
-
-			$blotResizer.on("mouseenter", () => { $resizeHandles.show() }).on("mouseleave", () => { $resizeHandles.hide() });
-			$imgBlot.on(    "mouseenter", () => { $resizeHandles.show() }).on("mouseleave", () => { $resizeHandles.hide() });
 
 		});
 		
