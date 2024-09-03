@@ -50,7 +50,6 @@ set(JASP_EXTRA_MODULES
         "jaspNetwork"
         "jaspPower"
         "jaspPredictiveAnalytics"
-        "jaspProcess"
         "jaspProphet"
         "jaspQualityControl"
         "jaspReliability"
