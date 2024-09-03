@@ -65,7 +65,7 @@ set(MSIX_NIGHTLY_PUBLISHER
     CACHE STRING "Publisher set for nightly msix package")
 
 set(MSIX_SIGN_CERT_PATH
-  "D:\\JASPSelfSign.pfx"
+  "C:\\JASPSelfSign.pfx"
   CACHE STRING "Path to selfsign cert for Nightlies")
 
 set(MSIX_SIGN_CERT_PASSWORD
