@@ -109,7 +109,7 @@ public:
 			void					upgradeSetDoubleLabelsInInts();			///< Used by upgrade 0.18.* -> 0.19
 			void					upgradeExtractDoublesIntsFromLabels();	///< Used by upgrade 0.18.* -> 0.19
 
-			void					labelsClear();
+			void					labelsClear(bool doIncRevision=true);
 			int						labelsAdd(			int display);
 			int						labelsAdd(			const std::string & display);
 			int						labelsAdd(			const std::string & display, const std::string & description, const Json::Value & originalValue);

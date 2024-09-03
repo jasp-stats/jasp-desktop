@@ -82,7 +82,7 @@ void Column::dbDelete(bool cleanUpRest)
 {
 	assert(_id != -1);
 
-	labelsClear();
+	labelsClear(false);
 	db().columnDelete(_id, cleanUpRest);
 
 	_id = -1;
@@ -649,13 +649,14 @@ void Column::_sortLabelsByOrder()
 	std::sort(_labels.begin(), _labels.end(), [](const Label * l, const Label * r) { return l->order() < r->order(); });
 }
 
-void Column::labelsClear()
+void Column::labelsClear(bool doIncRevision)
 {
 	db().labelsClear(_id);
 	_labels.clear();
 	_labelByIntsIdMap.clear();
 	
-	incRevision(false);
+	if(doIncRevision)
+		incRevision(false);
 }
 
 void Column::beginBatchedLabelsDB()

@@ -59,6 +59,7 @@ void DataSet::dbDelete()
 
 	_dataSetID = -1;
 
+	
 	db().transactionWriteEnd();
 }
 
@@ -171,12 +172,12 @@ void DataSet::removeColumn(const std::string & name)
 		}
 }
 
-void DataSet::insertColumn(size_t index)
+void DataSet::insertColumn(size_t index,	bool alterDataSetTable)
 {
 
 	assert(_dataSetID > 0);
 
-	Column * newColumn = new Column(this, db().columnInsert(_dataSetID, index));
+	Column * newColumn = new Column(this, db().columnInsert(_dataSetID, index, "", columnType::unknown, alterDataSetTable));
 
 	_columns.insert(_columns.begin()+index, newColumn);
 
@@ -382,18 +383,24 @@ void DataSet::setColumnCount(size_t colCount)
 	db().transactionWriteBegin();
 
 	int curCount = columns().size();
+	
+	bool alterTableAfterwards = curCount == 0 && colCount > 0;
 
 	if(colCount > curCount)
 		for(size_t i=curCount; i<colCount; i++)
-			insertColumn(i);
+			insertColumn(i, !alterTableAfterwards);
 
 	else if(colCount < curCount)
 		for(size_t i=curCount-1; i>=colCount; i--)
 			removeColumn(i);
 	
+
 	incRevision();
 
 	db().transactionWriteEnd();
+	
+	if(alterTableAfterwards)
+		db().dataSetCreateTable(this);
 }
 
 void DataSet::setRowCount(size_t rowCount)
