@@ -72,7 +72,6 @@ public:
 	void						setDataMode(bool data);
 	Q_INVOKABLE void			showData()			{ setCurrentRow(int(RowType::Data));		}
 	Q_INVOKABLE void			showStatistics()	{ setCurrentRow(int(RowType::Analyses));	}
-	void						genShowEmptyData()	{ generateEmptyData(); showData(); }
 
 	void						removeRibbonButtonModel(std::string moduleName);
 
@@ -124,6 +123,7 @@ signals:
 				void cellsClear();
 				void dataUndo();
 				void dataRedo();
+				void showNewData();
 
 public slots:
 	void addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);

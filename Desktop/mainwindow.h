@@ -102,6 +102,7 @@ public:
 
 	static MainWindow * singleton() { return _singleton; }
 
+	void				showNewData();
 	void				open(QString filepath);
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
@@ -249,6 +250,7 @@ signals:
 	void communityVisibleChanged();
 	void contactTextChanged();
 	void resizeData(int row, int col);
+	void qmlLoadedChanged();
 
 private slots:
 	void resultsPageLoaded();
