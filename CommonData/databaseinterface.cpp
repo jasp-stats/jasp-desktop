@@ -75,7 +75,7 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 
 	transactionWriteBegin();
 	int id = runStatementsId("INSERT INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;", prepare);
-	runStatements("CREATE TABLE " + dataSetName(id) + " (rowNumber INTEGER PRIMARY KEY);");
+	runStatements("CREATE TABLE " + dataSetName(id) + " (rowNumber INTEGER PRIMARY KEY);"); // Can be overwritten through dataSetCreateTable
 	transactionWriteEnd();
 
 	return id;
@@ -183,6 +183,7 @@ void DatabaseInterface::filterDelete(int filterIndex)
 
 	if(dataSetId != -1)
 		runStatements("ALTER TABLE " + dataSetName(dataSetId) + " DROP COLUMN " + filterName(filterIndex) + ";");
+	
 	runStatements("DELETE FROM Filters WHERE id = " + std::to_string(filterIndex) + ";");
 
 	transactionWriteEnd();
@@ -391,7 +392,7 @@ void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> & v
 	transactionWriteEnd();
 }
 
-int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string & name, columnType colType)
+int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string & name, columnType colType, bool alterTable)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnInsert);
 	transactionWriteBegin();
@@ -419,17 +420,36 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 		Log::log() << "Inserting column failed!" << std::endl;
 #endif
 
-	//Add a scalar and ordinal/nominal column to DataSet_# for the column
-	const std::string alterDatasetPrefix = "ALTER TABLE " + dataSetName(dataSetId);
-	const std::string addColumnFragment  = " ADD  " + columnBaseName(columnId);
-
-	runStatements(alterDatasetPrefix + addColumnFragment + "_DBL REAL NULL;");
-	runStatements(alterDatasetPrefix + addColumnFragment + "_INT INT  NULL;");
-
+	
+	if(alterTable) //If not then via dataSetCreateTable
+	{
+		//Add a scalar and ordinal/nominal column to DataSet_# for the column
+		const std::string alterDatasetPrefix = "ALTER TABLE " + dataSetName(dataSetId);
+		const std::string addColumnFragment  = " ADD  " + columnBaseName(columnId);
+	
+		runStatements(alterDatasetPrefix + addColumnFragment + "_DBL REAL NULL;");
+		runStatements(alterDatasetPrefix + addColumnFragment + "_INT INT  NULL;");
+	}
+	
 	//The labels will be added separately later
 
 	transactionWriteEnd();
 	return columnId;
+}
+
+void DatabaseInterface::dataSetCreateTable(DataSet * dataSet)
+{
+	runStatements("DROP TABLE " + dataSetName(dataSet->id()) + ";");
+	
+	std::stringstream statements;
+	statements <<  "CREATE TABLE " + dataSetName(dataSet->id()) + " (rowNumber INTEGER PRIMARY KEY, "+ filterName(dataSet->filter()->id()) + " INT NOT NULL DEFAULT 1";
+	
+	for(Column * column : dataSet->columns())
+		statements << ", " << columnBaseName(column->id()) << "_DBL REAL NULL, " << columnBaseName(column->id()) << "_INT INT NULL";
+
+	statements << ");";
+	
+	runStatements(statements.str());
 }
 
 int DatabaseInterface::columnGetDataSetId(int columnId)
@@ -1438,19 +1458,19 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	}
 	while(remain > 1 && (ret == SQLITE_OK && ret != SQLITE_DONE));
 
+	const int maxLenStatementError = 200;
+	std::string shortStatements = statements.size() <= maxLenStatementError ? statements : statements.substr(0, maxLenStatementError);
+	
 	if(ret == SQLITE_ERROR)
 	{
-		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because of: `" + sqlite3_errmsg(_db);
-		Log::log() << errorMsg << std::endl;
-
-		throw std::runtime_error(errorMsg);
+		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db) << std::endl;
+		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db));
 	}
 
 	if(ret == SQLITE_READONLY)
 	{
-		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because the database is readonly...";
-		Log::log() << errorMsg << std::endl;
-		throw std::runtime_error(errorMsg);
+		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because the database is readonly..." << std::endl;
+		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because the database is readonly...");
 	}
 }
 
@@ -1570,7 +1590,8 @@ void DatabaseInterface::create()
 	else
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
 
-
+	dbStartUpPragmas();
+	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
 	transactionWriteEnd();
@@ -1593,6 +1614,14 @@ void DatabaseInterface::load()
 	}
 	else
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
+	
+	dbStartUpPragmas();
+}
+
+void DatabaseInterface::dbStartUpPragmas()
+{
+	runStatements("pragma journal_mode = WAL;");
+	runStatements("pragma synchronous = normal;");
 }
 
 void DatabaseInterface::close()
