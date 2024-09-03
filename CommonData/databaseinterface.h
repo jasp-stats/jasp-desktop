@@ -87,6 +87,7 @@ public:
 	int			dataSetGetRevision(		int dataSetId);
 	int			dataSetGetFilter(		int dataSetId);
 	void		dataSetInsertEmptyRow(	int dataSetId, size_t row);
+	void		dataSetCreateTable(		DataSet * dataSet); ///< Assumes you are importing fresh data and havent created any DataSet_? table yet
 
 	void		dataSetBatchedValuesUpdate(DataSet * data, std::vector<Column*> columns, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback = [](float){});
@@ -109,7 +110,7 @@ public:
 
 	//Columns & Data/Values
 	//Index stuff:
-	int			columnInsert(			int dataSetId, int index = -1, const std::string & name = "", columnType colType = columnType::unknown);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
+	int			columnInsert(			int dataSetId, int index = -1, const std::string & name = "", columnType colType = columnType::unknown, bool alterTable=true);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
 	int			columnLastFreeIndex(	int dataSetId);
 	void		columnIndexIncrements(	int dataSetId, int index);																			///< If index already is in use that column and all after are incremented by 1
 	void		columnIndexDecrements(	int dataSetId, int index);																			///< Indices bigger than index are decremented, assumption is that the previous one using it has been removed already
@@ -158,6 +159,7 @@ public:
 	void		transactionReadBegin();							///< runs BEGIN DEFERRED and waits for sqlite to not be busy anymore if some other process is writing  Tracks whether nested and only does BEGIN+COMMIT at lowest depth
 	void		transactionReadEnd();							///< runs COMMIT and ends the transaction. Tracks whether nested and only does BEGIN+COMMIT at lowest depth
 	
+	
 private:
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility
 	double		_doubleTroubleReader(sqlite3_stmt *stmt, int colI);					///< The reading counterpart to _doubleTroubleBinder to convert string representations of NAN, INF and NEG_INF back to double
@@ -168,6 +170,7 @@ private:
 	void		load();											///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 	void		close();										///< Closes the loaded database and disconnects
 	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
+	void		dbStartUpPragmas();
 
 	int			_transactionWriteDepth	= 0,
 				_transactionReadDepth	= 0;
