@@ -130,7 +130,7 @@ public slots:
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentRow(int currentRow);
-
+	void refreshButtons();
 
 private slots:
 	void dynamicModuleChanged(	Modules::DynamicModule * module);
