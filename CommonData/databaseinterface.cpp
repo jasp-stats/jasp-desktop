@@ -1624,6 +1624,13 @@ void DatabaseInterface::dbStartUpPragmas()
 	runStatements("pragma synchronous = normal;");
 }
 
+
+void DatabaseInterface::doWALCheckpoint()
+{
+	// https://www.sqlite.org/pragma.html#pragma_wal_checkpoint
+	runStatements("PRAGMA wal_checkpoint(TRUNCATE);");
+}
+
 void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
@@ -1690,4 +1697,5 @@ void DatabaseInterface::transactionReadEnd()
 	if(--_transactionReadDepth == 0)
 		runStatements("COMMIT");
 }
+
 
