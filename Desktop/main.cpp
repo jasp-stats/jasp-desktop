@@ -121,7 +121,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 #endif
 
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, Json::Value & dbJson, QString & reportingDir)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & newData, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, Json::Value & dbJson, QString & reportingDir)
 {
 	filePath		= "";
 	unitTest		= false;
@@ -130,6 +130,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	logToFile		= false;
 	hideJASP		= false;
 	safeGraphics	= false;
+	newData			= false;
 	reportingDir	= "";
 	timeOut			= 10;
 	dbJson			= Json::nullValue;
@@ -145,6 +146,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else if(args[arg] == "--logToFile")						logToFile				= true;
 		else if(args[arg] == "--hide")							hideJASP				= true;
 		else if(args[arg] == "--safeGraphics")					safeGraphics			= true;
+		else if(args[arg] == "--newData")						newData					= true;
 #ifdef _WIN32
 		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv, false); //Run the junctionfixer, it will exit the application btw!
 		else if(args[arg] == removeJunctionsArg)				runJaspEngineJunctionFixer(argc, argv, true);  //Remove the junctions
@@ -408,7 +410,8 @@ int main(int argc, char *argv[])
 				save,
 				logToFile,
 				hideJASP,
-				safeGraphics;
+				safeGraphics,
+				newData;
 	int			timeOut;
 	Json::Value	dbJson;
 
@@ -416,7 +419,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, dbJson, reportingDir);
+	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, dbJson, reportingDir);
 
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
@@ -440,12 +443,6 @@ int main(int argc, char *argv[])
 				args.push_back("--disable-gpu");
 				char dst[] = "LIBGL_ALWAYS_SOFTWARE=1";
 				putenv(dst);
-			}
-
-			if(hideJASP)
-			{
-				args.push_back("-platform");
-				args.push_back("minimal");
 			}
 
 			if(hideJASP)
@@ -526,7 +523,7 @@ int main(int argc, char *argv[])
 				msgBox->hide();
 			}
 #endif
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
+			a.init(filePathQ, newData, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 
 			try
 			{

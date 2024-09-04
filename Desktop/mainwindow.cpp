@@ -552,7 +552,6 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
-	connect(_ribbonModel,			&RibbonModel::generateEmptyData,					_package,				&DataSetPackage::generateEmptyData							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
 	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
@@ -727,7 +726,7 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataUndo,						DataSetView::mainDataViewer(),	&DataSetView::undo);
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::mainDataViewer(),	&DataSetView::redo);
 	connect(this,		  &MainWindow::resizeData,						DataSetView::mainDataViewer(),	&DataSetView::resizeData);
-
+	connect(_ribbonModel, &RibbonModel::showNewData,					this,							&MainWindow::showNewData);
 
 	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
@@ -902,6 +901,11 @@ void MainWindow::open(QString filepath)
 	else					_openOnLoadFilename = filepath;
 }
 
+void MainWindow::showNewData()
+{
+	_package->generateEmptyData();
+	_ribbonModel->showData();
+}
 
 void MainWindow::open(const Json::Value & dbJson)
 {
@@ -1175,7 +1179,14 @@ void MainWindow::connectFileEventCompleted(FileEvent * event)
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
-	if (event->operation() == FileEvent::FileOpen)
+	if (event->operation() == FileEvent::FileNew)
+	{
+		if (_package->isLoaded())
+			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList("--newData"));
+		else
+			showNewData();
+	}
+	else if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded())
 		{
@@ -1301,7 +1312,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
 	hideProgress();
 
-	if (event->operation() == FileEvent::FileOpen)
+	if (event->operation() == FileEvent::FileNew)
+	{
+	}
+	else if (event->operation() == FileEvent::FileOpen)
 	{
 		if (event->isSuccessful())
 		{
@@ -1467,6 +1481,7 @@ void MainWindow::qmlLoaded()
 {
 	Log::log() << "MainWindow::qmlLoaded()" << std::endl;
 	_qmlLoaded = true;
+	emit qmlLoadedChanged();
 	
 	handleDeferredFileLoad();
 }

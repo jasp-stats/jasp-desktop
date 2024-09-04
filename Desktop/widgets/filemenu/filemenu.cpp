@@ -47,6 +47,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
 	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow,	&MainWindow::setCheckAutomaticSync	);
 
+	_actionButtons->setEnabled(ActionButtons::New,				true);
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
 	_actionButtons->setEnabled(ActionButtons::Save,				false);
 	_actionButtons->setEnabled(ActionButtons::SaveAs,			false);
@@ -114,6 +115,15 @@ FileEvent *FileMenu::open(const Json::Value & dbJson)
 FileEvent *FileMenu::saveAs()
 {
 	return _computer->browseSave();
+}
+
+FileEvent *FileMenu::newData()
+{
+	FileEvent *event = new FileEvent(this, FileEvent::FileNew);
+
+	dataSetIORequestHandler(event);
+
+	return event;
 }
 
 FileEvent *FileMenu::save()
@@ -409,6 +419,9 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 			save();
 		else
 			setMode(FileEvent::FileSave);			
+		break;
+	case ActionButtons::FileOperation::New:
+			newData();
 		break;
 
 	case ActionButtons::FileOperation::About:

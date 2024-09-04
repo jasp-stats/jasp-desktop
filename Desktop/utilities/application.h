@@ -34,7 +34,7 @@ public:
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;
 	virtual bool event(QEvent *event) OVERRIDE;
-	void init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath);
+	void init(QString filePath, bool newData, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath);
 
 signals:
 
