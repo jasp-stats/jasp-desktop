@@ -39,12 +39,12 @@ class AnalysisEntry
 {
 	friend EntryBase;
 public:
-	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
+	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::function<std::string()> menuTitleF, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
 	AnalysisEntry(std::string menuTitle, std::string icon = "", bool small=false);											///< AnalysisEntry grouptitle
 	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
 	AnalysisEntry();																										///< AnalysisEntry separator
 
-	std::string		menu()					const { return _menu;									}
+	std::string		menu()					const { return _menuF ? _menuF() : _menu;		}
 	std::string		title()					const { return _title;									}
 	std::string		function()				const { return _function;								}
 	std::string		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
@@ -75,20 +75,21 @@ public:
 	static bool		requiresDataEntries(const AnalysisEntries & entries);
 
 private:
-	std::string				_title			= "???"		,
-							_function		= "???"		,
-							_qml			= "???"		,
-							_menu			= "???"		,
-							_icon			= ""		;
-	DynamicModule*			_dynamicModule	= nullptr	;
-	bool					_isSeparator	= true		,
-							_isGroupTitle	= false		,
-							_isAnalysis		= false		,
-							_isEnabled		= true		,
-							_requiresData	= true		,
-							_hasWrapper		= false		,
-							_smallIcon		= false		;
-	std::function<void()>	_specialFunc	= nullptr	;
+	std::string						_title			= "???"		,
+									_function		= "???"		,
+									_qml			= "???"		,
+									_menu			= "???"		,
+									_icon			= ""		;
+	DynamicModule*					_dynamicModule	= nullptr	;
+	bool							_isSeparator	= true		,
+									_isGroupTitle	= false		,
+									_isAnalysis		= false		,
+									_isEnabled		= true		,
+									_requiresData	= true		,
+									_hasWrapper		= false		,
+									_smallIcon		= false		;
+	std::function<void()>			_specialFunc	= nullptr	;
+	std::function<std::string()>	_menuF			= nullptr	; //To make it translatable
 };
 
 }

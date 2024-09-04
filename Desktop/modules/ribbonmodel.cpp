@@ -38,6 +38,7 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel			);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleReplaced,		this, &RibbonModel::dynamicModuleReplaced					);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleChanged,		this, &RibbonModel::dynamicModuleChanged					);
+	connect(PreferencesModel::prefs(), &PreferencesModel::languageCodeChanged,		this, &RibbonModel::refreshButtons							);
 }
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
@@ -120,42 +121,41 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	//_entriesInsert and _entriesDelete are destroyed by the menumodel destructor when the button gets destroyed.
 	_entriesInsert = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(	-1);				},	"insert-row-before",			fq(tr("Insert row above")),					true,		"menu-row-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(		-1);				},	"insert-row-after",				fq(tr("Insert row below")),					true,		"menu-row-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowBefore(	-1);				},	"insert-row-before",			[&](){ return fq(tr("Insert row above"));},								true,		"menu-row-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertRowAfter(		-1);				},	"insert-row-after",				[&](){ return fq(tr("Insert row below"));},								true,		"menu-row-insert-after"),
 		new AnalysisEntry(),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,false,false);	},	"insert-column-before",			fq(tr("Insert column before")),				true,		"menu-column-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,false,false);	},	"insert-column-after",			fq(tr("Insert column after")),				true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,false,false);	},	"insert-column-before",			[&](){ return fq(tr("Insert column before"));},							true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,false,false);	},	"insert-column-after",			[&](){ return fq(tr("Insert column after"));},							true,		"menu-column-insert-after"),
 		new AnalysisEntry(),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,false);	},	"insert-c-column-before",		fq(tr("Insert constructor column before")),	true,		"menu-column-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,false);	},	"insert-c-column-after",		fq(tr("Insert constructor column after")),	true,		"menu-column-insert-after"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,true);		},	"insert-r-column-before",		fq(tr("Insert R column before")),			true,		"menu-column-insert-before"),
-		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,true);		},	"insert-r-column-after",		fq(tr("Insert R column after")),			true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,false);	},	"insert-c-column-before",		[&](){ return fq(tr("Insert constructor column before"));},				true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,false);	},	"insert-c-column-after",		[&](){ return fq(tr("Insert constructor column after"));},				true,		"menu-column-insert-after"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnBefore(	-1,true	,true);		},	"insert-r-column-before",		[&](){ return fq(tr("Insert R column before"));},						true,		"menu-column-insert-before"),
+		new AnalysisEntry([&](){ emit this->dataInsertColumnAfter(	-1,true	,true);		},	"insert-r-column-after",		[&](){ return fq(tr("Insert R column after"));},						true,		"menu-column-insert-after"),
 	});
 	
 	_entriesDelete = new AnalysisEntries(
 	{
-		new AnalysisEntry([&](){ emit this->dataRemoveColumn();			},					"delete-column",				fq(tr("Delete column")),		true,		"menu-column-remove"),
-		new AnalysisEntry([&](){ emit this->dataRemoveRow();			},					"delete-row",					fq(tr("Delete row")),			true,		"menu-row-remove"),
-		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					fq(tr("Clear cells")),			true,		"menu-cells-clear")
+		new AnalysisEntry([&](){ emit this->dataRemoveColumn();			},					"delete-column",				[&](){ return fq(tr("Delete column"));},								true,		"menu-column-remove"),
+		new AnalysisEntry([&](){ emit this->dataRemoveRow();			},					"delete-row",					[&](){ return fq(tr("Delete row"));},									true,		"menu-row-remove"),
+		new AnalysisEntry([&](){ emit this->cellsClear();				},					"clear-cells",					[&](){ return fq(tr("Clear cells"));},									true,		"menu-cells-clear")
 	});
 
 	_entriesSynchOn = new AnalysisEntries(
 	{
-		new AnalysisEntry([&]() { MainWindow::singleton()->startDataEditorHandler(); },		"open-datafile",				fq(tr("Open datafile with default spreadsheet editor")),	true, ""),
-		new AnalysisEntry([&]() { emit setDataSynchronisation(false);	},					"stop-externaledit",			fq(tr("Turn external data synchronisation off")),			true, "")
+		new AnalysisEntry([&]() { MainWindow::singleton()->startDataEditorHandler(); },		"open-datafile",				[](){ return fq(tr("Open datafile with default spreadsheet editor"));},	true, ""),
+		new AnalysisEntry([&]() { emit setDataSynchronisation(false);	},					"stop-externaledit",			[](){ return fq(tr("Turn external data synchronisation off"));},		true, "")
 	});
 
-	_analysesButton			= new RibbonButton(this, "Analyses",				fq(tr("Analyses")),					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),				true);
-	_dataSwitchButton		= new RibbonButton(this, "Data",					fq(tr("Edit Data")),				"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),			false, false, false);
-	_dataNewButton			= new RibbonButton(this, "Data-New",				fq(tr("New Data")),					"data-button-new.svg",		false, [&](){ emit showNewData();	 },								fq(tr("Open a workspace without data")),			true, false, false);
-	_dataResizeButton		= new RibbonButton(this, "Data-Resize", fq(tr("Resize Data")), "data-button-resize.svg", false, [&](){ emit resizeData(); }, fq(tr("Resize your dataset")), false);
-	_insertButton			= new RibbonButton(this, "Data-Insert",				fq(tr("Insert")),					"data-button-insert.svg",	_entriesInsert,														fq(tr("Insert empty columns or rows")));
-	_removeButton			= new RibbonButton(this, "Data-Remove",				fq(tr("Remove")),					"data-button-erase.svg",	_entriesDelete,														fq(tr("Remove columns or rows")));
-	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			fq(tr("Synchronisation")),			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					fq(tr("Turn external data synchronisation on")),	false);
-	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			fq(tr("Synchronisation")),			"data-button-sync-on.svg",	_entriesSynchOn,													fq(tr("Turn external data synchronisation off")),	true);
-
-	_undoButton				= new RibbonButton(this, "Data-Undo",				fq(tr("Undo")),						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									fq(tr("Undo changes, %1+Z").arg(getShortCutKey())),					true, false, false);
-	_redoButton				= new RibbonButton(this, "Data-Redo",				fq(tr("Redo")),						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									fq(tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey())),	true, false, false);
+	_analysesButton			= new RibbonButton(this, "Analyses",				[&](){ return fq(tr("Analyses"));},					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	[&](){return tr("Switch JASP to analyses mode");},								true);
+	_dataSwitchButton		= new RibbonButton(this, "Data",					[&](){ return fq(tr("Edit Data"));},				"data-button.svg",			false, [&](){ emit showData(); },									[&](){return tr("Switch JASP to data editing mode");},							false, false, false);
+	_dataNewButton			= new RibbonButton(this, "Data-New",				[&](){ return fq(tr("New Data"));},					"data-button-new.svg",		false, [&](){ emit showNewData();	 },								[&](){return tr("Open a workspace without data");},								true, false, false);
+	_dataResizeButton		= new RibbonButton(this, "Data-Resize",				[&](){ return fq(tr("Resize Data"));},				"data-button-resize.svg",	false, [&](){ emit resizeData(); },									[&](){return tr("Resize your dataset");},										false);
+	_insertButton			= new RibbonButton(this, "Data-Insert",				[&](){ return fq(tr("Insert"));},					"data-button-insert.svg",	_entriesInsert,														[&](){return tr("Insert empty columns or rows");});
+	_removeButton			= new RibbonButton(this, "Data-Remove",				[&](){ return fq(tr("Remove"));},					"data-button-erase.svg",	_entriesDelete,														[&](){return tr("Remove columns or rows");});
+	_synchroniseOnButton	= new RibbonButton(this, "Data-Synch-On",			[&](){ return fq(tr("Synchronisation"));},			"data-button-sync-off.svg",	true, [&](){ emit setDataSynchronisation(true); },					[&](){return tr("Turn external data synchronisation on");},						false);
+	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			[&](){ return fq(tr("Synchronisation"));},			"data-button-sync-on.svg",	_entriesSynchOn,													[&](){return tr("Turn external data synchronisation off");},					true);
+	_undoButton				= new RibbonButton(this, "Data-Undo",				[&](){ return fq(tr("Undo"));},						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									[&](){return tr("Undo changes, %1+Z").arg(getShortCutKey());},					true, false, false);
+	_redoButton				= new RibbonButton(this, "Data-Redo",				[&](){ return fq(tr("Redo"));},						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									[&](){return tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey());},	true, false, false);
 
 	_dataNewButton->setActive(true);
 	connect(this, &RibbonModel::dataLoadedChanged,							_dataSwitchButton,	[=](bool loaded)			{ _dataSwitchButton	->setEnabled(loaded);				});
@@ -173,14 +173,11 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 		auto setUnAndRedoButtonLambda = [&,view]()
 		{
-			QString undoText = view->undoText(),
-					redoText = view->redoText();
+			_undoButton->setActive(!view->undoText().isEmpty());
+			_redoButton->setActive(!view->redoText().isEmpty());
 
-			_undoButton->setActive(!undoText.isEmpty());
-			_redoButton->setActive(!redoText.isEmpty());
-
-			_undoButton->setToolTip(tr("Undo %2 (%1+Z)")				.arg(getShortCutKey()).arg(undoText));
-			_redoButton->setToolTip(tr("Redo %2 (%1+shift+Z or %1+Y)")	.arg(getShortCutKey()).arg(redoText));
+			_undoButton->setToolTipF([&,view](){return tr("Undo %2 (%1+Z)")					.arg(getShortCutKey()).arg(view->undoText());});
+			_redoButton->setToolTipF([&,view](){return tr("Redo %2 (%1+shift+Z or %1+Y)")	.arg(getShortCutKey()).arg(view->redoText());});
 		};
 
 
@@ -207,7 +204,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 
 void RibbonModel::addSpecialRibbonButtonsLate()
 {
-	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R console")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console")), false, true), size_t(RowType::Analyses));
+	addRibbonButtonModel(new RibbonButton(this, "R", [&](){return fq(tr("R console")); }, "Rlogo.svg", false, [&](){ emit showRCommander(); }, [&](){ return tr("Execute R code in a console");}, false, true), size_t(RowType::Analyses));
 }
 
 void RibbonModel::setDataMode(bool data)
@@ -454,4 +451,10 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButton* model)
 	int row = ribbonButtonModelIndex(model);
 	if(row > -1)
 		emit dataChanged(index(row), index(row));
+}
+
+void RibbonModel::refreshButtons()
+{
+	beginResetModel();
+	endResetModel();	
 }

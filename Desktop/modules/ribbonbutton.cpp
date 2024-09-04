@@ -17,7 +17,6 @@
 //
 
 #include "ribbonbutton.h"
-#include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
 #include "utilities/qutils.h"
@@ -49,14 +48,14 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	bindYourself();
 }
 
-RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip, bool enabled, bool remember, bool defaultActiveBinding)
+RibbonButton::RibbonButton(QObject *parent,	std::string name, std::function<std::string()> titleF, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::function<QString()> toolTipF, bool enabled, bool remember, bool defaultActiveBinding)
 	: QObject(parent), _enabled(enabled), _defaultActiveBinding(defaultActiveBinding), _remember(remember), _special(true), _module(nullptr), _specialButtonFunc(justThisFunction)
 {
 	_menuModel = new MenuModel(this);
 
 	setModuleName(name);
-	setTitle(title);
-	setToolTip(tq(toolTip));
+	_titleF		= titleF;
+	_toolTipF	= toolTipF;
 	setIconSource(tq(icon));
 
 	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
@@ -64,16 +63,16 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	bindYourself();
 }
 
-RibbonButton::RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, Modules::AnalysisEntries * funcEntries, std::string toolTip, bool enabled, bool remember, bool defaultActiveBinding)
+RibbonButton::RibbonButton(QObject *parent, std::string name,	std::function<std::string()> titleF, std::string icon, Modules::AnalysisEntries * funcEntries, std::function<QString()> toolTipF, bool enabled, bool remember, bool defaultActiveBinding)
 	: QObject(parent), _enabled(enabled), _defaultActiveBinding(defaultActiveBinding), _remember(remember), _special(true), _module(nullptr)
 {
 	_menuModel = new MenuModel(this, funcEntries);
 
 	setRequiresData(AnalysisEntry::requiresDataEntries(*funcEntries));
 	setModuleName(name);
-	setTitle(title);
+	_titleF		= titleF;
+	_toolTipF	= toolTipF;
 	setIconSource(tq(icon));
-	setToolTip(tq(toolTip));
 
 	bindYourself();
 }
@@ -149,8 +148,6 @@ void RibbonButton::setReady(bool ready)
 	if(_ready && dynamicModule() && dynamicModule()->isDevMod())
 		setEnabled(true); 
 }
-
-
 
 RibbonButton::~RibbonButton()
 {
@@ -289,6 +286,15 @@ void RibbonButton::setToolTip(QString toolTip)
 
 	_toolTip = toolTip;
 	emit toolTipChanged(_toolTip);
+}
+
+void RibbonButton::setToolTipF(std::function<QString()> toolTipF)
+{
+	if ((!_toolTipF && !toolTipF) || (_toolTipF && toolTipF && _toolTipF() == toolTipF()))
+		return;
+
+	_toolTipF = toolTipF;
+	emit toolTipChanged(_toolTipF());
 }
 
 bool RibbonButton::separator() const

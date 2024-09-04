@@ -23,8 +23,8 @@
 namespace Modules
 {
 
-AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string internalTitle, std::string menuTitle, bool requiresData, std::string icon)
-	: _title(internalTitle), _function(internalTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
+AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string internalTitle, std::function<std::string()> menuTitleF, bool requiresData, std::string icon)
+	: _title(internalTitle), _function(internalTitle), _menuF(menuTitleF), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
 {}
 
 AnalysisEntry::AnalysisEntry(std::string menuTitle, std::string icon, bool smallIcon)
