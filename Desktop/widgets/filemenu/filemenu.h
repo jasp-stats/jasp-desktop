@@ -71,6 +71,7 @@ public:
 	void		setResourceButtonsVisibleFor(FileOperation fo);
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
+	FileEvent * newData();
 	FileEvent *	open(const QString &filepath);
 	FileEvent * open(const Json::Value & databaseInfo);
 	FileEvent *	save();

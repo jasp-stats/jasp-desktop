@@ -13,7 +13,7 @@ class ActionButtons : public QAbstractListModel
 	Q_PROPERTY(int				width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 
 public:
-	enum FileOperation {None = 0, Open, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, Contact, Community, About};
+	enum FileOperation {None = 0, New, Open, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, Contact, Community, About};
 	Q_ENUM(FileOperation)
 
 	struct DataRow { FileOperation operation; QString name; bool enabled; std::set<ResourceButtons::ButtonType> resourceButtons; };

@@ -44,6 +44,11 @@ void AsyncLoader::io(FileEvent *event)
 
 	switch (event->operation())
 	{
+	case FileEvent::FileNew:
+		emit progress(tr("Loading New Data Set"), 0);
+		emit beginLoad(event);
+		break;
+
 	case FileEvent::FileOpen:
 		emit progress(tr("Loading Data Set"), 0);
 		emit beginLoad(event);

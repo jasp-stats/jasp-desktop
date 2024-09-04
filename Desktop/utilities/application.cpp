@@ -25,7 +25,7 @@
 #include "utilities/settings.h"
 #include <iostream>
 
-void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
+void Application::init(QString filePath, bool newData, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
 {	
 	std::cout << "Application init entered" << std::endl;
 	
@@ -36,14 +36,24 @@ void Application::init(QString filePath, bool unitTest, int timeOut, bool save, 
 
 	_mainWindow = new MainWindow(this);
 
-	if(unitTest)
-		_mainWindow->testLoadedJaspFile(timeOut, save);
+	connect(_mainWindow, &MainWindow::qmlLoadedChanged, this, [=]() {
+		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
+		// But to correctly work, the following calls need the QML files to be loaded.
+		if (newData)
+			_mainWindow->showNewData();
+		else
+		{
+			if(unitTest)
+				_mainWindow->testLoadedJaspFile(timeOut, save);
 
-	if(filePath.size() > 0)
-		_mainWindow->open(filePath);
-	
-	if(!dbJson.isNull())
-		_mainWindow->open(dbJson);
+			if(filePath.size() > 0)
+				_mainWindow->open(filePath);
+
+			if(!dbJson.isNull())
+				_mainWindow->open(dbJson);
+		}
+
+	});
 
 	if(reportingPath != "")
 		_mainWindow->reportHere(reportingPath);
