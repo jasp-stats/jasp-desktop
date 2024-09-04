@@ -104,7 +104,6 @@ signals:
 				void invalidateFilterModel();
 				void currentRowChanged();
 				void dataLoadedChanged(bool loaded);
-				void generateEmptyData();
 				void dataModeChanged(bool dataMode);
 				void startExternalEdit();
 				void stopExternalEdit();

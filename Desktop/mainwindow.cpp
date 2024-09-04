@@ -552,7 +552,6 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
-	connect(_ribbonModel,			&RibbonModel::generateEmptyData,					_package,				&DataSetPackage::generateEmptyData							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
 	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
