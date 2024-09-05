@@ -847,6 +847,13 @@
           "description": "Hypothetische dataset uit een artikel over ICC's van Shrout en Fleiss (1979). Het bestand demonstreert het gebruik van klassieke intra-klasse correlatiecoëfficiënten",
           "kind": "file",
           "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        },
+        {
+          "name": "Add symptoms",
+          "path": "Add symptoms.jasp",
+          "description": "",
+          "kind": "file",
+          "associated_datafile": "Add symptoms.csv"
         }
       ],
       "debug": false
