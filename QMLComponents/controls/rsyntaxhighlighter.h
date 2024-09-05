@@ -28,24 +28,27 @@
 class RSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
-    RSyntaxHighlighter(QTextDocument *parent);
-	virtual void highlightBlock(const QString &text) override;
-    void setStringsFormat(const QString &text, QChar c);
+				RSyntaxHighlighter(QTextDocument *parent);
+				
+	void		highlightBlock(const QString &text) override;
+    void		setStringsFormat(const QString &text, QChar c);
+
 private:
 	struct HighlightingRule
 	{
 		QRegularExpression pattern;
 		QTextCharFormat format;
 	};
-	QVector<HighlightingRule> highlightingRules;
-	QTextCharFormat operatorFormat;
-	QTextCharFormat variableFormat;
-    QTextCharFormat commentFormat;
-    QTextCharFormat keywordFormat;
-    QTextCharFormat stringFormat;
-    QTextCharFormat booleanFormat;
-    QTextCharFormat numberFormat;
-    QTextCharFormat punctuationFormat;
+	
+	QVector<HighlightingRule>	highlightingRules;
+	QTextCharFormat				operatorFormat,
+								variableFormat,
+								commentFormat,
+								keywordFormat,
+								stringFormat,
+								booleanFormat,
+								numberFormat,
+								punctuationFormat;
 };
 
 class RSyntaxHighlighterQuick : public QQuickItem
@@ -54,29 +57,17 @@ class RSyntaxHighlighterQuick : public QQuickItem
 	Q_PROPERTY(QQuickTextDocument* textDocument		READ textDocument	WRITE setTextDocument NOTIFY textDocumentChanged)
 	
 public:
-	RSyntaxHighlighterQuick(QQuickItem * parent = nullptr) : QQuickItem(parent)
-	{}
+	RSyntaxHighlighterQuick(QQuickItem * parent = nullptr) : QQuickItem(parent)	{}
 	
 	QQuickTextDocument * textDocument() { return _textDocument; }
 	
-	void setTextDocument(QQuickTextDocument * textDocument)
-	{
-		if(_textDocument == textDocument)	
-			return;
-		
-		_textDocument = textDocument;
-		
-		if(_textDocument)
-			_highlighter = new RSyntaxHighlighter(_textDocument->textDocument());
-		
-		emit textDocumentChanged();
-	}
+	void setTextDocument(QQuickTextDocument * textDocument);
 
 signals:
 	void textDocumentChanged();
 	
 private:
-	RSyntaxHighlighter	* _highlighter = nullptr;
+	RSyntaxHighlighter		* _highlighter  = nullptr;
 	QQuickTextDocument		* _textDocument = nullptr;
 };
 

@@ -108,3 +108,16 @@ void RSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
 		}
 	}
 }
+
+void RSyntaxHighlighterQuick::setTextDocument(QQuickTextDocument *textDocument) 
+{
+	if(_textDocument == textDocument)	
+		return;
+	
+	_textDocument = textDocument;
+	
+	if(_textDocument)
+		_highlighter = new RSyntaxHighlighter(_textDocument->textDocument());
+	
+	emit textDocumentChanged();
+}
