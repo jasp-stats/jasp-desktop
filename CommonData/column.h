@@ -127,7 +127,10 @@ public:
 			double					labelsTempValueDouble(	size_t tempLabelIndex);
 			int						labelsDoubleValueIsTempLabelRow(double dbl);
 			Label				*	labelDoubleDummy()		{ return _doubleDummy; }
-			
+
+			int						countTotalNonFilteredNumerics();
+			int						countTotalNonFilteredLevels();
+
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
 			void					valuesReverse();

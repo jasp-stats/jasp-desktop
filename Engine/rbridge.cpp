@@ -712,7 +712,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	jaspRCPP_freeArrayPointer(&arrayPointer);
 
 	if(!atLeastOneRow)
-		throw filterException("Filtered out all data..");
+		throw filterException("Filtered out all data.");
 
 	if(arrayLength != rowCount)
 	{

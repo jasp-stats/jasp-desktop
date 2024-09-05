@@ -61,6 +61,7 @@ signals:
 	void columnTypeChanged(QString colName);
 	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(QString columnName);
+	void filterChanged();
 	void rowCountChanged();
 	void dataAvailableChanged();
 

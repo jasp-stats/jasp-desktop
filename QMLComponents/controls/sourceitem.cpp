@@ -133,6 +133,7 @@ void SourceItem::connectModels()
 		} );
 		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
 		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
 		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 	}
 
@@ -142,6 +143,7 @@ void SourceItem::connectModels()
 		connect(_sourceListModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
 		connect(_sourceListModel,		&ListModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
 		connect(_sourceListModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+		connect(_sourceListModel,		&ListModel::filterChanged,			controlModel, &ListModel::filterChanged );
 		connect(_sourceListModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
 

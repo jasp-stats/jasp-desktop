@@ -88,7 +88,12 @@ void VariablesListBase::setUp()
 	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
-	connect(this,	&VariablesListBase::allowedColumnsChanged,						this, &VariablesListBase::_setAllowedVariables);
+	connect(this,				&VariablesListBase::allowedColumnsChanged,			this, &VariablesListBase::_setAllowedVariables			);
+	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::checkLevelsConstraints		);
+	connect(this,				&VariablesListBase::maxLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
+	connect(this,				&VariablesListBase::minLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
+	connect(this,				&VariablesListBase::maxNumericLevelsChanged,		this, &VariablesListBase::checkLevelsConstraints		);
+	connect(this,				&VariablesListBase::minNumericLevelsChanged,		this, &VariablesListBase::checkLevelsConstraints		);
 }
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
@@ -326,11 +331,8 @@ void VariablesListBase::setVariableType(int index, int type)
 	model()->setVariableType(index, columnType(type));
 }
 
-void VariablesListBase::termsChangedHandler()
+void VariablesListBase::checkLevelsConstraints()
 {
-	setColumnsTypes(model()->termsTypes());
-	setColumnsNames(model()->terms().asQList());
-
 	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
 
 	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
@@ -387,6 +389,14 @@ void VariablesListBase::termsChangedHandler()
 		if (!hasError)
 			clearControlError();
 	}
+}
+
+void VariablesListBase::termsChangedHandler()
+{
+	setColumnsTypes(model()->termsTypes());
+	setColumnsNames(model()->terms().asQList());
+
+	checkLevelsConstraints();
 
 	if (_boundControl)	_boundControl->resetBoundValue();
 	else JASPListControl::termsChangedHandler();

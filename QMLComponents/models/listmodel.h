@@ -107,6 +107,7 @@ signals:
 			void columnTypeChanged(Term term);
 			void labelsChanged(QString columnName, QMap<QString, QString> = {});
 			void labelsReordered(QString columnName);
+			void filterChanged();
 			void columnsChanged(QStringList columns);
 			void selectedItemsChanged();
 			void oneTermChanged(const QString& oldName, const QString& newName);

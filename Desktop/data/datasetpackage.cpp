@@ -517,8 +517,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::title):				return tq(column->title());
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(column->type());
-		case int(specialRoles::totalNumericValues):	return column->labelsTempNumerics();	
-		case int(specialRoles::totalLevels):		return int(column->labelsTemp().size());
+		case int(specialRoles::totalNumericValues):	return column->countTotalNonFilteredNumerics();
+		case int(specialRoles::totalLevels):		return column->countTotalNonFilteredLevels();
 		case int(specialRoles::computedColumnType):	return int(column->codeType());
 		case int(specialRoles::columnPkgIndex):		return index.column();
 		case int(specialRoles::lines):
@@ -877,7 +877,7 @@ bool DataSetPackage::setLabelDisplay(const QModelIndex &index, const QString &ne
 		changedCols = {column->name()};
 	
 	endSynchingDataChangedColumns(changedCols, false, false);
-	
+
 	if(setManual)
 		setManualEdits(true);
 

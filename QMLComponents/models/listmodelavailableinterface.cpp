@@ -179,6 +179,7 @@ bool ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
 	return change;
 }
 
+
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
 	if (keepTerms())
@@ -215,6 +216,7 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 	connect(this,			&ListModelAvailableInterface::columnTypeChanged,	assignedModel,				&ListModelAssignedInterface::sourceColumnTypeChanged	);
 	connect(this,			&ListModelAvailableInterface::labelsChanged,		assignedModel,				&ListModelAssignedInterface::sourceLabelsChanged		);
 	connect(this,			&ListModelAvailableInterface::labelsReordered,		assignedModel,				&ListModelAssignedInterface::sourceLabelsReordered		);
+	connect(this,			&ListModelAvailableInterface::filterChanged,		assignedModel,				&ListModelAssignedInterface::filterChanged				);
 	connect(listView(),		&JASPListControl::containsVariablesChanged,			assignedModel->listView(),	&JASPListControl::setContainsVariables					);
 	connect(listView(),		&JASPListControl::containsInteractionsChanged,		assignedModel->listView(),	&JASPListControl::setContainsInteractions				);
 }
