@@ -84,10 +84,17 @@
 				<key>CFBundleTypeExtensions</key>
 				<array>
 					<string>csv</string>
+					<string>txt</string>
 					<string>tsv</string>
 					<string>sav</string>
+					<string>zsav</string>
 					<string>ods</string>
-					<string>txt</string>
+					<string>xls</string>
+					<string>xlsx</string>
+					<string>sas7bdat</string>
+					<string>sas7bcat</string>
+					<string>por</string>
+					<string>dta</string>
 				</array>
 			</dict>
 		</array>
