@@ -331,6 +331,7 @@ public slots:
 				void				requestComputedColumnDestruction(	const std::string & columnName);
 				void				checkDataSetForUpdates();
 				void				delayedRefresh();
+				void				resetFilterCounters();
 				
 private:
 				bool				isThisTheSameThreadAsEngineSync();

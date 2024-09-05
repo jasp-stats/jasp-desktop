@@ -821,11 +821,36 @@ int Column::labelsTempCount()
 					_labelsTempNumerics++;
 			}
 		
-		doubleset dblset;
+		doubleset dblset, dblNonFiltered, dblNoLabelNonFiltered;
+		Labelset labelsNonFiltered;
 		
 		for(size_t r=0; r<rowCount(); r++)
-			if(_ints[r] == Label::DOUBLE_LABEL_VALUE && !std::isnan(_dbls[r]))
-				dblset.insert(_dbls[r]);
+		{
+			if(!std::isnan(_dbls[r]))
+			{
+				if(_ints[r] == Label::DOUBLE_LABEL_VALUE)
+					dblset.insert(_dbls[r]);
+				if(_countNonFilteredNumerics == -1 && _data->filter()->filtered()[r])
+					dblNonFiltered.insert(_dbls[r]);
+			}
+
+			if(_countNonFilteredLevels == -1 && _data->filter()->filtered()[r])
+			{
+				if(_ints[r] != Label::DOUBLE_LABEL_VALUE)
+				{
+					Label * label = labelByIntsId(_ints[r]);
+					if(!label->isEmptyValue())
+						labelsNonFiltered.insert(label);
+				}
+				else if(!std::isnan(_dbls[r]))
+					dblNoLabelNonFiltered.insert(_dbls[r]);
+			}
+		}
+
+		if (_countNonFilteredNumerics == -1)
+			_countNonFilteredNumerics = dblNonFiltered.size();
+		if (_countNonFilteredLevels == -1)
+			_countNonFilteredLevels = labelsNonFiltered.size() + dblNoLabelNonFiltered.size();
 		
 		doublevec dbls(dblset.begin(), dblset.end());
 		
@@ -853,6 +878,54 @@ int Column::labelsTempCount()
 	return _labelsTemp.size();
 }
 
+int Column::countTotalNonFilteredNumerics()
+{
+	if (_countNonFilteredNumerics == -1)
+	{
+		doubleset numerics;
+
+		for(size_t r=0; r<_data->rowCount(); r++)
+			if(_data->filter()->filtered()[r] && !std::isnan(_dbls[r]))
+					numerics.insert(_dbls[r]);
+
+		_countNonFilteredNumerics = numerics.size();
+	}
+
+	return _countNonFilteredNumerics;
+}
+
+int Column::countTotalNonFilteredLevels()
+{
+	if (_countNonFilteredLevels == -1)
+	{
+		Labelset	labels;
+		doubleset	numerics;
+
+		for(size_t r=0; r<_data->rowCount(); r++)
+			if(_data->filter()->filtered()[r])
+			{
+				if(_ints[r] != Label::DOUBLE_LABEL_VALUE)
+				{
+					Label * label = labelByIntsId(_ints[r]);
+					if(!label->isEmptyValue())
+						labels.insert(label);
+				}
+				else if(!std::isnan(_dbls[r]))
+					numerics.insert(_dbls[r]);
+			}
+
+		_countNonFilteredLevels = numerics.size() + labels.size();
+	}
+
+	return _countNonFilteredLevels;
+}
+
+void Column::resetFilterCounters()
+{
+	_countNonFilteredLevels = -1;
+	_countNonFilteredNumerics = -1;
+}
+
 int Column::labelsTempNumerics()
 {
 	labelsTempCount(); //generate the list if need be
@@ -865,39 +938,6 @@ const stringvec &Column::labelsTemp()
 	labelsTempCount(); //generate the list if need be
 	
 	return _labelsTemp;
-}
-
-int Column::countTotalNonFilteredNumerics()
-{
-	doubleset numerics;
-
-	for(size_t r=0; r<_data->rowCount(); r++)
-		if(_data->filter()->filtered()[r] && !std::isnan(_dbls[r]))
-				numerics.insert(_dbls[r]);
-
-	return numerics.size();
-}
-
-int Column::countTotalNonFilteredLevels()
-{
-	Labelset	labels;
-	doubleset	numerics;
-
-	for(size_t r=0; r<_data->rowCount(); r++)
-		if(_data->filter()->filtered()[r])
-		{
-			if(_ints[r] != Label::DOUBLE_LABEL_VALUE)
-			{
-				Label * label = labelByIntsId(_ints[r]);
-				if(!label->isEmptyValue())
-					labels.insert(label);
-			}
-			else if(!std::isnan(_dbls[r]))
-				numerics.insert(_dbls[r]);
-		}
-
-
-	return numerics.size() + labels.size();
 }
 
 std::string Column::labelsTempDisplay(size_t tempLabelIndex)

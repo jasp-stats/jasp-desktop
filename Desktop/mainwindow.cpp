@@ -546,7 +546,7 @@ void MainWindow::makeConnections()
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_package,				&DataSetPackage::refresh									);
-	connect(_filterModel,			&FilterModel::filterUpdated,						_columnsModel,			&ColumnsModel::filterChanged								);
+	connect(_filterModel,			&FilterModel::filterUpdated,						[&]() { _package->resetFilterCounters(); emit _columnsModel->filterChanged(); }		);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
 
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter,							Qt::QueuedConnection);

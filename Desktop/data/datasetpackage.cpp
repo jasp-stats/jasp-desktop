@@ -1217,6 +1217,12 @@ int DataSetPackage::columnsFilteredCount()
 	return colsFiltered;
 }
 
+void DataSetPackage::resetFilterCounters()
+{
+	for(Column * col : _dataSet->columns())
+		col->resetFilterCounters();
+}
+
 void DataSetPackage::resetAllFilters()
 {
 	for(Column * col : _dataSet->columns())

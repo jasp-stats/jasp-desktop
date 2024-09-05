@@ -130,6 +130,7 @@ public:
 
 			int						countTotalNonFilteredNumerics();
 			int						countTotalNonFilteredLevels();
+			void					resetFilterCounters();
 
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
 			void					labelsReverse();
@@ -257,6 +258,8 @@ private:
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
+			int						_countNonFilteredLevels		= -1,
+									_countNonFilteredNumerics	= -1;
 			bool					_invalidated		= false,
 									_forceTypes			= true, ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
 									_autoSortByValue;
