@@ -110,6 +110,11 @@ Window
 
 					TextArea
 					{
+						RSyntaxHighlighterQuick
+						{
+							textDocument:		outputWindow.textDocument
+						}
+						
 						id:					outputWindow
 						text:				rCmd.output
 						font:				jaspTheme.fontRCode
@@ -192,6 +197,13 @@ Window
 
 						TextArea
 						{
+							
+							RSyntaxHighlighterQuick
+							{
+								textDocument:		codeEntry.textDocument
+							}
+
+							
 							id:						codeEntry
 							font:					jaspTheme.fontRCode
 							color:					jaspTheme.textEnabled

@@ -2,6 +2,7 @@ import QtQuick			2.12
 import QtQuick.Controls 2.12
 import JASP.Controls	1.0 as JaspControls
 import "FilterConstructor"
+import JASP
 
 FocusScope
 {
@@ -302,6 +303,11 @@ FocusScope
 
 						TextArea
 						{
+							RSyntaxHighlighterQuick
+							{
+								textDocument:		filterGeneratedEdit.textDocument
+							}
+							
 							id:						filterGeneratedEdit
 							anchors.top:			filterGeneratedBox.top
 							anchors.left:			resetAllGeneratedFilters.right
@@ -347,6 +353,11 @@ FocusScope
 						TextArea
 						{
 
+							RSyntaxHighlighterQuick
+							{
+								textDocument:		filterEdit.textDocument
+							}
+							
 							id:						filterEdit
 							height:					contentHeight + 30
 							selectByMouse:			true

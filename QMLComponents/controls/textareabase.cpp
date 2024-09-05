@@ -20,7 +20,7 @@
 #include "analysisform.h"
 #include "boundcontrols/boundcontrolsourcetextarea.h"
 #include "boundcontrols/boundcontroljagstextarea.h"
-#include "boundcontrols/boundcontrollavaantextarea.h"
+#include "boundcontrols/boundcontrolrlangtextarea.h"
 #include "boundcontrols/boundcontrolcsemtextarea.h"
 
 
@@ -53,7 +53,8 @@ void TextAreaBase::setUp()
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
-	case TextType::TextTypeLavaan:		_boundControl = new BoundControlLavaanTextArea(this);	break;
+    case TextType::TextTypeLavaan:		_boundControl = new BoundControlRlangTextArea(this);	break;
+    case TextType::TextTypeRcode:		_boundControl = new BoundControlRlangTextArea(this);	break;
 	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
 	case TextType::TextTypeCSem:		_boundControl = new BoundControlCSemTextArea(this);		break;
 	default:							_boundControl = new BoundControlTextArea(this);			break;
