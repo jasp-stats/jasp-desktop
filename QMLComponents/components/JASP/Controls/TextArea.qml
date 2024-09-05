@@ -98,19 +98,27 @@ TextAreaBase
 				width:				lineNumbersRect.visible ? lineNumbers.width : 0
 				height:				Math.max(flickableRectangle.height, control.contentHeight) + 10
 				color:				"transparent"
+				
+				FontMetrics
+				{
+					font:			jaspTheme.fontCode
+					id:				lineNumberWidthDeterminer
+				}
 
 				ListView
 				{
 					id:				lineNumbers
-					width:			contentItem.childrenRect.width
+					width:			lineNumberWidthDeterminer.advanceWidth(control.lineCount) + jaspTheme.itemPadding
 					height:			parent.height
 					model:			control.lineCount
-					delegate: Text {
-						text:		"<i>%1.</i>".arg(index + 1)
-						font:		jaspTheme.fontCode
-						color:		jaspTheme.grayDarker
-						height: 	control.contentHeight / control.lineCount
-						anchors.right: parent.right
+					delegate:		Text 
+					{
+						text:					"<i>%1</i>".arg(index + 1)
+						font:					jaspTheme.fontCode
+						color:					jaspTheme.grayDarker
+						height:					control.contentHeight / control.lineCount
+						anchors.right:			parent.right
+						anchors.rightMargin:	jaspTheme.itemPadding / 2
 					}
 
 					onCountChanged: {
