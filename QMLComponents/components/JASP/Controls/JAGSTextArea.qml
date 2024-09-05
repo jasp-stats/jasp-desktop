@@ -5,4 +5,5 @@ import JASP				1.0
 TextArea
 {
 	textType: JASP.TextTypeJAGSmodel
+	showLineNumber: true
 }
