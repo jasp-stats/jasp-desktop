@@ -32,12 +32,11 @@
 #include <iostream>
 
 #include "log.h"
-#include "dirs.h"
 #include "timers.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "processinfo.h"
-#include "columnutils.h"
+
 #include "mainwindow.h"
 
 #include "analysisform.h"
@@ -46,6 +45,7 @@
 #include "controls/comboboxbase.h"
 #include "controls/textinputbase.h"
 #include "controls/componentslistbase.h"
+#include "controls/rsyntaxhighlighter.h"
 #include "controls/factorsformbase.h"
 #include "controls/inputlistbase.h"
 #include "controls/textareabase.h"
@@ -180,6 +180,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ComboBoxBase>								("JASP",			1, 0, "ComboBoxBase"					);
 	qmlRegisterType<RadioButtonBase>							("JASP",			1, 0, "RadioButtonBase"					);
 	qmlRegisterType<RadioButtonsGroupBase>						("JASP",			1, 0, "RadioButtonsGroupBase"			);
+	qmlRegisterType<RSyntaxHighlighterQuick>					("JASP",			1, 0, "RSyntaxHighlighterQuick"			);
 	qmlRegisterType<ComponentsListBase>							("JASP",			1, 0, "ComponentsListBase"				);
 	qmlRegisterType<FactorsFormBase>							("JASP",			1, 0, "FactorsFormBase"					);
 	qmlRegisterType<InputListBase>								("JASP",			1, 0, "InputListBase"					);

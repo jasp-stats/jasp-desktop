@@ -16,16 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDCONTROLLAVAANTEXTAREA_H
-#define BOUNDCONTROLLAVAANTEXTAREA_H
+#ifndef BOUNDCONTROLRLANGTEXTAREA_H
+#define BOUNDCONTROLRLANGTEXTAREA_H
 
 #include "boundcontroltextarea.h"
-#include "controls/lavaansyntaxhighlighter.h"
+#include "controls/rsyntaxhighlighter.h"
 
-class BoundControlLavaanTextArea : public BoundControlTextArea
+class BoundControlRlangTextArea : public BoundControlTextArea
 {
 public:
-	BoundControlLavaanTextArea(TextAreaBase* textArea);
+    BoundControlRlangTextArea(TextAreaBase* textArea);
 
 	bool		isJsonValid(const Json::Value& optionValue)		const	override;
 	Json::Value	createJson()									const	override;
@@ -35,7 +35,7 @@ public:
 	QString		rScriptDoneHandler(const QString &result)				override;
 
 protected:
-	LavaanSyntaxHighlighter*	_lavaanHighlighter		= nullptr;
+    RSyntaxHighlighter*	_rLangHighlighter		= nullptr;
 
 	std::set<std::string>		_usedColumnNames;
 	QString						_textEncoded;
@@ -43,4 +43,4 @@ protected:
 
 };
 
-#endif // BOUNDCONTROLLAVAANTEXTAREA_H
+#endif // BOUNDCONTROLRLANGTEXTAREA_H
