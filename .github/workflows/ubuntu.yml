@@ -43,7 +43,7 @@ jobs:
             sudo apt install libglpk-dev #required by igraph packages
             sudo apt install jags
             sudo apt install libminizip-dev # required by freexl
-            git clone https://github.com/shun2wang/freexl.git
+            git clone https://github.com/jasp-stats/freexl.git
             cd freexl && ./configure && make && sudo make install
             
       - name: Install boost

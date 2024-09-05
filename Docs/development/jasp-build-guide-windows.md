@@ -85,7 +85,7 @@ make install
 ```
 
 ```
-git clone https://github.com/shun2wang/freexl.git
+git clone https://github.com/jasp-stats/freexl.git
 cd freexl
 autoreconf -i -f
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
