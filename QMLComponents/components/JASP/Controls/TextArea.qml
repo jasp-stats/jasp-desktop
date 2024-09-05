@@ -120,11 +120,6 @@ TextAreaBase
 						anchors.right:			parent.right
 						anchors.rightMargin:	jaspTheme.itemPadding / 2
 					}
-
-					onCountChanged: {
-						if (textArea.showLineNumber)
-							control.leftPadding = lineNumbers.width + 2 * jaspTheme.contentMargin
-					}
 				}
 
 				Rectangle
@@ -146,7 +141,8 @@ TextAreaBase
 				selectionColor:		jaspTheme.itemSelectedColor
 				font:				textArea.textType === JASP.TextTypeDefault || textArea.textType === JASP.TextTypeSource ? jaspTheme.font : jaspTheme.fontCode
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-
+				leftPadding:		!textArea.showLineNumber ? 0 : lineNumbers.width + 2 * jaspTheme.contentMargin
+				
 				Component.onCompleted:
 				{
 					if (textArea.nextTabItem)
