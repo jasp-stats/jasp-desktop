@@ -799,6 +799,8 @@ void Column::labelsTempReset()
 	_labelsTempRevision = -1;
 	_labelsTempMaxWidth = 0;
 	_labelsTempNumerics = 0;
+	
+	nonFilteredCountersReset();
 }
 
 int Column::labelsTempCount()
@@ -855,9 +857,9 @@ int Column::labelsTempCount()
 	return _labelsTemp.size();
 }
 
-int Column::countTotalNonFilteredNumerics()
+int Column::nonFilteredTotalNumerics()
 {
-	if (_countNonFilteredNumerics == -1)
+	if (_nonFilteredNumericsCount == -1)
 	{
 		doubleset numerics;
 
@@ -865,15 +867,15 @@ int Column::countTotalNonFilteredNumerics()
 			if(_data->filter()->filtered()[r] && !std::isnan(_dbls[r]))
 					numerics.insert(_dbls[r]);
 
-		_countNonFilteredNumerics = numerics.size();
+		_nonFilteredNumericsCount = numerics.size();
 	}
 
-	return _countNonFilteredNumerics;
+	return _nonFilteredNumericsCount;
 }
 
-int Column::countTotalNonFilteredLevels()
+int Column::nonFilteredTotalLevels()
 {
-	if (_countNonFilteredLevels == -1)
+	if (_nonFilteredLevelsCount == -1)
 	{
 		Labelset	labels;
 		doubleset	numerics;
@@ -891,16 +893,16 @@ int Column::countTotalNonFilteredLevels()
 					numerics.insert(_dbls[r]);
 			}
 
-		_countNonFilteredLevels = numerics.size() + labels.size();
+		_nonFilteredLevelsCount = numerics.size() + labels.size();
 	}
 
-	return _countNonFilteredLevels;
+	return _nonFilteredLevelsCount;
 }
 
-void Column::resetFilterCounters()
+void Column::nonFilteredCountersReset()
 {
-	_countNonFilteredLevels = -1;
-	_countNonFilteredNumerics = -1;
+	_nonFilteredLevelsCount		= -1;
+	_nonFilteredNumericsCount	= -1;
 }
 
 int Column::labelsTempNumerics()

@@ -517,8 +517,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::title):				return tq(column->title());
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(column->type());
-		case int(specialRoles::totalNumericValues):	return column->countTotalNonFilteredNumerics();
-		case int(specialRoles::totalLevels):		return column->countTotalNonFilteredLevels();
+		case int(specialRoles::totalNumericValues):	return column->nonFilteredTotalNumerics();
+		case int(specialRoles::totalLevels):		return column->nonFilteredTotalLevels();
 		case int(specialRoles::computedColumnType):	return int(column->codeType());
 		case int(specialRoles::columnPkgIndex):		return index.column();
 		case int(specialRoles::lines):
@@ -1220,7 +1220,7 @@ int DataSetPackage::columnsFilteredCount()
 void DataSetPackage::resetFilterCounters()
 {
 	for(Column * col : _dataSet->columns())
-		col->resetFilterCounters();
+		col->nonFilteredCountersReset();
 }
 
 void DataSetPackage::resetAllFilters()
