@@ -46,7 +46,7 @@ Rectangle
 
 	onContainerWidthChanged:	if (visible)				showMessage()
 	onControlChanged:			if (!control)				controlErrorMessage.opacity = 0
-	onVisibleChanged:			if (!visible && control)
+	onVisibleChanged:			if (!visible && opacity === 0 && control)
 	{
 		control.hasError	= false;
 		control.hasWarning	= false;

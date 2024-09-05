@@ -18,12 +18,13 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
 	auto * info = new VariableInfo(_singleton);
-	
+
 	connect(this, &ColumnsModel::namesChanged,							info, &VariableInfo::namesChanged		);
 	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::columnsChanged		);
 	connect(this, &ColumnsModel::columnTypeChanged,						info, &VariableInfo::columnTypeChanged	);
 	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged		);
 	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered	);
+	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged		);
 	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged	);

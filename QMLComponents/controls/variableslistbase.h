@@ -110,6 +110,7 @@ protected slots:
 	void itemDoubleClickedHandler(int index);
 	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex);
 	void interactionHighOrderHandler(JASPControl* checkBoxControl);
+	void checkLevelsConstraints();
 
 protected:
 	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
