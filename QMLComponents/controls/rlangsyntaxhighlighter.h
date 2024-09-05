@@ -22,11 +22,13 @@
 #include <QSyntaxHighlighter>
 #include <QTextCursor>
 #include <QRegularExpression>
+#include <QQuickItem>
+#include <QQuickTextDocument>
 
-class RlangSyntaxHighlighter : public QSyntaxHighlighter
+class RSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
-    RlangSyntaxHighlighter(QTextDocument *parent);
+    RSyntaxHighlighter(QTextDocument *parent);
 	virtual void highlightBlock(const QString &text) override;
     void setStringsFormat(const QString &text, QChar c);
 private:
@@ -44,6 +46,31 @@ private:
     QTextCharFormat booleanFormat;
     QTextCharFormat numberFormat;
     QTextCharFormat punctuationFormat;
+};
+
+class RSyntaxHighlighterQuick : public QQuickItem
+{
+	Q_OBJECT
+	Q_PROPERTY(QQuickTextDocument* textDocument		READ textDocument	WRITE setTextDocument NOTIFY textDocumentChanged)
+	
+public:
+	RSyntaxHighlighterQuick(QQuickItem * parent) : QQuickItem(parent)
+	{}
+	
+	void setTextDocument(QQuickTextDocument * textDocument)
+	{
+		if(_textDocument == textDocument)	
+			return;
+		
+		_textDocument = textDocument;
+		
+		if(_textDocument)
+			_highlighter = new RSyntaxHighlighter(_textDocument->textDocument());
+	}
+	
+private:
+	RSyntaxHighlighter	* _highlighter = nullptr;
+	QQuickTextDocument		* _textDocument = nullptr;
 };
 
 #endif // RLANGSYNTAXHIGHLIGHTER_H

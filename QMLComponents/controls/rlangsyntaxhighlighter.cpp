@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "rlangsyntaxhighlighter.h"
+#include "rsyntaxhighlighter.h"
 
-RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
+RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
 
@@ -75,7 +75,7 @@ RlangSyntaxHighlighter::RlangSyntaxHighlighter(QTextDocument *parent)
 	highlightingRules.append(rule);
 }
 
-void RlangSyntaxHighlighter::highlightBlock(const QString &text)
+void RSyntaxHighlighter::highlightBlock(const QString &text)
 {
 	for (const HighlightingRule &rule : highlightingRules)
 	{
@@ -91,7 +91,7 @@ void RlangSyntaxHighlighter::highlightBlock(const QString &text)
 	}
 }
 
-void RlangSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
+void RSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
 {
 	int start = -1;
 	for (int i = 0; i < text.size(); ++i)

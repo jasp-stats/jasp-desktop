@@ -20,7 +20,7 @@
 #define BOUNDCONTROLRLANGTEXTAREA_H
 
 #include "boundcontroltextarea.h"
-#include "controls/rlangsyntaxhighlighter.h"
+#include "controls/rsyntaxhighlighter.h"
 
 class BoundControlRlangTextArea : public BoundControlTextArea
 {
@@ -35,7 +35,7 @@ public:
 	QString		rScriptDoneHandler(const QString &result)				override;
 
 protected:
-    RlangSyntaxHighlighter*	_rLangHighlighter		= nullptr;
+    RSyntaxHighlighter*	_rLangHighlighter		= nullptr;
 
 	std::set<std::string>		_usedColumnNames;
 	QString						_textEncoded;
