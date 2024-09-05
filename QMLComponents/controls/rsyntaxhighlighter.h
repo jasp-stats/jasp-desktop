@@ -54,8 +54,10 @@ class RSyntaxHighlighterQuick : public QQuickItem
 	Q_PROPERTY(QQuickTextDocument* textDocument		READ textDocument	WRITE setTextDocument NOTIFY textDocumentChanged)
 	
 public:
-	RSyntaxHighlighterQuick(QQuickItem * parent) : QQuickItem(parent)
+	RSyntaxHighlighterQuick(QQuickItem * parent = nullptr) : QQuickItem(parent)
 	{}
+	
+	QQuickTextDocument * textDocument() { return _textDocument; }
 	
 	void setTextDocument(QQuickTextDocument * textDocument)
 	{
@@ -66,7 +68,12 @@ public:
 		
 		if(_textDocument)
 			_highlighter = new RSyntaxHighlighter(_textDocument->textDocument());
+		
+		emit textDocumentChanged();
 	}
+
+signals:
+	void textDocumentChanged();
 	
 private:
 	RSyntaxHighlighter	* _highlighter = nullptr;
