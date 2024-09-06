@@ -851,7 +851,7 @@
           {
             "name": "Add symptoms",
             "path": "ADD symptoms.jasp",
-            "description": "",
+            "description": "数据样本由儿童（N=1163）的注意力缺陷障碍 (ADD) 症状进行评分构成，他们按照根据九个5分制李克特量表 (0-4)进行了打分（ Keulers & Hurks, 2021)。有序响应类别 0、1、2、3 、 4 表示特定症状行为的普遍性，范围从 0（从不）到 4（非常频繁）。对于 ADD 量表，总分越高，ADHD 症状越明显。该文件演示了分数相关标准测量误差的使用。",
             "kind": "file",
             "associated_datafile": "ADD symptoms.csv"
           }
