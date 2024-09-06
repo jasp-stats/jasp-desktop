@@ -77,10 +77,10 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 				std::string colName = colNames[i];
 				if (colName.empty()) 
 					colName = "V" + std::to_string(i + 1);
-				else if(ColumnUtils::isIntValue(colName))
+				else if(ColumnUtils::isIntValue(colName) || ColumnUtils::isDoubleValue(colName))
 					colName = "V" + colName;
-				//What is the purpose of the `find` here? Maybe explain in a comment here
-				if (std::find(colNames.begin(), colNames.begin() + i, colName) != colNames.begin() + i)
+				// distinguish duplicate column names
+				if(std::find(colNames.begin(), colNames.begin() + i, colName) != colNames.begin() + i)
 					colName += "_" + std::to_string(i + 1);
 
 				colNames[i] = colName;
@@ -95,9 +95,7 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 	}
 
 	for (ExcelImportColumn* col : importColumns) 
-	{
 		data->addColumn(col);
-	}
 
 	data->buildDictionary();
 	excel.close();

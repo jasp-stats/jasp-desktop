@@ -18,7 +18,6 @@
 #ifndef EXCEL_H
 #define EXCEL_H
 
-#include <vector>
 #include <string>
 #include <stdint.h>
 

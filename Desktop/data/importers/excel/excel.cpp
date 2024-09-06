@@ -17,14 +17,11 @@
 
 #include "excel.h"
 #include "utilities/qutils.h"
-#include "utils.h"
 
 #include <QFileInfo>
 #include <QDebug>
 
-using namespace std;
-
-Excel::Excel(const string &locator)
+Excel::Excel(const std::string &locator)
 {
 	_path = locator;
 }
@@ -35,11 +32,12 @@ void Excel::open()
 	_fileSize = fi.size();
 
 	if (_fileSize < 0)
-		throw runtime_error("Could not access file");
+		throw std::runtime_error("Could not access file");
 
 	if (_fileSize == 0)
-		throw runtime_error("File is empty");
+		throw std::runtime_error("File is empty");
 }
+
 void Excel::openWorkbook() 
 {
 	QString xlsFilePath = tq(_path);
@@ -52,24 +50,24 @@ void Excel::openWorkbook()
 	else if (extension == "xlsx")
 		ret = freexl_open_xlsx(utf8Path, &_handle);
 	else
-		throw runtime_error("Unsupported file format: " + fq(extension));
+		throw std::runtime_error("Unsupported file format: " + fq(extension));
 
 	if(ret != FREEXL_OK)
-		throw runtime_error("Unexpected error while loading excel file, error code: " + std::to_string(ret));
+		throw std::runtime_error("Unexpected error while loading excel file, error code: " + std::to_string(ret));
 }
 
 void Excel::selectActiveWorksheet() 
 {
 	int ret = freexl_select_active_worksheet(_handle, 0);  // import the first worksheet(index=0) by default.
 	if (ret != FREEXL_OK)
-		throw runtime_error("Could not select active worksheet,\n error code: " + std::to_string(ret));
+		throw std::runtime_error("Could not select active worksheet,\n error code: " + std::to_string(ret));
 }
 
 void Excel::getWorksheetDimensions(uint32_t &rows, uint16_t &cols) {
 	int ret = freexl_worksheet_dimensions(_handle, &rows, &cols);
 
 	if (ret != FREEXL_OK)
-		throw runtime_error("Could not read worksheet dimensions, error code: " + std::to_string(ret));
+		throw std::runtime_error("Could not read worksheet dimensions, error code: " + std::to_string(ret));
 
 	_numCols = cols; //get cols count while read sheet
 }
