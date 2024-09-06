@@ -289,63 +289,7 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
-  # FreeXL library ---
-  message(CHECK_START "Looking for freexl.dll.a")
-  find_file(
-    RTOOLS_LIBFREEXL_DLL_A
-    NAMES libfreexl.dll.a
-    PATHS ${RTOOLS_PATH}/lib
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBFREEXL_DLL_A})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBFREEXL_DLL_A}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "FreeXL is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for freexl.h")
-  find_file(
-    RTOOLS_LIBFREEXL_H
-    NAMES freexl.h
-    PATHS ${RTOOLS_PATH}/include
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBFREEXL_H})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBFREEXL_H}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "FreeXL is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libfreexl-1.dll")
-  find_file(
-    RTOOLS_LIBFREEXL_DLL
-    NAMES libfreexl-1.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBFREEXL_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBFREEXL_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "FreeXL is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-  # End FreeXL library ---
-
+  
   message(CHECK_START "Looking for zlib1.dll")
   find_file(
     RTOOLS_ZLIB_DLL

@@ -31,7 +31,7 @@ Excel::Excel(const string &locator)
 
 void Excel::open()
 {
-	_fileSize = Utils::getFileSize(_path);
+	_fileSize = QFileInfo::size(_path);
 
 	if (_fileSize < 0)
 		throw runtime_error("Could not access file");
@@ -41,8 +41,8 @@ void Excel::open()
 }
 void Excel::openWorkbook() 
 {
-	QString xlsFilePath = QString::fromStdString(_path);
-	const char* utf8Path = xlsFilePath.toUtf8();
+	QString xlsFilePath = tq(_path);
+	const char* utf8Path = _path.c_str(); //But it would be better to just use _path.c_str() directly if you need it. It is in utf8 in any case.
 	QString extension = QFileInfo(xlsFilePath).suffix().toLower();
 
 	int ret = 0;

@@ -22,7 +22,6 @@
 #include <QFileInfo>
 #include <QDebug>
 
-using namespace std;
 
 ExcelImporter::ExcelImporter() : Importer() {}
 
@@ -76,16 +75,10 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 			{
 				string colName = colNames[i];
 				if (colName.empty()) 
-				{
 					colName = "V" + std::to_string(i + 1);
-				} else 
-				{
-					try 
-					{
-						if (std::to_string(std::stoi(colName)) == colName)
-							colName = "V" + colName;
-					} catch (...) {}
-				}
+				else if(ColumnUtils::isIntValue(colName))
+					colName = "V" + colName;
+				//What is the purpose of the `find` here? Maybe explain in a comment here
 				if (std::find(colNames.begin(), colNames.begin() + i, colName) != colNames.begin() + i)
 					colName += "_" + std::to_string(i + 1);
 
@@ -96,9 +89,7 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 		else 
 		{
 			for (int i = 0; i < importColumns.size(); ++i) 
-			{
 				importColumns[i]->addValue(i < lineValues.size() ? lineValues[i] : "");
-			}
 		}
 	}
 

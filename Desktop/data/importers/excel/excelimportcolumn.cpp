@@ -13,7 +13,6 @@ ExcelImportColumn::ExcelImportColumn(ImportDataSet *importDataSet, std::string n
 ExcelImportColumn::~ExcelImportColumn()
 {
 	JASPTIMER_SCOPE(ExcelImportColumn::~ExcelImportColumn());
-	_data.clear();
 }
 
 size_t ExcelImportColumn::size() const
