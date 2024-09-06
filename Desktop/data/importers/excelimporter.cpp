@@ -18,6 +18,7 @@
 #include "excelimporter.h"
 #include "data/importers/excel/excel.h"
 #include "data/importers/excel/excelimportcolumn.h"
+#include <columnutils.h>
 #include <string>
 #include <QFileInfo>
 #include <QDebug>
@@ -37,7 +38,7 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 	uint32_t	row;
 	uint16_t	col;
 
-	vector<ExcelImportColumn *> importColumns;
+	std::vector<ExcelImportColumn *> importColumns;
 
 	Excel excel(locator);
 	excel.open();
@@ -73,7 +74,7 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 
 			for (int i = 0; i < colNames.size(); ++i) 
 			{
-				string colName = colNames[i];
+				std::string colName = colNames[i];
 				if (colName.empty()) 
 					colName = "V" + std::to_string(i + 1);
 				else if(ColumnUtils::isIntValue(colName))

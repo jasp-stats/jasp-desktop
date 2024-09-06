@@ -31,7 +31,8 @@ Excel::Excel(const string &locator)
 
 void Excel::open()
 {
-	_fileSize = QFileInfo::size(_path);
+	QFileInfo fi(tq(_path));
+	_fileSize = fi.size();
 
 	if (_fileSize < 0)
 		throw runtime_error("Could not access file");
