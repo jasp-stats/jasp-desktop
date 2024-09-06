@@ -850,10 +850,10 @@
           },
           {
             "name": "Add symptoms",
-            "path": "Add symptoms.jasp",
+            "path": "ADD symptoms.jasp",
             "description": "",
             "kind": "file",
-            "associated_datafile": "Add symptoms.csv"
+            "associated_datafile": "ADD symptoms.csv"
           }
         ],
         "debug": false

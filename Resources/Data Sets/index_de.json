@@ -849,11 +849,11 @@
           "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
         },
         {
-          "name": "Add symptoms",
-          "path": "Add symptoms.jasp",
-          "description": "",
+          "name": "ADS symptoms",
+          "path": "ADD symptoms.jasp",
+          "description": "Die Stichprobe besteht aus Kindern (N=1162), die von ihren Eltern anhand von neun 5-Punkte-Likert-Skala (0-4) Items zu Symptomen der Aufmerksamkeitsdefizitstörung (ADS) bewertet wurden (Keulers & Hurks, 2021). Die geordneten Antwortkategorien 0, 1, 2, 3 und 4 repräsentieren das Auftreten eines spezifischen symptomatischen Verhaltens, wobei 0 (nie) und 4 (sehr oft) bedeuten. Für die ADD-Skala weist eine höhere Summe der Punktzahlen auf mehr ADS-Symptome hin. Die Datei zeigt die Verwendung des Score-bezogenen Standardfehlers der Messung.",
           "kind": "file",
-          "associated_datafile": "Add symptoms.csv"
+          "associated_datafile": "ADD symptoms.csv"
         }
       ],
       "debug": false
