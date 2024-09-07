@@ -5272,3 +5272,11 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr "数值的最小数量为 %1。变量 %2 仅有 %3 个不同的数值"
+
+msgctxt "AsyncLoader|"
+msgid "Loading New Data Set"
+msgstr ""
+
+msgctxt "ActionButtons|"
+msgid "New"
+msgstr ""
