@@ -5494,3 +5494,11 @@ msgid ""
 msgstr ""
 "O número mínimo de valores numéricos é %1. A variable %2 ten só %3 valores "
 "numéricos diferentes"
+
+msgctxt "AsyncLoader|"
+msgid "Loading New Data Set"
+msgstr ""
+
+msgctxt "ActionButtons|"
+msgid "New"
+msgstr ""
