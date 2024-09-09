@@ -3,6 +3,6 @@ message: "If you use this software, please cite it as below."
 authors:
 - family-names: "JASP Team"
 title: "JASP"
-version: 0.19.0
+version: 0.19.1
 date-released: 2024-01-10
 url: "https://jasp-stats.org/"
