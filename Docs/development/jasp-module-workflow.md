@@ -23,23 +23,11 @@ Install the latest jasp beta with:
 flatpak install flathub-beta org.jaspstats.JASP
 ```
 
-To run it in development mode:
+Open it in development mode:
 
 ```sh
 flatpak run --branch=beta --devel org.jaspstats.JASP
 ```
-
-> [!IMPORTANT]
-> Some users experienced the following error:
-> ```sh
-> error: runtime/org.kde.Sdk/x86_64/6.7 not installed
-> ```
->
-> This can be fixed by manually installing the missing runtime:
-> ```sh
-> flatpak install org.kde.Sdk
-> ```
-> and choosing the appropriate version (`6.7`) in this example.
 
 > [!WARNING]
 > JASP will remember from which branch it was launched.
@@ -47,6 +35,17 @@ flatpak run --branch=beta --devel org.jaspstats.JASP
 > ```sh
 > flatpak run --branch=stable org.jaspstats.JASP
 > ```
+
+#### Problems?
+Some users experienced the following error:
+```sh
+error: runtime/org.kde.Sdk/x86_64/6.7 not installed
+```
+This can be fixed by manually installing the missing runtime:
+```sh
+flatpak install org.kde.Sdk
+```
+and choosing the appropriate version (`6.7` in this example).
 
 ### From source (advanced)
 In case you want to go the hard way and compile JASP from source, please follow our JASP building guides:
