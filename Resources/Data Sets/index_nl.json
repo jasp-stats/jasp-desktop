@@ -847,6 +847,13 @@
           "description": "Hypothetische dataset uit een artikel over ICC's van Shrout en Fleiss (1979). Het bestand demonstreert het gebruik van klassieke intra-klasse correlatiecoëfficiënten",
           "kind": "file",
           "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        },
+        {
+          "name": "ADD symptomen",
+          "path": "ADD symptoms.jasp",
+          "description": "De steekproef bestaat uit kinderen (N=1162) die door hun ouders zijn beoordeeld op negen 5-punt Likert-schaal (0-4) items met betrekking tot symptomen van Attention Deficit Disorder (ADD) (Keulers & Hurks, 2021). De geordende antwoordcategorieën 0, 1, 2, 3 en 4 vertegenwoordigen de frequentie van specifiek symptomatisch gedrag, waarbij 0 (nooit) en 4 (zeer vaak) betekenen. Voor de ADD-schaal duidt een hogere somscore op meer ADD-symptomen. Het bestand toont het gebruik van de score-gerelateerde standaardfout van de meting.", 
+          "kind": "file",
+          "associated_datafile": "ADD symptoms.csv"
         }
       ],
       "debug": false
