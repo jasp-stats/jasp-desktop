@@ -886,7 +886,7 @@ int Column::nonFilteredTotalLevels()
 				if(_ints[r] != Label::DOUBLE_LABEL_VALUE)
 				{
 					Label * label = labelByIntsId(_ints[r]);
-					if(!label->isEmptyValue())
+					if(label && !label->isEmptyValue())
 						labels.insert(label);
 				}
 				else if(!std::isnan(_dbls[r]))
