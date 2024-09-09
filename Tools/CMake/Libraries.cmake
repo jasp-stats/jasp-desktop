@@ -41,7 +41,6 @@ endif()
 find_package(ZLIB 1.2 REQUIRED)
 find_package(Iconv 1.16 REQUIRED)
 find_package(SQLite3 3.37.0 REQUIRED)
-find_package(freexl 2.0.0 REQUIRED)
 
 #if(USE_CONAN)
 #  find_package(jsoncpp 1.9 REQUIRED)
@@ -230,10 +229,14 @@ if(APPLE)
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
   find_package(Brotli 1.0.9 REQUIRED)
+  find_package(freexl 2.0.0 REQUIRED)
 
 endif()
 
 if(WIN32)
+
+  find_package(freexl 2.0.0 REQUIRED)
+
   # ReadStat
 
   message(CHECK_START "Looking for libreadstat.dll.a")
