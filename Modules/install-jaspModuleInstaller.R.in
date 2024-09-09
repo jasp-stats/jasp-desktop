@@ -56,6 +56,16 @@ if (.Platform$OS.type == "windows") {
   )
 }
 
+# need to load a previous module status object before a possible reinstall of jaspModuleInstaller, which would delete it
+JASPMODULEINSTALLER_INSTALL_DIR <- file.path(JASPMODULEINSTALLER_LIBRARY, "jaspModuleInstaller")
+moduleStatusObjectPath <- file.path(JASPMODULEINSTALLER_INSTALL_DIR, "moduleStatusObject.rds")
+if (file.exists(moduleStatusObjectPath)) {
+  cat("Loading previous module status object\n")
+  oldModuleStatusObject <- readRDS(file = moduleStatusObjectPath)
+} else {
+  oldModuleStatusObject <- NULL
+}
+
 cat("Restoring jaspModuleInstaller\n")
 options(renv.config.cache.symlinks = TRUE)
 setupRenv(JASPMODULEINSTALLER_LIBRARY)
@@ -83,16 +93,16 @@ if (dir.exists(file.path(.libPaths()[1L], pkgName)))
 renv::restore(lockfile = lf, library = .libPaths(), rebuild = pkgName)
 
 
+cat("jaspModuleInstaller::writeModuleStatusObject\n")
+jaspModuleInstaller::writeModuleStatusObject("@PROJECT_SOURCE_DIR@", oldModuleStatusObject, "@MODULES_BINARY_PATH@")
 
-print("jaspModuleInstaller::writeModuleStatusObject(@PROJECT_SOURCE_DIR@")
-jaspModuleInstaller::writeModuleStatusObject("@PROJECT_SOURCE_DIR@")
 #This is necessary because of conflicts with Matrix dep of base R lib.
 #Can be removed when a new version of R updates its Matrix
 if (!@IS_FLATPAK_USED@) {
-	
-  if (Sys.info()["sysname"] == "Darwin") { 
+
+  if (Sys.info()["sysname"] == "Darwin") {
     options(pkgType = "source")
-  }  
+  }
 
 	renv::install("Matrix", library = JASPMODULEINSTALLER_LIBRARY, prompt = FALSE)
 }
