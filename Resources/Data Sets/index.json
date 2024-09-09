@@ -847,6 +847,13 @@
           "description": "Hypothetical data set from a paper on ICCs by Shrout and Fleiss (1979). The file demonstrates the use of classical intraclass correlation coefficients",
           "kind": "file",
           "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        },
+        {
+          "name": "ADD symptoms",
+          "path": "ADD symptoms.jasp",
+          "description": "The data sample consists of children (N=1162) who were rated by their parents on nine 5-point Likert-scale (0-4) items about attention deficit disorder (ADD) symptoms (Keulers & Hurks, 2021). The ordered response categories, 0, 1, 2, 3, and 4 represent the prevalence of a specific symptomatic behavior, ranging from 0 (never) to 4 (very often). For the ADD scale, a higher sum score indicates more ADHD symptoms. The file demonstrates the use of the score-related standard error of measurement.",
+          "kind": "file",
+          "associated_datafile": "ADD symptoms.csv"
         }
       ],
       "debug": false
