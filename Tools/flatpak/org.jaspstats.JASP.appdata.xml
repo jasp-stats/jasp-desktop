@@ -38,6 +38,13 @@
   <color type="primary" scheme_preference="dark">#14a1e3</color>
   </branding>
 	<releases>
+        <release version="0.19.1" date="2024-09-10">
+          <description>
+0.19.1 (September 10th 2024)
+    Bug Fixes:
+        Filter being ignored in Levels constraint checks (https://github.com/jasp-stats/jasp-issues/issues/2853)
+          </description>
+        </release>
             <release version="0.19.0" date="2024-07-15">
                 <description>
 0.19.0 (July 15th 2024)
