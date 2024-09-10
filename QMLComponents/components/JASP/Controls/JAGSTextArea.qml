@@ -6,4 +6,8 @@ TextArea
 {
 	textType: JASP.TextTypeJAGSmodel
 	showLineNumber: true
+	RSyntaxHighlighterQuick
+	{
+		textDocument:		parent.textDocument
+	}
 }
