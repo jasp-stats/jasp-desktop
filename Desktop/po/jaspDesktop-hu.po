@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-03-05 20:01+0000\n"
-"Last-Translator: Horváth Péter <stopposoknak@gmail.com>\n"
+"PO-Revision-Date: 2024-09-10 13:09+0000\n"
+"Last-Translator: Salyámosy András <salyamos@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/hu/>\n"
 "Language: hu\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -30,11 +30,11 @@ msgstr "Fájl betöltése innen:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr "Menteni kívánt fájl kijelölése"
+msgstr "Menteni kívánt fájl kiválasztása"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "Megnyitni kívánt fájl kijelölése"
+msgstr "Megnyitni kívánt fájl kiválasztása"
 
 msgctxt "FileSelector|"
 msgid "Browse"
@@ -44,16 +44,20 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
+"Ez az analízis a JASP (vagy egy dinamikus modul) egy korábbi verziójával "
+"készült"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr ", a frissítése kissé eltérő eredményt adhat."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
+", javasolt frissítened az analízisedet, hogy a jegyzeteid a helyükön "
+"maradjanak!"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -94,11 +98,11 @@ msgstr "Ctrl+Enter az alkalmazásra"
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "Utolsó helyes érték helyreállítása: %1"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr ""
+msgstr "Fő hatások"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
@@ -146,15 +150,15 @@ msgstr "Letöltés:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "Idézet:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "Mindegyik kijelölése"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "Kijelölés másolása"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
@@ -162,43 +166,45 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Bezárás"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "Húzd arréb az analízis átrendezéséhez"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "Az analízis címének szerkesztése"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "Az analízis megduplázása"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "Információk megjelenítése erről az analízisről"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "Analízis eltávolítása"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "Adatok vagy eredmények átméretezése"
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "Húzd odébb az adatok megjelenítéséhez"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr ""
+msgstr "Bemeneti beállítások elrejtése"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr ""
+msgstr "Bemeneti beállítások megjelenítése"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -214,35 +220,41 @@ msgstr "Visszaállítás"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "Bayes faktor"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"Bayes faktor az alternatív hipotézis null hipotézishez viszonyított "
+"valószínűségének számszerűsítésére."
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"Bayes faktor a null hipotézis alternatív hipotézishez viszonyított "
+"valószínűségének számszerűsítésére."
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "A BF10 természetes logaritmusa."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
@@ -256,69 +268,70 @@ msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Visszaállítás"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "Számított oszlop: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "Oszlop kiválasztása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "abszolútérték"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "normális eloszlás"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "variancia"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "összegzés"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "értékek szorzata"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "az értékek minimumát adja vissza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "az értékek maximumát adja vissza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "átlag"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "n tizedesjegyre kerekíti y-t"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "visszaadja az y-ban lévő elemek számát"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "medián"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "természetes logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "2-es alapú logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "10-es alapú logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
@@ -326,7 +339,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "exponenciális"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
