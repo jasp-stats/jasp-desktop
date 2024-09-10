@@ -481,8 +481,15 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		moduleRequest	= jsonRequest["moduleRequest"].asString();
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
+	std::string		moduleLibPaths  = jsonRequest["moduleLibPaths"].asString();
 	
-	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl; 
+	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl;
+
+	if(moduleStatusFromString((moduleRequest)) == moduleStatus::loading) {
+		//Some jaspModules use jaspBase calls in their .onload so we first we need to prepare jaspbase
+		jaspRCPP_evalRCode((".libPaths( " + moduleLibPaths +  " );").c_str(), false);
+		jaspRCPP_init_jaspBase();
+	}
 
 	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()

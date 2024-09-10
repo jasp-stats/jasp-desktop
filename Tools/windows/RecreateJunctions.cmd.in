@@ -10,6 +10,7 @@ call "@VC_VARS_PATH_NATIVE@\vcvars64.bat"
 set PATH=@RINSIDE_PATH_NATIVE@\libs\x64;@RCPP_PATH_NATIVE@\libs\x64;@R_BIN_PATH_NATIVE@\x64;%QTVCDIR%;%PATH%
 set R_HOME=@R_HOME_PATH_NATIVE@
 set JASPENGINE_LOCATION=@JASP_BINARY_DIR_NATIVE@\JASPEngine.exe
+set R_LIBS=@JASP_BINARY_DIR_NATIVE@\Modules\Tools\junction_bootstrap_library;@R_HOME_PATH_NATIVE@\library
 
 rem ---------------------- Collecting Junctions ------------------
 

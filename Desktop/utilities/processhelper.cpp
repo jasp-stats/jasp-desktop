@@ -1,12 +1,9 @@
 #include "processhelper.h"
 #include "utilities/appdirs.h"
-
-#ifdef _WIN32
 #include "utilities/qutils.h"
 #include "log.h"
-#endif
 
-QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
+QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootStrap)
 {
 	QDir				programDir	= AppDirs::programDir();
 	QString				engineExe	= programDir.absoluteFilePath("JASPEngine");
@@ -21,8 +18,8 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	//Seems a bit weird but we need to tell this to jaspBase so it can tell renv to run it again because that will be running in a subprocess. 
 	//Which also means we have the following process -> subprocess structure while installing a dynamic module:
 	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
-	env.insert("JASPENGINE_LOCATION",				engineExe); 
-	
+	env.insert("JASPENGINE_LOCATION",				engineExe);
+
 	QString TZDIR		= AppDirs::rHome() + "/share/zoneinfo";
 	QString rHomePath	= AppDirs::rHome();
 	QDir	rHome		( rHomePath );
@@ -45,7 +42,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 			R_HOME		= shortenWinPaths(rHome.absolutePath()),
 			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/"));
 			// JAGS_LIBDIR	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/lib/"));
-	
+
 	Log::log() << "R_HOME set to " << R_HOME << std::endl;
 
 	env.insert("PATH",				PATH);
@@ -55,7 +52,10 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS",			 R_HOME + "/library");
+	if(bootStrap)
+		env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/junction_bootstrap_library") + ";" + R_HOME + "/library");
+	else
+		env.insert("R_LIBS",			AppDirs::bundledModulesDir() + "Tools/R_cpp_includes_library" + ";" + R_HOME + "/library");
 
 	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
@@ -73,7 +73,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("RHOME",				rHome.absolutePath()); //For Rscript
 	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
-	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
+	env.insert("R_LIBS",			programDir.absoluteFilePath("../Modules/Tools/R_cpp_includes_library") + ":" + rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library") + custom_R_library);
 	env.insert("JAGS_HOME",			rHome.absolutePath() + "/opt/jags/lib/JAGS/");
 	// env.insert("JAGS_LIBDIR",		rHome.absolutePath() + "/opt/jags/lib/");
 
@@ -84,11 +84,13 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 
 	env.insert("LC_CTYPE",			"UTF-8"); //This isn't really a locale but seems necessary to get proper output from gettext on mac
 	env.insert("TZDIR",				TZDIR);
-
-#else  // linux
-	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
+#elif FLATPAK_USED
 	env.insert("R_HOME",			rHome.absolutePath());
-	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("R_LIBS",			"/app/Modules/Tools/R_cpp_includes_library:/app/lib64/R/library" + custom_R_library);
+	env.insert("LD_LIBRARY_PATH",	"/app/Modules/Tools/R_cpp_includes_library/RInside/lib/:/app/lib64/R/lib/");
+#else  // linux
+	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("R_LIBS",			programDir.absoluteFilePath("../Modules/Tools/R_cpp_includes_library") + ":" + programDir.absoluteFilePath("R/library") + custom_R_library);
 #endif
 
 	env.insert("R_LIBS_SITE",		"");
@@ -98,6 +100,11 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	// Sorry Joris, I still had to do this because I couldn't get your method to work!
 	env.insert("R_LIBS_USER", (AppDirs::programDir().absolutePath().toStdString() + "/../R/library").c_str());
 #endif
+
+	Log::log() <<	"R_LIBS:"			<< env.value("R_LIBS")			<< "\n" <<
+					"R_LIBS_USER:"		<< env.value("R_LIBS_USER")		<< "\n" <<
+					"LD_LIBRARY_PATH:"	<< env.value("LD_LIBRARY_PATH") << "\n" <<
+					std::endl;
 
 	return(env);	
 }
