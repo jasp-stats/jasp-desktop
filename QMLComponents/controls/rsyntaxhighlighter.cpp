@@ -28,7 +28,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	}
 
 	HighlightingRule rule;
-	// all these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
+	// most of these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
 
 	// operators
 	_operatorFormat.setForeground(Qt::red);
@@ -44,7 +44,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 
 	// string
 	_stringFormat.setForeground(Qt::darkGreen);
-	rule.pattern = QRegularExpression(R"((['"])(?:\\.|(?!\1)[^\\\r\n])*\1)");
+	rule.pattern = QRegularExpression(R"(([`'"])(?:\\.|(?!\1)[^\\\r\n])*\1)");
 	rule.format = _stringFormat;
 	_highlightingRules.append(rule);
 
@@ -75,15 +75,11 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	// comments
 	_commentFormat.setForeground(Qt::darkGray);
 	_commentFormat.setFontItalic(true);
-	rule.pattern = QRegularExpression(R"(#[^\n]*)");
-	rule.format = _commentFormat;
-	_commentRule = rule;
-	//_highlightingRules.append(rule);
+	_commentRule.pattern = QRegularExpression(R"(#[^\n]*)");
+	_commentRule.format = _commentFormat;
 	
 	// columns
 	_columnFormat.setForeground(Qt::blue);
-	//_columnFormat.setUnderlineStyle(QTextCharFormat::DashUnderline);
-	//_columnFormat.setUnderlineColor(Qt::green);
 	_columnFormat.setFontItalic(true);
 }
 
