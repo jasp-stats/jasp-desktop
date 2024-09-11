@@ -74,6 +74,17 @@ Before creating any of the other files you should now add the module folder in J
 2. Click on the plus symbol in the top right corner
 3. Click on Install Developer Module
 
+### Problems?
+If you are experiencing an error similar to the one below:
+
+![](./img/installation-fail.png)
+
+very likely GitHub is stopping you from cloning multiple repositories at the same time.
+
+The fix is to configure a GitHub [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) (PAT). The only purpose is to identify yourself as a legit user, so a token with no permissions will suffice.
+
+When you have it, go to `Preferences/Advanced`, untick `Use default PAT for Github` and paste your recently created token there. Don't forget to press `Enter` or `tab` to make sure the changes were saved!
+
 ### Developing the module
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
