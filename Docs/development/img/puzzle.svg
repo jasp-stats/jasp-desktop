@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="117.23029mm"
+   height="81.655594mm"
+   viewBox="0 0 117.23029 81.655594"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.1 (9b9bdc1480, 2023-11-25, custom)"
+   sodipodi:docname="puzzle.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="2.0952862"
+     inkscape:cx="131.96288"
+     inkscape:cy="164.65531"
+     inkscape:window-width="2560"
+     inkscape:window-height="1376"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-23.011875,-28.769494)">
+    <rect
+       style="fill:#8383ff;fill-opacity:1;stroke-width:0.264999"
+       id="rect18"
+       width="87.468193"
+       height="62.013138"
+       x="23.011875"
+       y="48.405334" />
+    <path
+       id="path18"
+       style="fill:#a8e6aa;fill-opacity:1;stroke-width:0.264999"
+       d="m 87.092726,48.402404 v 8.641333 a 8.3011351,8.3011351 0 0 1 3.70365,-0.889351 8.3011351,8.3011351 0 0 1 8.301302,8.301302 8.3011351,8.3011351 0 0 1 -8.301302,8.300785 8.3011351,8.3011351 0 0 1 -3.70365,-0.874882 v 7.622791 h 19.846854 a 1.5533367,1.2047211 0 0 0 -0.0693,0.347782 1.5533367,1.2047211 0 0 0 1.55339,1.204578 1.5533367,1.2047211 0 0 0 0.65009,-0.112655 4.7843537,4.7871442 0 0 0 4.61367,3.708818 4.7843537,4.7871442 0 0 0 4.78473,-4.787305 4.7843537,4.7871442 0 0 0 -0.015,-0.361218 h 21.73201 V 48.402404 Z" />
+    <path
+       id="path5"
+       style="fill:#e6a8af;fill-opacity:1;stroke-width:0.265"
+       d="m 87.145147,79.322594 v 10.102223 a 8.3011351,8.3011351 0 0 0 -5.099947,-1.7756 8.3011351,8.3011351 0 0 0 -8.300786,8.3013 8.3011351,8.3011351 0 0 0 8.300786,8.300793 8.3011351,8.3011351 0 0 0 5.099947,-1.7756 v 7.94938 H 140.24217 V 79.322594 h -22.07928 a 4.7843537,4.7871442 0 0 1 -4.76301,4.492232 4.7843537,4.7871442 0 0 1 -4.76354,-4.492232 z" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;font-family:serif;-inkscape-font-specification:serif;fill:#03030e;fill-opacity:1;stroke-width:0.264999"
+       x="52.783001"
+       y="76.756149"
+       id="text6"><tspan
+         sodipodi:role="line"
+         id="tspan6"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="52.783001"
+         y="76.756149">R package</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="52.783001"
+         y="82.929764"
+         id="tspan8">(Functionality)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;font-family:serif;-inkscape-font-specification:serif;fill:#03030e;fill-opacity:1;stroke-width:0.264999"
+       x="116.2935"
+       y="58.986691"
+       id="text10"><tspan
+         sodipodi:role="line"
+         id="tspan9"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="116.2935"
+         y="58.986691">QML files</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="116.2935"
+         y="65.160301"
+         id="tspan10">(Graphical</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="116.2935"
+         y="71.333916"
+         id="tspan11">interface)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;font-family:serif;-inkscape-font-specification:serif;fill:#03030e;fill-opacity:1;stroke-width:0.264999"
+       x="113.51363"
+       y="92.997215"
+       id="text14"><tspan
+         sodipodi:role="line"
+         id="tspan12"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="113.51363"
+         y="92.997215">jaspResults</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="113.51363"
+         y="99.17083"
+         id="tspan15">(Display outputs)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;font-family:serif;-inkscape-font-specification:serif;fill:#03030e;fill-opacity:1;stroke-width:0.264999"
+       x="82.867897"
+       y="38.123394"
+       id="text17"><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="82.867897"
+         y="38.123394"
+         id="tspan17">The 3 main elements</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#03030e;fill-opacity:1;stroke-width:0.265"
+         x="82.867897"
+         y="44.297005"
+         id="tspan18">of a JASP module</tspan></text>
+  </g>
+</svg>

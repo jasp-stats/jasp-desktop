@@ -52,7 +52,7 @@ In case you want to go the hard way and compile JASP from source, please follow 
 - [For macOS](./jasp-build-guide-macos.md)
 - [For Linux](./jasp-build-guide-linux.md)
 
-## Development Process
+## Step 2. Develop your module
 Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
 
 To start developing your own module you should first understand the [structure of a module](jasp-adding-module.md). 
@@ -94,7 +94,7 @@ Similarly, if you change the title of your module in the .json file this will im
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 
 It might take a little while to see changes in R though, because JASP needs to rebuild the package and install it internally. So try to be patient with it ;)
 
-## Distributing the module
+## Step 3. Distribute your module
 In case you made a fork of an existing module all you need to do is open a PR to the original repository.
 Once your code is merged it will show up in the next nightly of JASP (or in your `jasp-desktop` folder if you build from source and run `git submodule update --remote`).
 
