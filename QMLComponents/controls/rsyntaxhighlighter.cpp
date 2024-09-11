@@ -19,76 +19,90 @@
 #include "rsyntaxhighlighter.h"
 
 RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
-	: QSyntaxHighlighter(parent)
+	: QSyntaxHighlighter(parent), VariableInfoConsumer(), _textDocument(parent)
 {
+	if(VariableInfo::info())
+	{
+		connect(VariableInfo::info(), &VariableInfo::namesChanged,		this, &RSyntaxHighlighter::handleNamesChanged);
+		connect(VariableInfo::info(), &VariableInfo::rowCountChanged,	this, &RSyntaxHighlighter::handleRowCountChanged);
+	}
 
 	HighlightingRule rule;
 	// all these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
 
 	// operators
-	operatorFormat.setForeground(Qt::red);
+	_operatorFormat.setForeground(Qt::red);
 	rule.pattern = QRegularExpression(R"(->?>?|<(?:=|<?-)?|[>=!]=?|::?|&&?|\|\|?|[+*\/^$@~]|%[^%\s]*%)");
-	rule.format = operatorFormat;
-	highlightingRules.append(rule);
+	rule.format = _operatorFormat;
+	_highlightingRules.append(rule);
 
 	// variables
-	variableFormat.setToolTip("variable");
+	_variableFormat.setToolTip("variable");
 	rule.pattern = QRegularExpression(R"(\b\w*\b)");
-	rule.format = variableFormat;
-	highlightingRules.append(rule);
+	rule.format = _variableFormat;
+	_highlightingRules.append(rule);
 
 	// string
-	stringFormat.setForeground(Qt::darkGreen);
+	_stringFormat.setForeground(Qt::darkGreen);
 	rule.pattern = QRegularExpression(R"((['"])(?:\\.|(?!\1)[^\\\r\n])*\1)");
-	rule.format = stringFormat;
-	highlightingRules.append(rule);
+	rule.format = _stringFormat;
+	_highlightingRules.append(rule);
 
 	// keyword
-	keywordFormat.setForeground(Qt::darkCyan);
+	_keywordFormat.setForeground(Qt::darkCyan);
 	rule.pattern = QRegularExpression(R"(\b(?:NA|NA_character_|NA_complex_|NA_integer_|NA_real_|NULL|break|else|for|function|if|in|next|repeat|while)\b)");
-	rule.format = keywordFormat;
-	highlightingRules.append(rule);
+	rule.format = _keywordFormat;
+	_highlightingRules.append(rule);
 
 	// boolean and special number
-	booleanFormat.setForeground(Qt::magenta);
+	_booleanFormat.setForeground(Qt::magenta);
 	rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE|Inf|NaN)\b)");
-	rule.format = booleanFormat;
-	highlightingRules.append(rule);
+	rule.format = _booleanFormat;
+	_highlightingRules.append(rule);
 
 	// number
-	numberFormat.setForeground(Qt::darkMagenta);
+	_numberFormat.setForeground(Qt::darkMagenta);
 	rule.pattern = QRegularExpression(R"((?:\b0x[\dA-Fa-f]+(?:\.\d*)?|\b\d+(?:\.\d*)?|\B\.\d+)(?:[EePp][+-]?\d+)?[iL]?)");
-	rule.format = numberFormat;
-	highlightingRules.append(rule);
+	rule.format = _numberFormat;
+	_highlightingRules.append(rule);
 
 	// punctuation
-	punctuationFormat.setForeground(Qt::blue);
+	_punctuationFormat.setForeground(Qt::blue);
 	rule.pattern = QRegularExpression(R"([(){}\[\],;])");
-	rule.format = punctuationFormat;
-	highlightingRules.append(rule);
+	rule.format = _punctuationFormat;
+	_highlightingRules.append(rule);
 
 	// comments
-	commentFormat.setForeground(Qt::darkGray);
-	commentFormat.setFontItalic(true);
-	rule.pattern = QRegularExpression(R"(#.*)");
-	rule.format = commentFormat;
-	highlightingRules.append(rule);
+	_commentFormat.setForeground(Qt::darkGray);
+	_commentFormat.setFontItalic(true);
+	rule.pattern = QRegularExpression(R"(#[^\n]*)");
+	rule.format = _commentFormat;
+	_commentRule = rule;
+	//_highlightingRules.append(rule);
+	
+	// columns
+	_columnFormat.setForeground(Qt::blue);
+	//_columnFormat.setUnderlineStyle(QTextCharFormat::DashUnderline);
+	//_columnFormat.setUnderlineColor(Qt::green);
+	_columnFormat.setFontItalic(true);
 }
 
 void RSyntaxHighlighter::highlightBlock(const QString &text)
 {
-	for (const HighlightingRule &rule : highlightingRules)
-	{
-		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
-
-		while (matchIterator.hasNext())
-		{
-			QRegularExpressionMatch match = matchIterator.next();
-			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
-			setStringsFormat(text, '"');
-			setStringsFormat(text, '\'');
-		}
-	}
+	setStringsFormat(text, '"');
+	setStringsFormat(text, '\'');
+	setStringsFormat(text, '`');
+	
+	for (const HighlightingRule & rule : _highlightingRules)
+		applyRule(text, rule);
+	
+	//Do columns
+	QStringList			names = requestInfo(VariableInfo::InfoType::VariableNames).toStringList();
+	
+	for(const QString & name : names)
+		applyRule(text, QRegularExpression(QString(R"(%1)").arg(name)), _columnFormat);
+	
+	applyRule(text, _commentRule);
 }
 
 void RSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
@@ -102,10 +116,21 @@ void RSyntaxHighlighter::setStringsFormat(const QString &text, QChar c)
 				start = i;
 			else
 			{
-				setFormat(start, i - start + 1, stringFormat);
+				setFormat(start, i - start + 1, _stringFormat);
 				start = -1;
 			}
 		}
+	}
+}
+
+void RSyntaxHighlighter::applyRule(const QString & text, const QRegularExpression & pattern, const QTextCharFormat & format)
+{
+	QRegularExpressionMatchIterator matchIterator = pattern.globalMatch(text);
+
+	while (matchIterator.hasNext())
+	{
+		QRegularExpressionMatch match = matchIterator.next();
+		setFormat(match.capturedStart(), match.capturedLength(), format);
 	}
 }
 
