@@ -39,9 +39,16 @@ FileEvent *Computer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = "Data Sets (*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
+	QString filter = tr("All Data Sets %1").arg("(*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt);;")
+					+ tr("JASP Files %1").arg("(*.jasp);;")
+					+ tr("CSV Text Files %1").arg("(*.csv *.txt *.tsv);;")
+					+ tr("Spreadsheet Files %1").arg("(*.ods *.xls *.xlsx);;")
+					+ tr("SPSS Files %1").arg("(*.sav *.zsav *.por)") + ";;"
+					+ tr("Stata Files %1").arg("(*.dta);;")
+					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt)");
+
 	if (mode() == FileEvent::FileSyncData)
-		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods)";
+		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
 
 	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
@@ -89,7 +96,7 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 
 	case FileEvent::FileSyncData:
 		caption = tr("Sync Data");
-		filter  = tr("Data Files") += " (*.csv *.txt *.tsv *.sav *.ods)";
+		filter  = tr("Data Files") += " (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
 		browsePath += ".csv";
 		break;
 

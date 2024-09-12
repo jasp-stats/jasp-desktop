@@ -199,6 +199,26 @@ if(LINUX)
     )
   endif()
 
+  # ---- FreeXL ----
+  message(CHECK_START "Looking for `libfreexl`")
+    set(LIBFREEXL_INCLUDE_DIRS /usr/include)
+    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+
+  message(CHECK_START "Looking for libfreexl.so")
+  find_library(LIBFREEXL_LIBRARIES libfreexl.so
+            HINTS ${LIBFREEXL_LIBRARY_DIRS} REQUIRED)
+
+  if(EXISTS ${LIBFREEXL_LIBRARIES})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${LIBFREEXL_LIBRARIES}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "FreeXL is required for building on Linux, please follow the build instruction before you continue."
+    )
+  endif()
+
   find_package(PkgConfig)
   #pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
 
@@ -209,10 +229,14 @@ if(APPLE)
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
   find_package(Brotli 1.0.9 REQUIRED)
+  find_package(freexl 2.0.0 REQUIRED)
 
 endif()
 
 if(WIN32)
+
+  find_package(freexl 2.0.0 REQUIRED)
+
   # ReadStat
 
   message(CHECK_START "Looking for libreadstat.dll.a")
@@ -269,7 +293,6 @@ if(WIN32)
     )
   endif()
   
-
   message(CHECK_START "Looking for zlib1.dll")
   find_file(
     RTOOLS_ZLIB_DLL
@@ -379,103 +402,6 @@ if(WIN32)
         "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
-  #message(CHECK_START "Looking for libjsoncpp-24.dll")
-  #find_file(
-  #  RTOOLS_LIBJSONCPP_DLL
-  #  NAMES libjsoncpp-24.dll
-  #  PATHS ${RTOOLS_PATH}/bin
-  #  NO_DEFAULT_PATH)
-
-  #if(EXISTS ${RTOOLS_LIBJSONCPP_DLL})
-  #  message(CHECK_PASS "found")
-  #  message(STATUS "  ${RTOOLS_LIBJSONCPP_DLL}")
-  #else()
-  #  message(CHECK_FAIL "not found")
-  #  message(
-  #    FATAL_ERROR
-  #      "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-  #  )
-  #endif()
-
-  # jags
-  # This could all go into its module later, and these can
-  # turn into a function, but I don't want to do it now
-  # because I'm uncertain about CMake variable scopping
-  # message(CHECK_START "Looking for jags files")
-  # find_file(
-  #   RTOOLS_LIBJAGS_BAT
-  #   NAMES jags.bat
-  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_BAT}")
-  # find_file(
-  #   RTOOLS_LIBJAGS
-  #   NAMES libjags-4.dll
-  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS}")
-  # find_file(
-  #   RTOOLS_LIBJAGS_JRMATH
-  #   NAMES libjrmath-0.dll
-  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_JRMATH}")
-  # find_file(
-  #   RTOOLS_LIB_BLAS
-  #   NAMES libblas.dll
-  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIB_BLAS}")
-  # find_file(
-  #   RTOOLS_LIB_LAPACK
-  #   NAMES liblapack.dll
-  #   PATHS ${RTOOLS_PATH}/bin REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIB_LAPACK}")
-
-  # set(RTOOLS_LIBJAGS_HEADERS_PATH "${RTOOLS_PATH}/include/JAGS")
-  # message(STATUS "  ${RTOOLS_LIBJAGS_HEADERS_PATH}")
-  # set(RTOOLS_LIBJAGS_LIBRARIES_PATH "${RTOOLS_PATH}/lib/JAGS")
-  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBRARIES_PATH}")
-  # set(RTOOLS_LIBJAGS_PKGCONFIG_PATH "${RTOOLS_PATH}/lib/pkgconfig")
-  # message(STATUS "  ${RTOOLS_LIBJAGS_PKGCONFIG_PATH}")
-  # set(RTOOLS_LIBJAGS_MODULES_PATH "${RTOOLS_PATH}/lib/JAGS/modules-4")
-  # message(STATUS "  ${RTOOLS_LIBJAGS_MODULES_PATH}")
-
-  # find_file(
-  #   RTOOLS_LIBJAGS_LIBJAGS_A
-  #   NAMES libjags.dll.a
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJAGS_A}")
-  # find_file(
-  #   RTOOLS_LIBJAGS_LIBJAGS_LA
-  #   NAMES libjags.la
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJAGS_LA}")
-  # find_file(
-  #   RTOOLS_LIBJAGS_LIBJRMATH_A
-  #   NAMES libjrmath.dll.a
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJRMATH_A}")
-  # find_file(
-  #   RTOOLS_LIBJAGS_LIBJRMATH_LA
-  #   NAMES libjrmath.la
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_LIBJRMATH_LA}")
-  # find_file(
-  #   RTOOLS_LIB_BLAS_DLL_A
-  #   NAMES libblas.dll.a
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIB_BLAS_DLL_A}")
-  # find_file(
-  #   RTOOLS_LIB_LAPACK_DLL_A
-  #   NAMES liblapack.dll.a
-  #   PATHS ${RTOOLS_PATH}/lib REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIB_LAPACK_DLL_A}")
-
-  # find_file(
-  #   RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE
-  #   NAMES jags-terminal.exe
-  #   PATHS ${RTOOLS_PATH}/libexec REQUIRED)
-  # message(STATUS "  ${RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE}")
-
-  # message(CHECK_PASS "found")
 
 endif()
 
