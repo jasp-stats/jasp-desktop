@@ -15,6 +15,8 @@ Importer::~Importer() {}
 
 void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
+	long timeBeginS = Utils::currentSeconds();
+	
 	DataSetPackage::pkg()->beginLoadingData();
 	
 	_synching = false;
@@ -52,6 +54,9 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	importDataSet->clearColumns();
 	delete importDataSet;
 	DataSetPackage::pkg()->endLoadingData();
+	
+	long totalS = (Utils::currentSeconds() - timeBeginS);
+	Log::log() << "Loading '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
 }
 
 void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
@@ -73,6 +78,7 @@ void Importer::initColumnWithStrings(QVariant colId, const std::string &newName,
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
 	_synching = true;
+	long timeBeginS = Utils::currentSeconds();
 	
 	ImportDataSet *	importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
@@ -135,6 +141,9 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 
 	DataSetPackage::pkg()->setManualEdits(false);
 	delete importDataSet;
+	
+	long totalS = (Utils::currentSeconds() - timeBeginS);
+	Log::log() << "Synching '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
 }
 
 void Importer::_syncPackage(

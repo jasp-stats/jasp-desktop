@@ -1589,8 +1589,6 @@ void DatabaseInterface::create()
 	}
 	else
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
-
-	dbStartUpPragmas();
 	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
@@ -1615,20 +1613,6 @@ void DatabaseInterface::load()
 	else
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
 	
-	dbStartUpPragmas();
-}
-
-void DatabaseInterface::dbStartUpPragmas()
-{
-	runStatements("pragma journal_mode = WAL;");
-	runStatements("pragma synchronous = normal;");
-}
-
-
-void DatabaseInterface::doWALCheckpoint()
-{
-	// https://www.sqlite.org/pragma.html#pragma_wal_checkpoint
-	runStatements("PRAGMA wal_checkpoint(TRUNCATE);");
 }
 
 void DatabaseInterface::close()
