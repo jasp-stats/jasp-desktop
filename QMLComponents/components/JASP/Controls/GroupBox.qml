@@ -39,10 +39,10 @@ GroupBoxBase
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing
 			property int	columns:			1
 			property bool	indent:				false
-			property bool	alignTextFields:	true
+			property bool	alignFields:	true
 			property alias	label:				label
 
-			property var	_allTextFields:		[]
+			property var	_allAlignableFields:		[]
 			property bool	_childrenConnected:	false
 
 	Label
@@ -89,14 +89,14 @@ GroupBoxBase
 		// The alignment should be done when the scaling of the TextField's are done
 		id: alignTextFieldTimer
 		interval: 50
-		onTriggered: _alignTextFields()
+		onTriggered: _alignFields()
 	}
 
 	Timer
 	{
 		id: checkFormOverflowAndAlignTimer
 		interval: 50
-		onTriggered: _alignTextFields()
+		onTriggered: _alignFields()
 	}
 
 	Component.onCompleted:
@@ -104,74 +104,74 @@ GroupBoxBase
 		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
-			if (child.hasOwnProperty('controlType') && child.controlType === JASPControl.TextField)
-				_allTextFields.push(child)
+			if (child.hasOwnProperty('controlType') && child.hasOwnProperty('controlXOffset'))//child.controlType === JASPControl.TextField)
+				_allAlignableFields.push(child)
 		}
 
 		checkFormOverflowAndAlignTimer.start()
 	}
 
-	function _alignTextFields()
+	function _alignFields()
 	{
-		if (!alignTextFields || _allTextFields.length < 1) return;
+		if (!alignFields || _allAlignableFields.length < 1) return;
 
-		var allTextFieldsPerColumn = {}
+		var allAlignableFieldsPerColumn = {}
 		var columns = [];
-		var i, j, textField;
+		var i, j, field;
 
-		for (i = 0; i < _allTextFields.length; i++)
+		for (i = 0; i < _allAlignableFields.length; i++)
 		{
-			textField = _allTextFields[i];
+			field = _allAlignableFields[i];
 			if (!_childrenConnected)
 				// Do not connect visible when component is just completed: the visible value is aparently not yet set for all children.
 				// So do it with the first time it is aligned.
-				textField.visibleChanged.connect(_alignTextFields);
+				field.visibleChanged.connect(_alignFields);
 
-			if (textField.visible)
+			if (field.visible)
 			{
-				if (!allTextFieldsPerColumn.hasOwnProperty(textField.x))
+				if (!allAlignableFieldsPerColumn.hasOwnProperty(field.x))
 				{
 					// Cannot use Layout.column to know in which column is the textField.
 					// Then its x value is used.
-					allTextFieldsPerColumn[textField.x] = []
-					columns.push(textField.x)
+					allAlignableFieldsPerColumn[field.x] = []
+					columns.push(field.x)
 				}
-				allTextFieldsPerColumn[textField.x].push(textField)
+				allAlignableFieldsPerColumn[field.x].push(field)
 			}
 		}
 
 		for (i = 0; i < columns.length; i++)
 		{
-			var textFields = allTextFieldsPerColumn[columns[i]]
+			var textFields = allAlignableFieldsPerColumn[columns[i]]
 
 			// To align all the textfields on one column:
 			// . First search for the Textfield with the longest label (its innerControl x position).
 			// . Then add an offset (the controlXOffset) to all other textfields so that they are aligned with the longest TextField
 			if (textFields.length >= 1)
 			{
-				textField = textFields[0];
-				textField.controlXOffset = 0;
-				var xMax = textField.innerControl.x;
-				var longestControl = textField.innerControl;
+				field = textFields[0];
+				field.controlXOffset = 0;
+				var xMax = field.innerControl.x;
+				var longestControl = field.innerControl;
 
 				for (j = 1; j < textFields.length; j++)
 				{
-					textField = textFields[j];
-					textField.controlXOffset = 0;
-					if (xMax < textField.innerControl.x)
+					field = textFields[j];
+					field.controlXOffset = 0;
+					if (xMax < field.innerControl.x)
 					{
-						longestControl = textField.innerControl;
-						xMax = textField.innerControl.x;
+						longestControl = field.innerControl;
+						xMax = field.innerControl.x;
 					}
 				}
 
 				for (j = 0; j < textFields.length; j++)
 				{
-					textField = textFields[j];
-					if (textField.innerControl !== longestControl)
+					field = textFields[j];
+					if (field.innerControl !== longestControl)
 						// Cannot use binding here, since innerControl.x depends on the controlXOffset,
 						// that would generate a binding loop
-						textField.controlXOffset = (xMax - textField.innerControl.x);
+						field.controlXOffset = (xMax - field.innerControl.x);
 
 				}
 			}

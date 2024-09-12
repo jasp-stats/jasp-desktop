@@ -28,8 +28,11 @@ ComboBoxBase
 	property bool	showBorder:				true
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
+	property double controlXOffset:			0
 
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
+	
+	
 
 	function resetWidth(values)
 	{
@@ -88,21 +91,24 @@ ComboBoxBase
 
 	QTC.ComboBox
 	{
-						id:				control
-						model:			comboBox.model
-						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
-						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : jaspTheme.labelSpacing
-						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
+						id:						control
+						model:					comboBox.model
+						anchors
+						{
+							top:				rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
+							left:				!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
+							leftMargin:			controlXOffset + (!rectangleLabel.visible || comboBox.setLabelAbove ? 0 : jaspTheme.labelSpacing)
+						}
 
-						focus:			true
-						padding:		2 * preferencesModel.uiScale
-						width:			0
-						height:			jaspTheme.comboBoxHeight
-						font:			jaspTheme.font
-		property bool	isEmptyValue:	comboBox.addEmptyValue && comboBox.currentIndex === 0
+						focus:					true
+						padding:				2 * preferencesModel.uiScale
+						width:					0
+						height:					jaspTheme.comboBoxHeight
+						font:					jaspTheme.font
+		property bool	isEmptyValue:			comboBox.addEmptyValue && comboBox.currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
-		property double realFieldWidth:	width
-		property double maxTextWidth:	0
+		property double realFieldWidth:			width
+		property double maxTextWidth:			0
 
 		TextMetrics
 		{
