@@ -30,7 +30,7 @@ CSVImporter::CSVImporter() : Importer()
 ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(CSVImporter::loadFile);
-
+	
 	ImportDataSet* result = new ImportDataSet(this);
 	stringvec colNames;
 	CSV csv(locator);

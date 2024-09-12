@@ -158,10 +158,7 @@ public:
 	void		transactionWriteEnd(bool rollback = false);		///< runs COMMIT or ROLLBACK based on rollback and ends the transaction.  Tracks whether nested and only does BEGIN+COMMIT at lowest depth
 	void		transactionReadBegin();							///< runs BEGIN DEFERRED and waits for sqlite to not be busy anymore if some other process is writing  Tracks whether nested and only does BEGIN+COMMIT at lowest depth
 	void		transactionReadEnd();							///< runs COMMIT and ends the transaction. Tracks whether nested and only does BEGIN+COMMIT at lowest depth
-	
-	//WAL handling, was added in https://github.com/jasp-stats/jasp-desktop/commit/4cfe6197714440b0ab6936891fa5ff7cc8ac19b6, see docs: https://www.sqlite.org/wal.html
-	void		doWALCheckpoint(); ///< Writes all pending changes to the db-file
-	
+		
 private:
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility
 	double		_doubleTroubleReader(sqlite3_stmt *stmt, int colI);					///< The reading counterpart to _doubleTroubleBinder to convert string representations of NAN, INF and NEG_INF back to double
@@ -172,7 +169,6 @@ private:
 	void		load();											///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 	void		close();										///< Closes the loaded database and disconnects
 	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
-	void		dbStartUpPragmas();
 
 	int			_transactionWriteDepth	= 0,
 				_transactionReadDepth	= 0;
