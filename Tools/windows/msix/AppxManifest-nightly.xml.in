@@ -55,6 +55,8 @@
             <uap:FileType>.csv</uap:FileType>
             <uap:FileType>.sav</uap:FileType>
             <uap:FileType>.ods</uap:FileType>
+            <uap:FileType>.xls</uap:FileType>
+            <uap:FileType>.xlsx</uap:FileType>
             <uap:FileType>.zsav</uap:FileType>
             <uap:FileType>.xpt</uap:FileType>
             <uap:FileType>.por</uap:FileType>

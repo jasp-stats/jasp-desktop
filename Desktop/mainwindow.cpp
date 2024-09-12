@@ -1738,7 +1738,7 @@ bool MainWindow::startDataEditorHandler()
 			else
 			{
 				QString caption = "Find Data File";
-				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods)";
+				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
 
 				dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
 				if (dataFilePath == "")

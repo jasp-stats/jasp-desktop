@@ -34,7 +34,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 	ImportDataSet* result = new ImportDataSet(this);
 	stringvec colNames;
 	CSV csv(locator);
-	csv.open();
+    csv.open();
 
 	csv.readLine(colNames);
 	vector<CSVImportColumn *> importColumns;

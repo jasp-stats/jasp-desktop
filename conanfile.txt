@@ -18,6 +18,7 @@ brotli/1.0.9
 sqlite3/3.46.0
 gmp/6.3.0
 mpfr/4.2.1
+freexl/2.0.0
 
 [generators]
 CMakeDeps

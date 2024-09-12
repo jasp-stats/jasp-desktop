@@ -172,7 +172,7 @@ void FileMenu::sync()
 						tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
 				return;
 	
-			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.zsav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
+			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.zsav *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
 		}
 	
 		_mainWindow->setCheckAutomaticSync(false);

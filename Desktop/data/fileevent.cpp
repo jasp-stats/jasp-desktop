@@ -129,7 +129,9 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::txt:
 		case Utils::FileType::tsv:
 		case Utils::FileType::ods:		return tr("Importing Data from %1").arg(FileTypeBaseToQString(_type).toUpper());
-		case Utils::FileType::sav:
+		case Utils::FileType::xls:
+		case Utils::FileType::xlsx:		return tr("Importing Excel File");
+        case Utils::FileType::sav:
 		case Utils::FileType::zsav:
 		case Utils::FileType::por:		return tr("Importing SPSS File");
 		case Utils::FileType::xpt:
