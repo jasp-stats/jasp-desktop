@@ -73,8 +73,16 @@ set(MSIX_SIGN_CERT_PASSWORD
   CACHE STRING "Password selfsign cert for Nightlies")
 
 set(R_PKG_CELLAR_PATH
+  "${CMAKE_SOURCE_DIR}/cellar/"
+  CACHE STRING "Set the path for an renv package cellar to be used during build phase. Changing this disables the use of a remote cellar")
+
+set(R_PKG_CELLAR_REMOTE
   ""
-  CACHE STRING "Set the path for an renv package cellar to be used during build phase")
+  CACHE STRING "URL to downloand a remote package cellar from (Make it https). If not set a platform default will be set by cmake")
+
+set(R_PKG_CELLAR_DOWNLOAD_REMOTE
+  ON
+  CACHE BOOL "Disable Downloading off a remote renv package cellar to use")
 
 set(RPKG_DOWNLOAD_ONLY
   OFF
@@ -105,6 +113,29 @@ if(FLATPAK_USED AND LINUX)
 endif()
 
 message(STATUS "CRAN mirror: ${R_REPOSITORY}")
+
+#this handles the cellar download.
+if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_SOURCE_DIR}/cellar/" AND NOT EXISTS "${CMAKE_SOURCE_DIR}/cellar/")
+  #set appropriate default remote if needed
+  if(R_PKG_CELLAR_REMOTE STREQUAL "")
+    if(APPLE)
+      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_AMD64_latest.tar.gz")
+      if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+        SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_arm64_latest.tar.gz")
+      endif()
+    elseif(WIN32)
+      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_Windows_latest.tar.gz")
+    endif()
+  endif()
+
+  #download and extract the cellar
+  if(NOT R_PKG_CELLAR_REMOTE STREQUAL "")
+    message(STATUS "Remote cellar: ${R_PKG_CELLAR_REMOTE}")
+    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/cellar/") 
+    file(DOWNLOAD "${R_PKG_CELLAR_REMOTE}" "${CMAKE_SOURCE_DIR}/cellar.tar.gz" TLS_VERIFY ON)
+    file(ARCHIVE_EXTRACT INPUT "${CMAKE_SOURCE_DIR}/cellar.tar.gz" DESTINATION "${CMAKE_SOURCE_DIR}")
+  endif()
+endif()
 
 # This one is GLOBAL
 # should be off for flatpak though because it is always build in debug mode (but the symbols are split off)
