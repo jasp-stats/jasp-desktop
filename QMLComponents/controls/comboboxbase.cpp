@@ -118,6 +118,9 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 
 void ComboBoxBase::setUp()
 {
+	if (property("fieldWidth").toInt() > 0) // If the fieldWidth is set, it means the width should be fixed and not dependent on the values of the dropdown.
+		_fixedWidth = true;
+
 	JASPListControl::setUp();
 
 	_model->resetTermsFromSources();
