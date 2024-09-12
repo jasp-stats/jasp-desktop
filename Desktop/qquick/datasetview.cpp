@@ -80,6 +80,7 @@ void DataSetView::setModel(QAbstractItemModel * model)
 		connect(model,				&QAbstractItemModel::modelAboutToBeReset,		this, &DataSetView::modelAboutToBeReset			);
 
 		connect(_selectionModel,	&QItemSelectionModel::selectionChanged,			this, &DataSetView::selectionChanged);
+		connect(_selectionModel,	&QItemSelectionModel::currentColumnChanged,		this, &DataSetView::currentSelectedColumnHandler);
 
 		connect(model,				&QAbstractItemModel::columnsAboutToBeInserted,	this, &DataSetView::columnsAboutToBeInserted	);
 		connect(model,				&QAbstractItemModel::columnsAboutToBeRemoved,	this, &DataSetView::columnsAboutToBeRemoved		);
@@ -1548,6 +1549,13 @@ void DataSetView::resizeData(int rows, int columns)
 {
 	// Argument row and column of the resize method are indices
 	_model->resize(rows - 1, columns - 1, false, tr("Resize data to %1 rows and %2 columns").arg(rows).arg(columns));
+}
+
+void DataSetView::currentSelectedColumnHandler(const QModelIndex &current, const QModelIndex &previous)
+{
+	int selectedColumn = current.column();
+	if (selectedColumn >= 0)
+		emit DataSetPackage::pkg()->chooseColumn(selectedColumn);
 }
 
 void DataSetView::columnReverseValues(int columnIndex)

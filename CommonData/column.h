@@ -44,12 +44,17 @@ public:
 	typedef std::map<std::pair<std::string, std::string>, Label*>	LabelByStrStr;
 
 									Column(DataSet * data, int id = -1);
+private:
+									Column(DataSet * data, int id, columnType colType, computedColumnType computedType, bool autoSort);
+
+public:									
+			static Column *			addColumn(DataSet* data, int index = -1, const std::string & name = "", columnType colType = columnType::scale, computedColumnType computedType = computedColumnType::notComputed, bool alterDataSetTable = true);
+			static Column *			loadColumn(DataSet* data, int index);
 									~Column();
 									
 				DatabaseInterface & db();
 		const	DatabaseInterface & db() const;
 
-			void					dbCreate(	int index);
 			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
 			void					dbLoadIndex(int index, bool getValues = true);
 			void					dbUpdateComputedColumnStuff();
@@ -72,7 +77,7 @@ public:
 			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
 			void					setCompColStuff(	bool				invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
-			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
+			void					setDefaultValues();
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
@@ -242,7 +247,8 @@ protected:
 			columnTypeChangeResult	_changeColumnToScale();
 			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
 			void					_resetLabelValueMap();
-			doublevec				valuesNumericOrdered();			
+			doublevec				valuesNumericOrdered();
+			stringvec				valuesAlphabeticOrdered();
 
 private:
 			DataSet			* const	_data;

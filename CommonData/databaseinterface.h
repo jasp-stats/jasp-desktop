@@ -112,7 +112,7 @@ public:
 
 	//Columns & Data/Values
 	//Index stuff:
-	int			columnInsert(			int dataSetId, int index = -1, const std::string & name = "", columnType colType = columnType::unknown, bool alterTable=true);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
+	int			columnInsert(			int dataSetId, int index, columnType colType, computedColumnType computedType, bool autoSort, bool alterTable=true);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
 	int			columnLastFreeIndex(	int dataSetId);
 	void		columnIndexIncrements(	int dataSetId, int index);																			///< If index already is in use that column and all after are incremented by 1
 	void		columnIndexDecrements(	int dataSetId, int index);																			///< Indices bigger than index are decremented, assumption is that the previous one using it has been removed already

@@ -191,7 +191,7 @@ public:
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const intvec & colTypes, const QStringList & colNames, const std::vector<boolvec> & selected = {}); ///< If selected.size() >0 it is assumed to be the same size as labels/values. And it will make sure that it will only overwrite values where it is `true`
 
-				void						columnSetDefaultValues(	const std::string	& columnName, columnType colType = columnType::unknown, bool emitSignals = true);
+				void						columnSetDefaultValues(	const std::string	& columnName, bool emitSignals = true);
 				Column *					createColumn(			const std::string	& name,		columnType colType);
 				Column *					createComputedColumn(	const std::string	& name,		columnType type, computedColumnType desiredType, Analysis * analysis = nullptr);
 				void						renameColumn(			const std::string	& oldColumnName, const std::string & newColumnName);

@@ -172,25 +172,26 @@ void DataSet::removeColumn(const std::string & name)
 		}
 }
 
-void DataSet::insertColumn(size_t index,	bool alterDataSetTable)
+Column* DataSet::insertColumn(size_t index, bool alterDataSetTable, const std::string & name, columnType colType, computedColumnType computedType)
 {
-
 	assert(_dataSetID > 0);
 
-	Column * newColumn = new Column(this, db().columnInsert(_dataSetID, index, "", columnType::unknown, alterDataSetTable));
+	Column * newColumn = Column::addColumn(this, index, name, colType, computedType, alterDataSetTable);
 
 	_columns.insert(_columns.begin()+index, newColumn);
 
 	newColumn->setRowCount(_rowCount);
+	newColumn->setDefaultValues();
 
 	incRevision();
+
+	return newColumn;
 }
 
 Column * DataSet::newColumn(const std::string &name)
 {
 	assert(_dataSetID > 0);
-	Column * col = new Column(this, db().columnInsert(_dataSetID, -1, name));
-	col->setName(name);
+	Column * col = Column::addColumn(this, -1, name);
 
 	_columns.push_back(col);
 
@@ -281,9 +282,9 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, boo
 	for(size_t i=0; i<colCount; i++)
 	{
 		if(_columns.size() == i)
-			_columns.push_back(new Column(this));
-
-		_columns[i]->dbLoadIndex(i, false);
+			_columns.push_back(Column::loadColumn(this, i));
+		else
+			_columns[i]->dbLoadIndex(i, false);
 		
 		progressCallback(0.2 + (i * colProgressMult * 0.3)); //should end at 0.5
 	}

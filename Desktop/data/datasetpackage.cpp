@@ -1882,7 +1882,7 @@ void DataSetPackage::labelReverse(size_t colIdx)
 	emit labelsReordered(tq(column->name()));
 }
 
-void DataSetPackage::columnSetDefaultValues(const std::string & columnName, columnType columnType, bool emitSignals)
+void DataSetPackage::columnSetDefaultValues(const std::string & columnName, bool emitSignals)
 {
 	if(!_dataSet)
 		return;
@@ -1892,7 +1892,7 @@ void DataSetPackage::columnSetDefaultValues(const std::string & columnName, colu
 	if(colIndex >= 0)
 	{
 		Column * column = _dataSet->columns()[colIndex];
-		column->setDefaultValues(columnType);
+		column->setDefaultValues();
 
 		QModelIndex p = indexForSubNode(_dataSet->dataNode());
 
@@ -2027,13 +2027,12 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), columnIndex, columnIndex);
 #endif
 
-	_dataSet->insertColumn(columnIndex);
-	
-	Column * column = _dataSet->column(columnIndex);
 
-	column->setName(			props.contains("name")		? fq(props["name"].toString())					: freeNewColumnName(columnIndex)	);
-	column->setDefaultValues(	props.contains("type")		? columnType(props["type"].toInt())				: columnType::scale					);
-	column->setCodeType(		props.contains("computed")	? computedColumnType(props["computed"].toInt())	: computedColumnType::notComputed	);
+	std::string name =				props.contains("name")		? fq(props["name"].toString())					: freeNewColumnName(columnIndex);
+	columnType	colType =			props.contains("type")		? columnType(props["type"].toInt())				: columnType::scale;
+	computedColumnType codeType =	props.contains("computed")	? computedColumnType(props["computed"].toInt())	: computedColumnType::notComputed;
+
+	Column * column = _dataSet->insertColumn(columnIndex, true, name, colType, codeType);
 
 	_dataSet->incRevision();
 
@@ -2075,10 +2074,8 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 
 	for(int c = column; c<column+count; c++)
 	{
-		_dataSet->insertColumn(c);
 		const std::string & name = freeNewColumnName(c);
-		_dataSet->column(c)->setName(name);
-		_dataSet->column(c)->setDefaultValues(columnType::scale);
+		_dataSet->insertColumn(c, true, name, columnType::scale);
 
 		changed.push_back(name);
 	}
@@ -2227,9 +2224,7 @@ Column * DataSetPackage::createColumn(const std::string & name, columnType colum
 
 	enginesPrepareForData();
 	beginResetModel();
-	_dataSet->insertColumn(newColumnIndex);
-	_dataSet->column(newColumnIndex)->setName(name);
-	_dataSet->column(newColumnIndex)->setDefaultValues(columnType);
+	_dataSet->insertColumn(newColumnIndex, true, name, columnType);
 	endResetModel();
 	enginesReceiveNewData();
 

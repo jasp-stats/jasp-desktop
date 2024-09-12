@@ -38,7 +38,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool 		isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
 	Q_PROPERTY(bool			compactMode					READ compactMode				WRITE setCompactMode			NOTIFY compactModeChanged				)
 	Q_PROPERTY(bool			autoSort					READ autoSort					WRITE setAutoSort				NOTIFY autoSortChanged					)
-	Q_PROPERTY(int			firstNonNumericRow			READ firstNonNumericRow											NOTIFY firstNonNumericRowChanged		) //Only works when autosort is on
+	Q_PROPERTY(bool			hasSeveralNumericValues		READ hasSeveralNumericValues									NOTIFY hasSeveralNumericValuesChanged	) //Only works when autosort is on
 	Q_PROPERTY(int			rowsTotal					READ rowsTotal													NOTIFY rowsTotalChanged					)
 
 public:
@@ -58,7 +58,7 @@ public:
 	QVariantList	columnTypeValues()				const;
 	bool			useCustomEmptyValues()			const;
 	QStringList		emptyValues()					const;
-	int				firstNonNumericRow()			const;
+	bool			hasSeveralNumericValues()		const;
 	int				rowsTotal()						const;
 
 
@@ -158,7 +158,7 @@ signals:
 	void isVirtualChanged();
 	void compactModeChanged();
 	void autoSortChanged();
-	void firstNonNumericRowChanged();
+	void hasSeveralNumericValuesChanged();
 	
 private:
 	std::vector<qsizetype>	getSortedSelection()					const;

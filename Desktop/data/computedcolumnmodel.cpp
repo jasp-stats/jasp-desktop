@@ -249,7 +249,7 @@ void ComputedColumnModel::computeColumnFailed(QString columnNameQ, QString error
 	if(areLoopDependenciesOk(columnName) && column->setError(error) && shouldNotifyQML)
 		emit computeColumnErrorChanged();
 
-	DataSetPackage::pkg()->columnSetDefaultValues(columnName, columnType::unknown, false);
+	DataSetPackage::pkg()->columnSetDefaultValues(columnName, false);
 	emit refreshColumn(columnNameQ);
 
 	validate(tq(columnName));

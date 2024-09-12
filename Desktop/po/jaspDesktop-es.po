@@ -5208,8 +5208,8 @@ msgid "Order labels by value by default"
 msgstr "Ordenar las etiquetas según valor, por defecto"
 
 msgctxt "LabelEditorWindow|"
-msgid "Automatically order labels by their numeric value"
-msgstr "Ordenar automaticamente las etiquetas según su valor numérico"
+msgid "Automatically order labels by their value"
+msgstr "Ordenar automaticamente las etiquetas según su valor"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of the labels with non-numeric values"

@@ -441,11 +441,11 @@ void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> & v
 	transactionWriteEnd();
 }
 
-int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string & name, columnType colType, bool alterTable)
+int DatabaseInterface::columnInsert(int dataSetId, int index, columnType colType, computedColumnType computedType, bool autoSort, bool alterTable)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnInsert);
 	transactionWriteBegin();
-	
+
 	if(index == -1)	index = columnLastFreeIndex(dataSetId);
 	else			columnIndexIncrements(dataSetId, index);
 
@@ -454,14 +454,17 @@ int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string 
 #endif
 
 	//Create column entry
-	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
+	int columnId = runStatementsId("INSERT INTO Columns (dataSet, columnType, codeType, autoSortByValue, colIdx, analysisId) VALUES (?, ?, ?, ?, ?, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
 	{
 		sqlite3_bind_int(stmt,	1, dataSetId);
-		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
 
 		std::string colT = columnTypeToString(colType);
-		sqlite3_bind_text(stmt, 3, colT.c_str(), colT.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	4, index);
+		std::string codeT = computedColumnTypeToString(computedType);
+
+		sqlite3_bind_text(stmt, 2, colT.c_str(), colT.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 3, codeT.c_str(), codeT.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	4, autoSort);
+		sqlite3_bind_int(stmt,	5, index);
 	});
 
 #ifdef SIR_LOG_A_LOT

@@ -17,7 +17,7 @@ void Column::setAutoSortByValuesByDefault(bool autoSort)
 	_autoSortByValuesByDefault = autoSort;
 }
 
-Column::Column(DataSet * data, int id)
+Column::Column(DataSet * data, int id, columnType colType, computedColumnType computedType, bool autoSort)
 :	DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
 	_data(				data),
 	_id(				id),
@@ -29,19 +29,32 @@ Column::Column(DataSet * data, int id)
 		db().columnSetAutoSort(_id, _autoSortByValue); //Store autosort in db
 }
 
+
+Column* Column::addColumn(DataSet * data, int index, const std::string& name, columnType colType, computedColumnType computedType, bool alterDataSetTable)
+{
+	int id = data->db().columnInsert(data->id(), index, colType, computedType, Column::autoSortByValuesByDefault());
+	Column* col = new Column(data, id, colType, computedType, Column::autoSortByValuesByDefault());
+
+	if (!name.empty())
+		col->setName(name);
+
+	return col;
+}
+
+Column* Column::loadColumn(DataSet * data, int index)
+{
+	Column* col = new Column(data, index, columnType::unknown, computedColumnType::notComputed, Column::autoSortByValuesByDefault());
+	col->dbLoadIndex(index, false);
+
+	return col;
+}
+
+
 Column::~Column()
 {
 	labelsTempReset();
 	delete _emptyValues;
 	delete _doubleDummy;
-}
-
-void Column::dbCreate(int index)
-{
-	JASPTIMER_SCOPE(Column::dbCreate);
-
-	assert(_id == -1);
-	db().columnInsert(_id, index);
 }
 
 void Column::dbLoad(int id, bool getValues)
@@ -391,18 +404,17 @@ columnTypeChangeResult Column::changeType(columnType colType)
 		if(codeType() == computedColumnType::analysis)
 			return columnTypeChangeResult::generatedFromAnalysis;
 
-		setDefaultValues(colType);
+		if (colType != columnType::unknown)
+			setType(colType);
+		setDefaultValues();
 		invalidate();
 		return columnTypeChangeResult::changed;	
 	}
 }
 
-void Column::setDefaultValues(enum columnType columnType)
+void Column::setDefaultValues()
 {
 	JASPTIMER_SCOPE(Column::setDefaultValues);
-
-	if(columnType != columnType::unknown)
-		setType(columnType);
 	
 	for(size_t i=0; i<_ints.size(); i++)
 	{
@@ -1719,7 +1731,7 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	bool replaceAllDoubles = false;
 	static double dummy;
 	
-	for(Label * label : labels())	
+	for(Label * label : labels())
 		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
 		{
 				replaceAllDoubles = true;
@@ -1729,24 +1741,43 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	if(replaceAllDoubles)
 		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
-	doublevec				asc			= valuesNumericOrdered();
-	size_t					curMax		= asc.size()+1;
-	std::map<double, int>	orderMap;
-	
-	for(size_t i=0; i<asc.size(); i++)
-		orderMap[asc[i]] = i;
-	
-	//and now to write them back into the data
-	for(Label * label : _labels)
+	doublevec asc = valuesNumericOrdered();
+
+	if (asc.empty())
 	{
-		double	aValue	= EmptyValues::missingValueDouble;
-		
-		if(label->originalValue().isDouble())
-			aValue = label->originalValue().asDouble();
-		else 
-			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
-		
-		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
+		stringvec					orderedstrings	= valuesAlphabeticOrdered();
+		size_t						curMax			= orderedstrings.size()+1;
+		std::map<std::string, int>	orderMap;
+
+		for(size_t i=0; i<orderedstrings.size(); i++)
+			orderMap[orderedstrings[i]] = i;
+
+		for(Label * label : _labels)
+		{
+			std::string	aValue = label->originalValueAsString();
+			label->setOrder(!isEmptyValue(aValue) ? orderMap[aValue] : curMax++);
+		}
+	}
+	else
+	{
+		size_t					curMax		= asc.size()+1;
+		std::map<double, int>	orderMap;
+
+		for(size_t i=0; i<asc.size(); i++)
+			orderMap[asc[i]] = i;
+
+		//and now to write them back into the data
+		for(Label * label : _labels)
+		{
+			double	aValue	= EmptyValues::missingValueDouble;
+
+			if(label->originalValue().isDouble())
+				aValue = label->originalValue().asDouble();
+			else
+				ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
+
+			label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
+		}
 	}
 	
 	_sortLabelsByOrder();
@@ -1773,6 +1804,20 @@ doublevec Column::valuesNumericOrdered()
 	}
 	
 	return doublevec(values.begin(), values.end());
+}
+
+stringvec Column::valuesAlphabeticOrdered()
+{
+	stringset	values;
+
+	for(const Label * label : _labels)
+	{
+		std::string	aValue	= label->originalValueAsString();
+		if (!isEmptyValue(aValue))
+			values.insert(aValue);
+	}
+
+	return stringvec(values.begin(), values.end());
 }
 
 void Column::valuesReverse()

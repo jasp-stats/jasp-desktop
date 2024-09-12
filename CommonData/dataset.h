@@ -44,7 +44,7 @@ public:
 			void			removeColumn(	const	std::string &	name	);
 			void			removeColumn(			size_t			index	);
 			void			removeColumnById(		size_t			id		);
-			void			insertColumn(			size_t			index,	bool alterDataSetTable = true);
+			Column		*	insertColumn(size_t index, bool alterDataSetTable = true, const std::string & name = "", columnType colType = columnType::unknown, computedColumnType computedType = computedColumnType::notComputed);
 			Column		*	newColumn(		const	std::string &	name);
 			int				getColumnIndex(	const	std::string &	name	) const;
 			int				columnIndex(	const	Column		*	col		) const;

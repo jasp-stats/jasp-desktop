@@ -5163,8 +5163,8 @@ msgid "Order labels by value by default"
 msgstr "Standaard labels ordenen op waarde"
 
 msgctxt "LabelEditorWindow|"
-msgid "Automatically order labels by their numeric value"
-msgstr "Labels automatisch ordenen op hun numerieke waarde"
+msgid "Automatically order labels by their value"
+msgstr "Labels automatisch ordenen op hun waarde"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of the labels with non-numeric values"

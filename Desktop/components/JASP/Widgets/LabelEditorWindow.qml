@@ -57,7 +57,7 @@ FocusScope
 					target:		columnModel
 					function	onChosenColumnChanged()
 					{
-						levelsTableView.lastRow = -1;
+						levelsTableView.selectedRow = -1;
 					}
 				}
 
@@ -65,7 +65,7 @@ FocusScope
 				property real	remainingWidth:	width - filterColWidth
 				property real	valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
 				property real	labelColWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property int	lastRow:		-1
+				property int	selectedRow:	-1
 				
 
 				columnHeaderDelegate:	Item
@@ -129,7 +129,7 @@ FocusScope
 				{
 					id:						backgroundItem
 					
-					onActiveFocusChanged:	if(activeFocus)	levelsTableView.lastRow = rowIndex
+					onActiveFocusChanged:	if(activeFocus)	levelsTableView.selectedRow = rowIndex
 
 					MouseArea
 					{
@@ -440,7 +440,7 @@ FocusScope
 					iconSource:		jaspTheme.iconPath +  "menu-column-order-by-values.svg"
 					onClicked:		{ forceActiveFocus(); columnModel.toggleAutoSortByValues(); }
 	
-					toolTip:		qsTr("Automatically order labels by their numeric value")
+					toolTip:		qsTr("Automatically order labels by their value")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
@@ -458,7 +458,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		!columnModel.autoSort || columnModel.firstNonNumericRow > 1 //if there are at least 2 numerics we have something to reverse
+					visible:		columnModel.hasSeveralNumericValues //if there are at least 2 numerics we have something to reverse
 				}
 				
 				RoundedButton
@@ -466,41 +466,41 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
 					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
-					toolTip:		columnModel.autoSort ? qsTr("Reverse order of the labels with non-numeric values") : qsTr("Reverse order of all labels")
+					toolTip:		qsTr("Reverse order of all labels")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to reverse
-					
+					visible:		!columnModel.autoSort
+					enabled:		columnModel.rowCount() > 1
 				}
 	
 				RoundedButton
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.lastRow--; }
-					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels up") : qsTr("Move selected labels up") 
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.selectedRow--; }
+					toolTip:		qsTr("Move selected labels up")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		levelsTableView.lastRow == -1 ? false : columnModel.firstNonNumericRow < levelsTableView.lastRow
-					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move up
+					enabled:		levelsTableView.selectedRow > 0
+					visible:		!columnModel.autoSort
 				}
 	
 				RoundedButton
 				{
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 	
-					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.lastRow++; }
-					toolTip:		columnModel.autoSort ? qsTr("Move selected non-numeric labels down") : qsTr("Move selected labels down")
+					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.selectedRow++; }
+					toolTip:		qsTr("Move selected labels down")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		levelsTableView.lastRow == -1  ? false :  ((columnModel.firstNonNumericRow <= levelsTableView.lastRow) && ( levelsTableView.lastRow < columnModel.rowsTotal - 1 ))
-					visible:		!columnModel.autoSort || columnModel.rowsTotal - columnModel.firstNonNumericRow > 1 //If there are at least 2 non numerics there is something to move down
+					enabled:		levelsTableView.selectedRow >= 0 && levelsTableView.selectedRow < columnModel.rowCount() - 1
+					visible:		!columnModel.autoSort
 				}
 	
 				RoundedButton

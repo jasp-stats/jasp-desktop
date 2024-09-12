@@ -5202,8 +5202,8 @@ msgid "Order labels by value by default"
 msgstr "Standardmäßig Beschriftungen nach Wert sortieren"
 
 msgctxt "LabelEditorWindow|"
-msgid "Automatically order labels by their numeric value"
-msgstr "Automatisch Beschriftungen nach deren numerischen Wert sortieren"
+msgid "Automatically order labels by their value"
+msgstr "Automatisch Beschriftungen nach deren Wert sortieren"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of the labels with non-numeric values"
