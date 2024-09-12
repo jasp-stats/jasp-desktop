@@ -35,6 +35,8 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString		startValue				READ startValue				WRITE setStartValue			NOTIFY startValueChanged			)
 	Q_PROPERTY( QString		currentColumnType		READ currentColumnType									NOTIFY currentColumnTypeChanged		)
 	Q_PROPERTY( QString		currentColumnTypeIcon	READ currentColumnTypeIcon								NOTIFY currentColumnTypeIconChanged	)
+	Q_PROPERTY( bool		fixedWidth				READ fixedWidth											NOTIFY fixedWidthChanged			)
+
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
 
@@ -53,6 +55,7 @@ public:
 	const QString&		currentColumnType()							const				{ return _currentColumnType;	}
 	const QString&		currentColumnTypeIcon()						const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()								const				{ return _currentIndex;			}
+	bool				fixedWidth()								const				{ return _fixedWidth;			}
 
 	std::vector<std::string> usedVariables()						const	override;
 
@@ -65,6 +68,7 @@ signals:
 	void currentColumnTypeIconChanged();
 	void currentIndexChanged();
 	void activated(int index);
+	void fixedWidthChanged();
 
 protected slots:
 	void termsChangedHandler() override;
@@ -84,6 +88,7 @@ protected:
 								_currentColumnRealType,
 								_currentColumnTypeIcon;
 	int							_currentIndex			= -1;
+	bool						_fixedWidth				= false;
 
 	int	 _getStartIndex()											const;
 	void _resetItemWidth();

@@ -19,7 +19,7 @@ ComboBoxBase
 	property alias	currentLabel:			comboBox.currentText
 	property alias	value:					comboBox.currentValue
 	property alias	indexDefaultValue:		comboBox.currentIndex
-	property alias	fieldWidth:				control.modelWidth
+	property alias	fieldWidth:				control.width
 	property bool	showVariableTypeIcon:	containsVariables
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
@@ -28,8 +28,11 @@ ComboBoxBase
 	property bool	showBorder:				true
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
+	property double controlXOffset:			0
 
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
+	
+	
 
 	function resetWidth(values)
 	{
@@ -55,13 +58,16 @@ ComboBoxBase
 		_resetWidth(maxWidth)
 	}
 
-	function _resetWidth(maxWidth)
+	function _resetWidth(maxTextWidth)
 	{
-		var newWidth = maxWidth + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
-		control.modelWidth = newWidth;
-		if (control.width < controlMinWidth)
-			control.modelWidth += (controlMinWidth - control.width);
-		comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
+		control.maxTextWidth = maxTextWidth
+		// The real field width is composed by the type icon (if displayed) + 2-padding + max width + 5-padding + dropdownIcon width + 2-padding
+		var newFieldWidth = (comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width : 0) + maxTextWidth + dropdownIcon.width + 9 * preferencesModel.uiScale
+		if (newFieldWidth < controlMinWidth)
+			newFieldWidth = controlMinWidth
+
+		control.realFieldWidth = newFieldWidth
+		if (!fixedWidth) control.width = newFieldWidth;
     }
 
 	Component.onCompleted:	control.activated.connect(activated);
@@ -85,22 +91,24 @@ ComboBoxBase
 
 	QTC.ComboBox
 	{
-						id:				control
-						model:			comboBox.model
-						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
-						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : jaspTheme.labelSpacing
-						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
+						id:						control
+						model:					comboBox.model
+						anchors
+						{
+							top:				rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
+							left:				!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
+							leftMargin:			controlXOffset + (!rectangleLabel.visible || comboBox.setLabelAbove ? 0 : jaspTheme.labelSpacing)
+						}
 
-						focus:			true
-						padding:		2 * preferencesModel.uiScale //jaspTheme.jaspControlPadding
-
-						width:			modelWidth + extraWidth
-						height:			jaspTheme.comboBoxHeight
-						font:			jaspTheme.font
-		property int	modelWidth:		30 * preferencesModel.uiScale
-		property int	extraWidth:		5 * padding + dropdownIcon.width
-		property bool	isEmptyValue:	comboBox.addEmptyValue && comboBox.currentIndex === 0
+						focus:					true
+						padding:				2 * preferencesModel.uiScale
+						width:					0
+						height:					jaspTheme.comboBoxHeight
+						font:					jaspTheme.font
+		property bool	isEmptyValue:			comboBox.addEmptyValue && comboBox.currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
+		property double realFieldWidth:			width
+		property double maxTextWidth:			0
 
 		TextMetrics
 		{
@@ -123,8 +131,8 @@ ComboBoxBase
 			{
 				id:						contentIcon
 				height:					15 * preferencesModel.uiScale
-				width:					15 * preferencesModel.uiScale
-				x:						3  * preferencesModel.uiScale
+				width:					15 * preferencesModel.uiScale // Even if not visible, the width should stay the same: if showVariableTypeIcon is true, a value may have no icon, but an empty icon place should still be displayed
+				x:						2  * preferencesModel.uiScale
 				anchors.verticalCenter: parent.verticalCenter
 				source:					!visible ? "" : ((comboBox.currentColumnTypeIcon && comboBox.isBound) ? comboBox.currentColumnTypeIcon : (comboBox.values && comboBox.currentIndex >= 0 && comboBox.currentIndex < comboBox.values.length ? comboBox.values[comboBox.currentIndex].columnTypeIcon : ""))
 				visible:				comboBox.showVariableTypeIcon && !control.isEmptyValue && (comboBox.currentColumnType || !comboBox.isBound)
@@ -133,19 +141,24 @@ ComboBoxBase
 			Text
 			{
 				anchors.left:				contentIcon.visible ? contentIcon.right : parent.left
-				anchors.leftMargin:			4 * preferencesModel.uiScale
+				anchors.leftMargin:			2 * preferencesModel.uiScale
 				anchors.verticalCenter:		parent.verticalCenter
 				anchors.horizontalCenter:	control.showEmptyValueStyle ? parent.horizontalCenter : undefined
 				text:						comboBox.currentText
 				font:						control.font
 				color:						(!enabled || control.showEmptyValueStyle) ? jaspTheme.grayDarker : jaspTheme.black
+				width:						(fixedWidth ? widthWhenContralHasFixedWidth : control.maxTextWidth) + 5 * preferencesModel.uiScale
+				elide:						Text.ElideRight
+
+				property double widthWhenContralHasFixedWidth: control.width - (x + dropdownIcon.width + 4 * preferencesModel.uiScale) // 4 = leftMargin + 2 padding right of dropdownIcon)
+
 			}
 		}
 
 		indicator: Image
 		{
 			id:			dropdownIcon
-			x:			control.width - width - 3 //control.spacing
+			x:			control.width - width - 2 * preferencesModel.uiScale
 			y:			control.topPadding + (control.availableHeight - height) / 2
 			width:		12 * preferencesModel.uiScale
 			height:		12 * preferencesModel.uiScale
@@ -180,7 +193,7 @@ ComboBoxBase
 		{
 			id:				popupRoot
 			y:				control.height
-			width:			comboBoxBackground.width + scrollBar.width
+			width:			Math.max(control.realFieldWidth, fieldWidth) + scrollBar.width
 
 			property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
 																			 : (typeof rcmdRoot !== 'undefined' ? rcmdRoot.height // Case Dropdown used in R Command
@@ -211,7 +224,7 @@ ComboBoxBase
 			contentItem: ListView
 			{
 				id:				popupView
-				width:			comboBoxBackground.width
+				width:			popupRoot.width - scrollBar.width
 				height:			popupRoot.height
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
@@ -239,14 +252,13 @@ ComboBoxBase
 		delegate: QTC.ItemDelegate
 		{
 			height:									jaspTheme.comboBoxHeight
-			implicitWidth:							comboBoxBackground.width
+			width:									popupView.width
 			enabled:								comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
 
 			contentItem: Rectangle
 			{
 				id:									itemRectangle
 				anchors.fill:						parent
-				anchors.rightMargin:				scrollBar.visible ? scrollBar.width + 2 : 0
 				color:								comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
 
 				property bool isEmptyValue:			comboBox.addEmptyValue && index === 0
