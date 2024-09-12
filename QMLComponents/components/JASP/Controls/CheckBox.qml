@@ -16,10 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3 as L
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls as QtC
+import JASP
 
 
 CheckBoxBase
@@ -44,7 +43,6 @@ CheckBoxBase
 			property alias	fontInfo:				label.fontInfo
 			property alias	label:					control.text
 			property alias	labelTextFormat:		label.textFormat
-			property string toolTip:                ""
 			property alias	checked:				control.checked
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
@@ -54,22 +52,7 @@ CheckBoxBase
 	function click()	{ control.toggle(); }
 	function toggle()	{ control.toggle(); }
 
-	MouseArea
-	{
-		id:					hoverMe
-		anchors.fill:		parent
-		hoverEnabled:		true
-	}
-
-	ToolTip
-	{
-		text: 		checkBox.toolTip
-		timeout:	jaspTheme.toolTipTimeout
-		delay:		jaspTheme.toolTipDelay
-		visible:	checkBox.toolTip !== "" &&  (hoverMe.containsMouse || control.hovered)
-	}
-
-	CheckBox
+	QtC.CheckBox
 	{
 		id:						control
 		padding:				jaspTheme.jaspControlPadding

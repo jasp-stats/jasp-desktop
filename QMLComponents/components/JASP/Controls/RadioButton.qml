@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.11
-import QtQuick.Controls	2.4
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls	as QtC
+import JASP
 
 
 RadioButtonBase
@@ -41,7 +41,6 @@ RadioButtonBase
 	property alias	childrenArea:			childControlsArea
 	property alias	text:					control.text
 	property alias	label:					control.text
-	property string toolTip:                ""
 	property alias	checked:				control.checked
 	property alias	value:					radioButton.name
 	property bool	childrenOnSameRow:		false
@@ -52,22 +51,7 @@ RadioButtonBase
 	function click() { clicked(); }
 	onClicked: { radioButton.clickHandler(); }
 
-	MouseArea
-	{
-		id:					hoverMe
-		anchors.fill:		parent
-		hoverEnabled:		true
-	}
-
-	ToolTip
-	{
-		text:		radioButton.toolTip
-		timeout:	jaspTheme.toolTipTimeout
-		delay:		jaspTheme.toolTipDelay
-		visible:	radioButton.toolTip !== "" &&  (hoverMe.containsMouse || control.hovered)
-	}
-
-	RadioButton
+	QtC.RadioButton
 	{
 		id:					control
 		padding:			jaspTheme.jaspControlPadding
