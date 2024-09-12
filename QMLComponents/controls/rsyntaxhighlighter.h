@@ -24,31 +24,49 @@
 #include <QRegularExpression>
 #include <QQuickItem>
 #include <QQuickTextDocument>
+#include "variableinfo.h"
 
-class RSyntaxHighlighter : public QSyntaxHighlighter
+class RSyntaxHighlighter : public QSyntaxHighlighter, public VariableInfoConsumer
 {
+	Q_OBJECT
+	
+	struct HighlightingRule
+	{
+		QRegularExpression		pattern;
+		QTextCharFormat			format;
+	};
+	
 public:
 				RSyntaxHighlighter(QTextDocument *parent);
 				
 	void		highlightBlock(const QString &text) override;
     void		setStringsFormat(const QString &text, QChar c);
+	
+	void		applyRule(const QString & text,  const HighlightingRule   & rule)											{ applyRule(text, rule.pattern, rule.format); }
+	void		applyRule(const QString & text,  const QRegularExpression & pattern, const QTextCharFormat & format);
+	
+	
+	
+protected slots:
+	void		handleNamesChanged(QMap<QString, QString> changedNames)	{ rehighlight(); }
+	void		handleRowCountChanged()									{ rehighlight(); }
 
 private:
-	struct HighlightingRule
-	{
-		QRegularExpression pattern;
-		QTextCharFormat format;
-	};
+
 	
-	QVector<HighlightingRule>	highlightingRules;
-	QTextCharFormat				operatorFormat,
-								variableFormat,
-								commentFormat,
-								keywordFormat,
-								stringFormat,
-								booleanFormat,
-								numberFormat,
-								punctuationFormat;
+	QTextDocument			*	_textDocument = nullptr;
+	
+	QVector<HighlightingRule>	_highlightingRules;
+	QTextCharFormat				_punctuationFormat,
+								_operatorFormat,
+								_variableFormat,
+								_commentFormat,
+								_keywordFormat,
+								_stringFormat,
+								_booleanFormat,
+								_numberFormat,
+								_columnFormat;
+	HighlightingRule			_commentRule;
 };
 
 class RSyntaxHighlighterQuick : public QQuickItem
@@ -62,7 +80,7 @@ public:
 	QQuickTextDocument * textDocument() { return _textDocument; }
 	
 	void setTextDocument(QQuickTextDocument * textDocument);
-
+	
 signals:
 	void textDocumentChanged();
 	
