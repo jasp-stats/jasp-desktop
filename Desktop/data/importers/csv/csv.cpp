@@ -536,7 +536,7 @@ bool CSV::readLine(vector<string> &items)
     for (size_t index = 0; index < items.size(); index++)
 	{
         string item = items.at(index);
-		boost::algorithm::replace_all(item, "\n", "_"); // so we should not newlines in values right?
+		boost::algorithm::replace_all(item, "\n", " "); // so we should not allow newlines in values right?
 		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
 			item = item.substr(1, item.size()-2);
         items[index] = item;
