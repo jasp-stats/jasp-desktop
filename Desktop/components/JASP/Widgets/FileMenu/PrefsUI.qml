@@ -50,19 +50,44 @@ ScrollView
 		{
 			id:		fontGroup
 			title:	qsTr("Fonts")
-			
-			property real maxText: Math.max(Math.max(interfaceTxt.implicitWidth, codeTxt.implicitWidth), Math.max(resultTxt.implicitWidth, languageTxt.implicitWidth));
 
-			Row
+			Item
 			{
-				spacing:		3 * preferencesModel.uiScale
+				visible: false;
+				// If the defaultInterfaceFont etc does not exist on the machine, then the default font of the machine is used.
+				// These (invisible) Text items are just to ask what will be the real font used.
+				
+				Text
+				{
+					
+					id:				 defaultInterfaceFont
+					font.family:	 preferencesModel.defaultInterfaceFont
+					text:			 fontInfo.family
+				}
+				
+				Text
+				{
+					id:			 	defaultRCodeFont
+					text:			fontInfo.family
+					font.family:	preferencesModel.defaultCodeFont
+				}
+				
+				Text
+				{
+					id: 			defaultResultFont
+					text: 			fontInfo.family
+					font.family: 	preferencesModel.defaultResultFont
+				}
+			}
+
+			GroupBox
+			{
 				width:			parent.width
 				
-				Text { id: interfaceTxt;		width:	fontGroup.maxText; text: qsTr("Interface:") }
-
-				DropDown
+				DropDown 
 				{
 					id:			 			interfaceFonts
+					label:					qsTr("Interface:")
 					values:			 		preferencesModel.allInterfaceFonts
 					addEmptyValue:			true
 					showEmptyValueAsNormal:	true
@@ -72,33 +97,12 @@ ScrollView
 					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab:		codeFonts
-					
-					control.width:			parent.width - (x + control.x)
-					
-
-					Text
-					{
-						// If the defaultInterfaceFont does not exist on the machine, then the default font of the machine is used.
-						// This (invisible) Text item is just to ask what will be the real font used.
-						id:				 defaultInterfaceFont
-						font.family:	 preferencesModel.defaultInterfaceFont
-						text:			 fontInfo.family
-						visible:		 false
-					}
 				}
-			}
-
-				
-			Row
-			{
-				spacing:		3 * preferencesModel.uiScale
-				width:			parent.width
-				
-				Text { id: codeTxt;		width:	fontGroup.maxText; text: qsTr("R, JAGS, or lavaan code:") }
-
+			
 				DropDown
 				{
 					id:							codeFonts
+					label:						qsTr("R, JAGS, or lavaan code:")
 					values:		 				preferencesModel.allCodeFonts
 					addEmptyValue:		 		true
 					showEmptyValueAsNormal:		true
@@ -108,32 +112,12 @@ ScrollView
 					onValueChanged:				preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab:			resultFonts
-					
-					control.width:			parent.width - (x + control.x)
-
-					Text
-					{
-						id:			 	defaultRCodeFont
-						text:			fontInfo.family
-						font.family:	preferencesModel.defaultCodeFont
-						visible:		false
-					}
-
 				}
-
-			
-			}
-			
-			Row
-			{
-				spacing:		3 * preferencesModel.uiScale
-				width:			parent.width
-				
-				Text { id: resultTxt;		width:	fontGroup.maxText; text: qsTr("Result & help:") }
 
 				DropDown
 				{
 					id:							resultFonts
+					label:						qsTr("Result & help:")
 					values:						preferencesModel.allResultFonts
 					addEmptyValue:				true
 					showEmptyValueAsNormal:		true
@@ -143,16 +127,6 @@ ScrollView
 					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab: 			qtTextRendering
-					
-					control.width:			parent.width - (x + control.x)
-
-					Text
-					{
-						id: 			defaultResultFont
-						text: 			fontInfo.family
-						font.family: 	preferencesModel.defaultResultFont
-						visible: 		false
-					}
 				}
 			}
 			
@@ -207,24 +181,17 @@ ScrollView
 			id:		languageGroup
 			title:	qsTr("Preferred language")
 			
-			Row
+			
+			DropDown
 			{
-				spacing:		3 * preferencesModel.uiScale
-				width:			parent.width
+				id:							languages
+				label:						qsTr("Choose language  ")
+				source:						languageModel
+				startValue: 				languageModel.currentLanguage
+				onValueChanged: 			languageModel.currentLanguage = value
+
+				KeyNavigation.tab: 			altnavcheckbox
 				
-				Text { id: languageTxt;		width:	fontGroup.maxText; text: qsTr("Choose language  ") }
-
-				DropDown
-				{
-					id:							languages
-					source:						languageModel
-					startValue: 				languageModel.currentLanguage
-					onValueChanged: 			languageModel.currentLanguage = value
-
-					KeyNavigation.tab: 			altnavcheckbox
-					
-					control.width:				parent.width - (x + control.x)
-				}
 			}
 			
 
