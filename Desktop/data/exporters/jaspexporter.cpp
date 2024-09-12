@@ -163,6 +163,5 @@ void JASPExporter::saveAnalyses(archive *a)
 
 void JASPExporter::saveDatabase(archive * a)
 {
-	DatabaseInterface::singleton()->doWALCheckpoint();
 	saveTempFile(a, DatabaseInterface::singleton()->dbFile(true));
 }
