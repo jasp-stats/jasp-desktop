@@ -119,12 +119,12 @@ if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_SOURCE_D
   #set appropriate default remote if needed
   if(R_PKG_CELLAR_REMOTE STREQUAL "")
     if(APPLE)
-      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_X86_64_latest.tar.gz")
+      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_x86_64_latest.tar.gz")
       if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
         SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_arm64_latest.tar.gz")
       endif()
     elseif(WIN32)
-      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_Windows_X86_64_latest.tar.gz")
+      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_Windows_x86_64_latest.tar.gz")
     endif()
   endif()
 
