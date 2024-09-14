@@ -5354,3 +5354,42 @@ msgstr ""
 msgctxt "ActionButtons|"
 msgid "New"
 msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing Excel File"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "All Data Sets %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "JASP Files %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "CSV Text Files %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Spreadsheet Files %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "SPSS Files %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Stata Files %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "SAS Files %1"
+msgstr ""
