@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-03-05 20:01+0000\n"
-"Last-Translator: Horváth Péter <stopposoknak@gmail.com>\n"
+"PO-Revision-Date: 2024-09-11 18:09+0000\n"
+"Last-Translator: Salyámosy András <salyamos@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/hu/>\n"
 "Language: hu\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -30,11 +30,11 @@ msgstr "Fájl betöltése innen:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr "Menteni kívánt fájl kijelölése"
+msgstr "Menteni kívánt fájl kiválasztása"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "Megnyitni kívánt fájl kijelölése"
+msgstr "Megnyitni kívánt fájl kiválasztása"
 
 msgctxt "FileSelector|"
 msgid "Browse"
@@ -44,16 +44,20 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
+"Ez az analízis a JASP (vagy egy dinamikus modul) egy korábbi verziójával "
+"készült"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr ", a frissítése kissé eltérő eredményt adhat."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
+", javasolt frissítened az analízisedet, hogy a jegyzeteid a helyükön "
+"maradjanak!"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -94,11 +98,11 @@ msgstr "Ctrl+Enter az alkalmazásra"
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "Utolsó helyes érték helyreállítása: %1"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr ""
+msgstr "Fő hatások"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
@@ -146,15 +150,15 @@ msgstr "Letöltés:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "Idézet:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "Mindegyik kijelölése"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "Kijelölés másolása"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
@@ -162,43 +166,45 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Bezárás"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "Húzd arréb az analízis átrendezéséhez"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "Az analízis címének szerkesztése"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "Az analízis megduplázása"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "Információk megjelenítése erről az analízisről"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "Analízis eltávolítása"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "Adatok vagy eredmények átméretezése"
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "Húzd odébb az adatok megjelenítéséhez"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr ""
+msgstr "Bemeneti beállítások elrejtése"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr ""
+msgstr "Bemeneti beállítások megjelenítése"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -214,35 +220,41 @@ msgstr "Visszaállítás"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "Bayes faktor"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"Bayes faktor az alternatív hipotézis null hipotézishez viszonyított "
+"valószínűségének számszerűsítésére."
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"Bayes faktor a null hipotézis alternatív hipotézishez viszonyított "
+"valószínűségének számszerűsítésére."
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "A BF10 természetes logaritmusa."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
@@ -256,69 +268,70 @@ msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Visszaállítás"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "Számított oszlop: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "Oszlop kiválasztása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "abszolútérték"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "normális eloszlás"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "variancia"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "összegzés"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "értékek szorzata"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "az értékek minimumát adja vissza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "az értékek maximumát adja vissza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "átlag"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "n tizedesjegyre kerekíti y-t"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "visszaadja az y-ban lévő elemek számát"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "medián"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "természetes logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "2-es alapú logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "10-es alapú logaritmus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
@@ -326,7 +339,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "exponenciális"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -427,23 +440,23 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr ""
+msgstr "Számított oszlop eltávolítása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "Generált R kód megjelenítése"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "Oszlop számítása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr ""
+msgstr "Oszlop számítása kész"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "Kattints ide az oszlop számításához"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
@@ -451,21 +464,23 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Dokumentáció megnyitása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr ""
+msgstr "Számított oszlop ablak bezárása"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr ""
+msgstr "Számított oszlop megváltozott"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
 msgstr ""
+"A számított oszlop nem mentett változtatásokat tartalmaz, mit szeretnél "
+"csinálni?"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -473,15 +488,15 @@ msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "eloszlás"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "egyszerű"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "eltérés"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
@@ -489,15 +504,15 @@ msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "ismételt"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "polinomiális"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "egyedi"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
@@ -510,23 +525,23 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "Számított oszlop létrehozása"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "Név:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "Ez az oszlopnév már használatban van, válassz egy másikat!"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "Oszlop létrehozása R kód segítségével"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "Oszlop létrehozása húzd-és-vidd képlettel"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
@@ -542,28 +557,29 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "Szöveg"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Dokumentáció megnyitása"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "Oszlop létrehozása"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr ""
+msgstr "Kattints ide az új számított oszlop létrehozásához '%1' néven"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
 msgstr ""
+"Adj meg egy érvényes (még nem használataban lévő) nevet a számított oszlopnak"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "Bezárás számított oszlop létrehozása nélkül"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -612,39 +628,39 @@ msgstr ""
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "Itt vagy most"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "Nemrégiben megnyitott mappák"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Tallózás"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "A szinkronizálásához jelenleg használt adatfájl"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "Adatkönyvtár"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "Adatfájl szinkronizálása"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "Mappa megnyitása"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "JASP fájl megnyitása"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "Adatfájl megnyitása"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -656,23 +672,23 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "Kijelentkezés"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "Mappa létrehozása"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "Mappanév"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "Fájlnév"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "Mentés"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
@@ -680,53 +696,56 @@ msgstr ""
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "Bejelentkezés OSF felhasználóval"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "Bejelentkezés"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "Emlékezz rám"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "Az OSF-ről"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "Regisztáció"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr ""
+msgstr "Haladó beállítások"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "Modul beállítások"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"Folytasd ott, ahol abbahagytad, amikor legközelebb elindul a JASP.\n"
+"Ennek a kapcsolónak a bekapcsolása után a JASP emlékezni fog rá, hogy melyik "
+"modulokat kapcsoltad be."
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr ""
+msgstr "Fejlesztői mód (béta verzió)"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "A JASP modulok engedélyezéséhez kapcsold be ezt az opciót."
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr ""
+msgstr "Fejlesztői mappa kiválasztása"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr ""
+msgstr "A JASP modul mappád megnyitása."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -734,12 +753,14 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr ""
+msgstr "Markdown súgó fájlok generálása"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr ""
+"Ennek az opciónak a bekapcsolása markdown formátumú súgó fájlokat fog "
+"generálni a qml beállításokból."
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
@@ -757,7 +778,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
+msgstr "Több információt a dokumentációban találsz."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -765,6 +786,10 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Ha bekapcsolod ezt az opciót, és a JASP-ot tartalmazó mappa elérési "
+"útvonalában nem ASCII karakterek szerepelnek, a JASP nem fog működni. Ha "
+"csak a felhasználói nevedben szerepelnek nem ASCII karakterek, valószínűleg "
+"nem fogsz tudni JASP modulokat telepíteni."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -773,54 +798,58 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Ha bekapcsolod ezt az opciót, néhány karakter furán fog megjelenni a "
+"kimenetben, de tudod majd használni a JASP-ot egy nem ASCII karakterket "
+"tartalmazó mappából is. Elnézést kérünk a kényelmetlenségéert, és dolgozunk "
+"azon, hogy ezt megjavítsuk a JASP következő kiadásában."
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "Logolással kapcsolatos beállítások"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr ""
+msgstr "Fájlba logolás"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr ""
+msgstr "A JASP debug logjainka fájlba való írásához kapcsold be ezt az opciót."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr ""
+msgstr "Logfájlok maximális száma: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "Logok megjelenítése"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "Futtató motor beállításai"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr ""
+msgstr "Futtató motorok maximális száma: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr ""
+msgstr "Adat beállítások"
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
-msgstr ""
+msgstr "Automatikus szinkronizáció az adatfájl mentésekor"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "Alapértelmezett táblázatszerkesztő használata"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "Egyedi szerkesztő kiválasztása"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr ""
+msgstr "Kategória és folyamatos változók közötti küszöbérték"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -828,14 +857,18 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
+"Az egyedi értékek számára megadott küszöbérték, ami alatt egy váltóz még nem "
+"számít folyamatos változónak.\n"
+"Az adatokat újra kell tölteni, hogy ez a beállítása kifejtse a hatását. Több "
+"információt a dokumentációban találsz."
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "Hiányzó értékek listája"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr ""
+msgstr "Hiányzó értékek eltávolítása"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
@@ -843,7 +876,7 @@ msgstr "Visszaállítás"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr ""
+msgstr "Eredmény beállítások"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
@@ -851,64 +884,69 @@ msgstr "Táblázatbeállítások"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr ""
+msgstr "Pontos p-értékek megjelenítése"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr ""
+msgstr "Helyiértékek számának rögzítése"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr ""
+msgstr "Diagram beállítások"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr ""
+msgstr "A képernyő PPI értékének használata a diagramokon: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
 msgstr ""
+"A képernyőd Pixel Per Inch értékének használata a diagramok rajzolásához."
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr ""
+msgstr "Egyedi PPI: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr ""
+msgstr "Kép háttérszín"
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "Fehér"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
+"Az összes diagram hátterét fehérre állítja, ami hasznos lehet, ha LaTeX "
+"kódban akarod használni, vagy egy folyóiratnak beküldeni."
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr ""
+msgstr "Átlátszó"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
+"Az összes diagram hátterét átlátszóra állítja, ami hasznos lehet, ha nem "
+"fehér színű háttér előtt akarod használni."
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Betűtípusok"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Interfész:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "alapértelmezett: %1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
@@ -917,36 +955,40 @@ msgstr "Témák"
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr ""
+msgstr "Világos téma használata, ez a JASP eredeti és alapértelmezett témája."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr ""
+msgstr "Sötét téma használata, ez kímélőbb a szemnek."
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "Egyéb beállítások"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "Nagyítás (%): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
+"A felhasználói felület elemeinek (szövegek, gombok, stb.) méretének "
+"csökkentése vagy növelése."
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "Görgetés sebessége (pix/s): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
+"A görgetés sebességének beállítása az adatok megjelenítésekor és egyéb "
+"helyeken."
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -955,15 +997,24 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"Egy \"biztonságosabb\" módú megjelenítésre vált (szoftveres rajzolásra).\n"
+"Ennek hatására a megjelenítés lassab lesz, de ha furcsa problémákat "
+"tapasztalsz (pl. villogó kép, nem látszanak az eredmények, ...), ez az opció "
+"megoldhatja.\n"
+"Az analízisek megjelenítése így is gyors lesz."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
+"Minden animációt kikapcsol, ez automatikusan bekapcsol, ha a \"Biztonságos "
+"megjelenítő mód\" be van kapcsolva."
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
+"Az animációk már ki vannak kapcsolva, mert a \"Biztonságos megjelenítő mód\" "
+"opció be van kapcsolva"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -971,46 +1022,50 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Ha ki van kapcsolva, az operációs rendszer beépített párbeszédablakai "
+"helyett a Qt-t használja majd. Ez megoldhat néhány problémát, amikor a JASP "
+"összeomlik a \"Tallózás\" gombra kattintva."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Utoljára használt fájlok"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Számított oszlopok kódja törölve"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Számított oszlopok kódja mentve"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "Kérjük, minden paramétert adjon meg - lásd a pirossal jelölt mezőket."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "Egy számított oszlopban csak egy képletet használhatsz."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "Üdvözlünk a húzd-és-vidd számított oszlop szerkeszőben!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
+msgstr "Húzd ide a nem kívánatos részleteket, dupla kattintással törölheted"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
-msgstr ""
+msgstr "Szűrő törölve<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
-msgstr ""
+msgstr "Szűrő beállítva<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
 msgstr ""
+"Kérjük, adjon meg minden paramétert - lásd a pirossal jelölt mezőket.<br>"
 
 msgctxt "FilterConstructor|"
 msgid ""
@@ -2208,6 +2263,8 @@ msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
+"A szerkesztőt nem sikerült elindítani: %1. Kérjük, ellenőrizze a szerkesztő "
+"beállításait."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2215,19 +2272,21 @@ msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
+"Nincs beállítva táblázatszerkesztő a %1 fájlhoz. Használja a beállítások "
+"menüpontot a szerkesztő beállításához."
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "Minden analízis eltávolítása"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "Valóban el akar távolítani minden analízist?"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "A %1 csomagolt modul betöltése nem sikerült"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2236,23 +2295,26 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"A %1 csomagolt modul betöltése nem sikerült az alábbi hibaüzenettel:\n"
+"\n"
+"%2"
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
-msgstr ""
+msgstr "R (béta)"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "Hiba történt a frissítések betöltése során"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "Az alábbi hiba történt a %1 frissítéseinek betöltése során: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "A frissítéseket nem sikerült beolvasni"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -2261,10 +2323,15 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"A régi JASP fájlok betöltéséhez szükséges frissítéseket nem sikerült "
+"beolvasni.\n"
+"Így is tudja használni a JASP-ot, és egyes régi fájlok betöltése is "
+"sikerülhet, de néhány régi beállítást nem biztos, hogy sikerülni fog "
+"beolvasni, és néhány analízis betöltése sem biztos, hogy sikerülni fog."
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr ""
+msgstr "Fájl megváltozott"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -2272,22 +2339,25 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
+"A fájl egyetlen másolata megváltozott a megnyitása óta.\n"
+"\n"
+"Szeretné felülírni az online fájlt?"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "Feltöltése indítása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "Letöltése indítása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "Új fájl létrehozásának indítása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "Új mappa létrehozásának indítása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
@@ -2303,80 +2373,80 @@ msgstr ""
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "Új fájl létrehozása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "Új mappa létrehozása "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "Osf művelet "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "%1 %%2 nem sikerült, mert %3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " folyamatban"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "Becsuk"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "Cím szerkesztése"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr ""
+msgstr "Másolás"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr ""
+msgstr "LaTeX kód másoláa"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr ""
+msgstr "Hivatkozások másolása"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr ""
+msgstr "Kép mentése másként"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr ""
+msgstr "Kép szerkesztése"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr ""
+msgstr "Megjegyzés hozzáadása"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikálás"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr ""
+msgstr "Eltávolítás"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr ""
+msgstr "Az összes eltávolítása"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr ""
+msgstr "Az összes frissítése"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr ""
+msgstr "Függőségek megjelenítése"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "Eredmények exportálása"
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
@@ -2391,67 +2461,73 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
+"Nemsokára érkezik!\n"
+"========\n"
+"\n"
+"Jelenleg nem érhető el súgó ehhez az analízishez.\n"
+"\n"
+"A JASP későbbi kiadásaiban bővítjük a dokumentációt."
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "érvényes R kód"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
+msgstr "Ismeretlen opció %1 a %2 legördülő menüben"
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr ""
+msgstr "Megnyitás"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "Mentés"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr ""
+msgstr "Mentés másként"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr ""
+msgstr "Eredmények exportálása"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr ""
+msgstr "Adatok exportálása"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr ""
+msgstr "Adatok szinkronizálása"
 
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "Bezárás"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr ""
+msgstr "Beállítások"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr ""
+msgstr "Névjegy"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr ""
+msgstr "Kategóriák"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr ""
+msgstr "Fájltípusok"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "Nem sikerült az OSF fájl megnyitása"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr ""
+msgstr "Nincs hozzárendelt adatfájl"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2462,31 +2538,32 @@ msgstr ""
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr ""
+msgstr "Adatfájl keresése"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr ""
+msgstr "Adatfájl"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "A felhasználónév vagy jelszó helytelen. Kérjük próbálja meg újra!"
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
 msgstr ""
+"Az OSF szolgáltatás nem elérhető. Kérjük ellenőrizze internet kapcsolatát!"
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "Időtúllépési hiba. Kérjük ellenőrizze internet kapcsolatát!"
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF hiba"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "Projektek"
 
 msgctxt "OSF|"
 msgid ""
@@ -2494,10 +2571,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"Nem sikerült a fájlok hozzáadása a projektlistához.\n"
+"\n"
+"Új projektek az online OSF szolgáltatással adhat hozzá."
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "Adatforrások"
 
 msgctxt "OSF|"
 msgid ""
@@ -2510,25 +2590,27 @@ msgstr ""
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "A fájlok hozzáadása a '%1'-hez nem sikerült ismeretlen hiba miatt."
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "Fájltípusok"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "Nem sikerült a fájl megnyitása az OSF-ből"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "Hiba történt a mappa léterhozása közben."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"Nem sikerült a mappa hozzáadása a projektlistához.<br>Új projekt "
+"hozzáadásához az online OSF szolgáltatást használhatja."
 
 msgctxt "OSF|"
 msgid ""
@@ -2543,60 +2625,60 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "Mappa"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "Belépés"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr ""
+msgstr "A felhasználónév és a jelszó nem lehet üres."
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr ""
+msgstr "A bejegyzés neve nem lehet üres."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr ""
+msgstr "%1 neve csak a következő karaktereket tartalmazhatja: A-Za-z0-9_%2"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Nemrégiben megnyitott fájlok"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr ""
+msgstr "Jelenlegi fájl"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr ""
+msgstr "Számítógép"
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "Adatkönyvtár"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr ""
+msgstr "Adat"
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr ""
+msgstr "Eredmények"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr ""
+msgstr "Felhasználói felület"
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr ""
+msgstr "Haladó"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
@@ -2606,7 +2688,7 @@ msgstr ""
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
+msgstr "Réteg %1"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
@@ -2636,31 +2718,31 @@ msgstr ""
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr ""
+msgstr "Rendezés név szerint"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr ""
+msgstr "Rendezés név szerint A-Z"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr ""
+msgstr "Rendezés név szerint Z-A"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr ""
+msgstr "Rendezés típus szerint"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr ""
+msgstr "Rendezés dátum szerint"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr ""
+msgstr "Rendezés méret szerint"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "SortMenuModel nem rendezhető szűlővel meghívva"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
@@ -2668,52 +2750,52 @@ msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "A kifejezés nem számott adott vissza."
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "Egész szám mező"
 
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr ""
+msgstr "Szám mező"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "Százalék mező"
 
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr ""
+msgstr "Egész számok mező"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "Lebegőpontos számok mező"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "Oszlop hozzáadása mező"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "Számított oszlop hozzáadása mező"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "Képlet mező"
 
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr ""
+msgstr "Képletek mező"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "Szöveg mező"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "A %1 értéke %2 kell, hogy legyen"
 
 #, qt-format
 msgctxt "VariablesListBase|"
@@ -2762,14 +2844,15 @@ msgstr ""
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"igazat vissza, ha a szöveg legalább egyszer tartalmazza a keresett szöveget"
 
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr ""
+msgstr "+"
 
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
@@ -2778,10 +2861,11 @@ msgstr ""
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"igazat vissza, ha a szöveg legalább egyszer tartalmazza a keresett szöveget"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Cím"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
@@ -2813,23 +2897,25 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "Alsó határérték"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "Felső határérték"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x-tengely"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y-tengely"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr ""
+"Itt szerkesztheti a címkéket, vagy kiválaszthatja, hogy melyik értékeket "
+"kell kiszűrni."
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
@@ -2849,11 +2935,11 @@ msgstr ""
 
 msgctxt "LabelModel|"
 msgid "Value"
-msgstr ""
+msgstr "Érték"
 
 msgctxt "LabelModel|"
 msgid "Label"
-msgstr ""
+msgstr "Címke"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2946,7 +3032,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "Mappa kiválasztása"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -2966,7 +3052,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "Hiányzó mappák vagy fájlok"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -2980,7 +3066,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "R mappa létrehozása az analízis kódjával."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
@@ -2994,7 +3080,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "%1 hiányzik"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3016,7 +3102,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1 eltávolítva!"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3028,7 +3114,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "Hiányzó mappa: %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3113,27 +3199,27 @@ msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Tényező"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "Szint"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Új tényező"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Új szint"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "Engedélyezett modulok megjegyzése"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Alapértelmezett Github token (PAT) használata"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -3143,7 +3229,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "Saját GitHub token:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
@@ -3167,31 +3253,31 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "Világos téma"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "Sötét téma"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Preferált nyelv"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "Nyelv kiválasztása  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "Biztonságos megjelenítés mód"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "Animációk kikapcsolása"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "Natív párbeszédablakok használata"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
@@ -3199,7 +3285,7 @@ msgstr ""
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Főmenü megjelenítése"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
@@ -3231,11 +3317,11 @@ msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "Változók"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Szétválasztás"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3272,7 +3358,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "Mégse"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -3308,7 +3394,7 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "R kód futtatása a konzolban"
 
 msgctxt "TableView|"
 msgid "Add to the left"
@@ -3362,7 +3448,7 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr ""
+msgstr "Címke"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
@@ -3394,7 +3480,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "Törlés"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
@@ -3402,23 +3488,23 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "Mégse"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "Alapbeállítások visszaállítása"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Cím megjelenítése"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "Tengely megjelenítése"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
@@ -3426,11 +3512,11 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "Pozíció"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr ""
+msgstr "Haladó"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
@@ -3442,7 +3528,7 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "Kép mentése másként"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3475,7 +3561,7 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Dokumentáció megnyitása"
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
