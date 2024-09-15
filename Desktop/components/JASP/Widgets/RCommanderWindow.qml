@@ -109,12 +109,7 @@ Window
 					width:		outputScroll.width
 
 					TextArea
-					{
-						RSyntaxHighlighterQuick
-						{
-							textDocument:		outputWindow.textDocument
-						}
-						
+					{					
 						id:					outputWindow
 						text:				rCmd.output
 						font:				jaspTheme.fontRCode
