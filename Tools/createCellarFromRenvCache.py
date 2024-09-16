@@ -7,6 +7,8 @@ import concurrent.futures
 from datetime import datetime
 import platform
 import re
+from shutil import copytree
+import tempfile
 
 def generatePkgArchiveName(pkg):
     descriptionPath = Path(pkg) / 'DESCRIPTION'
@@ -27,8 +29,16 @@ def cellar_name():
     return 'cellar_' + os + '_' + platform.machine() + '.tar.gz'
 
 def make_tar(pkg):
-    with tarfile.open(pkg[1], 'w:gz') as tar:
-        tar.add(pkg[0], arcname=pkg[0].name)
+    with tarfile.open(pkg[1], 'w:gz') as tar, tempfile.TemporaryDirectory() as tmpdir:
+        #we need to remove the "Built: " line from DESCRIPTION otherwise it breaks cp on windows because R is really weird
+        copytree(pkg[0], tmpdir, dirs_exist_ok=True)
+        descriptionPath = Path(tmpdir) / 'DESCRIPTION'
+        with descriptionPath.open('r+') as description:
+            lines = [x for x in description.readlines() if not x.startswith('Built: ')]
+            description.seek(0)
+            description.truncate()
+            description.writelines(lines)
+        tar.add(tmpdir, arcname=pkg[1].name)
 
 def build_cellar(renv_cache):
     renv_cache = Path(renv_cache) / 'v5'
@@ -43,6 +53,8 @@ def build_cellar(renv_cache):
     pkgsOutPaths = [output_dir / generatePkgArchiveName(x) for x in pkgs]        
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
         executor.map(make_tar, zip(pkgs, pkgsOutPaths), chunksize=50)
+    # for x in zip(pkgs, pkgsOutPaths):
+    #     make_tar(x)
 
     output_tar = Path('.') / 'cellar.tar.gz'
     output_tar.unlink(missing_ok=True)
