@@ -30,7 +30,7 @@ DropDown
 		{ label: qsTr("Colorblind"),		value: "colorblind"		},
 		{ label: qsTr("Colorblind #2"),		value: "colorblind2"	},
 		{ label: qsTr("Colorblind #3"),		value: "colorblind3"	},
-		{ label: qsTr("JASPO"),				value: "jaspo"			},
+		{ label: qsTr("JASP"),				value: "jaspPalette"			},
 		{ label: qsTr("Viridis"),			value: "viridis"		},
 		{ label: qsTr("ggplot2"),			value: "ggplot2"		},
 		{ label: qsTr("Gray"),				value: "gray"			},
