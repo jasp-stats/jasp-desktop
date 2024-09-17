@@ -50,6 +50,8 @@ So the root object of your `Description.qml` is a `Description` object that has 
   | `maintainer`  | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>". If it isn't a valid email adress **R will complain**. |
   | `website`     | Website of the author. |
   | `license`     | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)". |
+    | `requiresData` | Optional: Whether the analyses and/or module require a dataset or not.  |
+  | `preloadData` | Optional: Whether the analyses can handle getting the dataset as an argument to the R-function. |
 
   In the future most of this info will be taking straight from [DESCRIPTION](#packageMetadata).
 
@@ -69,6 +71,9 @@ It represents, surprise surprise, one of your analyses and has the following fie
   | `qml`      | Optional: Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). If it isn't filled `func + ".qml"` is used. |
   | `menu`     | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used. |
   | `icon`     | Optional: Filename of the icon to show next to `title` in the menu. |
+  | `requiresData` | Optional: Whether it requires a dataset or not. If not entered the default is taken from Description. |
+  | `preloadData` | Optional: Whether it can handle getting the dataset as an argument to the R-function. If not entered the default is taken from Description. |
+  
   
 
 ##### GroupTitle

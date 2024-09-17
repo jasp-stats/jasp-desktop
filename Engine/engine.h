@@ -60,7 +60,7 @@ public:
 
 	void					provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
 	void					provideStateFileName(											std::string & root,	std::string & relativePath);
-	void					provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
+	void					provideJaspResultsFileName(										std::string & root,	std::string & relativePath);
 	void					provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
 	void					reloadColumnNames();
 
@@ -79,7 +79,7 @@ private:
 	void					absorbSettings(					const Json::Value & json);
 
 	void					runAnalysis();
-	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType,	bool forceType);
+	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
 	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
 	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void					runRCodeCommander(		  std::string   rCode																						);
@@ -107,39 +107,41 @@ public:
 
 
 private: // Data:
-	static Engine		*	_EngineInstance;
-	const int				_engineNum;
-	const unsigned long		_parentPID;
-	DataSet				*	_dataSet				= nullptr;
-	DatabaseInterface	*	_db						= nullptr;
-	IPCChannel			*	_channel				= nullptr;
-	ColumnEncoder		*	_extraEncodings			= nullptr;
-	engineState				_engineState			= engineState::initializing,
-							_lastRequest			= engineState::initializing;
-	Status					_analysisStatus			= Status::empty;
-	int						_analysisId,
-							_analysisRevision,
-							_progress,
-							_ppi					= 96,
-							_numDecimals			= 3;
-	bool					_developerMode			= false,
-							_fixedDecimals			= false,
-							_exactPValues			= false,
-							_normalizedNotation		= true;
-	std::string				_analysisName,
-							_analysisTitle,
-							_analysisDataKey,
-							_analysisResultsMeta,
-							_analysisStateKey,
-							_analysisResultsString,
-							_resultFont,
-							_imageBackground		= "white",
-							_analysisRFile			= "",
-							_dynamicModuleCall		= "",
-							_langR					= "en";
-	Json::Value				_imageOptions,
-							_analysisOptions		= Json::nullValue,
-							_analysisResults;
+	static Engine				*	_EngineInstance;
+	const int						_engineNum;
+	const unsigned long				_parentPID;
+	DataSet						*	_dataSet				= nullptr;
+	DatabaseInterface			*	_db						= nullptr;
+	IPCChannel					*	_channel				= nullptr;
+	ColumnEncoder				*	_extraEncodings			= nullptr;
+	engineState						_engineState			= engineState::initializing,
+									_lastRequest			= engineState::initializing;
+	Status							_analysisStatus			= Status::empty;
+	int								_analysisId,
+									_analysisRevision,
+									_progress,
+									_ppi					= 96,
+									_numDecimals			= 3;
+	bool							_developerMode			= false,
+									_fixedDecimals			= false,
+									_exactPValues			= false,
+									_normalizedNotation		= true,
+									_analysisPreloadData;
+	std::string						_analysisName,
+									_analysisTitle,
+									_analysisDataKey,
+									_analysisResultsMeta,
+									_analysisStateKey,
+									_analysisResultsString,
+									_resultFont,
+									_imageBackground		= "white",
+									_analysisRFile			= "",
+									_dynamicModuleCall		= "",
+									_langR					= "en";
+	Json::Value						_imageOptions,
+									_analysisOptions		= Json::nullValue,
+									_analysisResults;
+	ColumnEncoder::colsPlusTypes	_analysisColsTypes;
 
 
 };

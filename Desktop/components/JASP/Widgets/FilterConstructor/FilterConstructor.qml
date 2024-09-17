@@ -1,7 +1,8 @@
 import JASP.Controls
 import QtQuick.Controls
 import QtQuick
-
+import JASP
+import QtQuick.Controls as QTC
 
 Item
 {
@@ -35,7 +36,7 @@ Item
 
 	function checkAndApplyFilter()
 	{
-		focus = true
+		forceActiveFocus()
 		filterConstructor.somethingChanged = false
 		var allCorrect = true
 		var allBoolean = true
@@ -57,18 +58,18 @@ Item
 		if(allCorrect && allBoolean)
 		{
 			if(noFormulas)
-				hints.filterText += qsTr("Filter cleared<br>")
+				hints.filterText += qsTr("Filter cleared\n")
 			else
-				hints.filterText += qsTr("Filter applied<br>")
+				hints.filterText += qsTr("Filter applied\n")
 
 			filterModel.applyConstructorJson(JSON.stringify(filterConstructor.returnFilterJSON()))
 		}
 
 		if(!allCorrect)
-			hints.filterText += qsTr("Please enter all arguments - see fields marked in red.<br>")
+			hints.filterText += qsTr("Please enter all arguments - see fields marked in red.\n")
 
 		if(!allBoolean)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + qsTr("Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>")
+			hints.filterText += (!allCorrect ? "\n" : "" ) + qsTr("Formula does not return a set of logical values, and therefore cannot be used in the filter.\n")
 
 		lastCheckPassed = allCorrect &&  allBoolean
 		return lastCheckPassed
@@ -173,7 +174,6 @@ Item
 					margins:		jaspTheme.contentMargin
 					bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 				}
-				
 			}
 		}
 
@@ -251,8 +251,9 @@ Item
 
 				MouseArea
 				{
-					anchors.fill: parent
-					onPressed: (mouse) => { scriptColumn.focus = true; mouse.accepted = false; }
+					anchors.fill:	parent
+					onPressed:		(mouse) => { scriptColumn.focus = true; mouse.accepted = false; }
+					z:				-1
 				}
 
 				DropTrash
@@ -265,19 +266,16 @@ Item
 					height: Math.min(60 * preferencesModel.uiScale, scrollScriptColumn.height)
 				}
 
-
 			}
 
-			Text
+			QTC.TextArea
 			{
-				property string filterText: qsTr("Welcome to the drag and drop filter!<br>")
+				property string filterText: qsTr("Welcome to the drag and drop filter!\n")
 
 				id:						hints
-				text:					filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
+				text:					filterModel.filterErrorMsg === "" ? filterText : filterModel.filterErrorMsg
 
-				color:					jaspTheme.textEnabled
-
-				height:					filterConstructor.fontPixelSize + contentHeight
+				color:					filterModel.filterErrorMsg === "" ? jaspTheme.textEnabled : jaspTheme.redDarker
 
                 wrapMode:				Text.WordWrap
                 horizontalAlignment:	Text.AlignHCenter

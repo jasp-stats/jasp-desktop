@@ -17,7 +17,6 @@ ComputedColumnModel::ComputedColumnModel()
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnRCodeChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnErrorChanged			);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
-	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnForceTypeChanged		);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnIconSourceChanged	);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::columnTypeChanged					);
 	
@@ -68,25 +67,6 @@ int ComputedColumnModel::computedColumnColumnType()
 QString ComputedColumnModel::computeColumnError()
 {
 	return !_selectedColumn ? "" : tq(_selectedColumn->error());
-}
-
-bool ComputedColumnModel::computeColumnForceType() const
-{
-	return _selectedColumn && _selectedColumn->forceTypes();
-}
-
-void ComputedColumnModel::setComputeColumnForceType(bool newComputeColumnForceType)
-{
-	if(!_selectedColumn)
-		return;
-	
-	if(_selectedColumn->forceTypes() == newComputeColumnForceType)
-		return;
-	
-	_selectedColumn->setForceType(newComputeColumnForceType);
-	emit computeColumnForceTypeChanged();
-	
-	_selectedColumn->invalidate();
 }
 
 void ComputedColumnModel::setComputeColumnRCode(const QString & newCode)
@@ -152,7 +132,7 @@ void ComputedColumnModel::emitSendComputeCode(Column * column)
 		return;
 
 	if(areLoopDependenciesOk(column->name(), code))
-		emit sendComputeCode(tq(column->name()), tq(code), column->type(), column->forceTypes());
+		emit sendComputeCode(tq(column->name()), tq(code), column->type());
 }
 
 void ComputedColumnModel::sendCode(const QString & code, const QString & json)

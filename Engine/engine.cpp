@@ -421,10 +421,10 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType, jsonRequest.get("forceType", false).asBool());
+	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
 
-void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, bool forceType)
+void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -442,9 +442,6 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	{
 		try
 		{
-			if(forceType)
-				rbridge_setComputedColumnTypeDesired(computeColumnType);
-			
 			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 			computeColumnResponse["columnName"]		= computeColumnNameEnc;
 
@@ -457,11 +454,8 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 		}
 		catch(std::exception e)
 		{
-			rbridge_setComputedColumnTypeDesired(columnType::unknown);	
 			throw e;
 		}
-		
-		rbridge_setComputedColumnTypeDesired(columnType::unknown);	
 	}
 	else
 	{
@@ -574,6 +568,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
 		_resultFont				= jsonRequest.get("resultFont",			"").asString();
+		_analysisPreloadData	= jsonRequest.get("preloadData",		false).asBool();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -635,11 +630,9 @@ void Engine::runAnalysis()
 
 	Json::Value encodedAnalysisOptions = _analysisOptions;
 
-	ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions);
+	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
-								encodedAnalysisOptions.toStyledString(),
-								_analysisStateKey, _analysisId, _analysisRevision, _developerMode);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,	encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, _developerMode, _analysisColsTypes, _analysisPreloadData);
 
 	switch(_analysisStatus)
 	{
@@ -666,11 +659,10 @@ void Engine::runAnalysis()
 
 			Json::Reader().parse(_analysisResultsString, _analysisResults, false);
 
-			_engineState = engineState::idle;
+			_engineState	= engineState::idle;
 			_analysisStatus = Status::empty;
 
-			removeNonKeepFiles(
-					_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
+			removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
 			return;
 		
 	}
@@ -864,7 +856,7 @@ DataSet * Engine::provideAndUpdateDataSet()
 		setColumnNames |= _dataSet->checkForUpdates();
 
 	if(_dataSet && setColumnNames)
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
+		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames(), true);
 
 	JASPTIMER_STOP(Engine::provideDataSet());
 

@@ -533,7 +533,7 @@ void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListe
 	_waitingScripts.push(new RScriptStore(requestId, rCode, module, engineState::rCode, whiteListedVersion));
 }
 
-void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType, bool forceType)
+void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
 {
 	//first we remove the previously sent requests for this same column!
 	std::queue<RComputeColumnStore*> copiedWaiting(_waitingCompCols);
@@ -547,7 +547,7 @@ void EngineSync::computeColumn(const QString & columnName, const QString & compu
 		copiedWaiting.pop();
 	}
 
-	_waitingCompCols.push(new RComputeColumnStore(columnName, computeCode, colType, forceType));
+	_waitingCompCols.push(new RComputeColumnStore(columnName, computeCode, colType));
 }
 
 void EngineSync::processFilterScript()

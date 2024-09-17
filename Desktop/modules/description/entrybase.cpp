@@ -22,6 +22,7 @@ EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(e
 	connect(this, &EntryBase::functionChanged,		this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::iconChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::entryTypeChanged,		this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::preloadDataChanged,	this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::requiresDataChanged,	this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::enabledChanged,		this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
@@ -158,7 +159,7 @@ void EntryBase::setHasWrapper(bool hasWrapper)
 	emit hasWrapperChanged();
 }
 
-AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) const
+AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault) const
 {
 	AnalysisEntry * entry = new AnalysisEntry();
 
@@ -168,6 +169,7 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 	entry->_title			= fq(title());
 	entry->_function		= fq(function());
 	entry->_requiresData	= _useDefaultRequiresData ? requiresDataDefault : requiresData();
+	entry->_preloadData		= _useDefaultPreloadData  ? preloadDataDefault  : preloadData();
 
 	entry->_isEnabled		= _enabled;
 	entry->_isAnalysis		= _entryType == EntryType::analysis;
@@ -179,6 +181,21 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 	//Log::log()<<"convertToAnalysisEntry has title '"<<title()<<"'"<<std::endl;
 
 	return entry;
+}
+
+bool EntryBase::preloadData() const
+{
+	return _preloadData;
+}
+
+void EntryBase::setPreloadData(bool newPreloadData)
+{
+	_useDefaultPreloadData = false;
+	
+	if (_preloadData == newPreloadData)
+		return;
+	_preloadData = newPreloadData;
+	emit preloadDataChanged();
 }
 
 }

@@ -12,7 +12,6 @@ class ComputedColumnModel : public QObject
 	Q_OBJECT
 	Q_PROPERTY(bool		computeColumnUsesRCode		READ computeColumnUsesRCode													NOTIFY computeColumnUsesRCodeChanged	)
 	Q_PROPERTY(QString	computeColumnRCode			READ computeColumnRCode				WRITE setComputeColumnRCode				NOTIFY computeColumnRCodeChanged		)
-	Q_PROPERTY(bool		computeColumnForceType		READ computeColumnForceType			WRITE setComputeColumnForceType			NOTIFY computeColumnForceTypeChanged	)
 	Q_PROPERTY(QString	computeColumnJson			READ computeColumnJson														NOTIFY computeColumnJsonChanged			)
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(int		columnType					READ computedColumnColumnType												NOTIFY columnTypeChanged				)
@@ -30,7 +29,6 @@ public:
 				QString				computeColumnError();
 				QString				computeColumnJson();
 				int					computedColumnColumnType();
-				bool				computeColumnForceType()	const;
 				QString				computeColumnIconSource()	const;
 				Column			*	column()					const;
 				bool				computeColumnUsesRCode();
@@ -38,7 +36,6 @@ public:
 				void				selectColumn(					Column		  * column);
 				void				setComputeColumnRCode(			const QString & newCode);
 				void				setComputeColumnJson(			const QString & newJson);
-				void				setComputeColumnForceType(bool newComputeColumnForceType);
 
 	Q_INVOKABLE void				sendCode(const QString & code);
 	Q_INVOKABLE void				sendCode(const QString & code, const QString & json);
@@ -73,12 +70,11 @@ signals:
 				void	computeColumnJsonChanged();
 				void	refreshColumn(QString columnName);
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
-				void	sendComputeCode(QString columnName, QString code, enum columnType columnType, bool forceType);
+				void	sendComputeCode(QString columnName, QString code, enum columnType columnType);
 				void	computeColumnUsesRCodeChanged();
 				void	showAnalysisForm(Analysis *analysis);
 				void	dataColumnAdded(QString columnName);
 				void	refreshData();
-				void	computeColumnForceTypeChanged();
 				void	columnTypeChanged();
 				void	chooseColumn(QString colId);
 				void	computeColumnIconSourceChanged();

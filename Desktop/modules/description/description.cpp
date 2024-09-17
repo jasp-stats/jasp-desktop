@@ -215,7 +215,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	{
 		if(entry->shouldBeAdded())
 		{
-			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef());
+			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), preloadData());
 			if (analysisEntry != nullptr)
 			{
 				if (analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())
@@ -227,6 +227,19 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	}
 
 	return entries;
+}
+
+bool Description::preloadData() const
+{
+	return _preloadData;
+}
+
+void Description::setPreloadData(bool newPreloadData)
+{
+	if (_preloadData == newPreloadData)
+		return;
+	_preloadData = newPreloadData;
+	emit preloadDataChanged();
 }
 
 }

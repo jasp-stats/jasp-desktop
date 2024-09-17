@@ -71,7 +71,6 @@ public:
 			void					setAnalysisId(		int					analysisId		);
 			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
-			void					setForceType(		bool				force		);
 			void					setCompColStuff(	bool				invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
 
@@ -94,7 +93,6 @@ public:
 			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
 			bool					invalidated()			const	{ return _invalidated;		}
 			bool					autoSortByValue()		const	{ return _autoSortByValue;	}
-			bool					forceTypes()			const	{ return _forceTypes;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
 			const std::string	&	title()					const	{ return _title.empty() ? _name : _title;	}
@@ -258,7 +256,6 @@ private:
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
 			bool					_invalidated		= false,
-									_forceTypes			= true, ///< If this is a computed column this means whether the source columns used in a computed columns calculation should be forcefully loaded as the desired type or just as their own.
 									_autoSortByValue;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,

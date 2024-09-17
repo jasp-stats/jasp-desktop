@@ -47,7 +47,7 @@ qt_add_executable(
 
 set(
     QML_IMPORT_PATH
-    "${PROJECT_SOURCE_DIR}/Desktop/components" 
+	"${PROJECT_SOURCE_DIR}/Desktop/components" 
 	"${PROJECT_SOURCE_DIR}/QMLComponents/components"
     CACHE
     PATH

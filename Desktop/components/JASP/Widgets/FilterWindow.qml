@@ -524,7 +524,7 @@ FocusScope
 					anchors.bottom:	parent.bottom
 					anchors.top:	closeRectangularButton.top
 
-					onClicked:		filterWindow.applyAndSendFilter(filterEdit.text)
+					onClicked:		{ forceActiveFocus(); filterWindow.applyAndSendFilter(filterEdit.text) }
 
 					toolTip:		qsTr("Click to apply filter")
 				}
