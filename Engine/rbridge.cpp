@@ -26,6 +26,7 @@
 #include "otoolstuff.h"
 #include "engine.h"
 #include "r_functionwhitelist.h"
+#include <sstream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -436,7 +437,11 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 
     for(const auto & nameType : datasetWanted)
     {
-		requestedColumns[*colMax].name = strdup(ColumnEncoder::columnEncoder()->encode(nameType.first).c_str());
+		//Make sure this is encodable/decodable
+		if(!ColumnEncoder::columnEncoder()->shouldEncode(nameType.first) && !ColumnEncoder::columnEncoder()->shouldDecode(nameType.first))
+			throw std::runtime_error("rbridge_readDataSetRequested gets '" + nameType.first + "' but its not a columnname at all");
+		
+		requestedColumns[*colMax].name = strdup(ColumnEncoder::columnEncoder()->encodeAll(nameType.first).c_str());
         requestedColumns[*colMax].type = int(nameType.second);
 
         (*colMax)++;
