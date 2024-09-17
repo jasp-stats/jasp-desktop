@@ -24,6 +24,7 @@ static			std::string lastErrorMessage	= "";
 
 RInside							*rinside;
 ReadDataSetCB					readDataSetCB;
+ReadADataSetFilterCB			readDataSetRequestedCB;
 RunCallbackCB					runCallbackCB;
 ReadADataSetCB					readFullDataSetCB,
 								readFullFilteredDataSetCB,
@@ -94,6 +95,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readFullFilteredDataSetCB					= callbacks->readFullFilteredDataSetCB;
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
 	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
+	readDataSetRequestedCB						= callbacks->readDataSetRequestedCB;
 	requestTempRootNameCB						= callbacks->requestTempRootNameCB;
 	requestTempFileNameCB						= callbacks->requestTempFileNameCB;
 	readDataColumnNamesCB						= callbacks->readDataColumnNamesCB;
@@ -142,6 +144,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".postProcessLibraryModule"]		= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
 	rInside[".requestTempFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
 	rInside[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
+	rInside[".readDataSetRequestedNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequested);
 	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
@@ -911,18 +914,20 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		{
 			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
 			for (const std::string & tmp : tmps)
-				if(columnsOrder.count(tmp) == 0)
+				if(tmp != "")
 				{
-					columnsRequested[tmp]	= SetThis;
-					columnsOrder[tmp]		= (*colMax)++;
+					if(columnsOrder.count(tmp) == 0)
+					{
+						columnsRequested[tmp]	= SetThis;
+						columnsOrder[tmp]		= (*colMax)++;
+					}
+
+					else if(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == columnType::unknown)
+						columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
+
+					else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
+						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
 				}
-
-				else if(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == columnType::unknown)
-					columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
-
-				else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
-                    Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
-
 		}
 	};
 
@@ -991,6 +996,14 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	
 	freeRBridgeColumnType(columnsRequested, colMax);
 
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
+Rcpp::DataFrame jaspRCPP_readDataSetRequested()
+{
+	size_t				colMax				= 0;
+	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, true);
+	
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 

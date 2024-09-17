@@ -70,6 +70,7 @@ struct RBridgeColumnType {
 // Callbacks from jaspRCPP to rbridge
 typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)                (RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
 typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)               (size_t * colMax);
+typedef RBridgeColumn*				(STDCALL *ReadADataSetFilterCB)         (size_t * colMax, bool obeyFilter);
 typedef char**						(STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
 typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)     (RBridgeColumnType* columns, size_t colMax);
 typedef bool						(STDCALL *RequestPredefinedFileSourceCB)(const char **root, const char **relativePath);
@@ -90,6 +91,7 @@ typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encod
 
 struct RBridgeCallBacks {
 	ReadDataSetCB					readDataSetCB;
+	ReadADataSetFilterCB			readDataSetRequestedCB;
 	ReadDataColumnNamesCB			readDataColumnNamesCB;
 	ReadDataSetDescriptionCB		readDataSetDescriptionCB;
 	RequestPredefinedFileSourceCB	requestStateFileSourceCB;

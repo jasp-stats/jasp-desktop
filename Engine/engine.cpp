@@ -635,11 +635,9 @@ void Engine::runAnalysis()
 
 	Json::Value encodedAnalysisOptions = _analysisOptions;
 
-	ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions);
+	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions);
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
-								encodedAnalysisOptions.toStyledString(),
-								_analysisStateKey, _analysisId, _analysisRevision, _developerMode);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,	encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, _developerMode, _analysisColsTypes);
 
 	switch(_analysisStatus)
 	{
@@ -666,11 +664,10 @@ void Engine::runAnalysis()
 
 			Json::Reader().parse(_analysisResultsString, _analysisResults, false);
 
-			_engineState = engineState::idle;
+			_engineState	= engineState::idle;
 			_analysisStatus = Status::empty;
 
-			removeNonKeepFiles(
-					_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
+			removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
 			return;
 		
 	}
@@ -864,7 +861,7 @@ DataSet * Engine::provideAndUpdateDataSet()
 		setColumnNames |= _dataSet->checkForUpdates();
 
 	if(_dataSet && setColumnNames)
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames());
+		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames(), true);
 
 	JASPTIMER_STOP(Engine::provideDataSet());
 

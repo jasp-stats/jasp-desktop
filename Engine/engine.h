@@ -107,39 +107,40 @@ public:
 
 
 private: // Data:
-	static Engine		*	_EngineInstance;
-	const int				_engineNum;
-	const unsigned long		_parentPID;
-	DataSet				*	_dataSet				= nullptr;
-	DatabaseInterface	*	_db						= nullptr;
-	IPCChannel			*	_channel				= nullptr;
-	ColumnEncoder		*	_extraEncodings			= nullptr;
-	engineState				_engineState			= engineState::initializing,
-							_lastRequest			= engineState::initializing;
-	Status					_analysisStatus			= Status::empty;
-	int						_analysisId,
-							_analysisRevision,
-							_progress,
-							_ppi					= 96,
-							_numDecimals			= 3;
-	bool					_developerMode			= false,
-							_fixedDecimals			= false,
-							_exactPValues			= false,
-							_normalizedNotation		= true;
-	std::string				_analysisName,
-							_analysisTitle,
-							_analysisDataKey,
-							_analysisResultsMeta,
-							_analysisStateKey,
-							_analysisResultsString,
-							_resultFont,
-							_imageBackground		= "white",
-							_analysisRFile			= "",
-							_dynamicModuleCall		= "",
-							_langR					= "en";
-	Json::Value				_imageOptions,
-							_analysisOptions		= Json::nullValue,
-							_analysisResults;
+	static Engine				*	_EngineInstance;
+	const int						_engineNum;
+	const unsigned long				_parentPID;
+	DataSet						*	_dataSet				= nullptr;
+	DatabaseInterface			*	_db						= nullptr;
+	IPCChannel					*	_channel				= nullptr;
+	ColumnEncoder				*	_extraEncodings			= nullptr;
+	engineState						_engineState			= engineState::initializing,
+									_lastRequest			= engineState::initializing;
+	Status							_analysisStatus			= Status::empty;
+	int								_analysisId,
+									_analysisRevision,
+									_progress,
+									_ppi					= 96,
+									_numDecimals			= 3;
+	bool							_developerMode			= false,
+									_fixedDecimals			= false,
+									_exactPValues			= false,
+									_normalizedNotation		= true;
+	std::string						_analysisName,
+									_analysisTitle,
+									_analysisDataKey,
+									_analysisResultsMeta,
+									_analysisStateKey,
+									_analysisResultsString,
+									_resultFont,
+									_imageBackground		= "white",
+									_analysisRFile			= "",
+									_dynamicModuleCall		= "",
+									_langR					= "en";
+	Json::Value						_imageOptions,
+									_analysisOptions		= Json::nullValue,
+									_analysisResults;
+	ColumnEncoder::colsPlusTypes	_analysisColsTypes;
 
 
 };
