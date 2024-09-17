@@ -24,7 +24,10 @@ Column::Column(DataSet * data, int id)
 	_emptyValues(		new EmptyValues(data->emptyValues())),
 	_doubleDummy(		new Label(this)),
 	_autoSortByValue(	_autoSortByValuesByDefault)
-{}
+{
+	if(_id != -1)
+		db().columnSetAutoSort(_id, _autoSortByValue); //Store autosort in db
+}
 
 Column::~Column()
 {
