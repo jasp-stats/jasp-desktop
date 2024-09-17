@@ -109,12 +109,7 @@ Window
 					width:		outputScroll.width
 
 					TextArea
-					{
-						RSyntaxHighlighterQuick
-						{
-							textDocument:		outputWindow.textDocument
-						}
-						
+					{					
 						id:					outputWindow
 						text:				rCmd.output
 						font:				jaspTheme.fontRCode
@@ -124,6 +119,11 @@ Window
 						selectionColor:		jaspTheme.black
 						selectByMouse:		true
 						readOnly:			true
+
+						RSyntaxHighlighterQuick
+						{
+							textDocument:		outputWindow.textDocument
+						}
 
 						anchors
 						{
