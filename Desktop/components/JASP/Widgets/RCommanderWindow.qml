@@ -120,6 +120,11 @@ Window
 						selectByMouse:		true
 						readOnly:			true
 
+						RSyntaxHighlighterQuick
+						{
+							textDocument:		outputWindow.textDocument
+						}
+
 						anchors
 						{
 							left:		parent.left
