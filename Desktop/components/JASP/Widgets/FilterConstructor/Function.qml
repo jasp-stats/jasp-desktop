@@ -35,7 +35,8 @@ Item
 	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "median"]
 	property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
 
-	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
+	height: funcRoot.isRoot && !funcRoot.acceptsDrops ? filterConstructor.blockDim  //If in the operatorselector bar then force same height as other operators
+													  : meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
 	width: functionDef.width + haakjesLinks.width + dropRow.width + haakjesRechts.width + extraMeanWidth
 
 	function shouldDrag(mouseX, mouseY)
@@ -99,36 +100,36 @@ Item
 
 		Text
 		{
-			id: functionText
+			id:						functionText
 
-			anchors.top: parent.top
-			anchors.bottom: parent.bottom
+			anchors.top:			parent.top
+			anchors.bottom:			parent.bottom
 			color:					jaspTheme.textEnabled
 
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
+			verticalAlignment:		Text.AlignVCenter
+			horizontalAlignment:	Text.AlignHCenter
 
-			text:				funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
-			font.pixelSize:		filterConstructor.fontPixelSize
-			font.family:		jaspTheme.font.family
+			text:					funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
+			font.pixelSize:			filterConstructor.fontPixelSize
+			font.family:			jaspTheme.font.family
 
-			visible: !functionImg.visible
+			visible:				!functionImg.visible
 		}
 
 
 		Image
 		{
-			id: functionImg
+			id:						functionImg
 
-			visible: (!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
+			visible:				(!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
 
-			source: functionImageSource
+			source:					funcRoot.isRoot && !funcRoot.acceptsDrops ? jaspTheme.iconPath + "/sqrtSelector.png" : functionImageSource //workaround for operatorselector bar
 
 
-			height: filterConstructor.blockDim
-			width: height
-			sourceSize.width: filterConstructor.blockDim * 2
-			sourceSize.height: filterConstructor.blockDim * 2
+			height:					filterConstructor.blockDim
+			width:					height
+			sourceSize.width:		filterConstructor.blockDim * 2
+			sourceSize.height:		filterConstructor.blockDim * 2
 
 			anchors.verticalCenter: parent.verticalCenter
 
@@ -136,17 +137,17 @@ Item
 
 		Image
 		{
-			id: functionImgRoot
+			id:					functionImgRoot
 
-			visible: funcRoot.isRoot &&  funcRoot.acceptsDrops
+			visible:			funcRoot.isRoot &&  funcRoot.acceptsDrops
 
-			source: functionImageSource
-			anchors.top: parent.top
-			anchors.bottom: parent.bottom
-			width: filterConstructor.blockDim
-			sourceSize.width: filterConstructor.blockDim * 2
-			sourceSize.height: filterConstructor.blockDim * 3
-			smooth: true
+			source:				functionImageSource
+			anchors.top:		parent.top
+			anchors.bottom:		parent.bottom
+			width:				filterConstructor.blockDim
+			sourceSize.width:	filterConstructor.blockDim * 2
+			sourceSize.height:	filterConstructor.blockDim * 3
+			smooth:				true
 		}
 	}
 

@@ -159,8 +159,8 @@ Item
 
 			}
 
-			onClicked:	if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height)) ;
-						else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width))  ;
+			onClicked:	(mouse) => {	if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height)) ;
+										else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width))  ; }
 
 		}
 	}

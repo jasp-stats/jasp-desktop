@@ -131,9 +131,11 @@ FocusScope
 
 			anchors
 			{
-				top:		parent.top
-				left:		parent.left
-				bottom:		parent.bottom
+				top:			parent.top
+				left:			parent.left
+				bottom:			parent.bottom
+				margins:		columns.anchors.margins
+				bottomMargin:	columns.anchors.bottomMargin
 			}
 		}
 
@@ -141,10 +143,16 @@ FocusScope
 		{
 			id:				columns
 			model:			columnsModel
-			anchors.top:	parent.top
-			anchors.left:	columnsLeftScrollBar.right
-			anchors.bottom:	parent.bottom
-            width:          maxWidth
+			width:          maxWidth
+			anchors
+			{
+				top:			parent.top
+				left:			columnsLeftScrollBar.right
+				bottom:			parent.bottom
+				margins:		jaspTheme.contentMargin
+				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+			}
+			
 		}
 	}
 
