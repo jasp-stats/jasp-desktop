@@ -11,7 +11,8 @@ Item
 				property real	fontPixelSize:			baseFontSize * preferencesModel.uiScale
 				property real	blockDim:				baseBlockDim * preferencesModel.uiScale
 				property var	allKeys:				["number", "boolean", "string", "variable"]
-	readonly	property real	desiredMinimumHeight:	operatorsRow.height + hints.height + applyFilter.height + (blockDim * 3)
+	readonly	property real	desiredMinimumHeight:	operatorsRow.height + hints.height + applyFilter.height + blockDim * 4
+	readonly	property real	desiredHeight:			operatorsRow.height + hints.height + applyFilter.height + functieLijst.contentHeight
 				property real	extraSpaceUnderColumns:	0
 				property bool	somethingChanged:		false
 				property bool	isColumnConstructor:	false
@@ -151,9 +152,11 @@ Item
 
 				anchors
 				{
-					top:		parent.top
-					left:		parent.left
-					bottom:		parent.bottom
+					top:			parent.top
+					left:			parent.left
+					bottom:			parent.bottom
+					margins:		columns.anchors.margins
+					bottomMargin:	columns.anchors.bottomMargin
 				}
 			}
 
@@ -161,10 +164,16 @@ Item
 			{
 				id:				columns
 				model:			columnsModel
-				anchors.top:	parent.top
-				anchors.left:	columnsLeftScrollBar.right
-				anchors.bottom:	parent.bottom
-                width:          maxWidth
+				width:          maxWidth
+				anchors
+				{
+					top:			parent.top
+					left:			columnsLeftScrollBar.right
+					bottom:			parent.bottom
+					margins:		jaspTheme.contentMargin
+					bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+				}
+				
 			}
 		}
 
@@ -325,7 +334,7 @@ Item
 					top:			parent.top
 					right:			functionsRightScrollBar.left
 					bottom:			parent.bottom
-					margins:		2 * preferencesModel.uiScale
+					margins:		jaspTheme.contentMargin
 					bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 				}
 

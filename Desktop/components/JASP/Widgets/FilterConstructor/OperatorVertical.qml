@@ -96,7 +96,7 @@ Item
 	Image
 	{
 		id: opImg
-		y: leftDrop.y + leftDrop.height + 2
+		y: (operator === "/" && !acceptsDrops) ? 0 : leftDrop.y + leftDrop.height + 2
 
 		visible: operatorImageSource !== "" && (operator !== "/" || !acceptsDrops)
 
@@ -108,7 +108,7 @@ Item
 		width: height
 		anchors.horizontalCenter: parent.horizontalCenter
 	}
-
+	
 	Item
 	{
 		id: opTextStripe

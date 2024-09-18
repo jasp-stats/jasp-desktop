@@ -24,7 +24,7 @@ DragGeneric {
 	property string operator: "+"
 	property bool acceptsDrops: true
 
-	property var opImages: { '==': 'equal.png', '!=': 'notEqual.png', '<': 'lessThan.png', '>': 'greaterThan.png', '<=': 'lessThanEqual.png', '>=': 'greaterThanEqual.png',  '&': 'and.png', '|': 'or.png', '%%': 'modulo.png', '%|%': 'ConditionBy.png'}
+	property var opImages: { '+': 'plus.png', '-': 'minus.png', '*': 'multiply.png', '==': 'equal.png', '!=': 'notEqual.png', '<': 'lessThan.png', '>': 'greaterThan.png', '<=': 'lessThanEqual.png', '>=': 'greaterThanEqual.png',  '&': 'and.png', '|': 'or.png', '%%': 'modulo.png', '%|%': 'ConditionBy.png'}
 
 
 	property alias leftDrop: showMe.leftDrop
