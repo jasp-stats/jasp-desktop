@@ -1,8 +1,14 @@
 
-Guide to adding a module in JASP
+Structure of a JASP module
 ================================
 
-The ability to add your own module to JASP is a recently added feature (as of 0.9.3) and we will take care to avoid introducing breaking changes. The basic idea of loadable modules in JASP is that they follow the general structure of an R-package. In fact, if you have an R-package it is relatively easy to convert this to a module.
+The basic idea of loadable modules in JASP is that they follow the general structure of an R package. From now on, we'll assume the reader is familiar with R packaging. If not, check out these excellent materials: Software Carpentries' [R packaging course](https://carpentries-incubator.github.io/lesson-R-packaging/index.html) and, if you want to go deeper, the [R packages book](https://r-pkgs.org/).
+
+In a nutshell, a JASP module provides no more (and no less) than a user-friendly graphical interface for an underlying R package. See a graphical summary below:
+
+![](./img/puzzle.svg)
+
+The ability to add your own module to JASP is a recently added feature (as of 0.9.3).
 
 ## Structure
 A module folder should look as follows:

@@ -1,14 +1,58 @@
 # Developing workflow in JASP for modules
 So you want to develop a module for JASP? Great!
 
-## Windows & macOs
-The easiest way to do so is downloading the latest [nightly for your system](http://static.jasp-stats.org/Nightlies/) or (a bit harder) [building jasp yourself](./jasp-building-guide.md). 
+## Step 1. Install a latest version of JASP
 
-## Linux
-If you are on linux you can add the 'flathub-beta' repository with `flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo`. Then you can install the latest jasp beta as `flatpak install flathub-beta org.jaspstats.JASP` and run it as `flatpak run --branch=beta --devel org.jaspstats.JASP`. It will remember which branch btw, so to go back to the "normal" jasp run `flatpak run --branch=stable org.jaspstats.JASP`.
-The hard way to develop on Linux is to compile JASP from source. We have a guide on how to do that [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md).
+### Windows & macOs
+The easiest way to do so is downloading the latest [nightly for your system](http://static.jasp-stats.org/Nightlies/).
 
-## Development Process
+### Linux
+
+0. Installing JASP in Linux requires flatpak. Please follow [this link](https://flatpak.org/setup/) if you haven't installed it yet.
+1. Add the `flathub-beta` repository with: 
+
+```sh
+flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+```
+
+3. Install the latest jasp beta with:
+
+```sh
+flatpak install flathub-beta org.jaspstats.JASP
+```
+
+4. Open it in development mode:
+
+```sh
+flatpak run --branch=beta --devel org.jaspstats.JASP
+```
+
+> [!WARNING]
+> JASP will remember from which branch it was launched.
+> To go back to the "normal" jasp, run: 
+> ```sh
+> flatpak run --branch=stable org.jaspstats.JASP
+> ```
+
+#### Problems?
+Some users experienced the following error:
+```sh
+error: runtime/org.kde.Sdk/x86_64/6.7 not installed
+```
+This can be fixed by manually installing the missing runtime:
+```sh
+flatpak install org.kde.Sdk
+```
+and choosing the appropriate version (`6.7` in this example).
+
+### From source (advanced)
+In case you want to go the hard way and compile JASP from source, please follow our JASP building guides:
+
+- [For Windows](./jasp-build-guide-windows.md)
+- [For macOS](./jasp-build-guide-macos.md)
+- [For Linux](./jasp-build-guide-linux.md)
+
+## Step 2. Develop your module
 Then you either create a new module repository [based on this template](https://github.com/jasp-stats/jaspModuleTemplate) or by forking one of the existing modules in [jasp-stats](https://github.com/jasp-stats). For example, you can create the fork by downloading the .ZIP and repackage it as a TAR.GZ.
 
 To start developing your own module you should first understand the [structure of a module](jasp-adding-module.md). 
@@ -30,6 +74,17 @@ Before creating any of the other files you should now add the module folder in J
 2. Click on the plus symbol in the top right corner
 3. Click on Install Developer Module
 
+### Problems?
+If you are experiencing an error similar to the one below:
+
+![](./img/installation-fail.png)
+
+very likely GitHub is stopping you from cloning multiple repositories at the same time.
+
+The fix is to configure a GitHub [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) (PAT). The only purpose is to identify yourself as a legit user, so a token with no permissions will suffice.
+
+When you have it, go to `Preferences/Advanced`, untick `Use default PAT for Github` and paste your recently created token there. Don't forget to press `Enter` or `tab` to make sure the changes were saved!
+
 ### Developing the module
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
@@ -39,7 +94,7 @@ Similarly, if you change the title of your module in the .json file this will im
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 
 It might take a little while to see changes in R though, because JASP needs to rebuild the package and install it internally. So try to be patient with it ;)
 
-## Distributing the module
+## Step 3. Distribute your module
 In case you made a fork of an existing module all you need to do is open a PR to the original repository.
 Once your code is merged it will show up in the next nightly of JASP (or in your `jasp-desktop` folder if you build from source and run `git submodule update --remote`).
 
