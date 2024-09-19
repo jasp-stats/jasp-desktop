@@ -167,9 +167,9 @@ void RibbonButton::bindYourself()
 	if (_defaultActiveBinding)
 	{
 		setActiveDefault();
-		connect(this,								&RibbonButton::enabledChanged,			[=]() { setActiveDefault(); });
-		connect(this,								&RibbonButton::dataLoadedChanged,		[=]() { setActiveDefault(); });
-		connect(this,								&RibbonButton::requiresDataChanged,		[=]() { setActiveDefault(); });
+		connect(this,								&RibbonButton::enabledChanged,			[&]() { setActiveDefault(); });
+		connect(this,								&RibbonButton::dataLoadedChanged,		[&]() { setActiveDefault(); });
+		connect(this,								&RibbonButton::requiresDataChanged,		[&]() { setActiveDefault(); });
 	}
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);

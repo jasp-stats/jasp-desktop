@@ -725,7 +725,7 @@ void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & wa
 				dstFile.remove();
 		}
 
-	connect(watcher, &QFileSystemWatcher::fileChanged, [=](const QString & path)
+	connect(watcher, &QFileSystemWatcher::fileChanged, [&](const QString & path)
 	{
 		//If only a file changes then update this single file
 		QFileInfo srcFileChanged(path);
@@ -739,7 +739,7 @@ void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & wa
 		if(folder == "help")		emit	this->reloadHelpPage();
 	});
 
-	connect(watcher, &QFileSystemWatcher::directoryChanged, [=, &watcher](QString path)
+	connect(watcher, &QFileSystemWatcher::directoryChanged, [&](QString path)
 	{
 		Log::log() << "Watched folder " << folder.toStdString() << " had a changed directory (file added or removed) on path: " << path.toStdString() << std::endl;
 
