@@ -38,6 +38,7 @@ class TextAreaBase : public JASPListControl, public BoundControl
 
 	Q_PROPERTY( TextType	textType			READ textType				WRITE setTextType			NOTIFY textTypeChanged							)
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged					)
+	Q_PROPERTY( bool		autoCheckSyntax		READ autoCheckSyntax		WRITE setAutoCheckSyntax	NOTIFY autoCheckSyntaxChanged					)
 
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
@@ -66,17 +67,23 @@ public:
 	QString						text();
 	void						setText(const QString& text);
 
+	bool autoCheckSyntax() const;
+	void setAutoCheckSyntax(bool newAutoCheckSyntax);
+
 public slots:
 	GENERIC_SET_FUNCTION(TextType,			_textType,			textTypeChanged,		TextType	)
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
 
-	void	checkSyntaxHandler()																{ _boundControl->checkSyntax();							}
+	void	checkSyntaxHandler()		{ _boundControl->checkSyntax();							}
+	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax) checkSyntaxHandler();			}
 
 signals:
 	void	textTypeChanged();
 	void	hasScriptErrorChanged();
 	void	applyRequest();
 	void	editingFinished();
+
+	void autoCheckSyntaxChanged();
 
 protected slots:
 	void	termsChangedHandler()		override;
@@ -86,11 +93,11 @@ protected:
 
 	BoundControlTextArea*		_boundControl			= nullptr;
 	TextType					_textType				= TextType::TextTypeDefault;
-	bool						_hasScriptError			= false;
+	bool						_hasScriptError			= false,
+								_autoCheckSyntax		= true;
 	QList<QString>				_separators;
 	
 	ListModelTermsAvailable*	_model					= nullptr;
-	
 };
 
 

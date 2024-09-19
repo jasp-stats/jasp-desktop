@@ -73,7 +73,7 @@ void TextAreaBase::setUp()
 
 	//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
 	//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
-	connect(VariableInfo::info(),	&VariableInfo::rowCountChanged,		this,		&TextAreaBase::checkSyntaxHandler);
+	connect(VariableInfo::info(),	&VariableInfo::rowCountChanged,		this,		&TextAreaBase::checkSyntaxMaybeHandler);
 
 	//Also do it on request of course ;)
 	connect(this,					&TextAreaBase::applyRequest,		this,		&TextAreaBase::checkSyntaxHandler);
@@ -123,4 +123,17 @@ void TextAreaBase::_setInitialized(const Json::Value &value)
 
 	if (keepText)
 		setText(currentText);
+}
+
+bool TextAreaBase::autoCheckSyntax() const
+{
+	return _autoCheckSyntax;
+}
+
+void TextAreaBase::setAutoCheckSyntax(bool newAutoCheckSyntax)
+{
+	if (_autoCheckSyntax == newAutoCheckSyntax)
+		return;
+	_autoCheckSyntax = newAutoCheckSyntax;
+	emit autoCheckSyntaxChanged();
 }
