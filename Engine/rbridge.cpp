@@ -760,7 +760,7 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(	rbridge_encodeColumnNamesInScript(rCode));
+	std::string rCode64(	"library(jaspBase);\n" + rbridge_encodeColumnNamesInScript(rCode));
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
