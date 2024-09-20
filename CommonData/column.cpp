@@ -636,10 +636,13 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 
 	intintmap orderPerDbIds;
 
+	_highestIntsId = 0;
 	for(size_t i=0; i<_labels.size(); i++)
 	{
 		_labels[i]->setOrder(i);
 		orderPerDbIds[_labels[i]->dbId()] = i;
+
+		_highestIntsId = std::max(_highestIntsId, _labels[i]->intsId());
 	}
 
 	db().labelsSetOrder(orderPerDbIds);
@@ -657,6 +660,8 @@ void Column::labelsClear(bool doIncRevision)
 	db().labelsClear(_id);
 	_labels.clear();
 	_labelByIntsIdMap.clear();
+	_labelByValDis.clear();
+	_highestIntsId = 0;
 	
 	if(doIncRevision)
 		incRevision(false);
@@ -692,6 +697,9 @@ int Column::labelsAdd(int display)
 
 int Column::labelsAdd(const std::string &display)
 {
+
+	JASPTIMER_SCOPE(Column::labelsAdd displaystring);
+
 	if(display == "")
 		return EmptyValues::missingValueInteger;
 	
@@ -708,24 +716,27 @@ int Column::labelsAdd(const std::string &display)
 
 int Column::labelsAdd(const std::string & display, const std::string & description, const Json::Value & originalValue)
 {
-	sizetset intIds;
-	
-	for(Label * label : _labels)
-		intIds.insert(label->intsId());
-		
-	for(size_t newIntId = 0; ; newIntId++)
-		if(intIds.count(newIntId) == 0)
-			return labelsAdd(newIntId, display, true, description, originalValue);
+	JASPTIMER_SCOPE(Column::labelsAdd 3 args);
+
+	return labelsAdd(++_highestIntsId, display, true, description, originalValue);
 }
 
 int Column::labelsAdd(int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
 {
-	JASPTIMER_SCOPE(Column::labelsAdd);
+	JASPTIMER_SCOPE(Column::labelsAdd lotsa arg);
+
+	auto valDisplay = std::make_pair(Label::originalValueAsString(this, originalValue), display);
+
+	if(_labelByValDis.count(valDisplay))
+		return _labelByValDis.at(valDisplay)->intsId();
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
 	
-	_labelByIntsIdMap[label->intsId()] = label;
+	_labelByIntsIdMap[label->intsId()]	= label;
+	_labelByValDis[valDisplay]			= label;
+
+	_highestIntsId = std::max(_highestIntsId, label->intsId());
 
 	_dbUpdateLabelOrder(true);
 	return label->intsId();
@@ -744,7 +755,8 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove)
 			[&](Label * label) {
 				if(std::find(valuesToRemove.begin(), valuesToRemove.end(), label->intsId()) != valuesToRemove.end())
 				{
-						_labelByIntsIdMap.erase(label->intsId());
+					_labelByIntsIdMap.erase(label->intsId());
+					_labelByValDis.erase(std::make_pair(label->originalValueAsString(), label->labelDisplay()));
 					label->dbDelete();
 					delete label;
 					return true;
@@ -759,7 +771,7 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove)
 strintmap Column::labelsResetValues(int & maxValue)
 {
 	JASPTIMER_SCOPE(Column::labelsResetValues);
-	
+
 	beginBatchedLabelsDB();
 
 	strintmap result;
@@ -779,6 +791,8 @@ strintmap Column::labelsResetValues(int & maxValue)
 	}
 
 	maxValue = labelValue;
+
+	_highestIntsId = maxValue;
 
 	endBatchedLabelsDB();
 
@@ -941,8 +955,13 @@ int Column::labelsDoubleValueIsTempLabelRow(double dbl)
 void Column::_resetLabelValueMap()
 {
 	_labelByIntsIdMap.clear();
+	_labelByValDis.clear();
+
 	for(Label * label : _labels)
-		_labelByIntsIdMap[label->intsId()] = label;
+	{
+		_labelByIntsIdMap[label->intsId()]														= label;
+		_labelByValDis[std::make_pair(label->originalValueAsString(), label->labelDisplay())]	= label;
+	}
 	
 	labelsTempReset();
 }
@@ -1272,11 +1291,17 @@ bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
 	return true;
 }
 
-void Column::labelValueChanged(Label *label, double aDouble)
+void Column::labelValueChanged(Label *label, double aDouble, const Json::Value & previousOriginal)
 {
+	auto oldValDis = std::make_pair(Label::originalValueAsString(this, previousOriginal), label->labelDisplay());
+
+	//Make sure it was registered before:
+	assert(_labelByValDis[oldValDis] == label);
+	//And that its new location is free:
+	assert(_labelByValDis.count(label->origValDisplay()) == 0);
+
 	//Lets assume that all occurences of a label in _dbls are the same.
 	//So when we encounter one that is the same as what is passed here we can return immediately
-	
 	for(size_t r=0; r<_dbls.size(); r++)
 		if(_ints[r] == label->intsId())
 		{
@@ -1286,6 +1311,10 @@ void Column::labelValueChanged(Label *label, double aDouble)
 			_dbls[r] = aDouble;
 		}
 	
+
+	_labelByValDis.erase(oldValDis);
+	_labelByValDis[label->origValDisplay()] = label;
+
 	dbUpdateValues();
 }
 
@@ -1295,8 +1324,19 @@ void Column::labelsHandleAutoSort(bool doDbUpdateEtc)
 		labelsOrderByValue(doDbUpdateEtc);	
 }
 
-void Column::labelDisplayChanged(Label *label)
+void Column::labelDisplayChanged(Label *label, const std::string & previousDisplay)
 {
+	auto oldValDis = std::make_pair(label->originalValueAsString(), previousDisplay);
+
+	//Make sure it was registered before:
+	assert(_labelByValDis[oldValDis] == label);
+	//And that its new location is free:
+	assert(_labelByValDis.count(label->origValDisplay()) == 0);
+
+	_labelByValDis.erase(oldValDis);
+	_labelByValDis[label->origValDisplay()] = label;
+
+
 	if(_labelsTempRevision < _revision)
 		return; //We dont care about this change anymore if the list is out of date
 
@@ -1513,17 +1553,14 @@ Labelset Column::labelsByValue(const std::string & value) const
 	return Labelset(found.begin(), found.end());
 }
 
+
+
 Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
 {
 	JASPTIMER_SCOPE(Column::labelsByValueAndDisplay);
 
-	Labels found;
-	for(Label * label : _labels)
-		if(label->originalValueAsString() == value && label->label() == labelText)
-			return label;
-	
-	
-	return nullptr;
+	auto valDis = std::make_pair(value, labelText);
+	return _labelByValDis.count(valDis) == 0 ? nullptr : _labelByValDis.at(valDis);
 }
 
 bool Column::labelsMergeDuplicates()
@@ -1921,11 +1958,11 @@ Json::Value	Column::serializeLabels() const
 
 void Column::deserializeLabelsForCopy(const Json::Value & labels)
 {
-	
 	labelsTempReset();
 
 	beginBatchedLabelsDB();
 	_labelByIntsIdMap.clear();
+	_labelByValDis.clear();
 	_labels.clear();
 
 	if (labels.isArray())

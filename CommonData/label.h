@@ -45,7 +45,10 @@ public:
 			int					order()						const	{ return _order;			}
 			bool				filterAllows()				const	{ return _filterAllows;		}
 	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
+	std::pair<std::string
+		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), labelDisplay()); }
 
+	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false);
 			std::string			originalValueAsString(bool fancyEmptyValue = false)		const;
 			std::string			str() const;
 			
@@ -77,7 +80,7 @@ private:
 	bool			_filterAllows	= true;	///< Used in generating filters for when users disable and enable certain labels/levels
 };
 
-typedef std::vector<Label*> Labels;
-typedef std::set<Label*>	Labelset;
+typedef std::vector<Label*>				Labels;
+typedef std::set<Label*>				Labelset;
 
 #endif // LABEL_H
