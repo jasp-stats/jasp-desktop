@@ -5166,3 +5166,7 @@ msgstr ""
 msgctxt "Computer|"
 msgid "SAS Files %1"
 msgstr ""
+
+msgctxt "ColorPalette|"
+msgid "JASP"
+msgstr ""
