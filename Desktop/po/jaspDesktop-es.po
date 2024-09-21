@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-09-15 09:32+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.8-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5532,39 +5538,39 @@ msgstr "Nuevo"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Importando archivo de Excel"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Todos los conjuntos de datos %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "Archivos de JASP %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "Archivos de texto CSV %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "Archivos de hoja de cálculo %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "Archivos de SPSS %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Archivos de Stata %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "Archivos de SAS %1"
