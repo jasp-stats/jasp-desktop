@@ -329,6 +329,9 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxs
                  ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/exe/ExePackerScript.iss.in
+                ${CMAKE_BINARY_DIR}/ExePackerScript.iss @ONLY)
+
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/WIX.cmd.in
                  ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
