@@ -1265,7 +1265,7 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 		if(!std::isnan(_dbls[r]) && doubleIntIdMap.count(_dbls[r]))
 			_ints[r] = doubleIntIdMap[_dbls[r]]; 
 	
-	dbUpdateValues();
+	dbUpdateValues(false);
 	
 	return doubleLabelMap;
 }
@@ -1278,7 +1278,6 @@ Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 	if(labelByIndexNotEmpty(row))
 		return labelByIndexNotEmpty(row);
 	
-	bool		labelsTempUpToDate = _revision == _labelsTempRevision; //If so we can just update it at the end. We dont not yet need to recreate them
 	doublevec	dbls;
 	double		dbl;
 	
@@ -1293,9 +1292,6 @@ Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 
 	//the last dbl is the one we want so use it to get the right label from the map:
 	Label * label = replaceDoubleWithLabel(dbls)[dbl];
-	
-	if(labelsTempUpToDate)
-		_labelsTempRevision = _revision;
 	
 	return label;
 }
