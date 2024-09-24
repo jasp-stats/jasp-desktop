@@ -823,6 +823,7 @@ bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObje
 bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
 {
 	static Rcpp::Function asNumeric("as.numeric");
+	
 	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::Vector<STRSXP>()	: Rcpp::as<Rcpp::Vector<STRSXP>>(data);
 	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(asNumeric(Rcpp::_["x"] = data));
 	
@@ -831,7 +832,12 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 	const char ** nominals = new const char*[convertedStrings.size()]();
 
 	for(size_t i=0; i<convertedStrings.size(); i++)
-		nominals[i] = std::isnan(dblData[i]) && convertedStrings[i] == "NA" ? "" : convertedStrings[i].c_str();
+	{
+		bool	isNA  = std::isnan(dblData[i]) && convertedStrings[i] == "NA",
+				isLgl = std::isnan(dblData[i]) && (convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE" );
+		
+		nominals[i] = !(isNA || isLgl) ? convertedStrings[i].c_str() : isNA ? "" : convertedStrings[i] == "TRUE" ? "1" : "0";
+	}
 
 	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType));
 }
