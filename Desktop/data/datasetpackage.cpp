@@ -250,8 +250,9 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 				
 			case dataSetBaseNodeType::column:
 			{
-				Column * col = dynamic_cast<Column*>(parentNode);
-				pointer = dynamic_cast<const void*>(col->labels().size() > row ? col->labels()[row] : col->labelDoubleDummy());
+				Column	* col	= dynamic_cast<Column*>(parentNode);
+				Label	* lab	= col->labelByIndexNotEmpty(row);
+				pointer			= dynamic_cast<const void*>(lab ? lab : col->labelDoubleDummy());
 				break;
 			}
 				
