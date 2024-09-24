@@ -11,7 +11,7 @@
 	body				   				{ float:	none  !important;  }
 
     .jasp-toolbar			    		{ page-break-after:	avoid;	}
-	.jasp-analysis			    		{ page-break-after:	avoid; }
+	.jasp-analysis			    		{ page-break-after:	auto; }
 	.jasp-collection		    		{ page-break-inside:	avoid;	}
 	.hidden-collection		    		{ page-break-inside:	auto;	}
 	.object-body			    		{ page-break-inside:	auto;	}
