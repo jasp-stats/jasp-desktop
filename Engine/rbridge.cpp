@@ -62,6 +62,18 @@ void rbridge_setEngine(Engine * engine)
 	rbridge_engine = engine;
 }
 
+const std::string jaspBaseDistributionSamplersR =
+		#include "jaspBase_distributionSamplers.h"
+		;
+
+const std::string jaspBaseFriendlyConstructorFunctionsR =
+		#include "jaspBase_friendlyConstructorFunctions.h"
+		;
+
+const std::string jaspBaseTransformFunctionsR =
+		#include "jaspBase_transformFunctions.h"
+		;
+
 void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont)
 {
 	JASPTIMER_SCOPE(rbridge_init);
@@ -103,6 +115,7 @@ void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessag
 	JASPTIMER_START(jaspRCPP_init);
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
+	static std::string initRCode	 = jaspBaseDistributionSamplersR + "\n" + jaspBaseFriendlyConstructorFunctionsR + "\n" + jaspBaseTransformFunctionsR;
 	
 	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
@@ -115,7 +128,8 @@ void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessag
 					rbridge_system,
 					rbridge_moduleLibraryFixer,
 					resultFont,
-					tempDirStatic.c_str()
+					tempDirStatic.c_str(),
+					initRCode.c_str()
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
@@ -760,7 +774,7 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(	"library(jaspBase);\n" + rbridge_encodeColumnNamesInScript(rCode));
+	std::string rCode64(rbridge_encodeColumnNamesInScript(rCode));
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}

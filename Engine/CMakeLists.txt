@@ -15,6 +15,10 @@ if(LINUX)
 
 endif()
 
+make_includable(jaspBase/R/distributionSamplers.R			jaspBase_distributionSamplers.h)
+make_includable(jaspBase/R/friendlyConstructorFunctions.R	jaspBase_friendlyConstructorFunctions.h)
+make_includable(jaspBase/R/transformFunctions.R				jaspBase_transformFunctions.h)
+
 file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
