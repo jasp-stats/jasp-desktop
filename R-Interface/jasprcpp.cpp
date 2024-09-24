@@ -821,20 +821,24 @@ bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObje
 bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
 {
 	static Rcpp::Function asNumeric("as.numeric");
+	static Rcpp::Function asCharacter("as.character");
 	
-	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::Vector<STRSXP>()	: Rcpp::as<Rcpp::Vector<STRSXP>>(data);
-	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(asNumeric(Rcpp::_["x"] = data));
+	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::CharacterVector()	: Rcpp::CharacterVector(asCharacter(Rcpp::_["x"] = data));
+	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(	asNumeric(	Rcpp::_["x"] = data));
 	
-	std::vector<std::string> convertedStrings(strData.begin(), strData.end());
+	stringvec convertedStrings(strData.begin(), strData.end());
 
 	const char ** nominals = new const char*[convertedStrings.size()]();
 
 	for(size_t i=0; i<convertedStrings.size(); i++)
 	{
-		bool	isNA  = std::isnan(dblData[i]) && convertedStrings[i] == "NA",
-				isLgl = std::isnan(dblData[i]) && (convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE" );
+		bool	isNA  = convertedStrings[i] == "NA",
+				isLgl = convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE",
+				isNan = std::isnan(dblData[i]);
 		
-		nominals[i] = !(isNA || isLgl) ? convertedStrings[i].c_str() : isNA ? "" : convertedStrings[i] == "TRUE" ? "1" : "0";
+		nominals[i] = std::isnan(dblData[i])	// If the string could not be converted to a number its not TRUE or FALSE, but it might be NA. We do not want that as a result!
+					? (!isNA	? convertedStrings[i].c_str() : "") 
+					: (!isLgl	? convertedStrings[i].c_str() : convertedStrings[i] == "TRUE" ? "1" : "0"); //Also getting TRUE or FALSE is not ideal
 	}
 
 	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType));
