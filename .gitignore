@@ -81,3 +81,6 @@ Desktop/utilities/simplecryptkey.h
 Desktop/modules/activemodules.h
 Common/appinfo.cpp
 QMLComponents/utilities/appdirs.h
+Engine/jaspBase_distributionSamplers.h
+Engine/jaspBase_friendlyConstructorFunctions.h
+Engine/jaspBase_transformFunctions.h

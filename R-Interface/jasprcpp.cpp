@@ -71,7 +71,7 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc,
-	libraryFixerDef libraryFixerFunc, const char* resultFont, const char * tempDir)
+	libraryFixerDef libraryFixerFunc, const char* resultFont, const char * tempDir, const char * initFriendlyFunctionsRCode)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
@@ -172,9 +172,12 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".ppi"]								= 300;
 
 	jaspRCPP_parseEvalQNT("library(methods)");
+	
+	jaspRCPP_logString("Loading friendly R functions for computed columns and filters.");
+	jaspRCPP_parseEvalQNT(initFriendlyFunctionsRCode);
 
 	_R_HOME = jaspRCPP_parseEvalStringReturn("R.home('')");
-	jaspRCPP_logString("R_HOME is: " + _R_HOME + "\n");
+	jaspRCPP_logString("jaspRCPP_init is done, R_HOME is: " + _R_HOME + "\n");
 
 }
 
@@ -230,16 +233,11 @@ void STDCALL jaspRCPP_init_jaspBase()
 	//Load it
 	jaspRCPP_logString("Initializing jaspBase.\n");
 	jaspRCPP_parseEvalQNT("library(jaspBase)");
-
-//	if we have a separate engine for each module then we should move these kind of hacks to the .onAttach() of each module (instead of loading BayesFactor when Descriptives is requested).
-//	jaspRCPP_logString("initEnvironment().\n");
-//	jaspRCPP_parseEvalQNT("initEnvironment()");
 	
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 
 	jaspRCPP_logString("Finished initializing jaspBase.\n");
-
 }
 
 void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * modulesFolder, const char * linkFolder, const char * junctionsFilePath)
@@ -823,15 +821,25 @@ bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObje
 bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
 {
 	static Rcpp::Function asNumeric("as.numeric");
-	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::Vector<STRSXP>()	: Rcpp::as<Rcpp::Vector<STRSXP>>(data);
-	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(asNumeric(Rcpp::_["x"] = data));
+	static Rcpp::Function asCharacter("as.character");
 	
-	std::vector<std::string> convertedStrings(strData.begin(), strData.end());
+	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::CharacterVector()	: Rcpp::CharacterVector(asCharacter(Rcpp::_["x"] = data));
+	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(	asNumeric(	Rcpp::_["x"] = data));
+	
+	stringvec convertedStrings(strData.begin(), strData.end());
 
 	const char ** nominals = new const char*[convertedStrings.size()]();
 
 	for(size_t i=0; i<convertedStrings.size(); i++)
-		nominals[i] = std::isnan(dblData[i]) && convertedStrings[i] == "NA" ? "" : convertedStrings[i].c_str();
+	{
+		bool	isNA  = convertedStrings[i] == "NA",
+				isLgl = convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE",
+				isNan = std::isnan(dblData[i]);
+		
+		nominals[i] = std::isnan(dblData[i])	// If the string could not be converted to a number its not TRUE or FALSE, but it might be NA. We do not want that as a result!
+					? (!isNA	? convertedStrings[i].c_str() : "") 
+					: (!isLgl	? convertedStrings[i].c_str() : convertedStrings[i] == "TRUE" ? "1" : "0"); //Also getting TRUE or FALSE is not ideal
+	}
 
 	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType));
 }
