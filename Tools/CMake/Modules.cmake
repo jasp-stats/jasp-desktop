@@ -165,24 +165,36 @@ add_custom_target(
 configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspModuleInstaller.R.in"
                    ${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R @ONLY)
 
-# I'm using a custom_command here to make sure that jaspModuleInstaller is installed once
-if(APPLE)
-	add_dependencies(jaspModuleInstaller JASPEngine)
+add_dependencies(jaspModuleInstaller JASPEngine)
 
+# always run a cmake command, based on https://stackoverflow.com/a/31518137
+# we want the R code to install jaspModuleInstaller to always run, because it generates
+# a status object that indicates which modules need reinstallation
+if(EXISTS ${JASPMODULEINSTALLER_LIBRARY}/fakeFile.R)
+    message(FATAL_ERROR "File \"${JASPMODULEINSTALLER_LIBRARY}/fakeFile.R\" found, \
+        this file should never be created, please remove it manually!")
+endif()
+
+if(APPLE)
 	add_custom_command(
 	  WORKING_DIRECTORY ${R_HOME_PATH}
-          OUTPUT  ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
+          OUTPUT
+              ${JASPMODULEINSTALLER_LIBRARY}/fakeFile.R          # never exists, thus ensures this is run
+              ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller # created by this command
           USES_TERMINAL
-          COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
+          COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --no-echo --vanilla --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
           COMMENT "------ Installing 'jaspModuleInstaller'")
 else()
-	add_custom_command(
-	  WORKING_DIRECTORY ${R_HOME_PATH}
-          OUTPUT ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller
-	  USES_TERMINAL
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-                  --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
+
+        add_custom_command(
+          WORKING_DIRECTORY ${R_HOME_PATH}
+          OUTPUT
+            ${JASPMODULEINSTALLER_LIBRARY}/fakeFile.R          # never exists, thus ensures this is run
+            ${JASPMODULEINSTALLER_LIBRARY}/jaspModuleInstaller # created by this command
+          USES_TERMINAL
+          COMMAND ${R_EXECUTABLE} --no-echo --vanilla --file=${SCRIPT_DIRECTORY}/install-jaspModuleInstaller.R
           COMMENT "------ Installing 'jaspModuleInstaller'")
+
 endif()
   
   
