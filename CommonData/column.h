@@ -41,6 +41,8 @@ class Analysis;
 class Column : public DataSetBaseNode
 {
 public:
+	typedef std::map<std::pair<std::string, std::string>, Label*>	LabelByStrStr;
+
 									Column(DataSet * data, int id = -1);
 									~Column();
 									
@@ -114,7 +116,7 @@ public:
 			int						labelsAdd(			const std::string & display);
 			int						labelsAdd(			const std::string & display, const std::string & description, const Json::Value & originalValue);
 			int						labelsAdd(			int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
-			void					labelsRemoveByIntsId(	intset valuesToRemove);
+			void					labelsRemoveByIntsId(	intset valuesToRemove, bool updateOrder = true);
 			strintmap				labelsResetValues(	int & maxValue);
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
@@ -149,9 +151,9 @@ public:
             Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row);
 			bool					replaceDoubleLabelFromRowWithDouble(size_t row, double dbl); ///< Returns true if succes
 
-			void					labelValueChanged(Label * label, double aDouble); ///< Pass NaN for non-convertible values
-			void					labelValueChanged(Label * label, int	anInteger) { labelValueChanged(label, double(anInteger)); }
-			void					labelDisplayChanged(Label * label);
+			void					labelValueChanged(Label * label,	double aDouble,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
+			void					labelValueChanged(Label * label,	int	anInteger,	const Json::Value & previousOriginal) { labelValueChanged(label, double(anInteger), previousOriginal); }
+			void					labelDisplayChanged(Label * label,	const std::string & previousDisplay);
 			
 			bool					setStringValue(				size_t row, const std::string & value, const std::string & label = "", bool writeToDB = true); ///< Does two things, if label=="" it will handle user input, as value or label depending on columnType. Otherwise it will simply try to use userEntered as a value. But this will trigger the setting of type
 			bool					setValue(					size_t row, const std::string & value, const std::string & label,	bool writeToDB = true);
@@ -166,16 +168,16 @@ public:
 
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
-			bool					labelsMergeDuplicates();
+			void					labelsMergeDuplicateInto(Label * label);
 			bool					labelsRemoveOrphans();
 			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
 			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
-			int						labelIndex(				const Label			*	label)									const;
+			int						labelIndexNonEmpty(		Label				*	label)									const;
 			Label				*	labelByRow(				int						row)									const; ///< 
 			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
 			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
 			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
-			Label				*	labelByIndexNotEmpty(	size_t					index)									const;
+			Label				*	labelByIndexNotEmpty(	int						index)									const;
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
 			void					labelsHandleAutoSort(	bool					doDbUpdateEtc = true);
 			size_t					labelCountNotEmpty()																	const;
@@ -249,7 +251,8 @@ private:
 			int						_id					= -1,
 									_analysisId			= -1,	// Actually initialized in DatabaseInterface::columnInsert
 									_labelsTempRevision	= -1,	///< When were the "temporary labels" created?
-									_labelsTempNumerics = 0;	///< Use the labelsTemp step to calculate the amount of numeric labels
+									_labelsTempNumerics = 0,	///< Use the labelsTemp step to calculate the amount of numeric labels
+									_highestIntsId		= -1;
 			qsizetype				_labelsTempMaxWidth = 0;
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
@@ -267,7 +270,10 @@ private:
 			doublevec				_dbls;
 			intvec					_ints;
 			stringset				_dependsOnColumns;
-			std::map<int, Label*>	_labelByIntsIdMap;
+			std::map<int, Label*>	_labelByIntsIdMap,
+									_labelByNonEmptyIndex;
+			std::map<Label*, int>	_labelNonEmptyIndexByLabel;
+			LabelByStrStr			_labelByValDis;
 			int						_batchedLabelDepth	= 0;
 	static	bool					_autoSortByValuesByDefault;
 			

@@ -296,7 +296,7 @@ QModelIndex DataSetPackage::indexForSubNode(DataSetBaseNode * node) const
 		{
 			Label	* lab = dynamic_cast<Label*>( node);
 			Column	* col = lab ? dynamic_cast<Column*>(node->parent()) : nullptr;
-			int		i = col ? col->labelIndex(lab) : -1;
+			int		i = col ? col->labelIndexNonEmpty(lab) : -1;
 
 			return createIndex(i, 0, dynamic_cast<void*>(lab));
 		}

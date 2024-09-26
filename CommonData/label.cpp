@@ -1,5 +1,4 @@
 #include "label.h"
-#include <sstream>
 #include "column.h"
 #include "timers.h"
 #include "databaseinterface.h"
@@ -135,9 +134,10 @@ bool Label::setLabel(const std::string & label)
 {
 	if(_label != label)
 	{
+		std::string oldLabel = _label;
 		_label = label.empty() ? originalValueAsString() : label;
 		
-		_column->labelDisplayChanged(this);
+		_column->labelDisplayChanged(this, oldLabel);
 
 		dbUpdate();
 		return true;
@@ -150,12 +150,13 @@ bool Label::setOriginalValue(const Json::Value & originalLabel)
 {
 	if(_originalValue != originalLabel)
 	{
+		Json::Value previous = _originalValue;
 		_originalValue = originalLabel;
 		dbUpdate();
 		
-		if(_originalValue.isDouble())	_column->labelValueChanged(this, _originalValue.asDouble()		);
-		else if(_originalValue.isInt())	_column->labelValueChanged(this, _originalValue.asInt()			);
-		else							_column->labelValueChanged(this, EmptyValues::missingValueDouble);
+		if(_originalValue.isDouble())	_column->labelValueChanged(this, _originalValue.asDouble(),			previous);
+		else if(_originalValue.isInt())	_column->labelValueChanged(this, _originalValue.asInt(),			previous);
+		else							_column->labelValueChanged(this, EmptyValues::missingValueDouble,	previous);
 		
 		return true;
 	}
@@ -227,19 +228,24 @@ bool Label::isEmptyValue() const
 
 std::string Label::originalValueAsString(bool fancyEmptyValue) const
 {
-	switch(_originalValue.type())
+	return originalValueAsString(_column, _originalValue, fancyEmptyValue);
+}
+
+std::string Label::originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue)
+{
+	switch(originalValue.type())
 	{
 	default:
 		return fancyEmptyValue ? EmptyValues::displayString() : "";
 
 	case Json::intValue:
-		return std::to_string(_originalValue.asInt());
+		return std::to_string(originalValue.asInt());
 
 	case Json::realValue:
-		return _column->doubleToDisplayString(_originalValue.asDouble(), fancyEmptyValue);
+		return column->doubleToDisplayString(originalValue.asDouble(), fancyEmptyValue);
 
 	case Json::stringValue:
-		return _originalValue.asString();
+		return originalValue.asString();
 	}
 }
 
