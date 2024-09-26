@@ -403,7 +403,7 @@ Item
 
 				function onExportToPDF(pdfPath)
 				{
-					resultsView.printToPdf(pdfPath);
+					resultsView.printToPdf(pdfPath, preferencesModel.pdfPageSize, preferencesModel.pdfOrientation);
 				}
 
 				function onPrepForExport()

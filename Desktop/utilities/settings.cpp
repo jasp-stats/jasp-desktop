@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "resultstesting/compareresults.h"
+#include "gui/pdfdefinition.h"
 
 QSettings* Settings::_settings = nullptr;
 
@@ -92,7 +93,9 @@ const Settings::Setting Settings::Values[] = {
 	{"checkUpdatesAskUser",			true	},
 	{"checkUpdates",				false	},
 	{"checkUpdatesLastTime",		-1		},
-	{"maxScaleLevels",				100		}
+	{"maxScaleLevels",				100		},
+	{"pdfOrientation",				int(pdfOrientation::landscape)	},
+	{"pdfPageSize",					int(pdfPageSize::A4)			}
 	
 };	
 

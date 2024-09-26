@@ -142,9 +142,52 @@ ScrollView
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
 
-					KeyNavigation.tab:		showRSyntaxInResults
+					KeyNavigation.tab:		pdfOrientationLandscape
 				}
 			}
+		}
+
+		PrefsGroupRect
+		{
+			title:				qsTr("PDF Settings")
+
+			RadioButtonGroup
+			{
+				id:		pdfOrientation
+				title:	qsTr("Orientation")
+
+				RadioButton
+				{
+					id:					pdfOrientationPortrait
+					label:				qsTr("Portrait")
+					checked:			preferencesModel.pdfOrientation === preferencesModel.pdfPortrait
+					onCheckedChanged:	if (checked) preferencesModel.pdfOrientation = preferencesModel.pdfPortrait
+
+					KeyNavigation.tab:	pdfOrientationLandscape
+				}
+
+				RadioButton
+				{
+					id:					pdfOrientationLandscape
+					label:				qsTr("Landsacpe")
+					checked:			preferencesModel.pdfOrientation === preferencesModel.pdfLandscape
+					onCheckedChanged:	if (checked) preferencesModel.pdfOrientation = preferencesModel.pdfLandscape
+
+					KeyNavigation.tab:	pdfPageSize
+				}
+			}
+
+			DropDown
+			{
+				id:				pdfPageSize
+				label:			qsTr("Page size")
+				values:			preferencesModel.pdfPageSizeModel
+				startValue: 	preferencesModel.pdfPageSize
+				onValueChanged: preferencesModel.pdfPageSize = value
+
+				KeyNavigation.tab:		showRSyntaxInResults
+			}
+
 		}
 
 		PrefsGroupRect
@@ -164,7 +207,6 @@ ScrollView
 				KeyNavigation.tab:		displayExactPVals
 			}
 		}
-
 
 		Item
 		{
