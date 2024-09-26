@@ -97,7 +97,7 @@ private:
 					_enabled				= true,
 					_debug					= false,
 					_hasWrapper				= false,
-					_preloadData			= true;
+					_preloadData			= false;
 };
 
 #define MAKE_ENTRY_CLASS(CLASS_NAME, ENTRYTYPENAME) class CLASS_NAME : public EntryBase \
