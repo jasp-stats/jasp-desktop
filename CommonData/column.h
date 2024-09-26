@@ -116,7 +116,7 @@ public:
 			int						labelsAdd(			const std::string & display);
 			int						labelsAdd(			const std::string & display, const std::string & description, const Json::Value & originalValue);
 			int						labelsAdd(			int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
-			void					labelsRemoveByIntsId(	intset valuesToRemove);
+			void					labelsRemoveByIntsId(	intset valuesToRemove, bool updateOrder = true);
 			strintmap				labelsResetValues(	int & maxValue);
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
@@ -168,16 +168,16 @@ public:
 
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
-			bool					labelsMergeDuplicates();
+			void					labelsMergeDuplicateInto(Label * label);
 			bool					labelsRemoveOrphans();
 			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
 			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
-			int						labelIndex(				const Label			*	label)									const;
+			int						labelIndexNonEmpty(		Label				*	label)									const;
 			Label				*	labelByRow(				int						row)									const; ///< 
 			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
 			Label				*	labelByIntsId(			int						intsId)									const; ///< Might be nullptr for missing label
 			Label				*	labelByDisplay(			const std::string	&	display)								const; ///< Might be nullptr for missing label, returns the first of labelsByDisplay
-			Label				*	labelByIndexNotEmpty(	size_t					index)									const;
+			Label				*	labelByIndexNotEmpty(	int						index)									const;
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
 			void					labelsHandleAutoSort(	bool					doDbUpdateEtc = true);
 			size_t					labelCountNotEmpty()																	const;
@@ -270,7 +270,9 @@ private:
 			doublevec				_dbls;
 			intvec					_ints;
 			stringset				_dependsOnColumns;
-			std::map<int, Label*>	_labelByIntsIdMap;
+			std::map<int, Label*>	_labelByIntsIdMap,
+									_labelByNonEmptyIndex;
+			std::map<Label*, int>	_labelNonEmptyIndexByLabel;
 			LabelByStrStr			_labelByValDis;
 			int						_batchedLabelDepth	= 0;
 	static	bool					_autoSortByValuesByDefault;
