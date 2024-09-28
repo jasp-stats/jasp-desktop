@@ -54,7 +54,7 @@
 
 		<Directory Id="ProgramMenuFolder">
 			<Directory Id="ProgramMenuSubfolder" Name="JASP">
-				<Component Id="ApplicationShortcut" Guid="553ab265-b401-48f6-a080-752abbed57c8"> 
+				<Component Id="ApplicationShortcut" Guid="553AB265-B401-48F6-A080-752ABBED57C8"> 
 
 					<RegistryValue Root="HKMU" Key="Software\JASP\JASP" Name="installed" Type="string" Value="JASP is installed here ;)"/> <!-- The registery key is necessary to make sure that we can check if the shortcut is installed or not -->
 
@@ -64,7 +64,7 @@
 					<RemoveFolder Id="ProgramMenuSubfolder"                             	On="uninstall"/> 
 				</Component>
 
-				<Component Id="FileTypeRegistration" Guid="c3591efa-fe71-416e-b5b8-6df0098f03c4">
+				<Component Id="FileTypeRegistration" Guid="C3591EFA-FE71-416E-B5B8-6DF0098F03C4">
 
 
 					<!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
@@ -95,15 +95,12 @@
 
 	<!-- Disable ms-gaming overlay pop while JASP starting -->
 	<DirectoryRef Id="TARGETDIR">
-		<Component Id="RegistryEntryHacky" Guid="4a21415f-a538-4cd4-a7d6-338390840bfb">
-			<RegistryKey Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
+		<Component Id="RegistryEntryHacky" Guid="4A21415F-A538-4CD4-A7D6-338390840BFB">
+			<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\GameDVR">
 				<RegistryValue Name="AppCaptureEnabled" Value="0" Type="integer"  />
 			</RegistryKey>
-			<RegistryKey Root="HKMU" Key="System\GameConfigStore">
+			<RegistryKey Root="HKCU" Key="System\GameConfigStore">
 				<RegistryValue Name="GameDVR_Enabled" Value="0"   Type="integer" />
-			</RegistryKey>
-			<RegistryKey Root="HKMU" Key="Software\Policies\Microsoft\Windows\GameDVR">
-				<RegistryValue Name="AllowGameDVR" Value="0"   Type="integer"  />
 			</RegistryKey>
 		</Component>
 	</DirectoryRef>
