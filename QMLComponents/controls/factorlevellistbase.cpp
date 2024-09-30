@@ -117,6 +117,8 @@ bool FactorLevelListBase::isJsonValid(const Json::Value &value) const
 
 void FactorLevelListBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	Json::Value boundValue(Json::arrayValue);
 	const vector<pair<string, vector<string> > > &factors = _factorLevelsModel->getFactors();
 	

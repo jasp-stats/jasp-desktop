@@ -195,6 +195,8 @@ void TableViewBase::refreshMe()
 
 void TableViewBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	if (_boundControl)
 		_boundControl->resetBoundValue();
 }
