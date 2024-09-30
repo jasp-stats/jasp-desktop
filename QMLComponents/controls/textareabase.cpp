@@ -106,6 +106,8 @@ void TextAreaBase::setText(const QString& text)
 
 void TextAreaBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	if ((_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem) && form() && initialized())
 		form()->refreshAnalysis();
 }

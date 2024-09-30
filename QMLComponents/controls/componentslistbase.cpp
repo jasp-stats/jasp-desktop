@@ -204,6 +204,8 @@ bool ComponentsListBase::isJsonValid(const Json::Value &value) const
 
 void ComponentsListBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();

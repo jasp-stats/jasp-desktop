@@ -111,6 +111,8 @@ bool InputListBase::isJsonValid(const Json::Value &value) const
 
 void InputListBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	if (hasRowComponent())
 		_setTableValue(_inputModel->terms(), _inputModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
 	else

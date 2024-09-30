@@ -333,6 +333,8 @@ void VariablesListBase::setVariableType(int index, int type)
 
 void VariablesListBase::checkLevelsConstraints()
 {
+	JASPListControl::termsChangedHandler();
+
 	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
 
 	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
@@ -399,7 +401,6 @@ void VariablesListBase::termsChangedHandler()
 	checkLevelsConstraints();
 
 	if (_boundControl)	_boundControl->resetBoundValue();
-	else JASPListControl::termsChangedHandler();
 }
 
 void VariablesListBase::_setAllowedVariables()

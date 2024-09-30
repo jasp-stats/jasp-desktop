@@ -148,6 +148,8 @@ std::vector<std::string> ComboBoxBase::usedVariables() const
 
 void ComboBoxBase::termsChangedHandler()
 {
+	JASPListControl::termsChangedHandler();
+
 	std::vector<std::string> values = _model->getValues();
 	int index = -1;
 

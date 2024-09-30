@@ -136,6 +136,12 @@ void JASPListControl::setContainsInteractions()
 	}
 }
 
+void JASPListControl::termsChangedHandler()
+{
+	setColumnsTypes(model()->termsTypes());
+	setColumnsNames(model()->terms().asQList());
+}
+
 void JASPListControl::_termsChangedHandler() 
 {
 	termsChangedHandler();
