@@ -1,14 +1,12 @@
 #ifndef DESCRIPTION_H
 #define DESCRIPTION_H
 
-#include <QQuickItem>
-#include <QTimer>
 #include <QUrl>
-
+#include <QTimer>
 #include "version.h"
-#include "utilities/qutils.h"
+#include <QQuickItem>
 #include <json/json.h>
-
+#include "utilities/qutils.h"
 #include "modules/dynamicmodule.h"
 
 namespace Modules
@@ -37,6 +35,7 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					license			READ license			WRITE setLicense			NOTIFY licenseChanged			)
 	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
+	Q_PROPERTY(bool						preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
 	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod				WRITE setDynMod				NOTIFY dynModChanged			)
 	Q_PROPERTY(bool						hasWrappers		READ hasWrappers		WRITE setHasWrappers		NOTIFY hasWrappersChanged		)
 
@@ -54,6 +53,7 @@ public:
 	QUrl			website()			const { return _website;					}
 	QString			license()			const { return _license;					}
 	bool			requiresDataDef()	const { return _requiresDataDef;			}
+	bool			preloadData()		const;
 	DynamicModule * dynMod()			const { return _dynMod;						}
 	bool			hasWrappers()		const { return _hasWrappers;				}
 
@@ -63,20 +63,22 @@ public:
 	std::vector<AnalysisEntry *>	menuEntries()		const;
 	std::set<std::string>			requiredModules()	const;
 
+	
 public slots:
-	void setName(				QString							name			);
-	void setTitle(				QString							title			);
-	void setIcon(				QString							icon			);
-	void setDescription(		QString							description		);
-	void setVersion(			QString							version			);
-	void setAuthor(				QString							author			);
-	void setMaintainer(			QString							maintainer		);
-	void setWebsite(			QUrl							website			);
-	void setLicense(			QString							license			);
-	void setRequiresDataDef(	bool							defRequiresData	);
-	void setDynMod(				Modules::DynamicModule		*	dynMod			);
+	void setName(					QString						name			);
+	void setTitle(					QString						title			);
+	void setIcon(					QString						icon			);
+	void setDescription(			QString						description		);
+	void setVersion(				QString						version			);
+	void setAuthor(					QString						author			);
+	void setMaintainer(				QString						maintainer		);
+	void setWebsite(				QUrl						website			);
+	void setLicense(				QString						license			);
+	void setRequiresDataDef(		bool						defRequiresData	);
+	void setPreloadData(			bool						newPreloadData	);
+	void setDynMod(					Modules::DynamicModule	*	dynMod			);
 	void delayedUpdate();
-	void setHasWrappers(		bool							hasWrappers		);
+	void setHasWrappers(			bool						hasWrappers		);
 
 signals:
 	void titleChanged(				QString						title			);
@@ -89,11 +91,13 @@ signals:
 	void licenseChanged(			QString						license			);
 	void nameChanged(				QString						name			);
 	void requiresDataDefChanged(	bool						defRequiresData	);
+	void preloadDataChanged();
 	void hasWrappersChanged(		bool						hasWrappers		);
 	void dynModChanged(				Modules::DynamicModule	*	dynMod			);
 	void iShouldBeUpdated(			Modules::Description	*	desc			);
 	void childChanged();
 
+	
 private:
 	void					setUpDelayedUpdate();
 	void					connectChangesToDelay();
@@ -108,7 +112,8 @@ private:
 	QUrl					_website;
 	Version					_version;
 	bool					_requiresDataDef	= true,
-							_hasWrappers		= false;
+							_hasWrappers		= false,
+							_preloadData		= false;
 	DynamicModule		*	_dynMod				= nullptr;
 	QList<EntryBase*>		_entries;
 	QTimer					_timer;

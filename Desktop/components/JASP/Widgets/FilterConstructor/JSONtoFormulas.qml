@@ -1,6 +1,7 @@
-import QtQuick 2.0
+import QtQuick
 
-Item {
+Item 
+{
 	function convertJSONtoFormulas(jsonString)
 	{
 		var jsonObj = JSON.parse(jsonString);
@@ -48,16 +49,16 @@ Item {
 		else if(jsonObj.nodeType === "String")
 				createString(jsonObj.text, toolTip).releaseHere(dropItHere)
 		else if(jsonObj.nodeType === "Column")
-				createColumn(jsonObj.columnName, jsonObj.columnIcon, toolTip).releaseHere(dropItHere)
+				createColumn(jsonObj.columnName, jsonObj.columnTypeUser, toolTip).releaseHere(dropItHere)
 	}
 
-	function createOperator(operator, toolTip)				{ return operatorComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "operator": operator } ) }
-	function createOperatorVertical(operator, toolTip)		{ return operatorvertComp.createObject(scriptColumn,	{ "toolTipText": toolTip, "operator": operator } ) }
+	function createOperator(operator, toolTip)					{ return operatorComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "operator": operator } ) }
+	function createOperatorVertical(operator, toolTip)			{ return operatorvertComp.createObject(scriptColumn,	{ "toolTipText": toolTip, "operator": operator } ) }
 	function createFunction(functionName, parameterNames,
-							parameterDropKeys, toolTip)		{ return functionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"parameterNames": parameterNames, "parameterDropKeys": parameterDropKeys } ) }
-	function createNumber(number, toolTip)					{ return numberComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": number } ) }
-	function createString(text, toolTip)					{ return stringComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "text": text } ) }
-	function createColumn(columnName, columnIcon, toolTip)	{ return columnComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "columnName": columnName,	"columnIcon": columnIcon } ) }
+							parameterDropKeys, toolTip)			{ return functionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"parameterNames": parameterNames, "parameterDropKeys": parameterDropKeys } ) }
+	function createNumber(number, toolTip)						{ return numberComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": number } ) }
+	function createString(text, toolTip)						{ return stringComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "text": text } ) }
+	function createColumn(columnName, columnTypeUser, toolTip)	{ return columnComp.createObject(scriptColumn,			{ "columnName": columnName,	"columnTypeUser": columnTypeUser } ) }
 
 
 	Component { id: operatorComp;		OperatorDrag			{ } }

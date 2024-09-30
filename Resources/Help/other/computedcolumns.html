@@ -7,6 +7,8 @@
 		When you click this it opens a dialog that lets you create a computed column, you are required to enter a valid and unused column name for it.</p>
 	<p>	You can choose whether you want to define it through R code or through the drag &amp; drop constructor, similar to those used in filtering.</p>
 	<p>	The initial type for your column can be selected as well. This can be changed at any later point anyway, just like the other columns (through the type dropdown menu from the columnheader icon). </p>
+	<p> You can also change any column to a computed column at any time via the variables window.
+		 Or change it from a drag&amp;drop to a r-code computed column, it will give you the r-code of any drag&amp;drop columns, but not the other way round.</p>
 </details>
 
 <details>
@@ -29,6 +31,7 @@
 				<p>Supposing we have a column <i>Height Ratio</i> and we want divide the rows up based on if they are <i>Short</i> or <i>Tall</i> or not. We create a column with <i>Nominal Text</i> as type and use the <i>cut</i> function to divide <i>Height Ratio</i> into 3 levels. Afterwards we give each of the intervals a nice name to clarify what's what.</p> 
 			</li>
 	</ul>
+	<p>A new feature missing from the rather old help gifs is the changing of a columntype within the constructor. Just click the icon and choose the type you want, the tooltip will show an example of the data.</p>
 </details>
 
 <details>
@@ -46,7 +49,8 @@
 				</li>
 			</ul>
 			There are of course many possibilities and you are only limited by the availability of (safe) functions in JASP. Should you miss something than don't hesitate to contact us so we may add it to the next version.
-	</p>	
+	</p>
+	<p>You can also transform the type of the column by appending the wanted type. So suppose we have a column <code>chestnut</code> we can convert it to any type as: <code>chestnut.scale, chestnut.ordinal and chestnut.nominal</code>. </p>
 </details>
 
 <details>

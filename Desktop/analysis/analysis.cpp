@@ -558,6 +558,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
 	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
+	json["preloadData"]			= _moduleData ? _moduleData->preloadData() : true;
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();

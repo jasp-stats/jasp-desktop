@@ -8,7 +8,7 @@ MouseArea
 
 	id: mouseArea
 
-	z: 2
+	z: 1
 
 	property var alternativeDropFunction: null
 
@@ -29,10 +29,10 @@ MouseArea
 	property string toolTipText: ""
 	property string shownToolTipText: toolTipText
 
-	ToolTip.delay: 1000
-	ToolTip.timeout: 5000
-	ToolTip.visible: shownToolTipText != "" && containsMouse
-	ToolTip.text: shownToolTipText
+	ToolTip.delay:		1000
+	ToolTip.timeout:	5000
+	ToolTip.visible:	shownToolTipText != "" && containsMouse
+	ToolTip.text:		shownToolTipText
 
 	objectName: "DragGeneric"
 	property var shownChild: null

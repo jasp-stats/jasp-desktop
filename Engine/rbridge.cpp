@@ -26,6 +26,7 @@
 #include "otoolstuff.h"
 #include "engine.h"
 #include "r_functionwhitelist.h"
+#include <sstream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -35,9 +36,9 @@ Engine						*	rbridge_engine		= nullptr;
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
-columnType						desiredCompColType	= columnType::unknown;
 std::vector<std::string>		columnNamesInDataSet;
 ColumnEncoder				*	extraEncodings		= nullptr;
+ColumnEncoder::colsPlusTypes	datasetWanted;
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
@@ -86,6 +87,7 @@ void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessag
 	Log::log() << "Collecting RBridgeCallBacks." << std::endl;
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
+		rbridge_readDataSetRequested,
 		rbridge_readDataColumnNames,
 		rbridge_readDataSetDescription,
 		rbridge_requestStateFileSource,
@@ -107,6 +109,7 @@ void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessag
 		rbridge_decodeColumnName,
 		rbridge_encodeAllColumnNames,
 		rbridge_decodeAllColumnNames,
+		rbridge_decodeColumnType,
 		rbridge_shouldEncodeColumnName,
 		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames
@@ -158,6 +161,16 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 	else									out = ColumnEncoder::columnEncoder()->decode(in);
 
 	return out.c_str();
+}
+
+extern "C" int STDCALL rbridge_decodeColumnType(const char * in)
+{
+	static columnType colType;
+
+	if(extraEncodings->shouldDecode(in))	colType = extraEncodings->columnTypeFromEncoded(in);
+	else									colType = ColumnEncoder::columnEncoder()->columnTypeFromEncoded(in);
+
+	return int(colType);
 }
 
 extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
@@ -264,13 +277,15 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
-std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode)
+std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != nullptr)
 		rbridge_dataSet		= rbridge_engine->provideAndUpdateDataSet();
+	
+	datasetWanted = datasetColsTypes;
 
-	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), analysisID, analysisRevision, developerMode);
+	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), analysisID, analysisRevision, developerMode, preloadData);
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
@@ -317,29 +332,27 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 
 	const Columns & columns = rbridge_dataSet->columns();
 
-	(*colMax) = filterColumnsUsed.size();
+	datasetWanted.clear();
 
-	if(*colMax == 0)
-		return nullptr;
-
-	RBridgeColumnType* colHeaders = (RBridgeColumnType*)calloc((*colMax), sizeof(RBridgeColumnType));
-
-	for(size_t iIn=0, iOut=0; iIn < columns.size() && iOut < filterColumnsUsed.size(); iIn++)
-		if(filterColumnsUsed.count(columns[iIn]->name()) > 0)
+	for(const std::string & colName : filterColumnsUsed)
+		if(rbridge_dataSet->column(colName))
+			datasetWanted.insert(std::make_pair(colName, rbridge_dataSet->column(colName)->type()));
+		else if(!colName.empty())
 		{
-			colHeaders[iOut].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[iIn]->name()).c_str());
-			colHeaders[iOut].type = int(desiredCompColType != columnType::unknown ? desiredCompColType : columns[iIn]->type());
+			//It should then be a columnName + '.' + type
+			//And decoding always goes to the original columnname so:
+			std::string colNameSansType = ColumnEncoder::columnEncoder()->decode(	ColumnEncoder::columnEncoder()->encode(colName));
 
-			iOut++;
+			assert(colName[colNameSansType.size()] == '.'); //Because how??? ;)
+
+			std::string typeStr = colName.substr(colNameSansType.size() + 1);
+
+			assert(columnTypeValidName(typeStr));
+
+			datasetWanted.insert(std::make_pair(colName, columnTypeFromString(typeStr)));
 		}
 
-	RBridgeColumn * returnThis = rbridge_readDataSet(colHeaders, (*colMax), false);
-
-	for(int i=0; i<(*colMax); i++)
-		free(colHeaders[i].name);
-	free(colHeaders);
-
-	return returnThis;
+	return rbridge_readDataSetRequested(colMax, false);
 }
 
 static RBridgeColumn*	datasetStatic = nullptr;
@@ -432,6 +445,39 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	return datasetStatic;
 }
 
+//This is straight up copied from jasprcpp, but thanks to the split between rbridge and jasprcpp this is how its gonna be...
+void __freeRBridgeColumnType(RBridgeColumnType *columns, size_t colMax)
+{
+	for (int i = 0; i < colMax; i++)
+		free(columns[i].name);
+
+	free(columns);
+}
+
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, bool obeyFilter)
+{
+	*colMax = 0;
+	RBridgeColumnType * requestedColumns = new RBridgeColumnType[datasetWanted.size()];
+
+    for(const auto & nameType : datasetWanted)
+    {
+		//Make sure this is encodable/decodable
+		if(!ColumnEncoder::columnEncoder()->shouldEncode(nameType.first) && !ColumnEncoder::columnEncoder()->shouldDecode(nameType.first))
+			throw std::runtime_error("rbridge_readDataSetRequested gets '" + nameType.first + "' but its not a columnname at all");
+		
+		requestedColumns[*colMax].name = strdup(ColumnEncoder::columnEncoder()->encodeAll(nameType.first).c_str());
+        requestedColumns[*colMax].type = int(nameType.second);
+
+        (*colMax)++;
+    }
+
+	RBridgeColumn * theData = rbridge_readDataSet(requestedColumns, *colMax, obeyFilter);
+
+	__freeRBridgeColumnType(requestedColumns, *colMax);
+
+	return theData;
+}
+
 extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
 	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
@@ -442,7 +488,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 		return nullptr;
 	}
 
-	const Columns		&	columns			= rbridge_dataSet->columns();
+	const Columns &	columns			= rbridge_dataSet->columns();
 	static int		staticColMax	= 0;
 	static char	**	staticResult	= nullptr;
 
@@ -737,11 +783,6 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	}
 
 	return returnThis;
-}
-
-void rbridge_setComputedColumnTypeDesired(columnType colType)
-{
-	desiredCompColType	= colType;
 }
 
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)

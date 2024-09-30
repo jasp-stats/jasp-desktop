@@ -56,6 +56,7 @@ public:
 	bool			hasWrapper()			const { return _hasWrapper;			}
 	bool			smallIcon()				const { return _smallIcon;			}
 	bool			requiresData()			const { return _requiresData;		}
+	bool			preloadData()			const { return _preloadData;		}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
 	DynamicModule*	dynamicModule()			const;
@@ -86,6 +87,7 @@ private:
 									_isAnalysis		= false		,
 									_isEnabled		= true		,
 									_requiresData	= true		,
+									_preloadData	= false		,
 									_hasWrapper		= false		,
 									_smallIcon		= false		;
 	std::function<void()>			_specialFunc	= nullptr	;

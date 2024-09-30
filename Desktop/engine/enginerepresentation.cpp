@@ -418,7 +418,6 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["columnName"]		= computeColumnStore->_columnName.toStdString();
 	json["computeCode"]		= computeColumnStore->script.toStdString();
-	json["forceType"]		= computeColumnStore->_forceType;
 	json["columnType"]		= columnTypeToString(computeColumnStore->_columnType);
 
 	_lastCompColName		= json["columnName"].asString();

@@ -37,6 +37,67 @@ ColumnsModel::~ColumnsModel()
 		_singleton = nullptr;
 }
 
+QString ColumnsModel::getColumnIcon(int colType) const
+{
+	return getColumnIcon(columnType(colType));
+}
+
+QString ColumnsModel::getColumnIcon(int colType, bool isTransformed) const
+{
+	return !isTransformed ? getColumnIcon(colType) : getColumnIconTransform(colType);
+}
+
+QString ColumnsModel::getColumnIcon(columnType colType) const
+{
+	return VariableInfo::getIconFile(colType, VariableInfo::DefaultIconType);
+}
+
+QString ColumnsModel::getColumnIconTransform(int colType) const
+{
+	return getColumnIconTransform(columnType(colType));
+}
+
+QString ColumnsModel::getColumnIconTransform(columnType colType) const
+{
+	return VariableInfo::getIconFile(colType, VariableInfo::TransformedIconType);
+}
+
+int ColumnsModel::getColumnType(const QString & columnName) const
+{
+	int index = ColumnsModel::singleton()->getColumnIndex(fq(columnName));
+	
+	if(index == -1)
+		return int(columnType::unknown);
+	
+	return ColumnsModel::singleton()->data(ColumnsModel::singleton()->index(index, 0), ColumnTypeRole).toInt();
+}
+
+QString ColumnsModel::getColumnTransformedToolTip(const QString &name, int transformedTo) const
+{
+	return 	getColumnTransformedToolTip(name, columnType(transformedTo));
+}
+
+QString ColumnsModel::getColumnTransformedToolTip(const QString &name, columnType chosenType) const
+{
+	columnType	realType	= columnType(getColumnType(name));
+	
+	if(ColumnsModel::singleton()->getColumnIndex(fq(name)) == -1 || chosenType == realType)
+		return "";
+	
+	VariableInfo::InfoType		previewType;
+	
+	switch(chosenType)
+	{
+	default:					previewType = VariableInfo::PreviewScale;		break;
+	case columnType::ordinal:	previewType	= VariableInfo::PreviewOrdinal;		break;
+	case columnType::nominal:	previewType	= VariableInfo::PreviewNominal;		break;
+	}
+	
+	return provideInfo(previewType, name).toString();
+	
+}
+
+
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
 	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
@@ -122,7 +183,7 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 		{ TypeRole,					"type"					},
 		{ ColumnTypeRole,			"columnType"			},
 		{ ComputedColumnTypeRole,	"computedColumnType"	},
-		{ IconSourceRole,			"columnIcon"			},
+		{ IconSourceRole,			"columnIcolumnTypeUsercon"			},
 		{ ToolTipRole,				"toolTip"				}
 	};
 

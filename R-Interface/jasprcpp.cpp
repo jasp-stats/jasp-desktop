@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@ static			std::string lastErrorMessage	= "";
 
 RInside							*rinside;
 ReadDataSetCB					readDataSetCB;
+ReadADataSetFilterCB			readDataSetRequestedCB;
 RunCallbackCB					runCallbackCB;
 ReadADataSetCB					readFullDataSetCB,
 								readFullFilteredDataSetCB,
@@ -47,6 +48,7 @@ EnDecodeDef						encodeColumnName,
 								decodeColumnName,
 								encodeAllColumnNames,
 								decodeAllColumnNames;
+DecodeTypeDef					decodeColumnType;
 
 ShouldEnDecodeDef				shouldEncodeColumnName,
 								shouldDecodeColumnName;
@@ -94,6 +96,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readFullFilteredDataSetCB					= callbacks->readFullFilteredDataSetCB;
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
 	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
+	readDataSetRequestedCB						= callbacks->readDataSetRequestedCB;
 	requestTempRootNameCB						= callbacks->requestTempRootNameCB;
 	requestTempFileNameCB						= callbacks->requestTempFileNameCB;
 	readDataColumnNamesCB						= callbacks->readDataColumnNamesCB;
@@ -110,6 +113,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	shouldDecodeColumnName						= callbacks->shouldDecode;
 	encodeAllColumnNames						= callbacks->encoderAll;
 	decodeAllColumnNames						= callbacks->decoderAll;
+	decodeColumnType							= callbacks->decodeType;
 	encodeColumnName							= callbacks->encoder;
 	decodeColumnName							= callbacks->decoder;
 
@@ -122,6 +126,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".returnString"]					= Rcpp::InternalFunction(&jaspRCPP_returnString);
 	rInside[".columnIsScale"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsScale);
 	rInside[".callbackNative"]					= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".decodeColTypes"]					= Rcpp::InternalFunction(&jaspRCPP_decodeColumnTypeRcpp);
 	rInside[".dataSetRowCount"]					= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".returnDataFrame"]					= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".columnIsOrdinal"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
@@ -142,6 +147,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".postProcessLibraryModule"]		= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
 	rInside[".requestTempFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
 	rInside[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
+	rInside[".readDataSetRequestedNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequested);
 	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
@@ -306,7 +312,7 @@ void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int 
 }
 
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options,
-										   const char* stateKey, int analysisID, int analysisRevision, bool developerMode)
+										   const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData)
 {
 	RInside &rInside			= rinside->instance();
 
@@ -316,6 +322,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside["dataKey"]				= dataKey;
 	rInside["stateKey"]				= stateKey;
 	rInside["moduleCall"]			= moduleCall;
+	rInside["preloadData"]			= preloadData;
 	rInside["resultsMeta"]			= "null";
 	rInside["requiresInit"]			= false;
 	
@@ -324,7 +331,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	static std::string str;
 	try
 	{
-		SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
+		SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall, preloadData=preloadData)", true);
 
 		if(results != NULL && Rcpp::is<std::string>(results))	str = Rcpp::as<Rcpp::String>(results);
 		else													str = "error!";
@@ -919,18 +926,20 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		{
 			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
 			for (const std::string & tmp : tmps)
-				if(columnsOrder.count(tmp) == 0)
+				if(tmp != "")
 				{
-					columnsRequested[tmp]	= SetThis;
-					columnsOrder[tmp]		= (*colMax)++;
+					if(columnsOrder.count(tmp) == 0)
+					{
+						columnsRequested[tmp]	= SetThis;
+						columnsOrder[tmp]		= (*colMax)++;
+					}
+
+					else if(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == columnType::unknown)
+						columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
+
+					else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
+						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
 				}
-
-				else if(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == columnType::unknown)
-					columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
-
-				else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
-                    Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
-
 		}
 	};
 
@@ -999,6 +1008,14 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	
 	freeRBridgeColumnType(columnsRequested, colMax);
 
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
+Rcpp::DataFrame jaspRCPP_readDataSetRequested()
+{
+	size_t				colMax				= 0;
+	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, true);
+	
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
@@ -1247,6 +1264,12 @@ Rcpp::String jaspRCPP_encodeColumnNameRcpp(const Rcpp::String & in)
 Rcpp::String jaspRCPP_decodeColumnNameRcpp(const Rcpp::String & in)
 {
 	return decodeColumnName(std::string(in).c_str());
+}
+
+
+int jaspRCPP_decodeColumnTypeRcpp(const Rcpp::String & in)
+{
+	return decodeColumnType(std::string(in).c_str());
 }
 
 Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)

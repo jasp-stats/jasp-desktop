@@ -30,6 +30,7 @@
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet();
 Rcpp::DataFrame jaspRCPP_readFilterDataSet();
+Rcpp::DataFrame jaspRCPP_readDataSetRequested();
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(		SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(	SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax);
@@ -61,6 +62,7 @@ void jaspRCPP_setLog(SEXP Message);
 
 Rcpp::String	jaspRCPP_encodeColumnNameRcpp(	const	Rcpp::String & in);
 Rcpp::String	jaspRCPP_decodeColumnNameRcpp(	const	Rcpp::String & in);
+int				jaspRCPP_decodeColumnTypeRcpp(	const	Rcpp::String & in);
 std::string		jaspRCPP_encodeColumnName(				std::string    in);
 std::string		jaspRCPP_decodeColumnName(				std::string    in);
 Rcpp::String	jaspRCPP_encodeAllColumnNames(	const	Rcpp::String & in);

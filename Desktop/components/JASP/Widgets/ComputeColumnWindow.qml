@@ -162,16 +162,7 @@ FocusScope
 				anchors.fill:			parent
                 anchors.leftMargin:     1
 				visible:				!computedColumnsInterface.computeColumnUsesRCode
-				forceColumnInputs:		!computedColumnsInterface.computeColumnForceType 
-										? "" 
-										: computedColumnsInterface.columnType === columnTypeScale 
-											? "scale" 
-											: computedColumnsInterface.columnType === columnTypeOrdinal 
-												? "ordinal" 
-												: computedColumnsInterface.columnType === columnTypeNominal 
-													? "nominal" 
-													: "scale"
-
+				
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
 
@@ -298,40 +289,18 @@ FocusScope
 
 				onClicked:		computedColumnConstructor.showGeneratedRCode = !computedColumnConstructor.showGeneratedRCode
 			}
-			
-			JaspControls.RectangularButton
-			{
-				id:				forceSourceColTypeButton
-
-				toolTip:		qsTr("- Keeping types: use columns with their defined columntype.\n- Converting types: convert all used columns to the columntype of this computed column before use.\n\nThe button displays the *current setting*, not what will happen when you press it!")	
-				text:			!computedColumnsInterface.computeColumnForceType 
-									? qsTr("Keeping types")
-									: qsTr("Converting types")
-
-				anchors.left:	showGeneratedRCode.right
-				anchors.bottom:	parent.bottom
-				anchors.top:	helpButton.top
-
-				onClicked:		
-				{
-					computedColumnsInterface.computeColumnForceType = !computedColumnsInterface.computeColumnForceType
-					computedColumnContainer.applyComputedColumn()
-				}
-			}
-			
-			
-
+		
 			JaspControls.RectangularButton
 			{
 				id:					applyComputedColumnButton
 
 				text:				qsTr("Compute column") 
-				anchors.left:		forceSourceColTypeButton.right
+				anchors.left:		showGeneratedRCode.right
 				anchors.right:		helpButton.left
 				centerTextParent:	true
 				anchors.bottom:		parent.bottom
 				anchors.top:		helpButton.top
-				onClicked:			computedColumnContainer.applyComputedColumn()
+				onClicked:			{ forceActiveFocus(); computedColumnContainer.applyComputedColumn() }
 				toolTip:			qsTr("Click to compute column")
 				
 			}

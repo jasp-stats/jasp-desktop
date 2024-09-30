@@ -1,7 +1,7 @@
-import JASP.Controls 1.0
-import QtQuick.Controls 2.2
-import QtQuick 2.9
-
+import JASP.Controls
+import QtQuick.Controls
+import QtQuick
+import JASP
 
 FocusScope
 {
@@ -34,7 +34,7 @@ FocusScope
 
 	function checkAndApplyFilter()
 	{
-		focus = true
+		forceActiveFocus();
 		filterConstructor.somethingChanged = false
 
 		var allCorrect		= true
@@ -317,6 +317,11 @@ FocusScope
 
 					verticalCenter:	rLetter.verticalCenter
 					leftMargin:		4
+				}
+				
+				RSyntaxHighlighterQuick
+				{
+					textDocument:		generatedRcode.textDocument
 				}
 			}
 		}

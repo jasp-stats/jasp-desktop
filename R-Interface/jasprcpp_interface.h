@@ -70,6 +70,7 @@ struct RBridgeColumnType {
 // Callbacks from jaspRCPP to rbridge
 typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)                (RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
 typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)               (size_t * colMax);
+typedef RBridgeColumn*				(STDCALL *ReadADataSetFilterCB)         (size_t * colMax, bool obeyFilter);
 typedef char**						(STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
 typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)     (RBridgeColumnType* columns, size_t colMax);
 typedef bool						(STDCALL *RequestPredefinedFileSourceCB)(const char **root, const char **relativePath);
@@ -83,6 +84,7 @@ typedef bool						(STDCALL *DeleteColumn)					(const char* columnName);
 typedef bool						(STDCALL *SetColumnDataAndType)			(const char* columnName, const char **	nominalData,	size_t length, int columnTYpe);
 typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
+typedef int							(STDCALL *DecodeTypeDef)				(const char *);
 typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
@@ -90,6 +92,7 @@ typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encod
 
 struct RBridgeCallBacks {
 	ReadDataSetCB					readDataSetCB;
+	ReadADataSetFilterCB			readDataSetRequestedCB;
 	ReadDataColumnNamesCB			readDataColumnNamesCB;
 	ReadDataSetDescriptionCB		readDataSetDescriptionCB;
 	RequestPredefinedFileSourceCB	requestStateFileSourceCB;
@@ -111,6 +114,7 @@ struct RBridgeCallBacks {
 									decoder,
 									encoderAll,
 									decoderAll;
+	DecodeTypeDef					decodeType;
 	ShouldEnDecodeDef				shouldEncode,
 									shouldDecode;
 	getColNames						columnNames;
@@ -127,7 +131,7 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, co
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init_jaspBase();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bool normalizedNotation, bool exactPValues);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int ppi, const char* imageBackground);
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int analysisID, int analysisRevision, bool developerMode);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *data, const char *type, const int height, const int width);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *optionsJson, int analysisID);
