@@ -51,16 +51,17 @@
      .jasp-table-primitive {
          page-break-inside: avoid;
     }
-     .jasp-table table {
+    /* .jasp-table table {
          table-layout:fixed !important;
-         width: 20cm !important;
-    }
+         width: 100% !important;
+    } */
+
      .jasp-table table td {
          white-space: pre-wrap !important;
          word-wrap: break-all !important;
     }
      .jasp-rsyntax-container {
-         max-width: 20cm !important;
+         max-width: 95% !important;
     }
 }
  @page {

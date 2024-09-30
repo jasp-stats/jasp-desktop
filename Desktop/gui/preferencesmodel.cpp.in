@@ -35,6 +35,17 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 
 	_loadDatabaseFont();
 
+	for(auto pdfPageSizeElt : pdfPageSizeToVector())
+	{
+		QMap<QString, QVariant> map =
+		{
+			std::make_pair("value", int(pdfPageSizeElt)),
+			std::make_pair("label", pdfPageSizeToQString(pdfPageSizeElt)),
+		};
+
+		_pdfPageSizeModel.append(map);
+	}
+
 	dataLabelNAChangedSlot(dataLabelNA());
 }
 
@@ -125,6 +136,8 @@ GET_PREF_FUNC_BOOL( orderByValueByDefault,		Settings::ORDER_BY_VALUE_BY_DEFAULT	
 GET_PREF_FUNC_BOOL( checkUpdatesAskUser,		Settings::CHECK_UPDATES_ASK_USER					)
 GET_PREF_FUNC_BOOL( checkUpdates,				Settings::CHECK_UPDATES								)
 GET_PREF_FUNC_INT(	maxScaleLevels,				Settings::MAX_SCALE_LEVELS							)
+GET_PREF_FUNC_BOOL(	pdfLandscape,				Settings::PDF_LANDSCAPE								)
+GET_PREF_FUNC_INT(	pdfPageSize,				Settings::PDF_PAGESIZE								)
 
 int PreferencesModel::maxEngines() const
 {
@@ -253,14 +266,6 @@ void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 	emit NOTIFY();														\
 }
 
-#define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
-void PreferencesModel::FUNC_NAME(TYPE newVal)							\
-{																		\
-	if(GET_FUNC() == newVal) return;									\
-	Settings::setValue(SETTING, newVal);								\
-	emit NOTIFY();														\
-}
-
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 {
 	if (currentThemeName() == _currentThemeName) return;
@@ -307,7 +312,8 @@ SET_PREF_FUNCTION(				bool,		setOrderByValueByDefault,	orderByValueByDefault,		o
 SET_PREF_FUNCTION(				bool,		setCheckUpdatesAskUser,		checkUpdatesAskUser,		checkUpdatesAskUserChanged,		Settings::CHECK_UPDATES_ASK_USER					)
 SET_PREF_FUNCTION(				bool,		setCheckUpdates,			checkUpdates,				checkUpdatesChanged,			Settings::CHECK_UPDATES								)
 SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
-
+SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeChanged,			Settings::PDF_LANDSCAPE								)
+SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

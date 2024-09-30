@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QFont>
+#include <QVariantList>
 #include "preferencesmodelbase.h"
+#include "pdfdefinition.h"
 
 class JaspTheme;
 
@@ -70,9 +72,14 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			checkUpdatesAskUser		READ checkUpdatesAskUser		WRITE setCheckUpdatesAskUser		NOTIFY checkUpdatesAskUserChanged		)
 	Q_PROPERTY(bool			checkUpdates			READ checkUpdates				WRITE setCheckUpdates				NOTIFY checkUpdatesChanged				)
 	Q_PROPERTY(int			maxScaleLevels			READ maxScaleLevels				WRITE setMaxScaleLevels				NOTIFY maxScaleLevelsChanged			)
+	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
+	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
+	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
 
 
 public:
+
+
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
@@ -136,7 +143,10 @@ public:
 	bool		ALTNavModeActive()						const;
     bool		orderByValueByDefault()					const;
 	int			maxScaleLevels()						const override;
-	
+	QVariantList pdfPageSizeModel()						const { return _pdfPageSizeModel; }
+	int			pdfPageSize()							const;
+	bool		pdfLandscape()							const;
+
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
 	
@@ -201,6 +211,8 @@ public slots:
 	void setALTNavModeActive(			bool		ALTNavModeActive);
 	void setOrderByValueByDefault(		bool		orderByValueByDefault);
 	void setMaxScaleLevels(				int			maxScaleLevels);
+	void setPdfPageSize(				int			pdfPageSize);
+	void setPdfLandscape(				bool		pdfLandscape);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -254,7 +266,9 @@ signals:
 	void checkUpdatesAskUserChanged(	bool		checkAsk);
 	void checkUpdatesChanged(			bool		check);
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
-	
+	void pdfPageSizeChanged(			int			pdfPageSize);
+	void pdfLandscapeChanged(			bool		pdfLandscape);
+
 private slots:
 	void dataLabelNAChangedSlot(QString label);
 	
@@ -265,6 +279,7 @@ private:
 					_allInterfaceFonts,
 					_allResultFonts,
 					_allCodeFonts;
+	QVariantList	_pdfPageSizeModel;
 	bool			_githubPatCustom; //Should be initialized on prefs construction
 
 	void			_loadDatabaseFont();
