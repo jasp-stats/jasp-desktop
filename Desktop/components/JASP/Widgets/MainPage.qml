@@ -403,7 +403,7 @@ Item
 
 				function onExportToPDF(pdfPath)
 				{
-					resultsView.printToPdf(pdfPath, preferencesModel.pdfPageSize, preferencesModel.pdfOrientation);
+					resultsView.printToPdf(pdfPath, preferencesModel.pdfPageSize, preferencesModel.pdfLandscape ? WebEngineView.Landscape : WebEngineView.Portrait);
 				}
 
 				function onPrepForExport()

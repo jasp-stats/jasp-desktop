@@ -94,7 +94,7 @@ const Settings::Setting Settings::Values[] = {
 	{"checkUpdates",				false	},
 	{"checkUpdatesLastTime",		-1		},
 	{"maxScaleLevels",				100		},
-	{"pdfOrientation",				int(pdfOrientation::landscape)	},
+	{"pdfLandscape",				false	},
 	{"pdfPageSize",					int(pdfPageSize::A4)			}
 	
 };	

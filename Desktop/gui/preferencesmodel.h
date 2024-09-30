@@ -74,9 +74,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			maxScaleLevels			READ maxScaleLevels				WRITE setMaxScaleLevels				NOTIFY maxScaleLevelsChanged			)
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
-	Q_PROPERTY(int			pdfOrientation			READ pdfOrientation				WRITE setPdfOrientation				NOTIFY pdfOrientationChanged			)
-	Q_PROPERTY(int			pdfLandscape			READ pdfLandscape				CONSTANT																	)
-	Q_PROPERTY(int			pdfPortrait				READ pdfPortrait				CONSTANT																	)
+	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
 
 
 public:
@@ -147,9 +145,7 @@ public:
 	int			maxScaleLevels()						const override;
 	QVariantList pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int			pdfPageSize()							const;
-	int			pdfOrientation()						const;
-	int			pdfPortrait()							const { return int(pdfOrientation::portrait); }
-	int			pdfLandscape()							const { return int(pdfOrientation::landscape); }
+	bool		pdfLandscape()							const;
 
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
@@ -216,7 +212,7 @@ public slots:
 	void setOrderByValueByDefault(		bool		orderByValueByDefault);
 	void setMaxScaleLevels(				int			maxScaleLevels);
 	void setPdfPageSize(				int			pdfPageSize);
-	void setPdfOrientation(				int			pdfOrientation);
+	void setPdfLandscape(				bool		pdfLandscape);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -271,7 +267,7 @@ signals:
 	void checkUpdatesChanged(			bool		check);
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
 	void pdfPageSizeChanged(			int			pdfPageSize);
-	void pdfOrientationChanged(			int			pdfOrientation);
+	void pdfLandscapeChanged(			bool		pdfLandscape);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);

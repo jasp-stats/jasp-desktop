@@ -160,8 +160,8 @@ ScrollView
 				{
 					id:					pdfOrientationPortrait
 					label:				qsTr("Portrait")
-					checked:			preferencesModel.pdfOrientation === preferencesModel.pdfPortrait
-					onCheckedChanged:	if (checked) preferencesModel.pdfOrientation = preferencesModel.pdfPortrait
+					checked:			!preferencesModel.pdfLandscape
+					onCheckedChanged:	if (checked) preferencesModel.pdfLandscape = false
 
 					KeyNavigation.tab:	pdfOrientationLandscape
 				}
@@ -169,9 +169,9 @@ ScrollView
 				RadioButton
 				{
 					id:					pdfOrientationLandscape
-					label:				qsTr("Landsacpe")
-					checked:			preferencesModel.pdfOrientation === preferencesModel.pdfLandscape
-					onCheckedChanged:	if (checked) preferencesModel.pdfOrientation = preferencesModel.pdfLandscape
+					label:				qsTr("Landscape")
+					checked:			preferencesModel.pdfLandscape
+					onCheckedChanged:	if (checked) preferencesModel.pdfLandscape = true
 
 					KeyNavigation.tab:	pdfPageSize
 				}
