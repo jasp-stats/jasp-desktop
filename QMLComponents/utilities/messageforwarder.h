@@ -37,11 +37,11 @@ public:
 	static DialogResponse showSaveDiscardCancel(QString title, QString message, QString saveTxt = "",		QString discardText = "",	QString cancelText = "");
 	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "");
 
-	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter);
+	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter, bool multiple = false);
 	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);
 	static QString browseOpenFolder(		QString caption, QString browsePath);
 	static QString browseOpenFolder(		QString caption);
-	static QString browseOpenFileDocuments(	QString caption,						QString filter);
+	static QString browseOpenFileDocuments(	QString caption,						QString filter, bool multiple = false);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);
 
 	static QString askPassword(QString title, QString message);
@@ -50,14 +50,13 @@ public:
 public slots:
 	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }
 	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
-	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter)																	{ return browseOpenFile(caption, browsePath, filter); }
-	QString			browseOpenFileDocumentsQML(QString caption, QString filter)																				{ return browseOpenFileDocuments(caption, filter); }
+	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter, bool multiple = false)											{ return browseOpenFile(caption, browsePath, filter, multiple); }
+	QString			browseOpenFileDocumentsQML(QString caption, QString filter, bool multiple = false)														{ return browseOpenFileDocuments(caption, filter, multiple); }
 
 	QString			browseSaveFileQML(QString caption, QString browsePath, QString filter)																	{ return browseSaveFile(caption, browsePath, filter); }
 	QString			browseSaveFileDocumentsQML(QString caption, QString filter)																				{ return browseSaveFileDocuments(caption, filter); }
 	QString			browseOpenFolderQML(QString caption, QString browsePath)																				{ return browseOpenFolder(caption, browsePath);}
 	QString			browseOpenFolderQML(QString caption)																									{ return browseOpenFolder(caption);}
-
 
 	void			log(QString msg);
 
