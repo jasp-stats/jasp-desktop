@@ -122,15 +122,17 @@ QString MessageForwarder::askPassword(QString title, QString message)
 	return QInputDialog::getText(nullptr, title, message, QLineEdit::Password);
 }
 
-QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)
+QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter, bool multiple)
 {
-	if(useNativeFileDialogs())	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
-	else						return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, QFileDialog::DontUseNativeDialog);
+	QFileDialog::Options options = useNativeFileDialogs() ? QFileDialog::Options() : QFileDialog::DontUseNativeDialog;
+
+	if (multiple)	return QFileDialog::getOpenFileNames(nullptr, caption, browsePath, filter, nullptr, options).join(';');
+	else			return QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, options);
 }
 
-QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filter)
+QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filter, bool multiple)
 {
-	return browseOpenFile(caption, AppDirs::documents(), filter);
+	return browseOpenFile(caption, AppDirs::documents(), filter, multiple);
 }
 
 QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filter)
