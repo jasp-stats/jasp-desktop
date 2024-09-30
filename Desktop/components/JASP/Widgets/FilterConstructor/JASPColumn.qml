@@ -37,7 +37,7 @@ Item
 		}
 	}
 	
-	onColumnTypeHereChanged:		filterConstructor.somethingChanged = true;
+	onColumnTypeUserChanged:		filterConstructor.somethingChanged = true;
 	
 	
 
