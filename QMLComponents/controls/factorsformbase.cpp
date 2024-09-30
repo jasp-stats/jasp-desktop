@@ -134,6 +134,8 @@ void FactorsFormBase::termsChangedHandler()
 	// and during the initialization, the boundValues has to be set by the bindTo method anyway.
 	if (!initialized()) return;
 
+	JASPListControl::termsChangedHandler();
+
 	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
 	Json::Value boundValue(Json::arrayValue);
 	

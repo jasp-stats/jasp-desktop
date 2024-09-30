@@ -36,8 +36,6 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList			suggestedColumns				READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
 	Q_PROPERTY( QStringList			allowedColumns					READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
 	Q_PROPERTY(	QStringList			allowedColumnsIcons				READ allowedColumnsIcons													NOTIFY allowedColumnsIconsChanged			)
-	Q_PROPERTY( QStringList			columnsTypes					READ columnsTypes															NOTIFY columnsTypesChanged					)
-	Q_PROPERTY( QStringList			columnsNames					READ columnsNames															NOTIFY columnsNamesChanged					)
 	Q_PROPERTY( QStringList			dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
 	Q_PROPERTY( QString				interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
 	Q_PROPERTY( QAbstractListModel* allowedTypesModel				READ allowedTypesModel														NOTIFY allowedTypesModelChanged				)
@@ -70,8 +68,6 @@ public:
 	int							columns()																				const				{ return _columns;									}
 	const QStringList		&	allowedColumns()																		const				{ return _allowedColumns;							}
 	QStringList					allowedColumnsIcons()																	const;
-	const QStringList		&	columnsTypes()																			const				{ return _columnsTypes;								}
-	const QStringList		&	columnsNames()																			const				{ return _columnsNames;								}
 	const QStringList		&	dropKeys()																				const				{ return _dropKeys;									}
 	const QString			&	interactionHighOrderCheckBox()															const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control)											override;
@@ -90,8 +86,6 @@ signals:
 	void columnsChanged();
 	void allowedColumnsChanged();
 	void allowedColumnsIconsChanged();
-	void columnsTypesChanged();
-	void columnsNamesChanged();
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
 	void allowedTypesModelChanged();
@@ -115,8 +109,6 @@ protected:
 	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
 	GENERIC_SET_FUNCTION(Columns,						_columns,						columnsChanged,							int				)
 	GENERIC_SET_FUNCTION(AllowedColumns,				_allowedColumns,				allowedColumnsChanged,					QStringList		)
-	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
-	GENERIC_SET_FUNCTION(ColumnsNames,					_columnsNames,					columnsNamesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
 	GENERIC_SET_FUNCTION(MinLevels,						_minLevels,						minLevelsChanged,						int				)
 	GENERIC_SET_FUNCTION(MaxLevels,						_maxLevels,						maxLevelsChanged,						int				)
@@ -150,8 +142,6 @@ private:
 
 	bool						_allowTypeChange =		false;
 	QStringList					_allowedColumns,
-								_columnsTypes,
-								_columnsNames,
 								_dropKeys;
 	QString						_interactionHighOrderCheckBox;
 

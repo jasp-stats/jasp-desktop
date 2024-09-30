@@ -328,8 +328,7 @@ void VariablesListBase::setVariableType(int index, int type)
 
 void VariablesListBase::termsChangedHandler()
 {
-	setColumnsTypes(model()->termsTypes());
-	setColumnsNames(model()->terms().asQList());
+	JASPListControl::termsChangedHandler();
 
 	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
 
@@ -389,7 +388,6 @@ void VariablesListBase::termsChangedHandler()
 	}
 
 	if (_boundControl)	_boundControl->resetBoundValue();
-	else JASPListControl::termsChangedHandler();
 }
 
 void VariablesListBase::_setAllowedVariables()

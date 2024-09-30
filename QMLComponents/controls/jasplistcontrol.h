@@ -53,6 +53,8 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QQmlComponent*	rowComponent					READ rowComponent						WRITE setRowComponent						NOTIFY rowComponentChanged			)
 	Q_PROPERTY( bool			addAvailableVariablesToAssigned	READ addAvailableVariablesToAssigned	WRITE setAddAvailableVariablesToAssigned	NOTIFY addAvailableVariablesToAssignedChanged )
 	Q_PROPERTY( bool			allowAnalysisOwnComputedColumns	READ allowAnalysisOwnComputedColumns	WRITE setAllowAnalysisOwnComputedColumns	NOTIFY allowAnalysisOwnComputedColumnsChanged )
+	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes																	NOTIFY columnsTypesChanged					)
+	Q_PROPERTY( QStringList		columnsNames					READ columnsNames																	NOTIFY columnsNamesChanged					)
 
 
 public:
@@ -99,6 +101,8 @@ public:
 			virtual bool			isTypeAllowed(columnType type)		const	{ return true;								}
 			virtual columnType		defaultType()						const	{ return columnType::unknown;				}
 			columnTypeVec			valueTypes()						const;
+	const	QStringList			&	columnsTypes()						const	{ return _columnsTypes;						}
+	const	QStringList			&	columnsNames()						const	{ return _columnsNames;						}
 
 signals:
 			void					modelChanged();
@@ -113,31 +117,36 @@ signals:
 			void					rowComponentChanged();
 			void					addAvailableVariablesToAssignedChanged();
 			void					allowAnalysisOwnComputedColumnsChanged();
+			void					columnsTypesChanged();
+			void					columnsNamesChanged();
 
 public slots:
 			void					setContainsVariables();
 			void					setContainsInteractions();
 
 protected slots:
-	virtual void					termsChangedHandler(){}; // This slot must be overriden in order to update the options when the model has changed
+	virtual void					termsChangedHandler();
 			void					_termsChangedHandler();
 			void					sourceChangedHandler();
 
 			void					setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
-			GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
-			GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)
-			GENERIC_SET_FUNCTION(Values,							_values,							sourceChanged,							QVariant		)
-			GENERIC_SET_FUNCTION(AddEmptyValue,						_addEmptyValue,						addEmptyValueChanged,					bool			)
-			GENERIC_SET_FUNCTION(PlaceHolderText,					_placeHolderText,					placeHolderTextChanged,					QString			)
-			GENERIC_SET_FUNCTION(RowComponent,						_rowComponent,						rowComponentChanged,					QQmlComponent*	)
-			GENERIC_SET_FUNCTION(MaxRows,							_maxRows,							maxRows,								int				)
-			GENERIC_SET_FUNCTION(AddAvailableVariablesToAssigned,	_addAvailableVariablesToAssigned,	addAvailableVariablesToAssignedChanged,	bool			)
-			GENERIC_SET_FUNCTION(AllowAnalysisOwnComputedColumns,	_allowAnalysisOwnComputedColumns,	allowAnalysisOwnComputedColumnsChanged,	bool			)
-
 protected:
 	void					_setInitialized(const Json::Value& value = Json::nullValue)	override;
-			
+
+	GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
+	GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)
+	GENERIC_SET_FUNCTION(Values,							_values,							sourceChanged,							QVariant		)
+	GENERIC_SET_FUNCTION(AddEmptyValue,						_addEmptyValue,						addEmptyValueChanged,					bool			)
+	GENERIC_SET_FUNCTION(PlaceHolderText,					_placeHolderText,					placeHolderTextChanged,					QString			)
+	GENERIC_SET_FUNCTION(RowComponent,						_rowComponent,						rowComponentChanged,					QQmlComponent*	)
+	GENERIC_SET_FUNCTION(MaxRows,							_maxRows,							maxRows,								int				)
+	GENERIC_SET_FUNCTION(AddAvailableVariablesToAssigned,	_addAvailableVariablesToAssigned,	addAvailableVariablesToAssignedChanged,	bool			)
+	GENERIC_SET_FUNCTION(AllowAnalysisOwnComputedColumns,	_allowAnalysisOwnComputedColumns,	allowAnalysisOwnComputedColumnsChanged,	bool			)
+	GENERIC_SET_FUNCTION(ColumnsTypes,						_columnsTypes,						columnsTypesChanged,					QStringList		)
+	GENERIC_SET_FUNCTION(ColumnsNames,						_columnsNames,						columnsNamesChanged,					QStringList		)
+
+
 private:
 	void					_setupSources();
 	Terms					_getCombinedTerms(SourceItem* sourceToCombine);			
@@ -159,7 +168,8 @@ protected:
 	int						_maxRows							= -1;
 	QString					_placeHolderText					= tr("<no choice>");
 	QQmlComponent		*	_rowComponent						= nullptr;
-
+	QStringList				_columnsTypes,
+							_columnsNames;
 
 };
 
