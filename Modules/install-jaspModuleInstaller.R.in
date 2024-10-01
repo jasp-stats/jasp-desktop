@@ -95,7 +95,7 @@ renv::restore(lockfile = lf, library = .libPaths(), rebuild = pkgName)
 
 cat("jaspModuleInstaller::writeModuleStatusObject\n")
 modulesToInstallRaw <- "@JASP_COMMON_MODULES@;@JASP_EXTRA_MODULES@"
-modulesToInstall <- strsplit(modulesToInstallRaw, ";", fixed = TRUE) # should perhaps use CMAKE_PREFIX_PATH
+modulesToInstall <- strsplit(modulesToInstallRaw, ";", fixed = TRUE)[[1]] # should perhaps use CMAKE_PREFIX_PATH
 jaspModuleInstaller::writeModuleStatusObject("@PROJECT_SOURCE_DIR@", oldModuleStatusObject, "@MODULES_BINARY_PATH@", modulesToInstall)
 
 #This is necessary because of conflicts with Matrix dep of base R lib.
