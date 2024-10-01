@@ -57,7 +57,6 @@ options(
   PKGDEPENDS_LIBRARY = "@PKGDEPENDS_LIBRARY@"
 )
 
-options(error = recover)
 jaspModuleInstaller::installJaspModule(
     modulePkg           = "@MODULES_SOURCE_PATH@/@MODULE@",
     repos               = "@R_REPOSITORY@",
@@ -66,10 +65,7 @@ jaspModuleInstaller::installJaspModule(
     frameworkLibrary    = "@R_LIBRARY_PATH@"
 )
 
-result <- "succes"
-if (result == "succes") {
-  cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
-}
+cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
 
 # Converting the absolute symlinks to relative symlinks on macOS
 # Todo, I can do this using CMake like I do on Windows
