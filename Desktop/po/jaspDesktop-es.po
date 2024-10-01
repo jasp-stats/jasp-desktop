@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2024-10-01 14:13+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
 "Language: es\n"
@@ -5543,19 +5543,19 @@ msgstr "Retrato"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Paisaje"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Tamaño de página"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Filtro borrado\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Filtro aplicado\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
