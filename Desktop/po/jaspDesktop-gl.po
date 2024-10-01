@@ -1997,32 +1997,6 @@ msgctxt "ModelTermsList|"
 msgid "Add to null model"
 msgstr "Engadir ao modelo nulo"
 
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.<br>"
-msgstr ""
-"A fórmula non devolve un conxunto de valores lóxicos, polo que non pode "
-"usarse no filtro.<br>"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.<br>"
-msgstr ""
-"Por favor, introduce todos os argumentos (observar os campos marcados en "
-"vermello).<br>"
-
-msgctxt "FilterConstructor|"
-msgid "Filter cleared<br>"
-msgstr "Filtro limpo<br>"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!<br>"
-msgstr "Benvido ao filtro de Arrastrar e Soltar!<br>"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied<br>"
-msgstr "Filtro aplicado<br>"
-
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
@@ -5027,30 +5001,6 @@ msgctxt "RibbonModel|"
 msgid "Insert R column after"
 msgstr "Inserir a columna de R despois"
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"- Keeping types: use columns with their defined columntype.\n"
-"- Converting types: convert all used columns to the columntype of this "
-"computed column before use.\n"
-"\n"
-"The button displays the *current setting*, not what will happen when you "
-"press it!"
-msgstr ""
-"- Manter os tipos: usar as columnas co seu tipo de columna definido.\n"
-"- Converter os tipos: converter tódalas columnas utilizadas ao tipo de "
-"columna da calculada, antes de usar.\n"
-"\n"
-"O botón amosa a *configuración vixente*, non o que vai acontecer cando o "
-"presiones!"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Keeping types"
-msgstr "Manter os tipos"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Converting types"
-msgstr "Converter os tipos"
-
 msgctxt "DataTableView|"
 msgid "Reverse values"
 msgstr "Inverter os valores"
@@ -5545,3 +5495,53 @@ msgstr "Ficheiros de SAS %1"
 msgctxt "ColorPalette|"
 msgid "JASP"
 msgstr "JASP"
+
+msgctxt "PrefsResults|"
+msgid "PDF Settings"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Orientation"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Portrait"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Landscape"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Page size"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter cleared\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter applied\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Please enter all arguments - see fields marked in red.\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter.\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Welcome to the drag and drop filter!\n"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Click icon to change column type"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Transformed to"
+msgstr ""

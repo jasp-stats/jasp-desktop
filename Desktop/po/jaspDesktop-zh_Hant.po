@@ -844,28 +844,6 @@ msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr "無用的程式片段放在此處; 滑鼠雙擊以刪除整個內容"
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared<br>"
-msgstr "篩選條件已清除<b4>"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied<br>"
-msgstr "已套用篩選條件<br>"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.<br>"
-msgstr "請輸入所有指令，參見紅字標示<br>"
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.<br>"
-msgstr "公式無法得到合理的數值，因此無法用於測定過濾條件"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!<br>"
-msgstr "歡迎使用拖曳過濾條件!<br>"
-
 msgctxt "OperatorSelector|"
 msgid "Addition"
 msgstr "加"
@@ -4812,24 +4790,6 @@ msgctxt "RibbonModel|"
 msgid "Insert R column after"
 msgstr ""
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"- Keeping types: use columns with their defined columntype.\n"
-"- Converting types: convert all used columns to the columntype of this "
-"computed column before use.\n"
-"\n"
-"The button displays the *current setting*, not what will happen when you "
-"press it!"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Keeping types"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Converting types"
-msgstr ""
-
 msgctxt "DataTableView|"
 msgid "Reverse values"
 msgstr ""
@@ -5256,4 +5216,54 @@ msgstr ""
 
 msgctxt "ColorPalette|"
 msgid "JASP"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "PDF Settings"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Orientation"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Portrait"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Landscape"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Page size"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter cleared\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter applied\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Please enter all arguments - see fields marked in red.\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter.\n"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Welcome to the drag and drop filter!\n"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Click icon to change column type"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Transformed to"
 msgstr ""
