@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-10-01 14:14+0000\n"
+"PO-Revision-Date: 2024-10-01 14:17+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -5539,7 +5539,7 @@ msgstr "Orientación"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr "Retrato"
+msgstr "Vertical"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
@@ -5551,7 +5551,7 @@ msgstr "Tamaño de página"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr "Filtro borrado\n"
+msgstr "Filtro eliminado\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
