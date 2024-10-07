@@ -116,8 +116,8 @@ Item
 						editItem.redo();
 					else
 						theView.redo();
+					event.accepted = true;
 				}
-				event.accepted = true;
 				break;
 								
 			}
