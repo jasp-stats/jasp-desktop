@@ -48,8 +48,8 @@ def create_archive(pkg):
             description.seek(0)
             description.truncate()
             description.writelines(lines)
-        MD5Path = tmpdir / 'MD5'
-        MD5Path.unlink(missing_ok=True)
+        # MD5Path = tmpdir / 'MD5'
+        # MD5Path.unlink(missing_ok=True)
         if 'zip' not in pkg[1].suffix:
             with tarfile.open(pkg[1], 'w:gz') as tar:
                 tar.add(tmpdir, arcname=pkg[0].name)
