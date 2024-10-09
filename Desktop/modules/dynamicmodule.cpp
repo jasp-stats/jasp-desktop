@@ -100,6 +100,24 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 }
 
 
+///This constructor is meant specifically for the development module from a libpath *it*!
+DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent), _isDeveloperMod(true), _isLibpathDevMod(true)
+{
+	_modulePackage	= fq(libpath + "/jaspAnova/");
+	_moduleFolder	= QFileInfo(libpath + "/");
+	_name = extractPackageNameFromFolder(_modulePackage);
+
+	if(_name == "") _name = defaultDevelopmentModuleName();
+
+	Log::log() << "Development Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
+
+	_developmentModuleName = _name;
+
+	loadDescriptionFromFolder(_modulePackage);
+	setInstalled(true);
+}
+
+
 void DynamicModule::initialize()
 {
 
@@ -112,7 +130,6 @@ void DynamicModule::initialize()
 //	else if(!_moduleFolder.isWritable())	throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not writable!");
 
 	setInitialized(true);
-
 	auto checkForExistence = [&](std::string name, bool isFile = false)
 	{
 		QString modPath = _moduleFolder.absolutePath() + "/" + nameQ() + "/" + QString::fromStdString(name);
@@ -499,7 +516,7 @@ std::string DynamicModule::generateModuleUninstallingR()
 std::string DynamicModule::moduleInstFolder() const
 {
 	//Because in a developer mod everything is loaded directly from the source folder we give an actual inst folder:
-	if(_isDeveloperMod)	return _modulePackage + "/inst";
+	if(_isDeveloperMod && !_isLibpathDevMod) return _modulePackage + "/inst";
 	//But after install this is in a R-library and therefore there is no more inst folder:
 	else				return moduleRLibrary().toStdString() + "/" + _name + "/";
 }

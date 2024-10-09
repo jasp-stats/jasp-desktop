@@ -79,7 +79,9 @@ public:
 		LAST_CHECK,
 		MAX_SCALE_LEVELS,
 		PDF_LANDSCAPE,
-		PDF_PAGESIZE
+		PDF_PAGESIZE,
+		DIRECT_LIBPATH_ENABLED,
+		DIRECT_LIBPATH_FOLDER
 	};
 
 	static QVariant value(Settings::Type key);

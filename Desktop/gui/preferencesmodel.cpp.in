@@ -138,6 +138,9 @@ GET_PREF_FUNC_BOOL( checkUpdates,				Settings::CHECK_UPDATES								)
 GET_PREF_FUNC_INT(	maxScaleLevels,				Settings::MAX_SCALE_LEVELS							)
 GET_PREF_FUNC_BOOL(	pdfLandscape,				Settings::PDF_LANDSCAPE								)
 GET_PREF_FUNC_INT(	pdfPageSize,				Settings::PDF_PAGESIZE								)
+GET_PREF_FUNC_BOOL( directLibpathEnabled,		Settings::DIRECT_LIBPATH_ENABLED					)
+GET_PREF_FUNC_STR(	directLibpathFolder,		Settings::DIRECT_LIBPATH_FOLDER						)
+
 
 int PreferencesModel::maxEngines() const
 {
@@ -314,6 +317,8 @@ SET_PREF_FUNCTION(				bool,		setCheckUpdates,			checkUpdates,				checkUpdatesCha
 SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
 SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeChanged,			Settings::PDF_LANDSCAPE								)
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
+SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
+
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {
@@ -550,4 +555,13 @@ QStringList PreferencesModel::_splitValues(const QString &values) const
 
 	return QStringList(orderedValues.begin(), orderedValues.end());
 
+}
+
+void PreferencesModel::setDirectLibpathFolder(QString libpath)
+{
+	if (libpath != "")
+	{
+		Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
+		emit directLibpathFolderChanged();
+	}
 }

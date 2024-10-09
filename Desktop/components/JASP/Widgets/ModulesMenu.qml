@@ -219,7 +219,7 @@ FocusScope
 					focus:				currentIndex === -1
 					activeFocusOnTab:	false
 
-					readonly property bool folderSelected: preferencesModel.developerFolder != ""
+					readonly property bool folderSelected: preferencesModel.developerFolder != "" || (preferencesModel.directLibpathEnabled && preferencesModel.directLibpathFolder != "")
 				}
 
 				QTC.ToolSeparator
