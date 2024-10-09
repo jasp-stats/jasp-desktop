@@ -86,7 +86,7 @@ private:
 	int						_initNumberFactors			= 1,
 							_startIndex					= 1;
 	QString					_availableVariablesListName,
-							_baseName					= tr("Factor"),
+							_baseName					= "Factor",   // dont translate it, see: https://github.com/jasp-stats/jasp-issues/issues/2947
 							_baseTitle					= tr("Factor");
 	bool					_nested						= false,
 							_allowInteraction			= false;
