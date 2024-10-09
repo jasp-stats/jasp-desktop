@@ -116,7 +116,9 @@ FocusScope
 			color: jaspTheme.uiBackground
 
 			property var	currentTabButton
-			property real	currentTabX:		currentTabButton ? currentTabButton.mapToItem(tabView, 0, 0).x : 0
+			// Be careful with https://bugreports.qt.io/browse/QTBUG-129500: the currentTabButton is set with onCheckedChanged but the tabView is not yet initialized, so the mapToItem may crash
+			// As workaround the index is used: during the initialization, the first tabButton is checked, and its x is anyway 0.
+			property real	currentTabX:		currentTabButton && currentTabButton.index > 0 ? currentTabButton.mapToItem(tabView, 0, 0).x : 0
 			property real	currentTabWidth:	currentTabButton ? currentTabButton.width : 0
 
 			QTC.TabBar
@@ -143,7 +145,7 @@ FocusScope
 						required property int index
 
 						onCheckedChanged:	if (checked)
-												tabView.currentTabButton				= tabButton; 
+												tabView.currentTabButton				= tabButton;
 
 						background: Rectangle
 						{
