@@ -214,7 +214,7 @@ ScrollView
 				enabled:			preferencesModel.directLibpathEnabled
 				width:				parent.width
 				height:				cranRepoUrl.height
-				visible:			preferencesModel.developerMode
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 
 				Label
 				{
@@ -236,12 +236,54 @@ ScrollView
 					text:				preferencesModel.directLibpathFolder
 					onEditingFinished:	preferencesModel.directLibpathFolder = text
 
-					nextEl:				cleanModulesFolder
+					nextEl:				moduleName
 
 					height:				browseDeveloperFolderButton.height
 					anchors
 					{
 						left:			directLibPathLabel.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	moduleName
+				}
+			}
+
+			Item {
+
+				id:					directDevMod
+				enabled:			preferencesModel.directLibpathEnabled
+				width:				parent.width
+				height:				cranRepoUrl.height
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+
+				Label
+				{
+					id:					directDevModName
+					text:				qsTr("Developer module name:")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					moduleName
+
+					text:				preferencesModel.directDevModName
+					onEditingFinished:	preferencesModel.directDevModName = text
+
+					nextEl:				cleanModulesFolder
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			directDevModName.right
 						right:			parent.right
 						margins:		jaspTheme.generalAnchorMargin
 					}

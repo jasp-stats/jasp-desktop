@@ -97,7 +97,8 @@ const Settings::Setting Settings::Values[] = {
 	{"pdfLandscape",				false	},
 	{"pdfPageSize",					int(pdfPageSize::A4)			},
 	{"directLibpathEnabled",		false	},
-	{"directLibpathFolder",			""		}
+	{"directLibpathFolder",			""		},
+	{"directDevModName",			""		}
 	
 };	
 

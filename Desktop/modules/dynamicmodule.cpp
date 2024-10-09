@@ -103,7 +103,7 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 ///This constructor is meant specifically for the development module from a libpath *it*!
 DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent), _isDeveloperMod(true), _isLibpathDevMod(true)
 {
-	_modulePackage	= fq(libpath + "/jaspAnova/");
+	_modulePackage	= fq(libpath + "/" + Settings::value(Settings::DIRECT_DEVMOD_NAME).toString() + "/");
 	_moduleFolder	= QFileInfo(libpath + "/");
 	_name = extractPackageNameFromFolder(_modulePackage);
 
