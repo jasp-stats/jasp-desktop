@@ -298,7 +298,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		unloadModule(moduleName);
 		_modules[moduleName]->setInstalled(false);
 
-		if(_modules[moduleName]->isBundled())
+		if(_modules[moduleName]->isBundled() || _modules[moduleName]->isLibpathDevMod())
 			removeFolder = false;
 
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
@@ -529,14 +529,16 @@ void DynamicModules::uninstallJASPDeveloperModule()
 
 void DynamicModules::installJASPDeveloperModule()
 {
-	if(Settings::value(Settings::DEVELOPER_FOLDER).toString() == "")
+	bool directLibpathEnabled = PreferencesModel::prefs()->directLibpathEnabled();
+	QString modulePath = directLibpathEnabled ? PreferencesModel::prefs()->directLibpathFolder() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+	if(modulePath == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
 		return;
 	}
-	else if(!QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString()).exists())
+	else if(!QDir(modulePath).exists())
 	{
-		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(Settings::value(Settings::DEVELOPER_FOLDER).toString()));
+		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(modulePath));
 		return;
 	}
 
@@ -544,12 +546,7 @@ void DynamicModules::installJASPDeveloperModule()
 
 	try
 	{
-
-		_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
-
-		DynamicModule * devMod = new DynamicModule(this);
-
-		devMod->loadDescriptionFromFolder(fq(_devModSourceDirectory.absolutePath()));
+		DynamicModule * devMod = directLibpathEnabled ? new DynamicModule(this, modulePath) : new DynamicModule(this);
 
 		std::string origin	= devMod->modulePackage(),
 					name	= devMod->name(),
@@ -562,11 +559,14 @@ void DynamicModules::installJASPDeveloperModule()
 		else if(_modules.count(name) > 0 && _modules[name] != devMod)
 			replaceModule(devMod);
 
-		DynamicModule::developmentModuleFolderCreate();
-
 		_modules[name] = devMod;
-
-		registerForInstalling(name);
+		if(directLibpathEnabled) {
+			initializeModule(devMod);
+		}
+		else {
+			DynamicModule::developmentModuleFolderCreate();
+			registerForInstalling(name);
+		}
 	}
 	catch(ModuleException & e)
 	{
@@ -602,8 +602,14 @@ void DynamicModules::startWatchingDevelopersModule()
 					if(dir == "icons")	iconsFound	= true;
 				}
 		}
+		else if(entry.isDir() && entry.fileName().toLower() == "qml")
+			qmlFound = true;
+		else if(entry.isDir() && entry.fileName().toLower() == "icons")
+			iconsFound = true;
 		else if(entry.isDir() && entry.fileName().toUpper() == "R")
 			rFound = true;
+		else if(entry.isFile() && DynamicModule::isDescriptionFile(entry.fileName()))
+				descFound = entry.fileName();
 
 	if(!(descFound != "" && rFound && qmlFound && iconsFound))
 	{
@@ -755,7 +761,10 @@ void DynamicModules::regenerateDeveloperModuleRPackage()
 		throw std::runtime_error("void DynamicModules::regenerateDeveloperModuleRPackage() called but the development module is not initialized...");
 
 	auto * devMod = _modules[developmentModuleName()];
-	devMod->setStatus(moduleStatus::installModPkgNeeded);
+	if(devMod->isLibpathDevMod())
+		emit dynamicModuleChanged(devMod);
+	else
+		devMod->setStatus(moduleStatus::installModPkgNeeded);
 }
 
 QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const

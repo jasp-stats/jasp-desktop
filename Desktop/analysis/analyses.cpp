@@ -305,8 +305,7 @@ void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
 
 void Analyses::refreshAnalysesOfDynamicModule(Modules::DynamicModule * module)
 {
-	//Log::log() << "void Analyses::refreshAnalysesOfDynamicModule(" << module->toString() << ")" << std::endl;
-
+	Log::log() << "void Analyses::refreshAnalysesOfDynamicModule(" << module->toString() << ")" << std::endl;
 
 	for(auto & keyval : _analysisMap)
 		if(keyval.second->dynamicModule() == module)
