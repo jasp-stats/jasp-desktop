@@ -88,6 +88,7 @@ public:
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 			QStringList				termsTypes();
+			QStringList				allLevels(const Terms& terms)								const;
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)					const;
 			columnType				getVariableRealType(const QString& name)					const;

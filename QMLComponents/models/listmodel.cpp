@@ -566,17 +566,16 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 	}
 
 	if (filters.contains("levels"))
-	{
-		Terms allLabels;
-		for (const Term& term : result)
-		{
-			Terms labels = requestInfo(VariableInfo::Labels, term.asQString()).toStringList();
-			if (labels.size() > 0)	allLabels.add(labels);
-			else					allLabels.add(term);
-		}
+		result = allLevels(result);
 
-		result = allLabels;
-	}
+	return result;
+}
+
+QStringList	ListModel::allLevels(const Terms& terms) const
+{
+	QStringList result;
+	for (const Term& term : terms)
+		result.append(requestInfo(VariableInfo::Labels, term.asQString()).toStringList());
 
 	return result;
 }

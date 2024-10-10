@@ -58,8 +58,6 @@ signals:
 	void dataSetChanged();
 
 private:
-	QVariant				_getLabels(int colId) const;
-
 	DataSetTableModel		* _tableModel	= nullptr;
 	static ColumnsModel		* _singleton;
 };

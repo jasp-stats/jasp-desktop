@@ -873,7 +873,7 @@ int Column::labelsTempCount()
 	return _labelsTemp.size();
 }
 
-int Column::nonFilteredTotalNumerics()
+int Column::nonFilteredNumericsCount()
 {
 	if (_nonFilteredNumericsCount == -1)
 	{
@@ -889,13 +889,10 @@ int Column::nonFilteredTotalNumerics()
 	return _nonFilteredNumericsCount;
 }
 
-int Column::nonFilteredTotalLevels()
+stringset Column::nonFilteredLevels()
 {
-	if (_nonFilteredLevelsCount == -1)
+	if (_nonFilteredLevels.empty())
 	{
-		Labelset	labels;
-		doubleset	numerics;
-
 		for(size_t r=0; r<_data->rowCount(); r++)
 			if(_data->filter()->filtered()[r])
 			{
@@ -903,22 +900,20 @@ int Column::nonFilteredTotalLevels()
 				{
 					Label * label = labelByIntsId(_ints[r]);
 					if(label && !label->isEmptyValue())
-						labels.insert(label);
+						_nonFilteredLevels.insert(label->label());
 				}
 				else if(!std::isnan(_dbls[r]))
-					numerics.insert(_dbls[r]);
+					_nonFilteredLevels.insert(ColumnUtils::doubleToString(_dbls[r]));
 			}
-
-		_nonFilteredLevelsCount = numerics.size() + labels.size();
 	}
 
-	return _nonFilteredLevelsCount;
+	return _nonFilteredLevels;
 }
 
 void Column::nonFilteredCountersReset()
 {
-	_nonFilteredLevelsCount		= -1;
-	_nonFilteredNumericsCount	= -1;
+	_nonFilteredLevels.clear();
+	_nonFilteredNumericsCount = -1;
 }
 
 int Column::labelsTempNumerics()

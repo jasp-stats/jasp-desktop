@@ -37,6 +37,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList			allowedColumns					READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
 	Q_PROPERTY(	QStringList			allowedColumnsIcons				READ allowedColumnsIcons													NOTIFY allowedColumnsIconsChanged			)
 	Q_PROPERTY( QStringList			dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
+	Q_PROPERTY( QStringList			levels							READ levels																	NOTIFY levelsChanged						)
 	Q_PROPERTY( QString				interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
 	Q_PROPERTY( QAbstractListModel* allowedTypesModel				READ allowedTypesModel														NOTIFY allowedTypesModelChanged				)
 	Q_PROPERTY( int					minNumericLevels				READ minNumericLevels				WRITE setMinNumericLevels				NOTIFY minNumericLevelsChanged				)
@@ -75,6 +76,7 @@ public:
 	QAbstractListModel		*	allowedTypesModel();
 	bool						isTypeAllowed(columnType type)															const	override;
 	columnType					defaultType()																			const	override;
+	QStringList					levels()																				const;
 	int							minLevels()																				const				{ return _minLevels;			}
 	int							maxLevels()																				const				{ return _maxLevels;			}
 	int							minNumericLevels()																		const				{ return _minNumericLevels;		}
@@ -89,6 +91,7 @@ signals:
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
 	void allowedTypesModelChanged();
+	void levelsChanged();
 	void minLevelsChanged();
 	void maxLevelsChanged();
 	void minNumericLevelsChanged();
