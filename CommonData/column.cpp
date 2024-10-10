@@ -488,7 +488,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	
 	for(size_t i=0; i<values.size(); i++)
 	{
-		setValue(i, values[i], labels.size() ? labels[i] : "", false);
+		if(setValue(i, values[i], labels.size() ? labels[i] : "", false) && aChange)
+			(*aChange) = true;
 		
 		
 		if(values[i] != "" || (labels.size() && labels[i] != ""))
