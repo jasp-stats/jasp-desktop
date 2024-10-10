@@ -20,7 +20,7 @@ class ChangeJS : public ChangeBase
 public:
 	ChangeJS();
 
-	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const override;
+	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const override;
 
 	QString		toString()		const override	{ return _toString() + " running javascript function for option '" + name() + "', function: '" + jsFunction().toString() + "'"; };
 	QString		name()			const			{ return _name;		}

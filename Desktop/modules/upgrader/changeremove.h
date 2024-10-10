@@ -17,7 +17,7 @@ class ChangeRemove : public ChangeBase
 public:
 	ChangeRemove();
 
-	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const override;
+	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const override;
 
 	QString	name()		const			{ return _name; }
 	QString	toString()	const override	{ return _toString() + " removing option '" + name() + "'"; };

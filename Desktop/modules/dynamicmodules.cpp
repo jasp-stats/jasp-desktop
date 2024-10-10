@@ -18,15 +18,14 @@
 
 
 
-#include "dynamicmodules.h"
-#include "utilities/extractarchive.h"
-#include "utilities/settings.h"
-#include "utilities/messageforwarder.h"
-#include "utilities/appdirs.h"
-#include "utilities/qutils.h"
 #include "log.h"
-#include "modules/description/description.h"
-#include "modules/description/entrybase.h"
+#include "dynamicmodules.h"
+#include "utilities/qutils.h"
+#include <QRegularExpression>
+#include "utilities/appdirs.h"
+#include "utilities/settings.h"
+#include "utilities/extractarchive.h"
+#include "utilities/messageforwarder.h"
 #include "modules/upgrader/upgrades.h"
 #include "modules/upgrader/upgrade.h"
 #include "modules/upgrader/changejs.h"
@@ -34,9 +33,9 @@
 #include "modules/upgrader/changeremove.h"
 #include "modules/upgrader/changerename.h"
 #include "modules/upgrader/changesetvalue.h"
-#include "gui/preferencesmodel.h"
-#include "dirs.h"
-#include <QRegularExpression>
+#include "modules/upgrader/changeincompatible.h"
+#include "modules/description/description.h"
+#include "modules/description/entrybase.h"
 
 namespace Modules
 {
@@ -883,6 +882,7 @@ void DynamicModules::registerQMLTypes()
 	qmlRegisterType<Modules::ChangeCopy>						("JASP.Module", 1, 0, "ChangeCopy"						);
 	qmlRegisterType<Modules::ChangeRename>						("JASP.Module", 1, 0, "ChangeRename"					);
 	qmlRegisterType<Modules::ChangeRemove>						("JASP.Module", 1, 0, "ChangeRemove"					);
+	qmlRegisterType<Modules::ChangeIncompatible>				("JASP.Module", 1, 0, "ChangeIncompatible"				);
 	qmlRegisterType<Modules::ChangeSetValue>					("JASP.Module", 1, 0, "ChangeSetValue"					);
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",						"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",					"Can only be instantiated by JASP");

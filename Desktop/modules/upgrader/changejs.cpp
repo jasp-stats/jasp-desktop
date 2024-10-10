@@ -10,7 +10,7 @@ ChangeJS::ChangeJS()
 
 }
 
-void ChangeJS::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
+void ChangeJS::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const
 {
 	const std::string name = fq(_name);
 

@@ -26,10 +26,9 @@
 
 #include "utilities/qutils.h"
 #include "gui/aboutmodel.h"
-#include "appinfo.h"
 #include "tempfiles.h"
+#include "data/datasetpackage.h"
 #include <functional>
-#include "timers.h"
 #include "utilities/settings.h"
 #include <QMimeData>
 #include <QAction>

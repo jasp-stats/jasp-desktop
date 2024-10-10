@@ -10,7 +10,7 @@ ChangeRename::ChangeRename()
 
 }
 
-void ChangeRename::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
+void ChangeRename::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const
 {
 	const std::string	oldName = fq(_from),
 						newName = fq(_to);

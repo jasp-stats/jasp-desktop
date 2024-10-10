@@ -17,7 +17,7 @@ class ChangeRename : public ChangeBase
 public:
 	ChangeRename();
 
-	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const override;
+	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const override;
 
 	QString from()	const { return _from;	}
 	QString to()	const { return _to;		}

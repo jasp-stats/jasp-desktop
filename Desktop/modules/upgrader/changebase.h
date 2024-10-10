@@ -27,7 +27,7 @@ public:
 	~ChangeBase();
 
 	virtual QString			toString() const = 0;
-	virtual void			 applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const = 0;
+	virtual void			applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const = 0;
 			bool			conditionSatisfied(const Json::Value & options) const;
 	
 			QJSValue		condition() const	{ return _condition;	}

@@ -99,6 +99,12 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		
 		analysisEntry		= Modules::DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
 		analysis			= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
+		
+		if(msgs.count(Modules::analysisLog))
+		{
+			QStringList msgAna = tq(msgs[Modules::analysisLog]);
+			analysis->setErrorInResults(fq(msgAna.join("\n")));
+		}
 	}
 
 	if(wasUpgraded)

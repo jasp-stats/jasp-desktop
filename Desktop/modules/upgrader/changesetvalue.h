@@ -20,7 +20,7 @@ class ChangeSetValue : public ChangeBase
 public:
 	ChangeSetValue();
 
-	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const override;
+	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const override;
 
 	QString		toString()	const override;
 	QString		name()		const { return _name;		}

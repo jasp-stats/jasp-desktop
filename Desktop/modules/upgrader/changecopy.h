@@ -17,7 +17,7 @@ class ChangeCopy : public ChangeBase
 public:
 	ChangeCopy();
 
-	void	applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const override;
+	void	applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const override;
 	
 	QString	toString()	const override	{ return _toString() + " copying option from '" + from() + "' to '" + to() + "'"; };
 	QString from()		const			{ return _from;	}
