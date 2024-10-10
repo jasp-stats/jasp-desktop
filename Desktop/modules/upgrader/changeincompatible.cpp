@@ -13,7 +13,7 @@ void ChangeIncompatible::applyUpgrade(Json::Value &options, UpgradeMsgs &msgs, b
 	options = Json::objectValue;	
 	
 	if(!inMeta)
-		msgs[analysisLog].push_back(prefixLog + "Reset analysis because of '" + (msg().isEmpty() ? "???" : msg()).toStdString() + "'");
+		msgs[analysisLog].push_back(prefixLog + tr("Reset analysis because of '%1'").arg(msg().isEmpty() ? "???" : msg()).toStdString());
 }
 
 }
