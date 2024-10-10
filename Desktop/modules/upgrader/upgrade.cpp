@@ -43,11 +43,11 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 			if(change->conditionSatisfied(analysesJson["options"]))
 			{
 				Log::log(false) << "it is and applying the change!" << std::endl;
-				change->applyUpgrade(analysesJson["options"], msgs);
+				change->applyUpgrade(analysesJson["options"], msgs, false);
 				
 				try //Also try it on .meta
 				{
-					change->applyUpgrade(analysesJson["options"][".meta"], msgs);
+					change->applyUpgrade(analysesJson["options"][".meta"], msgs, true);
 				}
 				catch(upgradeError & e)
 				{

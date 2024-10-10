@@ -9,7 +9,7 @@ ChangeRemove::ChangeRemove()
 
 }
 
-void ChangeRemove::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
+void ChangeRemove::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const
 {
 	const std::string name = fq(_name);
 

@@ -20,23 +20,18 @@
 
 #include <boost/uuid/uuid.hpp>
 
-#include "common.h"
-#include "version.h"
-
 #include "enginedefinitions.h"
-#include "controls/jaspcontrol.h"
 
 #include <set>
 #include "analysisbase.h"
-#include "modules/dynamicmodules.h"
-#include "data/datasetpackage.h"
 #include "utilities/qutils.h"
-#include "modules/upgrader/upgradechange.h"
+#include "modules/dynamicmodules.h"
 #include <QFileSystemWatcher>
 #include <QQuickItem>
 
 class Column;
 class AnalysisForm;
+
 
 ///
 /// A single instantiated analysis, aka it was clicked by the user and now has a qml-form loaded and some (rudimentary) output in the results or is on its way there.

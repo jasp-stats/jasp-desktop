@@ -10,7 +10,7 @@ ChangeCopy::ChangeCopy()
 
 }
 
-void ChangeCopy::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
+void ChangeCopy::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const
 {
 	//It is ok to overwrite whatever is in newName? Because it is a sort of "set value"
 

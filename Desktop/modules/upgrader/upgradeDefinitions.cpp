@@ -5,6 +5,7 @@ namespace Modules
 
 const std::string		prefixLog	= "\t\t";
 const char			*	logId		= "!log!"; //To add general logging to UpgradeMsgs as opposed to for a specific option
+const char			*	analysisLog	= "!analysis!"; //On the level of an analysis
 
 const char * upgradeError::what() const noexcept
 {

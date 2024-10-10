@@ -15,6 +15,8 @@ typedef std::map<std::string, std::vector<std::string>> UpgradeMsgs; //option na
 
 extern const std::string		prefixLog;
 extern const char			*	logId;
+extern const char			*	analysisLog;
+
 
 struct upgradeError  : public std::runtime_error
 {

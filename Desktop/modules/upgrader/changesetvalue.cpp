@@ -10,7 +10,7 @@ ChangeSetValue::ChangeSetValue()
 
 }
 
-void ChangeSetValue::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
+void ChangeSetValue::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMeta) const
 {
 	const std::string name = fq(_name);
 
