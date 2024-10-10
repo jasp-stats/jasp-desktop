@@ -44,8 +44,6 @@ public:
 	const Json::Value&			defaultBoundValue()											const	override { return _defaultValue; }
 	void						setDefaultBoundValue(const Json::Value& defaultValue)				override { _defaultValue = defaultValue; }
 
-	JASPControl			*		control() { return _control; }
-
 protected:
 	std::string					getName()													const;
 	bool						setValueType();

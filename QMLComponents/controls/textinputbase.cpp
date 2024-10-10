@@ -288,7 +288,7 @@ void TextInputBase::checkIfColumnIsFreeOrMine()
 	if(form() && !form()->isColumnFreeOrMine(val))
 	{
 		setHasScriptError(true);
-		control()->addControlError(tr("Column '%1' already exists and is not created by this analysis.").arg(val));
+		addControlError(tr("Column '%1' already exists and is not created by this analysis.").arg(val));
 	}
 	else
 		setHasScriptError(false);

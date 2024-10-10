@@ -54,6 +54,8 @@ void TableViewBase::setUpModel()
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	this, &TableViewBase::columnCountChanged);
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		this, &TableViewBase::rowCountChanged);
 	connect(_tableModel, &ListModelTableViewBase::variableCountChanged,	this, &TableViewBase::variableCountChanged);
+	connect(_tableModel, &ListModelTableViewBase::requestComputedColumnCreation,	this, &TableViewBase::requestComputedColumnCreation);
+	connect(_tableModel, &ListModelTableViewBase::requestComputedColumnDestruction,	this, &TableViewBase::requestComputedColumnDestruction);
 }
 
 void TableViewBase::setUp()
