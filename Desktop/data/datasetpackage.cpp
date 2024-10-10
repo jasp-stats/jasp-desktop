@@ -2540,7 +2540,7 @@ Column * DataSetPackage::requestComputedColumnCreation(const std::string & colum
 
 bool DataSetPackage::requestColumnCreation(const std::string & columnName, Analysis * analysis, columnType type)
 {
-	if(DataSetPackage::pkg()->isColumnNameFree(columnName))
+	if(!DataSetPackage::pkg()->isColumnNameFree(columnName))
 		return false;
 	
 	createComputedColumn(columnName, type, computedColumnType::analysisNotComputed, analysis);
