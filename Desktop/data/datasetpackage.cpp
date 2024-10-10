@@ -506,21 +506,21 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 
 		switch(role)
 		{
-		case Qt::DisplayRole:						return tq(column->getDisplay(index.row()));
-		case int(specialRoles::label):				return tq(column->getLabel(index.row(), false, true));
-		case int(specialRoles::description):		return tq(column->description());
-		case int(specialRoles::shadowDisplay):		return tq(column->getShadow(index.row()));
-		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
-		case int(specialRoles::inEasyFilter):		return isColumnUsedInEasyFilter(column->name());
-		case int(specialRoles::value):				return tq(column->getValue(index.row()));
-		case int(specialRoles::name):				return tq(column->name());
-		case int(specialRoles::title):				return tq(column->title());
-		case int(specialRoles::filter):				return getRowFilter(index.row());
-		case int(specialRoles::columnType):			return int(column->type());
+		case Qt::DisplayRole:									return tq(column->getDisplay(index.row()));
+		case int(specialRoles::label):							return tq(column->getLabel(index.row(), false, true));
+		case int(specialRoles::value):							return tq(column->getValue(index.row()));
+		case int(specialRoles::name):							return tq(column->name());
+		case int(specialRoles::title):							return tq(column->title());
+		case int(specialRoles::filter):							return getRowFilter(index.row());
+		case int(specialRoles::columnType):						return int(column->type());
+		case int(specialRoles::description):					return tq(column->description());
+		case int(specialRoles::inEasyFilter):					return isColumnUsedInEasyFilter(column->name());
+		case int(specialRoles::shadowDisplay):					return tq(column->getShadow(index.row()));
+		case int(specialRoles::valuesDblList):					return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::nonFilteredNumericValuesCount):	return column->nonFilteredNumericsCount();
-		case int(specialRoles::nonFilteredLevels):	return tql(column->nonFilteredLevels());
-		case int(specialRoles::computedColumnType):	return int(column->codeType());
-		case int(specialRoles::columnPkgIndex):		return index.column();
+		case int(specialRoles::nonFilteredLevels):				return tql(column->nonFilteredLevels());
+		case int(specialRoles::computedColumnType):				return int(column->codeType());
+		case int(specialRoles::columnPkgIndex):					return index.column();
 		case int(specialRoles::lines):
 		{
 			bool	iAmActive		= getRowFilter(index.row()),
@@ -550,16 +550,16 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		
 		switch(role)
 		{
-		case int(specialRoles::filter):				return index.row() >= labels.size() || labels[index.row()]->filterAllows();
-		case int(specialRoles::value):				return tq(column->labelsTempValue(index.row()));
-		case int(specialRoles::description):		return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::nonFilteredNumericValuesCount):	return column->nonFilteredNumericsCount();
-		case int(specialRoles::nonFilteredLevels):	return tql(column->nonFilteredLevels());
-		case int(specialRoles::valuesDblList):		return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
-		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
-		case int(specialRoles::label):				[[fallthrough]];
-		case Qt::DisplayRole:						return tq(column->labelsTempDisplay(index.row()));
-		default:									return QVariant();
+		case int(specialRoles::nonFilteredLevels):				return tql(column->nonFilteredLevels());
+		case int(specialRoles::valuesDblList):					return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
+		case int(specialRoles::description):					return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
+		case int(specialRoles::filter):							return index.row() >= labels.size() || labels[index.row()]->filterAllows();
+		case int(specialRoles::value):							return tq(column->labelsTempValue(index.row()));
+		case int(specialRoles::lines):							return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
+		case int(specialRoles::label):							[[fallthrough]];
+		case Qt::DisplayRole:									return tq(column->labelsTempDisplay(index.row()));
+		default:												return QVariant();
 		}
 	}
 	}
