@@ -537,7 +537,7 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 			if(label && !label->isEmptyValue())
 				labelsNonNA.insert(label);
 		}
-		else if(!std::isnan(_dbls[i]))
+		else if(!isEmptyValue(_dbls[i]))
 			doublesNonNA.insert(_dbls[i]);
 	}
 	
@@ -833,7 +833,7 @@ int Column::labelsTempCount()
 				_labelByNonEmptyIndex[nonEmptyIndex]					= _labels[r];
 				_labelNonEmptyIndexByLabel[_labels[r]]					= nonEmptyIndex;
 				
-				if(!std::isnan(*_labelsTempDbls.rbegin()))
+				if(!isEmptyValue(*_labelsTempDbls.rbegin()))
 					_labelsTempNumerics++;
 				
 				nonEmptyIndex++;
@@ -843,7 +843,7 @@ int Column::labelsTempCount()
 		
 		for(size_t r=0; r<rowCount(); r++)
 		{
-			if(!std::isnan(_dbls[r]) && _ints[r] == Label::DOUBLE_LABEL_VALUE)
+			if(!isEmptyValue(_dbls[r]) && _ints[r] == Label::DOUBLE_LABEL_VALUE)
 				dblset.insert(_dbls[r]);
 		}
 		
@@ -880,7 +880,7 @@ int Column::nonFilteredNumericsCount()
 		doubleset numerics;
 
 		for(size_t r=0; r<_data->rowCount(); r++)
-			if(_data->filter()->filtered()[r] && !std::isnan(_dbls[r]))
+			if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
 					numerics.insert(_dbls[r]);
 
 		_nonFilteredNumericsCount = numerics.size();
@@ -902,7 +902,7 @@ stringset Column::nonFilteredLevels()
 					if(label && !label->isEmptyValue())
 						_nonFilteredLevels.insert(label->label());
 				}
-				else if(!std::isnan(_dbls[r]))
+				else if(!isEmptyValue(_dbls[r]))
 					_nonFilteredLevels.insert(ColumnUtils::doubleToString(_dbls[r]));
 			}
 	}
@@ -1768,7 +1768,7 @@ doublevec Column::valuesNumericOrdered()
 		else 
 			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
 		
-		if(!std::isnan(aValue))
+		if(!std::isnan(aValue)) //not isEmptyValue because we want to use the output to rewrite the data again
 			values.insert(aValue);
 	}
 	
@@ -1801,7 +1801,7 @@ void Column::valuesReverse()
 		else 
 			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
 		
-		if(!std::isnan(aValue))
+		if(!std::isnan(aValue)) //not isEmptyValue because we want to use the output to rewrite the data again
 			label->setOriginalValue(flipIt[aValue]);
 	}
 	
