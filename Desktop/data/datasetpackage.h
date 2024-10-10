@@ -327,8 +327,8 @@ public slots:
 				void				setSynchingExternallyFriendly(		bool synchingExternally);
 				void				setSynchingExternally(				bool synchingExternally);
 				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
-				void				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
-				void				requestComputedColumnDestruction(	const std::string & columnName);
+				bool				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
+				bool				requestComputedColumnDestruction(	const std::string & columnName, Analysis * analysis);
 				void				checkDataSetForUpdates();
 				void				delayedRefresh();
 				void				resetFilterCounters();

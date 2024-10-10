@@ -142,12 +142,12 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 			connect(module, &DynamicModule::registerForInstalling,			this,	&DynamicModules::registerForInstalling			);
 			connect(module, &DynamicModule::registerForInstallingModPkg,	this,	&DynamicModules::registerForInstallingModPkg	);
 			connect(module, &DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
-			connect(module, &DynamicModule::statusChanged,					module,	[=]()
+			connect(module, &DynamicModule::statusChanged,					module,	[this, module, moduleName]()
 			{
 				if(module->status() == moduleStatus::error)
 				{
 						_modulesInstallPackagesNeeded.erase(moduleName);
-						QTimer::singleShot(0, module, [=](){ uninstallModule(moduleName); });
+						QTimer::singleShot(0, module, [this, moduleName](){ uninstallModule(moduleName); });
 				}
 			});
 			

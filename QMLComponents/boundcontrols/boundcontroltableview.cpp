@@ -94,7 +94,7 @@ void BoundControlTableView::bindTo(const Json::Value &value)
 {
 	BoundControlBase::bindTo(value);
 
-	ListModelTableViewBase::TableTerms tableTerms;
+	ListModelTableViewBase::TableTerms tableTerms(_tableView->tableModel());
 	QMap<QString, QString> extra;
 
 	fillTableTerms(value, tableTerms);

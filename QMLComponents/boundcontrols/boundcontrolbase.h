@@ -39,6 +39,7 @@ public:
 	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
 	void						setIsRCode(std::string key = "");
+	void						setFilterForValues(const std::string & filterName);
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
 	const Json::Value&			defaultBoundValue()											const	override { return _defaultValue; }
 	void						setDefaultBoundValue(const Json::Value& defaultValue)				override { _defaultValue = defaultValue; }
@@ -60,6 +61,7 @@ protected:
 	Json::Value					_orgValue,
 								_defaultValue;
 	columnType					_columnType			= columnType::unknown;
+	std::string					_filterForValues;
 };
 
 #endif // BOUNDCONTROLBASE_H

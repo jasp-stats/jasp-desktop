@@ -26,6 +26,7 @@
 #include "columntype.h"
 
 class VariableInfoProvider;
+class DataSet;
 
 // The Provider/Consumer mechanism makes an interface so that the consumers (the QML models) get their data without having to know how the Provider furnishes this data
 // Typically, for a JASP application, the Provider will be the ColumnsModel, but if the QML forms are used somewhere else, another Provider should be instantiated.
@@ -37,7 +38,7 @@ class VariableInfo : public QObject
 {
 	Q_OBJECT
 public:
-	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues, TotalLevels, PreviewScale, PreviewOrdinal, PreviewNominal };
+	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, DataSetValues, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues, TotalLevels, PreviewScale, PreviewOrdinal, PreviewNominal, DataSetPointer };
 	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransformedIconType };
 
 public:
@@ -46,21 +47,23 @@ public:
 	Q_PROPERTY(int	rowCount		READ rowCount		NOTIFY rowCountChanged		)
 	Q_PROPERTY(bool	dataAvailable	READ dataAvailable	NOTIFY dataAvailableChanged	)
 
-	static VariableInfo*		info();
+	static VariableInfo		*	info();
 	static QString				getIconFile(columnType colType, IconType type);
 	static QString				getTypeFriendly(columnType colType);
 
-	VariableInfoProvider*		provider()	{ return _provider; }
+	VariableInfoProvider	*	provider()	{ return _provider; }
 
-	int rowCount();
-	bool dataAvailable();
+	int							rowCount();
+	bool						dataAvailable();
+	DataSet					*	dataSet();
 
 signals:
-	void namesChanged(QMap<QString, QString> changedNames);
-	void columnsChanged(QStringList changedColumns);
-	void columnTypeChanged(QString colName);
-	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
-	void labelsReordered(QString columnName);
+	void namesChanged(		QMap<QString, QString> changedNames);
+	void columnsChanged(	QStringList changedColumns);
+	void columnTypeChanged(	QString colName);
+	void labelsChanged(		QString columnName, QMap<QString, QString> changedLabels);
+	void labelsReordered(	QString columnName);
+	void dataSetChanged();
 	void filterChanged();
 	void rowCountChanged();
 	void dataAvailableChanged();
@@ -76,20 +79,21 @@ private:
 class VariableInfoProvider
 {
 public:
-	virtual QVariant				provideInfo(VariableInfo::InfoType info, const QString& name = "", int row = 0)	const	= 0;
+	virtual QVariant				provideInfo(VariableInfo::InfoType info, const QString& name = "", int row = 0)			const	= 0;
+	virtual bool					absorbInfo(VariableInfo::InfoType info, const QString& name, int row, QVariant value)			= 0;
 	virtual QAbstractItemModel*		providerModel()																			{ return nullptr;			}
-	virtual QQmlContext*			providerQMLContext()															const	= 0;
+	virtual QQmlContext*			providerQMLContext()																	const	= 0;
 };
 
 class VariableInfoConsumer
 {
 public:
-	VariableInfoConsumer() { _provider = (VariableInfo::info() ? VariableInfo::info()->provider() : nullptr);
-}
+	VariableInfoConsumer() { _provider = (VariableInfo::info() ? VariableInfo::info()->provider() : nullptr); }
 
-	QVariant				requestInfo(VariableInfo::InfoType info, const QString &name = "", int row = 0)	const	{ return _provider ? _provider->provideInfo(info, name, row)	: QVariant();	}
-	bool					isInfoProviderModel(QObject* model)												const	{ return _provider ? model == _provider->providerModel()		: false;		}
-	QAbstractItemModel*		infoProviderModel()																		{ return _provider ? _provider->providerModel()					: nullptr;		}
+	QVariant				requestInfo(VariableInfo::InfoType info, const QString &name = "", int row = 0)			const	{ return _provider ? _provider->provideInfo(info, name, row)		: QVariant();	}
+	bool					sendInfo(VariableInfo::InfoType info, const QString &name, int row, QVariant value)		const	{ return _provider ? _provider->absorbInfo(info, name, row, value)	: false;	}
+	bool					isInfoProviderModel(QObject* model)														const	{ return _provider ? model == _provider->providerModel()			: false;		}
+	QAbstractItemModel*		infoProviderModel()																				{ return _provider ? _provider->providerModel()						: nullptr;		}
 
 private:
 	VariableInfoProvider *_provider = nullptr;

@@ -60,12 +60,21 @@ AnalysisForm::~AnalysisForm()
 	Log::log() << "~AnalysisForm " << this << std::endl;
 }
 
-void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
+void AnalysisForm::runRScript(const QString & script, const QString & controlName, bool whiteListedVersion)
 {
 	if(_analysis && !_removed)
 	{
 		if(_valueChangedSignalsBlocked == 0)	_analysis->sendRScript(script, controlName, whiteListedVersion);
 		else									_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
+	}
+}
+
+void AnalysisForm::runFilter(const QString & name)
+{
+	if(_analysis && !_removed)
+	{
+		if(_valueChangedSignalsBlocked == 0)	_analysis->sendFilter(name);
+		else									_waitingFilters.insert(name);
 	}
 }
 
@@ -145,6 +154,13 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 	else
 		Log::log() << "Unknown item " << controlName.toStdString() << std::endl;
 }
+
+void AnalysisForm::filterByNameDone(const QString & name, const QString & error)
+{
+	for(JASPControl * control : _controls)
+		control->filterDoneHandler(name, error);
+}
+
 
 void AnalysisForm::addControl(JASPControl *control)
 {
@@ -539,7 +555,7 @@ void AnalysisForm::setTitle(QString title)
 		_analysis->setTitle(fq(title.simplified()));
 }
 
-void AnalysisForm::setOptionNameConversion(const QVariantList &conv)
+void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
 {
 	if (_rSyntax->setControlNameToRSyntaxMap(conv))
 		emit optionNameConversionChanged();
@@ -676,14 +692,24 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 			_valueChangedEmittedButBlocked = false;
 		
 			if(_analysis && (notifyOnceUnblocked || _analysis->wasUpgraded())) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
+			{
 				while(_waitingRScripts.size() > 0)
 				{
 					const auto & front = _waitingRScripts.front();
 					_analysis->sendRScript(std::get<0>(front), std::get<1>(front), std::get<2>(front));
 					_waitingRScripts.pop();
 				}
+
+				for(const auto & filterName : _waitingFilters)
+					_analysis->sendFilter(filterName);
+				
+				_waitingFilters.clear();
+			}
 			else //Otherwise just clean it up
+			{
 				_waitingRScripts = std::queue<std::tuple<QString, QString, bool>>();
+				_waitingFilters.clear();
+			}
 		}
 	}
 }
@@ -701,6 +727,11 @@ bool AnalysisForm::needsRefresh() const
 bool AnalysisForm::isFormulaName(const QString& name) const
 {
 	return _rSyntax->getFormula(name) != nullptr;
+}
+
+bool AnalysisForm::isColumnFreeOrMine(const QString &name) const
+{
+	return _analysis ? _analysis->isColumnFreeOrMine(name) : false;
 }
 
 QString AnalysisForm::generateRSyntax(bool useHtml) const

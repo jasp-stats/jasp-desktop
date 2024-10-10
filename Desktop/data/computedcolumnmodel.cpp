@@ -319,8 +319,7 @@ void ComputedColumnModel::removeColumn()
 
 	// TODO pass RemoveColumnCommand aab
 	DataSetPackage::pkg()->undoStack()->pushCommand(new RemoveColumnsCommand(DataSetPackage::pkg(), _selectedColumn->id(), 1));
-
-	DataSetPackage::pkg()->requestComputedColumnDestruction(_selectedColumn->name());
+	
 	emit refreshData();
 }
 
@@ -468,7 +467,7 @@ void ComputedColumnModel::analysisRemoved(Analysis * analysis)
 			colsToRemove.insert(col->name());
 
 	for(const std::string & col : colsToRemove)
-		DataSetPackage::pkg()->requestComputedColumnDestruction(col);
+		DataSetPackage::pkg()->requestComputedColumnDestruction(col, analysis);
 }
 
 QString ComputedColumnModel::computeColumnIconSource() const

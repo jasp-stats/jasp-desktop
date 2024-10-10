@@ -104,7 +104,7 @@ Analysis::~Analysis()
 			if(DataSetPackage::pkg()->isColumnAnalysisNotComputed(col))
 				DataSetPackage::pkg()->setColumnComputedType(col, computedColumnType::notComputed);
 			else
-				emit requestComputedColumnDestruction(col);
+				emit requestComputedColumnDestruction(col, this);
 	}
 }
 
@@ -502,8 +502,8 @@ void Analysis::requestColumnCreationHandler(const std::string & columnName, colu
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
-	emit requestComputedColumnDestruction(columnName);
-
+	emit requestComputedColumnDestruction(columnName, this);
+	//We could check whether it worked or not, but if this column wasnt owned by analysis and it dfailed the next will be noop anyway:
 	removeOwnComputedColumn(columnName);
 }
 
@@ -537,6 +537,12 @@ void Analysis::runScriptRequestDone(const QString& result, const QString& contro
 {
 	if (_analysisForm)
 		_analysisForm->runScriptRequestDone(result, controlName, hasError);
+}
+
+void Analysis::filterByNameDone(const QString &name, const QString &error)
+{
+	if (_analysisForm)
+		_analysisForm->filterByNameDone(name, error);
 }
 
 Json::Value Analysis::createAnalysisRequestJson()
@@ -1153,4 +1159,14 @@ std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) 
 	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
+}
+
+bool Analysis::isColumnFreeOrMine(const QString & columnName) const
+{
+	if(DataSetPackage::pkg()->isColumnNameFree(columnName))
+		return true;
+	
+	Column * col = DataSetPackage::pkg()->getColumn(columnName.toStdString());
+	
+	return col->analysisId() == id();
 }

@@ -15,17 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "engine.h"
-
-#include <sstream>
-
-#include "tempfiles.h"
+#include "log.h"
 #include "utils.h"
+#include "engine.h"
+#include "timers.h"
+#include "rbridge.h"
+#include "tempfiles.h"
 #include "columnutils.h"
 #include "processinfo.h"
-#include "rbridge.h"
-#include "timers.h"
-#include "log.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
 
@@ -231,6 +228,7 @@ bool Engine::receiveMessages(int timeout)
 			{
 			case engineState::analysis:				receiveAnalysisMessage(jsonRequest);		return true;
 			case engineState::filter:				receiveFilterMessage(jsonRequest);			break;
+			case engineState::filterByName:			receiveFilterByNameMessage(jsonRequest);	break;
 			case engineState::rCode:				receiveRCodeMessage(jsonRequest);			break;
 			case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
 			case engineState::pauseRequested:		pauseEngine(jsonRequest);					break;
@@ -259,6 +257,121 @@ void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 	int filterRequestId			= jsonRequest.get("requestId", -1).asInt();
 
 	runFilter(filter, generatedFilter, filterRequestId);
+}
+
+void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
+{
+	if(_engineState != engineState::idle)
+		Log::log() << "Unexpected filterByName message, current state is not idle (" << engineStateToString(_engineState) << ")";
+
+	_engineState				= engineState::filter;
+	std::string name			= jsonRequest.get("name", "").asString();
+
+	runFilterByName(name);
+}
+
+void Engine::runFilterByName(const std::string & name)
+{
+	provideAndUpdateDataSet();
+	
+	Filter		localFilter			(_dataSet, name, false);
+	std::string strippedFilter		= stringUtils::stripRComments(localFilter.rFilter());
+	boolvec		filterResult;
+	std::string RPossibleWarning;
+	try
+	{
+		filterResult		= rbridge_applyFilter(strippedFilter, "");
+		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
+	}
+	catch(filterException & e)
+	{
+		std::string error = std::string(e.what()).length() > 0 ? e.what() : "but it is unclear what the problem was...";
+		error = "There was a problem running filter '" + name + "':\n" + error;
+		Log::log() << error << std::endl;
+		
+		filterResult		= boolvec(_dataSet ? _dataSet->rowCount() : 0, false); //in the case of a non-dataset filter a better default is probably better to set everything to false if something is wrong
+		RPossibleWarning	= error;
+	}
+	
+
+
+	DatabaseInterface::singleton()->transactionWriteBegin();
+	localFilter.setFilterVector(filterResult);
+	localFilter.setErrorMsg(RPossibleWarning);
+	localFilter.incRevision();
+	DatabaseInterface::singleton()->transactionWriteEnd();
+
+	sendFilterByNameDone(name, RPossibleWarning);
+
+	_engineState = engineState::idle;
+}
+
+void Engine::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
+{
+	JASPTIMER_SCOPE(Engine::updateOptionsAccordingToMeta);
+	
+	std::function<void(Json::Value&,Json::Value&)> recursiveUpdate;
+	recursiveUpdate = [&recursiveUpdate, this](Json::Value & options, Json::Value & meta)
+	{
+		if(meta.isNull())
+			return;
+		
+		Json::Value loadFilteredData = !meta.isObject() || !meta.isMember("loadFilteredData") ? Json::nullValue : meta["loadFilteredData"];
+		
+		switch(options.type())
+		{
+		case Json::arrayValue:
+			for(int i=0; i<options.size() && i < meta.size(); i++)
+				recursiveUpdate(options[i], meta.type() == Json::arrayValue ? meta[i] : meta);
+				
+			return;
+	
+		case Json::objectValue:
+			for(const std::string & memberName : options.getMemberNames())
+				if(memberName != ".meta" && meta.isMember(memberName))
+					recursiveUpdate(options[memberName], meta[memberName]);
+			
+			if(loadFilteredData.isObject())
+			{
+				const std::string	colName = loadFilteredData["column"].asString(),
+									filterN	= loadFilteredData["filter"].asString();
+				DataSet			*	data	= provideAndUpdateDataSet();
+				Column			*	col		= data->column(colName);
+				
+				if(!col)
+					return;
+				
+				Filter			*	filter	= new Filter(data, filterN, false);
+				
+				if(col && filter)
+				{
+					Json::Value rowIndices	= Json::arrayValue,
+								values		= Json::arrayValue;
+					doublevec	dbls		= col->dataAsRDoubles({}); //We dont pass a filter because we need to know the rowindices.
+					
+					for(size_t r=0; r<dbls.size(); r++)
+						if(filter->filtered()[r])
+						{
+							rowIndices	.append(int(r+1));
+							values		.append(dbls[r]);
+						}
+					
+					options["rowIndices"]	= rowIndices;
+					options["values"]		= values;
+				}					
+				delete filter;
+			}
+			return;
+	
+		default:
+			return;
+		}
+	};
+	
+	recursiveUpdate(encodedOptions, encodedOptions[".meta"]);
+	
+	
+	//Log::log() << "After updating options according to their meta it is now:\n" << encodedOptions << std::endl;
 }
 
 void Engine::runFilter(const std::string & filter, const std::string & generatedFilter, int filterRequestId)
@@ -304,9 +417,6 @@ void Engine::sendFilterResult(int filterRequestId)
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
 	filterResponse["requestId"]		= filterRequestId;
 
-//	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
-//	if(warning != "")			filterResponse["filterError"] = warning;
-
 	sendString(filterResponse.toStyledString());
 }
 
@@ -319,6 +429,17 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
 	filterResponse["requestId"]		= filterRequestId;
 	filterResponse["error"]			= errorMessage;
+
+	sendString(filterResponse.toStyledString());
+}
+
+void Engine::sendFilterByNameDone(const std::string & name, const std::string & errorMessage)
+{
+	Json::Value filterResponse(Json::objectValue);
+
+	filterResponse["typeRequest"]	= engineStateToString(engineState::filterByName);
+	filterResponse["name"]			= name;
+	filterResponse["errorMessage"]	= errorMessage;
 
 	sendString(filterResponse.toStyledString());
 }
@@ -625,14 +746,20 @@ void Engine::runAnalysis()
 	default:	break;
 	}
 
-        provideAndUpdateDataSet();
+	   provideAndUpdateDataSet();
 	Log::log() << "Analysis will be run now." << std::endl;
 
 	Json::Value encodedAnalysisOptions = _analysisOptions;
+	
+	updateOptionsAccordingToMeta(encodedAnalysisOptions);
 
 	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,	encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, _developerMode, _analysisColsTypes, _analysisPreloadData);
+	
+
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
+								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 
+								_developerMode, _analysisColsTypes, _analysisPreloadData);
 
 	switch(_analysisStatus)
 	{
@@ -900,6 +1027,7 @@ void Engine::stopEngine()
 	default:							/* everything not mentioned is fine */	break;
 	case engineState::analysis:			_analysisStatus = Status::aborted;		break;
 	case engineState::filter:
+	case engineState::filterByName:
 	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(_engineState) + " somehow, you should not expect to see this exception ever.");
 	};
 
@@ -925,6 +1053,7 @@ void Engine::pauseEngine(const Json::Value & json)
 	default:							/* everything not mentioned is fine */	break;
 	case engineState::analysis:			_analysisStatus = Status::aborted;		break;
 	case engineState::filter:
+	case engineState::filterByName:
 	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(_engineState) + " somehow, you should not expect to see this exception ever.");
 	};
 
@@ -950,6 +1079,7 @@ void Engine::receiveReloadData()
 	default:							/* everything not mentioned is fine */	break;
 	case engineState::analysis:			_analysisStatus = Status::aborted;		break;
 	case engineState::filter:
+	case engineState::filterByName:
 	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(_engineState) + " somehow, you should not expect to see this exception ever.");
 	};
 
@@ -958,7 +1088,7 @@ void Engine::receiveReloadData()
 	//First send state, then load data
 	sendEngineLoadingData();
 
-        provideAndUpdateDataSet(); //Also triggers loading from DB
+	provideAndUpdateDataSet(); //Also triggers loading from DB
 
 	reloadColumnNames();
 

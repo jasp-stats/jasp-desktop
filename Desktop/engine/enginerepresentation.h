@@ -42,19 +42,22 @@ public:
 
 	void			handleRunningAnalysisStatusChanges();
 
-	void			runScriptOnProcess(RFilterStore * filterStore);
-	void			runScriptOnProcess(RScriptStore * scriptStore);
-	void			runScriptOnCommanderProcess(const QString & rCmdCode);
-	void			runScriptOnProcess(RComputeColumnStore * computeColumnStore);
-	void			runAnalysisOnProcess(Analysis *analysis);
-	void			runModuleInstallRequestOnProcess(Json::Value request);
-	void			runModuleLoadRequestOnProcess(Json::Value request);
+	void			runAnalysisOnProcess(	Analysis			*analysis);
+	void			runScriptOnProcess(		RFilterStore		* filterStore);
+	void			runScriptOnProcess(		RScriptStore		* scriptStore);
+	void			runScriptOnProcess(		const QString		& rCmdCode);
+	void			runScriptOnProcess(		RFilterByNameStore	* filterStore);
+	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
+
+	void			runModuleInstallRequestOnProcess(	Json::Value request);
+	void			runModuleLoadRequestOnProcess(		Json::Value request);
+
 	void			sendLogCfg();
 	void			sendSettings();
 	void			sendReloadData();
 
 	///Kills engine outright by killing process
-	void 			killEngine();
+	void 			killEngine(bool beCareful = true);
 	
 	///Try to gracefully shut down this engine so it can be removed
 	void 			shutEngineDown();
@@ -120,6 +123,7 @@ public:
 protected:
 	void			processRCodeReply(			Json::Value & json);
 	void			processFilterReply(			Json::Value & json);
+	void			processFilterByNameReply(	Json::Value & json);
 	void			processAnalysisReply(		Json::Value & json);
 	void			processComputeColumnReply(	Json::Value & json);
 	void			processModuleRequestReply(	Json::Value & json);
@@ -146,6 +150,7 @@ public slots:
 signals:
 	void			engineTerminated();
 	void			checkDataSetForUpdates();
+	void			filterByNameDone(				QString name, QString error);
 	void			filterDone(																int requestID);
 	void			processFilterErrorMsg(			const QString & error,					int requestId = -1);
 	void			processNewFilterResult(			int requestId);

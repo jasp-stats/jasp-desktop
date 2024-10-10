@@ -40,6 +40,9 @@ Json::Value BoundControlBase::createMeta()  const
 		if(key.empty())		meta	 ["isRCode"] = true;
 		else				meta[key]["isRCode"] = true;
 	
+	if(!_filterForValues.empty()) //Then the control should load a filter by this name and give it as "values" in the options it passes to the analysis
+		meta["filterForValues"] = _filterForValues;
+
 	return meta;
 }
 
@@ -110,6 +113,11 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 void BoundControlBase::setIsRCode(std::string key)
 {
 	_isRCode.insert(key);
+}
+
+void BoundControlBase::setFilterForValues(const std::string &filterName)
+{
+	_filterForValues = filterName;
 }
 
 const Json::Value & BoundControlBase::boundValue() const

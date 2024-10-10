@@ -23,21 +23,36 @@
 BoundControlFilteredTableView::BoundControlFilteredTableView(TableViewBase* tableView)
 	: BoundControlTableView(tableView)
 {
+	setIsColumn(true);
 }
 
 Json::Value BoundControlFilteredTableView::createJson() const
 {
 	Json::Value result(Json::arrayValue);
 	Json::Value row(Json::objectValue);
-	Json::Value values(Json::arrayValue);
 
-	row["colName"]	= fq(_tableView->property("colName").toString());
-	row["filter"]	= fq(_tableView->property("filter").toString());
-	row["extraCol"] = fq(_tableView->property("extraCol").toString());
-	row["values"] = values;
+	row["colName"]		= fq(_tableView->property("colName").toString());
+	row["filter"]		= fq(_tableView->property("filter").toString());
+	row["filterName"]	= fq(_tableView->property("filterName").toString());
+	row["extraCol"]		= fq(_tableView->property("extraCol").toString());
 
 	result.append(row);
 	return result;
+}
+
+Json::Value BoundControlFilteredTableView::createMeta() const
+{
+	ListModelFilteredDataEntry* filteredModel = qobject_cast<ListModelFilteredDataEntry*>(_tableView->tableModel());
+	
+	Json::Value meta = BoundControlTableView::createMeta(),
+				load = Json::objectValue;
+	
+	load["filter"] = filteredModel->filterName();
+	load["column"] = fq(filteredModel->colName());
+	
+	meta["loadFilteredData"] = load;
+	
+	return meta;
 }
 
 void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, ListModelTableViewBase::TableTerms &tableTerms)
@@ -46,13 +61,9 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 	{
 		const Json::Value& firstRow = value[Json::UInt(0)];
 
-		tableTerms.filter	= tq(firstRow["filter"].asString());
-
-		tableTerms.values.push_back({});
-		for (const Json::Value& value : firstRow["values"])
-			tableTerms.values[0].push_back(value.asDouble());
-
-		tableTerms.colName	= tq(firstRow["colName"].asString());
+		tableTerms.filter		= tq(firstRow["filter"].asString());
+		tableTerms.filterName	= firstRow.isMember("filterName") ? tq(firstRow["filterName"].asString()) : "";
+		tableTerms.colName		= tq(firstRow["colName"].asString());
 
 		for (const Json::Value& value : firstRow["dataCols"])
 			tableTerms.colNames.push_back(tq(value.asString()));
@@ -62,9 +73,6 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 			tableTerms.extraCol = tq(extraCol.asString());
 		else if (extraCol.isArray() && extraCol.size() > 0)
 			tableTerms.extraCol = tq(extraCol[Json::UInt(0)].asString());
-
-		for (const Json::Value& value : firstRow["rowIndices"])
-			tableTerms.rowIndices.push_back(value.asInt());
 	}
 }
 
@@ -74,20 +82,10 @@ void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const Lis
 
 	Json::Value row(Json::objectValue);
 
-	Json::Value stdRowIndices(Json::arrayValue);
-	for (size_t index : filteredModel->filteredRowToData())
-		stdRowIndices.append(static_cast<int>(index + 1));
+	row["colName"]		= fq(filteredModel->colName()	);
+	row["filter"]		= fq(filteredModel->filter()	);
+	row["filterName"]	=	 filteredModel->filterName() ;
 
-	std::string colName = fq(filteredModel->colName());
-	if (!colName.empty())
-		row["colName"] = colName;
-	row["filter"] =	fq(filteredModel->filter());
-	row["rowIndices"] = stdRowIndices;
-
-	Json::Value values(Json::arrayValue);
-	for (QVariant val : tableTerms.values[0])
-		values.append(val.toDouble());
-	row["values"] = values;
 
 	Json::Value dataCols(Json::arrayValue);
 	for (const QString& dataCol : filteredModel->dataColumns())

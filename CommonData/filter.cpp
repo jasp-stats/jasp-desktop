@@ -3,14 +3,24 @@
 #include "dataset.h"
 #include "databaseinterface.h"
 
-Filter::Filter(DataSet *data)
+Filter::Filter(DataSet * data)
 	: DataSetBaseNode(dataSetBaseNodeType::filter, data), _data(data)
 { }
+
+Filter::Filter(DataSet * data, const std::string & name, bool createIfMissing)
+	: DataSetBaseNode(dataSetBaseNodeType::filter), _data(data), _name(name)
+{
+	assert(_name != "");
+
+	if(db().filterGetId(_name) > -1)	dbLoad();
+	else if(createIfMissing)			dbCreate();
+	else								throw std::runtime_error("Filter by name '" + _name + "' but it doesnt exist and createIfMissing=false!\nAre you sure this filter should exist?");
+}
 
 void Filter::dbCreate()
 {
 	assert(_id == -1);
-	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR);
+	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
 }
 
 void Filter::dbUpdate()
@@ -21,7 +31,7 @@ void Filter::dbUpdate()
 
 	db().transactionWriteBegin();
 	if(!_data->writeBatchedToDB())
-		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR);
+		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
 
 	incRevision();
 	db().transactionWriteEnd();
@@ -40,14 +50,16 @@ void Filter::dbUpdateErrorMsg()
 void Filter::dbLoad()
 {
 	if(_id == -1)
-		_id = db().filterGetId(_data->id());
+		_id = _name == "" ? db().filterGetId(_data->id()) : db().filterGetId(_name);
 
 	if(_id == -1)
 		return;
 
 	db().transactionReadBegin();
 	
-	db().filterLoad(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _revision);
+	std::string nameInDB = "";
+	db().filterLoad(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _revision, nameInDB);
+	assert(nameInDB == _name);
 
 	_filteredRowCount	= 0;
 
@@ -156,6 +168,11 @@ bool Filter::checkForUpdates()
 	}
 	else
 		return false;
+}
+
+bool Filter::filterNameIsFree(const std::string &filterName)
+{
+	return -1 == DatabaseInterface::singleton()->filterGetId(filterName);
 }
 
 void Filter::reset()

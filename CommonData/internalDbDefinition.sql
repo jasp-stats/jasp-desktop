@@ -14,7 +14,8 @@ CREATE TABLE DataSets (
 CREATE TABLE Filters ( 
 	id				INTEGER PRIMARY KEY, 
 	dataSet			INT, 
-	rFilter			TEXT, 
+	rFilter			TEXT,
+	name			TEXT, 
 	generatedFilter TEXT, 
 	constructorJson TEXT, 
 	constructorR	TEXT, 

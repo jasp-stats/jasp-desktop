@@ -168,11 +168,13 @@ public:
 	virtual bool					encodeValue()						const	{ return false; }
 
 	const Set					&	depends()							const	{ return _depends; }
-	bool							addDependency(JASPControl* item);
-	void							removeDependency(JASPControl* item);
-	virtual JASPControl			*	getChildControl(QString key, QString name)	{ return nullptr; }
-	void							runRScript(const QString& script, bool whiteListedVersion = true);
-	virtual void					rScriptDoneHandler(const QString& result);
+	bool							addDependency(		JASPControl* item);
+	void							removeDependency(	JASPControl* item);
+	virtual JASPControl			*	getChildControl(	const QString & key, const QString & name)	{ return nullptr; }
+	void							runRScript(			const QString & script, bool whiteListedVersion = true);
+	void							runFilter(			const QString & name);
+	virtual void					rScriptDoneHandler(	const QString & result);
+	virtual void					filterDoneHandler(	const QString & name, const QString & error);
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();

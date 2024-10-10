@@ -116,6 +116,7 @@ public slots:
 	void selectAnalysisAtRow(int row);
 	void unselectAnalysis();
 	void rCodeReturned(QString result, int requestId, bool hasError);
+	void filterByNameDone(QString name, QString error);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
 	void setMoving(bool moving);
@@ -151,6 +152,8 @@ signals:
 	void analysisOverwriteUserdata(		Analysis *	source);
 	void analysisStatusChanged(			Analysis *	source);
 	void sendRScript(					QString		script, int requestID, bool whiteListedVersion, QString module);
+	void sendFilterByName(				QString		name,	QString module);
+
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
 	void reloadQmlForm(					int			row);
@@ -166,13 +169,14 @@ signals:
 	void moveAnalyses(quint64 fromId, quint64 toId);
 
 	Column *			requestComputedColumnCreation(		const std::string & columnName, Analysis *source);
-	void				requestColumnCreation(				const std::string & columnName, Analysis *source, columnType type);
-	void				requestComputedColumnDestruction(	const std::string & columnName);
+	bool				requestColumnCreation(				const std::string & columnName, Analysis *source, columnType type);
+	bool				requestComputedColumnDestruction(	const std::string & columnName, Analysis *source);
 
 	void currentFormPrevHChanged(double currentFormPrevH);
 
 private slots:
 	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion, QString module);
+	void sendFilterHandler(QString name, QString module);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);

@@ -54,6 +54,8 @@ void TableViewBase::setUpModel()
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	this, &TableViewBase::columnCountChanged);
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		this, &TableViewBase::rowCountChanged);
 	connect(_tableModel, &ListModelTableViewBase::variableCountChanged,	this, &TableViewBase::variableCountChanged);
+	connect(_tableModel, &ListModelTableViewBase::requestComputedColumnCreation,	this, &TableViewBase::requestComputedColumnCreation);
+	connect(_tableModel, &ListModelTableViewBase::requestComputedColumnDestruction,	this, &TableViewBase::requestComputedColumnDestruction);
 }
 
 void TableViewBase::setUp()
@@ -177,6 +179,12 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 {
 	if(_tableModel)
 		_tableModel->rScriptDoneHandler(result);
+}
+
+void TableViewBase::filterDoneHandler(const QString &name, const QString & error)
+{
+	if(_tableModel)
+		_tableModel->filterDoneHandler(name, error);
 }
 
 JASPControl::ItemType TableViewBase::itemTypePerItem(int col, int row) const

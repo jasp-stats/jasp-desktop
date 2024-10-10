@@ -691,18 +691,30 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
 
-			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value) || role == int(specialRoles::valueLabelPair))
+			if(role == Qt::DisplayRole || role == Qt::EditRole || role == int(specialRoles::value) || role == int(specialRoles::valueLabelPair) || role == int(specialRoles::valuesStrList))
 			{				
-				bool				isPair	= role == int(specialRoles::valueLabelPair);
-				QVariantList		listVar	= isPair	? value.toList()		: QVariantList{ value };
-				const std::string	val		= fq(listVar[0].toString()),
-									label	= fq(isPair ? listVar[1].toString() : "");
+				bool				isPair	= role == int(specialRoles::valueLabelPair),
+									isVals	= role == int(specialRoles::valuesStrList);
+				QVariantList		listVar	= isPair || isVals ? value.toList()	: QVariantList{ value };
+				bool				aChange = false;
 				
-				bool	somethingChanged	= !isPair
-						? column->setStringValue(index.row(), val == EmptyValues::displayString() ? "" : val)
-											: column->setValue(index.row(), val, label);
-
-				if(somethingChanged)
+				if(!isVals)
+				{
+					const std::string	val		= fq(listVar[0].toString()),
+										label	= fq(isPair ? listVar[1].toString() : "");
+										aChange	= !isPair	
+												? column->setStringValue(index.row(), val == EmptyValues::displayString() ? "" : val)
+												: column->setValue(index.row(), val, label);
+				}
+				else //Its a list of values, for instance "intial values"
+				{
+					int r=0;
+					for(const QVariant & val : listVar)
+						if(column->setStringValue(index.row() + r++, fq(val.toString() == tq(EmptyValues::displayString()) ? "" : val.toString())))
+							aChange = true;
+				}
+				
+				if(aChange)
 				{
 						JASPTIMER_SCOPE(DataSetPackage::setData reset model);
 
@@ -2526,26 +2538,31 @@ Column * DataSetPackage::requestComputedColumnCreation(const std::string & colum
 	return createComputedColumn(columnName, columnType::scale, computedColumnType::analysis, analysis);
 }
 
-void DataSetPackage::requestColumnCreation(const std::string & columnName, Analysis * analysis, columnType type)
+bool DataSetPackage::requestColumnCreation(const std::string & columnName, Analysis * analysis, columnType type)
 {
 	if(DataSetPackage::pkg()->isColumnNameFree(columnName))
-		createComputedColumn(columnName, type, computedColumnType::analysisNotComputed, analysis);
+		return false;
+	
+	createComputedColumn(columnName, type, computedColumnType::analysisNotComputed, analysis);
+	return true;
 }
 
 
-void DataSetPackage::requestComputedColumnDestruction(const std::string& columnName)
+bool DataSetPackage::requestComputedColumnDestruction(const std::string& columnName, Analysis * analysis)
 {
 	if(columnName.empty())
-		return;
+		return false;
 
 	Column * col = dataSet()->column(columnName);
 
-	if(!col || !col->isComputed())
-		return;
+	if(!col || !col->isComputed() || !col->isComputedByAnalysis(analysis->id()))
+		return false;
 
 	removeColumn(columnName);
 
 	emit checkForDependentColumnsToBeSent(tq(columnName));
+	
+	return true;
 }
 
 void DataSetPackage::checkDataSetForUpdates()

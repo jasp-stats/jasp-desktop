@@ -38,10 +38,12 @@ public:
 	Q_INVOKABLE	QString						getColumnIconTransform(int columnType)												const;
 				QString						getColumnIconTransform(columnType colType)											const;
 
-				QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)	const	override;
+				QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)		const	override;
+				bool						absorbInfo(	VariableInfo::InfoType info, const QString& name, int row, QVariant value)			override;
+				
 				QAbstractItemModel		*	providerModel()																				override	{ return this;	}
 				QQmlContext				*	providerQMLContext()																const	override;
-	static		ColumnsModel		*	singleton()	{ return _singleton; }
+	static		ColumnsModel			*	singleton()	{ return _singleton; }
 
 public slots:
 	void datasetChanged(QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
@@ -53,6 +55,7 @@ signals:
 	void labelsChanged(		QString					columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(	QString					columnName);
 	void filterChanged();
+	void dataSetChanged();
 
 private:
 	QVariant				_getLabels(int colId) const;

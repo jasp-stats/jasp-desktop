@@ -76,7 +76,7 @@ public:
 			bool					hasRowComponent()			const;
 
 			const QString		&	optionKey()					const			{ return _optionKey; }
-			JASPControl			*	getChildControl(QString key, QString name) override;
+			JASPControl			*	getChildControl(const QString & key, const QString & name) override;
 
 	Q_INVOKABLE QString				getSourceType(QString name);
 	Q_INVOKABLE columnType			getVariableType(const QString& name);

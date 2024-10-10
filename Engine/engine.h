@@ -70,6 +70,7 @@ private:
 
 	void					receiveRCodeMessage(			const Json::Value & jsonRequest);
 	void					receiveFilterMessage(			const Json::Value & jsonRequest);
+	void 					receiveFilterByNameMessage(		const Json::Value & jsonRequest);
 	void					receiveAnalysisMessage(			const Json::Value & jsonRequest);
 	void					receiveComputeColumnMessage(	const Json::Value & jsonRequest);
 	void					receiveModuleRequestMessage(	const Json::Value & jsonRequest);
@@ -77,10 +78,12 @@ private:
 	void					receiveLogCfg(					const Json::Value & jsonRequest);
 	void					receiveSettings(				const Json::Value & jsonRequest);
 	void					absorbSettings(					const Json::Value & json);
+	void 					updateOptionsAccordingToMeta(					  Json::Value & options);
 
 	void					runAnalysis();
 	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
 	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
+	void 					runFilterByName(	const std::string & name);
 	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void					runRCodeCommander(		  std::string   rCode																						);
 
@@ -98,13 +101,11 @@ private:
 	void					removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void					sendAnalysisResults();
+	void					sendFilterByNameDone(	const std::string & name, const std::string & errorMessage);
 	void					sendFilterResult(		int filterRequestId);
 	void					sendFilterError(		int filterRequestId,	const std::string & errorMessage);
 	void					sendRCodeResult(		int rCodeRequestId,		const std::string & rCodeResult);
 	void					sendRCodeError(			int rCodeRequestId);
-
-public:
-
 
 private: // Data:
 	static Engine				*	_EngineInstance;

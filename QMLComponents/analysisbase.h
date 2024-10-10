@@ -18,49 +18,50 @@ public:
 	explicit AnalysisBase(QObject *parent = nullptr, Version moduleVersion = AppInfo::version);
 	AnalysisBase(QObject *parent, AnalysisBase* duplicateMe);
 
-	virtual bool isOwnComputedColumn(const std::string &col)				const	{ return false; }
-	virtual void refresh()															{}
-	virtual void run()																{}
-	virtual void reloadForm()														{}
-	virtual void exportResults()													{}
-	virtual bool isDuplicate()												const	{ return false;				}
-	virtual bool wasUpgraded()												const	{ return false;				}
-	virtual bool needsRefresh()												const	{ return false;				}
-	virtual const std::string & module()									const	{ return emptyString;		}
-	virtual const std::string & name()										const	{ return emptyString;		}
-	virtual const std::string & title()										const	{ return emptyString;		}
-	virtual void setTitle(const std::string& titel)									{}
-	virtual void preprocessMarkdownHelp(const QString& md)					const	{}
-	virtual QString helpFile()														{ return "";				}
-	virtual const stringvec & upgradeMsgsForOption(const std::string& name) const	{ return emptyStringVec;	}
-	virtual const Json::Value & resultsMeta()								const 	{ return Json::Value::null;	}
-	virtual const Json::Value & getRSource(const std::string& name)			const 	{ return Json::Value::null;	}
-	virtual void initialized(AnalysisForm* form, bool isNewAnalysis)				{}
-	virtual std::string	qmlFormPath(bool addFileProtocol = true, 
-									bool ignoreReadyForUse = false)			const;
+	virtual				bool				isOwnComputedColumn(const std::string &col)					const	{ return false; }
+	virtual				void				refresh()															{}
+	virtual				void				run()																{}
+	virtual				void				reloadForm()														{}
+	virtual				void				exportResults()														{}
+	virtual				bool				isDuplicate()												const	{ return false;				}
+	virtual				bool				wasUpgraded()												const	{ return false;				}
+	virtual				bool				needsRefresh()												const	{ return false;				}
+	virtual				const std::string & module()													const	{ return emptyString;		}
+	virtual				const std::string & name()														const	{ return emptyString;		}
+	virtual				const std::string & title()														const	{ return emptyString;		}
+	virtual				void				setTitle(const std::string& titel)									{}
+	virtual				void				preprocessMarkdownHelp(const QString& md)					const	{}
+	virtual				QString				helpFile()															{ return "";				}
+	virtual				const stringvec   & upgradeMsgsForOption(const std::string& name)				const	{ return emptyStringVec;	}
+	virtual				const Json::Value & resultsMeta()												const 	{ return Json::Value::null;	}
+	virtual				const Json::Value & getRSource(const std::string& name)							const 	{ return Json::Value::null;	}
+	virtual				void				initialized(AnalysisForm* form, bool isNewAnalysis)					{}
+	virtual				std::string			qmlFormPath(bool addFileProtocol = true,
+											bool ignoreReadyForUse = false)								const;
+	virtual Q_INVOKABLE	QString				helpFile()													const	{ return ""; }
+	virtual Q_INVOKABLE void				createForm(QQuickItem* parentItem=nullptr);
+	virtual				void				destroyForm();
+	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 
-	virtual Q_INVOKABLE	QString	helpFile()									const	{ return ""; }
-	virtual Q_INVOKABLE void	createForm(QQuickItem* parentItem=nullptr);
-	virtual				void	destroyForm();
+						const Json::Value &	boundValues()												const	{ return _boundValues;		}
+						const Json::Value &	orgBoundValues()											const	{ return _orgBoundValues;	}
+						const Json::Value &	boundValue(const std::string& name,
+														 const QVector<JASPControl::ParentKey>& parentKeys = {});
 
-	const Json::Value&	boundValues()										const	{ return _boundValues;		}
-	const Json::Value&	orgBoundValues()									const	{ return _orgBoundValues;	}
-	const Json::Value&	boundValue(const std::string& name, 
-								   const QVector<JASPControl::ParentKey>& parentKeys = {});
+						void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+						void				setBoundValues(const Json::Value& boundValues);
+						void				setOrgBoundValues(const Json::Value& orgBoundValues)				{ _orgBoundValues = orgBoundValues; }
+						const Json::Value	optionsMeta()												const	{ return _boundValues.get(".meta", Json::nullValue);	}
+						void				clearOptions()														{ _boundValues.clear();		}
 
-	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
-	void				setBoundValues(const Json::Value& boundValues);
-	void				setOrgBoundValues(const Json::Value& orgBoundValues)		{ _orgBoundValues = orgBoundValues; }
-	const	Json::Value	optionsMeta()										const	{ return _boundValues.get(".meta", Json::nullValue);	}
-	void				clearOptions()												{ _boundValues.clear();		}
+						const Version	  &	moduleVersion()												const	{ return _moduleVersion;	}
 
-	const	Version	&	moduleVersion()										const	{ return _moduleVersion;	}
+						QQuickItem		  *	formItem()													const;
 
-	QQuickItem *	formItem()												const;
-
-	const QString &	qmlError()																	const;
-	void			setQmlError(const QString &newQmlError);
-	void			sendRScript(QString script, QString controlName, bool whiteListedVersion)		{ emit sendRScriptSignal(script, controlName, whiteListedVersion, tq(module())); }
+						const QString	  &	qmlError()													const;
+						void				setQmlError(const QString &newQmlError);
+						void				sendRScript(const QString & script, const QString & controlName, bool whiteListedVersion)		{ emit sendRScriptSignal(script, controlName, whiteListedVersion, tq(module())); }
+						void				sendFilter(	const QString & name)																{ emit sendFilterSignal(name, tq(module())); }
 
 
 public slots:
@@ -73,6 +74,7 @@ public slots:
 
 signals:
 	void			sendRScriptSignal(QString script, QString controlName, bool whiteListedVersion, QString module);
+	void			sendFilterSignal( QString  name,  QString module);
 	void			formItemChanged();
 	void			qmlErrorChanged();
 	void			boundValuesChanged();

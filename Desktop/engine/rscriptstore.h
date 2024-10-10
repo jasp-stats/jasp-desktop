@@ -30,6 +30,16 @@ struct RFilterStore : public RScriptStore
 };
 
 ///
+/// For when you want to run a filter from a qmlcomponent or something use this override
+struct RFilterByNameStore : public RScriptStore
+{
+	RFilterByNameStore(QString name, QString module) : RScriptStore(-1, "Filter selected by name", module, engineState::filterByName), name(name) { }
+
+
+	QString name;
+};
+
+///
 /// For when a computed column must be, well, computed
 struct RComputeColumnStore : public RScriptStore
 {

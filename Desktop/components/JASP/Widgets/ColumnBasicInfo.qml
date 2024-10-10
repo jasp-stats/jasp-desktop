@@ -119,7 +119,7 @@ Item
 		{
 			implicitWidth:			parent.width
 			implicitHeight:			showAnalysisButton.height
-			visible:				columnModel.computedType === "analysisNotComputed" || columnModel.computedType === "analysisNotComputed"
+			visible:				columnModel.computedType === "analysisNotComputed" || columnModel.computedType === "analysis"
 
 			RoundedButton
 			{

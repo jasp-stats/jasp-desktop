@@ -20,7 +20,7 @@ class DataSetBaseNode
 public:
 			typedef std::set<DataSetBaseNode*> NodeSet;
 	
-									DataSetBaseNode(dataSetBaseNodeType typeNode, DataSetBaseNode * parent);
+									DataSetBaseNode(dataSetBaseNodeType typeNode, DataSetBaseNode * parent = nullptr);
 									~DataSetBaseNode();
 	
 			dataSetBaseNodeType		nodeType() const { return _type; }
