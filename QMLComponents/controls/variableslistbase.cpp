@@ -45,6 +45,8 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 	_controlType			= ControlType::VariablesListView;
 	_useControlMouseArea	= false;
 	_allowedTypesModel		= new ColumnTypesModel(this);
+	
+	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,		this,	&VariablesListBase::levelsChanged);
 }
 
 void VariablesListBase::setUp()

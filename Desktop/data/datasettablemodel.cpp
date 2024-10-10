@@ -28,6 +28,7 @@ DataSetTableModel::DataSetTableModel(bool showInactive)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, [&](QString colName) { emit columnTypeChanged(colName, int(DataSetPackage::pkg()->getColumnType(colName)));	}, Qt::QueuedConnection);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this, &DataSetTableModel::labelChanged					);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelsReordered,				this, &DataSetTableModel::labelsReordered				);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::workspaceEmptyValuesChanged,	this, &DataSetTableModel::emptyValuesChanged			);
 	//connect(this,		&DataSetTableModel::dataChanged,				this, &DataSetTableModel::onDataChanged,				Qt::QueuedConnection);
 
 	setFilterRole(int(DataSetPackage::specialRoles::filter));

@@ -16,8 +16,10 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, [&](QString col, int) { emit columnTypeChanged(col); });
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
+	connect(_tableModel, &DataSetTableModel::emptyValuesChanged,	this, &ColumnsModel::dataSetChanged		);
 
 	auto * info = new VariableInfo(_singleton);
+
 
 	connect(this, &ColumnsModel::namesChanged,							info, &VariableInfo::namesChanged		);
 	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::columnsChanged		);
