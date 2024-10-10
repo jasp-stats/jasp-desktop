@@ -214,7 +214,8 @@ void TextInputBase::setUp()
 
 void TextInputBase::setDisplayValue()
 {
-	setProperty("displayValue", _value);
+	if(property("displayValue") != _value)
+		setProperty("displayValue", _value);
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)
