@@ -99,7 +99,7 @@ QString ColumnModel::columnNameQ()
 
 void ColumnModel::setColumnNameQ(QString newColumnName)
 {
-	if (newColumnName == columnNameQ()) return;
+	if (_beingRefreshed || newColumnName == columnNameQ()) return;
 
 	if (_virtual)
 	{
@@ -127,6 +127,9 @@ QString ColumnModel::columnTitle() const
 
 void ColumnModel::setColumnTitle(const QString & newColumnTitle)
 {
+	if (_beingRefreshed)
+		return;
+
 	if (_virtual)
 		_dummyColumn.title = newColumnTitle;
 
@@ -169,7 +172,7 @@ bool ColumnModel::useCustomEmptyValues() const
 
 void ColumnModel::setUseCustomEmptyValues(bool useCustom)
 {
-	if (_virtual || !column() || column()->hasCustomEmptyValues() == useCustom) return;
+	if (_beingRefreshed || _virtual || !column() || column()->hasCustomEmptyValues() == useCustom) return;
 
 	_undoStack->pushCommand(new SetUseCustomEmptyValuesCommand(this, useCustom));
 }
@@ -209,7 +212,7 @@ int ColumnModel::firstNonNumericRow() const
 
 void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
 {
-	if (_virtual || !column() || column()->emptyValues()->emptyStrings() == fql(customEmptyValues)) return;
+	if (_beingRefreshed || _virtual || !column() || column()->emptyValues()->emptyStrings() == fql(customEmptyValues)) return;
 
 	_undoStack->pushCommand(new SetCustomEmptyValuesCommand(this, customEmptyValues));
 }
@@ -297,6 +300,9 @@ bool ColumnModel::computedTypeEditable() const
 
 void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 {
+	if (_beingRefreshed)
+		return;
+
 	if (_virtual)
 		_dummyColumn.description = newColumnDescription;
 
@@ -306,7 +312,7 @@ void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 
 void ColumnModel::setComputedType(QString type)
 {
-	if (type == computedType())
+	if (_beingRefreshed || type.isEmpty() || type == computedType())
 		return;
 
 	computedColumnType cType = computedColumnTypeFromString(type.toStdString());
@@ -322,7 +328,7 @@ void ColumnModel::setComputedType(QString type)
 
 void ColumnModel::setColumnType(QString type)
 {
-	if (type.isEmpty() || type == currentColumnType()) return;
+	if (_beingRefreshed || type.isEmpty() || type == currentColumnType()) return;
 
 	columnType cType = columnTypeFromString(type.toStdString());
 
@@ -376,7 +382,7 @@ void ColumnModel::setLabelMaxWidth()
 void ColumnModel::moveSelectionUp()
 {
 	std::vector<qsizetype> indexes = getSortedSelection();
-	if (indexes.size() < 1)
+	if (_beingRefreshed || indexes.size() < 1)
 		return;
 
 	_lastSelected = -1;
@@ -386,7 +392,7 @@ void ColumnModel::moveSelectionUp()
 void ColumnModel::moveSelectionDown()
 {
 	std::vector<qsizetype> indexes = getSortedSelection();
-	if (indexes.size() < 1)
+	if (_beingRefreshed || indexes.size() < 1)
 		return;
 
 	_lastSelected = -1;
@@ -395,12 +401,18 @@ void ColumnModel::moveSelectionDown()
 
 void ColumnModel::reverse()
 {
+	if (_beingRefreshed)
+		return;
+
 	_lastSelected = -1;
 	_undoStack->pushCommand(new ReverseLabelCommand(this));
 }
 
 void ColumnModel::reverseValues()
 {
+	if (_beingRefreshed)
+		return;
+
 	_lastSelected = -1;
 	_undoStack->pushCommand(new ColumnReverseValuesCommand(this, {chosenColumn()}));
 }
@@ -580,6 +592,7 @@ void ColumnModel::onChosenColumnChanged()
 
 void ColumnModel::refresh()
 {	
+	_beingRefreshed = true;
 	beginResetModel();
 	endResetModel();
 
@@ -602,6 +615,8 @@ void ColumnModel::refresh()
 
 	setValueMaxWidth();
 	setLabelMaxWidth();
+
+	_beingRefreshed = false;
 }
 
 /*void ColumnModel::changeSelectedColumn(QPoint selectionStart)
@@ -724,7 +739,7 @@ bool ColumnModel::setChecked(int rowIndex, bool checked)
 {
 	JASPTIMER_SCOPE(ColumnModel::setChecked);
 	
-	if(checked == data(index(rowIndex,0), int(DataSetPackage::specialRoles::filter)).toBool())
+	if(_beingRefreshed || checked == data(index(rowIndex,0), int(DataSetPackage::specialRoles::filter)).toBool())
 		return true; //Its already that value
 
 	_editing = true;
@@ -740,7 +755,7 @@ void ColumnModel::setValue(int rowIndex, const QString &value)
 	
 	QString originalValue = data(index(rowIndex,0), int(DataSetPackage::specialRoles::value)).toString();
 	
-	if(value == originalValue)
+	if(_beingRefreshed || value == originalValue)
 		return; //Its already that value
 	
 	_editing = true;
@@ -754,7 +769,7 @@ void ColumnModel::setLabel(int rowIndex, QString label)
 	
 	QString originalLabel = data(index(rowIndex,0), int(DataSetPackage::specialRoles::label)).toString();
 	
-	if(label == originalLabel)
+	if(_beingRefreshed || label == originalLabel)
 		return; //Its already that value
 	
 	_editing = true;

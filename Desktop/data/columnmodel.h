@@ -175,7 +175,8 @@ private:
 	bool					_visible			= false,
 							_editing			= false,
 							_virtual			= false,
-							_compactMode		= false;
+							_compactMode		= false,
+							_beingRefreshed		= false;
 	int						_currentColIndex	= -1;
 	double					_valueMaxWidth		= 10,
 							_labelMaxWidth		= 10,
