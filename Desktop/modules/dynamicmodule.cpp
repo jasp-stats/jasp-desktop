@@ -38,6 +38,10 @@
 #include "utilities/qmlutils.h"
 #include "mainwindow.h"
 
+#ifdef __APPLE__
+#include "otoolstuff.h"
+#endif
+
 namespace Modules
 {
 
@@ -112,6 +116,10 @@ DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent
 	Log::log() << "Development Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
 
 	_developmentModuleName = _name;
+
+	#ifdef __APPLE__
+	_moduleLibraryFixer(libpath.toStdString(), true, true, false);
+	#endif
 
 	loadDescriptionFromFolder(_modulePackage);
 	setInstalled(true);
