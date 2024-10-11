@@ -118,7 +118,7 @@ DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent
 	_developmentModuleName = _name;
 
 	#ifdef __APPLE__
-	_moduleLibraryFixer(libpath.toStdString(), true, true, false);
+	_moduleLibraryFixer(libpath.toStdString(), true, true, true);
 	#endif
 
 	loadDescriptionFromFolder(_modulePackage);

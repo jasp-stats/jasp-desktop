@@ -33,7 +33,7 @@ std::string _system(std::string cmd)
 	return out.str();
 }
 
-void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff, bool sign)
+void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff, bool devMod)
 {
 	using namespace boost;
 
@@ -114,17 +114,27 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"/opt/X11/lib",												framework_resources + "opt/X11/lib"},
 				};
 
-				// Known fix library id's and paths 
-				const std::map<std::string, std::string> ids_to_be_replaced =
-				{
-					{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
-					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
-					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+				// Known fix library id's and paths
+				std::map<std::string, std::string> ids_to_be_replaced;
+				if(devMod) {
+					ids_to_be_replaced = {
 #ifndef __aarch64__
-					,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
-					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+							,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+							,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
 #endif
-				};
+						};
+				}
+				else {
+					ids_to_be_replaced = {
+						{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
+						{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
+						{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+#ifndef __aarch64__
+						,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+						,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+#endif
+					};
+				}
 
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
 				{
@@ -185,7 +195,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				
 			}
 
-			if(sign) 
+			if(!devMod)
 			{
 				std::cout << "Signing the modified library\n";
 				const std::string sign_command = "codesign --force --deep --verbose=4 --timestamp --sign \"" + AppInfo::getSigningIdentity() + "\" " + path.string();
