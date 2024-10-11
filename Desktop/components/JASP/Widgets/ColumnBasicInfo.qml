@@ -108,11 +108,10 @@ Item
 			values:				columnModel.computedTypeValues
 			currentValue:		columnModel.computedType
 			onValueChanged:		columnModel.computedType = currentValue
-			visible:			columnModel.computedTypeEditable
 			controlMinWidth:	200 * jaspTheme.uiScale
 
 			controlLabel.width:	leftColumn.labelWidth
-			enabled:			!columnModel.isVirtual
+			enabled:			!columnModel.isVirtual && columnModel.computedTypeEditable
 		}
 
 		Item
