@@ -5576,21 +5576,21 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::ChangeIncompatible|"
 msgid "Reset analysis because of '%1'"
-msgstr "Reiniciar el análisis debido a '%1"
+msgstr "Reiniciar el análisis debido a '%1'"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr "El nombre de la columna es un campo libre"
+msgstr "Campo nombre-de-columna-está-libre"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr "La columna '%1' ya existe y no ha sido creada por este análisis."
+msgstr "La columna '%1' ya existe, y no está creada por este análisis."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr "El filtro tuvo el error '%1'"
+msgstr "El filtro tuvo el fallo '%1'"
 
 #, qt-format
 msgctxt "FilterModel|"
@@ -5603,11 +5603,11 @@ msgid ""
 "perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
-"Arriba puedes ver el código que JASP genera tanto para el filtrado por "
-"valores como para el filtro de arrastrar y soltar.\n"
-"Este resultado por defecto se almacena en 'generatedFilter' y puede ser "
-"reemplazado o combinado con un filtro personalizado.\n"
-"Para combinar se pueden añadir cláusulas usando '&': '%1 & customFilter & "
+"Arriba puede ver el código que JASP genera tanto para el filtrado de valores "
+"como para el filtro de Arrastrar y soltar.\n"
+"Este resultado predeterminado se almacena en 'generatedFilter' y se puede "
+"reemplazar o combinar con un filtro personalizado.\n"
+"Para combinar, se pueden añadir cláusulas usando '&': '%1 & customFilter & "
 "perhapsAnotherFilter'\n"
 "Haga clic en el icono (i) de la esquina inferior derecha para obtener más "
 "ayuda.\n"
