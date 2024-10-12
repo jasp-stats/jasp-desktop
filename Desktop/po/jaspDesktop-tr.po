@@ -4917,20 +4917,6 @@ msgid ""
 "As a '%2' it looks like: %3"
 msgstr ""
 
-#, qt-format
-msgctxt "FilterModel|"
-msgid ""
-"# Above you see the code that JASP generates for both value filtering and "
-"the drag&drop filter.\n"
-"# This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"# To combine you can append clauses using '&': '%1 & customFilter & "
-"perhapsAnotherFilter'\n"
-"# Click the (i) icon in the lower right corner for further help.\n"
-"\n"
-"%1\n"
-msgstr ""
-
 msgctxt "MainWindow|"
 msgid "Check for updates"
 msgstr ""
@@ -5124,4 +5110,35 @@ msgstr ""
 
 msgctxt "JASPColumn|"
 msgid "Transformed to"
+msgstr ""
+
+#, qt-format
+msgctxt "FilterModel|"
+msgid ""
+"Above you see the code that JASP generates for both value filtering and the "
+"drag&drop filter.\n"
+"This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"To combine you can append clauses using '&': '%1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"Click the (i) icon in the lower right corner for further help.\n"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::ChangeIncompatible|"
+msgid "Reset analysis because of '%1'"
+msgstr ""
+
+msgctxt "TextInputBase|"
+msgid "Column-name-is-free field"
+msgstr ""
+
+#, qt-format
+msgctxt "TextInputBase|"
+msgid "Column '%1' already exists and is not created by this analysis."
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelFilteredDataEntry|"
+msgid "Filter had error '%1'"
 msgstr ""
