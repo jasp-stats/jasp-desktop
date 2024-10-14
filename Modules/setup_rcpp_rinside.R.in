@@ -1,4 +1,4 @@
-# Generated from Tools/setup_renv_rcpp_rinside_jaspModuleInstaller.R.in
+# Generated from Tools/setup_rcpp_rinside.R.in
 #
 Sys.setenv(GITHUB_PAT          = "@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT     = "@MODULES_RENV_ROOT_PATH@")
@@ -28,27 +28,6 @@ mkdir <- function(paths) {
 }
 
 mkdir(c(RENV_LIBRARY, R_CPP_INCLUDES_LIBRARY, JASPMODULEINSTALLER_LIBRARY))
-
-repos <- "https://packagemanager.posit.co/cran/latest"
-# alternative to 'http://cloud.r-project.org'
-if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
-  if (@IS_FLATPAK_USED@) {
-    cat("Installing renv from cellar\n")
-    install.packages(
-      pkgs         = file.path("@R_PKG_CELLAR_PATH@", "renv.tar.gz"),
-      lib          = RENV_LIBRARY,
-      INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
-  } else {
-    cat("Installing renv from CRAN\n")
-    install.packages(
-      pkgs         = "renv",
-      lib          = RENV_LIBRARY,
-      repos        ='http://cloud.r-project.org',
-      INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
-  }
-} else {
-  cat("renv already installed, not reinstalling\n")
-}
 
 # used by renv
 options(
