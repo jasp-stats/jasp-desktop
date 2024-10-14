@@ -57,6 +57,7 @@ signals:
 	void					columnTypeChanged(QString colName, int colType);
 	void					labelChanged(QString columnName, QString originalLabel, QString newLabel);
 	void					labelsReordered(QString columnName);
+	void					emptyValuesChanged();
 
 	void					renameColumnDialog(int columnIndex);
 

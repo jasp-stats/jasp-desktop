@@ -563,6 +563,8 @@ void DataSet::setEmptyValuesJson(const Json::Value &emptyValues, bool updateDB)
 void DataSet::setWorkspaceEmptyValues(const stringset &values)
 {
 	_emptyValues->setEmptyValues(values);
+	for(Column * column : _columns)
+		column->labelsTempReset();
 	dbUpdate();
 }
 

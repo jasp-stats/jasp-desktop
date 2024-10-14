@@ -241,7 +241,6 @@ public:
 				void						columnsReverseValues(				intset				columnIndex);
 				void						columnsSetAutoSortForColumns(		std::map<int,bool>	columnutoSort);
 				qsizetype					getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
-				QStringList					getColumnLabelsAsStringList(		const std::string & columnName)					const;
 				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;
 				stringvec					getColumnLabelsAsStrVec(			size_t				columnIndex)				const;
 				boolvec						getColumnFilterAllows(				size_t				columnIndex)				const;

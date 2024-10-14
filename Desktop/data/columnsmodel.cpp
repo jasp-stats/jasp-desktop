@@ -16,8 +16,10 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, [&](QString col, int) { emit columnTypeChanged(col); });
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
+	connect(_tableModel, &DataSetTableModel::emptyValuesChanged,	this, &ColumnsModel::dataSetChanged		);
 
 	auto * info = new VariableInfo(_singleton);
+
 
 	connect(this, &ColumnsModel::namesChanged,							info, &VariableInfo::namesChanged		);
 	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::columnsChanged		);
@@ -151,10 +153,10 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		switch(info)
 		{
 		case VariableInfo::VariableType:				return	colTypeInt;
-		case VariableInfo::Labels:						return	_getLabels(colIndex);
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::valuesDblList));
-		case VariableInfo::TotalNumericValues:			return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::totalNumericValues));
-		case VariableInfo::TotalLevels:					return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::totalLevels));
+		case VariableInfo::TotalNumericValues:			return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::nonFilteredNumericValuesCount));
+		case VariableInfo::TotalLevels:					return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::nonFilteredLevels)).toStringList().length();
+		case VariableInfo::Labels:						return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::nonFilteredLevels));
 		case VariableInfo::NameRole:					return	data(qColIndex, ColumnsModel::NameRole);
 		case VariableInfo::DataSetRowCount:				return  QTransposeProxyModel::columnCount();
 		case VariableInfo::DataSetValue:				return	QTransposeProxyModel::data(qValIndex,						int(DataSetPackage::specialRoles::value));
@@ -276,22 +278,3 @@ void ColumnsModel::datasetChanged(  QStringList                             chan
 	emit dataSetChanged(); //For VariableInfoProvider and listeners
 }
 
-QVariant ColumnsModel::_getLabels(int colId) const
-{
-	QStringList labels = QTransposeProxyModel::data(index(colId, 0), int(DataSetPackage::specialRoles::labelsStrList)).toStringList();
-	QStringList unusedLabels = labels;
-
-	int count = _tableModel->rowCount();
-	for (int i = 0; i < count; i++)
-	{
-		unusedLabels.removeAll(_tableModel->data(_tableModel->index(i, colId)).toString());
-		if (unusedLabels.isEmpty())
-			break;
-	}
-
-	// Warning: the order of the labels must be kept.
-	for (const QString& unusedLabel : unusedLabels)
-		labels.removeAll(unusedLabel);
-
-	return labels;
-}

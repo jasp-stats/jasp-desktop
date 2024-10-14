@@ -5,7 +5,7 @@
 
 ///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in ColumnModel, but defined here for convenience.
 DECLARE_ENUM(
-	dataPkgRoles, 
+	dataPkgRoles,
 		filter				= Qt::UserRole, 
 		name, 
 		title, 
@@ -24,11 +24,11 @@ DECLARE_ENUM(
 		maxColumnHeaderString, 
 		columnWidthFallback, 
 		computedColumnType, 
-		totalNumericValues,
+		nonFilteredNumericValuesCount,
+		nonFilteredLevels,
 		columnIsComputed, 
 		labelsHasFilter, 
 		columnPkgIndex, 
-		labelsStrList, 
 		valuesStrList, 
 		valuesDblList, 
 		inEasyFilter, 

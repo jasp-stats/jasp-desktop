@@ -45,6 +45,8 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 	_controlType			= ControlType::VariablesListView;
 	_useControlMouseArea	= false;
 	_allowedTypesModel		= new ColumnTypesModel(this);
+	
+	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,		this,	&VariablesListBase::levelsChanged);
 }
 
 void VariablesListBase::setUp()
@@ -89,6 +91,8 @@ void VariablesListBase::setUp()
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
 	connect(this,				&VariablesListBase::allowedColumnsChanged,			this, &VariablesListBase::_setAllowedVariables			);
+	connect(_draggableModel,	&ListModelDraggable::termsChanged,					this, &VariablesListBase::levelsChanged					);
+	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::levelsChanged					);
 	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::checkLevelsConstraints		);
 	connect(this,				&VariablesListBase::maxLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
 	connect(this,				&VariablesListBase::minLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
@@ -294,6 +298,11 @@ bool VariablesListBase::isTypeAllowed(columnType type) const
 columnType VariablesListBase::defaultType() const
 {
 	return _allowedTypesModel->defaultType();
+}
+
+QStringList VariablesListBase::levels() const
+{
+	return initialized() ? model()->allLevels(model()->terms()) : QStringList();
 }
 
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)

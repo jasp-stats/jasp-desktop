@@ -537,7 +537,7 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 			if(label && !label->isEmptyValue())
 				labelsNonNA.insert(label);
 		}
-		else if(!std::isnan(_dbls[i]))
+		else if(!isEmptyValue(_dbls[i]))
 			doublesNonNA.insert(_dbls[i]);
 	}
 	
@@ -833,7 +833,7 @@ int Column::labelsTempCount()
 				_labelByNonEmptyIndex[nonEmptyIndex]					= _labels[r];
 				_labelNonEmptyIndexByLabel[_labels[r]]					= nonEmptyIndex;
 				
-				if(!std::isnan(*_labelsTempDbls.rbegin()))
+				if(!isEmptyValue(*_labelsTempDbls.rbegin()))
 					_labelsTempNumerics++;
 				
 				nonEmptyIndex++;
@@ -843,7 +843,7 @@ int Column::labelsTempCount()
 		
 		for(size_t r=0; r<rowCount(); r++)
 		{
-			if(!std::isnan(_dbls[r]) && _ints[r] == Label::DOUBLE_LABEL_VALUE)
+			if(!isEmptyValue(_dbls[r]) && _ints[r] == Label::DOUBLE_LABEL_VALUE)
 				dblset.insert(_dbls[r]);
 		}
 		
@@ -873,14 +873,14 @@ int Column::labelsTempCount()
 	return _labelsTemp.size();
 }
 
-int Column::nonFilteredTotalNumerics()
+int Column::nonFilteredNumericsCount()
 {
 	if (_nonFilteredNumericsCount == -1)
 	{
 		doubleset numerics;
 
 		for(size_t r=0; r<_data->rowCount(); r++)
-			if(_data->filter()->filtered()[r] && !std::isnan(_dbls[r]))
+			if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
 					numerics.insert(_dbls[r]);
 
 		_nonFilteredNumericsCount = numerics.size();
@@ -889,13 +889,10 @@ int Column::nonFilteredTotalNumerics()
 	return _nonFilteredNumericsCount;
 }
 
-int Column::nonFilteredTotalLevels()
+stringset Column::nonFilteredLevels()
 {
-	if (_nonFilteredLevelsCount == -1)
+	if (_nonFilteredLevels.empty())
 	{
-		Labelset	labels;
-		doubleset	numerics;
-
 		for(size_t r=0; r<_data->rowCount(); r++)
 			if(_data->filter()->filtered()[r])
 			{
@@ -903,22 +900,20 @@ int Column::nonFilteredTotalLevels()
 				{
 					Label * label = labelByIntsId(_ints[r]);
 					if(label && !label->isEmptyValue())
-						labels.insert(label);
+						_nonFilteredLevels.insert(label->label());
 				}
-				else if(!std::isnan(_dbls[r]))
-					numerics.insert(_dbls[r]);
+				else if(!isEmptyValue(_dbls[r]))
+					_nonFilteredLevels.insert(ColumnUtils::doubleToString(_dbls[r]));
 			}
-
-		_nonFilteredLevelsCount = numerics.size() + labels.size();
 	}
 
-	return _nonFilteredLevelsCount;
+	return _nonFilteredLevels;
 }
 
 void Column::nonFilteredCountersReset()
 {
-	_nonFilteredLevelsCount		= -1;
-	_nonFilteredNumericsCount	= -1;
+	_nonFilteredLevels.clear();
+	_nonFilteredNumericsCount = -1;
 }
 
 int Column::labelsTempNumerics()
@@ -1773,7 +1768,7 @@ doublevec Column::valuesNumericOrdered()
 		else 
 			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
 		
-		if(!std::isnan(aValue))
+		if(!std::isnan(aValue)) //not isEmptyValue because we want to use the output to rewrite the data again
 			values.insert(aValue);
 	}
 	
@@ -1806,7 +1801,7 @@ void Column::valuesReverse()
 		else 
 			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
 		
-		if(!std::isnan(aValue))
+		if(!std::isnan(aValue)) //not isEmptyValue because we want to use the output to rewrite the data again
 			label->setOriginalValue(flipIt[aValue]);
 	}
 	

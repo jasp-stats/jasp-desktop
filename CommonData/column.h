@@ -128,8 +128,8 @@ public:
 			int						labelsDoubleValueIsTempLabelRow(double dbl);
 			Label				*	labelDoubleDummy()		{ return _doubleDummy; }
 
-			int						nonFilteredTotalNumerics();
-			int						nonFilteredTotalLevels();
+			int						nonFilteredNumericsCount();
+			stringset				nonFilteredLevels();
 			void					nonFilteredCountersReset();
 
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
@@ -259,8 +259,8 @@ private:
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
-			int						_nonFilteredLevelsCount		= -1,
-			_nonFilteredNumericsCount	= -1;
+			stringset				_nonFilteredLevels;
+			int						_nonFilteredNumericsCount	= -1;
 			bool					_invalidated		= false,
 									_autoSortByValue;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
