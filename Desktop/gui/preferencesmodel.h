@@ -29,6 +29,9 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
+	Q_PROPERTY(bool			directLibpathEnabled	READ directLibpathEnabled		WRITE setDirectLibpathEnabled		NOTIFY directLibpathEnabledChanged		)
+	Q_PROPERTY(QString		directLibpathFolder		READ directLibpathFolder		WRITE setDirectLibpathFolder		NOTIFY directLibpathFolderChanged		)
+	Q_PROPERTY(QString		directDevModName		READ directDevModName			WRITE setDirectDevModName			NOTIFY directDevModNameChanged			)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
@@ -146,7 +149,10 @@ public:
 	QVariantList pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int			pdfPageSize()							const;
 	bool		pdfLandscape()							const;
-
+	bool		directLibpathEnabled()					const;
+	QString		directLibpathFolder()					const;
+	QString		directDevModName()						const;
+	
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
 	
@@ -213,6 +219,9 @@ public slots:
 	void setMaxScaleLevels(				int			maxScaleLevels);
 	void setPdfPageSize(				int			pdfPageSize);
 	void setPdfLandscape(				bool		pdfLandscape);
+	void setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
+	void setDirectLibpathFolder(		QString		libpath);
+	void setDirectDevModName(			QString		 name);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -268,6 +277,9 @@ signals:
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
 	void pdfPageSizeChanged(			int			pdfPageSize);
 	void pdfLandscapeChanged(			bool		pdfLandscape);
+	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
+	void directLibpathFolderChanged();
+	void directDevModNameChanged(		QString name);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);
