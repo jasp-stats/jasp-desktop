@@ -225,31 +225,16 @@ VariablesListBase
 		}
 	}
 
-	Row
+	AllowedTypeIcons
 	{
+		id:			allowedTypeIcons
+		iconModel:	allowedColumnsIcons
 		anchors
 		{
 			bottom:			itemRectangle.bottom;
 			bottomMargin:	jaspTheme.contentMargin
 			right:			itemRectangle.right
 			rightMargin:	jaspTheme.contentMargin + (scrollBar.visible ? scrollBar.width : 0)
-		}
-		spacing: jaspTheme.contentMargin
-
-		Repeater
-		{
-			id:		allowedColumnsId
-			model:	allowedColumnsIcons
-
-			Image
-			{
-				source:		modelData
-				height:		16 * preferencesModel.uiScale
-				width:		16 * preferencesModel.uiScale
-				z:			2
-				mipmap:		true
-				smooth:		true
-			}
 		}
 	}
 
@@ -421,7 +406,7 @@ VariablesListBase
 				property bool	draggable:				variablesList.draggable && model.selectable
 				property string	columnType:				isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var	extraItem:				model.rowComponent
-				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedColumnsId.count === 0 || allowedColumnsId.count > 1) && icon.visible
+				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedTypeIcons.count === 0 || allowedTypeIcons.count > 1) && icon.visible
 
 				enabled: !variablesList.draggable || model.selectable
 

@@ -36,17 +36,12 @@
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
-#include "models/columntypesmodel.h"
-#include "preferencesmodelbase.h"
 
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType			= ControlType::VariablesListView;
-	_useControlMouseArea	= false;
-	_allowedTypesModel		= new ColumnTypesModel(this);
-	
-	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,		this,	&VariablesListBase::levelsChanged);
+	_useControlMouseArea	= false;	
 }
 
 void VariablesListBase::setUp()
@@ -79,10 +74,6 @@ void VariablesListBase::setUp()
 		setProperty("sortMenuModel", QVariant::fromValue(sortedMenuModel));
 	}
 
-	_setAllowedVariables();
-
-	connect(DesktopCommunicator::singleton(), &DesktopCommunicator::currentJaspThemeChanged, this, &VariablesListBase::_setAllowedVariables);
-
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
@@ -90,14 +81,9 @@ void VariablesListBase::setUp()
 	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
-	connect(this,				&VariablesListBase::allowedColumnsChanged,			this, &VariablesListBase::_setAllowedVariables			);
 	connect(_draggableModel,	&ListModelDraggable::termsChanged,					this, &VariablesListBase::levelsChanged					);
 	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::levelsChanged					);
 	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::checkLevelsConstraints		);
-	connect(this,				&VariablesListBase::maxLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
-	connect(this,				&VariablesListBase::minLevelsChanged,				this, &VariablesListBase::checkLevelsConstraints		);
-	connect(this,				&VariablesListBase::maxNumericLevelsChanged,		this, &VariablesListBase::checkLevelsConstraints		);
-	connect(this,				&VariablesListBase::minNumericLevelsChanged,		this, &VariablesListBase::checkLevelsConstraints		);
 }
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
@@ -285,26 +271,6 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	if (form()) form()->blockValueChangeSignal(false);
 }
 
-QAbstractListModel *VariablesListBase::allowedTypesModel()
-{
-	return _allowedTypesModel;
-}
-
-bool VariablesListBase::isTypeAllowed(columnType type) const
-{
-	return _allowedTypesModel->hasType(type);
-}
-
-columnType VariablesListBase::defaultType() const
-{
-	return _allowedTypesModel->defaultType();
-}
-
-QStringList VariablesListBase::levels() const
-{
-	return initialized() ? model()->allLevels(model()->terms()) : QStringList();
-}
-
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	Log::log() << "LOG setDropKeys " << name() << ": " << dropKeys.join('/') << std::endl;
@@ -340,67 +306,6 @@ void VariablesListBase::setVariableType(int index, int type)
 	model()->setVariableType(index, columnType(type));
 }
 
-void VariablesListBase::checkLevelsConstraints()
-{
-	JASPListControl::termsChangedHandler();
-
-	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
-
-	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
-	{
-		bool hasError = false;
-		int maxScaleLevels = PreferencesModelBase::preferences()->maxScaleLevels();
-
-		for (const Term& term : model()->terms())
-		{
-			QString termStr = term.asQString();
-			if (termStr.isEmpty())
-				continue;
-
-			columnType	termType	= (columnType)model()->requestInfo(VariableInfo::VariableType, termStr).toInt();
-			if (termType == columnType::unknown)
-				continue;
-
-			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, termStr).toInt(),
-				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, termStr).toInt();
-
-			if (_minLevels >= 0 && nbLevels < _minLevels)
-			{
-				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(termStr).arg(nbLevels));
-				hasError = true;
-			}
-			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
-			{
-				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(termStr).arg(nbLevels));
-				hasError = true;
-			}
-			else if (_maxLevels < 0 && noScaleAllowed && termType == columnType::scale && nbLevels > maxScaleLevels)
-			{
-				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
-				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
-				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
-										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->defaultType())).arg(nbLevels).arg(maxScaleLevels));
-				hasError = true;
-			}
-			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
-			{
-				addControlErrorPermanent(tr("Minimum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(termStr).arg(nbNumValues));
-				hasError = true;
-			}
-			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
-			{
-				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(termStr).arg(nbNumValues));
-				hasError = true;
-			}
-
-			if (hasError)
-				break;
-		}
-
-		if (!hasError)
-			clearControlError();
-	}
-}
 
 void VariablesListBase::termsChangedHandler()
 {
@@ -411,33 +316,6 @@ void VariablesListBase::termsChangedHandler()
 
 	if (_boundControl)	_boundControl->resetBoundValue();
 }
-
-void VariablesListBase::_setAllowedVariables()
-{
-	columnTypeVec allowedTypes;
-
-	for (const QString& typeStr: allowedColumns())
-	{
-		columnType typeCol = columnTypeFromString(fq(typeStr), columnType::unknown);
-		
-		if (typeCol != columnType::unknown)
-			allowedTypes.push_back(typeCol);
-	}
-	
-	_allowedTypesModel->setTypes(allowedTypes);
-
-	emit allowedColumnsIconsChanged();
-
-	if (form() && form()->initialized())
-		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
-		model()->refresh();
-}
-
-QStringList VariablesListBase::allowedColumnsIcons() const
-{
-	return _allowedTypesModel->iconList();
-}
-
 
 void VariablesListBase::_setRelations()
 {

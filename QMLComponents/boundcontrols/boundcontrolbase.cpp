@@ -218,3 +218,8 @@ void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowCo
 	setBoundValue(_getTableValueOption(terms, componentValuesMap, key, hasMultipleTerms));
 }
 
+bool BoundControlBase::_isValueWithTypes(const Json::Value &value) const
+{
+	return value.isObject() && value.isMember("types") && value.isMember("value");
+}
+

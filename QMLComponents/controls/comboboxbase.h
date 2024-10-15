@@ -29,13 +29,13 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 
-	Q_PROPERTY( int			currentIndex			READ currentIndex			WRITE setCurrentIndex		NOTIFY currentIndexChanged			)
-	Q_PROPERTY( QString		currentText				READ currentText			WRITE setCurrentText		NOTIFY currentTextChanged			)
-	Q_PROPERTY( QString		currentValue			READ currentValue			WRITE setCurrentValue		NOTIFY currentValueChanged			)
-	Q_PROPERTY( QString		startValue				READ startValue				WRITE setStartValue			NOTIFY startValueChanged			)
-	Q_PROPERTY( QString		currentColumnType		READ currentColumnType									NOTIFY currentColumnTypeChanged		)
-	Q_PROPERTY( QString		currentColumnTypeIcon	READ currentColumnTypeIcon								NOTIFY currentColumnTypeIconChanged	)
-	Q_PROPERTY( bool		fixedWidth				READ fixedWidth											NOTIFY fixedWidthChanged			)
+	Q_PROPERTY( int					currentIndex				READ currentIndex				WRITE setCurrentIndex		NOTIFY currentIndexChanged			)
+	Q_PROPERTY( QString				currentText					READ currentText				WRITE setCurrentText		NOTIFY currentTextChanged			)
+	Q_PROPERTY( QString				currentValue				READ currentValue				WRITE setCurrentValue		NOTIFY currentValueChanged			)
+	Q_PROPERTY( QString				startValue					READ startValue					WRITE setStartValue			NOTIFY startValueChanged			)
+	Q_PROPERTY( QString				currentColumnType			READ currentColumnType										NOTIFY currentColumnTypeChanged		)
+	Q_PROPERTY( QString				currentColumnTypeIcon		READ currentColumnTypeIcon									NOTIFY currentColumnTypeIconChanged	)
+	Q_PROPERTY( bool				fixedWidth					READ fixedWidth												NOTIFY fixedWidthChanged			)
 
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
@@ -48,6 +48,7 @@ public:
 	void				setUpModel()										override;
 	QString				helpMD(int depth = 0)						const	override;
 	bool				hasInfo()									const	override;
+	void				setBoundValue(const Json::Value &value, bool emitChanges = true)	override;
 
 	const QString&		currentText()								const				{ return _currentText;			}
 	const QString&		currentValue()								const				{ return _currentValue;			}
@@ -58,6 +59,7 @@ public:
 	bool				fixedWidth()								const				{ return _fixedWidth;			}
 
 	std::vector<std::string> usedVariables()						const	override;
+	bool				encodeValue()								const	override	{ return containsVariables();	}
 
 
 signals:
@@ -94,6 +96,7 @@ protected:
 	void _resetItemWidth();
 	void _setCurrentProperties(int index, bool bindValue = true);
 	bool _hasOptionInfo()											const;
+	std::string _findType(std::string value)						const;
 
 };
 

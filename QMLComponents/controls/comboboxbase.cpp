@@ -32,8 +32,10 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 {
 	_model->resetTermsFromSources();
 
+	Json::Value valuePart = _isValueWithTypes(value) ? value["value"] : value;
+	std::string selectedValue = valuePart.asString();
+
 	std::vector<std::string> values = _model->getValues();
-	std::string selectedValue = value.asString();
 	int index = -1;
 
 	if (values.size() > 0)
@@ -81,11 +83,21 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 		}
 	}
 
-	_setCurrentProperties(index); // This will call the BoundControlBase::bindTo method
+	_setCurrentProperties(index);
 
 	_resetItemWidth();
 
-	BoundControlBase::bindTo(value);
+	if (_control->encodeValue())
+	{
+		Json::Value newValue(Json::objectValue);
+		Json::Value type = _isValueWithTypes(value) ? value["types"] : Json::nullValue;
+		std::string currentValue = fq(_currentValue);
+		newValue["value"] = currentValue;
+		newValue["types"] = (currentValue != selectedValue || type.isNull()) ? _findType(currentValue) : type;
+		BoundControlBase::bindTo(newValue);
+	}
+	else
+		BoundControlBase::bindTo(fq(_currentValue));
 }
 
 int ComboBoxBase::_getStartIndex() const
@@ -108,12 +120,20 @@ Json::Value ComboBoxBase::createJson() const
 	
 	std::string selected = index >= 0 ? options[size_t(index)] : "";
 	
-	return selected;
+	if (_control->encodeValue())
+	{
+		Json::Value json(Json::objectValue);
+		json["value"] = selected;
+		json["types"] = _findType(selected);
+		return json;
+	}
+	else
+		return selected;
 }
 
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::stringValue;
+	return optionValue.type() == Json::stringValue || optionValue.type() == Json::arrayValue;
 }
 
 void ComboBoxBase::setUp()
@@ -298,4 +318,36 @@ bool ComboBoxBase::_hasOptionInfo() const
 bool ComboBoxBase::hasInfo() const
 {
 	return JASPControl::hasInfo() || _hasOptionInfo();
+}
+
+std::string ComboBoxBase::_findType(std::string value) const
+{
+	// Find the type of this value in the terms of the model
+	columnType type = columnType::unknown;
+	if (!value.empty())
+	{
+		const Terms& terms = model()->terms();
+		int index = terms.indexOf(value);
+		if (index >= 0)
+			type = terms.at(index).type();
+	}
+	return columnTypeToString(type);
+}
+
+void ComboBoxBase::setBoundValue(const Json::Value &value, bool emitChanges)
+{
+	if (_control->encodeValue())
+	{
+		Json::Value newValue;
+
+		if (_isValueWithTypes(value))
+			newValue = value;
+		else
+			newValue["value"] = value;
+
+		newValue["types"] = _findType(newValue["value"].asString());
+		BoundControlBase::setBoundValue(newValue, emitChanges);
+	}
+	else
+		BoundControlBase::setBoundValue(value, emitChanges);
 }

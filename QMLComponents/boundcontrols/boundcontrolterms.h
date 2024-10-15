@@ -33,7 +33,6 @@ public:
 	void		bindTo(const Json::Value &value)													override;
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
-	Json::Value	createMeta()																const	override;
 
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
@@ -43,7 +42,6 @@ private:
 	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
 	Json::Value	_adjustBindingType(const Json::Value &value)								const;
 	Json::Value _getTypes()																	const;
-	bool		_isValueWithTypes(const Json::Value &value)									const;
 
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;
