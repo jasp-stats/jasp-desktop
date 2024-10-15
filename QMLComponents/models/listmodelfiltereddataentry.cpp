@@ -155,7 +155,15 @@ void ListModelFilteredDataEntry::initialValuesChanged()
 				_initialValues.push_back(value.toDouble());
 		}
 	}
-
+	else if(_tableView->initialValuesSource().toString().isEmpty())
+	{
+		int			rowCount		= requestInfo(VariableInfo::DataSetRowCount).toInt();
+		QVariant	defaultValue	= _tableView->defaultValue();
+		bool		isDbl			= false;
+		double		dblVal			= defaultValue.toDouble(&isDbl);
+		if(isDbl)
+					_initialValues	= doublevec(rowCount, dblVal);
+	}
 	fillTable();
 }
 

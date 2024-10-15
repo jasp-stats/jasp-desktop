@@ -166,13 +166,15 @@ void TableViewBase::setInitialValuesControl()
 		disconnect(_initialValuesControl->model(), &ListModel::termsChanged, _tableModel, &ListModelTableViewBase::initialValuesChanged);
 
 	QString initialValuesSourceName = initialValuesSource().toString();
+	
 	if (!initialValuesSourceName.isEmpty() && form())
 	{
 		_initialValuesControl = qobject_cast<JASPListControl*>(form()->getControl(initialValuesSourceName));
 		addDependency(_initialValuesControl);
 		connect(_initialValuesControl->model(), &ListModel::termsChanged, _tableModel, &ListModelTableViewBase::initialValuesChanged);
-		_tableModel->initialValuesChanged();
 	}
+	
+	_tableModel->initialValuesChanged(); //It could also be based on defaultValue https://github.com/jasp-stats/INTERNAL-jasp/issues/2661
 }
 
 void TableViewBase::rScriptDoneHandler(const QString & result)
