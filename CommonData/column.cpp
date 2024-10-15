@@ -1281,7 +1281,7 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 	return doubleLabelMap;
 }
 
-Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
+Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl)
 {
 	JASPTIMER_SCOPE(Column::replaceDoublesTillLabelsRowWithLabels);
 	
@@ -1301,8 +1301,9 @@ Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 		else
 			throw std::runtime_error("replaceDoublesTillLabelsRowWithLabels choked on a temp-label that cant be converted to double???"); //Should never ever occur because it starts from _labels.size!
 
-	//the last dbl is the one we want so use it to get the right label from the map:
-	Label * label = replaceDoubleWithLabel(dbls)[dbl];
+	//the last dbl is the one we want so use it to get the right label from the map
+	auto	labelPerDbl = replaceDoubleWithLabel(dbls);
+	Label * label		= labelPerDbl[std::isnan(returnForDbl) || labelPerDbl.count(returnForDbl) == 0 ? dbl : returnForDbl];
 	
 	return label;
 }

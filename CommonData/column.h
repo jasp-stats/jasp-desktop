@@ -150,7 +150,7 @@ public:
 
 			std::map<double,Label*>	replaceDoubleWithLabel(doublevec dbls);
 			Label				* 	replaceDoubleWithLabel(double dbl);
-            Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row);
+            Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl = NAN);
 			bool					replaceDoubleLabelFromRowWithDouble(size_t row, double dbl); ///< Returns true if succes
 
 			void					labelValueChanged(Label * label,	double aDouble,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
