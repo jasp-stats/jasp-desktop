@@ -275,7 +275,7 @@ bool ODSXmlContentsHandler::characters(const QString &ch)
 			switch(_docDepth)
 			{
 			case text:
-				if(_currentCell != ch)
+				if(_currentCell.isEmpty()) 	// see: https://github.com/jasp-stats/jasp-issues/issues/2963 and https://github.com/jasp-stats/jasp-issues/issues/2789
 					_currentCell.push_back(ch);
 				break;
 			
