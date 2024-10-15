@@ -259,6 +259,8 @@ private:
 
 	static std::string			_developmentModuleName;
 	static const std::string	_moduleDirPostfix;
+
+	QString patchLibPathHelperFunc(QString libpath);
 };
 
 

@@ -36,6 +36,7 @@
 #include "modules/upgrader/changeincompatible.h"
 #include "modules/description/description.h"
 #include "modules/description/entrybase.h"
+#include "engine/enginesync.h"
 
 namespace Modules
 {
@@ -527,10 +528,23 @@ void DynamicModules::uninstallJASPDeveloperModule()
 		uninstallModule(developmentModuleName());
 }
 
+void DynamicModules::refreshDeveloperModule(bool R, bool Qml)
+{
+	if(_modules.count(developmentModuleName())) {
+		EngineSync::singleton()->killModuleEngine(_modules[developmentModuleName()]);
+		if(R && Qml)
+			installJASPDeveloperModule();
+		else if(R)
+			emit dynamicModuleChanged(_modules[developmentModuleName()]);
+		else if(Qml)
+			emit dynamicModuleQmlChanged(_modules[developmentModuleName()]);
+	}
+}
+
 void DynamicModules::installJASPDeveloperModule()
 {
-	bool directLibpathEnabled = PreferencesModel::prefs()->directLibpathEnabled();
-	QString modulePath = directLibpathEnabled ? PreferencesModel::prefs()->directLibpathFolder() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+	bool directLibpathEnabled = Settings::value(Settings::DIRECT_LIBPATH_ENABLED).toBool();
+	QString modulePath = directLibpathEnabled ? Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
 	if(modulePath == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));

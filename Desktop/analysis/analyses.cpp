@@ -351,6 +351,13 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 		removeAnalysisById(size_t(id));
 }
 
+void Analyses::reloadQmlAnalysesDynamicModule(Modules::DynamicModule * module)
+{
+	for(auto idAnalysis : _analysisMap)
+		if(idAnalysis.second->dynamicModule() == module)
+			idAnalysis.second->analysisQMLFileChanged();
+}
+
 void Analyses::refreshAllAnalyses()
 {
 	for(auto idAnalysis : _analysisMap)

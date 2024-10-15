@@ -265,10 +265,27 @@ FocusScope
 							anchors
 							{
 								left			: parent.left
-								right			: minusButton.left
+                                right			: refreshButton.left
 								verticalCenter	: parent.verticalCenter
 							}
 						}
+
+
+                        MenuButton
+                        {
+                            z:				1
+                            id:				refreshButton
+                            visible:		!isBundled && !isSpecial
+                            iconSource:		jaspTheme.iconPath + "/redo.svg"
+                            width:			visible ? height : 0
+                            onClicked:		dynamicModules.refreshDeveloperModule();
+                            toolTip:		qsTr("Refresh developer module ") + displayText
+                            anchors
+                            {
+                                right			: minusButton.left
+                                verticalCenter	: parent.verticalCenter
+                            }
+                        }
 
 						MenuButton
 						{

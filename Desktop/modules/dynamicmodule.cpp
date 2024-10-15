@@ -40,6 +40,7 @@
 
 #ifdef __APPLE__
 #include "otoolstuff.h"
+#include <filesystem>
 #endif
 
 namespace Modules
@@ -107,6 +108,7 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 ///This constructor is meant specifically for the development module from a libpath *it*!
 DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent), _isDeveloperMod(true), _isLibpathDevMod(true)
 {
+	libpath = patchLibPathHelperFunc(libpath);
 	_modulePackage	= fq(libpath + "/" + Settings::value(Settings::DIRECT_DEVMOD_NAME).toString() + "/");
 	_moduleFolder	= QFileInfo(libpath + "/");
 	_name = extractPackageNameFromFolder(_modulePackage);
@@ -116,10 +118,6 @@ DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent
 	Log::log() << "Development Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
 
 	_developmentModuleName = _name;
-
-	#ifdef __APPLE__
-	_moduleLibraryFixer(libpath.toStdString(), true, true, true);
-	#endif
 
 	loadDescriptionFromFolder(_modulePackage);
 	setInstalled(true);
@@ -942,5 +940,23 @@ stringset DynamicModule::requiredModules() const
 	return out;
 }
 
+QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
+#ifdef __APPLE__
+	//we copy everything because we need to patch and resign it all
+	auto path = std::filesystem::temp_directory_path() / Settings::value(Settings::DIRECT_DEVMOD_NAME).toString().toStdString();
+	std::filesystem::remove_all(path);
+	std::filesystem::copy(libpath.toStdString(), path, std::filesystem::copy_options::recursive);
+	_moduleLibraryFixer(path, true, true, true);
+	return tq(path.generic_string());
+#else
+	return libpath;
+#endif
 
 }
+
+
+}
+
+
+
+
