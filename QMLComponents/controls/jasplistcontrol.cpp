@@ -20,13 +20,14 @@
 #include "analysisform.h"
 #include "jaspcontrol.h"
 #include "models/listmodel.h"
-#include "models/listmodellabelvalueterms.h"
 #include "models/listmodelassignedinterface.h"
+#include "models/columntypesmodel.h"
 #include "log.h"
 #include "rowcontrols.h"
 #include "sourceitem.h"
 #include "jasptheme.h"
 #include "utilities/desktopcommunicator.h"
+#include "preferencesmodelbase.h"
 
 #include <QQmlContext>
 
@@ -35,6 +36,10 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 	: JASPControl(parent)
 {
 	_hasUserInteractiveValue = false;
+	_allowedTypesModel		= new ColumnTypesModel(this);
+
+	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,		this,	&JASPListControl::levelsChanged);
+
 }
 
 void JASPListControl::setUpModel()
@@ -161,12 +166,21 @@ void JASPListControl::setUp()
 	listModel->setRowComponent(rowComponent());
 	_setupSources();
 
-	connect(this,								&JASPListControl::sourceChanged,			this,	&JASPListControl::sourceChangedHandler);
-	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::_termsChangedHandler);
-	connect(listModel,							&ListModel::termsChanged,					this,	[this]() { emit countChanged(); });
-	connect(listModel,							&ListModel::termsChanged,					this,	&JASPListControl::maxTermsWidthChanged);
-	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,		this,	&JASPListControl::maxTermsWidthChanged);
-	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::interfaceFontChanged, this,	&JASPListControl::maxTermsWidthChanged);
+	_setAllowedVariables();
+
+	connect(this,								&JASPListControl::sourceChanged,				this,	&JASPListControl::sourceChangedHandler		);
+	connect(listModel,							&ListModel::termsChanged,						this,	&JASPListControl::_termsChangedHandler		);
+	connect(listModel,							&ListModel::termsChanged,						this,	[this]() { emit countChanged(); }			);
+	connect(listModel,							&ListModel::termsChanged,						this,	&JASPListControl::maxTermsWidthChanged		);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,			this,	&JASPListControl::maxTermsWidthChanged		);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::interfaceFontChanged,		this,	&JASPListControl::maxTermsWidthChanged		);
+	connect(this,								&JASPListControl::maxLevelsChanged,				this,	&JASPListControl::checkLevelsConstraints	);
+	connect(this,								&JASPListControl::minLevelsChanged,				this,	&JASPListControl::checkLevelsConstraints	);
+	connect(this,								&JASPListControl::maxNumericLevelsChanged,		this,	&JASPListControl::checkLevelsConstraints	);
+	connect(this,								&JASPListControl::minNumericLevelsChanged,		this,	&JASPListControl::checkLevelsConstraints	);
+	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::currentJaspThemeChanged,	this,	&JASPListControl::_setAllowedVariables		);
+	connect(this,								&JASPListControl::allowedColumnsChanged,		this,	&JASPListControl::_setAllowedVariables		);
+
 
 }
 
@@ -302,3 +316,113 @@ void JASPListControl::_setInitialized(const Json::Value &value)
 
 	JASPControl::_setInitialized(value);
 }
+
+QAbstractListModel *JASPListControl::allowedTypesModel()
+{
+	return _allowedTypesModel;
+}
+
+bool JASPListControl::isTypeAllowed(columnType type) const
+{
+	return _allowedTypesModel->hasType(type);
+}
+
+columnType JASPListControl::defaultType() const
+{
+	return _allowedTypesModel->defaultType();
+}
+
+void JASPListControl::checkLevelsConstraints()
+{
+	JASPListControl::termsChangedHandler();
+
+	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
+
+	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
+	{
+		bool hasError = false;
+		int maxScaleLevels = PreferencesModelBase::preferences()->maxScaleLevels();
+
+		for (const Term& term : model()->terms())
+		{
+			QString termStr = term.asQString();
+			if (termStr.isEmpty())
+				continue;
+
+			columnType	termType	= (columnType)model()->requestInfo(VariableInfo::VariableType, termStr).toInt();
+			if (termType == columnType::unknown)
+				continue;
+
+			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, termStr).toInt(),
+				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, termStr).toInt();
+
+			if (_minLevels >= 0 && nbLevels < _minLevels)
+			{
+				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(termStr).arg(nbLevels));
+				hasError = true;
+			}
+			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
+			{
+				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(termStr).arg(nbLevels));
+				hasError = true;
+			}
+			else if (_maxLevels < 0 && noScaleAllowed && termType == columnType::scale && nbLevels > maxScaleLevels)
+			{
+				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
+				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
+				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
+										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->defaultType())).arg(nbLevels).arg(maxScaleLevels));
+				hasError = true;
+			}
+			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
+			{
+				addControlErrorPermanent(tr("Minimum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(termStr).arg(nbNumValues));
+				hasError = true;
+			}
+			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
+			{
+				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(termStr).arg(nbNumValues));
+				hasError = true;
+			}
+
+			if (hasError)
+				break;
+		}
+
+		if (!hasError)
+			clearControlError();
+	}
+}
+
+QStringList JASPListControl::levels() const
+{
+	return initialized() ? model()->allLevels(model()->terms()) : QStringList();
+}
+
+QStringList JASPListControl::allowedColumnsIcons() const
+{
+	return _allowedTypesModel->iconList();
+}
+
+void JASPListControl::_setAllowedVariables()
+{
+	columnTypeVec allowedTypes;
+
+	for (const QString& typeStr: allowedColumns())
+	{
+		columnType typeCol = columnTypeFromString(fq(typeStr), columnType::unknown);
+
+		if (typeCol != columnType::unknown)
+			allowedTypes.push_back(typeCol);
+	}
+
+	_allowedTypesModel->setTypes(allowedTypes);
+
+	emit allowedColumnsIconsChanged();
+
+	if (form() && form()->initialized())
+		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
+		model()->refresh();
+}
+
+

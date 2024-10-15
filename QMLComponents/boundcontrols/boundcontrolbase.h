@@ -53,6 +53,7 @@ protected:
 	void						_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms);
 
 	void						_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
+	bool						_isValueWithTypes(const Json::Value &value)					const;
 
 	JASPControl*				_control			= nullptr;
 	bool						_isComputedColumn	= false,

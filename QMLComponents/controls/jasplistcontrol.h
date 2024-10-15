@@ -33,28 +33,38 @@ class Options;
 class RowControls;
 class Terms;
 class SourceItem;
+class ColumnTypesModel;
 
 class JASPListControl : public JASPControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ListModel*		model							READ model																			NOTIFY modelChanged					)
-	Q_PROPERTY( QVariant		source							READ source								WRITE setSource								NOTIFY sourceChanged				)
-	Q_PROPERTY( QVariant		rSource							READ rSource							WRITE setRSource							NOTIFY sourceChanged				)
-	Q_PROPERTY( QVariant		values							READ values								WRITE setValues								NOTIFY sourceChanged				)
-	Q_PROPERTY( int				count							READ count																			NOTIFY countChanged					)
-	Q_PROPERTY( int				maxRows							READ maxRows							WRITE setMaxRows							NOTIFY maxRowsChanged				)
-	Q_PROPERTY( QString			optionKey						READ optionKey							WRITE setOptionKey																)
-	Q_PROPERTY( bool			addEmptyValue					READ addEmptyValue						WRITE setAddEmptyValue						NOTIFY addEmptyValueChanged			)
-	Q_PROPERTY( QString			placeholderText					READ placeholderText					WRITE setPlaceHolderText					NOTIFY placeHolderTextChanged		)
-	Q_PROPERTY( bool			containsVariables				READ containsVariables																NOTIFY containsVariablesChanged		)
-	Q_PROPERTY( bool			containsInteractions			READ containsInteractions															NOTIFY containsInteractionsChanged	)
-	Q_PROPERTY( double			maxTermsWidth					READ maxTermsWidth																	NOTIFY maxTermsWidthChanged			)
-	Q_PROPERTY( QQmlComponent*	rowComponent					READ rowComponent						WRITE setRowComponent						NOTIFY rowComponentChanged			)
-	Q_PROPERTY( bool			addAvailableVariablesToAssigned	READ addAvailableVariablesToAssigned	WRITE setAddAvailableVariablesToAssigned	NOTIFY addAvailableVariablesToAssignedChanged )
-	Q_PROPERTY( bool			allowAnalysisOwnComputedColumns	READ allowAnalysisOwnComputedColumns	WRITE setAllowAnalysisOwnComputedColumns	NOTIFY allowAnalysisOwnComputedColumnsChanged )
-	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes																	NOTIFY columnsTypesChanged					)
-	Q_PROPERTY( QStringList		columnsNames					READ columnsNames																	NOTIFY columnsNamesChanged					)
+	Q_PROPERTY( ListModel*			model							READ model																			NOTIFY modelChanged					)
+	Q_PROPERTY( QVariant			source							READ source								WRITE setSource								NOTIFY sourceChanged				)
+	Q_PROPERTY( QVariant			rSource							READ rSource							WRITE setRSource							NOTIFY sourceChanged				)
+	Q_PROPERTY( QVariant			values							READ values								WRITE setValues								NOTIFY sourceChanged				)
+	Q_PROPERTY( int					count							READ count																			NOTIFY countChanged					)
+	Q_PROPERTY( int					maxRows							READ maxRows							WRITE setMaxRows							NOTIFY maxRowsChanged				)
+	Q_PROPERTY( QString				optionKey						READ optionKey							WRITE setOptionKey																)
+	Q_PROPERTY( bool				addEmptyValue					READ addEmptyValue						WRITE setAddEmptyValue						NOTIFY addEmptyValueChanged			)
+	Q_PROPERTY( QString				placeholderText					READ placeholderText					WRITE setPlaceHolderText					NOTIFY placeHolderTextChanged		)
+	Q_PROPERTY( bool				containsVariables				READ containsVariables																NOTIFY containsVariablesChanged		)
+	Q_PROPERTY( bool				containsInteractions			READ containsInteractions															NOTIFY containsInteractionsChanged	)
+	Q_PROPERTY( double				maxTermsWidth					READ maxTermsWidth																	NOTIFY maxTermsWidthChanged			)
+	Q_PROPERTY( QQmlComponent*		rowComponent					READ rowComponent						WRITE setRowComponent						NOTIFY rowComponentChanged			)
+	Q_PROPERTY( bool				addAvailableVariablesToAssigned	READ addAvailableVariablesToAssigned	WRITE setAddAvailableVariablesToAssigned	NOTIFY addAvailableVariablesToAssignedChanged )
+	Q_PROPERTY( bool				allowAnalysisOwnComputedColumns	READ allowAnalysisOwnComputedColumns	WRITE setAllowAnalysisOwnComputedColumns	NOTIFY allowAnalysisOwnComputedColumnsChanged )
+	Q_PROPERTY( QStringList			columnsTypes					READ columnsTypes																	NOTIFY columnsTypesChanged					)
+	Q_PROPERTY( QStringList			columnsNames					READ columnsNames																	NOTIFY columnsNamesChanged					)
+	Q_PROPERTY( QAbstractListModel* allowedTypesModel				READ allowedTypesModel																NOTIFY allowedTypesModelChanged		)
+	Q_PROPERTY( bool				allowTypeChange					READ allowTypeChange					WRITE setAllowTypeChange					NOTIFY allowTypeChangeChanged		)
+	Q_PROPERTY( int					minNumericLevels				READ minNumericLevels					WRITE setMinNumericLevels					NOTIFY minNumericLevelsChanged		)
+	Q_PROPERTY( int					maxNumericLevels				READ maxNumericLevels					WRITE setMaxNumericLevels					NOTIFY maxNumericLevelsChanged		)
+	Q_PROPERTY( int					minLevels						READ minLevels							WRITE setMinLevels							NOTIFY minLevelsChanged				)
+	Q_PROPERTY( int					maxLevels						READ maxLevels							WRITE setMaxLevels							NOTIFY maxLevelsChanged				)
+	Q_PROPERTY( QStringList			levels							READ levels																			NOTIFY levelsChanged				)
+	Q_PROPERTY( QStringList			allowedColumns					READ allowedColumns						WRITE setAllowedColumns						NOTIFY allowedColumnsChanged		)
+	Q_PROPERTY(	QStringList			allowedColumnsIcons				READ allowedColumnsIcons															NOTIFY allowedColumnsIconsChanged	)
 
 
 public:
@@ -98,11 +108,20 @@ public:
 	virtual stringvec				usedVariables()				const;
 			bool					addAvailableVariablesToAssigned()	const	{ return _addAvailableVariablesToAssigned;	}
 			bool					allowAnalysisOwnComputedColumns()	const	{ return _allowAnalysisOwnComputedColumns;	}
-			virtual bool			isTypeAllowed(columnType type)		const	{ return true;								}
-			virtual columnType		defaultType()						const	{ return columnType::unknown;				}
+			bool					isTypeAllowed(columnType type)		const;
+			columnType				defaultType()						const;
 			columnTypeVec			valueTypes()						const;
 	const	QStringList			&	columnsTypes()						const	{ return _columnsTypes;						}
 	const	QStringList			&	columnsNames()						const	{ return _columnsNames;						}
+	QAbstractListModel			*	allowedTypesModel();
+	bool							allowTypeChange()					const	{ return _allowTypeChange;		}
+	QStringList						levels()							const;
+	int								minLevels()							const	{ return _minLevels;			}
+	int								maxLevels()							const	{ return _maxLevels;			}
+	int								minNumericLevels()					const	{ return _minNumericLevels;		}
+	int								maxNumericLevels()					const	{ return _maxNumericLevels;		}
+	const QStringList			&	allowedColumns()					const	{ return _allowedColumns;		}
+	QStringList						allowedColumnsIcons()				const;
 
 signals:
 			void					modelChanged();
@@ -119,6 +138,15 @@ signals:
 			void					allowAnalysisOwnComputedColumnsChanged();
 			void					columnsTypesChanged();
 			void					columnsNamesChanged();
+			void					allowedTypesModelChanged();
+			void					allowTypeChangeChanged();
+			void					levelsChanged();
+			void					minLevelsChanged();
+			void					maxLevelsChanged();
+			void					minNumericLevelsChanged();
+			void					maxNumericLevelsChanged();
+			void					allowedColumnsChanged();
+			void					allowedColumnsIconsChanged();
 
 public slots:
 			void					setContainsVariables();
@@ -130,9 +158,11 @@ protected slots:
 			void					sourceChangedHandler();
 
 			void					setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
+			void					checkLevelsConstraints();
 
 protected:
-	void					_setInitialized(const Json::Value& value = Json::nullValue)	override;
+	void							_setInitialized(const Json::Value& value = Json::nullValue)	override;
+	void							_setAllowedVariables();
 
 	GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
 	GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)
@@ -145,6 +175,12 @@ protected:
 	GENERIC_SET_FUNCTION(AllowAnalysisOwnComputedColumns,	_allowAnalysisOwnComputedColumns,	allowAnalysisOwnComputedColumnsChanged,	bool			)
 	GENERIC_SET_FUNCTION(ColumnsTypes,						_columnsTypes,						columnsTypesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsNames,						_columnsNames,						columnsNamesChanged,					QStringList		)
+	GENERIC_SET_FUNCTION(AllowTypeChange,					_allowTypeChange,					allowTypeChangeChanged,					bool			)
+	GENERIC_SET_FUNCTION(MinLevels,							_minLevels,							minLevelsChanged,						int				)
+	GENERIC_SET_FUNCTION(MaxLevels,							_maxLevels,							maxLevelsChanged,						int				)
+	GENERIC_SET_FUNCTION(MinNumericLevels,					_minNumericLevels,					minNumericLevelsChanged,				int				)
+	GENERIC_SET_FUNCTION(MaxNumericLevels,					_maxNumericLevels,					maxNumericLevelsChanged,				int				)
+	GENERIC_SET_FUNCTION(AllowedColumns,					_allowedColumns,					allowedColumnsChanged,					QStringList		)
 
 
 private:
@@ -163,13 +199,21 @@ protected:
 							_termsAreInteractions				= false,
 							_useSourceLevels					= false,
 							_addAvailableVariablesToAssigned	= false,
-							_allowAnalysisOwnComputedColumns	= true;
+							_allowAnalysisOwnComputedColumns	= true,
+							_allowTypeChange					= false;
 
-	int						_maxRows							= -1;
+	int						_maxRows							= -1,
+							_minNumericLevels					= -1,
+							_maxNumericLevels					= -1,
+							_minLevels							= -1,
+							_maxLevels							= -1;
+
 	QString					_placeHolderText					= tr("<no choice>");
 	QQmlComponent		*	_rowComponent						= nullptr;
 	QStringList				_columnsTypes,
-							_columnsNames;
+							_columnsNames,
+							_allowedColumns;
+	ColumnTypesModel	*	_allowedTypesModel					= nullptr;
 
 };
 

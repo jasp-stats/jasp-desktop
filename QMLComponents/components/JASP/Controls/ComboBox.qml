@@ -62,7 +62,7 @@ ComboBoxBase
 	{
 		control.maxTextWidth = maxTextWidth
 		// The real field width is composed by the type icon (if displayed) + 2-padding + max width + 5-padding + dropdownIcon width + 2-padding
-		var newFieldWidth = (comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width : 0) + maxTextWidth + dropdownIcon.width + 9 * preferencesModel.uiScale
+		var newFieldWidth = (comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width : 0) + (allowedTypeIcons.count > 0 ? allowedTypeIcons.width + jaspTheme.itemPadding : 0) + maxTextWidth + dropdownIcon.width + 9 * preferencesModel.uiScale
 		if (newFieldWidth < controlMinWidth)
 			newFieldWidth = controlMinWidth
 
@@ -152,6 +152,19 @@ ComboBoxBase
 
 				property double widthWhenContralHasFixedWidth: control.width - (x + dropdownIcon.width + 4 * preferencesModel.uiScale) // 4 = leftMargin + 2 padding right of dropdownIcon)
 
+			}
+
+			AllowedTypeIcons
+			{
+				id:			allowedTypeIcons
+				iconModel:	allowedColumnsIcons
+
+				anchors
+				{
+					bottomMargin:	jaspTheme.contentMargin
+					right:			parent.right
+					rightMargin:	jaspTheme.contentMargin
+				}
 			}
 		}
 
