@@ -187,27 +187,25 @@ int ColumnModel::rowsTotal() const
 	return rowCount();	
 }
 
-int ColumnModel::firstNonNumericRow() const
+bool ColumnModel::hasSeveralNumericValues() const
 {
-	if(!column() || !column()->autoSortByValue())
-		return 0;
+	if(!column())
+		return false;
 	
-	int nonEmptyNonNumerics = 0;
+	int numberOfNumericalValues = 0;
 	for(Label * label : column()->labels())	
 		if(!label->isEmptyValue())
 		{
 			static double dummy;
 			
-			if(!(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
-				return nonEmptyNonNumerics;
-			nonEmptyNonNumerics++;
+			if(label->originalValue().isDouble() && ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy))
+				numberOfNumericalValues++;
+
+			if (numberOfNumericalValues > 1)
+				return true;
 		}
 	
-	//If we have more temporary labels then normal ones then those afterwards are all numeric (or something wouldve been replaced/sorted) so we can return labelsTempCount()
-	if(column()->labelsTempCount() > nonEmptyNonNumerics)
-		return column()->labelsTempCount();
-	
-	return nonEmptyNonNumerics;	
+	return column()->labelsTempNumerics() > 1;
 }
 
 void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
@@ -602,10 +600,9 @@ void ColumnModel::refresh()
 	emit nameEditableChanged();
 	emit columnDescriptionChanged();
 	emit computedTypeValuesChanged();
-	emit firstNonNumericRowChanged();
+	emit hasSeveralNumericValuesChanged();
 	emit computedTypeEditableChanged();
 	emit useCustomEmptyValuesChanged();
-	emit firstNonNumericRowChanged();
 	emit columnTypeValuesChanged();
 	emit computedTypeChanged();
 	emit emptyValuesChanged();
