@@ -159,6 +159,8 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	Json::Value newValue = Json::objectValue;
 	newValue["value"] = valuePart;
 	newValue["types"] = typesPart;
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
+		newValue["optionKey"] = _optionKey;
 	BoundControlBase::bindTo(newValue);
 
 	_termsModel->initTerms(terms, allControlValues);
