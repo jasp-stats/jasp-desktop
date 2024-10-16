@@ -73,7 +73,7 @@ set(MSIX_SIGN_CERT_PASSWORD
   CACHE STRING "Password selfsign cert for Nightlies")
 
 set(R_PKG_CELLAR_PATH
-  "${CMAKE_SOURCE_DIR}/cellar/"
+  "${CMAKE_BINARY_DIR}/_cache/cellar/"
   CACHE STRING "Set the path for an renv package cellar to be used during build phase. Changing this disables the use of a remote cellar")
 
 set(R_PKG_CELLAR_REMOTE
@@ -115,7 +115,7 @@ endif()
 message(STATUS "CRAN mirror: ${R_REPOSITORY}")
 
 #this handles the cellar download.
-if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_SOURCE_DIR}/cellar/" AND NOT EXISTS "${CMAKE_SOURCE_DIR}/cellar/")
+if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_BINARY_DIR}/_cache/cellar/" AND NOT EXISTS "${CMAKE_BINARY_DIR}/_cache/cellar/")
   #set appropriate default remote if needed
   if(R_PKG_CELLAR_REMOTE STREQUAL "")
     if(APPLE)
@@ -132,8 +132,8 @@ if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_SOURCE_D
   if(NOT R_PKG_CELLAR_REMOTE STREQUAL "")
     message(STATUS "Remote cellar: ${R_PKG_CELLAR_REMOTE}")
     file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/cellar/") 
-    file(DOWNLOAD "${R_PKG_CELLAR_REMOTE}" "${CMAKE_SOURCE_DIR}/cellar.tar.gz" TLS_VERIFY ON)
-    file(ARCHIVE_EXTRACT INPUT "${CMAKE_SOURCE_DIR}/cellar.tar.gz" DESTINATION "${CMAKE_SOURCE_DIR}")
+    file(DOWNLOAD "${R_PKG_CELLAR_REMOTE}" "${CMAKE_BINARY_DIR}/_cache/cellar.tar.gz" TLS_VERIFY ON)
+    file(ARCHIVE_EXTRACT INPUT "${CMAKE_BINARY_DIR}/_cache/cellar.tar.gz" DESTINATION "${CMAKE_BINARY_DIR}/_cache/")
   endif()
 endif()
 
