@@ -5320,6 +5320,11 @@ msgid ""
 "perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
+"在上方您可以看到 JASP 为值筛选和拖放式筛选器生成的代码。\n"
+"此默认结果存储在“generatedFilter”中，可以用定义筛选器替换或组合。\n"
+"要组合，您可以使用 '&' 附加子句： ' %1 & customFilter & "
+"perhapsAnotherFilter'\n"
+"单击右下角的 (i) 图标可获取帮助信息。\n"
 
 #, qt-format
 msgctxt "Modules::ChangeIncompatible|"
