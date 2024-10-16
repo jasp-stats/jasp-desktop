@@ -13,7 +13,7 @@ std::string _system(std::string cmd)
 	std::ofstream ofs(path , std::ofstream::out);
 	if (!ofs.is_open())
 		throw std::runtime_error("Cannot open output file for separate R/System cmd!");
-	cmd += " > " + std::string(path) + " 2>&1 ";
+	cmd += " > " + path + " 2>&1 ";
 
 #ifdef WIN32
 	cmd = '"' + cmd + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
