@@ -35,6 +35,7 @@ if(USE_CONAN)
       COMMAND
       conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/conan_build
       -s build_type=${CMAKE_BUILD_TYPE}
+      -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
 
   elseif(APPLE)
