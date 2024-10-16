@@ -34,6 +34,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( int					columns							READ columns						WRITE setColumns						NOTIFY columnsChanged						)
 	Q_PROPERTY( QStringList			dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
 	Q_PROPERTY( QString				interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
+	Q_PROPERTY( bool				keepVariablesWhenMoved			READ keepVariablesWhenMoved			WRITE setKeepVariablesWhenMoved			NOTIFY keepVariablesWhenMovedChanged		)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
@@ -60,12 +61,14 @@ public:
 	const QString			&	interactionHighOrderCheckBox()															const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control)											override;
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
+	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
 
 signals:
 	void listViewTypeChanged();
 	void columnsChanged();
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
+	void keepVariablesWhenMovedChanged();
 
 public slots:
 	void setVariableType(int index, int type);
@@ -81,6 +84,7 @@ protected:
 	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
 	GENERIC_SET_FUNCTION(Columns,						_columns,						columnsChanged,							int				)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
+	GENERIC_SET_FUNCTION(KeepVariablesWhenMoved,		_keepVariablesWhenMoved,		keepVariablesWhenMovedChanged,			bool			)
 
 	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 	void						setDropKeys(const QStringList& dropKeys);
@@ -93,6 +97,7 @@ protected:
 	ListModelDraggable*			_draggableModel	= nullptr;
 	ListViewType				_listViewType	= ListViewType::AssignedVariables;
 	BoundControl*				_boundControl	= nullptr;
+	bool						_keepVariablesWhenMoved = false;
 	
 private:
 	int							_columns				= 1;
