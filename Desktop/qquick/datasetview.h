@@ -273,6 +273,7 @@ public slots:
 
 	void		setColumnType(int columnIndex, int newColumnType);
 	void		resizeData(int rows, int columns);
+	void		currentSelectedColumnHandler(const QModelIndex &current, const QModelIndex &previous);
 
 protected:
 	void		_copy(QPoint where, bool clear);

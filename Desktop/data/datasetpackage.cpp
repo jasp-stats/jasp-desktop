@@ -920,12 +920,14 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 	
 	if(column->labelDoubleDummy() == label)
 	{
-		int replaceTill	= -1;
+		int		replaceTill	= -1;
+		double	oldDouble	= column->labelsTempValueDouble(index.row());
+				
 		if(aNumber)
 		{
-			int		newHasRow	= column->labelsDoubleValueIsTempLabelRow(aDouble);
+			int newHasRow	= column->labelsDoubleValueIsTempLabelRow(aDouble);
 					
-			if(!Utils::isEqual(aDouble, column->labelsTempValueDouble(index.row())))
+			if(!Utils::isEqual(aDouble, oldDouble))
 			{
 				assert(newHasRow != index.row()); //Because it shouldnt be the same after all
 				replaceTill = std::max(index.row(), newHasRow);
@@ -945,7 +947,7 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		if(replaceTill == -1 && column->autoSortByValue())
 				replaceTill = column->labelsTempCount();
 		
-		label = column->replaceDoublesTillLabelsRowWithLabels(replaceTill > -1 ? replaceTill : index.row());
+		label	= column->replaceDoublesTillLabelsRowWithLabels(replaceTill > -1 ? replaceTill : index.row(), oldDouble);
 		aChange = true;
 	}
 	

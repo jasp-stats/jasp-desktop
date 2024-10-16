@@ -150,7 +150,7 @@ public:
 
 			std::map<double,Label*>	replaceDoubleWithLabel(doublevec dbls);
 			Label				* 	replaceDoubleWithLabel(double dbl);
-            Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row);
+            Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl = NAN);
 			bool					replaceDoubleLabelFromRowWithDouble(size_t row, double dbl); ///< Returns true if succes
 
 			void					labelValueChanged(Label * label,	double aDouble,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
@@ -232,7 +232,7 @@ public:
 			
 	static	void					setAutoSortByValuesByDefault(bool autoSort);
 	static	bool					autoSortByValuesByDefault();
-
+	
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
 			void					_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease = false);		///< Sets the order of the _labels to label.order and in DB
@@ -243,6 +243,7 @@ protected:
 			void					_convertVectorIntToDouble(intvec & intValues, doublevec & doubleValues);
 			void					_resetLabelValueMap();
 			doublevec				valuesNumericOrdered();			
+			std::map<Label*,size_t> valuesAlphabeticalOffsets();
 
 private:
 			DataSet			* const	_data;

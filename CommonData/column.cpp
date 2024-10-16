@@ -1281,7 +1281,7 @@ std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
 	return doubleLabelMap;
 }
 
-Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
+Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl)
 {
 	JASPTIMER_SCOPE(Column::replaceDoublesTillLabelsRowWithLabels);
 	
@@ -1301,8 +1301,9 @@ Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row)
 		else
 			throw std::runtime_error("replaceDoublesTillLabelsRowWithLabels choked on a temp-label that cant be converted to double???"); //Should never ever occur because it starts from _labels.size!
 
-	//the last dbl is the one we want so use it to get the right label from the map:
-	Label * label = replaceDoubleWithLabel(dbls)[dbl];
+	//the last dbl is the one we want so use it to get the right label from the map
+	auto	labelPerDbl = replaceDoubleWithLabel(dbls);
+	Label * label		= labelPerDbl[std::isnan(returnForDbl) || labelPerDbl.count(returnForDbl) == 0 ? dbl : returnForDbl];
 	
 	return label;
 }
@@ -1730,7 +1731,8 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
-	size_t					curMax		= asc.size()+1;
+	auto					alpha		= valuesAlphabeticalOffsets();
+	size_t					ascMax		= asc.size()+1;
 	std::map<double, int>	orderMap;
 	
 	for(size_t i=0; i<asc.size(); i++)
@@ -1746,7 +1748,7 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 		else 
 			ColumnUtils::getDoubleValue(label->originalValueAsString(), aValue);
 		
-		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : curMax++);
+		label->setOrder(!std::isnan(aValue) ? orderMap[aValue] : alpha[label] + ascMax);
 	}
 	
 	_sortLabelsByOrder();
@@ -1773,6 +1775,26 @@ doublevec Column::valuesNumericOrdered()
 	}
 	
 	return doublevec(values.begin(), values.end());
+}
+
+std::map<Label*, size_t> Column::valuesAlphabeticalOffsets()
+{
+	std::map<Label*, size_t>	labelMap;
+	Labels						alphaLabels;
+	
+	for(Label * label : _labels)
+		if(!label->originalValue().isDouble())
+			alphaLabels.push_back(label);
+	
+	std::sort(alphaLabels.begin(), alphaLabels.end(), [](const Label * l, const Label * r)
+	{
+		return l->originalValueAsString() < r->originalValueAsString();
+	});
+	
+	for(size_t l=0; l<alphaLabels.size(); l++)
+		labelMap[alphaLabels[l]] = l;
+	
+	return labelMap;
 }
 
 void Column::valuesReverse()
