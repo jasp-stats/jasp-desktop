@@ -23,6 +23,7 @@ FactorsFormBase
 	property int    factorListHeight:				(jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing
 	property int	assignAvailableVariablesToList:	allowInteraction ? (initNumberFactors - 1) : -1 // If interaction is used, set automatically the available variables to the last assigned variables list
 	property bool	allowTypeChange:				false
+	property alias	keepAvailableVariables:			availableVariablesList.keepVariablesWhenMoved
 
 	AvailableVariablesList
 	{

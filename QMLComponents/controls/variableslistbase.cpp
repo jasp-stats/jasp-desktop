@@ -338,7 +338,11 @@ void VariablesListBase::_setRelations()
 
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
 				if (_listViewType == ListViewType::Interaction || (columns() > 1 && _listViewType != ListViewType::RepeatedMeasures))
-					availableModel->setKeepTerms(true);
+				{
+					VariablesListBase* listControl = qobject_cast<VariablesListBase*>(availableModel->listView());
+					if (listControl)
+						listControl->setKeepVariablesWhenMoved(true);
+				}
 			}
 		}
 	}

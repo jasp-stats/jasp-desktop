@@ -19,6 +19,7 @@
 #include "listmodeldraggable.h"
 #include "analysisform.h"
 #include "controls/jasplistcontrol.h"
+#include "controls/variableslistbase.h"
 
 ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
@@ -27,6 +28,12 @@ ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 
 ListModelDraggable::~ListModelDraggable()
 {
+}
+
+bool ListModelDraggable::keepTerms() const
+{
+	VariablesListBase* variablesList = qobject_cast<VariablesListBase*>(listView());
+	return variablesList ? variablesList->keepVariablesWhenMoved() : false;
 }
 
 Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
