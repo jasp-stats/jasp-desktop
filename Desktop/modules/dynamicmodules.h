@@ -120,6 +120,7 @@ public slots:
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 	void setDataLoaded(bool dataLoaded);
 	void uninstallJASPDeveloperModule();
+	void refreshDeveloperModule(bool R = true, bool Qml = true);
 
 	QStringList requiredModulesLibPaths(QString moduleName);
 
@@ -129,6 +130,7 @@ signals:
 	void dynamicModuleAdded(			Modules::DynamicModule * dynamicModule);
 	void dynamicModuleUnloadBegin(		Modules::DynamicModule * dynamicModule);
 	void dynamicModuleChanged(			Modules::DynamicModule * dynamicModule);
+	void dynamicModuleQmlChanged(		Modules::DynamicModule * dynamicModule);
 	void descriptionReloaded(			Modules::DynamicModule * dynamicModule);
 	void loadModuleTranslationFile(		Modules::DynamicModule * dynamicModule);
 	void dynamicModuleReplaced(			Modules::DynamicModule * oldMod, Modules::DynamicModule *  newMod);

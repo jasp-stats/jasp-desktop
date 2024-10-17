@@ -7,6 +7,6 @@
 /// Depends on otool being present and callable in the users system.
 
 std::string _system(					std::string		cmd);
-void		_moduleLibraryFixer(const	std::string &	moduleLibrary, bool engineCall = false, bool printStuff = false);
+void		_moduleLibraryFixer(const	std::string &	moduleLibrary, bool engineCall = false, bool printStuff = false, bool devMod = false);
 
 #endif // OTOOLSTUFF_H
