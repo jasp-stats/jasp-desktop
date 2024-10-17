@@ -840,8 +840,7 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 	for(size_t i=0; i<convertedStrings.size(); i++)
 	{
 		bool	isNA  = convertedStrings[i] == "NA",
-				isLgl = convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE",
-				isNan = std::isnan(dblData[i]);
+				isLgl = convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE";
 		
 		nominals[i] = std::isnan(dblData[i])	// If the string could not be converted to a number its not TRUE or FALSE, but it might be NA. We do not want that as a result!
 					? (!isNA	? convertedStrings[i].c_str() : "") 

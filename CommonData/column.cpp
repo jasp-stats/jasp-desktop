@@ -598,7 +598,21 @@ bool Column::overwriteDataAndType(stringvec data, columnType colType)
 	JASPTIMER_SCOPE(Column::overwriteDataAndType);
 
 	if(data.size() != _data->rowCount())
-		data.resize(_data->rowCount());
+	{
+		if(data.size() == _data->filter()->filteredRowCount())
+		{
+			const boolvec & filtered = _data->filter()->filtered();
+			stringvec		newData;
+							newData	 . reserve(filtered.size());
+			
+			for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < data.size(); iFilter++)
+				newData.push_back(filtered[iFilter] ? data[iData++] : "");
+				
+			data = newData;
+		}
+		else
+			data.resize(_data->rowCount());
+	}
 
 	bool changes = _type != colType;
 	setValues(data, data, 0, &changes);
