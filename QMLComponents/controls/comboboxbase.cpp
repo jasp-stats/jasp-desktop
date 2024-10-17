@@ -148,6 +148,7 @@ void ComboBoxBase::setUp()
 	connect(this,	&ComboBoxBase::activated,					this,	&ComboBoxBase::activatedSlot);
 	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->resetTermsFromSources(); }	);
 	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentProperties(currentIndex()); } ); // Case when currentIndex is changed in QML
+	connect(this,	&ComboBoxBase::currentValueChanged,			[this] () { if (containsVariables()) checkLevelsConstraints(); } );
 
 	if (form())
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
@@ -195,6 +196,11 @@ void ComboBoxBase::termsChangedHandler()
 void ComboBoxBase::activatedSlot(int index)
 {
 	_setCurrentProperties(index);
+}
+
+bool ComboBoxBase::_checkLevelsConstraints()
+{
+	return _checkLevelsConstraintsForVariable(_currentValue);
 }
 
 void ComboBoxBase::_resetItemWidth()

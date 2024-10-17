@@ -143,8 +143,11 @@ void JASPListControl::setContainsInteractions()
 
 void JASPListControl::termsChangedHandler()
 {
-	setColumnsTypes(model()->termsTypes());
-	setColumnsNames(model()->terms().asQList());
+	if (checkLevelsConstraints())
+	{
+		setColumnsTypes(model()->termsTypes());
+		setColumnsNames(model()->terms().asQList());
+	}
 }
 
 void JASPListControl::_termsChangedHandler() 
@@ -180,8 +183,9 @@ void JASPListControl::setUp()
 	connect(this,								&JASPListControl::minNumericLevelsChanged,		this,	&JASPListControl::checkLevelsConstraints	);
 	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::currentJaspThemeChanged,	this,	&JASPListControl::_setAllowedVariables		);
 	connect(this,								&JASPListControl::allowedColumnsChanged,		this,	&JASPListControl::_setAllowedVariables		);
-
-
+	connect(listModel,							&ListModelDraggable::termsChanged,				this,	&JASPListControl::levelsChanged				);
+	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::levelsChanged				);
+	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::checkLevelsConstraints, Qt::QueuedConnection	);
 }
 
 void JASPListControl::cleanUp()
@@ -332,66 +336,81 @@ columnType JASPListControl::defaultType() const
 	return _allowedTypesModel->defaultType();
 }
 
-void JASPListControl::checkLevelsConstraints()
-{
-	JASPListControl::termsChangedHandler();
 
-	bool noScaleAllowed = !_allowedTypesModel->hasType(columnType::scale);
+bool JASPListControl::_checkLevelsConstraintsForVariable(const QString& variable)
+{
+	if (variable.isEmpty())
+		return true;
+
+	columnType	type	= (columnType)model()->requestInfo(VariableInfo::VariableType, variable).toInt();
+	if (type == columnType::unknown)
+		return true;
+
+	int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, variable).toInt(),
+		nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, variable).toInt(),
+		maxScaleLevels		= PreferencesModelBase::preferences()->maxScaleLevels();
+	bool noScaleAllowed		= !_allowedTypesModel->hasType(columnType::scale);
+
+	if (_minLevels >= 0 && nbLevels < _minLevels)
+	{
+		addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(variable).arg(nbLevels));
+		return false;
+	}
+	else if (_maxLevels >= 0 && nbLevels > _maxLevels)
+	{
+		addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(variable).arg(nbLevels));
+		return false;
+	}
+	else if (_maxLevels < 0 && noScaleAllowed && type == columnType::scale && nbLevels > maxScaleLevels)
+	{
+		// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
+		// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
+		addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
+								 .arg(variable).arg(columnTypeToQString(_allowedTypesModel->defaultType())).arg(nbLevels).arg(maxScaleLevels));
+		return false;
+	}
+	else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
+	{
+		addControlErrorPermanent(tr("Minimum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(variable).arg(nbNumValues));
+		return false;
+	}
+	else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
+	{
+		addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(variable).arg(nbNumValues));
+		return false;
+	}
+
+	return true;
+}
+
+bool JASPListControl::_checkLevelsConstraints()
+{
+	bool checked = true;
+
+	for (const Term& term : model()->terms())
+	{
+		if (!_checkLevelsConstraintsForVariable(term.asQString()))
+		{
+			checked = false;
+			break;
+		}
+	}
+
+	return checked;
+}
+
+bool JASPListControl::checkLevelsConstraints()
+{
+	bool checked			= true,
+		 noScaleAllowed		= !_allowedTypesModel->hasType(columnType::scale);
 
 	if (_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed)
-	{
-		bool hasError = false;
-		int maxScaleLevels = PreferencesModelBase::preferences()->maxScaleLevels();
+		checked = _checkLevelsConstraints();
 
-		for (const Term& term : model()->terms())
-		{
-			QString termStr = term.asQString();
-			if (termStr.isEmpty())
-				continue;
+	if (checked)
+		clearControlError();
 
-			columnType	termType	= (columnType)model()->requestInfo(VariableInfo::VariableType, termStr).toInt();
-			if (termType == columnType::unknown)
-				continue;
-
-			int nbLevels			= model()->requestInfo(VariableInfo::TotalLevels, termStr).toInt(),
-				nbNumValues			= model()->requestInfo(VariableInfo::TotalNumericValues, termStr).toInt();
-
-			if (_minLevels >= 0 && nbLevels < _minLevels)
-			{
-				addControlErrorPermanent(tr("Minimum number of levels is %1. Variable %2 has only %3 levels").arg(_minLevels).arg(termStr).arg(nbLevels));
-				hasError = true;
-			}
-			else if (_maxLevels >= 0 && nbLevels > _maxLevels)
-			{
-				addControlErrorPermanent(tr("Maximum number of levels is %1. Variable %2 has %3 levels.").arg(_maxLevels).arg(termStr).arg(nbLevels));
-				hasError = true;
-			}
-			else if (_maxLevels < 0 && noScaleAllowed && termType == columnType::scale && nbLevels > maxScaleLevels)
-			{
-				// This is the case when a scale variable is transformed into a nominal or ordinal, and the variable has more than the default maximum number of levels
-				// This should not be checked if maxLevels is explicitly set (that is if _maxLevels >= 0)
-				addControlErrorPermanent(tr("Attempt to transform scale variable %1 into a %2 variable, but its number of levels %3 exceeds the maximum %4. If you still want to use this variable, either change its type, or change 'Maximum allowed levels for scale' in Preferences / Data menu")
-										 .arg(termStr).arg(columnTypeToQString(_allowedTypesModel->defaultType())).arg(nbLevels).arg(maxScaleLevels));
-				hasError = true;
-			}
-			else if (_minNumericLevels >= 0 && nbNumValues < _minNumericLevels)
-			{
-				addControlErrorPermanent(tr("Minimum number of numeric values is %1. Variable %2 has only %3 different numeric values").arg(_minNumericLevels).arg(termStr).arg(nbNumValues));
-				hasError = true;
-			}
-			else if (_maxNumericLevels >= 0 && nbNumValues > _maxNumericLevels)
-			{
-				addControlErrorPermanent(tr("Maximum number of numeric values is %1. Variable %2 has %3 different numeric values").arg(_maxNumericLevels).arg(termStr).arg(nbNumValues));
-				hasError = true;
-			}
-
-			if (hasError)
-				break;
-		}
-
-		if (!hasError)
-			clearControlError();
-	}
+	return checked;
 }
 
 QStringList JASPListControl::levels() const

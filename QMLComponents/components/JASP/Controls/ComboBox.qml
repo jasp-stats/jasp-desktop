@@ -29,6 +29,7 @@ ComboBoxBase
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
 	property double controlXOffset:			0
+	property bool	alignInGroup:			!setLabelAbove
 
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
 	

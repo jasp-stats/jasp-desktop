@@ -73,7 +73,7 @@ signals:
 	void fixedWidthChanged();
 
 protected slots:
-	void termsChangedHandler() override;
+	void termsChangedHandler()				override;
 	void setCurrentIndex(int index);
 	void setCurrentValue(QString value);
 	void setCurrentText(QString text);
@@ -82,6 +82,9 @@ protected slots:
 	GENERIC_SET_FUNCTION(StartValue,	_startValue,	startValueChanged,	QString	)
 
 protected:
+	bool _checkLevelsConstraints()			override;
+
+
 	ListModelLabelValueTerms*	_model					= nullptr;
 	QString						_currentText,
 								_currentValue,

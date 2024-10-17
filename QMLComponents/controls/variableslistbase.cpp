@@ -81,9 +81,6 @@ void VariablesListBase::setUp()
 	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
-	connect(_draggableModel,	&ListModelDraggable::termsChanged,					this, &VariablesListBase::levelsChanged					);
-	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::levelsChanged					);
-	connect(_draggableModel,	&ListModelDraggable::filterChanged,					this, &VariablesListBase::checkLevelsConstraints		);
 }
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
@@ -309,10 +306,7 @@ void VariablesListBase::setVariableType(int index, int type)
 
 void VariablesListBase::termsChangedHandler()
 {
-	setColumnsTypes(model()->termsTypes());
-	setColumnsNames(model()->terms().asQList());
-
-	checkLevelsConstraints();
+	JASPListControl::termsChangedHandler();
 
 	if (_boundControl)	_boundControl->resetBoundValue();
 }

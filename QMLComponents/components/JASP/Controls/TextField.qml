@@ -51,6 +51,8 @@ TextInputBase
 	property var	undoModel
 
 	property double controlXOffset:		0
+	property bool	alignInGroup:		true
+
 
 	signal editingFinished()	///< To get the entered value use `displayValue` in the slot instead of `value`
 	signal textEdited()
