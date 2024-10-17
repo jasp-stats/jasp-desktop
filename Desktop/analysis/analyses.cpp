@@ -305,8 +305,7 @@ void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
 
 void Analyses::refreshAnalysesOfDynamicModule(Modules::DynamicModule * module)
 {
-	//Log::log() << "void Analyses::refreshAnalysesOfDynamicModule(" << module->toString() << ")" << std::endl;
-
+	Log::log() << "void Analyses::refreshAnalysesOfDynamicModule(" << module->toString() << ")" << std::endl;
 
 	for(auto & keyval : _analysisMap)
 		if(keyval.second->dynamicModule() == module)
@@ -350,6 +349,13 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 
 	for(const int & id : removeIds)
 		removeAnalysisById(size_t(id));
+}
+
+void Analyses::reloadQmlAnalysesDynamicModule(Modules::DynamicModule * module)
+{
+	for(auto idAnalysis : _analysisMap)
+		if(idAnalysis.second->dynamicModule() == module)
+			idAnalysis.second->analysisQMLFileChanged();
 }
 
 void Analyses::refreshAllAnalyses()
