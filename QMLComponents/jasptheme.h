@@ -721,7 +721,7 @@ private:
 	theme_timeType		_hoverTime							=  400,
 						_fileMenuSlideDuration				=  150,
 						_toolTipDelay						=  500,
-						_toolTipTimeout						=60000;
+						_toolTipTimeout						= 5000;
 
 	QFont				_font,
 						_fontLink,
