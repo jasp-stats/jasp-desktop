@@ -557,6 +557,7 @@ void MainWindow::makeConnections()
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule						);
+	connect(_dynamicModules,		&DynamicModules::dynamicModuleQmlChanged,			_analyses,				&Analyses::reloadQmlAnalysesDynamicModule						);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleReplaced,				_analyses,				&Analyses::replaceAnalysesOfDynamicModule,					Qt::DirectConnection);
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule,			Qt::QueuedConnection);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);

@@ -78,6 +78,10 @@ public:
 	///This constructor is meant specifically for the development module and only *it*!
 	explicit DynamicModule(QObject * parent);
 
+	///This constructor is meant specifically for development modules initialized form a libpaths
+	explicit DynamicModule(QObject *parent, QString libpath);
+
+
 	~DynamicModule() override
 	{
 		for(auto * entry : _menuEntries)
@@ -165,6 +169,7 @@ public:
 	bool installing()	const { return _installing;		}
 	bool initialized()	const { return _initialized;	}
 	bool isBundled()	const { return _bundled;		}
+	bool isLibpathDevMod() const { return _isLibpathDevMod; }
 
 	void initialize();
 	void loadDescriptionQml(const QString		& descriptionTxt,	const QUrl		& url);
@@ -242,6 +247,7 @@ private:
 	bool				_installing			= false,
 						_installed			= false,
 						_isDeveloperMod		= false,
+						_isLibpathDevMod	= false,
 						_initialized		= false,
 						_bundled			= false,
 						_isCommon			= false,
@@ -253,6 +259,8 @@ private:
 
 	static std::string			_developmentModuleName;
 	static const std::string	_moduleDirPostfix;
+
+	QString patchLibPathHelperFunc(QString libpath);
 };
 
 
