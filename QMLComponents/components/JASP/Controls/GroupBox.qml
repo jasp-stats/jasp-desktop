@@ -105,7 +105,7 @@ GroupBoxBase
 		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
-			if (child.hasOwnProperty('controlType') && child.hasOwnProperty('controlXOffset'))//child.controlType === JASPControl.TextField)
+			if (child.hasOwnProperty('controlType') && child.hasOwnProperty('alignInGroup') && child.alignInGroup)
 				_allAlignableFields.push(child)
 		}
 

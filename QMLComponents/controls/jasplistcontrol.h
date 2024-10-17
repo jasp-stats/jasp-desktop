@@ -158,11 +158,13 @@ protected slots:
 			void					sourceChangedHandler();
 
 			void					setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
-			void					checkLevelsConstraints();
+			bool					checkLevelsConstraints();
 
 protected:
 	void							_setInitialized(const Json::Value& value = Json::nullValue)	override;
 	void							_setAllowedVariables();
+	virtual bool					_checkLevelsConstraints();
+	bool							_checkLevelsConstraintsForVariable(const QString& variable);
 
 	GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
 	GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)
