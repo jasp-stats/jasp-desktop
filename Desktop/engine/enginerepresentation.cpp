@@ -331,7 +331,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 
 	_lastRequestId			= filterStore->requestId;
 
-	QString dataFilter = filterStore->script == "" ? "*" : filterStore->script;
+	QString dataFilter = filterStore->script == "" ? "generatedFilter" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
 
 	Log::log() << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
