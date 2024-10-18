@@ -13,10 +13,15 @@ const QStringList JASPControl::_optionReservedNames = {"data", "version"};
 QMap<QQmlEngine*, QQmlComponent*> JASPControl::_mouseAreaComponentMap;
 QByteArray JASPControl::_mouseAreaDef = "\
 	import QtQuick\n\
+	import QtQuick.Controls\n\
 	MouseArea {\n\
 	z:					5\n\
 	anchors.fill:		parent\n\
 	acceptedButtons:	Qt.NoButton\n\
+	ToolTip.timeout:	jaspTheme.toolTipTimeout\n\
+	ToolTip.delay:		jaspTheme.toolTipDelay\n\
+	ToolTip.text:		parent ? parent.toolTip : ''\n\
+	ToolTip.visible:	ToolTip.text && containsMouse\n\
 }";
 
 QQmlComponent* JASPControl::getMouseAreaComponent(QQmlEngine* engine)
@@ -53,7 +58,6 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::indentChanged,			[this] () { QQmlProperty(this, "Layout.leftMargin", qmlContext(this)).write( (indent() && JaspTheme::currentTheme()) ? JaspTheme::currentTheme()->indentationLength() : 0); });
 	connect(this, &JASPControl::debugChanged,			[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
-	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_notifyFormOfActiveFocus);
@@ -707,7 +711,7 @@ JASPControl *JASPControl::parentListViewEx() const
 bool JASPControl::hovered() const
 {
 	if (_mouseAreaObj)
-		return _mouseAreaObj->property("hovered").toBool();
+		return _mouseAreaObj->property("containsMouse").toBool();
 	else
 		return false;
 }
