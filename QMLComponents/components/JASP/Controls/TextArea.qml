@@ -141,7 +141,7 @@ TextAreaBase
 				selectionColor:		jaspTheme.itemSelectedColor
 				font:				textArea.textType === JASP.TextTypeDefault || textArea.textType === JASP.TextTypeSource ? jaspTheme.font : jaspTheme.fontCode
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-				leftPadding:		!textArea.showLineNumber ? 0 : lineNumbers.width + 2 * jaspTheme.contentMargin
+				leftPadding:		!textArea.showLineNumber ? 2 * jaspTheme.contentMargin : lineNumbers.width + 2 * jaspTheme.contentMargin
 				
 				Component.onCompleted:
 				{
