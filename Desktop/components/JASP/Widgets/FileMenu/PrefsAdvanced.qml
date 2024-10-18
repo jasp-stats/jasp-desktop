@@ -140,9 +140,6 @@ ScrollView
 				KeyNavigation.tab:		githubPatCustomToken
 			}
 			
-
-				
-			
 			Item
 			{
 				id:			githubPatCustomTokenItem
@@ -170,7 +167,7 @@ ScrollView
 					text:				preferencesModel.githubPatCustom
 					onEditingFinished:	preferencesModel.githubPatCustom = text
 
-					nextEl:				generateMarkdown
+					nextEl:				directLibpathDevModEnabled
 					
 					height:				browseDeveloperFolderButton.height
 					anchors
@@ -182,7 +179,7 @@ ScrollView
 
 					textInput.echoMode:	TextInput.Password
 
-					KeyNavigation.tab:		generateMarkdown
+					KeyNavigation.tab:		directLibpathDevModEnabled
 				}
 			}				
 
@@ -196,6 +193,103 @@ ScrollView
 				visible:			preferencesModel.developerMode
 				KeyNavigation.tab:	cleanModulesFolder
 
+			}
+
+
+			CheckBox
+			{
+				id:					directLibpathDevModEnabled
+				label:				qsTr("Enable direct libpath mode")
+				checked:			preferencesModel.directLibpathEnabled
+				onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
+				toolTip:			qsTr("To use JASP Modules enable this option.")
+				visible:			preferencesModel.developerMode
+
+				KeyNavigation.tab:	directLibpathFolder
+			}
+
+			Item
+			{
+				id:					directLibpath
+				enabled:			preferencesModel.directLibpathEnabled
+				width:				parent.width
+				height:				cranRepoUrl.height
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+
+				Label
+				{
+					id:					directLibPathLabel
+					text:				qsTr("DevModule libpath:")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					directLibpathFolder
+
+					text:				preferencesModel.directLibpathFolder
+					onEditingFinished:	preferencesModel.directLibpathFolder = text
+
+					nextEl:				moduleName
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			directLibPathLabel.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	moduleName
+				}
+			}
+
+			Item {
+
+				id:					directDevMod
+				enabled:			preferencesModel.directLibpathEnabled
+				width:				parent.width
+				height:				cranRepoUrl.height
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+
+				Label
+				{
+					id:					directDevModName
+					text:				qsTr("Developer module name:")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					moduleName
+
+					text:				preferencesModel.directDevModName
+					onEditingFinished:	preferencesModel.directDevModName = text
+
+					nextEl:				cleanModulesFolder
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			directDevModName.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	cleanModulesFolder
+				}
 			}
 	
 			RoundedButton
