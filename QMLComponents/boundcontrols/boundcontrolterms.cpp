@@ -159,8 +159,6 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	Json::Value newValue = Json::objectValue;
 	newValue["value"] = valuePart;
 	newValue["types"] = typesPart;
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		newValue["optionKey"] = _optionKey;
 	BoundControlBase::bindTo(newValue);
 
 	_termsModel->initTerms(terms, allControlValues);
@@ -227,8 +225,6 @@ Json::Value BoundControlTerms::createJson() const
 			typesPart.append(columnTypeToString(term.type()));
 		}
 	}
-
-
 
 	Json::Value result = Json::objectValue;
 	result["value"] = valuePart;
@@ -331,8 +327,12 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 		if (_isValueWithTypes(value))
 			newValue = value;
 		else
+		{
 			newValue["value"] = value;
-		newValue["types"] = _getTypes();
+			newValue["types"] = _getTypes();
+		}
+		if (_listView->hasRowComponent() || _listView->containsInteractions())
+			newValue["optionKey"] = _optionKey;
 	}
 
 	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
