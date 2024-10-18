@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-10-18 03:19+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5295,19 +5301,19 @@ msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
-msgstr ""
+msgstr "公式没有返回一组逻辑值，因此不能在过滤器中使用。\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "欢迎使用拖放式筛选器！\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "点击图标更改变量类型"
 
 msgctxt "JASPColumn|"
 msgid "Transformed to"
-msgstr ""
+msgstr "变换为"
 
 #, qt-format
 msgctxt "FilterModel|"
@@ -5329,18 +5335,18 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::ChangeIncompatible|"
 msgid "Reset analysis because of '%1'"
-msgstr ""
+msgstr "由于“%1”而重置分析"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Column-name-is-free 字段"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "列“%1”已存在并且不是由此分析创建的。"
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "筛选器出现错误“%1”"
