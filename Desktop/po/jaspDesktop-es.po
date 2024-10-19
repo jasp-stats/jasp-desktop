@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-10-19 09:24+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5535,20 +5541,19 @@ msgstr "El filtro tuvo el fallo '%1'"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Ordenar automáticamente las etiquetas por su valor"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
-"El número mínimo de niveles es %1. La variable %2 tiene solo %3 niveles"
+msgstr "El número mínimo de niveles es %1. La variable %2 tiene solo %3 niveles"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
 msgstr "El número máximo de niveles es %1. La variable %2 tiene %3 niveles."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Attempt to transform scale variable %1 into a %2 variable, but its number of "
@@ -5561,7 +5566,7 @@ msgstr ""
 "variable, modifique su tipo o cambie 'Niveles de escala máximos permitidos' "
 "en el menú de Preferencias/Datos"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
@@ -5570,7 +5575,7 @@ msgstr ""
 "El número mínimo de valores numéricos es %1. La variable %2 tiene solo %3 "
 "valores numéricos diferentes"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
