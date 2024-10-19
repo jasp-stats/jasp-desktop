@@ -201,8 +201,8 @@ if(LINUX)
 
   # ---- FreeXL ----
   message(CHECK_START "Looking for `libfreexl`")
-    set(LIBFREEXL_INCLUDE_DIRS /usr/include)
-    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+    set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
+    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
 
   message(CHECK_START "Looking for libfreexl.so")
   find_library(LIBFREEXL_LIBRARIES libfreexl.so
