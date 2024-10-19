@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-10-18 03:19+0000\n"
-"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
-"projects/jasp/jaspdesktop/zh_Hans/>\n"
-"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8-rc\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -4991,22 +4985,6 @@ msgctxt "PrefsData|"
 msgid "Order labels by value by default"
 msgstr "默认按值对标签进行排序"
 
-msgctxt "LabelEditorWindow|"
-msgid "Automatically order labels by their numeric value"
-msgstr "按数值自动对标签进行排序"
-
-msgctxt "LabelEditorWindow|"
-msgid "Reverse order of the labels with non-numeric values"
-msgstr "反转非数字值的标签顺序"
-
-msgctxt "LabelEditorWindow|"
-msgid "Move selected non-numeric labels up"
-msgstr "将选中的非数值标签上移"
-
-msgctxt "LabelEditorWindow|"
-msgid "Move selected non-numeric labels down"
-msgstr "将选中的非数值标签下移"
-
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
 msgstr "调整数据大小"
@@ -5142,18 +5120,6 @@ msgid "No"
 msgstr "否"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr "最小水平数为 %1。变量 %2 仅有 %3 个水平"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
-"values"
-msgstr "数值的最大数量为 %1。变量 %2 有 %3 个不同的数值"
-
-#, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr "仅允许 %1 个变量"
@@ -5190,29 +5156,6 @@ msgid ""
 msgstr ""
 "对于某些变量仅接受名义或有序的分析，如果使用了连续变量，JASP 会检查该变量的水"
 "平数是否超出此最大值。"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr "最大水平数仅允许 %1。变量 %2 有 %3 个水平。"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Attempt to transform scale variable %1 into a %2 variable, but its number of "
-"levels %3 exceeds the maximum %4. If you still want to use this variable, "
-"either change its type, or change 'Maximum allowed levels for scale' in "
-"Preferences / Data menu"
-msgstr ""
-"尝试将连续变量 %1 转换为 %2 变量，但其水平数 %3 超出最大值 %4。如果您仍想使用"
-"此变量，请更改其度量类型，或在“首选项/数据”菜单中更改“连续变量允许的最大水平”"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Minimum number of numeric values is %1. Variable %2 has only %3 different "
-"numeric values"
-msgstr "数值的最小数量为 %1。变量 %2 仅有 %3 个不同的数值"
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
@@ -5316,23 +5259,6 @@ msgid "Transformed to"
 msgstr "变换为"
 
 #, qt-format
-msgctxt "FilterModel|"
-msgid ""
-"Above you see the code that JASP generates for both value filtering and the "
-"drag&drop filter.\n"
-"This default result is stored in 'generatedFilter' and can be replaced or "
-"combined with a custom filter.\n"
-"To combine you can append clauses using '&': '%1 & customFilter & "
-"perhapsAnotherFilter'\n"
-"Click the (i) icon in the lower right corner for further help.\n"
-msgstr ""
-"在上方您可以看到 JASP 为值筛选和拖放式筛选器生成的代码。\n"
-"此默认结果存储在“generatedFilter”中，可以用定义筛选器替换或组合。\n"
-"要组合，您可以使用 '&' 附加子句： ' %1 & customFilter & "
-"perhapsAnotherFilter'\n"
-"单击右下角的 (i) 图标可获取帮助信息。\n"
-
-#, qt-format
 msgctxt "Modules::ChangeIncompatible|"
 msgid "Reset analysis because of '%1'"
 msgstr "由于“%1”而重置分析"
@@ -5350,3 +5276,53 @@ msgstr "列“%1”已存在并且不是由此分析创建的。"
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
 msgstr "筛选器出现错误“%1”"
+
+msgctxt "LabelEditorWindow|"
+msgid "Automatically order labels by their value"
+msgstr ""
+
+msgctxt "FilterModel|"
+msgid ""
+"Above you see the code that JASP generates for both value filtering and the "
+"drag&drop filter.\n"
+"This default result is stored in 'generatedFilter' and can be replaced or "
+"combined with a custom filter.\n"
+"To combine you can append clauses using '&': 'generatedFilter & customFilter "
+"& perhapsAnotherFilter'\n"
+"Click the (i) icon in the lower right corner for further help.\n"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr "最小水平数为 %1。变量 %2 仅有 %3 个水平"
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
+msgstr "最大水平数仅允许 %1。变量 %2 有 %3 个水平。"
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Attempt to transform scale variable %1 into a %2 variable, but its number of "
+"levels %3 exceeds the maximum %4. If you still want to use this variable, "
+"either change its type, or change 'Maximum allowed levels for scale' in "
+"Preferences / Data menu"
+msgstr ""
+"尝试将连续变量 %1 转换为 %2 变量，但其水平数 %3 超出最大值 %4。如果您仍想使用"
+"此变量，请更改其度量类型，或在“首选项/数据”菜单中更改“连续变量允许的最大水平”"
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Minimum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr "数值的最小数量为 %1。变量 %2 仅有 %3 个不同的数值"
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr "数值的最大数量为 %1。变量 %2 有 %3 个不同的数值"

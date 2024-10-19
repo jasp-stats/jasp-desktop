@@ -5112,22 +5112,6 @@ msgctxt "PrefsData|"
 msgid "Order labels by value by default"
 msgstr "デフォルトで値でラベルを並び替える"
 
-msgctxt "LabelEditorWindow|"
-msgid "Automatically order labels by their numeric value"
-msgstr "数値で自動的にラベルを並び替える"
-
-msgctxt "LabelEditorWindow|"
-msgid "Reverse order of the labels with non-numeric values"
-msgstr "数値以外のラベルを逆順にする"
-
-msgctxt "LabelEditorWindow|"
-msgid "Move selected non-numeric labels up"
-msgstr "選択した数字以外のラベルを上に移動する"
-
-msgctxt "LabelEditorWindow|"
-msgid "Move selected non-numeric labels down"
-msgstr "選択した数字以外のラベルを下に移動する"
-
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
 msgstr "データのサイズ変更"
@@ -5269,18 +5253,6 @@ msgid "No"
 msgstr "いいえ"
 
 #, qt-format
-msgctxt "VariablesListBase|"
-msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr "水準%1の最小値、変数%2は、%3 水準のみもつ"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
-"values"
-msgstr "数値%1の最大値、変数%2は、%3 の異なる数値をもつ"
-
-#, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr "%1変数のみ許可されている"
@@ -5314,27 +5286,6 @@ msgid ""
 "For analysis accepting only nominal or ordinal for some variables, if a "
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Attempt to transform scale variable %1 into a %2 variable, but its number of "
-"levels %3 exceeds the maximum %4. If you still want to use this variable, "
-"either change its type, or change 'Maximum allowed levels for scale' in "
-"Preferences / Data menu"
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid ""
-"Minimum number of numeric values is %1. Variable %2 has only %3 different "
-"numeric values"
 msgstr ""
 
 msgctxt "AsyncLoader|"
@@ -5438,19 +5389,18 @@ msgctxt "JASPColumn|"
 msgid "Transformed to"
 msgstr ""
 
-#, qt-format
 msgctxt "FilterModel|"
 msgid ""
 "Above you see the code that JASP generates for both value filtering and the "
 "drag&drop filter.\n"
 "This default result is stored in 'generatedFilter' and can be replaced or "
 "combined with a custom filter.\n"
-"To combine you can append clauses using '&': 'generatedFilter & customFilter & "
-"perhapsAnotherFilter'\n"
+"To combine you can append clauses using '&': 'generatedFilter & customFilter "
+"& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
-"上記のコードでは、JASPが値フィルタリングとドラッグ＆ドロップフィルタの両方"
-"を生成しています。\n"
+"上記のコードでは、JASPが値フィルタリングとドラッグ＆ドロップフィルタの両方を"
+"生成しています。\n"
 "このデフォルトの結果は'generatedFilter'に保存され、カスタムフィルターと置き換"
 "えたり、 組み合わせたりすることができます。\n"
 "組み合わせるには'&'を使って節を追加します: 'generatedFilter & customFilter & "
@@ -5475,3 +5425,40 @@ msgstr ""
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
 msgstr ""
+
+msgctxt "LabelEditorWindow|"
+msgid "Automatically order labels by their value"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
+msgstr "水準%1の最小値、変数%2は、%3 水準のみもつ"
+
+#, qt-format
+msgctxt "JASPListControl|"
+msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
+msgstr ""
+
+#, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Attempt to transform scale variable %1 into a %2 variable, but its number of "
+"levels %3 exceeds the maximum %4. If you still want to use this variable, "
+"either change its type, or change 'Maximum allowed levels for scale' in "
+"Preferences / Data menu"
+msgstr ""
+
+#, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Minimum number of numeric values is %1. Variable %2 has only %3 different "
+"numeric values"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
+"values"
+msgstr "数値%1の最大値、変数%2は、%3 の異なる数値をもつ"
