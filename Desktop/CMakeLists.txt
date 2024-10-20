@@ -148,7 +148,7 @@ target_link_libraries(
     OpenSSL::Crypto
     # FreeXL
     ${LIBFREEXL_LIBRARIES}
-    $<$<NOT:$<BOOL:${LINUX_LOCAL_BUILD}>>:freexl::freexl>
+    $<$<NOT:$<BOOL:${LINUX}>>:freexl::freexl>
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
     # MinGW's ReadStat
