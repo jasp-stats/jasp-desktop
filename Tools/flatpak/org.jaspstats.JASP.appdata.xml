@@ -27,7 +27,7 @@
 	<screenshots>
 		<screenshot type="default">
 			<caption xml:lang="en-GB">Shows JASP Descriptives</caption>
-			<image type="source" width="965" height="685">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/lockfiletesting/Tools/flatpak/flatpak_screenshot_0_small.png</image>
+			<image type="source" width="965" height="685">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/flatpak_screenshot_0_small.png</image>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
@@ -38,6 +38,13 @@
   <color type="primary" scheme_preference="dark">#14a1e3</color>
   </branding>
 	<releases>
+        <release version="0.19.1" date="2024-09-10">
+          <description>
+0.19.1 (September 10th 2024)
+    Bug Fixes:
+        Filter being ignored in Levels constraint checks (https://github.com/jasp-stats/jasp-issues/issues/2853)
+          </description>
+        </release>
             <release version="0.19.0" date="2024-07-15">
                 <description>
 0.19.0 (July 15th 2024)
