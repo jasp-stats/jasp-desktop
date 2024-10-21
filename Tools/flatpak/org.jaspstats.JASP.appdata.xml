@@ -38,6 +38,11 @@
   <color type="primary" scheme_preference="dark">#14a1e3</color>
   </branding>
 	<releases>
+	<release version="0.19.2" date="2024-10-21">
+                <description>
+Beta
+                </description>
+        </release>
         <release version="0.19.1" date="2024-09-10">
           <description>
 0.19.1 (September 10th 2024)
