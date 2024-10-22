@@ -6,6 +6,7 @@ Sys.setenv(R_HOME					="@R_HOME_PATH@") #Some configure scripts need R_HOME (Im 
 Sys.setenv(GITHUB_PAT				="@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT			="@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE			="@MODULES_RENV_CACHE_PATH@")
+Sys.setenv(RENV_SANDBOX_LOCKING_ENABLED = FALSE)
 Sys.setenv(JASPENGINE_LOCATION		="@JASP_ENGINE_PATH@/JASPEngine")
 Sys.setenv(JAGS_PREFIX				="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR			="@jags_INCLUDE_DIRS@")
