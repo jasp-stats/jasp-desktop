@@ -74,7 +74,8 @@ renv::restore(
 	library  = JASPMODULEINSTALLER_LIBRARY,
 	lockfile = file.path(ENGINE, "jaspModuleInstaller", "renv.lock"),
 	exclude  = "jaspModuleInstaller", # otherwise "clean" would remove jaspModuleInstaller
-	clean    = TRUE
+	clean    = TRUE,
+ 	repos    =  "http://cloud.r-project.org"
 )
 
 print("Installing jaspModuleInstaller")
