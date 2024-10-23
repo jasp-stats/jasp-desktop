@@ -809,7 +809,7 @@ void Column::labelsRemoveBeyond(size_t indexToStartRemoving)
 	for(size_t i=indexToStartRemoving; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	_labels.resize(indexToStartRemoving);
+	_labels.resize(indexToStartRemoving > 0 ? indexToStartRemoving-1 : 0);
 	
 	_resetLabelValueMap();
 }
