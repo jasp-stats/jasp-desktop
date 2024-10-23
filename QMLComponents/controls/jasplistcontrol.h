@@ -110,7 +110,7 @@ public:
 			bool					allowAnalysisOwnComputedColumns()	const	{ return _allowAnalysisOwnComputedColumns;	}
 			bool					isTypeAllowed(columnType type)		const;
 			columnType				defaultType()						const;
-			columnTypeVec			valueTypes()						const;
+			Json::Value				valueTypes()						const;
 	const	QStringList			&	columnsTypes()						const	{ return _columnsTypes;						}
 	const	QStringList			&	columnsNames()						const	{ return _columnsNames;						}
 	QAbstractListModel			*	allowedTypesModel();

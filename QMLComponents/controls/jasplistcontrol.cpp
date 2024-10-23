@@ -296,12 +296,35 @@ std::vector<std::string> JASPListControl::usedVariables() const
 	else												return {};
 }
 
-columnTypeVec JASPListControl::valueTypes() const
+Json::Value JASPListControl::valueTypes() const
 {
-	columnTypeVec types;
+	Json::Value types(Json::arrayValue);
+	std::map<std::string, std::string> variableTypeMap;
+	static columnType unknownType = columnType::unknown;
+
+	// An interaction term has components that can be variables: if the model contains also such variables, the interaction term should get the same types.
+	// So first check which terms have only 1 component: these terms might be variable names, so keep in a map their types. Use then this map to set the type for interaction terms.
+	for (const Term& term : model()->terms())
+		if (term.components().size() == 1)
+			variableTypeMap[term.asString()] = columnTypeToString(term.type());
 
 	for (const Term& term : model()->terms())
-		types.push_back(term.type());
+	{
+		if (term.components().size() == 1)
+			types.append(columnTypeToString(term.type()));
+		else
+		{
+			Json::Value compTypes(Json::arrayValue);
+			for (const std::string& component : term.scomponents())
+			{
+				if (variableTypeMap.count(component) > 0)
+					compTypes.append(variableTypeMap[component]);
+				else
+					compTypes.append(columnTypeToString(unknownType));
+			}
+			types.append(compTypes);
+		}
+	}
 
 	return types;
 }

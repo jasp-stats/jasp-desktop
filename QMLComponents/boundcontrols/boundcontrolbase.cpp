@@ -46,35 +46,6 @@ Json::Value BoundControlBase::createMeta()  const
 	return meta;
 }
 
-bool BoundControlBase::setValueType()
-{
-	bool hasChanges = false;
-	AnalysisForm* form = _control->form();
-
-	if (_control->encodeValue())
-	{
-		JASPListControl* listControl = qobject_cast<JASPListControl*>(_control);
-		if (listControl)
-		{
-			Json::Value jsonTypesOrg = form->boundValue(getName() + ".types", _control->getParentKeys());
-
-			columnTypeVec types = listControl->valueTypes();
-			Json::Value jsonTypes(Json::arrayValue);
-
-			for (columnType type : types)
-				jsonTypes.append(columnTypeToString(type));
-
-			if (jsonTypes != jsonTypesOrg)
-			{
-				form->setBoundValue(getName() + ".types", jsonTypes, Json::nullValue, _control->getParentKeys());
-				hasChanges = true;
-			}
-		}
-	}
-
-	return hasChanges;
-}
-
 void BoundControlBase::handleComputedColumn(const Json::Value& value)
 {
 	if (_isColumn && value.isString())
