@@ -36,7 +36,7 @@ void Application::init(QString filePath, bool newData, bool unitTest, int timeOu
 
 	_mainWindow = new MainWindow(this);
 
-	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [&, newData, unitTest, filePath, dbJson]() {
+	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=]() {
 		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
 		// But to correctly work, the following calls need the QML files to be loaded.
 		if (newData)
