@@ -307,17 +307,6 @@ void BoundControlTerms::resetBoundValue()
 	}
 }
 
-Json::Value BoundControlTerms::_getTypes() const
-{
-	columnTypeVec types = _listView->valueTypes();
-	Json::Value jsonTypes(Json::arrayValue);
-
-	for (columnType type : types)
-		jsonTypes.append(columnTypeToString(type));
-
-	return jsonTypes;
-}
-
 void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges)
 {
 	Json::Value newValue;
@@ -329,7 +318,10 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 		else
 		{
 			newValue["value"] = value;
-			newValue["types"] = _getTypes();
+			Json::Value types = _listView->valueTypes();
+			if (_isSingleRow && types.isArray() && types.size() > 0)
+				types = types[0];
+			newValue["types"] = types;
 		}
 		if (_listView->hasRowComponent() || _listView->containsInteractions())
 			newValue["optionKey"] = _optionKey;
