@@ -1,29 +1,26 @@
 #include "otoolstuff.h"
 #include "stringutils.h"
-#include "rbridge.h"
 #include <fstream>
 #include <boost/algorithm/string/predicate.hpp>
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>
+#include <filesystem>
 
 std::string _system(std::string cmd)
 {
-	const char *root, *relativePath;
-
-	if (!rbridge_requestTempFileName("log", &root, &relativePath))
+	auto path = std::filesystem::temp_directory_path() / "jaspTmpSystem";
+	std::ofstream ofs(path , std::ofstream::out);
+	if (!ofs.is_open())
 		throw std::runtime_error("Cannot open output file for separate R/System cmd!");
-
-	std::string path = std::string(root) + "/" + relativePath;
-
-	cmd += " > " + path + " 2>&1 ";
+	cmd += " > " + path.generic_string() + " 2>&1 ";
 
 #ifdef WIN32
 	cmd = '"' + cmd + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
 #endif
 
 	system(cmd.c_str());
-
+	ofs.close();
 	std::ifstream readLog(path);
 	std::stringstream out;
 
@@ -36,7 +33,7 @@ std::string _system(std::string cmd)
 	return out.str();
 }
 
-void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff)
+void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff, bool devMod)
 {
 	using namespace boost;
 
@@ -117,17 +114,27 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					{"/opt/X11/lib",												framework_resources + "opt/X11/lib"},
 				};
 
-				// Known fix library id's and paths 
-				const std::map<std::string, std::string> ids_to_be_replaced =
-				{
-					{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
-					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
-					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+				// Known fix library id's and paths
+				std::map<std::string, std::string> ids_to_be_replaced;
+				if(devMod) {
+					ids_to_be_replaced = {
 #ifndef __aarch64__
-					,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+					{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
 					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
 #endif
-				};
+						};
+				}
+				else {
+					ids_to_be_replaced = {
+						{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
+						{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
+						{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+#ifndef __aarch64__
+						,{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+						,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+#endif
+					};
+				}
 
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
 				{
@@ -188,13 +195,16 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				
 			}
 
-			std::cout << "Signing the modified library\n";
-			const std::string sign_command = "codesign --force --deep --verbose=4 --timestamp --sign \"" + AppInfo::getSigningIdentity() + "\" " + path.string();
+			if(!devMod)
+			{
+				std::cout << "Signing the modified library\n";
+				const std::string sign_command = "codesign --force --deep --verbose=4 --timestamp --sign \"" + AppInfo::getSigningIdentity() + "\" " + path.string();
 
-			if (printStuff)
-				std::cout << sign_command << std::endl;
+				if (printStuff)
+					std::cout << sign_command << std::endl;
 
-			_system(sign_command);
+				_system(sign_command);
+			}
 		}
 	}
 	catch(std::filesystem::filesystem_error & error)

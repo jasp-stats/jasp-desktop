@@ -124,6 +124,7 @@ public slots:
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void replaceAnalysesOfDynamicModule(Modules::DynamicModule * oldModule, Modules::DynamicModule * newModule);
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
+	void reloadQmlAnalysesDynamicModule(Modules::DynamicModule * module);
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);
 	void setCurrentFormPrevH(double currentFormPrevH);
