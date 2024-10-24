@@ -119,8 +119,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				if(devMod) {
 					ids_to_be_replaced = {
 #ifndef __aarch64__
-							{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
-							,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
+					{"libgfortran.dylib",					framework_resources + "opt/local/gfortran/lib/libgfortran.dylib"}
+					,{"libquadmath.dylib",					framework_resources + "opt/local/gfortran/lib/libquadmath.dylib"}
 #endif
 						};
 				}
