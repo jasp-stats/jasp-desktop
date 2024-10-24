@@ -804,13 +804,13 @@ strintmap Column::labelsResetValues(int & maxValue)
 	return result;
 }
 
-void Column::labelsRemoveBeyond(size_t indexToStartRemoving)
+void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 {
-	for(size_t i=indexToStartRemoving; i<_labels.size(); i++)
+	for(size_t i=desiredLabelsSize; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	_labels.resize(indexToStartRemoving > 0 ? indexToStartRemoving-1 : 0);
-	
+	_labels.resize(desiredLabelsSize);
+
 	_resetLabelValueMap();
 }
 
