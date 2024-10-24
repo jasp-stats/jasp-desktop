@@ -154,9 +154,9 @@ public:
             Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl = NAN);
 			bool					replaceDoubleLabelFromRowWithDouble(size_t row, double dbl); ///< Returns true if succes
 
-			void					labelValueChanged(Label * label,	double aDouble,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
-			void					labelValueChanged(Label * label,	int	anInteger,	const Json::Value & previousOriginal) { labelValueChanged(label, double(anInteger), previousOriginal); }
-			void					labelDisplayChanged(Label * label,	const std::string & previousDisplay);
+			void					labelValueChanged(		Label * label,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
+			void					labelDisplayChanged(	Label * label,	const std::string & previousDisplay);
+			void					labelValDisplayChanged(	Label * label,	const std::string & previousDisplay,	const Json::Value & previousOriginal);
 			
 			bool					setStringValue(				size_t row, const std::string & value, const std::string & label = "", bool writeToDB = true); ///< Does two things, if label=="" it will handle user input, as value or label depending on columnType. Otherwise it will simply try to use userEntered as a value. But this will trigger the setting of type
 			bool					setValue(					size_t row, const std::string & value, const std::string & label,	bool writeToDB = true);

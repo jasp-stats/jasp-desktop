@@ -952,19 +952,22 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		aChange = true;
 	}
 	
-	//If the user is changing the value of a column to a string we want the display/label to also change if its the same
-	//to a double/int however might mean recoding so it would be a bit impractical to have the label dissappear
-	if(	label->originalValueAsString(false) == label->labelDisplay())
 	{
-		if(!originalValue.isDouble())
-			aChange = label->setLabel(originalValue.asString()) || aChange;
+		// Here we will overwrite the original value with the new origval.
+		// but if the label is the same as the original value we want to make the users life easier and replace it as well.
+		// this makes sense if the user is changing a string or number. But if the user is recoding, so turning values from str => dbl
+		// then we dont want to do this, because then the label should be different afterwards.
 		
-		else if(label->originalValue().isDouble())
-				label->setLabel(column->doubleToDisplayString(originalValue.asDouble(), false));
+		//summarized:
+		// if orgval == label then: 
+		// if (oldorigval == dbl && newOrigVal == dbl) || (olorigval != dbl && newOrigVal != dbl)  then replace both
+		// if neworigval == dbl and oldorigval != dbl then replace only value
 		
+		if(	label->originalValueAsString(false) != label->labelDisplay() || (originalValue.isDouble() && !label->originalValue().isDouble()))
+			aChange = label->setOriginalValue(originalValue) || aChange;
+		else 
+			aChange = label->setOrigValLabel(originalValue) || aChange;
 	}
-	
-	aChange = label->setOriginalValue(originalValue) || aChange;
 	
 	column->labelsHandleAutoSort();
 	

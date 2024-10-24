@@ -1385,7 +1385,7 @@ bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
 	return true;
 }
 
-void Column::labelValueChanged(Label *label, double aDouble, const Json::Value & previousOriginal)
+void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
 	auto oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), label->labelDisplay());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
@@ -1398,17 +1398,11 @@ void Column::labelValueChanged(Label *label, double aDouble, const Json::Value &
 	//And that its new location is free:
 	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
 
-	//Lets assume that all occurences of a label in _dbls are the same.
-	//So when we encounter one that is the same as what is passed here we can return immediately
+	double theDouble = label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	
 	for(size_t r=0; r<_dbls.size(); r++)
 		if(_ints[r] == label->intsId())
-		{
-			if(Utils::isEqual(_dbls[r], aDouble))
-				return;
-			
-			_dbls[r] = aDouble;
-		}
-	
+			_dbls[r] = theDouble;
 
 	_labelByValDis.erase(oldValDis);
 	_labelByValDis[label->origValDisplay()] = label;
@@ -1455,6 +1449,37 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 	
 	//So we know that label is about to trigger an incRevision for the column through dbUpdate and checkForChanges
 	_labelsTempRevision++;
+}
+
+void Column::labelValDisplayChanged(Label *label, const std::string &previousDisplay, const Json::Value &previousOriginal)
+{
+	auto	oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), previousDisplay),
+			newValDis	= std::make_pair(label->originalValueAsString(), label->labelDisplay());
+	bool	merged		= _labelByValDis.count(label->origValDisplay()) != 0;
+	
+	if(merged)
+		labelsMergeDuplicateInto(label);
+	
+	//Make sure it was registered before:
+	assert(_labelByValDis[oldValDis] == label);
+	//And that its new location is free:
+	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
+
+	double newOrigValDbl = label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	
+	//Lets assume that all occurences of a label in _dbls are the same.
+	//So when we encounter one that is the same as what is passed here we can return immediately
+	for(size_t r=0; r<_dbls.size(); r++)
+		if(_ints[r] == label->intsId())
+			_dbls[r] = newOrigValDbl;
+	
+	_labelByValDis.erase(oldValDis);
+	_labelByValDis[label->origValDisplay()] = label;
+
+	if(merged)
+		_dbUpdateLabelOrder();
+	
+	dbUpdateValues();
 }
 
 Label * Column::labelByRow(int row) const

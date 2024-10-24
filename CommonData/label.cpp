@@ -147,18 +147,42 @@ bool Label::setLabel(const std::string & label)
 	return false;
 }
 
-bool Label::setOriginalValue(const Json::Value & originalLabel)
+bool Label::setOriginalValue(const Json::Value & originalValue)
 {
-	if(_originalValue != originalLabel)
+	if(_originalValue != originalValue)
 	{
-		Json::Value previous = _originalValue;
-		_originalValue = originalLabel;
+		Json::Value previous	= _originalValue;
+		_originalValue			= originalValue;
 		dbUpdate();
 		
-		if(_originalValue.isDouble())	_column->labelValueChanged(this, _originalValue.asDouble(),			previous);
-		else if(_originalValue.isInt())	_column->labelValueChanged(this, _originalValue.asInt(),			previous);
-		else							_column->labelValueChanged(this, EmptyValues::missingValueDouble,	previous);
+		_column->labelValueChanged(this, previous);
 		
+		return true;
+	}
+	return false;
+}
+
+bool Label::setOrigValLabel(const Json::Value &originalValue)
+{
+	std::string oldLabel	= _label,
+				newLabel	= !originalValue.isDouble() ? originalValue.asString() : _column->doubleToDisplayString(originalValue.asDouble(), false, false);
+	Json::Value previous	= _originalValue;
+	bool		labelChange = _label			!= newLabel,
+				valChange	= _originalValue	!= originalValue,
+				aChange		= labelChange		|| valChange;
+	
+	if(labelChange)
+		_label = newLabel;
+	
+	if(valChange)
+		_originalValue			= originalValue;
+	
+	
+	if(aChange)
+	{
+		dbUpdate();
+	
+		_column->labelValDisplayChanged(this, oldLabel, previous);
 		return true;
 	}
 	return false;
