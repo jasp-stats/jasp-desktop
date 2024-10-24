@@ -1290,14 +1290,12 @@ void DatabaseInterface::labelsLoad(Column * column)
 
 		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
 			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
-		
-		if(column->labels().size() == row)	column->labelsAdd(value, label, filterAllows, description, originalValueJson, order, id);
-		else								column->labels()[row]->setInformation(column, id, order, label, value, filterAllows, description, originalValueJson);
 
+		column->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id);
 	};
 
 	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
-	
+
 	column->labelsRemoveBeyond(labelsSize);
 	 
 	column->endBatchedLabelsDB(false);

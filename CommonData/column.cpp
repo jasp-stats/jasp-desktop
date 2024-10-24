@@ -62,7 +62,7 @@ void Column::dbLoad(int id, bool getValues)
 	
 	_emptyValues->fromJson(emptyVals);
 
-	labelsTempReset();
+	_resetLabelValueMap();
 	db().labelsLoad(this);
 	
 	if(getValues)
@@ -721,6 +721,17 @@ int Column::labelsAdd(const std::string & display, const std::string & descripti
 	return labelsAdd(++_highestIntsId, display, true, description, originalValue);
 }
 
+int Column::_labelMapIt(Label * label)
+{
+	_labelByIntsIdMap[label->intsId()]		= label;
+	_labelByValDis[label->origValDisplay()]	= label;
+
+	_highestIntsId = std::max(_highestIntsId, label->intsId());
+
+	_dbUpdateLabelOrder(true);
+	return label->intsId();
+}
+
 int Column::labelsAdd(int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
 {
 	JASPTIMER_SCOPE(Column::labelsAdd lotsa arg);
@@ -733,13 +744,36 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
 	
-	_labelByIntsIdMap[label->intsId()]	= label;
-	_labelByValDis[valDisplay]			= label;
+	return _labelMapIt(label);
+}
 
-	_highestIntsId = std::max(_highestIntsId, label->intsId());
+int Column::labelsSet(int labelIndex, int value, const std::string &display, bool filterAllows, const std::string &description, const Json::Value &originalValue, int order, int id)
+{
+	JASPTIMER_SCOPE(Column::labelsSet);
 
-	_dbUpdateLabelOrder(true);
-	return label->intsId();
+	Label * label = nullptr;
+	if(_labels.size() > labelIndex)
+	{
+		label = _labels[labelIndex];
+		label->setInformation(this, id, order, display, value, filterAllows, description, originalValue);
+	}
+	else
+	{
+		if(_labels.size() != labelIndex)
+			Log::log() << "Labels are not being set in a sensible order it seems." << std::endl;
+
+		if(id == -1)
+			Log::log() << "This functions expects a label to be set from the DB, so why is dbId -1?" << std::endl;
+
+		if(_labels.size() < labelIndex+1)
+			_labels			. resize(labelIndex+1);
+		_labels[labelIndex]	= new Label(this, display, value, filterAllows, description, originalValue, order, id);
+		label				= _labels[labelIndex];
+	}
+
+	assert(label);
+
+	return _labelMapIt(label);
 }
 
 void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder)
@@ -809,7 +843,8 @@ void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 	for(size_t i=desiredLabelsSize; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	_labels.resize(desiredLabelsSize);
+	if(desiredLabelsSize < _labels.size())
+		_labels.resize(desiredLabelsSize);
 
 	_resetLabelValueMap();
 }
@@ -1350,7 +1385,7 @@ bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
 	return true;
 }
 
-void Column::labelValueChanged(Label *label, double aDouble, const Json::Value & previousOriginal)
+void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
 	auto oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), label->labelDisplay());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
@@ -1363,17 +1398,11 @@ void Column::labelValueChanged(Label *label, double aDouble, const Json::Value &
 	//And that its new location is free:
 	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
 
-	//Lets assume that all occurences of a label in _dbls are the same.
-	//So when we encounter one that is the same as what is passed here we can return immediately
+	double theDouble = label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	
 	for(size_t r=0; r<_dbls.size(); r++)
 		if(_ints[r] == label->intsId())
-		{
-			if(Utils::isEqual(_dbls[r], aDouble))
-				return;
-			
-			_dbls[r] = aDouble;
-		}
-	
+			_dbls[r] = theDouble;
 
 	_labelByValDis.erase(oldValDis);
 	_labelByValDis[label->origValDisplay()] = label;
@@ -1420,6 +1449,37 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 	
 	//So we know that label is about to trigger an incRevision for the column through dbUpdate and checkForChanges
 	_labelsTempRevision++;
+}
+
+void Column::labelValDisplayChanged(Label *label, const std::string &previousDisplay, const Json::Value &previousOriginal)
+{
+	auto	oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), previousDisplay),
+			newValDis	= std::make_pair(label->originalValueAsString(), label->labelDisplay());
+	bool	merged		= _labelByValDis.count(label->origValDisplay()) != 0;
+	
+	if(merged)
+		labelsMergeDuplicateInto(label);
+	
+	//Make sure it was registered before:
+	assert(_labelByValDis[oldValDis] == label);
+	//And that its new location is free:
+	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
+
+	double newOrigValDbl = label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
+	
+	//Lets assume that all occurences of a label in _dbls are the same.
+	//So when we encounter one that is the same as what is passed here we can return immediately
+	for(size_t r=0; r<_dbls.size(); r++)
+		if(_ints[r] == label->intsId())
+			_dbls[r] = newOrigValDbl;
+	
+	_labelByValDis.erase(oldValDis);
+	_labelByValDis[label->origValDisplay()] = label;
+
+	if(merged)
+		_dbUpdateLabelOrder();
+	
+	dbUpdateValues();
 }
 
 Label * Column::labelByRow(int row) const

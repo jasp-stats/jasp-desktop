@@ -57,6 +57,7 @@ public:
 			void				setDbId(			int id) { _dbId = id; }
 			bool				setLabel(			const std::string & label);
 			bool				setOriginalValue(	const Json::Value & originalValue);
+			bool				setOrigValLabel(	const Json::Value & originalValue);
 			bool				setDescription(		const std::string & description);
 			bool				setFilterAllows(	bool allowFilter);
 			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
