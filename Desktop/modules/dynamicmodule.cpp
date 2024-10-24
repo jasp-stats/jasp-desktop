@@ -105,7 +105,7 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 }
 
 
-///This constructor is meant specifically for the development module from a libpath *it*!
+///This constructor is meant specifically for the development module from a libpath
 DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent), _isDeveloperMod(true), _isLibpathDevMod(true)
 {
 	libpath = patchLibPathHelperFunc(libpath);
