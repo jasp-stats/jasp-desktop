@@ -719,6 +719,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 						setManualEdits(true); //Don't synch with external file after editing
 						
 						column->labelsRemoveOrphans();
+						column->labelsTempReset();
 						column->labelsHandleAutoSort();
 
 						stringvec	changedCols = {column->name()};
@@ -2195,8 +2196,8 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 	{
 		changed.push_back(column->name());
 		
-		if(row+count > column->rowCount())
-			Log::log() << "???" << std::endl;
+		//if(row+count > column->rowCount())
+		//	Log::log() << "???" << std::endl;
 	
 		for(int r=row+count; r>row; r--)
 			column->rowDelete(r-1);

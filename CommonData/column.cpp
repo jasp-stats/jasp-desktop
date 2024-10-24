@@ -62,7 +62,7 @@ void Column::dbLoad(int id, bool getValues)
 	
 	_emptyValues->fromJson(emptyVals);
 
-	labelsTempReset();
+	_resetLabelValueMap();
 	db().labelsLoad(this);
 	
 	if(getValues)
@@ -721,6 +721,17 @@ int Column::labelsAdd(const std::string & display, const std::string & descripti
 	return labelsAdd(++_highestIntsId, display, true, description, originalValue);
 }
 
+int Column::_labelMapIt(Label * label)
+{
+	_labelByIntsIdMap[label->intsId()]		= label;
+	_labelByValDis[label->origValDisplay()]	= label;
+
+	_highestIntsId = std::max(_highestIntsId, label->intsId());
+
+	_dbUpdateLabelOrder(true);
+	return label->intsId();
+}
+
 int Column::labelsAdd(int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
 {
 	JASPTIMER_SCOPE(Column::labelsAdd lotsa arg);
@@ -733,13 +744,36 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
 	
-	_labelByIntsIdMap[label->intsId()]	= label;
-	_labelByValDis[valDisplay]			= label;
+	return _labelMapIt(label);
+}
 
-	_highestIntsId = std::max(_highestIntsId, label->intsId());
+int Column::labelsSet(int labelIndex, int value, const std::string &display, bool filterAllows, const std::string &description, const Json::Value &originalValue, int order, int id)
+{
+	JASPTIMER_SCOPE(Column::labelsSet);
 
-	_dbUpdateLabelOrder(true);
-	return label->intsId();
+	Label * label = nullptr;
+	if(_labels.size() > labelIndex)
+	{
+		label = _labels[labelIndex];
+		label->setInformation(this, id, order, display, value, filterAllows, description, originalValue);
+	}
+	else
+	{
+		if(_labels.size() != labelIndex)
+			Log::log() << "Labels are not being set in a sensible order it seems." << std::endl;
+
+		if(id == -1)
+			Log::log() << "This functions expects a label to be set from the DB, so why is dbId -1?" << std::endl;
+
+		if(_labels.size() < labelIndex+1)
+			_labels			. resize(labelIndex+1);
+		_labels[labelIndex]	= new Label(this, display, value, filterAllows, description, originalValue, order, id);
+		label				= _labels[labelIndex];
+	}
+
+	assert(label);
+
+	return _labelMapIt(label);
 }
 
 void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder)
@@ -809,7 +843,8 @@ void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 	for(size_t i=desiredLabelsSize; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	_labels.resize(desiredLabelsSize);
+	if(desiredLabelsSize < _labels.size())
+		_labels.resize(desiredLabelsSize);
 
 	_resetLabelValueMap();
 }

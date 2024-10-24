@@ -92,7 +92,8 @@ void Label::dbUpdate()
 
 void Label::setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
 {
-	_dbId				= id;
+	assert(_column == column);
+	_dbId			= id;
 	_order			= order;
 	_label			= label;
 	_intsId			= value;	
