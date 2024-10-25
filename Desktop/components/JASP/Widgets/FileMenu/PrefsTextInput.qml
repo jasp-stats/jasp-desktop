@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 Rectangle
 {
 	property alias	text:		textInput.text
+	property string	toolTip:	""
 	property alias	textInput:	textInput
 	property var	nextEl:		null
 	
@@ -23,6 +24,19 @@ Rectangle
 	border.width:		1
 	onFocusChanged:		if(focus) textInput.focus = true;
 	activeFocusOnTab:	true
+
+	ToolTip.visible:	toolTip != "" && toolTipMouseArea.containsMouse
+	ToolTip.text:		toolTip
+	ToolTip.timeout:	3000
+	ToolTip.delay:		500
+
+	MouseArea
+	{
+		id:					toolTipMouseArea
+		hoverEnabled:		toolTip != ""
+		acceptedButtons:	Qt.NoButton
+		anchors.fill:		parent
+	}
 
 	TextInput
 	{

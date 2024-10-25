@@ -96,7 +96,7 @@ const Settings::Setting Settings::Values[] = {
 	{"maxScaleLevels",				100		},
 	{"pdfLandscape",				false	},
 	{"pdfPageSize",					int(pdfPageSize::A4)			},
-	{"directLibpathEnabled",		false	},
+	{"directLibpathEnabled",		true	},
 	{"directLibpathFolder",			""		},
 	{"directDevModName",			""		}
 	

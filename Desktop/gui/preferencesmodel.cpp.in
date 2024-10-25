@@ -85,9 +85,28 @@ void PreferencesModel::browseDeveloperFolder()
 	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
 
 	if (!folder.isEmpty())
-		setDeveloperFolder(folder);
-		
+		setDeveloperFolder(folder);	
 }
+
+
+void PreferencesModel::browseDeveloperLibPathFolder()
+{
+	QString defaultfolder = directLibpathFolder();
+	if (defaultfolder.isEmpty())
+	{
+#ifdef _WIN32
+		defaultfolder = "c:\\";
+#else
+		defaultfolder = "~";
+#endif
+	}
+
+	QString folder = MessageForwarder::browseOpenFolder(tr("Select a R-library..."), defaultfolder);
+
+	if (!folder.isEmpty())
+		setDirectLibpathFolder(folder);
+}
+
 
 #define GET_PREF_FUNC(TYPE, NAME, SETTING, TO_FUNC)	TYPE PreferencesModel::NAME() const { return Settings::value(SETTING).TO_FUNC; }
 #define GET_PREF_FUNC_BOOL(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toBool())

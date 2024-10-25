@@ -38,56 +38,7 @@ ScrollView
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
 				
-				KeyNavigation.tab:		developerMode
-			}
-
-			CheckBox
-			{
-				id:					developerMode
-				label:				qsTr("Developer mode (Beta version)")
-				checked:			preferencesModel.developerMode
-				onCheckedChanged:	preferencesModel.developerMode = checked
-				toolTip:			qsTr("To use JASP Modules enable this option.")
-				
-				KeyNavigation.tab:		browseDeveloperFolderButton
-			}
-
-			Item
-			{
-				id:					editDeveloperFolder
-				enabled:			preferencesModel.developerMode
-				width:				parent.width
-				height:				browseDeveloperFolderButton.height
-
-				RectangularButton
-				{
-					id:					browseDeveloperFolderButton
-					text:				qsTr("Select developer folder")
-					onClicked:			preferencesModel.browseDeveloperFolder()
-					anchors.left:		parent.left
-					anchors.leftMargin: jaspTheme.subOptionOffset
-					toolTip:			qsTr("Browse to your JASP Module folder.")
-
-					KeyNavigation.tab:		developerFolderText.textInput
-					activeFocusOnTab:		true
-				}
-				
-				PrefsTextInput
-				{
-					id:					developerFolderText
-					
-					text:				preferencesModel.developerFolder
-					onEditingFinished:	preferencesModel.developerFolder = text
-					nextEl:				cranRepoUrl.textInput
-					
-					height:				browseDeveloperFolderButton.height
-					anchors
-					{
-						left:			browseDeveloperFolderButton.right
-						right:			parent.right
-						top:			parent.top
-					}
-				}
+				KeyNavigation.tab:		cranRepoUrl
 			}
 
 			Item
@@ -108,27 +59,28 @@ ScrollView
 						margins:		jaspTheme.generalAnchorMargin
 					}
 				}
-				
+
 				PrefsTextInput
 				{
 					id:					cranRepoUrl
-					
+
 					text:				preferencesModel.cranRepoURL
 					onEditingFinished:	preferencesModel.cranRepoURL = text
 					nextEl:				githubPatDefault
-					
+
 					height:				browseDeveloperFolderButton.height
 					anchors
 					{
 						left:			cranRepoUrlLabel.right
 						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
 					}
 
 					KeyNavigation.tab:	githubPatDefault
 				}
 			}
-			
-		
+
+
 			CheckBox
 			{
 				id:					githubPatDefault
@@ -139,7 +91,7 @@ ScrollView
 
 				KeyNavigation.tab:		githubPatCustomToken
 			}
-			
+
 			Item
 			{
 				id:			githubPatCustomTokenItem
@@ -159,16 +111,16 @@ ScrollView
 						leftMargin:		jaspTheme.subOptionOffset
 					}
 				}
-				
+
 				PrefsTextInput
 				{
 					id:					githubPatCustomToken
-					
+
 					text:				preferencesModel.githubPatCustom
 					onEditingFinished:	preferencesModel.githubPatCustom = text
 
-					nextEl:				directLibpathDevModEnabled
-					
+					nextEl:				developerMode
+
 					height:				browseDeveloperFolderButton.height
 					anchors
 					{
@@ -179,9 +131,20 @@ ScrollView
 
 					textInput.echoMode:	TextInput.Password
 
-					KeyNavigation.tab:		directLibpathDevModEnabled
+					KeyNavigation.tab:		developerMode
 				}
-			}				
+			}
+
+			CheckBox
+			{
+				id:					developerMode
+				label:				qsTr("Developer mode")
+				checked:			preferencesModel.developerMode
+				onCheckedChanged:	preferencesModel.developerMode = checked
+				toolTip:			qsTr("To use JASP Modules enable this option.")
+				
+				KeyNavigation.tab:	generateMarkdown
+			}
 
 			CheckBox
 			{
@@ -191,10 +154,30 @@ ScrollView
 				checked:			preferencesModel.generateMarkdown
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
 				visible:			preferencesModel.developerMode
+				enabled:			preferencesModel.developerMode
 				KeyNavigation.tab:	cleanModulesFolder
 
 			}
 
+	
+			RoundedButton
+			{	
+				id:					cleanModulesFolder
+				text:				qsTr("Clear installed modules and packages")
+				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
+				onClicked:			mainWindow.clearModulesFoldersUser();
+
+				KeyNavigation.tab:		directLibpathDevModEnabled
+				activeFocusOnTab:		true
+			}
+		}
+
+		PrefsGroupRect
+		{
+			id:					editDeveloperFolder
+			title:				qsTr("Development module")
+			visible:			preferencesModel.developerMode
+			enabled:			preferencesModel.developerMode
 
 			CheckBox
 			{
@@ -202,24 +185,70 @@ ScrollView
 				label:				qsTr("Enable direct libpath mode")
 				checked:			preferencesModel.directLibpathEnabled
 				onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
-				toolTip:			qsTr("To use JASP Modules enable this option.")
+				toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")
 				visible:			preferencesModel.developerMode
 
-				KeyNavigation.tab:	directLibpathFolder
+				KeyNavigation.tab:	editDeveloperFolder
+			}
+
+
+			Item
+			{
+				width:				parent.width
+				height:				browseDeveloperFolderButton.height
+				enabled:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
+
+
+				RectangularButton
+				{
+					id:						browseDeveloperFolderButton
+					text:					qsTr("Source folder:")
+					onClicked:				preferencesModel.browseDeveloperFolder()
+					anchors.left:			parent.left
+					anchors.leftMargin:		jaspTheme.subOptionOffset
+					toolTip:				qsTr("Browse to your JASP Module folder.")
+
+					KeyNavigation.tab:		developerFolderText.textInput
+					activeFocusOnTab:		true
+
+				}
+
+				PrefsTextInput
+				{
+					id:					developerFolderText
+
+					text:				preferencesModel.developerFolder
+					onEditingFinished:	preferencesModel.developerFolder = text
+					nextEl:				directLibPathLabel
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			browseDeveloperFolderButton.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
 			}
 
 			Item
 			{
 				id:					directLibpath
 				enabled:			preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 				width:				parent.width
 				height:				cranRepoUrl.height
-				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 
-				Label
+				RectangularButton
 				{
-					id:					directLibPathLabel
-					text:				qsTr("DevModule libpath:")
+					id:						directLibPathLabel
+					text:					qsTr("Libpath:")
+					width:					Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
+					onClicked:				preferencesModel.browseDeveloperLibPathFolder()
+					activeFocusOnTab:		true
+					KeyNavigation.tab:		directLibpathFolder.textInput
+					KeyNavigation.backtab:	directLibpathDevModEnabled
 
 					anchors
 					{
@@ -227,6 +256,8 @@ ScrollView
 						verticalCenter:	parent.verticalCenter
 						leftMargin:		jaspTheme.subOptionOffset
 					}
+
+
 				}
 
 				PrefsTextInput
@@ -247,21 +278,24 @@ ScrollView
 					}
 
 					KeyNavigation.tab:	moduleName
+
+					toolTip:			qsTr("Choose the R library where you installed the development module")
 				}
 			}
 
 			Item {
 
 				id:					directDevMod
-				enabled:			preferencesModel.directLibpathEnabled
+				enabled:			preferencesModel.developerMode &&preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 				width:				parent.width
 				height:				cranRepoUrl.height
-				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 
 				Label
 				{
 					id:					directDevModName
-					text:				qsTr("Developer module name:")
+					text:				qsTr("Module name:")
+					width:				Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
 
 					anchors
 					{
@@ -278,7 +312,7 @@ ScrollView
 					text:				preferencesModel.directDevModName
 					onEditingFinished:	preferencesModel.directDevModName = text
 
-					nextEl:				cleanModulesFolder
+					nextEl:				logToFile
 
 					height:				browseDeveloperFolderButton.height
 					anchors
@@ -288,19 +322,9 @@ ScrollView
 						margins:		jaspTheme.generalAnchorMargin
 					}
 
-					KeyNavigation.tab:	cleanModulesFolder
+					KeyNavigation.tab:	logToFile
+					toolTip:			qsTr("Enter the (package)name of the development module you want to load")
 				}
-			}
-	
-			RoundedButton
-			{	
-				id:					cleanModulesFolder
-				text:				qsTr("Clear installed modules and packages")
-				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
-				onClicked:			mainWindow.clearModulesFoldersUser();
-
-				KeyNavigation.tab:		logToFile
-				activeFocusOnTab:		true
 			}
 		}
 		
@@ -339,7 +363,7 @@ ScrollView
 					defaultValue:		10
 					stepSize:			1
 
-					KeyNavigation.tab:		showLogs
+					KeyNavigation.tab:	showLogs
 					text:				qsTr("Max logfiles to keep: ")
 
 					anchors

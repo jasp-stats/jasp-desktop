@@ -177,6 +177,7 @@ public slots:
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
+	void browseDeveloperLibPathFolder();
 	void removeEmptyValue(				QString		value);
 	void addEmptyValue(					QString		value);
 	void resetEmptyValues();
