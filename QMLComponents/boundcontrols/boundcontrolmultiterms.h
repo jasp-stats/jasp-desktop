@@ -28,10 +28,11 @@ class BoundControlMultiTerms : public BoundControlBase
 public:
 	BoundControlMultiTerms(ListModelMultiTermsAssigned* listModel);
 
-	bool		isJsonValid(const Json::Value& optionValue) const	override;
-	Json::Value	createJson()								const	override;
-	void		bindTo(const Json::Value &value)					override;
-	void		resetBoundValue()									override;
+	bool		isJsonValid(const Json::Value& optionValue)							const	override;
+	Json::Value	createJson()														const	override;
+	void		bindTo(const Json::Value &value)											override;
+	void		resetBoundValue()															override;
+	void		setBoundValue(const Json::Value &value, bool emitChanges = true)			override;
 
 
 private:

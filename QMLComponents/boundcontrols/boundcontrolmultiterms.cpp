@@ -27,11 +27,13 @@ BoundControlMultiTerms::BoundControlMultiTerms(ListModelMultiTermsAssigned* list
 
 void BoundControlMultiTerms::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
+	Json::Value adjustedValue = _isValueWithTypes(value) ? value["value"] : value;
+
+	BoundControlBase::bindTo(adjustedValue);
 
 	std::vector<std::vector<std::string> > values;
 
-	for (const Json::Value& rowJson : value)
+	for (const Json::Value& rowJson : adjustedValue)
 	{
 		std::vector<std::string> rowValues;
 		if (rowJson.isArray())
@@ -54,7 +56,7 @@ Json::Value BoundControlMultiTerms::createJson() const
 
 bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::arrayValue;
+	return optionValue.type() == Json::arrayValue || optionValue.type() == Json::objectValue;
 }
 
 void BoundControlMultiTerms::resetBoundValue()
@@ -70,4 +72,37 @@ void BoundControlMultiTerms::resetBoundValue()
 	}
 
 	setBoundValue(boundValue);
+}
+
+void BoundControlMultiTerms::setBoundValue(const Json::Value &value, bool emitChanges)
+{
+	Json::Value newValue;
+
+	if (_control->encodeValue())
+	{
+		if (_isValueWithTypes(value))
+			newValue = value;
+		else
+		{
+			Json::Value types(Json::arrayValue);
+			std::string type =  columnTypeToString(_listModel->listView()->defaultType());
+			for (const Json::Value& row : value)
+			{
+				Json::Value rowType(Json::arrayValue);
+				if (row.isString())
+					rowType.append(type);
+				else if (row.isArray())
+				{
+					for (int i = 0; i < row.size(); i++)
+						rowType.append(type);
+				}
+				types.append(rowType);
+			}
+			newValue["value"] = value;
+			newValue["types"] = types;
+		}
+	}
+
+	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
+
 }
