@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-10-27 07:00+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -3991,7 +3997,7 @@ msgstr "選擇行"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr "插入左方欄"
+msgstr "插入左方行"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
@@ -4268,7 +4274,7 @@ msgstr "運動隊伍：NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Grand Budapest 風格"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
@@ -4310,7 +4316,7 @@ msgstr "從'%2'移除欄位 %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "刪除 %1 到 %2 行"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4351,7 +4357,7 @@ msgstr "此程式是按照現狀提供且不附帶任何包括設計、適銷性
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "和 %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
@@ -4420,7 +4426,7 @@ msgstr "工作空間設定"
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "名稱： %1"
 
 msgctxt "ModulesMenu|"
 msgid "Description: "
@@ -4428,7 +4434,7 @@ msgstr "備註: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr ""
+msgstr "使用在資料首選項中設置的值重置缺失值"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
@@ -4440,7 +4446,7 @@ msgstr "使用自訂值"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr ""
+msgstr "使用工作區中設定的值重置缺失值"
 
 msgctxt "QObject|"
 msgid "Not computed"
@@ -4524,7 +4530,7 @@ msgstr "在欄位 '%1' 使用預設的空值"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "為列 %1 設定空值"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
@@ -4589,7 +4595,6 @@ msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "社群"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "名稱: "
@@ -4600,13 +4605,12 @@ msgstr "欄位型別 "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "計算類型： "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "顯示父級分析"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
 msgstr "長名稱: "
@@ -4615,12 +4619,10 @@ msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr "<填寫更具描述性的欄位名稱>"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
 msgstr "關閉變量視窗"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "備註: "
@@ -4666,7 +4668,6 @@ msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr ""
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
 msgstr "已復製到剪貼板"
@@ -4713,7 +4714,6 @@ msgctxt "FactorsForm|"
 msgid "Remove last %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "因素"
@@ -4734,37 +4734,30 @@ msgctxt "DataTableView|"
 msgid "Insert R column after"
 msgstr ""
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "按下此處以修改變數類型"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "新增欄位"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
 msgstr "由分析計算"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
 msgstr "在此處點兩下更改變數設定"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
 msgstr "在此處點兩下關閉變數視窗"
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
 msgstr "點擊這裡更改所選變數"
 
-#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr "單按此處選擇列，按住Shift鍵可多選"
@@ -4821,10 +4814,10 @@ msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr "反轉列“%2”的標籤 {1'?}"
+msgstr "反轉列“%1”的標籤"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
@@ -4883,7 +4876,6 @@ msgctxt "TableViewBase|"
 msgid "Grid Table"
 msgstr ""
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Table"
 msgstr "表"
@@ -5055,12 +5047,10 @@ msgid ""
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Yes"
 msgstr "是"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "No"
 msgstr "否"
@@ -5070,17 +5060,14 @@ msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr ""
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "連續"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "次序"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "名義"
