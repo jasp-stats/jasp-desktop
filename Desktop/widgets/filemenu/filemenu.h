@@ -87,6 +87,7 @@ public:
 	QString			getDefaultOutFileName();
 
 	void			showPreferences();
+	
 	void			syncDataFile(const QString& path, bool waitForExistence = false);
 
 
@@ -103,7 +104,8 @@ public:
 	ResourceButtonsVisible			*	resourceButtonsVisible()	const	{ return _resourceButtonsVisible;	}
 
 	Q_INVOKABLE void exportResultsInteractive();
-
+	Q_INVOKABLE void showAdvancedPreferences();
+	
 signals:
 	void fileoperationChanged();
 	void dataSetIORequest(FileEvent *event);

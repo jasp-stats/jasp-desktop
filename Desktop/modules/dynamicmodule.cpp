@@ -942,10 +942,17 @@ stringset DynamicModule::requiredModules() const
 
 QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
 #ifdef __APPLE__
+	
 	//we copy everything because we need to patch and resign it all
-	auto path = std::filesystem::temp_directory_path() / Settings::value(Settings::DIRECT_DEVMOD_NAME).toString().toStdString();
-	std::filesystem::remove_all(path);
-	std::filesystem::copy(libpath.toStdString(), path, std::filesystem::copy_options::recursive);
+	const std::string devMod = Settings::value(Settings::DIRECT_DEVMOD_NAME).toString().toStdString();
+	if(devMod.empty())
+		throw std::runtime_error("No development module name set!");
+	
+	auto path = std::filesystem::temp_directory_path() / devMod;
+	if(std::filesystem::exists(path))
+		for (const auto& entry : std::filesystem::directory_iterator(path)) 
+			std::filesystem::remove_all(entry.path());
+	copy(libpath.toStdString(), path, std::filesystem::copy_options::recursive);
 	_moduleLibraryFixer(path, true, true, true);
 	return tq(path.generic_string());
 #else

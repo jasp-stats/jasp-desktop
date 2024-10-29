@@ -545,6 +545,13 @@ void FileMenu::showPreferences()
 	_actionButtons->setSelectedAction(ActionButtons::Preferences);
 }
 
+void FileMenu::showAdvancedPreferences()
+{
+	setVisible(true);
+	_actionButtons->setSelectedAction(ActionButtons::Preferences);
+	_resourceButtons->setSelectedButton(ResourceButtons::PrefsAdvanced);
+}
+
 void FileMenu::exportResultsInteractive()
 {
 	actionButtonClicked(ActionButtons::ExportResults);
