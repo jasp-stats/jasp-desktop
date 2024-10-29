@@ -84,6 +84,7 @@ void BoundControlMultiTerms::setBoundValue(const Json::Value &value, bool emitCh
 			newValue = value;
 		else
 		{
+			// Else we are loading from a jasp version before "preloadData" was on or var.types were added to the options
 			Json::Value types(Json::arrayValue);
 			std::string type =  columnTypeToString(_listModel->listView()->defaultType());
 			for (const Json::Value& row : value)
