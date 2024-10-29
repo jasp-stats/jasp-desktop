@@ -150,7 +150,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 	}
 }
 
-Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms)
+Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasInteraction, bool keyHasVariables)
 {
 	Json::Value result(Json::arrayValue);
 
@@ -158,19 +158,39 @@ Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const Lis
 	{
 		QMap<QString, Json::Value> componentValues = componentValuesMap[term.asQString()];
 
-		Json::Value rowValues(Json::objectValue);
-		if (hasMultipleTerms)
+		Json::Value rowValues(Json::objectValue),
+					keyValue; // depending of keyHasVariables & hasInteraction, keyValue can be an object, an array or a string
+
+		if (keyHasVariables)
 		{
-			Json::Value keyValue(Json::arrayValue);
-			for (const std::string& comp : term.scomponents())
-				keyValue.append(comp);
-			rowValues[key] = keyValue;
+			// If the key of the row contains variables, set 'value' and 'types'
+			Json::Value jsonValue, jsonTypes;
+
+			if (hasInteraction)
+			{
+				for (const std::string& comp : term.scomponents())
+					jsonValue.append(comp);
+				for (columnType type : term.types())
+					jsonTypes.append(columnTypeToString(type));
+			}
+			else
+			{
+				jsonValue = term.asString();
+				jsonTypes = columnTypeToString(term.type());
+			}
+			keyValue["value"] = jsonValue;
+			keyValue["types"] = jsonTypes;
 		}
 		else
 		{
-			Json::Value keyValue(term.asString());
-			rowValues[key] = keyValue;
+			if (hasInteraction)
+				for (const std::string& comp : term.scomponents())
+					keyValue.append(comp);
+			else
+				keyValue = term.asString();
 		}
+
+		rowValues[key] = keyValue;
 
 		QMapIterator<QString, Json::Value> it2(componentValues);
 		while (it2.hasNext())
@@ -184,9 +204,9 @@ Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const Lis
 	return result;
 }
 
-void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasMultipleTerms)
+void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasInteraction, bool keyHasVariables)
 {
-	setBoundValue(_getTableValueOption(terms, componentValuesMap, key, hasMultipleTerms));
+	setBoundValue(_getTableValueOption(terms, componentValuesMap, key, hasInteraction, keyHasVariables));
 }
 
 bool BoundControlBase::_isValueWithTypes(const Json::Value &value) const

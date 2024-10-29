@@ -149,7 +149,7 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 		{
 			Json::Value* parentBoundValues = &(*parentBoundValue)[parent.name];
 			if (parentBoundValues->isObject() && parentBoundValues->isMember("value") && parentBoundValues->isMember("types"))
-				parentBoundValues = &(*parentBoundValues)["value"];
+				parentBoundValues = &(*parentBoundValues)["value"]; // If the control contain variable names, the option values are inside the 'value' member
 
 			if (!parentBoundValues->isNull() && parentBoundValues->isArray())
 			{
@@ -157,17 +157,20 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 				{
 					if (boundValue.isMember(parent.key))
 					{
-						Json::Value &val = boundValue[parent.key];
+						Json::Value* keyValue = &(boundValue[parent.key]);
+						if (keyValue->isObject() && keyValue->isMember("value") && keyValue->isMember("types"))
+							keyValue = &((*keyValue)["value"]); // The key can be also a variable name
+
 						// The value can be a string or an array of strings (for interaction terms)
-						if (val.isString() && parent.value.size() == 1)
+						if (keyValue->isString() && parent.value.size() == 1)
 						{
-							if (val.asString() == parent.value[0])	found = true;
+							if (keyValue->asString() == parent.value[0])	found = true;
 						}
-						else if (val.isArray() && val.size() == parent.value.size())
+						else if (keyValue->isArray() && keyValue->size() == parent.value.size())
 						{
 							found = true;
 							size_t i = 0;
-							for (const Json::Value& compVal : val)
+							for (const Json::Value& compVal : *keyValue)
 							{
 								if (!compVal.isString() || compVal.asString() != parent.value[i]) found = false;
 								i++;

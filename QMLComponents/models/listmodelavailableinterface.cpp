@@ -149,14 +149,14 @@ void ListModelAvailableInterface::sourceColumnsChanged(QStringList columns)
 		emit columnsChanged(changedColumns);
 }
 
-int ListModelAvailableInterface::sourceColumnTypeChanged(Term term)
+bool ListModelAvailableInterface::sourceColumnTypeChanged(Term term)
 {
-	int index = ListModelDraggable::sourceColumnTypeChanged(term);
+	bool change = ListModelDraggable::sourceColumnTypeChanged(term);
 
-	if (index == -1 && _allTerms.contains(term))
+	if (!change && _allTerms.contains(term))
 		emit columnTypeChanged(term);
 
-	return index;
+	return change;
 }
 
 bool ListModelAvailableInterface::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)

@@ -116,7 +116,7 @@ signals:
 public slots:	
 	virtual void sourceTermsReset();
 	virtual void sourceNamesChanged(QMap<QString, QString> map);
-	virtual int  sourceColumnTypeChanged(Term sourceTerm);
+	virtual bool sourceColumnTypeChanged(Term sourceTerm);
 	virtual bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels = {});
 	virtual bool sourceLabelsReordered(QString columnName);
 	virtual void sourceColumnsChanged(QStringList columns);

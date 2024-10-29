@@ -140,7 +140,17 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	for (Term& term : terms)
 	{
 		if (typesPart.size() > i) // If the type is given, use it
-			term.setType(columnTypeFromString(typesPart[i].asString(), columnType::unknown));
+		{
+			if (typesPart[i].isArray())
+			{
+				columnTypeVec types;
+				for (const Json::Value& jsonType : typesPart[i])
+					types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
+				term.setTypes(types);
+			}
+			else
+				term.setType(columnTypeFromString(typesPart[i].asString(), columnType::unknown));
+		}
 		else
 		{
 			if (term.type() == columnType::unknown)

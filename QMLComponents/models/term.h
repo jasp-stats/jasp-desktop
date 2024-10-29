@@ -47,8 +47,11 @@ public:
 	bool						isDraggable()	const			{ return _draggable; }
 	void						setDraggable(bool draggable)	{ _draggable = draggable; }
 
-	columnType					type()			const			{ return _type; }
-	void						setType(columnType type)		{ _type = type; }
+	// If a term has several components, its type self is unknown, but the components have maybe a type.
+	columnType					type()			const			{ return _types.size() == 1 ? _types[0] : columnType::unknown; }
+	void						setType(columnType type)		{ _types = {type}; }
+	columnTypeVec				types()			const			{ return _types; }
+	void						setTypes(columnTypeVec types)	{ _types = types; }
 
 	typedef QStringList::const_iterator const_iterator;
 	typedef QStringList::iterator		iterator;
@@ -81,7 +84,7 @@ private:
 	QStringList		_components;
 	QString			_asQString;
 	bool			_draggable = true;
-	columnType		_type = columnType::unknown;
+	columnTypeVec	_types = {columnType::unknown};
 };
 
 #endif // TERM_H

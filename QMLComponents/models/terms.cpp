@@ -152,7 +152,7 @@ void Terms::add(const Term &term, bool isUnique)
 		else if (result == 0)
 		{
 			itr->setDraggable(term.isDraggable());
-			itr->setType(term.type());
+			itr->setTypes(term.types());
 		}
 		else if (result < 0)
 			_terms.push_back(term);
@@ -165,7 +165,7 @@ void Terms::add(const Term &term, bool isUnique)
 		else
 		{
 			_terms.at(i).setDraggable(term.isDraggable());
-			_terms.at(i).setType(term.type());
+			_terms.at(i).setTypes(term.types());
 		}
 	}
 }
@@ -348,19 +348,21 @@ Terms Terms::crossCombinations() const
 		do {
 
 			vector<string> combination;
+			columnTypeVec types;
 
 			for (uint i = 0; i < _terms.size(); i++) {
 				if (!v[i])
 				{
 					vector<string> components = _terms.at(i).scomponents();
+					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
+					types.insert(types.end(), termTypes.begin(), termTypes.end());
 				}
 			}
 
-			if (combination.size() == 1)
-				t.add(at(indexOf(combination[0])));
-			else
-				t.add(Term(combination));
+			Term newTerm(combination);
+			newTerm.setTypes(types);
+			t.add(newTerm);
 
 		} while (std::next_permutation(v.begin(), v.end()));
 	}
@@ -380,19 +382,21 @@ Terms Terms::wayCombinations(int ways) const
 		do {
 
 			vector<string> combination;
+			columnTypeVec types;
 
 			for (uint i = 0; i < _terms.size(); ++i) {
 				if (!v[i])
 				{
 					vector<string> components = _terms.at(i).scomponents();
+					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
+					types.insert(types.end(), termTypes.begin(), termTypes.end());
 				}
 			}
 
-			if (combination.size() == 1)
-				t.add(at(indexOf(combination[0])));
-			else
-				t.add(Term(combination));
+			Term newTerm(combination);
+			newTerm.setTypes(types);
+			t.add(newTerm);
 
 		} while (std::next_permutation(v.begin(), v.end()));
 	}
@@ -415,11 +419,15 @@ Terms Terms::ffCombinations(const Terms &terms)
 	{
 		for (uint j = 0; j < combos.size(); j++)
 		{
-			QStringList term = _terms.at(i).components();
-			QStringList newTerm = combos.at(j).components();
+			QStringList termComponents = _terms.at(i).components();
+			termComponents.append(combos.at(j).components());
+			columnTypeVec types = _terms.at(i).types();
+			columnTypeVec coTypes = combos.at(j).types();
+			types.insert(types.end(), coTypes.begin(), coTypes.end());
 
-			term.append(newTerm);
-			newTerms.add(Term(term));
+			Term newTerm(termComponents);
+			newTerm.setTypes(types);
+			newTerms.add(newTerm);
 		}
 	}
 

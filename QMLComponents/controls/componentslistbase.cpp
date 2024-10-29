@@ -206,7 +206,7 @@ void ComponentsListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions(), containsVariables());
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();
 }
@@ -308,7 +308,7 @@ Json::Value ComponentsListBase::getJsonFromComponentValues(const ListModel::RowC
 	for (const QString& term : termsWithComponentValues.keys())
 		terms.add(Term::readTerm(term));
 
-	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKey), containsInteractions());
+	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKey), containsInteractions(), containsVariables());
 }
 
 void ComponentsListBase::addItemHandler()

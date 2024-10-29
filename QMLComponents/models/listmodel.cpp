@@ -297,10 +297,9 @@ void ListModel::setVariableType(int ind, columnType type)
 	if (term.type() == type)
 		return;
 
-	term.setType(type);
-
-	emit dataChanged(index(ind, 0), index(ind, 0));
-	emit columnTypeChanged(term);
+	Term newTerm(term);
+	newTerm.setType(type);
+	sourceColumnTypeChanged(newTerm);
 }
 
 columnType ListModel::getVariableType(const QString& name) const
@@ -613,20 +612,37 @@ void ListModel::sourceNamesChanged(QMap<QString, QString> map)
 		emit namesChanged(changedNamesMap);
 }
 
-int ListModel::sourceColumnTypeChanged(Term sourceTerm)
+bool ListModel::sourceColumnTypeChanged(Term sourceTerm)
 {
-	int i = _terms.indexOf(sourceTerm);
-	if (i >= 0)
+	bool change = false;
+	for (int i = 0; i < _terms.size(); i++)
 	{
 		Term& term = _terms.at(i);
-		term.setType(sourceTerm.type());
-		QModelIndex ind = index(i, 0);
+		if (term.containsAll(sourceTerm))
+		{
+			// A term may have several components: if all sourceTerm's components are in the term's components,
+			// then for each component in term that is in sourceTerm, replace its type (in term) by the one in sourceTerm
+			columnTypeVec	types = term.types(),
+							sourceTypes = sourceTerm.types();
+			int				sourceInd = 0;
 
-		emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
-		emit columnTypeChanged(term);
+			for (const QString& sourceComponent : sourceTerm.components())
+			{
+				int ind = term.components().indexOf(sourceComponent);
+				if (ind >= 0 && types.size() > ind && sourceTypes.size() > sourceInd)
+					types[ind] = sourceTypes[sourceInd];
+				sourceInd++;
+			}
+			term.setTypes(types);
+			QModelIndex ind = index(i, 0);
+
+			emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
+			emit columnTypeChanged(term);
+
+			change = true;
+		}
 	}
-
-	return i;
+	return change;
 }
 
 bool ListModel::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
