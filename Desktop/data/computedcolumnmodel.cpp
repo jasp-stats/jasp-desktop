@@ -228,6 +228,8 @@ void ComputedColumnModel::computeColumnSucceeded(QString columnNameQ, QString wa
 
 	if(dataChanged)
 		checkForDependentColumnsToBeSent(columnNameQ);
+	
+	DataSetPackage::pkg()->labelFilterChanged(); //in case the user had enabled some labelfilter on the computed column?
 }
 
 void ComputedColumnModel::computeColumnFailed(QString columnNameQ, QString errorQ)

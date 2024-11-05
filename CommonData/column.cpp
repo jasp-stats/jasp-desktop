@@ -642,6 +642,9 @@ bool Column::overwriteDataAndType(stringvec data, columnType colType)
 	
 	setValues(values, labels, 0, &changes);
 	setType(colType);
+	labelsTempReset();
+	
+	labelsHandleAutoSort();
 	
 	return changes;
 }
@@ -1711,8 +1714,6 @@ Labelset Column::labelsByValue(const std::string & value) const
 	return Labelset(found.begin(), found.end());
 }
 
-
-
 Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
 {
 	JASPTIMER_SCOPE(Column::labelsByValueAndDisplay);
@@ -1816,18 +1817,8 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 
-	bool replaceAllDoubles = false;
 	static double dummy;
-	
-	for(Label * label : labels())	
-		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
-		{
-				replaceAllDoubles = true;
-				break;
-		}
-	
-	if(replaceAllDoubles)
-		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
+	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	auto					alpha		= valuesAlphabeticalOffsets();

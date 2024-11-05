@@ -76,8 +76,8 @@ std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 	std::stringstream	out;
 	
 	for(size_t row=0; row<filterAllows.size(); row++)
-		if(filterAllows[row] == bePositive)
-			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
+		if(filterAllows[row] == bePositive) //Also make sure we use .nominal because otherwise we might be comparing to the value instead...
+			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << ".nominal" << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
 	
 	return "(" + out.str() + ")";
 }

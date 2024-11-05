@@ -61,12 +61,16 @@ FocusScope
 					}
 				}
 
-				property real	filterColWidth:	60  * jaspTheme.uiScale
-				property real	remainingWidth:	width - filterColWidth
-				property real	valueColWidth:	Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property real	labelColWidth:	Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property int	selectedRow:	-1
+				property real	filterColWidth:		60  * jaspTheme.uiScale
+				property real	remainingWidth:		width - filterColWidth
+				property real	valueColWidth:		Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	labelColWidth:		Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property int	selectedRow:		-1
 				
+				property bool	isBasicComputed:	columnModel.computedType == "rCode" || columnModel.computedType == "constructorCode"
+				property bool	valueEditable:		!isBasicComputed || columnModel.currentColumnType != "scale"
+				property bool	labelEditable:		!isBasicComputed || columnModel.currentColumnType == "scale"
+				property bool	filterEditable:		true // columnModel.computedType == "notComputed"
 
 				columnHeaderDelegate:	Item
 				{
@@ -85,7 +89,7 @@ FocusScope
 							{
 								text:					qsTr("Filter")
 								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
+								color:					levelsTableView.filterEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								width:					levelsTableView.filterColWidth;
 								anchors.verticalCenter:	parent.verticalCenter
 								horizontalAlignment:	Text.AlignHCenter
@@ -100,7 +104,7 @@ FocusScope
 							{
 								text:					qsTr("Value")
 								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
+								color:					levelsTableView.valueEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								width:					levelsTableView.valueColWidth;
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
@@ -115,7 +119,7 @@ FocusScope
 							{
 								text:					qsTr("Label")
 								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
+								color:					levelsTableView.labelEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
 								width:					levelsTableView.labelColWidth;
@@ -208,6 +212,7 @@ FocusScope
 								height:					parent.height
 								z:						-1
 								cursorShape:			Qt.PointingHandCursor
+								enabled:				levelsTableView.filterEditable
 								
 	
 								onClicked:				
@@ -251,6 +256,7 @@ FocusScope
 								width:				levelsTableView.valueColWidth;
 								height:				parent.height
 								clip:				true
+								enabled:			levelsTableView.valueEditable
 							
 								MouseArea
 								{
@@ -336,6 +342,7 @@ FocusScope
 								width:				levelsTableView.remainingWidth - (levelsTableView.valueColWidth + 2 + (2 * levelsTableView.itemHorizontalPadding)) //+2 for line-rectangles!
 								height:				parent.height
 								clip:				true
+								enabled:			levelsTableView.labelEditable
 								
 								MouseArea
 								{

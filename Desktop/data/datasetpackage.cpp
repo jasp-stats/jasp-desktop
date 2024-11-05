@@ -1495,7 +1495,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
 				
-                                if(PreferencesModel::prefs()->orderByValueByDefault())
+	if(PreferencesModel::prefs()->orderByValueByDefault())
 		column->labelsOrderByValue();
 	
 	return anyChanges || column->type() != prevType;
