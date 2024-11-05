@@ -1817,8 +1817,18 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 
+	bool replaceAllDoubles = false;
 	static double dummy;
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
+
+	for(Label * label : labels())	
+		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+		{
+				replaceAllDoubles = true;
+				break;
+		}
+
+	if(replaceAllDoubles)
+		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	
 	doublevec				asc			= valuesNumericOrdered();
 	auto					alpha		= valuesAlphabeticalOffsets();
