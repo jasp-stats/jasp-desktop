@@ -173,8 +173,8 @@ public:
 			const Labels		&	labels()																				const	{ return _labels; }
 			void					labelsMergeDuplicateInto(Label * label);
 			bool					labelsRemoveOrphans();
-			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< Might be nullptr for missing label
-			Labelset				labelsByValue(			const std::string	&	value)									const; ///< 
+			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< SLOW! Might be nullptr for missing label
+			Labelset				labelsByValue(			const std::string	&	value)									const; ///< SLOW!
 			int						labelIndexNonEmpty(		Label				*	label)									const;
 			Label				*	labelByRow(				int						row)									const; ///< 
 			Label				*	labelByValue(			const std::string	&	value)									const; ///< Might be nullptr for missing label, returns the first of labelsByValue
