@@ -21,6 +21,7 @@
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
 #include "controls/jasplistcontrol.h"
+#include "analysisform.h"
 
 using namespace std;
 
@@ -123,6 +124,9 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 
 void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
 {
+	if (listView()->form() && !listView()->form()->initialized())
+		return;
+
 	if (termsAdded.size() > 0 && listView()->addAvailableVariablesToAssigned())
 	{
 		_addTerms(termsAdded, _addInteractionsByDefault);
