@@ -45,6 +45,7 @@ FocusScope
 			computedColumnsInterface.sendCode(computeColumnEdit.text)
 		else
 		{
+			computedColumnConstructor.forceActiveFocus();
 			computedColumnConstructor.checkAndApplyFilter()
 			computedColumnsInterface.sendCode(computedColumnConstructor.rCode, computedColumnConstructor.jsonConstructed)
 		}
@@ -52,10 +53,9 @@ FocusScope
 
 	function askIfChangedOrClose()
 	{
-		if(computedColumnContainer.changed)	saveDialog.open()
+		if(computedColumnContainer.changed)	
+			saveDialog.open()
 	}
-
-
 
 	Item
 	{

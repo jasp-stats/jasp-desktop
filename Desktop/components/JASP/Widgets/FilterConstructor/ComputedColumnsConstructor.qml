@@ -34,7 +34,6 @@ FocusScope
 
 	function checkAndApplyFilter()
 	{
-		forceActiveFocus();
 		filterConstructor.somethingChanged = false
 
 		var allCorrect		= true

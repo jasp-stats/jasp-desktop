@@ -34,21 +34,21 @@ Item
 	property alias columnComputedTypeValue:	computedTypeVariableWindow.value
 	property alias columnTypeValue:			columnTypeVariableWindow.value
 
+	function focusOnTheNamePlease()
+	{
+		if (visible && columnModel.isVirtual)
+			columnNameVariablesWindow.forceActiveFocus()
+	}
+	
 	Connections
 	{
 		target: columnModel
-		function onVisibleChanged()
-		{
-			if (visible && columnModel.isVirtual)
-				columnNameVariablesWindow.forceActiveFocus()
-		}
-
-		function onChosenColumnChanged()
-		{
-			if (visible && columnModel.isVirtual)
-				columnNameVariablesWindow.forceActiveFocus()
-		}
+		function onVisibleChanged()			{ focusOnTheNamePlease(); }
+		function onChosenColumnChanged()	{ focusOnTheNamePlease(); }
+		function onIsVirtualChanged()		{ focusOnTheNamePlease(); }
 	}
+	
+
 
 	Column
 	{
