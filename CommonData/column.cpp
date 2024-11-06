@@ -1821,9 +1821,9 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	static double dummy;
 
 	for(Label * label : labels())	
-		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+		if(!label->isEmptyValue())
 		{
-				replaceAllDoubles = true;
+				replaceAllDoubles = true; // because if there is any label at all it will show up at the end after the doubles without a Label. If this label is a double and the same as the label we could try to turn it back into a non-Label. But it still would break for Labels with a double value and a non-double label. So instead lets just make a label for everything. We keep the doubles only if there are only doubles. This should speed up a lot of operations for massive double datasets so its worth the extra hassle I guess. Just like you, who just read to the end of this line that really really breaks the 80's guideline of 80 characterwide code ;)
 				break;
 		}
 
