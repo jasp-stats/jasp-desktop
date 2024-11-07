@@ -110,7 +110,7 @@ public:
 			bool					allowAnalysisOwnComputedColumns()	const	{ return _allowAnalysisOwnComputedColumns;	}
 			bool					isTypeAllowed(columnType type)		const;
 			columnType				defaultType()						const;
-			Json::Value				valueTypes()						const;
+			bool					hasMandatoryType()					const;
 	const	QStringList			&	columnsTypes()						const	{ return _columnsTypes;						}
 	const	QStringList			&	columnsNames()						const	{ return _columnsNames;						}
 	QAbstractListModel			*	allowedTypesModel();
@@ -122,6 +122,10 @@ public:
 	int								maxNumericLevels()					const	{ return _maxNumericLevels;		}
 	const QStringList			&	allowedColumns()					const	{ return _allowedColumns;		}
 	QStringList						allowedColumnsIcons()				const;
+	bool							mayUseFormula()						const	{ return _mayUseFormula;		}
+	bool							useTermsInRSyntax()					const	{ return _useTermsInRSyntax;	}
+	void							setMayUseFormula(bool use)					{ _mayUseFormula = use;			}
+	void							setUseTermsInRSyntax(bool use)				{ _useTermsInRSyntax = use;		}
 
 signals:
 			void					modelChanged();
@@ -202,7 +206,9 @@ protected:
 							_useSourceLevels					= false,
 							_addAvailableVariablesToAssigned	= false,
 							_allowAnalysisOwnComputedColumns	= true,
-							_allowTypeChange					= false;
+							_allowTypeChange					= false,
+							_mayUseFormula						= true,
+							_useTermsInRSyntax					= true;
 
 	int						_maxRows							= -1,
 							_minNumericLevels					= -1,

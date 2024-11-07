@@ -87,12 +87,13 @@ public:
 	RowControls*					getRowControls(const QString& key)							const		{ return _rowControlsMap.value(key);	}
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
-			QStringList				termsTypes();
 			QStringList				allLevels(const Terms& terms)								const;
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)					const;
+			Json::Value				getVariableTypes(bool onlyChanged = false)					const;
 			columnType				getVariableRealType(const QString& name)					const;
 			QString					getVariablePreview(	const QString& name)					const;
+			QStringList				getUsedTypes()												const;
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);

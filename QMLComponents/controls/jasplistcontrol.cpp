@@ -145,7 +145,7 @@ void JASPListControl::termsChangedHandler()
 {
 	if (checkLevelsConstraints())
 	{
-		setColumnsTypes(model()->termsTypes());
+		setColumnsTypes(model()->getUsedTypes());
 		setColumnsNames(model()->terms().asQList());
 	}
 }
@@ -296,26 +296,6 @@ std::vector<std::string> JASPListControl::usedVariables() const
 	else												return {};
 }
 
-Json::Value JASPListControl::valueTypes() const
-{
-	Json::Value types(Json::arrayValue);
-
-	for (const Term& term : model()->terms())
-	{
-		if (term.components().size() == 1)
-			types.append(columnTypeToString(term.type()));
-		else
-		{
-			Json::Value compTypes(Json::arrayValue);
-			for (columnType type : term.types())
-				compTypes.append(columnTypeToString(type));
-			types.append(compTypes);
-		}
-	}
-
-	return types;
-}
-
 void JASPListControl::sourceChangedHandler()
 {
 	if (!model())	return;
@@ -344,6 +324,11 @@ bool JASPListControl::isTypeAllowed(columnType type) const
 columnType JASPListControl::defaultType() const
 {
 	return _allowedTypesModel->defaultType();
+}
+
+bool JASPListControl::hasMandatoryType() const
+{
+	return _allowedTypesModel->hasMandatoryType();
 }
 
 

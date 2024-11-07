@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include "columntype.h"
+#include <json/json.h>
 
 ///
 /// A term is a basic element of a VariablesList
@@ -33,10 +34,10 @@
 class Term
 {
 public:
-	Term(const std::vector<std::string> components);
-	Term(const std::string				component);
-	Term(const QStringList				components);
-	Term(const QString					component);
+	Term(const std::vector<std::string> components, const columnTypeVec& types	= { columnType::unknown }	);
+	Term(const std::string				component, columnType type				= columnType::unknown		);
+	Term(const QStringList				components, const columnTypeVec& types	= { columnType::unknown }	);
+	Term(const QString					component, columnType type				= columnType::unknown		);
 
 	const QStringList			& components()	const;
 	const QString				& asQString()	const;
@@ -76,10 +77,13 @@ public:
 	static const char* separator;
 	static Term	readTerm(std::string str);
 	static Term	readTerm(QString str);
+	static Term readTerm(const Json::Value& json, columnType defaultType = columnType::unknown);
+
+	Json::Value toJson(bool useArray = true, bool useValueAndType = true) const;
 
 private:
-	void initFrom(const QStringList components);
-	void initFrom(const QString		component);
+	void initFrom(const QStringList components, const columnTypeVec& type);
+	void initFrom(const QString		component,	columnType type);
 
 	QStringList		_components;
 	QString			_asQString;

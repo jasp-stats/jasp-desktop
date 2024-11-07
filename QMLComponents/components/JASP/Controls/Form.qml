@@ -243,7 +243,7 @@ AnalysisForm
 				textType:           JASPControl.TextTypeRcode
 				isBound:			false
 				onApplyRequest:		form.sendRSyntax(text)
-				autoCheckSyntax:	false
+				checkSyntax:		false
 
 				onInitializedChanged: if (preferencesModel.showRSyntax) control.forceActiveFocus() // If the textarea has already some large text, then it does not display it if it does not get temporarly the focus...
 			}

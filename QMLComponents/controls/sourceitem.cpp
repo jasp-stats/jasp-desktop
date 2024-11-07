@@ -126,9 +126,7 @@ void SourceItem::connectModels()
 		connect(variableInfo,	&VariableInfo::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
 		connect(variableInfo,	&VariableInfo::columnTypeChanged,	controlModel, [this, controlModel] (QString colName)
 		{
-			columnType type = (columnType)requestInfo(VariableInfo::VariableType, colName).toInt();
-			Term term(colName);
-			term.setType(type);
+			Term term(colName, (columnType)requestInfo(VariableInfo::VariableType, colName).toInt());
 			controlModel->sourceColumnTypeChanged(term);
 		} );
 		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
@@ -513,8 +511,7 @@ Terms SourceItem::_readAllTerms()
 		QStringList variableNames = requestInfo(VariableInfo::VariableNames).toStringList();
 		for (const QString& name : variableNames)
 		{
-			Term term(name);
-			term.setType(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+			Term term(name, columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
 			terms.add(term);
 		}
 		if (!_sourceFilter.empty())
@@ -531,10 +528,14 @@ Terms SourceItem::_readAllTerms()
 		for (int i = 0; i < nbRows; i++)
 		{
 			QStringList row;
+			columnTypeVec types;
 			for (int j = 0; j < nbCols; j++)
-				row.append(_sourceNativeModel->data(_sourceNativeModel->index(i, j), _nativeModelRole).toString());
-			Term term(row);
-			term.setType(columnType(requestInfo(VariableInfo::VariableType, term.asQString()).toInt()));
+			{
+				QString name = _sourceNativeModel->data(_sourceNativeModel->index(i, j), _nativeModelRole).toString();
+				row.append(name);
+				types.push_back(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+			}
+			Term term(row, types);
 			terms.add(term, false);
 		}
 		if (!_sourceFilter.empty())

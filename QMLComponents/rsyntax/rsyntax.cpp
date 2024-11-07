@@ -123,12 +123,13 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			// Check whether there are really different.
 			if (!showAllOptions && defaultValue.isNumeric() && foundValue.isNumeric())
 				isDifferent = !qFuzzyCompare(defaultValue.asDouble(), foundValue.asDouble());
+
 			if (isDifferent)
 			{
 				result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
 
 				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-				if (listControl && !listControl->hasRowComponent() && listControl->containsInteractions())
+				if (listControl && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
 					result += _transformInteractionTerms(listControl->model());
 				else
 					result += transformJsonToR(foundValue);
@@ -145,7 +146,7 @@ QString RSyntax::generateWrapper() const
 {
 	QString result = "\
 #\n\
-# Copyright (C) 2013-2022 University of Amsterdam\n\
+# Copyright (C) 2013-2024 University of Amsterdam\n\
 #\n\
 # This program is free software: you can redistribute it and/or modify\n\
 # it under the terms of the GNU General Public License as published by\n\
@@ -435,7 +436,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 	if (terms.size() == 0)	return "NULL";
 
-	if (_areTermsVariables(model, terms))	return "~ " + FormulaSource::generateInteractionTerms(terms);
+	if (_areTermsVariables(model, terms) && model->listView()->mayUseFormula())	return "~ " + FormulaSource::generateInteractionTerms(terms, model->getVariableTypes(true));
 
 	QString result = "list(";
 	bool first = true;
@@ -461,6 +462,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 	}
 
 	result += ")";
+
 
 	return result;
 }

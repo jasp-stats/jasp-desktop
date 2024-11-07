@@ -39,6 +39,7 @@ class TextAreaBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( TextType	textType			READ textType				WRITE setTextType			NOTIFY textTypeChanged							)
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged					)
 	Q_PROPERTY( bool		autoCheckSyntax		READ autoCheckSyntax		WRITE setAutoCheckSyntax	NOTIFY autoCheckSyntaxChanged					)
+	Q_PROPERTY( bool		checkSyntax			READ checkSyntax			WRITE setCheckSyntax		NOTIFY checkSyntaxChanged						)
 
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
@@ -67,23 +68,25 @@ public:
 	QString						text();
 	void						setText(const QString& text);
 
-	bool autoCheckSyntax() const;
-	void setAutoCheckSyntax(bool newAutoCheckSyntax);
+	bool autoCheckSyntax()								const	{	return _autoCheckSyntax;	}
+	bool checkSyntax()									const	{	return _checkSyntax;		}
 
 public slots:
 	GENERIC_SET_FUNCTION(TextType,			_textType,			textTypeChanged,		TextType	)
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
+	GENERIC_SET_FUNCTION(AutoCheckSyntax,	_autoCheckSyntax,	autoCheckSyntaxChanged,	bool		)
+	GENERIC_SET_FUNCTION(CheckSyntax,		_checkSyntax,		checkSyntaxChanged,		bool		)
 
-	void	checkSyntaxHandler()		{ _boundControl->checkSyntax();							}
-	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax) checkSyntaxHandler();			}
+	void	checkSyntaxHandler()		{ if(_checkSyntax)		_boundControl->checkSyntax();		}
+	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax)	checkSyntaxHandler();				}
 
 signals:
 	void	textTypeChanged();
 	void	hasScriptErrorChanged();
 	void	applyRequest();
 	void	editingFinished();
-
-	void autoCheckSyntaxChanged();
+	void	autoCheckSyntaxChanged();
+	void	checkSyntaxChanged();
 
 protected slots:
 	void	termsChangedHandler()		override;
@@ -94,7 +97,8 @@ protected:
 	BoundControlTextArea*		_boundControl			= nullptr;
 	TextType					_textType				= TextType::TextTypeDefault;
 	bool						_hasScriptError			= false,
-								_autoCheckSyntax		= true;
+								_autoCheckSyntax		= true,
+								_checkSyntax			= true;
 	QList<QString>				_separators;
 	
 	ListModelTermsAvailable*	_model					= nullptr;

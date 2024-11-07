@@ -41,7 +41,7 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType			= ControlType::VariablesListView;
-	_useControlMouseArea	= false;	
+	_useControlMouseArea	= false;
 }
 
 void VariablesListBase::setUp()
@@ -77,10 +77,13 @@ void VariablesListBase::setUp()
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
+
+	_mayUseFormula = (_columns == 1);
 	
 	//We use macros here because the signals come from QML
-	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
-	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
+	QQuickItem::connect(this,	SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int))					);
+	QQuickItem::connect(this,	SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int))	);
+	connect(this,				&VariablesListBase::columnsChanged,					this, [&]() { _mayUseFormula = (_columns == 1); }				);
 }
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
@@ -123,6 +126,7 @@ void VariablesListBase::setUpModel()
 		auto *	layersModel		= new ListModelLayersAssigned(this);
 				_boundControl	= new BoundControlLayers(layersModel);
 				_draggableModel = layersModel;
+				_useTermsInRSyntax = false;
 		break;
 	}
 		

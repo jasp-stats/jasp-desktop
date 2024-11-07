@@ -56,7 +56,7 @@ public:
 	QList<QVariant>	controlNameXOffsetMap()				const;
 	QList<QVariant>	headerLabels()						const			{ return _headerLabels;			}
 
-	Json::Value		getJsonFromComponentValues(const ListModel::RowControlsValues& termsWithComponentValues);
+	Json::Value		getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues& termsWithComponentValues);
 
 signals:
 	void			addItem();

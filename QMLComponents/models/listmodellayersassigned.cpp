@@ -32,6 +32,7 @@ void ListModelLayersAssigned::initLayers(const std::vector<std::vector<std::stri
 {
 	beginResetModel();
 	
+	_variables.clear();
 	for (const std::vector<std::string>& variables : allVariables)
 	{
 		QList<QString> layer;
@@ -93,8 +94,7 @@ void ListModelLayersAssigned::_setTerms()
 		newTerms.add(tr("Layer %1").arg(layer));
 		for (const QString& variable : variables)
 		{
-			Term term(variable);
-			term.setType(columnType::nominal);
+			Term term(variable, columnType::nominal);
 			newTerms.add(term);
 		}
 		layer++;

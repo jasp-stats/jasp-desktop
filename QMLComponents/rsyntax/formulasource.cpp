@@ -202,10 +202,11 @@ QString FormulaSource::toString() const
 	if (!_model)										return tr("No source found in Formula");
 
 	const Terms& terms = _model->terms();
+	Json::Value changedTypes = _model->getVariableTypes(true);
 
 	if (hasRandomEffects())								return _generateRandomEffectsTerms(terms);
-	if (_model->listView()->containsInteractions())		return generateInteractionTerms(terms);
-	else												return _generateSimpleTerms(terms);
+	if (_model->listView()->containsInteractions())		return generateInteractionTerms(terms, changedTypes);
+	else												return _generateSimpleTerms(terms, changedTypes);
 }
 
 
@@ -245,7 +246,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 			result += (hasIntercept ? "1" : "0");
 
 			if (filteredTerms.size() > 0)
-				result += " + " + generateInteractionTerms(filteredTerms);
+				result += " + " + generateInteractionTerms(filteredTerms, filteredTerms.types(true, componentListModel));
 
 			result += (hasCorrelation ? " | " : " || ");
 			result += key;
@@ -256,7 +257,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 	return result;
 }
 
-QString FormulaSource::generateInteractionTerms(const Terms& tterms)
+QString FormulaSource::generateInteractionTerms(const Terms& tterms, const Json::Value& changedTypes)
 {
 	// If the terms has interactions, try to use the '*' symbol when all combinations of the subterms are also present in the terms.
 	QString result;
@@ -270,8 +271,10 @@ QString FormulaSource::generateInteractionTerms(const Terms& tterms)
 		if (!first)	result += " + ";
 		first = false;
 		const Term& term = terms.at(terms.size() - 1);
+		int orgInd = tterms.indexOf(term);
+		const Json::Value& changedType = changedTypes.size() > orgInd ? changedTypes[orgInd] : Json::nullValue;
 		terms.pop_back();
-		if (term.components().size() == 1)	result += FormulaParser::transformToFormulaTerm(term);
+		if (term.components().size() == 1)	result += FormulaParser::transformToFormulaTerm(term, changedType);
 		else
 		{
 			bool allComponentsAreAlsoInTerms = true;
@@ -295,10 +298,10 @@ QString FormulaSource::generateInteractionTerms(const Terms& tterms)
 					if (found != terms.end()) terms.erase(found);
 				}
 
-				result += FormulaParser::transformToFormulaTerm(term, FormulaParser::allInterationsSeparator);
+				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator);
 			}
 			else
-				result += FormulaParser::transformToFormulaTerm(term, FormulaParser::interactionSeparator);
+				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator);
 		}
 	}
 
@@ -306,35 +309,47 @@ QString FormulaSource::generateInteractionTerms(const Terms& tterms)
 }
 
 
-QString FormulaSource::_generateSimpleTerms(const Terms &terms) const
+QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Value& changedTypes) const
 {
 	QString result;
-	bool first = true;
+	int i = 0;
 
 	for (const Term& term : terms)
 	{
-		if (!first) result += " + ";
-		first = false;
-		result += FormulaParser::transformToFormulaTerm(term, FormulaParser::interactionSeparator);
+		Json::Value changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
+		if (i > 0) result += " + ";
+		result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator);
+		i++;
 	}
 
 	return result;
 }
 
-Terms FormulaSource::_onlyTrueTerms(const QString& controlName, const Terms &terms) const
+std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& controlName) const
 {
-	Terms result;
-	if (!_model) return result;
+	Terms onlyTrueTerms;
+	Json::Value onlyTrueTypes(Json::arrayValue);
 
+	if (!_model) return std::make_pair(onlyTrueTerms, onlyTrueTypes);
+
+	Terms terms = _model->terms();
+	Json::Value changedTypes = _model->getVariableTypes(true);
+
+	int i = 0;
 	for (const Term& term : terms)
 	{
+		const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
 		JASPControl* control = _model->getRowControl(term.asQString(), controlName);
 		BoundControl* boundControl = control ? control->boundControl() : nullptr;
-		if (boundControl && boundControl->boundValue().asBool())
-			result.add(term);
+		if (boundControl && boundControl->boundValue().asBool())	
+		{
+			onlyTrueTerms.add(term);
+			onlyTrueTypes.append(changedType);
+		}
+		i++;
 	}
 
-	return result;
+	return std::make_pair(onlyTrueTerms, onlyTrueTypes);
 }
 
 ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Json::Value& options) const
@@ -485,9 +500,20 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 			continue;
 		}
 		bool found = false;
-		Terms terms;
+		Terms terms, termsToSearch;
 		terms.add(parsedTerm);
-		Terms termsToSearch = isInteractionModel ? Terms(parsedTerm.components()) : terms;
+		if (isInteractionModel)
+		{
+			int i = 0;
+			for (const QString component : parsedTerm.components())
+			{
+				columnType type = parsedTerm.types().size() > i ? parsedTerm.types()[i] : columnType::unknown;
+				termsToSearch.add(Term(component, type));
+				i++;
+			}
+		}
+		else
+			 termsToSearch = terms;
 
 		if (termsToSearch.size() == 0) continue;
 
@@ -570,10 +596,12 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 
 	std::map<ListModelAssignedInterface*, Terms> sourceMainTermsMap;
 	ListModel::RowControlsValues randomTermsMap;
+	Terms mainTerms;
 
 	for (auto i = parsedTerms.randomTerms.begin(); i != parsedTerms.randomTerms.end(); ++i)
 	{
-		QString mainTerm = i.key();
+		Term mainTerm = Term(i.key(), columnType::nominal);
+		mainTerms.add(mainTerm);
 		const FormulaParser::RandomTerm& randomTerm = i.value();
 
 		for (ListModelAssignedInterface* model : sourceModels)
@@ -592,35 +620,32 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		}
 
 		QMap<QString, Json::Value> componentValues;
-		Json::Value variables(Json::arrayValue);
+		Terms variables;
+		variables.add(interceptTerm);
 
-		Json::Value interceptVariable(Json::objectValue);
-		Json::Value interceptValue(Json::arrayValue);
-		interceptValue.append(fq(interceptTerm));
-		interceptVariable[fq(_randomEffects.variablesKey)] = interceptValue;
-		interceptVariable[fq(_randomEffects.checkControl)] = randomTerm.intercept;
-		variables.append(interceptVariable);
+		ListModel::RowControlsValues controlValues;
+		QMap<QString, Json::Value> interceptCheck;
+		interceptCheck[_randomEffects.checkControl] =  randomTerm.intercept;
+		controlValues[interceptTerm] = interceptCheck;
 
 		for (const Term& fixedTerm : fixedEffectTerms)
 		{
-			Json::Value variable(Json::objectValue);
-			variable[fq(_randomEffects.checkControl)] = randomTerm.terms.contains(fixedTerm);
-			Json::Value randomVariables(Json::arrayValue);
-			for (const std::string& fixedTermComponent : fixedTerm.scomponents())
-				randomVariables.append(fixedTermComponent);
-
-			variable[fq(_randomEffects.variablesKey)] = randomVariables;
-			variables.append(variable);
+			variables.add(fixedTerm);
+			QMap<QString, Json::Value> checkValue;
+			checkValue[_randomEffects.checkControl] = randomTerm.terms.contains(fixedTerm);
+			controlValues[fixedTerm.asQString()] = checkValue;
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
-		componentValues[_randomEffects.variablesControl] = variables;
-		randomTermsMap[mainTerm] = componentValues;
+		componentValues[_randomEffects.variablesControl] = BoundControlTerms::makeOption(variables, controlValues, fq(_randomEffects.variablesKey), true, true, false);
+		randomTermsMap[mainTerm.asQString()] = componentValues;
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)
 		_addTermsToOptions(sourceMainTermsIt.first, options, sourceMainTermsIt.second);
 
-	options[fq(_sourceName)] = _randomEffects.componentsList->getJsonFromComponentValues(randomTermsMap);
+	options[fq(_sourceName)] = _randomEffects.componentsList->getJsonFromComponentValues(mainTerms, randomTermsMap);
+
+	Log::log() << "TATA: options " << options.toStyledString() << std::endl;
 
 	return remainingParsedTerms;
 }
@@ -648,23 +673,27 @@ QMap<QString, QString> FormulaSource::additionalOptionStrings() const
 
 		const ExtraOption& extraOption = _extraOptions.contains(controlName) ? _extraOptions[controlName] : ExtraOption(controlName);
 		bool valueIsBool = boundControl->boundValue().type() == Json::booleanValue;
-		Terms terms = valueIsBool ? _onlyTrueTerms(controlName, _model->terms()) : _model->terms();
-		if (terms.size() == 0) continue;
+		std::pair<Terms, Json::Value> termsWithChangedTypes = valueIsBool ? _onlyTrueTerms(controlName) : std::make_pair(_model->terms(), _model->getVariableTypes(true));
+		if (termsWithChangedTypes.first.size() == 0) continue;
+
 		QString optionValue;
+		const Terms& terms = termsWithChangedTypes.first;
+		const Json::Value& changedTypes = termsWithChangedTypes.second;
 
 		if (valueIsBool && extraOption.useFormula)
-			optionValue = "~ " + generateInteractionTerms(terms);
+			optionValue = "~ " + generateInteractionTerms(terms, changedTypes);
 		else
 		{
 			optionValue = "list(";
-			bool first = true;
-			for (const Term& term : _model->terms())
+			int i = 0;
+			for (const Term& term : terms)
 			{
-				if (!first) optionValue += ", ";
-				first = false;
+				const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
+				if (i > 0) optionValue += ", ";
 
-				if (valueIsBool)	optionValue += FormulaParser::transformToFormulaTerm(term, FormulaParser::allInterationsSeparator, true);
-				else				optionValue += FormulaParser::transformToFormulaTerm(term, FormulaParser::allInterationsSeparator, true) + " = " + RSyntax::transformJsonToR(boundControl->boundValue());
+				if (valueIsBool)	optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true);
+				else				optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true) + " = " + RSyntax::transformJsonToR(boundControl->boundValue());
+				i++;
 			}
 			optionValue += ")";
 		}

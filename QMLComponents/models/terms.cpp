@@ -24,6 +24,7 @@
 #include <QIODevice>
 #include <QSet>
 #include "utilities/qutils.h"
+#include "variableinfo.h"
 
 using namespace std;
 
@@ -530,7 +531,38 @@ void Terms::setUndraggableTerms(const Terms& undraggableTerms)
 	_terms = newTerms;
 }
 
+Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) const
+{
+	Json::Value types(Json::arrayValue);
 
+	auto changedType = [&, onlyChanged, info] (const QString& term, columnType type) -> Json::Value
+	{
+		if (onlyChanged && info && (columnType)info->requestInfo(VariableInfo::VariableType, term).toInt() == type)
+			return Json::nullValue;
+		else
+			return columnTypeToString(type);
+	};
+
+	for (const Term& term : _terms)
+	{
+		if (term.components().size() == 1)
+			types.append(changedType(term.asQString(), term.type()));
+		else
+		{
+			Json::Value componentTypes(Json::arrayValue);
+			columnTypeVec termTypes = term.types();
+			int i = 0;
+			for (const QString component : term.components())
+			{
+				componentTypes.append(changedType(component, termTypes.size() > i ? termTypes[i] : columnType::unknown));
+				i++;
+			}
+			types.append(componentTypes);
+		}
+	}
+
+	return types;
+}
 
 void Terms::set(const QByteArray & array, bool isUnique)
 {

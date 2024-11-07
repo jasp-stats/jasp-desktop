@@ -302,12 +302,8 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 	return result;
 }
 
-Json::Value ComponentsListBase::getJsonFromComponentValues(const ListModel::RowControlsValues &termsWithComponentValues)
+Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	Terms terms;
-	for (const QString& term : termsWithComponentValues.keys())
-		terms.add(Term::readTerm(term));
-
 	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKey), containsInteractions(), containsVariables());
 }
 

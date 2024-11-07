@@ -274,7 +274,7 @@ bool ListModel::addRowControl(const QString &key, JASPControl *control)
 	return _rowControlsMap.contains(key) ? _rowControlsMap[key]->addJASPControl(control) : false;
 }
 
-QStringList ListModel::termsTypes()
+QStringList ListModel::getUsedTypes() const
 {
 	QSet<QString> types;
 
@@ -297,7 +297,7 @@ void ListModel::setVariableType(int ind, columnType type)
 	if (term.type() == type)
 		return;
 
-	Term newTerm(term);
+	Term newTerm = term;
 	newTerm.setType(type);
 	sourceColumnTypeChanged(newTerm);
 }
@@ -792,4 +792,12 @@ void ListModel::_replaceTerm(int index, const Term &term)
 {
 	_terms.replace(index, _checkTermType(term));
 	setUpRowControls();
+}
+
+Json::Value ListModel::getVariableTypes(bool onlyChanged) const
+{
+	if (onlyChanged && _listView->hasMandatoryType())
+		return Json::nullValue;
+
+	return _terms.types(onlyChanged, this);
 }

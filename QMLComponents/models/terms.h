@@ -30,6 +30,8 @@
 #include "term.h"
 #include "controls/jaspcontrol.h"
 
+class VariableInfoConsumer;
+
 ///
 /// Terms is a list of Term. They are used in VariablesList
 /// Some extra functionalities are added to deal with terms with interactions, in order for example to remove all terms that contain some component
@@ -123,6 +125,8 @@ public:
 	bool strictlyEquals(const Terms &terms) const; // Also takes care of the draggable flag
 	void setDraggable(bool draggable);
 	void setUndraggableTerms(const Terms& undraggableTerms);
+
+	Json::Value types(bool onlyChanged = false, const VariableInfoConsumer* info = nullptr) const;
 
 private:
 

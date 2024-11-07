@@ -29,6 +29,8 @@ FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 	_controlType			= ControlType::FactorsForm;
 	_useControlMouseArea	= false;
 	_containsVariables		= true;
+	_mayUseFormula			= false;
+	_useTermsInRSyntax		= false;
 }
 
 void FactorsFormBase::setUpModel()
@@ -47,49 +49,38 @@ void FactorsFormBase::setUpModel()
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
 	ListModelFactorsForm::FactorVec factors;
-	Json::Value updatedValue = value; // If the value has no types, then we need to update it.
 
-	for (Json::Value& factor : updatedValue)
+	for (const Json::Value& factor : value)
 	{
-		Json::Value types = factor.isMember("types") ? factor["types"] : Json::arrayValue;
-		int i = 0;
-
 		Terms initTerms;
-		for (const Json::Value& termsJson : factor[fq(_optionKey)])
+		for (const Json::Value& termJson : factor[fq(_optionKey)])
 		{
 			std::vector<std::string> components;
 
-			if (allowInteraction())
+			if (termJson.isArray())
 			{
 				// For interaction, each term is an array of strings
-				for (const Json::Value& elt : termsJson)
+				for (const Json::Value& elt : termJson)
 					if (elt.isString())
 						components.push_back(elt.asString());
 			}
-			else
+			else if (termJson.isString())
 				// If not, each term is just a string
-				components.push_back(termsJson.asString());
+				components.push_back(termJson.asString());
 
-			Term term(components);
-			columnType type = columnType::unknown;
-			if (types.size() <= i)
+			if (components.size() > 0)
 			{
-				if (components.size() == 1)
-					type = model()->getVariableRealType(tq(components[0]));
-				types.append(columnTypeToString(type));
+				columnTypeVec types;
+				for (const std::string& component : components)
+					types.push_back(model()->getVariableRealType(tq(component)));
+				Term term(components, types);
+				initTerms.add(term);
 			}
-			else
-				type = columnTypeFromString(types[i].asString());
-			term.setType(type);
-			initTerms.add(term);
-
-			i++;
 		}
-		factor["types"] = types;
 		factors.push_back(ListModelFactorsForm::Factor(tq(factor["name"].asString()), tq(factor["title"].asString()), initTerms));
 	}
 
-	BoundControlBase::bindTo(updatedValue);
+	BoundControlBase::bindTo(value);
 	
 	_factorsModel->initFactors(factors);
 }
@@ -104,7 +95,6 @@ Json::Value FactorsFormBase::createJson() const
 		row["name"] = fq(baseName() + QString::number(i + startIndex()));
 		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
 		row[fq(_optionKey)] = Json::Value(Json::arrayValue);
-		row["types"] = Json::Value(Json::arrayValue);
 
 		result.append(row);
 	}
@@ -145,7 +135,6 @@ void FactorsFormBase::termsChangedHandler()
 		factorJson["name"] = fq(factor.name);
 		factorJson["title"] = fq(factor.title);
 		Json::Value termsJson(Json::arrayValue);
-		Json::Value typesJson(Json::arrayValue);
 
 		for (const Term &term : factor.listView ? factor.listView->model()->terms() : factor.initTerms)
 		{
@@ -158,10 +147,8 @@ void FactorsFormBase::termsChangedHandler()
 			else
 				termJson = term.asString();
 			termsJson.append(termJson);
-			typesJson.append(columnTypeToString(term.type()));
 		}
 		factorJson[fq(_optionKey)] = termsJson;
-		factorJson["types"] = typesJson;
 		boundValue.append(factorJson);
 	}
 	

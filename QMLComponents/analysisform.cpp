@@ -129,7 +129,11 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			clearFormErrors();
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
+				blockValueChangeSignal(true);
+				_analysis->clearOptions();
+				bindTo(Json::nullValue);
 				bindTo(options);
+				blockValueChangeSignal(false, false);
 				_analysis->boundValueChangedHandler();
 			}
 		}
@@ -309,6 +313,9 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 {
 	if(list.length() == 0)
 		return "";
+
+	if (list.size() == 1)
+		return list[0];
 
 	QString text;
 	for (const QString & msg : list)

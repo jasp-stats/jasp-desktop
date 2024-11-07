@@ -126,16 +126,3 @@ void TextAreaBase::_setInitialized(const Json::Value &value)
 	if (keepText)
 		setText(currentText);
 }
-
-bool TextAreaBase::autoCheckSyntax() const
-{
-	return _autoCheckSyntax;
-}
-
-void TextAreaBase::setAutoCheckSyntax(bool newAutoCheckSyntax)
-{
-	if (_autoCheckSyntax == newAutoCheckSyntax)
-		return;
-	_autoCheckSyntax = newAutoCheckSyntax;
-	emit autoCheckSyntaxChanged();
-}
