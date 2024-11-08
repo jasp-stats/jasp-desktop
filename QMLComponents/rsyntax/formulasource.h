@@ -82,7 +82,7 @@ protected:
 	void							_addError(const QString& error)																	const;
 	std::string						_controlToOptionName(const QString& name)														const;
 	QString							_generateRandomEffectsTerms(const Terms& terms)													const;
-	QString							_generateSimpleTerms(const Terms& terms, const Json::Value& changedTypes)						const;
+	QString							_generateSimpleTerms(const Terms& terms, const Json::Value& types)								const;
 	std::pair<Terms, Json::Value>	_onlyTrueTerms(const QString& controlName)														const;
 	bool							_areTermsInOptions(ListModelAssignedInterface* model, const Json::Value& options, Terms& terms)	const;
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;

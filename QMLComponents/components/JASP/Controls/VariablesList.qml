@@ -401,7 +401,7 @@ VariablesListBase
 				property bool	containsDragItem:		variablesList.itemContainingDrag === itemRectangle
 				property bool	isVirtual:				(typeof model.type !== "undefined") && model.type.includes("virtual")
 				property bool	isVariable:				(typeof model.type !== "undefined") && model.type.includes("variable")
-				property string	preview:				!isVariable ? "" : model.preview
+				property string	preview:				!isVariable || (typeof model.preview === "undefined") ? "" : model.preview
 				property bool	isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool	draggable:				variablesList.draggable && model.selectable
 				property string	columnType:				isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""

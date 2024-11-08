@@ -23,6 +23,7 @@
 #include "controls/rowcontrols.h"
 #include "controls/sourceitem.h"
 #include "log.h"
+#include "jsonutilities.h"
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
@@ -796,8 +797,13 @@ void ListModel::_replaceTerm(int index, const Term &term)
 
 Json::Value ListModel::getVariableTypes(bool onlyChanged) const
 {
-	if (onlyChanged && _listView->hasMandatoryType())
-		return Json::nullValue;
+	return getVariableTypes(_terms, onlyChanged);
+}
 
-	return _terms.types(onlyChanged, this);
+Json::Value ListModel::getVariableTypes(const Terms& terms, bool onlyChanged) const
+{
+	if (onlyChanged && _listView->hasMandatoryType()) // Don't need to ask for the changed types: this avoids to add the type in formula when it is not necessary
+		return JsonUtilities::vecToJsonArray(stringvec(terms.size(), columnTypeToString(columnType::unknown)));
+
+	return terms.types(onlyChanged, this);
 }

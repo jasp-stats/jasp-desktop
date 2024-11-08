@@ -246,7 +246,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 			result += (hasIntercept ? "1" : "0");
 
 			if (filteredTerms.size() > 0)
-				result += " + " + generateInteractionTerms(filteredTerms, filteredTerms.types(true, componentListModel));
+				result += " + " + generateInteractionTerms(filteredTerms, componentListModel->getVariableTypes(filteredTerms, true));
 
 			result += (hasCorrelation ? " | " : " || ");
 			result += key;
@@ -309,14 +309,14 @@ QString FormulaSource::generateInteractionTerms(const Terms& tterms, const Json:
 }
 
 
-QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Value& changedTypes) const
+QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Value& types) const
 {
 	QString result;
 	int i = 0;
 
 	for (const Term& term : terms)
 	{
-		Json::Value changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
+		Json::Value changedType = types.size() > i ? types[i] : Json::nullValue;
 		if (i > 0) result += " + ";
 		result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator);
 		i++;

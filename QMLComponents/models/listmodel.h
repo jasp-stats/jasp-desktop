@@ -91,6 +91,7 @@ public:
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)					const;
 			Json::Value				getVariableTypes(bool onlyChanged = false)					const;
+			Json::Value				getVariableTypes(const Terms& terms, bool onlyChanged = false)	const;
 			columnType				getVariableRealType(const QString& name)					const;
 			QString					getVariablePreview(	const QString& name)					const;
 			QStringList				getUsedTypes()												const;

@@ -191,8 +191,11 @@ Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::R
 	else if (isSingleRow)
 		optionValue = terms.size() > 0 ? terms[0].asString() : "";
 	else
+	{
+		optionValue = Json::arrayValue;
 		for (const Term& term : terms)
 			optionValue.append(term.asString());
+	}
 
 	result["value"] = optionValue;
 	result["types"] = terms.types();
