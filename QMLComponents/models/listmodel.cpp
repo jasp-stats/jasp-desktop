@@ -117,7 +117,7 @@ Term ListModel::_checkTermType(const Term &term) const
 	return checkedTerm;
 }
 
-Terms ListModel::_checkTermsTypes(const std::vector<Term>& terms) const
+Terms ListModel::checkTermsTypes(const std::vector<Term>& terms) const
 {
 	Terms checkedTerms;
 	for (const Term& term : terms)
@@ -127,7 +127,7 @@ Terms ListModel::_checkTermsTypes(const std::vector<Term>& terms) const
 }
 
 
-Terms ListModel::_checkTermsTypes(const Terms& terms) const
+Terms ListModel::checkTermsTypes(const Terms& terms) const
 {
 	Terms checkedTerms = terms; // Keep terms properties
 	for (Term& term : checkedTerms)
@@ -742,14 +742,14 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 
 void ListModel::_setTerms(const std::vector<Term> &terms)
 {
-	_checkTermsTypes(terms);
+	checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
 
 void ListModel::_setTerms(const Terms &terms)
 {
-	_terms.set(_checkTermsTypes(terms));
+	_terms.set(checkTermsTypes(terms));
 	setUpRowControls();
 }
 
@@ -779,7 +779,7 @@ void ListModel::_removeLastTerm()
 
 void ListModel::_addTerms(const Terms &terms)
 {
-	_terms.add(_checkTermsTypes(terms));
+	_terms.add(checkTermsTypes(terms));
 	setUpRowControls();
 }
 

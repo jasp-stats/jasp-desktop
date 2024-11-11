@@ -541,6 +541,8 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 
 					if (found)
 					{
+						terms = sourceModel->checkTermsTypes(terms);
+						termsToSearch = sourceModel->checkTermsTypes(termsToSearch);
 						_addTermsToOptions(sourceModel, options, termsToSearch);
 						break;
 					}
