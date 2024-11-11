@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-11-11 12:00+0000\n"
+"PO-Revision-Date: 2024-11-12 06:48+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -1775,7 +1775,7 @@ msgstr "Fallo al cambiar el tamaño del gráfico"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr "Si"
+msgstr "Sí"
 
 msgctxt "MessageForwarder|"
 msgid "No"
@@ -5342,7 +5342,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Yes"
-msgstr "Si"
+msgstr "Sí"
 
 msgctxt "MainWindow|"
 msgid "No"
