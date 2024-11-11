@@ -78,7 +78,7 @@ Terms FormulaParser::parseTerm(QString termStr)
 		result = baseTerms.crossCombinations();
 	}
 	else
-		result.add(readTerm(termStr));
+		result.add(readTerm(trim(termStr)));
 
 	return result;
 }
