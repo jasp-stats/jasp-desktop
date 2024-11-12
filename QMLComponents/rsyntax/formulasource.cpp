@@ -257,24 +257,25 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 	return result;
 }
 
-QString FormulaSource::generateInteractionTerms(const Terms& tterms, const Json::Value& changedTypes)
+QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes)
 {
 	// If the terms has interactions, try to use the '*' symbol when all combinations of the subterms are also present in the terms.
 	QString result;
 	bool first = true;
-	std::vector<Term> terms = tterms.terms();
-	std::sort(terms.begin(), terms.end(), [](const Term& a, const Term& b){ return a.components().length() < b.components().length(); });
-	std::vector<Term> orgTerms = terms;
+	std::vector<Term> sortedTerms = terms.terms();
+	QMap<Term, Json::Value> termsToAdd;
+	std::sort(sortedTerms.begin(), sortedTerms.end(), [](const Term& a, const Term& b){ return a.components().length() < b.components().length(); });
+	std::vector<Term> orgTerms = sortedTerms;
 
-	while (!terms.empty())
+	// First try to find out whether if several terms can be reduced in a crass combination term: "a * b" means "a + b + a:b"
+	while (!sortedTerms.empty())
 	{
-		if (!first)	result += " + ";
-		first = false;
-		const Term& term = terms.at(terms.size() - 1);
-		int orgInd = tterms.indexOf(term);
+		const Term& term = sortedTerms.at(sortedTerms.size() - 1);
+		int orgInd = terms.indexOf(term);
 		const Json::Value& changedType = changedTypes.size() > orgInd ? changedTypes[orgInd] : Json::nullValue;
-		terms.pop_back();
-		if (term.components().size() == 1)	result += FormulaParser::transformToFormulaTerm(term, changedType);
+		sortedTerms.pop_back();
+		if (term.components().size() == 1)
+			termsToAdd[term] = changedType;
 		else
 		{
 			bool allComponentsAreAlsoInTerms = true;
@@ -294,14 +295,27 @@ QString FormulaSource::generateInteractionTerms(const Terms& tterms, const Json:
 				// Remove the components and their combinations in terms so that they don't appear in the formula
 				for (const Term& oneTerm : allCrossedTerms)
 				{
-					auto found = std::find(terms.begin(), terms.end(), oneTerm);
-					if (found != terms.end()) terms.erase(found);
+					auto found = std::find(sortedTerms.begin(), sortedTerms.end(), oneTerm);
+					if (found != sortedTerms.end()) sortedTerms.erase(found);
 				}
 
+				if (!first)	result += " + ";
 				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator);
+				first = false;
 			}
 			else
-				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator);
+				termsToAdd[term] = changedType;
+		}
+	}
+
+	// Use the original order of the terms to add them in the formula
+	for (const Term term : terms)
+	{
+		if (termsToAdd.contains(term))
+		{
+			if (!first)	result += " + ";
+			result += FormulaParser::transformToFormulaTerm(term, termsToAdd[term], FormulaParser::interactionSeparator);
+			first = false;
 		}
 	}
 
