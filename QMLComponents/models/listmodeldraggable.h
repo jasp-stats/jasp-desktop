@@ -37,12 +37,10 @@ public:
 	
 	void					setDropMode(JASPControl::DropMode dropMode)			{ _dropMode = dropMode; }
 	
-	virtual QList<int>		indexesFromTerms(	const Terms		& terms)		const;
 	virtual Terms			canAddTerms(		const Terms		& terms)		const;
 	virtual Terms			addTerms(			const Terms		& terms,	int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues());
 	virtual void			moveTerms(			const QList<int>& indexes,	int dropItemIndex = -1);
 	virtual void			removeTerms(		const QList<int>& indexes);
-	virtual Terms			termsFromIndexes(	const QList<int>& indexes)		const;
 	
 protected:
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;

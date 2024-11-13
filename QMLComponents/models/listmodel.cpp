@@ -454,15 +454,42 @@ int ListModel::rowCount(const QModelIndex &) const
 	return int(terms().size());
 }
 
+Terms ListModel::termsFromIndexes(const QList<int> &indexes) const
+{
+	Terms result;
+
+	for (int index : indexes)
+		if (size_t(index) < terms().size())
+			result.add(terms().at(index));
+
+	return result;
+}
+
+QList<int> ListModel::indexesFromTerms(const  Terms & termsIn) const
+{
+	std::set<int>		result;
+	std::map<Term, int> termToIndex;
+
+	for(size_t t=0; t<terms().size(); t++)
+		termToIndex[terms().at(t)] = t;
+
+	for(const Term & term : termsIn)
+		if(termToIndex.count(term))
+			result.insert(termToIndex[term]);
+
+	return tql(result);
+}
+
+
+
 QVariant ListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
-	const Terms& myTerms = terms();
-	size_t row_t = size_t(row);
-	if (row_t >= myTerms.size())
+	Terms terms = termsFromIndexes({row});
+	if (terms.size() == 0)
 		return QVariant();
 
-	const Term& term = myTerms.at(row_t);
+	const Term& term = terms[0];
 
 	switch (role)
 	{

@@ -36,32 +36,6 @@ bool ListModelDraggable::keepTerms() const
 	return variablesList ? variablesList->keepVariablesWhenMoved() : false;
 }
 
-Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
-{
-	Terms result;
-
-	for (int index : indexes)
-		if (size_t(index) < terms().size())
-			result.add(terms().at(index));
-	
-	return result;
-}
-
-QList<int> ListModelDraggable::indexesFromTerms(const  Terms & termsIn) const
-{
-	std::set<int>		result;
-	std::map<Term, int> termToIndex;
-	
-	for(size_t t=0; t<terms().size(); t++)
-		termToIndex[terms().at(t)] = t;
-
-	for(const Term & term : termsIn)
-		if(termToIndex.count(term))
-			result.insert(termToIndex[term]);
-	
-	return tql(result);
-}
-
 void ListModelDraggable::removeTerms(const QList<int> &indices)
 {
 	if(!indices.count())
