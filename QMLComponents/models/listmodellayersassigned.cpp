@@ -107,7 +107,7 @@ Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, c
 	int layer = _variablesPerLayer.length();
 	int indexInLayer = 0;
 	if (dropItemIndex >= 0)
-		std::tie(layer, indexInLayer) = _getLayer(dropItemIndex, true);
+		auto [layer, indexInLayer] = _getLayer(dropItemIndex, true);
 	
 	if (layer >= _variablesPerLayer.length())
 	{
