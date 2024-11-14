@@ -90,7 +90,7 @@ When you have it, go to `Preferences/Advanced`, untick `Use default PAT for Gith
 ### Developing the module
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
-The advantage of installing the module is that all changes you make from this point onwards are (almost) instantly reflected in JASP. If not, then rebuild your module in Rstudio and click on the refresh symbol in the Modules list.
+The advantage of installing the module with the non-libpaths install is that all changes you make from this point onwards are (almost) instantly reflected in JASP, this however requires JASP to handle the install, which can be brittle. The development module with libpath support doesnt load changes automatically, so to see changes rebuild your module in Rstudio and click on the refresh symbol in the Modules list.
 If you add a checkbox in your .qml file, this checkbox will also appear on the analysis input panel of your module. 
 Similarly, if you change the title of your module in the .json file this will immediately change on the ribbon. 
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 
