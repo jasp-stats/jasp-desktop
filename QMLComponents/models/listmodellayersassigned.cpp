@@ -136,7 +136,7 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 	int layerDrop = _variablesPerLayer.length();
 	int indexInLayerDrop = 0;
 	if (dropItemIndex >= 0)
-		std::tie(layerDrop, indexInLayerDrop) = _getLayer(dropItemIndex, true);
+		auto [layerDrop, indexInLayerDrop] = _getLayer(dropItemIndex, true);
 	
 	if (layerDrop >= _variablesPerLayer.length())
 	{
