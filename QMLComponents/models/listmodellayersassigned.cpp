@@ -104,10 +104,7 @@ Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, c
 	
 	beginResetModel();
 	
-	int layer = _variablesPerLayer.length();
-	int indexInLayer = 0;
-	if (dropItemIndex >= 0)
-		auto [layer, indexInLayer] = _getLayer(dropItemIndex, true);
+	auto [layer, indexInLayer] = (dropItemIndex >= 0) ? _getLayer(dropItemIndex, true) : std::make_pair(int(_variablesPerLayer.length()), 0);
 	
 	if (layer >= _variablesPerLayer.length())
 	{
@@ -133,10 +130,7 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 {	
 	beginResetModel();
 	
-	int layerDrop = _variablesPerLayer.length();
-	int indexInLayerDrop = 0;
-	if (dropItemIndex >= 0)
-		auto [layerDrop, indexInLayerDrop] = _getLayer(dropItemIndex, true);
+	auto [layerDrop, indexInLayerDrop] = (dropItemIndex >= 0) ? _getLayer(dropItemIndex, true): std::make_pair(int(_variablesPerLayer.length()), 0);
 	
 	if (layerDrop >= _variablesPerLayer.length())
 	{
