@@ -775,11 +775,25 @@
       "kind": "folder",
       "children": [
         {
-          "name": "BCG-Vaccin",
-          "path": "BCG Vaccine.jasp",
-          "description": "Toetsstatistiek van studies die de effectiviteit van het BCG-Vaccin onderzochten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een vast-effect en willekeurig-effect meta-analyse kan worden toegepast. <br><br> <i>Data aangeboden door Raoul Grasman.<\/i>",
+          "name": "Effectiveness of the BCG Vaccine Against Tuberculosis",
+          "path": "Effectiveness of the BCG Vaccine Against Tuberculosis.jasp",
+          "description": "Resultaten van 13 studies die de effectiviteit van het Bacillus Calmette-Guérin (BCG)-vaccin tegen tuberculose onderzoeken. <br><br> Het voorbeeld JASP-bestand demonstreert een effectgrootteberekening op basis van de samenvattende statistieken, een trechterplotanalyse voor visuele verkenning van de resultaten en een meta-regressieanalyse met forest plot en bubbelplotvisualisaties.<br><br> <i>Dataset verkregen uit het R-pakket metadat.</i>",
           "kind": "file",
-          "associated_datafile": "BCG Vaccine.csv"
+          "associated_datafile": "Effectiveness of the BCG Vaccine Against Tuberculosis.csv"
+        },
+        {
+          "name": "Effects of Modified School Calendars on Student Achievement",
+          "path": "Effects of Modified School Calendars on Student Achievement.jasp",
+          "description": "Resultaten van 56 studies over de effecten van aangepaste schoolkalenders op de leerprestaties van studenten. <br><br> Het voorbeeld JASP-bestand demonstreert een meerlagige meta-analyse. <br><br> <i>Dataset verkregen uit het R-pakket metadat.</i>",
+          "kind": "file",
+          "associated_datafile": "Effects of Modified School Calendars on Student Achievement.csv"
+        },
+        {
+          "name": "Temporal Trends in Fish Community Structures in French Rivers",
+          "path": "Temporal Trends in Fish Community Structures in French Rivers.jasp",
+          "description": "Resultaten van studies die veranderingen in de abundantie van vissoorten in Franse rivieren onderzoeken. <br><br> Het voorbeeld JASP-bestand demonstreert een meerlagige en ruimtelijke meta-analyse. <br><br> <i>Dataset verkregen uit het R-pakket metadat.</i>",
+          "kind": "file",
+          "associated_datafile": "Temporal Trends in Fish Community Structures in French Rivers.csv"
         },
         {
           "name": "EuroSCORE II",
@@ -791,7 +805,7 @@
         {
           "name": "Precognition",
           "path": "Precognition.jasp",
-          "description": "Summary of estimates from the infamous 2011 article `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' door Daryl J. Bem. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een PET-PEESE publication bias adjustment. <br><br> <i> Dataset opgehaald uit het R-pakket RoBMA. <\/i>",
+          "description": "Samenvatting van schattingen uit het beruchte artikel uit 2011 `Feeling the future: Experimental evidence for anomalous retroactive influences on cognition and affect' van Daryl J. Bem. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een PET-PEESE publicatiebiascorrectie.<br><br> <i>Dataset verkregen uit het R-pakket RoBMA.</i>",
           "kind": "file",
           "associated_datafile": "Precognition.csv"
         },
