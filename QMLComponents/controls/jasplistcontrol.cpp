@@ -410,7 +410,7 @@ bool JASPListControl::checkLevelsConstraints()
 
 QStringList JASPListControl::levels() const
 {
-	return initialized() ? model()->allLevels(model()->terms()) : QStringList();
+	return model() ? model()->allLevels(model()->terms()) : QStringList();
 }
 
 QStringList JASPListControl::allowedColumnsIcons() const

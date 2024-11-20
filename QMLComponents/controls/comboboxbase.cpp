@@ -82,6 +82,8 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 			index = int(std::distance(values.begin(), itr));
 		}
 	}
+	else if (!selectedValue.empty())
+		_lostValue = selectedValue;
 
 	_setCurrentProperties(index);
 
@@ -133,7 +135,7 @@ Json::Value ComboBoxBase::createJson() const
 
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::stringValue || optionValue.type() == Json::arrayValue;
+	return optionValue.type() == Json::stringValue || optionValue.type() == Json::objectValue;
 }
 
 void ComboBoxBase::setUp()
@@ -151,8 +153,10 @@ void ComboBoxBase::setUp()
 	connect(this,	&ComboBoxBase::currentValueChanged,			[this] () { if (containsVariables()) checkLevelsConstraints(); } );
 
 	if (form())
+	{
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
-
+		connect(form(), &AnalysisForm::analysisChanged,			[this] () { _lostValue = ""; });
+	}
 }
 
 void ComboBoxBase::setUpModel()
@@ -179,6 +183,17 @@ void ComboBoxBase::termsChangedHandler()
 		if (initialized())
 		{
 			auto itr = std::find(values.begin(), values.end(), fq(_currentValue));
+
+			if (!_lostValue.empty())
+			{
+				auto lostValueItr = std::find(values.begin(), values.end(), _lostValue);
+				if (lostValueItr != values.end())
+				{
+					itr = lostValueItr;
+					_orgValue = _lostValue;
+					_lostValue = "";
+				}
+			}
 
 			if (itr == values.end())	index = _getStartIndex();
 			else						index = int(std::distance(values.begin(), itr));
