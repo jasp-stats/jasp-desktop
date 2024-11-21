@@ -34,6 +34,7 @@ TextInputBase
 	property alias	control:			control
 	property alias	text:				textField.label
 	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
+	property int	textFormat:			Text.AutoText
 	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
@@ -151,6 +152,7 @@ TextInputBase
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			text:					textField.label
 			width:					implicitWidth
+			textFormat:				textField.textFormat
 		}
 	}
 
@@ -279,6 +281,7 @@ TextInputBase
 			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			text:					textField.afterLabel
+			textFormat:				textField.textFormat
 		}
 	}
 }

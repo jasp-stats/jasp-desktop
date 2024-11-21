@@ -46,6 +46,7 @@ FocusScope
 	readonly	property string iconsFolder				: jaspTheme.iconPath
 	readonly	property string	expanderButtonIcon		: "expander-arrow-up.png"
 				property alias	columns					: expanderArea.columns
+				property int	textFormat				: Text.AutoText
 	
 	states: [
 		State
@@ -131,6 +132,7 @@ FocusScope
 				anchors.verticalCenter	: parent.verticalCenter
 				font					: jaspTheme.font
 				color					: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+				textFormat				: expanderWrapper.textFormat
             }
         }
     }

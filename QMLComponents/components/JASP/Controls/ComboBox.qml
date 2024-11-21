@@ -20,6 +20,7 @@ ComboBoxBase
 	property alias	value:					comboBox.currentValue
 	property alias	indexDefaultValue:		comboBox.currentIndex
 	property alias	fieldWidth:				control.width
+	property int	textFormat:				Text.AutoText
 	property bool	showVariableTypeIcon:	containsVariables
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
@@ -87,6 +88,7 @@ ComboBoxBase
 			anchors.verticalCenter: parent.verticalCenter
 			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			width:		implicitWidth
+			textFormat: comboBox.textFormat
 		}
 	}
 

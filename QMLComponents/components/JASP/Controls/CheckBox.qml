@@ -42,8 +42,8 @@ CheckBoxBase
 			property alias	font:					label.font
 			property alias	fontInfo:				label.fontInfo
 			property alias	label:					control.text
-			property alias	labelTextFormat:		label.textFormat
 			property alias	checked:				control.checked
+			property int	textFormat:				Text.AutoText
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
@@ -111,6 +111,7 @@ CheckBoxBase
 			font:				jaspTheme.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
+			textFormat:			checkBox.textFormat
 		}
 
 		background: Rectangle

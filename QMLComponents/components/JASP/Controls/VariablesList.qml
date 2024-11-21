@@ -43,6 +43,7 @@ VariablesListBase
 	property alias	itemRectangle					: itemRectangle
 	property alias	scrollBar						: scrollBar
 	property alias	itemTitle						: itemTitle
+	property int	textFormat						: Text.AutoText
 	property string	rowComponentTitle				: ""
 	property string itemType						: "variables"
 	property int	dropMode						: JASP.DropNone
@@ -146,6 +147,7 @@ VariablesListBase
 		height			: title ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		textFormat		: variablesList.textFormat
 	}
 
 	Text
@@ -156,6 +158,7 @@ VariablesListBase
 		height			: rowComponentTitle ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		textFormat		: variablesList.textFormat
 	}
 
 	Rectangle
