@@ -83,7 +83,11 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 		}
 	}
 	else if (!selectedValue.empty())
-		_lostValue = selectedValue;
+		// The control is bound with a value, but its model is empty.
+		// Probably the values are set with a direct reference of a property of another control, like varList.levels, and this control is not yet initialized.
+		// (as the combobox has no direct reference to the varList self, it cannot add a dependency in _depends).
+		// So keep this value, and use it if the model is reset during the initialization of the form.
+		_unusedInitialValue = selectedValue;
 
 	_setCurrentProperties(index);
 
@@ -155,7 +159,7 @@ void ComboBoxBase::setUp()
 	if (form())
 	{
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
-		connect(form(), &AnalysisForm::analysisChanged,			[this] () { _lostValue = ""; });
+		connect(form(), &AnalysisForm::analysisChanged,			[this] () { _unusedInitialValue = ""; });
 	}
 }
 
@@ -184,14 +188,14 @@ void ComboBoxBase::termsChangedHandler()
 		{
 			auto itr = std::find(values.begin(), values.end(), fq(_currentValue));
 
-			if (!_lostValue.empty())
+			if (!_unusedInitialValue.empty())
 			{
-				auto lostValueItr = std::find(values.begin(), values.end(), _lostValue);
+				auto lostValueItr = std::find(values.begin(), values.end(), _unusedInitialValue);
 				if (lostValueItr != values.end())
 				{
 					itr = lostValueItr;
-					_orgValue = _lostValue;
-					_lostValue = "";
+					_orgValue = _unusedInitialValue;
+					_unusedInitialValue = "";
 				}
 			}
 

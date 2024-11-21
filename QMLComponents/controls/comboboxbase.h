@@ -92,7 +92,7 @@ protected:
 								_currentColumnType,
 								_currentColumnRealType,
 								_currentColumnTypeIcon;
-	std::string					_lostValue;
+	std::string					_unusedInitialValue;
 	int							_currentIndex			= -1;
 	bool						_fixedWidth				= false;
 
