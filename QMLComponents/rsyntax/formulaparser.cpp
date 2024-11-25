@@ -1,11 +1,12 @@
 #include "formulaparser.h"
+#include "variableinfo.h"
 #include <QRegularExpression>
 #include "log.h"
 
 const char FormulaParser::interactionSeparator			= ':';
 const char FormulaParser::allInterationsSeparator		= '*';
 
-Terms FormulaParser::parseTerm(QString term)
+Terms FormulaParser::parseTerm(QString termStr)
 {
 	auto trim = [] (const QString& input) -> QString
 	{
@@ -31,19 +32,53 @@ Terms FormulaParser::parseTerm(QString term)
 		return output;
 	};
 
+	auto readTermWithType = [] (const QString& input) -> std::pair<QString, columnType>
+	{
+		QString term = input;
+		columnType type = columnType::unknown;
+		int index = input.lastIndexOf('.');
+		if (index > 0)
+		{
+			QString typeStr = input.mid(index+1);
+			if (columnTypeValidName(fq(typeStr)))
+			{
+				type = columnTypeFromQString(typeStr);
+				term = input.first(index);
+			}
+		}
+		if (type == columnType::unknown)
+			type = columnType(VariableInfo::info()->provider()->provideInfo(VariableInfo::VariableType, input).toInt());
+
+		return std::make_pair(term, type);
+	};
+
+	auto readTerm = [=] (const QString& input) -> Term
+	{
+		QStringList components = input.split(FormulaParser::interactionSeparator),
+					parsedComponents;
+		columnTypeVec types;
+		for (const QString& component : components)
+		{
+			std::pair<QString, columnType> pair = readTermWithType(component);
+			parsedComponents.push_back(pair.first);
+			types.push_back(pair.second);
+		}
+
+		return Term(parsedComponents, types);
+	};
+
 	Terms result;
-	if (term.contains(FormulaParser::interactionSeparator))
+
+	if (termStr.contains(FormulaParser::allInterationsSeparator))
 	{
-		term.replace(FormulaParser::interactionSeparator, Term::separator);
-		result.add(Term::readTerm(term));
-	}
-	else if (term.contains(FormulaParser::allInterationsSeparator))
-	{
-		Terms baseTerms = trimList(term, FormulaParser::allInterationsSeparator);
+		Terms baseTerms;
+		QStringList baseTermsStr = trimList(termStr, FormulaParser::allInterationsSeparator);
+		for (const QString& baseTermStr : baseTermsStr)
+			baseTerms.add(readTerm(baseTermStr));
 		result = baseTerms.crossCombinations();
 	}
 	else
-		result.add(term);
+		result.add(readTerm(trim(termStr)));
 
 	return result;
 }
@@ -131,23 +166,26 @@ bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& p
 	return true;
 }
 
-QString FormulaParser::transformToFormulaTerm(const Term &term, char join, bool addQuotes)
+QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Value& changedType, char join, bool addQuotes)
 {
-	static QRegularExpression rx("^[a-zA-Z0-9_]+$");
+	static QRegularExpression rx("^[a-zA-Z0-9_\\.]+$");
 	QString result;
 	const QStringList& components = term.components();
+	int i = 0;
 
-	bool first = true;
-	for (const QString& component : components)
+	for (QString component : components)
 	{
-		if (!first) 
-			result += QString(' ') + join + ' ';
+		std::string compType = (changedType.isArray() && changedType.size() > i ? changedType[i] : changedType).asString();
+		if (columnTypeFromString(compType, columnType::unknown) != columnType::unknown)
+			component.append("." + tq(compType));
 
-		first = false;
+		if (i > 0)
+			result += QString(' ') + join + ' ';
 
 		if (addQuotes)						result += '"' + component + '"';
 		else if (component.contains(rx))	result += component;
 		else								result += '`' + component + '`';
+		i++;
 	}
 	return result;
 }

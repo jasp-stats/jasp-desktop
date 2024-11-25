@@ -37,6 +37,7 @@ set(JASP_EXTRA_MODULES
         "jaspAudit"
         "jaspBain"
         "jaspBFF"
+        "jaspBfpack"
         "jaspBsts"
         "jaspCircular"
         "jaspCochrane"

@@ -727,11 +727,14 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 void DataSetView::setTextItemInfo(int row, int col, QQuickItem * textItem)
 {
 	JASPTIMER_SCOPE(DataSetView::setTextItemInfo);
+	
+	double	desiredX = _colXPositions.size()	> col ? _colXPositions[col]		: 0,
+			desiredW = _dataColsMaxWidth.size() > col ? _dataColsMaxWidth[col]	: 0;
 
 	textItem->setHeight(_dataRowsMaxHeight		- (2 * _itemVerticalPadding));
-	textItem->setWidth(_dataColsMaxWidth[col]	- (2 * _itemHorizontalPadding));
+	textItem->setWidth(desiredW					- (2 * _itemHorizontalPadding));
 
-	textItem->setX(_colXPositions[col]				+ _itemHorizontalPadding);
+	textItem->setX(desiredX							+ _itemHorizontalPadding);
 	textItem->setY(((row + 1) * _dataRowsMaxHeight)	+ _itemVerticalPadding);
 
 	textItem->setZ(-4);

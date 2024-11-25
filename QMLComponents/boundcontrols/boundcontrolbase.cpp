@@ -121,21 +121,12 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 {
 	for (const Json::Value& row : value)
 	{
-		std::vector<std::string> term;
-		const Json::Value& keyValue = row[key];
-		if (keyValue.isArray())
-		{
-			for (const Json::Value& component : keyValue)
-				term.push_back(component.asString());
-		}
-		else if (keyValue.isString())
-			term.push_back(keyValue.asString());
-		else
-			Log::log() << "Key (" << key << ") bind value is not an array or a string in " << getName() << ": " << value.toStyledString() << std::endl;
+		Json::Value keyValue = row[key];
 
+		Term term = Term::readTerm(keyValue);
 		if (term.size() > 0)
 		{
-			terms.add(Term(term));
+			terms.add(term);
 
 			QMap<QString, Json::Value> controlMap;
 			for (auto itr = row.begin(); itr != row.end(); ++itr)
@@ -145,7 +136,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 					controlMap[tq(name)] = *itr;
 			}
 
-			allControlValues[Term(term).asQString()] = controlMap;
+			allControlValues[term.asQString()] = controlMap;
 		}
 	}
 }
@@ -158,39 +149,9 @@ Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const Lis
 	{
 		QMap<QString, Json::Value> componentValues = componentValuesMap[term.asQString()];
 
-		Json::Value rowValues(Json::objectValue),
-					keyValue; // depending of keyHasVariables & hasInteraction, keyValue can be an object, an array or a string
+		Json::Value rowValues(Json::objectValue);
 
-		if (keyHasVariables)
-		{
-			// If the key of the row contains variables, set 'value' and 'types'
-			Json::Value jsonValue, jsonTypes;
-
-			if (hasInteraction)
-			{
-				for (const std::string& comp : term.scomponents())
-					jsonValue.append(comp);
-				for (columnType type : term.types())
-					jsonTypes.append(columnTypeToString(type));
-			}
-			else
-			{
-				jsonValue = term.asString();
-				jsonTypes = columnTypeToString(term.type());
-			}
-			keyValue["value"] = jsonValue;
-			keyValue["types"] = jsonTypes;
-		}
-		else
-		{
-			if (hasInteraction)
-				for (const std::string& comp : term.scomponents())
-					keyValue.append(comp);
-			else
-				keyValue = term.asString();
-		}
-
-		rowValues[key] = keyValue;
+		rowValues[key] = term.toJson(hasInteraction, keyHasVariables);
 
 		QMapIterator<QString, Json::Value> it2(componentValues);
 		while (it2.hasNext())

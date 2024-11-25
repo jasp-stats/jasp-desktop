@@ -218,7 +218,7 @@ msgstr "Copiar LaTeX"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr "Renovar todo"
+msgstr "Actualizar todo"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
@@ -574,7 +574,7 @@ msgstr "O ficheiro procede probablemente dunha versión antiga de JASP."
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr "Renovar a análise pode cambiar os resultados."
+msgstr "Actualizar a análise pode cambiar os resultados."
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -5480,11 +5480,6 @@ msgstr ""
 "customFilter & perhapsAnotherFilter'\n"
 "Fai clic na icona (i) do recanto inferior dereito para obter máis axuda.\n"
 
-#, qt-format
-msgctxt "Modules::ChangeIncompatible|"
-msgid "Reset analysis because of '%1'"
-msgstr "Reiniciar a análise debido a '%1'"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Campo nome-de-columna-está-libre"
@@ -5546,46 +5541,57 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Modo de Desenvolvedor"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Módulo de Desenvolvemento"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable direct libpath mode"
-msgstr ""
+msgstr "Habilitar o módulo libpah directo"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"Cargar módulos desde un binario nunha biblioteca de R, en troques de "
+"instalalos desde as fontes."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Cartafol da fonte:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Libpath:"
-msgstr ""
+msgstr "Libpath:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Elixir a biblioteca de R onde instalaches o Módulo de Desenvolvemento"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Nome do módulo:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
 msgstr ""
+"Introduce o nome (de paquete) do Módulo de Desenvolvemento que queres cargar"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
 msgstr ""
+"Seleccionar un Módulo de Desenvolvemento completando as preferencias "
+"pertinentes"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
+msgstr "Actualizar o Módulo de Desenvolvedor "
+
+msgctxt "ExcelImporter|"
+msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"Léronse 0 columnas válidas do ficheiro; por favor, comproba teu ficheiro de "
+"datos."

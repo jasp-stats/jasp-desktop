@@ -25,8 +25,6 @@
 #include "boundcontrols/boundcontrol.h"
 #include "analysisbase.h"
 #include "models/listmodel.h"
-#include "models/listmodeltermsavailable.h"
-#include "utilities/messageforwarder.h"
 #include "utilities/qutils.h"
 #include <queue>
 

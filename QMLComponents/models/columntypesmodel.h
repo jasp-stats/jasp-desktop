@@ -50,6 +50,7 @@ public:
 	void									setTypes(columnTypeVec types);
 	bool									hasType(columnType type)									const;
 	bool									hasAllTypes()												const;
+	bool									hasMandatoryType()											const;
 	columnType								defaultType()												const			{ return _defaultType;	}
 	QStringList								iconList()													const;
 

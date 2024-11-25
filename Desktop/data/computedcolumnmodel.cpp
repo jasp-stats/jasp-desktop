@@ -228,6 +228,8 @@ void ComputedColumnModel::computeColumnSucceeded(QString columnNameQ, QString wa
 
 	if(dataChanged)
 		checkForDependentColumnsToBeSent(columnNameQ);
+	
+	DataSetPackage::pkg()->labelFilterChanged(); //in case the user had enabled some labelfilter on the computed column?
 }
 
 void ComputedColumnModel::computeColumnFailed(QString columnNameQ, QString errorQ)
@@ -262,7 +264,7 @@ void ComputedColumnModel::recomputeColumn(QString columnName)
 	std::string		colName = fq(columnName);
 	Column		*	col		= dataSet()->column(colName);
 
-	if(col && col->isComputed() && col->codeType() != computedColumnType::analysis && col->codeType() == computedColumnType::analysisNotComputed)
+	if(col && col->isComputed() && col->codeType() == computedColumnType::analysisNotComputed)
 		DataSetPackage::pkg()->columnSetDefaultValues(colName);
 
 	checkForDependentColumnsToBeSent(columnName, col && col->isComputed());
@@ -293,23 +295,23 @@ void ComputedColumnModel::checkForDependentColumnsToBeSent(QString columnNameQ, 
 void ComputedColumnModel::checkForDependentAnalyses(const std::string & columnName)
 {
 	Analyses::analyses()->applyToAll([&](Analysis * analysis)
+	{
+		stringset	usedCols	= analysis->usedVariables(),
+					createdCols = analysis->createdVariables();
+
+		//Dont create an infinite loop please, but do this only for non-computed columns created by an analysis (aka distributions, because otherwise it breaks things like planning from audit)
+		if(usedCols.count(columnName) && (!createdCols.count(columnName) || !DataSetPackage::pkg()->isColumnAnalysisNotComputed(columnName)))
 		{
-			stringset	usedCols	= analysis->usedVariables(),
-						createdCols = analysis->createdVariables();
+			bool allColsValidated = true;
 
-			//Dont create an infinite loop please, but do this only for non-computed columns created by an analysis (aka distributions, because otherwise it breaks things like planning from audit)
-			if(usedCols.count(columnName) && (!createdCols.count(columnName) || !DataSetPackage::pkg()->isColumnAnalysisNotComputed(columnName)))
-			{
-				bool allColsValidated = true;
+			for(Column * col : computedColumns())
+				if(usedCols.count(col->name()) > 0 && col->invalidated())
+					allColsValidated = false;
 
-				for(Column * col : computedColumns())
-					if(usedCols.count(col->name()) > 0 && col->invalidated())
-						allColsValidated = false;
-
-				if(allColsValidated)
-					analysis->refresh();
-			}
-		});
+			if(allColsValidated)
+				analysis->refresh();
+		}
+	});
 }
 
 void ComputedColumnModel::removeColumn()

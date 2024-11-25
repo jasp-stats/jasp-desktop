@@ -5399,11 +5399,6 @@ msgstr ""
 "perhapsAnotherFilter'.\n"
 "右下の(i)アイコンをクリックすると, さらなるヘルプが表示されます.\n"
 
-#, qt-format
-msgctxt "Modules::ChangeIncompatible|"
-msgid "Reset analysis because of '%1'"
-msgstr ""
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr ""
@@ -5499,4 +5494,8 @@ msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
+msgstr ""
+
+msgctxt "ExcelImporter|"
+msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""

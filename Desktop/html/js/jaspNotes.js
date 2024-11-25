@@ -540,7 +540,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				html = this.model.get("text");
 			}
 
-			delt = this.$quill.clipboard.convert(html);
+			delt = this.$quill.clipboard.convert({"html" : html});    //see:https://github.com/slab/quill/issues/4135
 		}
 
 		this.$quill.setContents(delt);

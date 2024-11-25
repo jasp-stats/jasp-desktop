@@ -36,7 +36,7 @@ public:
 //	static ParsedTerm	parseTerm(const QString& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 //	static ParsedTerm	parseTerm(const ParsedTerm& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 
-	static QString		transformToFormulaTerm(const Term& term, char join = FormulaParser::allInterationsSeparator, bool withCrossCombinations = false);
+	static QString		transformToFormulaTerm(const Term& term, const Json::Value& changedType = Json::nullValue, char join = FormulaParser::allInterationsSeparator, bool withCrossCombinations = false);
 
 private:
 	static ParsedTerms	squeezeConditionalTerms(const ParsedTerms& terms);

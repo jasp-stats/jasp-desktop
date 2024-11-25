@@ -614,9 +614,37 @@ bool Column::overwriteDataAndType(stringvec data, columnType colType)
 			data.resize(_data->rowCount());
 	}
 
-	bool changes = _type != colType;
-	setValues(data, data, 0, &changes);
+	bool			changes		= _type != colType,
+					toScale		= colType == columnType::scale;
+	stringvec		otherData	= data,
+				&	values		= toScale  ? data : otherData,
+				&	labels		= !toScale ? data : otherData;
+	
+	// If we are going to allow users to edit things it would be nice if we didnt just throw it away so rough
+	// See: https://github.com/jasp-stats/INTERNAL-jasp/issues/2680
+	// All we have to do is find the value/label per label/value given depending on the selected columnType
+	
+	
+	strstrmap											replacePerKey;
+	std::function<std::string(const std::string &)>		getOther		= [&](const std::string & in) 
+	{ 
+		if(!replacePerKey.count(in))
+		{
+			Label * tmp = toScale ? labelByValue(in) : labelByDisplay(in); 
+			replacePerKey[in] = !tmp ? in : toScale ? tmp->label() : tmp->originalValueAsString();
+		}
+		
+		return replacePerKey.at(in);
+	};
+	
+	for(size_t i=0; i<data.size(); i++)
+		otherData[i] = getOther(data[i]);
+	
+	setValues(values, labels, 0, &changes);
 	setType(colType);
+	labelsTempReset();
+	
+	labelsHandleAutoSort();
 	
 	return changes;
 }
@@ -1686,8 +1714,6 @@ Labelset Column::labelsByValue(const std::string & value) const
 	return Labelset(found.begin(), found.end());
 }
 
-
-
 Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
 {
 	JASPTIMER_SCOPE(Column::labelsByValueAndDisplay);
@@ -1793,14 +1819,14 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 
 	bool replaceAllDoubles = false;
 	static double dummy;
-	
+
 	for(Label * label : labels())	
-		if(!label->isEmptyValue() && !(label->originalValue().isDouble() || ColumnUtils::getDoubleValue(label->originalValueAsString(), dummy)))
+		if(!label->isEmptyValue())
 		{
-				replaceAllDoubles = true;
+				replaceAllDoubles = true; // because if there is any label at all it will show up at the end after the doubles without a Label. If this label is a double and the same as the label we could try to turn it back into a non-Label. But it still would break for Labels with a double value and a non-double label. So instead lets just make a label for everything. We keep the doubles only if there are only doubles. This should speed up a lot of operations for massive double datasets so its worth the extra hassle I guess. Just like you, who just read to the end of this line that really really breaks the 80's guideline of 80 characterwide code ;)
 				break;
 		}
-	
+
 	if(replaceAllDoubles)
 		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	

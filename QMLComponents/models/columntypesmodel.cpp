@@ -102,6 +102,11 @@ bool ColumnTypesModel::hasAllTypes() const
 	return true;
 }
 
+bool ColumnTypesModel::hasMandatoryType() const
+{
+	return _types.size() == 1 && _types[0] != columnType::unknown;
+}
+
 QStringList ColumnTypesModel::iconList() const
 {
 	QStringList result;

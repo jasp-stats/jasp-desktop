@@ -158,3 +158,6 @@
 	path = Modules/jaspBFF
 	url = https://github.com/jasp-stats/jaspBFF
 	branch = master
+[submodule "Modules/jaspBfpack"]
+	path = Modules/jaspBfpack
+	url = https://github.com/jasp-stats/jaspBfpack

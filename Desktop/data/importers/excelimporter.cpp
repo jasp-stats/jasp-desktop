@@ -18,6 +18,7 @@
 #include "excelimporter.h"
 #include "data/importers/excel/excel.h"
 #include "data/importers/excel/excelimportcolumn.h"
+#include "utilities/qutils.h"
 #include <columnutils.h>
 #include <string>
 #include <QFileInfo>
@@ -55,6 +56,9 @@ ImportDataSet* ExcelImporter::loadFile(const std::string &locator, std::function
 
 	cols = excel.countCols();
 	importColumns.reserve(cols);
+
+	if (cols == 0)
+		throw std::runtime_error(fq(tr("0 valid columns were read from the file, please check your data file.")));
 
 	for (uint32_t row = 0; row < rows; ++row) 
 	{

@@ -2,6 +2,7 @@
 #include <regex>
 #include "timers.h"
 #include "dataset.h"
+#include "columnencoder.h"
 #include "jsonutilities.h"
 #include "databaseinterface.h"
 
@@ -586,30 +587,14 @@ const DatabaseInterface &DataSet::db() const
 
 stringset DataSet::findUsedColumnNames(std::string searchThis)
 {
-	//sort of based on rbridge_encodeColumnNamesToBase64
-	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
-	std::set<std::string> columnsFound;
-	size_t foundPos = -1;
-
-	for(Column * column : _columns)
-	{
-		const std::string & col = column->name();
-		
-		while((foundPos = searchThis.find(col, foundPos + 1)) != std::string::npos)
-		{
-			size_t foundPosEnd = foundPos + col.length();
-			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
-			bool startIsFree	= foundPos == 0							|| std::regex_match(searchThis.substr(foundPos - 1, 1),	nonNameChar);
-			bool endIsFree		= foundPosEnd == searchThis.length()	|| (std::regex_match(searchThis.substr(foundPosEnd, 1),	nonNameChar) && searchThis[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
-
-			if(startIsFree && endIsFree)
-			{
-				columnsFound.insert(col);
-				searchThis.replace(foundPos, col.length(), ""); // remove the found entry
-			}
-
-		}
-	}
-
+	stringset columnsFound, columnsWithTypeFound;
+	ColumnEncoder::columnEncoder()->encodeRScript(searchThis, &columnsWithTypeFound);
+	
+	//The found columns now also include the type, but we dont really care about that right now.
+	//Instead we'll make use of the encode->decode not being symmetrical (for the results to be less ugly) and dropping the type
+	
+	for(const std::string & colPlusType : columnsWithTypeFound)
+		columnsFound.insert(ColumnEncoder::columnEncoder()->decode(ColumnEncoder::columnEncoder()->encode(colPlusType)));
+	
 	return columnsFound;
 }

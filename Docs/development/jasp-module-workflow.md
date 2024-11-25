@@ -68,6 +68,8 @@ Before creating any of the other files you should now add the module folder in J
 4. Navigate to 'Advanced'
 5. Place a checkmark before 'Developer mode'
 6. Browse to the module source folder, aka a folder with the same name as your module and that contains `inst/Description.qml`.
+   
+	- When this does not work, enable libpath mode and enter your libpath into the textbox along with the name of the module you wish to load (use `.libPaths()` to identify where your packages are stored). Make sure that you have built your module in Rstudio: open the `.Rproj` located in the module source folder, go the 'Build' tab and click on 'Install'.		
 
 ### Steps to install the module in JASP:
 1. Open JASP
@@ -88,7 +90,7 @@ When you have it, go to `Preferences/Advanced`, untick `Use default PAT for Gith
 ### Developing the module
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
-The advantage of installing the module is that all changes you make from this point onwards are (almost) instantly reflected in JASP.
+The advantage of installing the module with the non-libpaths install is that all changes you make from this point onwards are (almost) instantly reflected in JASP, this however requires JASP to handle the install, which can be brittle. The development module with libpath support doesnt load changes automatically, so to see changes rebuild your module in Rstudio and click on the refresh symbol in the Modules list.
 If you add a checkbox in your .qml file, this checkbox will also appear on the analysis input panel of your module. 
 Similarly, if you change the title of your module in the .json file this will immediately change on the ribbon. 
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 

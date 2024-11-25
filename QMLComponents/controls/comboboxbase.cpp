@@ -82,6 +82,12 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 			index = int(std::distance(values.begin(), itr));
 		}
 	}
+	else if (!selectedValue.empty())
+		// The control is bound with a value, but its model is empty.
+		// Probably the values are set with a direct reference of a property of another control, like varList.levels, and this control is not yet initialized.
+		// (as the combobox has no direct reference to the varList self, it cannot add a dependency in _depends).
+		// So keep this value, and use it if the model is reset during the initialization of the form.
+		_unusedInitialValue = selectedValue;
 
 	_setCurrentProperties(index);
 
@@ -133,7 +139,7 @@ Json::Value ComboBoxBase::createJson() const
 
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::stringValue || optionValue.type() == Json::arrayValue;
+	return optionValue.type() == Json::stringValue || optionValue.type() == Json::objectValue;
 }
 
 void ComboBoxBase::setUp()
@@ -151,8 +157,10 @@ void ComboBoxBase::setUp()
 	connect(this,	&ComboBoxBase::currentValueChanged,			[this] () { if (containsVariables()) checkLevelsConstraints(); } );
 
 	if (form())
+	{
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
-
+		connect(form(), &AnalysisForm::analysisChanged,			[this] () { _unusedInitialValue = ""; });
+	}
 }
 
 void ComboBoxBase::setUpModel()
@@ -179,6 +187,17 @@ void ComboBoxBase::termsChangedHandler()
 		if (initialized())
 		{
 			auto itr = std::find(values.begin(), values.end(), fq(_currentValue));
+
+			if (!_unusedInitialValue.empty())
+			{
+				auto lostValueItr = std::find(values.begin(), values.end(), _unusedInitialValue);
+				if (lostValueItr != values.end())
+				{
+					itr = lostValueItr;
+					_orgValue = _unusedInitialValue;
+					_unusedInitialValue = "";
+				}
+			}
 
 			if (itr == values.end())	index = _getStartIndex();
 			else						index = int(std::distance(values.begin(), itr));

@@ -28,21 +28,23 @@ const char * Term::separator =
 #endif
 
 
-Term::Term(const std::vector<std::string>	components)	{ initFrom(tq(components));		}
-Term::Term(const std::string				component)	{ initFrom(tq(component));		}
-Term::Term(const QStringList				components)	{ initFrom(components);			}
-Term::Term(const QString					component)	{ initFrom(component);			}
+Term::Term(const std::vector<std::string>	components, const columnTypeVec&	types)	{ initFrom(tq(components),	types);		}
+Term::Term(const std::string				component,	columnType				type)	{ initFrom(tq(component),	type);		}
+Term::Term(const QStringList				components, const columnTypeVec&	types)	{ initFrom(components,		types);		}
+Term::Term(const QString					component,	columnType				type)	{ initFrom(component,		type);		}
 
-void Term::initFrom(const QStringList components)
+void Term::initFrom(const QStringList components, const columnTypeVec& types)
 {
 	_asQString	= components.join(separator);
 	_components = components;
+	_types = types;
 }
 
-void Term::initFrom(const QString component)
+void Term::initFrom(const QString component, columnType type)
 {
 	_components.append(component);
 	_asQString = component;
+	_types = {type};
 }
 
 const QStringList &Term::components() const
@@ -141,7 +143,7 @@ bool Term::replaceVariableName(const std::string & oldName, const std::string & 
 			changed = true;
 		}
 
-	initFrom(_components);
+	initFrom(_components, _types);
 
 	return changed;
 }
@@ -154,4 +156,67 @@ Term Term::readTerm(std::string str)
 Term Term::readTerm(QString str)
 {
 	return Term(str.split(separator));
+}
+
+Term Term::readTerm(const Json::Value &json, columnType defaultType)
+{
+	Json::Value jsonValue = json;
+	std::vector<std::string> components;
+	columnTypeVec types;
+
+	if (json.isObject() && json.isMember("value") && json.isMember("types"))
+	{
+		jsonValue = json["value"];
+		Json::Value jsonType = json["types"];
+
+		if (jsonType.isArray())
+		{
+			for (const Json::Value& type : jsonType)
+				types.push_back(columnTypeFromString(type.asString(), columnType::unknown));
+		}
+		else if (jsonType.isString())
+			types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
+	}
+
+	if (jsonValue.isArray())
+	{
+		for (const Json::Value& component : jsonValue)
+			components.push_back(component.asString());
+	}
+	else if (jsonValue.isString())
+		components.push_back(jsonValue.asString());
+
+	while (types.size() < components.size())
+		types.push_back(defaultType);
+
+	return Term(components, types);
+}
+
+Json::Value Term::toJson(bool useArray, bool useValueAndType) const
+{
+	useArray = useArray || _components.size();
+	Json::Value result, value, types;
+
+	if (useArray)
+	{
+		for (const QString& component : _components)
+			value.append(fq(component));
+		for (columnType type : _types)
+			types.append(columnTypeToString(type));
+	}
+	else
+	{
+		value = asString();
+		types = columnTypeToString(type());
+	}
+
+	if (useValueAndType)
+	{
+		result["value"] = value;
+		result["types"] = types;
+	}
+	else
+		result = value;
+
+	return result;
 }

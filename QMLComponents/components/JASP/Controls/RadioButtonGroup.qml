@@ -35,6 +35,7 @@ RadioButtonsGroupBase
 			property alias	columns:				contentArea.columns
 			property alias	text:					control.title
 			property int	leftPadding:			jaspTheme.groupContentPadding
+			property int	textFormat:				Text.AutoText
 
 	implicitWidth:	radioButtonsOnSameRow
 						? contentArea.x + contentArea.implicitWidth
@@ -57,6 +58,7 @@ RadioButtonsGroupBase
 		verticalAlignment: Text.AlignVCenter
 		font:			jaspTheme.font
 		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled		
+		textFormat:		control.textFormat
     }
     
 

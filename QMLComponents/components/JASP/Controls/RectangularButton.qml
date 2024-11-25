@@ -24,8 +24,7 @@ Rectangle
 {
 	id:				filterButtonRoot
 
-	
-
+	property alias  textFormat:			buttonText.textFormat
 	property string	text:				""
 	property string	toolTip:			""
 	property string textColor:			"default"

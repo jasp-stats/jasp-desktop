@@ -73,7 +73,7 @@ bool BoundControlLayers::isJsonValid(const Json::Value &optionValue) const
 			{
 				const Json::Value& nameOption = value["name"];
 				const Json::Value& variablesOption = value["variables"];
-				valid = nameOption.type() == Json::stringValue && variablesOption.type() == Json::arrayValue;
+				valid = nameOption.type() == Json::stringValue && (variablesOption.type() == Json::arrayValue || variablesOption.type() == Json::stringValue);
 
 				if (!valid)
 					break;

@@ -129,8 +129,17 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			clearFormErrors();
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
-				bindTo(options);
-				_analysis->boundValueChangedHandler();
+				blockValueChangeSignal(true);
+				_analysis->clearOptions();
+				bindTo(Json::nullValue);
+				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
+				// For this, bind all controls to null and wait for the controls to be completely destroyed.
+				QTimer::singleShot(0, [=](){
+					bindTo(options);
+					blockValueChangeSignal(false, false);
+					_analysis->boundValueChangedHandler();
+				});
+
 			}
 		}
 
@@ -309,6 +318,9 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 {
 	if(list.length() == 0)
 		return "";
+
+	if (list.size() == 1)
+		return list[0];
 
 	QString text;
 	for (const QString & msg : list)
@@ -591,7 +603,6 @@ void AnalysisForm::setAnalysisUp()
 	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
 	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::setRSyntaxText,				Qt::QueuedConnection	);
 
-	setRSyntaxText();
 	emit analysisChanged();
 }
 

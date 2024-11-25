@@ -845,7 +845,8 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	BoundControl* bControl = boundControl();
 	if (bControl)
 	{
-		bControl->setDefaultBoundValue(bControl->createJson());
+		if (!_initialized) // If it was already initialized, don't reset its default value: this can be the case when R syntax is re-run
+			bControl->setDefaultBoundValue(bControl->createJson());
 		bControl->bindTo(value == Json::nullValue ? bControl->createJson() : value);
 	}
 

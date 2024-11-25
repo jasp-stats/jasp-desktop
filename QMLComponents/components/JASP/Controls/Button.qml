@@ -34,6 +34,7 @@ JASPControl
 	readonly	property alias control:		control
 				property alias text:		control.text
 				property alias label:		control.text
+				property alias textFormat:	control.textFormat
 				property alias iconSource:	control.iconSource
 	readonly	property alias pressed:		control._pressed
 

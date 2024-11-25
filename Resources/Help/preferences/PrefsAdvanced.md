@@ -10,12 +10,6 @@ With the advanced parameters in JASP you can specify the following options:
 ### Remember enabled modules
 If you've enabled this option then JASP will remember which modules are activated and make sure they remain that way even when you close JASP. So supposing `Summary Statistics` was enabled and JASP closes then after reopening JASP it will be enabled immediately.
 
-### Developer mode (beta version)
-
-This is where you specify if you want to use JASP modules or not.
-A location folder can be selected where new modules reside.
-Developers modules can be added directly from this folder or modules can be added from another specified location.
-
 The CRAN repository URL determines where JASP will try to download the required packages specified in a module from.
 The default is `https://cloud.r-project.org` but a good alternative (when packages seemingly can't be installed for instance) is `cran.r-project.org`.
 
@@ -32,6 +26,23 @@ This can be done by generating a new token for your github account at https://gi
 Please *DO NOT* give this personal access token **any permissions** at all, because it really isn't necessary for the way it is used in JASP.
 
 Otherwise you can set it specifically in JASP by unchecking "Use default PAT" and then copying your token-code into the custom GITHUB_PAT textbox, this is probably the easiest if you do not know what an environment variable is.
+
+### Developer mode
+This is where you specify if you want to use JASP development modules or not (see section *Development module* below).
+
+
+## Development module
+
+The development module option allows you to enter a libpath and use that to load modules from.  This mean you can build/install a module with its dependencies in Rstudio and then load it into JASP.
+For example load a module project and run:
+```
+renv::activate()
+renv::restore()
+renv::install('.')
+.libPaths()
+```
+
+Copy the first entry into the libpath menu textbox along with the name of the module you wish to load. After that, open the sidebar with the modules and select "Install Developer Module" to install your locally built module. Each time you adjust something in your module, such as the .R or .qml files, rebuild the module in Rstudio and refresh the developer module in JASP. You can also use keyboard shortcuts: `ctrl+shift+R` for refreshing the R part, `ctrl+shift+U` for the qml part, and `ctrl+shift+D` for refreshing the whole module.
 
 ## Logging options
 

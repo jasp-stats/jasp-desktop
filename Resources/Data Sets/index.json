@@ -775,11 +775,25 @@
       "kind": "folder",
       "children": [
         {
-          "name": "BCG Vaccine",
-          "path": "BCG Vaccine.jasp",
-          "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effect and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
+          "name": "Effectiveness of the BCG Vaccine Against Tuberculosis",
+          "path": "Effectiveness of the BCG Vaccine Against Tuberculosis.jasp",
+          "description": "Results from 13 studies examining the effectiveness of the Bacillus Calmette-Guerin (BCG) vaccine against tuberculosis. <br><br> The example JASP file demonstrates a effect size calculation from the summary statistics, a funnel plot analysis for visual exploration of the results, and a meta-regression analysis with forest plot and bubble plot visualizations.<br><br> <i> Data set retrieved from the R package metadat.<\/i>",
           "kind": "file",
-          "associated_datafile": "BCG Vaccine.csv"
+          "associated_datafile": "Effectiveness of the BCG Vaccine Against Tuberculosis.csv"
+        },
+        {
+          "name": "Effects of Modified School Calendars on Student Achievement",
+          "path": "Effects of Modified School Calendars on Student Achievement.jasp",
+          "description": "Results from 56 studies on the effects of modified school calendars on student achievement. <br><br> The example JASP file demonstrates a multilevel meta-analysis. <br><br> <i> Data set retrieved from the R package metadat.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Effects of Modified School Calendars on Student Achievement.csv"
+        },
+        {
+          "name": "Temporal Trends in Fish Community Structures in French Rivers",
+          "path": "Temporal Trends in Fish Community Structures in French Rivers.jasp",
+          "description": "Results from studies examining changes in the abundance of fish species in French rivers. <br><br> The example JASP file demonstrates a multilevel and spatial meta-analysis. <br><br> <i> Data set retrieved from the R package metadat.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Temporal Trends in Fish Community Structures in French Rivers.csv"
         },
         {
           "name": "EuroSCORE II",

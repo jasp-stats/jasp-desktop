@@ -376,7 +376,7 @@ Item
 				else if(isURLInWhitelist(requestedURL.hostname))
 				{
 					request.accept();
-					console.log("Navigation requeste accepted:", requestedURL.hostname)
+					console.log("Navigation requested accepted:", requestedURL.hostname)
 				}
 				else
 				{
@@ -429,14 +429,21 @@ Item
 			// where use i18n(...) to return  translations
 			property var i18nObject: 
 			{
-				"Bold"			   : qsTr("Bold"), 			       "Italic" : qsTr("Italic"),   	"Underline"    : qsTr("Underline"),    "Link"           : qsTr("Link"),           "Formula"      : qsTr("Formula"),
-				"Code Block"	   : qsTr("Code Block"),  		   "Header" : qsTr("Header"),   	"Ordered List" : qsTr("Ordered List"), "Unordered List" : qsTr("Unordered List"), "Font Color"   : qsTr("Font Color"), 
-				"Background Color" : qsTr("Background Color"),  "Subscript" : qsTr("Subscript"), 	 "Superscript"  : qsTr("Superscript"),  "Blockquote"    : qsTr("Blockquote"), 		"Add Indent" : qsTr("Add Indent"),
-				"Remove Indent"   : qsTr("Remove Indent"), 	    "Font Size" : qsTr("Font Size"), "Clear Formatting" : qsTr("Clear Formatting"),			"Click here to add text" : qsTr("Click here to add text"),
-				"Copied to clipboard" : qsTr("Copied to clipboard"), "Citations copied to clipboard" : qsTr("Citations copied to clipboard"), 	"LaTeX code copied to clipboard" : qsTr("LaTeX code copied to clipboard"),
-				"Introduction:"		: qsTr("Introduction:"),  "Conclusion:" : qsTr("Conclusion:"), "Image" : qsTr("Image"), "Embed web video" : qsTr("Embed web video"), "Unsupported video services" : qsTr("Unsupported video services"), 
-				"JASP only allows the following videoservices:" : qsTr("JASP only allows the following videoservices:"), "Contact the JASP team to request adding another videoservice to the list." : qsTr("Contact the JASP team to request adding another videoservice to the list."),
-				"Input LaTeX here:" : qsTr("Input LaTeX here:"),  "Press `Cmd/Ctrl + Enter` to apply;" : qsTr("Press `Cmd/Ctrl + Enter` to apply;"), "Click to apply formula" : qsTr("Click to apply formula"), "Click to edit this formula" : qsTr("Click to edit this formula")
+				"Bold":					qsTr("Bold"),					"Italic":			qsTr("Italic"),			"Underline":		qsTr("Underline"),			"Link":						qsTr("Link"),					
+				"Formula":				qsTr("Formula"),				"Font Color":		qsTr("Font Color"),		"Add Indent":		qsTr("Add Indent"),			"Embed web video" :			qsTr("Embed web video"), 
+				"Code Block":			qsTr("Code Block"),				"Header":			qsTr("Header"),			"Ordered List":		qsTr("Ordered List"),		"Unordered List":			qsTr("Unordered List"),			
+				"Background Color":		qsTr("Background Color"),		"Subscript":		qsTr("Subscript"),		"Superscript":		qsTr("Superscript"),		"Blockquote":				qsTr("Blockquote"),				
+				"Remove Indent":		qsTr("Remove Indent"),			"Font Size":		qsTr("Font Size"),		"Clear Formatting":	qsTr("Clear Formatting"),	"Click here to add text" :	qsTr("Click here to add text"),
+				"Copied to clipboard":	qsTr("Copied to clipboard"),	"Introduction:":	qsTr("Introduction:"),	"Conclusion:" :		qsTr("Conclusion:"),		"Image" :					qsTr("Image"),					
+				
+				"Unsupported video services":			qsTr("Unsupported video services"),			"Input LaTeX here:":				qsTr("Input LaTeX here:"),		
+				"Press `Cmd/Ctrl + Enter` to apply;":	qsTr("Press `Cmd/Ctrl + Enter` to apply;"),	"Click to apply formula":			qsTr("Click to apply formula"), 
+				"Click to edit this formula":			qsTr("Click to edit this formula"),			"Citations copied to clipboard":	qsTr("Citations copied to clipboard"), 	
+				"LaTeX code copied to clipboard":		qsTr("LaTeX code copied to clipboard"),	
+				
+				"JASP only allows the following videoservices:":								qsTr("JASP only allows the following videoservices:"), 
+				"Contact the JASP team to request adding another videoservice to the list." :	qsTr("Contact the JASP team to request adding another videoservice to the list.")
+				
 			}
 
 			function setTranslatedResultsString()

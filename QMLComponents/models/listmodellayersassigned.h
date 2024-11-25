@@ -24,6 +24,7 @@
 class ListModelLayersAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
+
 public:
 	ListModelLayersAssigned(JASPListControl* listView);
 
@@ -31,15 +32,18 @@ public:
 	Terms		addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
 	void		removeTerms(const QList<int>& indexes)												override;
-	
+	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
+	QList<int>	indexesFromTerms(const Terms &terms)										const	override;
+	Terms		termsFromIndexes(const QList<int> &indexes)									const	override;
+
 	void		initLayers(const std::vector<std::vector<std::string> >& allVariables);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getLayers()				const;
-		
+
 private:
-	int			_getLayer(int index, int& realIndex, bool inclusive = false) const;
+	std::pair<int, int>	_getLayer(int index, bool insertVariable = false)					const;
 	void		_setTerms();
-	
-	QList<QList<QString> >	_variables;
+
+	QList<QList<QString> >	_variablesPerLayer;
 };
 
 #endif // LISTMODELLAYERSASSIGNED_H

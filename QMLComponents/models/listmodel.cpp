@@ -23,6 +23,7 @@
 #include "controls/rowcontrols.h"
 #include "controls/sourceitem.h"
 #include "log.h"
+#include "jsonutilities.h"
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
@@ -116,7 +117,7 @@ Term ListModel::_checkTermType(const Term &term) const
 	return checkedTerm;
 }
 
-Terms ListModel::_checkTermsTypes(const std::vector<Term>& terms) const
+Terms ListModel::checkTermsTypes(const std::vector<Term>& terms) const
 {
 	Terms checkedTerms;
 	for (const Term& term : terms)
@@ -126,7 +127,7 @@ Terms ListModel::_checkTermsTypes(const std::vector<Term>& terms) const
 }
 
 
-Terms ListModel::_checkTermsTypes(const Terms& terms) const
+Terms ListModel::checkTermsTypes(const Terms& terms) const
 {
 	Terms checkedTerms = terms; // Keep terms properties
 	for (Term& term : checkedTerms)
@@ -274,7 +275,7 @@ bool ListModel::addRowControl(const QString &key, JASPControl *control)
 	return _rowControlsMap.contains(key) ? _rowControlsMap[key]->addJASPControl(control) : false;
 }
 
-QStringList ListModel::termsTypes()
+QStringList ListModel::getUsedTypes() const
 {
 	QSet<QString> types;
 
@@ -297,7 +298,7 @@ void ListModel::setVariableType(int ind, columnType type)
 	if (term.type() == type)
 		return;
 
-	Term newTerm(term);
+	Term newTerm = term;
 	newTerm.setType(type);
 	sourceColumnTypeChanged(newTerm);
 }
@@ -453,15 +454,42 @@ int ListModel::rowCount(const QModelIndex &) const
 	return int(terms().size());
 }
 
+Terms ListModel::termsFromIndexes(const QList<int> &indexes) const
+{
+	Terms result;
+
+	for (int index : indexes)
+		if (size_t(index) < terms().size())
+			result.add(terms().at(index));
+
+	return result;
+}
+
+QList<int> ListModel::indexesFromTerms(const  Terms & termsIn) const
+{
+	std::set<int>		result;
+	std::map<Term, int> termToIndex;
+
+	for(size_t t=0; t<terms().size(); t++)
+		termToIndex[terms().at(t)] = t;
+
+	for(const Term & term : termsIn)
+		if(termToIndex.count(term))
+			result.insert(termToIndex[term]);
+
+	return tql(result);
+}
+
+
+
 QVariant ListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
-	const Terms& myTerms = terms();
-	size_t row_t = size_t(row);
-	if (row_t >= myTerms.size())
+	Terms terms = termsFromIndexes({row});
+	if (terms.size() == 0)
 		return QVariant();
 
-	const Term& term = myTerms.at(row_t);
+	const Term& term = terms[0];
 
 	switch (role)
 	{
@@ -741,14 +769,14 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 
 void ListModel::_setTerms(const std::vector<Term> &terms)
 {
-	_checkTermsTypes(terms);
+	checkTermsTypes(terms);
 	_terms.set(terms);
 	setUpRowControls();
 }
 
 void ListModel::_setTerms(const Terms &terms)
 {
-	_terms.set(_checkTermsTypes(terms));
+	_terms.set(checkTermsTypes(terms));
 	setUpRowControls();
 }
 
@@ -778,7 +806,7 @@ void ListModel::_removeLastTerm()
 
 void ListModel::_addTerms(const Terms &terms)
 {
-	_terms.add(_checkTermsTypes(terms));
+	_terms.add(checkTermsTypes(terms));
 	setUpRowControls();
 }
 
@@ -792,4 +820,17 @@ void ListModel::_replaceTerm(int index, const Term &term)
 {
 	_terms.replace(index, _checkTermType(term));
 	setUpRowControls();
+}
+
+Json::Value ListModel::getVariableTypes(bool onlyChanged) const
+{
+	return getVariableTypes(_terms, onlyChanged);
+}
+
+Json::Value ListModel::getVariableTypes(const Terms& terms, bool onlyChanged) const
+{
+	if (onlyChanged && _listView->hasMandatoryType()) // Don't need to ask for the changed types: this avoids to add the type in formula when it is not necessary
+		return JsonUtilities::vecToJsonArray(stringvec(terms.size(), columnTypeToString(columnType::unknown)));
+
+	return terms.types(onlyChanged, this);
 }

@@ -66,7 +66,7 @@ public:
 
 	static const QString			interceptTerm;
 	static QVector<FormulaSource*>	makeFormulaSources(FormulaBase* formula, const QVariant& var);
-	static QString					generateInteractionTerms(const Terms& terms);
+	static QString					generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes);
 
 	const QString&					sourceName()																					const	{ return _sourceName;	}
 	QStringList						modelSources()																					const;
@@ -82,8 +82,8 @@ protected:
 	void							_addError(const QString& error)																	const;
 	std::string						_controlToOptionName(const QString& name)														const;
 	QString							_generateRandomEffectsTerms(const Terms& terms)													const;
-	QString							_generateSimpleTerms(const Terms& terms)														const;
-	Terms							_onlyTrueTerms(const QString& controlName, const Terms& terms)									const;
+	QString							_generateSimpleTerms(const Terms& terms, const Json::Value& types)								const;
+	std::pair<Terms, Json::Value>	_onlyTrueTerms(const QString& controlName)														const;
 	bool							_areTermsInOptions(ListModelAssignedInterface* model, const Json::Value& options, Terms& terms)	const;
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;
 	FormulaParser::ParsedTerms		_fillOptionsWithFixedTerms(ListModel* model, const FormulaParser::ParsedTerms &parsedTerms, Json::Value &options, QMap<QString, Terms>* termsMap = nullptr)	const;

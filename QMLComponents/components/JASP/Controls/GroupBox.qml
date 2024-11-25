@@ -39,9 +39,10 @@ GroupBoxBase
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing
 			property int	columns:			1
 			property bool	indent:				false
-			property bool	alignFields:	true
+			property bool	alignFields:		true
 			property alias	label:				label
 			property alias	preferredWidth:		contentArea.width
+			property int	textFormat:			Text.AutoText
 
 			property var	_allAlignableFields:		[]
 			property bool	_childrenConnected:	false
@@ -55,6 +56,7 @@ GroupBoxBase
 		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		font:			jaspTheme.font
 		visible:		groupBox.title ? true : false
+		textFormat:		groupBox.textFormat
 		
 		property int	realHeight: visible ? implicitHeight : 0
 		property int	realWidth:  visible ? implicitWidth  : 0

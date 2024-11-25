@@ -39,8 +39,6 @@
 #include "gui/aboutmodel.h"
 #include "models/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
-#include "modules/dynamicmodule.h"
-#include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonmodel.h"
 #include "modules/upgrader/upgrader.h"
@@ -49,15 +47,13 @@
 #include "results/resultsjsinterface.h"
 #include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
-#include "jsonutilities.h"
 #include "utilities/helpmodel.h"
+#include "utilities/messageforwarder.h"
 #include "utilities/reporter.h"
 #include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
 #include "data/workspacemodel.h"
-
 #include "utilities/languagemodel.h"
-#include <vector>
 
 using namespace std;
 

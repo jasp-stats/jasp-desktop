@@ -963,10 +963,17 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		// if (oldorigval == dbl && newOrigVal == dbl) || (olorigval != dbl && newOrigVal != dbl)  then replace both
 		// if neworigval == dbl and oldorigval != dbl then replace only value
 		
-		if(	label->originalValueAsString(false) != label->labelDisplay() || (originalValue.isDouble() && !label->originalValue().isDouble()))
-			aChange = label->setOriginalValue(originalValue) || aChange;
-		else 
-			aChange = label->setOrigValLabel(originalValue) || aChange;
+		// But only if we are allowed to change both because of https://github.com/jasp-stats/INTERNAL-jasp/issues/2680 (allow editing of only value/label and disable the other one for computed columns
+		// which means that if this column is a computed column of scale type we are only allowed to change the label and only the value for the other types.
+		// so in this case this means that if it is a computed column, and of type !scale we do *not* also update the label when updating the value. Because otherwise it would override the data from the computed column...
+		
+		bool dontSetLabel = label->originalValueAsString(false) != label->labelDisplay() || (originalValue.isDouble() && !label->originalValue().isDouble());
+		
+		if(!dontSetLabel && column->isComputed() && column->type() != columnType::scale)
+			dontSetLabel = true;
+		
+		if(dontSetLabel)	aChange = label->setOriginalValue(originalValue)	||	aChange;
+		else				aChange = label->setOrigValLabel(originalValue)		||	aChange;
 	}
 	
 	column->labelsHandleAutoSort();
@@ -1495,7 +1502,7 @@ bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & n
 				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 				column			->	endBatchedLabelsDB();
 				
-                                if(PreferencesModel::prefs()->orderByValueByDefault())
+	if(PreferencesModel::prefs()->orderByValueByDefault())
 		column->labelsOrderByValue();
 	
 	return anyChanges || column->type() != prevType;

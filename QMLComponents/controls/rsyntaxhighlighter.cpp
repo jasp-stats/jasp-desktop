@@ -96,7 +96,7 @@ void RSyntaxHighlighter::highlightBlock(const QString &text)
 	QStringList			names = requestInfo(VariableInfo::InfoType::VariableNames).toStringList();
 	
 	for(const QString & name : names)
-		applyRule(text, QRegularExpression(QString(R"(%1)").arg(name)), _columnFormat);
+		applyRule(text, QRegularExpression(QString(R"(%1(\.(scale|ordinal|nominal))?)").arg(name)), _columnFormat);
 	
 	applyRule(text, _commentRule);
 }

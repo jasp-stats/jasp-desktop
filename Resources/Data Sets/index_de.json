@@ -775,11 +775,25 @@
       "kind": "folder",
       "children": [
         {
-          "name": "BCG Vaccine",
-          "path": "BCG Vaccine.jasp",
-          "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effects and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
+          "name": "Effectiveness of the BCG Vaccine Against Tuberculosis",
+          "path": "Effectiveness of the BCG Vaccine Against Tuberculosis.jasp",
+          "description": "Ergebnisse von 13 Studien, die die Wirksamkeit des Bacillus Calmette-Guérin (BCG)-Impfstoffs gegen Tuberkulose untersuchen. <br><br> Die Beispiel-JASP-Datei demonstriert eine Effektgrößenberechnung aus den Zusammenfassungsstatistiken, eine Trichterdiagrammanalyse zur visuellen Exploration der Ergebnisse und eine Meta-Regression mit Forest-Plot- und Blasendiagramm-Visualisierungen.<br><br> <i>Datensatz aus dem R-Paket metadat entnommen.</i>",
           "kind": "file",
-          "associated_datafile": "BCG Vaccine.csv"
+          "associated_datafile": "Effectiveness of the BCG Vaccine Against Tuberculosis.csv"
+        },
+        {
+          "name": "Effects of Modified School Calendars on Student Achievement",
+          "path": "Effects of Modified School Calendars on Student Achievement.jasp",
+          "description": "Ergebnisse von 56 Studien zu den Auswirkungen modifizierter Schulkalender auf die Schülerleistungen. <br><br> Die Beispiel-JASP-Datei demonstriert eine Mehrebenen-Metaanalyse. <br><br> <i>Datensatz aus dem R-Paket metadat entnommen.</i>",
+          "kind": "file",
+          "associated_datafile": "Effects of Modified School Calendars on Student Achievement.csv"
+        },
+        {
+          "name": "Temporal Trends in Fish Community Structures in French Rivers",
+          "path": "Temporal Trends in Fish Community Structures in French Rivers.jasp",
+          "description": "Ergebnisse von Studien, die Veränderungen in der Häufigkeit von Fischarten in französischen Flüssen untersuchen. <br><br> Die Beispiel-JASP-Datei demonstriert eine Mehrebenen- und räumliche Metaanalyse. <br><br> <i>Datensatz aus dem R-Paket metadat entnommen.</i>",
+          "kind": "file",
+          "associated_datafile": "Temporal Trends in Fish Community Structures in French Rivers.csv"
         },
         {
           "name": "EuroSCORE II",

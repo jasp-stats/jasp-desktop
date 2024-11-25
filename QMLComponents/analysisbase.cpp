@@ -252,7 +252,8 @@ void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &val
 	else
 		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
 
-	emit boundValuesChanged();
+	if (_analysisForm->initialized())
+		emit boundValuesChanged();
 }
 
 void AnalysisBase::setBoundValues(const Json::Value &boundValues)

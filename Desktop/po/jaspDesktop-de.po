@@ -5504,11 +5504,6 @@ msgstr ""
 "Klicken Sie auf das (i)-Symbol in der unteren rechten Ecke für weitere "
 "Hilfe.\n"
 
-#, qt-format
-msgctxt "Modules::ChangeIncompatible|"
-msgid "Reset analysis because of '%1'"
-msgstr "Analyse zurückgesetzt wegen '%1'"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr ""
@@ -5572,46 +5567,58 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Entwicklermodus"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Entwicklungsmodul"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable direct libpath mode"
-msgstr ""
+msgstr "Direkten libpath-Modus aktivieren"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"Laden von Modulen aus einer Binärdatei in einer R-Bibliothek anstelle der "
+"Installation aus Quellen."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Quellen-Verzeichnis:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Libpath:"
-msgstr ""
+msgstr "Libpath:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
 msgstr ""
+"Wählen Sie die R-Bibliothek, wo Sie das Entwicklungsmodul installiert haben"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Modulname:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
 msgstr ""
+"Geben Sie den (Paket-)Namen des Entwicklungsmoduls ein, das Sie laden möchten"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
 msgstr ""
+"Wählen Sie ein Entwicklungsmodul aus, indem Sie die entsprechenden "
+"Präferenzen ausfüllen"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
+msgstr "Entwicklungsmodul neu laden "
+
+msgctxt "ExcelImporter|"
+msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"0 gültige Spalten wurden aus der Datei gelesen, bitte überprüfen Sie ihre "
+"Datendatei."

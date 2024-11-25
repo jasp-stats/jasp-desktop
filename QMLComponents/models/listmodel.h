@@ -87,12 +87,20 @@ public:
 	RowControls*					getRowControls(const QString& key)							const		{ return _rowControlsMap.value(key);	}
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
-			QStringList				termsTypes();
 			QStringList				allLevels(const Terms& terms)								const;
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)					const;
+			Json::Value				getVariableTypes(bool onlyChanged = false)					const;
+			Json::Value				getVariableTypes(const Terms& terms, bool onlyChanged = false)	const;
 			columnType				getVariableRealType(const QString& name)					const;
 			QString					getVariablePreview(	const QString& name)					const;
+			QStringList				getUsedTypes()												const;
+
+			Terms					checkTermsTypes(const Terms& terms)							const;
+			Terms					checkTermsTypes(const std::vector<Term>& terms)				const;
+	virtual Terms					termsFromIndexes(	const QList<int>& indexes)				const;
+	virtual QList<int>				indexesFromTerms(	const Terms		& terms)				const;
+
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -135,8 +143,6 @@ protected:
 			void	_addTerm(const Term& term, bool isUnique = true);
 			void	_replaceTerm(int index, const Term& term);
 			void	_connectAllSourcesControls();
-			Terms	_checkTermsTypes(const Terms& terms)				const;
-			Terms	_checkTermsTypes(const std::vector<Term>& terms)	const;
 			Term	_checkTermType(const Term& terms)					const;
 			void	_setAllowedType(Term& term)							const;
 

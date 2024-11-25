@@ -43,6 +43,7 @@ RadioButtonBase
 	property alias	label:					control.text
 	property alias	checked:				control.checked
 	property alias	value:					radioButton.name
+	property int	textFormat:				Text.AutoText
 	property bool	childrenOnSameRow:		false
 	property alias	columns:				childControlsArea.columns
 	property bool	enableChildrenOnChecked: true
@@ -102,6 +103,7 @@ RadioButtonBase
 			leftPadding:	radioIndicator.width + control.spacing
 			font:			jaspTheme.font
 			color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			textFormat:		radioButton.textFormat
 		}
 
 		background: Rectangle { color: "transparent" }

@@ -17,13 +17,8 @@
 //
 
 #include "boundcontrolterms.h"
-#include "controls/variableslistbase.h"
 #include "log.h"
-#include "analysisform.h"
-#include "models/listmodeltermsavailable.h"
-#include "models/listmodeltermsassigned.h"
-#include "models/listmodelinteractionassigned.h"
-#include "controls/rowcontrols.h"
+#include "controls/jasplistcontrol.h"
 
 BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow) : BoundControlBase(listModel->listView())
 {
@@ -132,10 +127,6 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << valuePart.toStyledString() << std::endl;
 	}
 
-	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_listView->model());
-	if (assignedModel && !assignedModel->checkAllowedTerms(terms))
-		valuePart = addTermsToOption(Json::Value::null, terms);
-
 	int i = 0;
 	for (Term& term : terms)
 	{
@@ -177,144 +168,52 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 
 Json::Value BoundControlTerms::createJson() const
 {
-	Json::Value valuePart,
-				typesPart = Json::arrayValue;
-
-	const Terms& terms = _termsModel->terms();
-
-	if (_listView->containsInteractions() || _listView->hasRowComponent())
-	{
-		valuePart = Json::arrayValue;
-		for (const Term& term : terms)
-		{
-			Json::Value row(Json::objectValue);
-			if (_listView->containsInteractions())
-			{
-				Json::Value keyValue(Json::arrayValue);
-				for (const std::string& comp : term.scomponents())
-					keyValue.append(comp);
-				row[_optionKey] = keyValue;
-			}
-			else
-			{
-				Json::Value keyValue(term.asString());
-				row[_optionKey] = keyValue;
-			}
-
-			if (_listView->hasRowComponent())
-			{
-				auto allRowControls = _termsModel->getAllRowControls();
-				if (allRowControls.contains(term.asQString()))
-				{
-					RowControls* rowControls = allRowControls[term.asQString()];
-					const QMap<QString, JASPControl*>&	controlsMap = rowControls->getJASPControlsMap();
-					for (const QString& controlName : controlsMap.keys())
-					{
-						JASPControl* control = controlsMap[controlName];
-						BoundControl* boundControl = control->boundControl();
-						if (boundControl)
-							row[fq(controlName)] = boundControl->createJson();
-					}
-				}
-			}
-			valuePart.append(row);
-			typesPart.append(columnTypeToString(term.type()));
-		}
-	}
-	else if (_isSingleRow)
-	{
-		valuePart = (terms.size() > 0) ? terms.at(0).asString() : "";
-		typesPart = columnTypeToString((terms.size() > 0) ? terms.at(0).type() : columnType::unknown);
-	}
-	else
-	{
-		valuePart = Json::arrayValue;
-		for (const Term& term : terms)
-		{
-			valuePart.append(term.asString());
-			typesPart.append(columnTypeToString(term.type()));
-		}
-	}
-
-	Json::Value result = Json::objectValue;
-	result["value"] = valuePart;
-	result["types"] = typesPart;
-
-	return result;
+	return _makeOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues());
 }
 
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
-	bool valid = true;
 	const Json::Value & valuePart = _isValueWithTypes(optionValue) ? optionValue["value"] : optionValue;
 	const Json::Value & typesPart = _isValueWithTypes(optionValue) ? optionValue["types"] : Json::arrayValue;
 
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-	{
-		valid = valuePart.type() == Json::arrayValue;
-		if (valid)
-		{
-			for (uint i = 0; i < valuePart.size(); i++)
-			{
-				const Json::Value& value = valuePart[i];
+	return	(valuePart.isNull() || valuePart.isArray() || valuePart.isString()) &&
+			(typesPart.isArray() || typesPart.isString());
+}
 
-				if (!_listView->hasRowComponent() && (value.type() == Json::stringValue || value.type() == Json::arrayValue))
-				{
-					// If there is no row component, allow stringValue (only one value) or arrayValue (for several values)
-					valid = true;
-				}
-				else if (value.type() == Json::objectValue)
-				{
-					const Json::Value& components = value[_optionKey];
-					valid = components.type() == Json::arrayValue || components.type() == Json::stringValue;
-				}
-				if (!valid)
-				{
-					Log::log() << "Wrong type: " << value.toStyledString() << std::endl;
-					break;
-				}
-			}
-		}
-	}
-	else if (_isSingleRow)
-		valid = valuePart.type() == Json::stringValue;
+Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues, const std::string& optionKey, bool containsInteractions, bool hasRowComponent, bool isSingleRow)
+{
+	Json::Value result(Json::objectValue);
+
+	Json::Value optionValue;
+
+	if (hasRowComponent || containsInteractions)
+		optionValue = _getTableValueOption(terms, controlValues, optionKey, containsInteractions, false);
+	else if (isSingleRow)
+		optionValue = terms.size() > 0 ? terms[0].asString() : "";
 	else
 	{
-		valid = valuePart.type() == Json::arrayValue;
-		if (valid)
-		{
-			for (uint i = 0; i < valuePart.size(); i++)
-			{
-				const Json::Value& value = valuePart[i];
-				valid = value.type() == Json::stringValue;
-				if (!valid)
-					break;
-			}
-		}
+		optionValue = Json::arrayValue;
+		for (const Term& term : terms)
+			optionValue.append(term.asString());
 	}
 
-	return valid && (typesPart.isArray() || typesPart.isString());
+	result["value"] = optionValue;
+	result["types"] = terms.types();
+
+	if (hasRowComponent || containsInteractions)
+		result["optionKey"] = optionKey;
+
+	return result;
+}
+
+Json::Value BoundControlTerms::_makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues) const
+{
+	return makeOption(terms, controlValues, _optionKey, _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
 }
 
 void BoundControlTerms::resetBoundValue()
 {
-	const Terms& terms = _termsModel->terms();
-
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		_setTableValue(terms, _termsModel->getTermsWithComponentValues(), _optionKey, _listView->containsInteractions());
-	else if (_isSingleRow)
-	{
-		std::string str = terms.size() > 0 ? terms[0].asString() : "";
-		Json::Value boundValue(str);
-		setBoundValue(boundValue);
-	}
-	else
-	{
-		Json::Value boundValue(Json::arrayValue);
-		for (const Term& term : terms)
-			boundValue.append(term.asString());
-		setBoundValue(boundValue);
-	}
+	setBoundValue(_makeOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues()));
 }
 
 void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges)
@@ -327,11 +226,17 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 			newValue = value;
 		else
 		{
-			newValue["value"] = value;
-			Json::Value types = _listView->valueTypes();
-			if (_isSingleRow && types.isArray() && types.size() > 0)
-				types = types[0];
-			newValue["types"] = types;
+			Json::Value types = _termsModel->getVariableTypes();
+			if (_isSingleRow)
+			{
+				newValue["types"] = types.isArray() ? (types.size() > 0 ? types[0] : "") : types;
+				newValue["value"] = value.isArray() ? (value.size() > 0 ? value[0] : "") : value;
+			}
+			else
+			{
+				newValue["value"] = value;
+				newValue["types"] = types;
+			}
 		}
 		if (_listView->hasRowComponent() || _listView->containsInteractions())
 			newValue["optionKey"] = _optionKey;
@@ -343,61 +248,13 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap) const
 {
 	Json::Value result = option;
-	Terms termsAlreadyInOptions = _getValuesFromOptions(option);
+	Terms newTerms = _getTermsFromOptions(option);
+	newTerms.add(terms);
 
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-	{
-		Terms termsToAdd;
-		for (const Term& term : terms)
-		{
-			if (!termsAlreadyInOptions.contains(term)) 
-				continue; // Don't add term that is already in option.
-			
-			termsToAdd.add(term);
-		}
+	ListModel::RowControlsValues newRowControlsValues = _termsModel->getTermsWithComponentValues();
+	newRowControlsValues.insert(extraTermsMap);
 
-		for (const Term& term : terms)
-		{
-			if (termsAlreadyInOptions.contains(term)) 
-				continue; // Don't add term that is already in option.
-
-			Json::Value rowValues(Json::objectValue);
-			if (_listView->containsInteractions())
-			{
-				Json::Value keyValue(Json::arrayValue);
-				for (const std::string& comp : term.scomponents())
-					keyValue.append(comp);
-				rowValues[_optionKey] = keyValue;
-			}
-			else
-			{
-				Json::Value keyValue(term.asString());
-				rowValues[_optionKey] = keyValue;
-			}
-
-			QString termStr = term.asQString();
-			if (extraTermsMap.contains(termStr))
-			{
-				const QMap<QString, Json::Value>& controlsMap = extraTermsMap[termStr];
-				QMapIterator<QString, Json::Value> it(controlsMap);
-				while (it.hasNext())
-				{
-					it.next();
-					rowValues[fq(it.key())] = it.value();
-				}
-			}
-			result.append(rowValues);
-		}
-	}
-	else if (_isSingleRow)
-		result = terms.size() > 0 ? terms[0].asString() : "";
-	
-	else
-		for (const Term& term : terms)
-			if (!termsAlreadyInOptions.contains(term))
-				result.append(term.asString());
-
-	return result;
+	return _makeOption(newTerms, newRowControlsValues);
 }
 
 bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms) const
@@ -405,7 +262,7 @@ bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms
 	if (terms.size() == 0) return false;
 
 	bool result = true;
-	Terms termsInOptions = _getValuesFromOptions(option);
+	Terms termsInOptions = _getTermsFromOptions(option);
 	Terms termsToSearch = terms;
 
 	for (const Term& term : termsToSearch)
@@ -415,49 +272,54 @@ bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms
 	return result;
 }
 
-Terms BoundControlTerms::_getValuesFromOptions(const Json::Value& _option) const
+Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 {
 	Terms result;
 
-	Json::Value option = _isValueWithTypes(option) ? _option["value"] : _option;
+	Json::Value valueOption = _isValueWithTypes(option) ? option["value"] : option;
+	Json::Value typesOption = _isValueWithTypes(option) ? option["types"] : Json::nullValue;
 
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
+	if (valueOption.isObject() && valueOption.isMember(_optionKey))
+		valueOption = valueOption[_optionKey];
+
+	auto parseType = [](const Json::Value& jsonType, int i = 0) -> columnType
 	{
-		if (!option.isArray()) 
-			return result; // Just to be sure
+		std::string strType = (jsonType.isArray() && jsonType.size() > i ? jsonType[i].asString() : (jsonType.isString() && i == 0 ? jsonType.asString() : ""));
+		return columnTypeFromString(strType, columnType::unknown);
+	};
 
-		for (const Json::Value& row : option)
-			if (_listView->containsInteractions())
+	if (valueOption.isArray())
+	{
+		int i = 0;
+		for (Json::Value jsonValue : valueOption)
+		{
+			if (jsonValue.isObject() && jsonValue.isMember(_optionKey))
+				jsonValue = jsonValue[_optionKey];
+
+			const Json::Value& jsonType = typesOption.size() > i ? typesOption[i] : Json::nullValue;
+			if (jsonValue.isArray())
 			{
-				if (row.isArray())
+				std::vector<std::string> components;
+				columnTypeVec types;
+				int j = 0;
+				for (const Json::Value& component : jsonValue)
 				{
-					std::vector<std::string> term;
-					for (const Json::Value& val : row)
-						if (val.isString())
-							term.push_back(val.asString());
-					
-					result.add(Term(term));
+					components.push_back(component.asString());
+					types.push_back(parseType(typesOption, j));
+					j++;
 				}
+
+				result.add(Term(components, types));
 			}
-			else if (row.isString())
-				result.add(row.asString());
+			else if (jsonValue.isString())
+				result.add(Term(jsonValue.asString(), parseType(typesOption)));
+
+			i++;
+		}
 
 	}
-	else if (_isSingleRow)
-	{
-		if (!option.isString()) 
-			return result; // Just to be sure
-		result.add(option.asString());
-	}
-	else
-	{
-		if (!option.isArray()) 
-			return result;
-
-		for (const Json::Value& row : option)
-			if (row.isString())
-				result.add(row.asString());
-	}
+	else if (valueOption.isString())
+		result.add(valueOption.asString());
 
 	return result;
 }
