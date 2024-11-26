@@ -50,10 +50,10 @@ So the root object of your `Description.qml` is a `Description` object that has 
   | `maintainer`  | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>". If it isn't a valid email adress **R will complain**. |
   | `website`     | Website of the author. |
   | `license`     | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)". |
-    | `requiresData` | Optional: Whether the analyses and/or module require a dataset or not.  |
+  | `requiresData` | Optional: Whether the analyses and/or module require a dataset or not.  |
   | `preloadData` | Optional: Whether the analyses can handle getting the dataset as an argument to the R-function. |
 
-  In the future most of this info will be taking straight from [DESCRIPTION](#packageMetadata).
+  In the future most of this info will be taken straight from [DESCRIPTION](#packageMetadata).
 
 #### Description Menu
 A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
