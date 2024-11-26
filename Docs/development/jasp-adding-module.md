@@ -6,6 +6,8 @@ Adding a module to JASP
 
 Modules in JASP follow the general structure of an R package. From now on, we'll assume the reader is familiar with R packaging. If not, check out these excellent materials: Software Carpentries' [R packaging course](https://carpentries-incubator.github.io/lesson-R-packaging/index.html) and, if you want to go deeper, the [R packages book](https://r-pkgs.org/).
 
+On top of it, we provide a graphical user interface. We'll use Qt's `qml` files for this. `qml` files allows us to describe a user interface in terms of their visual components using plain text. More information about the `qml` format can be found [here](https://doc.qt.io/qt-6/qmlapplications.html).
+
 In a nutshell, a JASP module provides no more (and no less) than a user-friendly graphical interface for an underlying R package. See a graphical summary below:
 
 ![](./img/puzzle.svg)
