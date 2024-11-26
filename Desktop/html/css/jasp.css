@@ -655,9 +655,3 @@ iframe.ql-video {
     transform: translateX(0);
   }
 }
-
-/* we hack the quill editor code-block style */
-.ql-snow .ql-editor .ql-code-block-container {
-    background-color: #333333 !important;
-    color: #f8f8f2 !important;
-}
