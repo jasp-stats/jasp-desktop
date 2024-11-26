@@ -11,7 +11,7 @@ In a nutshell, a JASP module provides no more (and no less) than a user-friendly
 
 
 ## Structure
-A module folder looks like a standard R package + some special files in the `inst/` folder:
+A module folder looks like a standard R package + some [qml](https://doc.qt.io/qt-6/qmlapplications.html) files in the `inst/` folder:
 
 ```sh
 .
@@ -43,11 +43,9 @@ A module folder looks like a standard R package + some special files in the `ins
 The functionality of those files can be graphically summarized as follows:
 
 ```mermaid
-graph LR
-Description.qml -- points to --> qmls & icons & help
-qmls["qml files"] -- create submenu(s) for --> Analysis 
-R["R functions"] -- imported via --> NAMESPACE -- implement --> Analysis
-Analysis & icons & help -- create --> Menu["Graphical menu"]
+graph TD
+R["R functions"] -- imported via --> NAMESPACE -- called by --> qmls["qml files"] -- to create--> Analyses
+Analyses & help & icons & aesthetics["other aesthetics"] -- coordinated by --> Description.qml -- to create --> Menu["Graphical menu"]
 ```
 
 ### `Description.qml`
@@ -173,22 +171,18 @@ It has the following fields:
   
 ##### Separator
 A nice line to break your menu even better than a GroupTitle would do.
-Has no properties.
+It has no properties.
 
-
-### Upgrades.qml
-The optional Upgrades.qml file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on Upgrades.qml](jasp-upgrade-qml.md).
-
-#### icons
+### `icons/`
 The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [Description.qml](#Description.qml) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.
 
-#### qml
+### `qml/`
 The qml folder is where you place your [qml](https://en.wikipedia.org/wiki/QML) files. In practice you probably want to have at least a single qml file per analysis. You can then specify which file to use per analysis in the [menu](#description-menu), the names should include the extension `.qml` as well. A detailed guide on creating QML files can be found [here](jasp-qml-guide.md). As an aside, if you want to go for creating you own reusable qml components you can store them here as well. This is described in more detail [here](jasp-qml-guide.md#advanced-usage).
 
-#### R
+### `R/`
 In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). You might event want to separate the reusable parts of your code further into their own file(s). The important part is that the name(s) of your main function(s) match the name(s) you specified under `function` in the analysis-entries of the [menu](#description-menu). A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
 
-#### help
+### `help/`
 The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same functionname as your analysis has. **Only all characters should be lowercase**. 
 - **Image**:To be able to refer to another helpfile or an image in your module's  helpfile or in the `info` field of the = options in QML you can use a special string.
 This string is `%HELP_FOLDER%` and when loaded it will be replaced with the path to the `help`-folder of your module.
@@ -196,8 +190,11 @@ So suppose you have an image in `module/help/img/picture.png`, to link to it you
 - **Math**:If you want to add math expressions to help documentation, use TeX/LaTeX code into `\\\\(...\\\\)` or `$...$` for inline style, and use `\\\\[...\\\\]` or `$$...$$` for block style math expressions, note that you may need to escape characters such `$\\alpha+\\beta$` to get $\alpha+\beta$.
 - **R Code**:Suppose want to display example R code block or highlighting in the help documentation, you can use ` ```r ``` ` with your R code.
 
-#### Package Metadata
+### Package Metadata
 Because a JASP Module is also an R package it should contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
 JASP uses the Imports field in a DESCRIPTION file to understand which dependencies it needs to install from [CRAN](https://cran.r-project.org/), in fact it lets R figure this out for it. It also installs the module as an actual R-package which means you must specify each of the main-analysis-functions in the NAMESPACE file to make sure JASP can see these functions. 
 
 To actually use this shiny new module and work on it see: [development workflow](./jasp-module-workflow.md)).
+
+### `Upgrades.qml`
+The optional Upgrades.qml file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on Upgrades.qml](jasp-upgrade-qml.md).
