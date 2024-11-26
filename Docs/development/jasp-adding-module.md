@@ -34,10 +34,14 @@ A module folder looks like a standard R package + some [qml](https://doc.qt.io/q
 └──inst
     ├── Description.qml
     ├── Upgrades.qml        # Optional
+    ├──  qml
+    │   └── analysis_1.qml
+    │   └── ...
     ├── help
-    ├── icons
-    └── qml
-        └── examples.qml
+    │   └── ...
+    └── icons
+        ├── <module_name>.svg
+        └── ...
 ```
 
 The functionality of those files can be graphically summarized as follows:
@@ -173,14 +177,8 @@ It has the following fields:
 A nice line to break your menu even better than a GroupTitle would do.
 It has no properties.
 
-### `icons/`
-The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [Description.qml](#Description.qml) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.
-
 ### `qml/`
 The qml folder is where you place your [qml](https://en.wikipedia.org/wiki/QML) files. In practice you probably want to have at least a single qml file per analysis. You can then specify which file to use per analysis in the [menu](#description-menu), the names should include the extension `.qml` as well. A detailed guide on creating QML files can be found [here](jasp-qml-guide.md). As an aside, if you want to go for creating you own reusable qml components you can store them here as well. This is described in more detail [here](jasp-qml-guide.md#advanced-usage).
-
-### `R/`
-In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). You might event want to separate the reusable parts of your code further into their own file(s). The important part is that the name(s) of your main function(s) match the name(s) you specified under `function` in the analysis-entries of the [menu](#description-menu). A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
 
 ### `help/`
 The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same functionname as your analysis has. **Only all characters should be lowercase**. 
@@ -189,6 +187,12 @@ This string is `%HELP_FOLDER%` and when loaded it will be replaced with the path
 So suppose you have an image in `module/help/img/picture.png`, to link to it you would put `"%HELP_FOLDER%/img/picture.png"` in your markdown.
 - **Math**:If you want to add math expressions to help documentation, use TeX/LaTeX code into `\\\\(...\\\\)` or `$...$` for inline style, and use `\\\\[...\\\\]` or `$$...$$` for block style math expressions, note that you may need to escape characters such `$\\alpha+\\beta$` to get $\alpha+\beta$.
 - **R Code**:Suppose want to display example R code block or highlighting in the help documentation, you can use ` ```r ``` ` with your R code.
+
+### `icons/`
+The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [Description.qml](#Description.qml) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.
+
+### `R/`
+In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). You might event want to separate the reusable parts of your code further into their own file(s). The important part is that the name(s) of your main function(s) match the name(s) you specified under `function` in the analysis-entries of the [menu](#description-menu). A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
 
 ### Package Metadata
 Because a JASP Module is also an R package it should contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
