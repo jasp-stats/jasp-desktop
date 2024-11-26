@@ -8,88 +8,55 @@ In a nutshell, a JASP module provides no more (and no less) than a user-friendly
 
 ![](./img/puzzle.svg)
 
-The ability to add your own module to JASP is a recently added feature (as of 0.9.3).
+
 
 ## Structure
-A module folder should look as follows:
+A module folder looks like a standard R package + some special files in the `inst/` folder:
 
-- ModuleName/
-  - [inst/](#inst)
-    - [Description.qml](#Descriptionqml)
-    - [Upgrades.qml](#Upgradesqml)
-    - [icons/](#icons)
-    - [qml/](#qml)
-    - [help/](#help)
-  - [R/](#r)
-  - [DESCRIPTION](#package-metadata)
-  - [NAMESPACE](#package-metadata)
-
-### Description.qml
-The Description.qml file is the main configuration file for a JASP Module and consists of a `Description` qml root object where you can add `Package`'s and `Analysis`, `GroupTitle` and `Separator` objects to. I would suggest you take a look at the description made by the JASP team at [one our modules on GitHub](https://github.com/jasp-stats).  
-
-It should always start with the following:
+```sh
+.
+├── <module_name>.Rproj
+├── DESCRIPTION
+├── LICENSE
+├── NAMESPACE               # Controls function importing
+├── R                       # Where the package functions live
+│   └── functions.R
+│   └── more-functions.R
+│   └── ...
+├── README.md
+├── renv.lock               # Optional
+├── _processedLockFile.lock # Optional
+├── tests/                  # Optional
+│
+│  # === So far, this is just a standard R package ===
+│  # === Interaction with JASP starts below === 
+│ 
+└──inst
+    ├── Description.qml
+    ├── Upgrades.qml        # Optional
+    ├── help
+    ├── icons
+    └── qml
+        └── examples.qml
 ```
-import QtQuick 		2.12
-import JASP.Module 	1.0
 
-Description 
-{
+The functionality of those files can be graphically summarized as follows:
+
+```mermaid
+graph LR
+Description.qml -- points to --> qmls & icons & help
+qmls["qml files"] -- create submenu(s) for --> Analysis 
+R["R functions"] -- imported via --> NAMESPACE -- implement --> Analysis
+Analysis & icons & help -- create --> Menu["Graphical menu"]
 ```
 
-#### Module Description
-So the root object of your `Description.qml` is a `Description` object that has the following properties:
+### `Description.qml`
+`Description.qml` is the main configuration file for a JASP Module. It will coordinate all the moving parts in order to create the graphical menu we are aiming for.
 
-  | property     | description |
-  |---------------|-------------|
-  | `name`        | Specifies the name of the module, only necessary if you are not adding your own [DESCRIPTION](#packageMetadata) file. This name should contain only ASCII letters, numbers and dots, have at least two characters and start with a letter and not end in a dot.|
-  | `title`       | The user-friendly name that is shown in the ribbonbar (top of JASP) and the modules-menu (the right-hand-side menu in JASP). |
-  | `description` | A description of the module that will be shown during install. |
-  | `icon`        | The filename of the icon to show in the ribbonbar. |
-  | `version`     | The current version of your module, encoded as a string. This is a sequence of at least two (and usually three) non-negative integers separated by single ‘.’ or ‘-’ characters. A good example is "1.0.0", a version such as "0.01" or "0.01.0" will be handled as if it were ‘0.1-0’. It is not a decimal number, so for example "0.9" < "0.75" since 9 < 75. |
-  | `author`      | Name of the author. |
-  | `maintainer`  | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>". If it isn't a valid email adress **R will complain**. |
-  | `website`     | Website of the author. |
-  | `license`     | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)". |
-  | `requiresData` | Optional: Whether the analyses and/or module require a dataset or not.  |
-  | `preloadData` | Optional: Whether the analyses can handle getting the dataset as an argument to the R-function. |
+It contains a `Description` qml root object where you can add `Package`'s and `Analysis`, `GroupTitle` and `Separator` objects to.
 
-  In the future most of this info will be taken straight from [DESCRIPTION](#packageMetadata).
+Click below to see an example. In the next lines, we'll dissect it to understand each of its elements.
 
-#### Description Menu
-A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
-
-This menu is specified by a succession of `GroupTitle`, `Separator` and `Analysis` QML objects.
-
-##### Analysis
-The most important one and you should always have at least one of these, because otherwise your module doesn't do *anything*.
-It represents, surprise surprise, one of your analyses and has the following fields:
-
-  | fieldname  | description |
-  |------------|-------------|
-  | `title`    | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu. |
-  | `func` 	   | Name of the main R function of an analysis, this should be part of your R-code. |
-  | `qml`      | Optional: Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). If it isn't filled `func + ".qml"` is used. |
-  | `menu`     | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used. |
-  | `icon`     | Optional: Filename of the icon to show next to `title` in the menu. |
-  | `requiresData` | Optional: Whether it requires a dataset or not. If not entered the default is taken from Description. |
-  | `preloadData` | Optional: Whether it can handle getting the dataset as an argument to the R-function. If not entered the default is taken from Description. |
-  
-  
-
-##### GroupTitle
-A nice big header for your menu, can have an icon and it will be clearly visible. Useful for breaking up the list in, for instance, "Bayesian" and "Classical".
-It has the following fields:
-
-  | fieldname  | description |
-  |------------|-------------|
-  | `title`    | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu. |
-  | `icon`     | Optional: Filename of the icon to show next to `title` in the menu, can be used by analyses and headers. |
-  
-##### Separator
-A nice line to break your menu even better than a GroupTitle would do.
-Has no properties.
-  
- 
 <details>
 	<summary>Example</summary>
   
@@ -99,7 +66,7 @@ import JASP.Module 	1.0
 
 Description
 {
-      title: 		"Amazing module"
+      title: 		    "Amazing module"
       description: 	"This is a totally amazing module."
       version: 		"0.0.1"
       author: 		"yourName"
@@ -133,7 +100,7 @@ Description
 	GroupTitle
 	{
 		title:	"Nederlandse Analyses"
-		icon:  	1"dutchFlag.svg"
+		icon:  	"dutchFlag.svg"
 	}
 
 	Analysis
@@ -152,8 +119,61 @@ Description
 	}
 }
   ```
-  
 </details>
+
+You can see more `Description.qml` files in the wild at virtually any of [our modules on GitHub](https://github.com/jasp-stats).
+
+#### Module Description
+So the root object of your `Description.qml` is a `Description` object that has the following properties:
+
+  | property       | description                                                                                                                                                                                                                                                                                                                                                     |
+  |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | `name`         | Specifies the name of the module, only necessary if you are not adding your own [DESCRIPTION](#packageMetadata) file. This name should contain only ASCII letters, numbers and dots, have at least two characters and start with a letter and not end in a dot.                                                                                                 |
+  | `title`        | The user-friendly name that is shown in the ribbonbar (top of JASP) and the modules-menu (the right-hand-side menu in JASP).                                                                                                                                                                                                                                    |
+  | `description`  | A description of the module that will be shown during install.                                                                                                                                                                                                                                                                                                  |
+  | `icon`         | The filename of the icon to show in the ribbonbar.                                                                                                                                                                                                                                                                                                              |
+  | `version`      | The current version of your module, encoded as a string. This is a sequence of at least two (and usually three) non-negative integers separated by single ‘.’ or ‘-’ characters. A good example is "1.0.0", a version such as "0.01" or "0.01.0" will be handled as if it were ‘0.1-0’. It is not a decimal number, so for example "0.9" < "0.75" since 9 < 75. |
+  | `author`       | Name of the author.                                                                                                                                                                                                                                                                                                                                             |
+  | `maintainer`   | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>". If it isn't a valid email adress **R will complain**.                                                                                                                                                                                                                           |
+  | `website`      | Website of the author.                                                                                                                                                                                                                                                                                                                                          |
+  | `license`      | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)".                                                                                                                                                        |
+  | `requiresData` | Optional: Whether the analyses and/or module require a dataset or not.                                                                                                                                                                                                                                                                                          |
+  | `preloadData`  | Optional: Whether the analyses can handle getting the dataset as an argument to the R-function.                                                                                                                                                                                                                                                                 |
+
+In the future most of this info will be taken straight from R's [DESCRIPTION](#packageMetadata) file.
+
+#### Submenu(s) specification
+A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
+
+This menu is specified by a succession of `GroupTitle`, `Separator` and `Analysis` QML objects.
+
+##### Analysis
+Analyses are the most important element, and you should always have at least one of these. Otherwise your module doesn't do *anything*. It represents, unsurprisingly, one of your analyses. It has the following fields:
+
+  | fieldname      | description                                                                                                                                               |
+  |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | `title`        | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu.                                                                  |
+  | `func`         | Name of the main R function of an analysis, this should be part of your R-code.                                                                           |
+  | `qml`          | Optional: Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). If it isn't filled `func + ".qml"` is used. |
+  | `menu`         | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used.                                        |
+  | `icon`         | Optional: Filename of the icon to show next to `title` in the menu.                                                                                       |
+  | `requiresData` | Optional: Whether it requires a dataset or not. If not entered the default is taken from Description.                                                     |
+  | `preloadData`  | Optional: Whether it can handle getting the dataset as an argument to the R-function. If not entered the default is taken from Description.               |
+  
+  
+
+##### GroupTitle
+A nice big header for your menu, can have an icon and it will be clearly visible. Useful for breaking up the list in, for instance, "Bayesian" and "Classical".
+It has the following fields:
+
+  | fieldname | description                                                                                              |
+  |-----------|----------------------------------------------------------------------------------------------------------|
+  | `title`   | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu.                 |
+  | `icon`    | Optional: Filename of the icon to show next to `title` in the menu, can be used by analyses and headers. |
+  
+##### Separator
+A nice line to break your menu even better than a GroupTitle would do.
+Has no properties.
 
 
 ### Upgrades.qml
