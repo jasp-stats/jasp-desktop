@@ -1,16 +1,16 @@
 
-Structure of a JASP module
+Adding a module to JASP
 ================================
 
-The basic idea of loadable modules in JASP is that they follow the general structure of an R package. From now on, we'll assume the reader is familiar with R packaging. If not, check out these excellent materials: Software Carpentries' [R packaging course](https://carpentries-incubator.github.io/lesson-R-packaging/index.html) and, if you want to go deeper, the [R packages book](https://r-pkgs.org/).
+## Structure of a JASP module
+
+Modules in JASP follow the general structure of an R package. From now on, we'll assume the reader is familiar with R packaging. If not, check out these excellent materials: Software Carpentries' [R packaging course](https://carpentries-incubator.github.io/lesson-R-packaging/index.html) and, if you want to go deeper, the [R packages book](https://r-pkgs.org/).
 
 In a nutshell, a JASP module provides no more (and no less) than a user-friendly graphical interface for an underlying R package. See a graphical summary below:
 
 ![](./img/puzzle.svg)
 
-
-
-## Structure
+## Detailed structure
 A module folder looks like a standard R package + some [qml](https://doc.qt.io/qt-6/qmlapplications.html) files in the `inst/` folder:
 
 ```sh
