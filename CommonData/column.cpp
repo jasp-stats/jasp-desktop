@@ -116,12 +116,12 @@ void Column::invalidateDependents()
 			col->invalidate();
 }
 
-void Column::setName(const std::string &name)
+bool Column::setName(const std::string &name)
 {
 	JASPTIMER_SCOPE(Column::setName);
 
-	if(_name == name)
-		return;
+	if(_name == name || name.empty())
+		return false;
 
 	std::string orgName = _name;
 	_name = getUniqueName(name);
@@ -131,6 +131,8 @@ void Column::setName(const std::string &name)
 
 	db().columnSetName(_id, _name);
 	incRevision();
+
+	return true;
 }
 
 void Column::setTitle(const std::string &title)

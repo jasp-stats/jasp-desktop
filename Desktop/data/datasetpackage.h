@@ -231,7 +231,7 @@ public:
 				enum columnType				getColumnType(						const QString	  &	name)			const;
 				std::string					getColumnName(						size_t				columnIndex)	const;
 				stringvec					getColumnDataStrs(					size_t				columnIndex);
-				void						setColumnName(						size_t				columnIndex, const std::string	& newName,			bool resetModel = true);
+				void						setColumnName(						size_t				columnIndex, const std::string	& newName);
 				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
 				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
 				void						setColumnComputedType(				size_t				columnIndex, computedColumnType	type);
