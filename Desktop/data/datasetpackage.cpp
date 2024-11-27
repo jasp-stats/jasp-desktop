@@ -1634,17 +1634,13 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 
 	std::string oldName = getColumnName(columnIndex);
 
-	beginResetModel();
-
-	bool change = column->setName(newName);
-
-	endResetModel();
-
-	if (change)
-	{
-		setManualEdits(true);
-		emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
-	}
+	if(!column->setName(newName))
+		return;
+	
+	
+	setManualEdits(true);
+	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
+	refresh();
 }
 
 void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newTitle)
