@@ -262,7 +262,10 @@ void AsyncLoader::loadPackage(QString id)
 
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
-				pkg->setDataFilePath(_currentEvent->path().toStdString());
+				QFileInfo fileInfo(_currentEvent->path());
+				long timestamp = fileInfo.isFile() ? fileInfo.lastModified().toSecsSinceEpoch() : 0;
+
+				pkg->setDataFilePath(_currentEvent->path().toStdString(), timestamp);
 				pkg->setDatabaseJson(_currentEvent->database());
 			}
 

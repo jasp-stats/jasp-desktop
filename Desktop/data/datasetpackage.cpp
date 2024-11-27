@@ -2439,7 +2439,7 @@ bool DataSetPackage::currentFileIsExample() const
 
 void DataSetPackage::setDataFilePath(std::string filePath, long timestamp)
 {
-	if(!_dataSet || _dataSet->dataFilePath() == filePath)
+	if(!_dataSet || (_dataSet->dataFilePath() == filePath && timestamp == _dataSet->dataFileTimestamp()))
 		return;
 
 	if (timestamp == 0 && !filePath.empty())
@@ -2452,6 +2452,7 @@ void DataSetPackage::setDataFilePath(std::string filePath, long timestamp)
 	if (tq(filePath).startsWith(AppDirs::examples()))
 		setDataFileReadOnly(true);
 
+	setModified(true);
 	emit synchingExternallyChanged(synchingExternally());
 }
 
