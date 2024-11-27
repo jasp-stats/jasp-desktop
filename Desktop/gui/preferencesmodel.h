@@ -26,6 +26,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			whiteBackground			READ whiteBackground			WRITE setWhiteBackground			NOTIFY whiteBackgroundChanged			)
 	Q_PROPERTY(QString		plotBackground			READ plotBackground				WRITE setPlotBackground				NOTIFY plotBackgroundChanged			)
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
+	Q_PROPERTY(float		ribbonBarHeightScale	READ ribbonBarHeightScale		WRITE setRibbonBarHeightScale		NOTIFY ribbonBarHeightScaleChanged		)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
@@ -99,6 +100,7 @@ public:
 	bool		whiteBackground()						const;
 	QString		plotBackground()						const;
 	double		uiScale()								override;
+	float		ribbonBarHeightScale()					const override;
 	QString		customEditor()							const;
 	QString		developerFolder()						const;
 	QString		fixedDecimalsForJS()					const;
@@ -167,6 +169,7 @@ public slots:
 	void setNumDecimals(				int			numDecimals);
 	void setExactPValues(				bool		exactPValues);
 	void setNormalizedNotation(			bool		normalizedNotation);
+	void setRibbonBarHeightScale(		float		ribbonBarHeightScale);
 	void setCustomEditor(				QString		customEditor);
 	void setFixedDecimals(				bool		fixedDecimals);
 	void setUseDefaultPPI(				bool		useDefaultPPI);

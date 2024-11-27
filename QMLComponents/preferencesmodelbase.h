@@ -15,6 +15,7 @@ public:
 	virtual bool	showRSyntax()			const	{ return false; }
 	virtual bool	showAllROptions()		const	{ return false; }
 	virtual int		maxScaleLevels()		const	{ return 100;	}
+	virtual float	ribbonBarHeightScale()	const	{ return 1.0;	}
 
 	static PreferencesModelBase* preferences();
 
@@ -25,6 +26,7 @@ public slots:
 	virtual void	setShowAllROptions(bool showAllROptions)		{}
 
 signals:
+	void ribbonBarHeightScaleChanged(float height);
 	void uiScaleChanged();
 	void maxFlickVelocityChanged();
 	void currentJaspThemeChanged();
