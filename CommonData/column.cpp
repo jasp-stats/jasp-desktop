@@ -2379,7 +2379,6 @@ stringvec Column::previewTransform(columnType transformType)
 			int count = 0;
 			
 			for(Label * label : _labels)
-			{
 				if(!label->isEmptyValue() && !ColumnUtils::isDoubleValue(label->originalValueAsString()))
 				{
 					if(count < showThisMany)
@@ -2388,8 +2387,7 @@ stringvec Column::previewTransform(columnType transformType)
 						someImplicitEmptyValues << ", ...";
 					else
 						break; // Do not need to loop further over the labels.
-				}
-			}
+				}	
 		}
 		
 		out.push_back(someImplicitEmptyValues.str());
