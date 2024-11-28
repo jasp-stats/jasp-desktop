@@ -2380,7 +2380,7 @@ stringvec Column::previewTransform(columnType transformType)
 			
 			for(Label * label : _labels)
 			{
-				if(!label->isEmptyValue() && !ColumnUtils::isDoubleValue(label->label()))
+				if(!label->isEmptyValue() && !ColumnUtils::isDoubleValue(label->originalValueAsString()))
 				{
 					if(count < showThisMany)
 						someImplicitEmptyValues << (count++ > 0 ? ", " : "") << '"' << label->originalValueAsString() << '"';

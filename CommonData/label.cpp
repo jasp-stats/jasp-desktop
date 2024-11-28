@@ -248,7 +248,7 @@ std::string Label::labelIgnoreEmpty() const
 
 bool Label::isEmptyValue() const
 {
-	return _column->isEmptyValue(_label);
+	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
 
 std::string Label::originalValueAsString(bool fancyEmptyValue) const
