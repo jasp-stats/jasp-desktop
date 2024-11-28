@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-11-29 09:29+0000\n"
+"Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.9-dev\n"
 "X-Language: nl\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5225,6 +5231,17 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP deelt geen van je gegevens wanneer het updates krijgt, zelfs niet welke "
+"versie van JASP je gebruikt.\n"
+"Het deelt wel je IP-adres met de server, maar dat is nodig om internet te "
+"laten werken.\n"
+"\n"
+"De lijst met bekende problemen die het downloadt wordt zelden gebruikt, "
+"meestal staan de problemen op [jasp-issues](https://github.com/jasp-stats/"
+"jasp-issues/issues). Maar als we ons realiseren dat er een verschrikkelijke "
+"fout in een analyse is geslopen, dan laat dit je *in de analyse* zien dat er "
+"iets is waar je rekening mee moet houden. Gelukkig hoeven we het bijna nooit "
+"te gebruiken."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5233,11 +5250,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"Er zijn %1 totale niveaus, waarvan %2 een numerieke waarde hebben.\n"
+"Als een '%3' ziet het er als volgt uit: %4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Impliciet ontbrekende waarden: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5245,8 +5265,9 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"Er zijn %1 niveaus in totaal.\n"
+"Als een '%2' ziet het er als volgt uit: %3"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Check for updates"
 msgstr "Controleer voor updates"
@@ -5263,13 +5284,20 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"Moet JASP controleren op updates op onze server en u laten weten of er een "
+"nieuwe versie is?\n"
+"\n"
+"JASP deelt geen van uw gegevens wanneer het updates krijgt, zelfs niet welke "
+"versie van JASP u gebruikt.\n"
+"Het deelt wel je IP-adres met onze server, maar dat is nodig om internet te "
+"laten werken.\n"
+"\n"
+"Deze instelling kan altijd worden gewijzigd in de interfacevoorkeuren."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Yes"
 msgstr "Ja"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "No"
 msgstr "Nee"
@@ -5277,34 +5305,31 @@ msgstr "Nee"
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "Alleen %1 variabelen zijn toegestaan"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "Schaal"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "Ordinaal"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "Nominaal"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Onbekend"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<Vul eerst de kolomnaam in>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "Maximaal toegestane schaalniveaus bij gebruik als nominaal/ordinaal"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5312,107 +5337,112 @@ msgid ""
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
 msgstr ""
+"Voor analyses die voor sommige variabelen alleen nominaal of ordinaal "
+"accepteren, controleert JASP, als een schaalvariabele wordt gebruikt, of het "
+"aantal niveaus van deze variabele dit maximum overschrijdt."
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "Nieuwe Gegevensset Laden"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "Nieuw"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Excel-bestand Importeren"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Alle Gegevenssets %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP-bestanden %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "CSV Tekstbestanden %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "Spreadsheet-bestanden %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS-bestanden %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Stats-bestanden %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS-bestanden %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF-instellingen"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "Oriëntatie"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "Staand"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Liggend"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Paginaformaat"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Filter gewist\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Filter toegepast\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "Voer alle argumenten in - zie de rood gemarkeerde velden.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
 msgstr ""
+"De formule retourneert geen verzameling logische waarden en kan daarom niet "
+"worden gebruikt in het filter.\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "Welkom bij de sleepfilter!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Klik op het pictogram om het kolomtype te wijzigen"
 
 msgctxt "JASPColumn|"
 msgid "Transformed to"
-msgstr ""
+msgstr "Getransformeerd naar"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5434,31 +5464,31 @@ msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Kolom-naam-is-vrij veld"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "Kolom '%1' bestaat al en wordt niet gemaakt door deze analyse."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "Filter had foutmelding '%1'"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Labels automatisch ordenen op hun waarde"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "Minimumaantal niveaus is %1. Variabele %2 heeft slechts %3 niveaus"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "Maximum aantal niveaus is %1. Variabele %2 heeft %3 niveaus."
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5468,6 +5498,10 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"Poging om schaalvariabele %1 om te zetten in een %2 variabele, maar het "
+"aantal niveaus %3 overschrijdt het maximum %4. Als u deze variabele toch "
+"wilt gebruiken, wijzigt u het type of wijzigt u 'Maximaal toegestane niveaus "
+"voor schaal' in Voorkeuren / Gegevensmenu"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5475,6 +5509,8 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
+"Minimumaantal numerieke waarden is %1. Variabele %2 heeft slechts %3 "
+"verschillende numerieke waarden"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5482,53 +5518,60 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
+"Maximumaantal numerieke waarden is %1. Variabele %2 heeft %3 verschillende "
+"numerieke waarden"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Ontwikkelaarsmodus"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Ontwikkelingsmodule"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable direct libpath mode"
-msgstr ""
+msgstr "Directe libpath-modus inschakelen"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"Laad modules vanuit een binair bestand in een R-bibliotheek in plaats van "
+"het vanuit de broncode te installeren."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Bronmap:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Libpath:"
-msgstr ""
+msgstr "Libpad:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Kies de R-bibliotheek waar u de ontwikkelingsmodule hebt geïnstalleerd"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Modulenaam:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr ""
+msgstr "Voer de (pakket)naam in van de ontwikkelingsmodule die je wilt laden"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
 msgstr ""
+"Selecteer een ontwikkelaarsmodule door de relevante voorkeuren in te vullen"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "Ontwikkelaarsmodule vernieuwen "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"Er zijn 0 geldige kolommen uit het bestand gelezen, controleer uw "
+"gegevensbestand."
