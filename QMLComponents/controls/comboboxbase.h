@@ -35,7 +35,7 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString				startValue					READ startValue					WRITE setStartValue			NOTIFY startValueChanged			)
 	Q_PROPERTY( QString				currentColumnType			READ currentColumnType										NOTIFY currentColumnTypeChanged		)
 	Q_PROPERTY( QString				currentColumnTypeIcon		READ currentColumnTypeIcon									NOTIFY currentColumnTypeIconChanged	)
-	Q_PROPERTY( bool				fixedWidth					READ fixedWidth												NOTIFY fixedWidthChanged			)
+	Q_PROPERTY( bool				fixedWidth					READ fixedWidth					WRITE setFixedWidth			NOTIFY fixedWidthChanged			)
 
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
@@ -80,6 +80,7 @@ protected slots:
 	void activatedSlot(int index);
 
 	GENERIC_SET_FUNCTION(StartValue,	_startValue,	startValueChanged,	QString	)
+	GENERIC_SET_FUNCTION(FixedWidth,	_fixedWidth,	fixedWidthChanged,	bool	)
 
 protected:
 	bool _checkLevelsConstraints()			override;
