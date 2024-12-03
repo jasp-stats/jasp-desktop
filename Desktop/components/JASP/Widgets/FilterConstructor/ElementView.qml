@@ -4,7 +4,7 @@ import QtQuick 2.0
 ListView
 {
 	id:						listOfStuff
-    implicitWidth:          130 * jaspTheme.uiScale
+    implicitWidth:          150 * jaspTheme.uiScale
 	spacing:				4
 	maximumFlickVelocity:	jaspTheme.maximumFlickVelocity
 	boundsBehavior:			Flickable.StopAtBounds
@@ -12,7 +12,7 @@ ListView
 
 	property string	__debugName:	"ElementView"
 	property real	maxWidth:		180 * preferencesModel.uiScale
-	property real	widthMargin:	10
+	property real	widthMargin:	16 * preferencesModel.uiScale
 
 	delegate: MouseArea
 	{

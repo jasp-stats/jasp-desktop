@@ -114,11 +114,13 @@ FocusScope
 	{
 		id: columnList
 
-		//anchors.top: columnsRow.bottom
-		anchors.top: columnsRow.bottom
-		anchors.left: parent.left
-		anchors.bottom: parent.bottom
-		anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+		anchors
+		{
+			top:			columnsRow.bottom
+			left:			parent.left
+			bottom:			parent.bottom
+			bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+		}
 
 		width: columns.width + columnsLeftScrollBar.width
 
@@ -133,7 +135,7 @@ FocusScope
 				top:			parent.top
 				left:			parent.left
 				bottom:			parent.bottom
-				margins:		columns.anchors.margins
+				margins:		jaspTheme.contentMargin
 				bottomMargin:	columns.anchors.bottomMargin
 			}
 		}
@@ -331,10 +333,13 @@ FocusScope
 	{
 		id: funcVarLists
 
-		anchors.top: columnsRow.bottom
-		anchors.right: parent.right
-		anchors.bottom: parent.bottom
-		anchors.rightMargin: 4 * preferencesModel.uiScale
+		anchors
+		{
+			top:			columnsRow.bottom
+			right:			parent.right
+			bottom:			parent.bottom
+			bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+		}
 
 		width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
 
@@ -349,7 +354,7 @@ FocusScope
 				top:			parent.top
 				right:			parent.right
 				bottom:			parent.bottom
-				margins:		functieLijst.anchors.margins
+				margins:		jaspTheme.contentMargin
 				bottomMargin:	functieLijst.anchors.bottomMargin
 			}
 		}
@@ -357,12 +362,13 @@ FocusScope
 		ElementView
 		{
 			id:					functieLijst
+			width:				maxWidth
 			anchors
 			{
 				top:			parent.top
 				right:			functionsRightScrollBar.left
 				bottom:			parent.bottom
-				margins:		2 * preferencesModel.uiScale
+				margins:		jaspTheme.contentMargin
 				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 			}
 		}

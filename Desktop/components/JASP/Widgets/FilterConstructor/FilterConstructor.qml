@@ -156,7 +156,7 @@ Item
 					top:			parent.top
 					left:			parent.left
 					bottom:			parent.bottom
-					margins:		columns.anchors.margins
+					margins:		jaspTheme.contentMargin
 					bottomMargin:	columns.anchors.bottomMargin
 				}
 			}
@@ -303,7 +303,8 @@ Item
 				top:			operatorsRow.bottom
 				right:			parent.right
 				bottom:			parent.bottom
-				rightMargin:	4 * preferencesModel.uiScale
+				rightMargin:	0
+				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 			}
 
 			width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
@@ -319,7 +320,7 @@ Item
 					top:			parent.top
 					right:			parent.right
 					bottom:			parent.bottom
-					margins:		functieLijst.anchors.margins
+					margins:		jaspTheme.contentMargin
 					bottomMargin:	functieLijst.anchors.bottomMargin
 				}
 			}
@@ -327,6 +328,7 @@ Item
 			ElementView
 			{
 				id:						functieLijst
+				width:					maxWidth
 				anchors
 				{
 					top:			parent.top
