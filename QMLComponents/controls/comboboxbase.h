@@ -35,7 +35,7 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString				startValue					READ startValue					WRITE setStartValue			NOTIFY startValueChanged			)
 	Q_PROPERTY( QString				currentColumnType			READ currentColumnType										NOTIFY currentColumnTypeChanged		)
 	Q_PROPERTY( QString				currentColumnTypeIcon		READ currentColumnTypeIcon									NOTIFY currentColumnTypeIconChanged	)
-	Q_PROPERTY( bool				fixedWidth					READ fixedWidth					WRITE setFixedWidth			NOTIFY fixedWidthChanged			)
+	Q_PROPERTY( QString				longestValue				READ longestValue											NOTIFY longestValueChanged			)
 
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
@@ -56,7 +56,7 @@ public:
 	const QString&		currentColumnType()							const				{ return _currentColumnType;	}
 	const QString&		currentColumnTypeIcon()						const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()								const				{ return _currentIndex;			}
-	bool				fixedWidth()								const				{ return _fixedWidth;			}
+	QString				longestValue()								const				{ return _longestValue;			}
 
 	std::vector<std::string> usedVariables()						const	override;
 	bool				encodeValue()								const	override	{ return containsVariables();	}
@@ -70,7 +70,7 @@ signals:
 	void currentColumnTypeIconChanged();
 	void currentIndexChanged();
 	void activated(int index);
-	void fixedWidthChanged();
+	void longestValueChanged();
 
 protected slots:
 	void termsChangedHandler()				override;
@@ -80,10 +80,10 @@ protected slots:
 	void activatedSlot(int index);
 
 	GENERIC_SET_FUNCTION(StartValue,	_startValue,	startValueChanged,	QString	)
-	GENERIC_SET_FUNCTION(FixedWidth,	_fixedWidth,	fixedWidthChanged,	bool	)
 
 protected:
 	bool _checkLevelsConstraints()			override;
+	void _setLongestValue();
 
 
 	ListModelLabelValueTerms*	_model					= nullptr;
@@ -95,7 +95,7 @@ protected:
 								_currentColumnTypeIcon;
 	std::string					_unusedInitialValue;
 	int							_currentIndex			= -1;
-	bool						_fixedWidth				= false;
+	QString						_longestValue;
 
 	int	 _getStartIndex()											const;
 	void _resetItemWidth();

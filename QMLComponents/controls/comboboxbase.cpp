@@ -19,7 +19,7 @@
 #include "comboboxbase.h"
 #include "analysisform.h"
 #include "log.h"
-
+#include "jasptheme.h"
 
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 	: JASPListControl(parent), BoundControlBase(this)
@@ -144,9 +144,6 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 
 void ComboBoxBase::setUp()
 {
-	if (property("fieldWidth").toInt() > 0) // If the fieldWidth is set, it means the width should be fixed and not dependent on the values of the dropdown.
-		_fixedWidth = true;
-
 	JASPListControl::setUp();
 
 	_model->resetTermsFromSources();
@@ -224,8 +221,31 @@ bool ComboBoxBase::_checkLevelsConstraints()
 
 void ComboBoxBase::_resetItemWidth()
 {
-	const Terms& terms = _model->terms();
-	QMetaObject::invokeMethod(this, "resetWidth", Q_ARG(QVariant, QVariant(terms.asQList())));
+	double maxWidth = 0;
+	QString longestValue;
+
+	QFontMetricsF& metrics = JaspTheme::fontMetrics();
+
+	if (_addEmptyValue)
+	{
+		maxWidth = metrics.horizontalAdvance(_placeHolderText);
+		longestValue = _placeHolderText;
+	}
+	for (const Term& term : model()->terms())
+	{
+		double termWidth = metrics.horizontalAdvance(term.asQString());
+		if (maxWidth < termWidth)
+		{
+			maxWidth = termWidth;
+			longestValue = term.asQString();
+		}
+	}
+
+	if (_longestValue != longestValue)
+	{
+		_longestValue = longestValue;
+		emit longestValueChanged();
+	}
 }
 
 void ComboBoxBase::setCurrentText(QString text)

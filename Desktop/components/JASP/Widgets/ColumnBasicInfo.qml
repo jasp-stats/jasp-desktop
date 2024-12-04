@@ -94,7 +94,7 @@ Item
 			values:				columnModel.columnTypeValues
 			currentValue:		columnModel.currentColumnType
 			onValueChanged:		columnModel.currentColumnType = currentValue
-			controlMinWidth:	200 * jaspTheme.uiScale
+			fieldWidth:			200 * jaspTheme.uiScale
 			controlLabel.width:	leftColumn.labelWidth
 			enabled:			!columnModel.isVirtual
 
@@ -108,7 +108,7 @@ Item
 			values:				columnModel.computedTypeValues
 			currentValue:		columnModel.computedType
 			onValueChanged:		columnModel.computedType = currentValue
-			controlMinWidth:	200 * jaspTheme.uiScale
+			fieldWidth:			200 * jaspTheme.uiScale
 
 			controlLabel.width:	leftColumn.labelWidth
 			enabled:			!columnModel.isVirtual && columnModel.computedTypeEditable
