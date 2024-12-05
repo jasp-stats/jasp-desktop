@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls as QTC
+import QtQuick.Controls
 import QtQuick.Layouts
 import JASP
 
@@ -52,7 +52,7 @@ ComboBoxBase
 		}
 	}
 
-	QTC.ComboBox
+	ComboBox
 	{
 						id:						control
 						implicitWidth:			longestFieldWidth + (allowedTypeIcons.count > 0 ? allowedTypeIcons.width + jaspTheme.contentMargin : 0)
@@ -161,11 +161,12 @@ ComboBoxBase
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
-		popup: QTC.Popup
+		popup: Popup
 		{
 			id:				popupRoot
 			padding:		1
 			implicitWidth:	popupView.implicitWidth + scrollBar.width
+			implicitHeight: popupView.implicitHeight
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 
@@ -220,7 +221,7 @@ ComboBoxBase
 			}
 		}
 
-		delegate: QTC.ItemDelegate
+		delegate: ItemDelegate
 		{
 			implicitHeight:							jaspTheme.comboBoxHeight
 			implicitWidth:							popupView.width
