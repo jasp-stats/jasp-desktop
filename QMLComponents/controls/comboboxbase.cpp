@@ -78,6 +78,8 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 			{
 				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
 				index = 0;
+				// Maybe the values will be reset afterwards due to some QML/JavaScript dependencies: use this selectedValue if the model is reset during the initialization of the form
+				_unusedInitialValue = selectedValue;
 			}
 			index = int(std::distance(values.begin(), itr));
 		}
@@ -193,6 +195,7 @@ void ComboBoxBase::termsChangedHandler()
 					itr = lostValueItr;
 					_orgValue = _unusedInitialValue;
 					_unusedInitialValue = "";
+					clearControlError();
 				}
 			}
 
