@@ -20,7 +20,6 @@ ComboBoxBase
 	property alias	value:					comboBox.currentValue
 	property alias	indexDefaultValue:		comboBox.currentIndex
 	property alias	fieldWidth:				control.implicitWidth
-	property alias  controlText:			controlText
 	property int	textFormat:				Text.AutoText
 	property bool	showVariableTypeIcon:	containsVariables
 	property var	enabledOptions:			[]
