@@ -165,8 +165,8 @@ ComboBoxBase
 		{
 			id:				popupRoot
 			padding:		1
-			implicitWidth:	popupView.implicitWidth + scrollBar.width
-			implicitHeight: popupView.implicitHeight
+			implicitWidth:	popupView.implicitWidth + scrollBar.width + 2*padding
+			implicitHeight: popupView.implicitHeight + 2 * padding
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 
