@@ -83,7 +83,6 @@ protected slots:
 
 protected:
 	bool _checkLevelsConstraints()			override;
-	void _setLongestValue();
 
 
 	ListModelLabelValueTerms*	_model					= nullptr;
