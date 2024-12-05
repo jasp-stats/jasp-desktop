@@ -71,7 +71,7 @@ ComboBoxBase
 		property bool	isEmptyValue:			comboBox.addEmptyValue && comboBox.currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
 		property double	longestFieldWidth:		(comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width + jaspTheme.contentMargin : 0) +
-												textMetrics.width + 2 * jaspTheme.contentMargin
+												textMetrics.width + indicator.width + 3 * jaspTheme.contentMargin
 
 		TextMetrics
 		{
