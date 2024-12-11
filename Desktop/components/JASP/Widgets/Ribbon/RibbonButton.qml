@@ -21,12 +21,13 @@ import QtQuick.Controls		2.4
 import JASP					1.0
 import JASP.Widgets			1.0
 
-Rectangle
+Item
 {
 	id				: ribbonButton
-	width			: separator ? 2 * jaspTheme.ribbonButtonPadding : (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
-	height			: jaspTheme.ribbonButtonHeight
-	color			: separator || !showPressed ? "transparent" : jaspTheme.grayLighter
+	width			: implicitWidth * preferencesModel.ribbonBarHeightScale
+	implicitWidth	: separator ? 2 * jaspTheme.ribbonButtonPadding : (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
+	height			: jaspTheme.ribbonButtonHeight * preferencesModel.ribbonBarHeightScale
+	
 	z				: 1
 	objectName		: "ribbonButton"
 
@@ -210,14 +211,15 @@ Rectangle
 		}
 	}
 
-	Item
+	Rectangle
 	{
 		anchors.centerIn	: parent
-		width				: parent.width
-		height				: parent.height
-		scale				: mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1
+		width				: parent.implicitWidth
+		height				: jaspTheme.ribbonButtonHeight
+		scale				: preferencesModel.ribbonBarHeightScale * (mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1)
 		visible				: !separator
-
+		color			: separator || !showPressed ? "transparent" : jaspTheme.grayLighter
+		
 		Image
 		{
 			id:			backgroundImage

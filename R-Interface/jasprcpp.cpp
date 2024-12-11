@@ -1266,7 +1266,7 @@ Rcpp::String jaspRCPP_decodeColumnNameRcpp(const Rcpp::String & in)
 }
 
 
-int jaspRCPP_decodeColumnTypeRcpp(const Rcpp::String & in)
+Rcpp::String jaspRCPP_decodeColumnTypeRcpp(const Rcpp::String & in)
 {
 	return decodeColumnType(std::string(in).c_str());
 }

@@ -5621,3 +5621,11 @@ msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
 "Se leyeron 0 columnas válidas del archivo; por favor, compruebe su archivo "
 "de datos."
+
+msgctxt "PrefsUI|"
+msgid "Ribbon scale (%): "
+msgstr "Escala de cinta (%): "
+
+msgctxt "PrefsUI|"
+msgid "Set the scale of height of the ribbon."
+msgstr "Establecer la escala de altura de la cinta."

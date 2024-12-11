@@ -86,7 +86,7 @@ def main():
     parser.add_argument('renv_cache')
     parser.add_argument('--inner_extension', required=False)
     args = parser.parse_args()
-    extension = args.inner_extension if  args.inner_extension != None else ('.zip' if platform.system() == 'Windows' else '.tgz')
+    extension = args.inner_extension if  args.inner_extension != None else '.tar.gz'
     build_cellar(args.renv_cache, extension)
 
 if __name__ == "__main__":

@@ -62,7 +62,7 @@ void jaspRCPP_setLog(SEXP Message);
 
 Rcpp::String	jaspRCPP_encodeColumnNameRcpp(	const	Rcpp::String & in);
 Rcpp::String	jaspRCPP_decodeColumnNameRcpp(	const	Rcpp::String & in);
-int				jaspRCPP_decodeColumnTypeRcpp(	const	Rcpp::String & in);
+Rcpp::String	jaspRCPP_decodeColumnTypeRcpp(	const	Rcpp::String & in);
 std::string		jaspRCPP_encodeColumnName(				std::string    in);
 std::string		jaspRCPP_decodeColumnName(				std::string    in);
 Rcpp::String	jaspRCPP_encodeAllColumnNames(	const	Rcpp::String & in);

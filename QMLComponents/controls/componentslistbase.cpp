@@ -47,7 +47,7 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
-	_readTableValue(value, keyName, containsInteractions(), terms, allControlValues);
+	_readTableValue(value, keyName, containsInteractions(), terms, allControlValues, _termsModel->getSourceTerms());
 
 	_termsModel->initTerms(terms, allControlValues);
 }

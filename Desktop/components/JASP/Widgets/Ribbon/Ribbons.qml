@@ -25,7 +25,7 @@ Item
 	id:				jaspRibbons
 	objectName:		"jaspRibbon"
 	width:			500
-	height:			jaspTheme.ribbonButtonHeight
+	height:			jaspTheme.ribbonButtonHeight * preferencesModel.ribbonBarHeightScale
 
 	onActiveFocusChanged: buttonList.focus = true;
 
@@ -186,6 +186,7 @@ Item
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
 			separator:		 model.ribbonButton && model.ribbonButton.separator
+			
 
 			ALTNavigation.enabled:		!separator
 //			ALTNavigation.y: 10

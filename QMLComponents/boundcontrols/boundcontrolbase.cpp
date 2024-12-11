@@ -117,7 +117,7 @@ std::string BoundControlBase::getName() const
 	return fq(_control->name());
 }
 
-void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues)
+void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
 {
 	for (const Json::Value& row : value)
 	{
@@ -126,6 +126,9 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 		Term term = Term::readTerm(keyValue);
 		if (term.size() > 0)
 		{
+			int termInd = sourceTerms.indexOf(term);
+			if (termInd >= 0)
+				term.setTypes(sourceTerms[termInd].types());
 			terms.add(term);
 
 			QMap<QString, Json::Value> controlMap;

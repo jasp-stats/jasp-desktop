@@ -210,7 +210,7 @@ void IPCChannel::findConstructMutexes()
 
 void IPCChannel::findConstructDataStrings()
 {
-	Log::log() << "Finding/constructing communication strings" << std::endl;
+	Log::log() << "Finding/constructing communication strings for channel #" << _channelNumber << "" << std::endl;
 
 	Log::log() << "Creating " << _dataInName << std::endl;
 	_dataIn		= _memoryIn ->find_or_construct<String>(_dataInName.c_str())	(_memoryIn ->get_segment_manager());
@@ -221,7 +221,7 @@ void IPCChannel::findConstructDataStrings()
 
 void IPCChannel::findConstructAllAgain()
 {
-	Log::log() << "Finding/constructing all relevant shared memory objects again." << std::endl;
+	Log::log() << "Finding/constructing all relevant shared memory objects again for channel #" << _channelNumber << "." << std::endl;
 	findConstructSizes();
 	findConstructMutexes();
 	findConstructDataStrings();

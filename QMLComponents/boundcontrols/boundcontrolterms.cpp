@@ -127,43 +127,61 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << valuePart.toStyledString() << std::endl;
 	}
 
-	int i = 0;
+	int termId = 0;
 	for (Term& term : terms)
 	{
-		if (typesPart.size() > i) // If the type is given, use it
+		if (typesPart.size() > termId) // If the type is given, use it
 		{
-			if (typesPart[i].isArray())
-			{
-				columnTypeVec types;
-				for (const Json::Value& jsonType : typesPart[i])
+			columnTypeVec types;
+			if (typesPart[termId].isArray())
+				for (const Json::Value& jsonType : typesPart[termId])
 					types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
-				term.setTypes(types);
-			}
 			else
-				term.setType(columnTypeFromString(typesPart[i].asString(), columnType::unknown));
+				types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
+			term.setTypes(types);
 		}
-		else
+		termId++;
+	}
+
+	// For backward compatibility, the types of the terms must be checked.
+	// Before 0.19.0, the types were not given: in this case the real type of the variable (if it is a variable) is retrieved from the dataset.
+	// In 0.19.1, the types were not given for terms with interaction: in this case, the variables of the interation term is
+	// most of the time also in the Variables List: the types of these variables must be stored and used for interaction term. This type might be not the one in the dataset, but a type changed by the user.
+	QMap<QString, columnType> variableTypeMap;
+	for (Term& term : terms)
+	{
+		if (term.size() == 1 && term.type() != columnType::unknown && _listView->isTypeAllowed(term.type()))
+			variableTypeMap[term.asQString()] = term.type();
+	}
+
+	for (Term& term : terms)
+	{
+		columnTypeVec	types = term.types(),
+						checkedTypes;
+		int componentId = 0;
+		for (const QString& component : term.components())
 		{
-			if (term.type() == columnType::unknown)
-			{
-				// Backward compatibility: the type was not saved before 0.19, so get the real type and check whether it is allowed. If not, take the default
-				columnType type = _listView->model()->getVariableRealType(term.asQString());
-				if (type != columnType::unknown && !_listView->isTypeAllowed(type))
-					type = _listView->defaultType();
-				term.setType(type);
-			}
-			typesPart.append(columnTypeToString(term.type()));
+			columnType type = types.size() > componentId ? types[componentId] : columnType::unknown;
+			if (type == columnType::unknown)
+				type = variableTypeMap.contains(component) ? variableTypeMap[component] : _listView->model()->getVariableRealType(component);
+
+			// Ensure that the type is allowed (if it is unknown, this is not a variable, so don't check the type)
+			if (type != columnType::unknown && !_listView->isTypeAllowed(type))
+				type = _listView->defaultType();
+
+			checkedTypes.push_back(type);
+			componentId++;
 		}
-		i++;
+
+		term.setTypes(checkedTypes);
 	}
 
 	Json::Value newValue = Json::objectValue;
 	newValue["value"] = valuePart;
-	newValue["types"] = typesPart;
+	newValue["types"] = terms.types();
 	BoundControlBase::bindTo(newValue);
 
 	_termsModel->initTerms(terms, allControlValues);
-
 }
 
 Json::Value BoundControlTerms::createJson() const

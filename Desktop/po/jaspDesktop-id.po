@@ -5221,3 +5221,11 @@ msgstr ""
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Ribbon scale (%): "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Set the scale of height of the ribbon."
+msgstr ""

@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls as QTC
+import QtQuick.Controls
 import QtQuick.Layouts
 import JASP
 
@@ -19,58 +19,17 @@ ComboBoxBase
 	property alias	currentLabel:			comboBox.currentText
 	property alias	value:					comboBox.currentValue
 	property alias	indexDefaultValue:		comboBox.currentIndex
-	property alias	fieldWidth:				control.width
+	property alias	fieldWidth:				control.implicitWidth
 	property int	textFormat:				Text.AutoText
 	property bool	showVariableTypeIcon:	containsVariables
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
-	property int	controlMinWidth:		0
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
 	property double controlXOffset:			0
 	property bool	alignInGroup:			!setLabelAbove
-
-	onControlMinWidthChanged: _resetWidth(textMetrics.width)
-	
-	
-
-	function resetWidth(values)
-	{
-		var maxWidth = 0
-		var maxValue = ""
-		textMetrics.initialized = false;
-
-		if (addEmptyValue)
-			values.push(placeholderText)
-
-		for (var i = 0; i < values.length; i++)
-		{
-			textMetrics.text = values[i]
-			if (textMetrics.width > maxWidth)
-			{
-				maxWidth = textMetrics.width
-				maxValue = values[i]
-			}
-		}
-
-		textMetrics.text = maxValue;
-		textMetrics.initialized = true;
-		_resetWidth(maxWidth)
-	}
-
-	function _resetWidth(maxTextWidth)
-	{
-		control.maxTextWidth = maxTextWidth
-		// The real field width is composed by the type icon (if displayed) + 2-padding + max width + 5-padding + dropdownIcon width + 2-padding
-		var newFieldWidth = (comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width : 0) + (allowedTypeIcons.count > 0 ? allowedTypeIcons.width + jaspTheme.itemPadding : 0) + maxTextWidth + dropdownIcon.width + 9 * preferencesModel.uiScale
-		if (newFieldWidth < controlMinWidth)
-			newFieldWidth = controlMinWidth
-
-		control.realFieldWidth = newFieldWidth
-		if (!fixedWidth) control.width = newFieldWidth;
-    }
 
 	Component.onCompleted:	control.activated.connect(activated);
 
@@ -92,9 +51,10 @@ ComboBoxBase
 		}
 	}
 
-	QTC.ComboBox
+	ComboBox
 	{
 						id:						control
+						implicitWidth:			longestFieldWidth + (allowedTypeIcons.count > 0 ? allowedTypeIcons.width + jaspTheme.contentMargin : 0)
 						model:					comboBox.model
 						anchors
 						{
@@ -105,31 +65,25 @@ ComboBoxBase
 
 						focus:					true
 						padding:				2 * preferencesModel.uiScale
-						width:					0
 						height:					jaspTheme.comboBoxHeight
 						font:					jaspTheme.font
 		property bool	isEmptyValue:			comboBox.addEmptyValue && comboBox.currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
-		property double realFieldWidth:			width
-		property double maxTextWidth:			0
+		property double	longestFieldWidth:		(comboBox.showVariableTypeIcon ? contentIcon.x + contentIcon.width + jaspTheme.contentMargin : 0) +
+												textMetrics.width + indicator.width + 3 * jaspTheme.contentMargin
 
 		TextMetrics
 		{
 			id: textMetrics
 			font: control.font
-
-			property bool initialized: false
-
-			onWidthChanged:
-			{
-				if (initialized)
-					_resetWidth(width)
-			}
+			text: longestValue
 		}
 
 		contentItem: Rectangle
 		{
+			id: contentRectangle
 			color:	jaspTheme.controlBackgroundColor
+
 			Image
 			{
 				id:						contentIcon
@@ -143,18 +97,19 @@ ComboBoxBase
 
 			Text
 			{
-				anchors.left:				contentIcon.visible ? contentIcon.right : parent.left
-				anchors.leftMargin:			2 * preferencesModel.uiScale
-				anchors.verticalCenter:		parent.verticalCenter
-				anchors.horizontalCenter:	control.showEmptyValueStyle ? parent.horizontalCenter : undefined
+				id:							controlText
+				anchors
+				{
+					left:					contentIcon.visible ? contentIcon.right : parent.left
+					leftMargin:				2 * preferencesModel.uiScale
+					right:					allowedColumnsIcons.length > 0 ? allowedTypeIcons.left : parent.right
+					verticalCenter:			parent.verticalCenter
+					//horizontalCenter:		control.showEmptyValueStyle ? parent.horizontalCenter : undefined
+				}
 				text:						comboBox.currentText
 				font:						control.font
 				color:						(!enabled || control.showEmptyValueStyle) ? jaspTheme.grayDarker : jaspTheme.black
-				width:						(fixedWidth ? widthWhenContralHasFixedWidth : control.maxTextWidth) + 5 * preferencesModel.uiScale
 				elide:						Text.ElideRight
-
-				property double widthWhenContralHasFixedWidth: control.width - (x + dropdownIcon.width + 4 * preferencesModel.uiScale) // 4 = leftMargin + 2 padding right of dropdownIcon)
-
 			}
 
 			AllowedTypeIcons
@@ -205,18 +160,12 @@ ComboBoxBase
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
-		popup: QTC.Popup
+		popup: Popup
 		{
 			id:				popupRoot
-			y:				control.height
-			width:			Math.max(control.realFieldWidth, fieldWidth) + scrollBar.width
-
-			property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
-																			 : (typeof rcmdRoot !== 'undefined' ? rcmdRoot.height // Case Dropdown used in R Command
-																												: (typeof backgroundForms !== 'undefined' ? backgroundForms.height // Case Dropdowns used in Analysis forms
-																																						  : Infinity))
-			height:			Math.min(popupView.contentHeight + (padding*2), maxHeight)
 			padding:		1
+			implicitWidth:	popupView.implicitWidth + scrollBar.width + 2*padding
+			implicitHeight: popupView.implicitHeight + 2 * padding
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 
@@ -236,15 +185,21 @@ ComboBoxBase
 				}
 			}
 
-
 			contentItem: ListView
 			{
 				id:				popupView
-				width:			popupRoot.width - scrollBar.width
-				height:			popupRoot.height
-				model:			control.popup.visible ? control.delegateModel : null
+				implicitWidth:	Math.max(control.longestFieldWidth, control.width)
+				implicitHeight:	Math.min(contentHeight, maxHeight)
+				model:			control.delegateModel
 				currentIndex:	control.highlightedIndex
 				clip:			true
+
+				property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
+																				 : (typeof rcmdRoot !== 'undefined' ? rcmdRoot.height // Case Dropdown used in R Command
+																													: (typeof backgroundForms !== 'undefined' ? backgroundForms.height // Case Dropdowns used in Analysis forms
+																																							  : Infinity))
+
+
 
 				Rectangle
 				{
@@ -265,10 +220,10 @@ ComboBoxBase
 			}
 		}
 
-		delegate: QTC.ItemDelegate
+		delegate: ItemDelegate
 		{
-			height:									jaspTheme.comboBoxHeight
-			width:									popupView.width
+			implicitHeight:							jaspTheme.comboBoxHeight
+			implicitWidth:							popupView.width
 			enabled:								comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
 
 			contentItem: Rectangle

@@ -19,7 +19,7 @@
 #include "comboboxbase.h"
 #include "analysisform.h"
 #include "log.h"
-
+#include "jasptheme.h"
 
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 	: JASPListControl(parent), BoundControlBase(this)
@@ -78,6 +78,8 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 			{
 				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
 				index = 0;
+				// Maybe the values will be reset afterwards due to some QML/JavaScript dependencies: use this selectedValue if the model is reset during the initialization of the form
+				_unusedInitialValue = selectedValue;
 			}
 			index = int(std::distance(values.begin(), itr));
 		}
@@ -144,9 +146,6 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 
 void ComboBoxBase::setUp()
 {
-	if (property("fieldWidth").toInt() > 0) // If the fieldWidth is set, it means the width should be fixed and not dependent on the values of the dropdown.
-		_fixedWidth = true;
-
 	JASPListControl::setUp();
 
 	_model->resetTermsFromSources();
@@ -196,6 +195,7 @@ void ComboBoxBase::termsChangedHandler()
 					itr = lostValueItr;
 					_orgValue = _unusedInitialValue;
 					_unusedInitialValue = "";
+					clearControlError();
 				}
 			}
 
@@ -224,8 +224,31 @@ bool ComboBoxBase::_checkLevelsConstraints()
 
 void ComboBoxBase::_resetItemWidth()
 {
-	const Terms& terms = _model->terms();
-	QMetaObject::invokeMethod(this, "resetWidth", Q_ARG(QVariant, QVariant(terms.asQList())));
+	double maxWidth = 0;
+	QString longestValue;
+
+	QFontMetricsF& metrics = JaspTheme::fontMetrics();
+
+	if (_addEmptyValue)
+	{
+		maxWidth = metrics.horizontalAdvance(_placeHolderText);
+		longestValue = _placeHolderText;
+	}
+	for (const Term& term : model()->terms())
+	{
+		double termWidth = metrics.horizontalAdvance(term.asQString());
+		if (maxWidth < termWidth)
+		{
+			maxWidth = termWidth;
+			longestValue = term.asQString();
+		}
+	}
+
+	if (_longestValue != longestValue)
+	{
+		_longestValue = longestValue;
+		emit longestValueChanged();
+	}
 }
 
 void ComboBoxBase::setCurrentText(QString text)

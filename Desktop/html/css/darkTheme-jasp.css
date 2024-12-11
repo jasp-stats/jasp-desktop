@@ -257,3 +257,9 @@ mjx-container {
   /* light theme uses the default value */
   border: 1px solid #5c5c5c;
 }
+
+/* we hack the quill editor code-block style */
+.jasp-notes .ql-snow .ql-editor .ql-code-block-container {
+  background-color: #000000!important;
+  color: #dfdfdf !important;
+}

@@ -1397,9 +1397,12 @@ void EngineSync::destroyEngine(EngineRepresentation * engine)
 	if(channel < _engineStopTimes.size())
 	{
 		_engineStopTimes[channel] = Utils::currentMillis();
+		
+		Log::log() << "EngineSync::destroyEngine _engineStopTimes[" << channel << "] = '"<< _engineStopTimes[channel]  <<"'" << std::endl;
 
-		QTimer::singleShot(ENGINE_COOLDOWN / 2, [channel, this]()
+		QTimer::singleShot(ENGINE_COOLDOWN / 2, this, [channel, this]()
 		{
+			Log::log() << "EngineSync::destroyEngine's singleshot _channels[channel]->findConstructAllAgain() fires." << std::endl;
 			if(_channels.size() > channel) //still there?
 				_channels[channel]->findConstructAllAgain();
 		});

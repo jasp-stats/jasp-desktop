@@ -98,7 +98,8 @@ const Settings::Setting Settings::Values[] = {
 	{"pdfPageSize",					int(pdfPageSize::A4)			},
 	{"directLibpathEnabled",		true	},
 	{"directLibpathFolder",			""		},
-	{"directDevModName",			""		}
+	{"directDevModName",			""		},
+	{"ribbonBarHeightScale",		1.0		}
 	
 };	
 

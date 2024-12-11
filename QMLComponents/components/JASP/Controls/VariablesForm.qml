@@ -111,7 +111,7 @@ VariablesFormBase
 			else if (isControlComboBox && widthSetByForm(control))
 			{
 				control.setLabelAbove	= true
-				control.controlMinWidth = Qt.binding(function() {return variablesForm.listWidth; })
+				control.fieldWidth = Qt.binding(function() {return variablesForm.listWidth; })
 			}
 		}
 

@@ -128,7 +128,8 @@ FocusScope
 			Item
 			{
 				id:					addValueItem
-				height:				addButton.height
+				height:				implicitHeight
+				implicitHeight:		addButton.height
 				Layout.fillWidth:	true
 
 

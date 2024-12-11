@@ -28,9 +28,8 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 	connect(this,					&PreferencesModel::dataLabelNAChanged,			this, &PreferencesModel::dataLabelNAChangedSlot			);
-
 	connect(this,					&PreferencesModel::guiQtTextRenderChanged,		this, &PreferencesModel::onGuiQtTextRenderChanged,		Qt::QueuedConnection);
-
+	
 	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
 
 	_loadDatabaseFont();
@@ -113,6 +112,7 @@ void PreferencesModel::browseDeveloperLibPathFolder()
 #define GET_PREF_FUNC_INT(NAME, SETTING)					GET_PREF_FUNC(int,		NAME, SETTING, toInt())
 #define GET_PREF_FUNC_STR(NAME, SETTING)					GET_PREF_FUNC(QString,	NAME, SETTING, toString())
 #define GET_PREF_FUNC_DBL(NAME, SETTING)					GET_PREF_FUNC(double,	NAME, SETTING, toDouble())
+#define GET_PREF_FUNC_FLT(NAME, SETTING)					GET_PREF_FUNC(float,	NAME, SETTING, toFloat())
 #define GET_PREF_FUNC_WHT(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toString() == "white")
 
 
@@ -120,6 +120,7 @@ GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
 GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
 GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
 GET_PREF_FUNC_BOOL(	normalizedNotation,			Settings::NORMALIZED_NOTATION						)
+GET_PREF_FUNC_FLT(	ribbonBarHeightScale,		Settings::RIBBON_BAR_HEIGHT_SCALE					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
 GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
@@ -307,6 +308,7 @@ SET_PREF_FUNCTION(				bool,		setUseDefaultPPI,			useDefaultPPI,				useDefaultPPI
 SET_PREF_FUNCTION(				bool,		setDeveloperMode,			developerMode,				developerModeChanged,			Settings::DEVELOPER_MODE							)
 SET_PREF_FUNCTION(				QString,	setDeveloperFolder,			developerFolder,			developerFolderChanged,			Settings::DEVELOPER_FOLDER							)
 SET_PREF_FUNCTION(				int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
+SET_PREF_FUNCTION(				float,		setRibbonBarHeightScale,	ribbonBarHeightScale,		ribbonBarHeightScaleChanged,	Settings::RIBBON_BAR_HEIGHT_SCALE					)
 SET_PREF_FUNCTION(				bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
 SET_PREF_FUNCTION(				int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,				Settings::LOG_FILES_MAX								)
 SET_PREF_FUNCTION_EMIT_NO_ARG(	int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)

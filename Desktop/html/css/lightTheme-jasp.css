@@ -248,3 +248,9 @@ div.jasp-image-image.no-data.error {
   /* border: 1px solid #ccc; */
   background-color: #f5f6f6
 }
+
+/* we hack the quill editor code-block style */
+.jasp-notes .ql-snow .ql-editor .ql-code-block-container {
+  background-color: #dfdfdf!important;
+  color: #000000 !important;
+}

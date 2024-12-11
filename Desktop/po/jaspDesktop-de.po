@@ -5556,7 +5556,7 @@ msgstr ""
 "Die minimale Anzahl von numerischen Werten ist %1. Variable %2 hat nur %3 "
 "verschiedene numerische Werte"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
@@ -5622,3 +5622,11 @@ msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
 "0 gültige Spalten wurden aus der Datei gelesen, bitte überprüfen Sie ihre "
 "Datendatei."
+
+msgctxt "PrefsUI|"
+msgid "Ribbon scale (%): "
+msgstr "Skalierung des Menübandes (%): "
+
+msgctxt "PrefsUI|"
+msgid "Set the scale of height of the ribbon."
+msgstr "Legen Sie den Skalierungsgrad der Höhe des Menübandes fest."

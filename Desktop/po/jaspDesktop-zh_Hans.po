@@ -5368,3 +5368,11 @@ msgstr "刷新开发者模块 "
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr "从文件中未读取到有效列，请检查您的数据文件。"
+
+msgctxt "PrefsUI|"
+msgid "Ribbon scale (%): "
+msgstr "菜单栏缩放（%）: "
+
+msgctxt "PrefsUI|"
+msgid "Set the scale of height of the ribbon."
+msgstr "设置顶部分析菜单栏的高度尺寸。"

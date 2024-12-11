@@ -266,9 +266,25 @@ ScrollView
 				decimals:				0
 				text:					qsTr("Zoom (%): ")
 				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
+				KeyNavigation.tab:		ribbonBarSpinBox
+
+				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel,Math.max(ribbonBarSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel))
+			}
+			
+			SpinBox
+			{
+				id:						ribbonBarSpinBox
+				value:					Math.round(preferencesModel.ribbonBarHeightScale * 100)
+				onValueChanged:			if(value!= "") preferencesModel.ribbonBarHeightScale = value / 100
+				from:					10
+				to:						500
+				stepSize:				10
+				decimals:				0
+				text:					qsTr("Ribbon scale (%): ")
+				toolTip:				qsTr("Set the scale of height of the ribbon.")
 				KeyNavigation.tab:		uiMaxFlickVelocity
 
-				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
+				widthLabel:				uiScaleSpinBox.widthLabel
 			}
 
 			SpinBox
@@ -294,7 +310,7 @@ ScrollView
 				checked:			preferencesModel.safeGraphics
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
-
+				
 				KeyNavigation.tab:			disableAnimations
 
 			}

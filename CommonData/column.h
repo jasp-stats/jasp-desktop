@@ -57,7 +57,7 @@ public:
 			void					dbDelete(bool cleanUpRest = true);
 																														
 			
-			void					setName(			const std::string & name			);
+			bool					setName(			const std::string & name			);
 			void					setTitle(			const std::string & title			);
 			bool					setRCode(			const std::string & rCode			);
 			bool					setError(			const std::string & error			);

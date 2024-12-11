@@ -725,6 +725,11 @@ void EngineRepresentation::stopEngine()
 
 void EngineRepresentation::shutEngineDown()
 {
+	if(!_slaveFinishedConnection || !_slaveProcess)
+	{
+		Log::log() << "Engine #" << _channelNumber << " shutEngineDown() requested, but connection is already severed so engine is probably already down." << std::endl;
+		return;
+	}
 
 	Log::log() << "Engine #" << _channelNumber << " shutEngineDown()" << std::endl;
 
