@@ -92,6 +92,7 @@ ComponentsListBase
 					leftPadding			: jaspTheme.labelSpacing
 					color				: jaspTheme.black
 					text				: model.name
+					font				: jaspTheme.font
 					elide				: Text.ElideRight
 					width				: parent.width - jaspTheme.labelSpacing - (removeIconItem.visible ? removeIconItem.width  : 0)
 					visible				: !textFieldItem.visible
