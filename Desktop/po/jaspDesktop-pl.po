@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2024-12-17 23:00+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.9.2-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -5269,12 +5275,10 @@ msgid ""
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Yes"
 msgstr "Tak"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "No"
 msgstr "Nie"
@@ -5284,24 +5288,21 @@ msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr ""
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "Skala"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "Porządkowa"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "Nominalna"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Nieznane"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
@@ -5324,7 +5325,7 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "Nowy"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
