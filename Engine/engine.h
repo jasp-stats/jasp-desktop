@@ -18,6 +18,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "enginebase.h"
 #include "enginedefinitions.h"
 #include "dataset.h"
 #include "ipcchannel.h"
@@ -27,7 +28,7 @@
 /// The Engine handles communication between Desktop and R
 /// It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
 /// It also contains some utility functions for use by rbridge and by extension R
-class Engine
+class Engine : public EngineBase
 {
 public:
 	typedef engineAnalysisStatus Status;
@@ -48,21 +49,7 @@ public:
 	analysisResultStatus	getStatusToAnalysisStatus();
 
 	//the following functions in public can all be called (indirectly) from R and/or rbridge:
-	int						getColumnType(			const std::string & columnName);
-	int						getColumnAnalysisId(	const std::string & columnName);
-	std::string				createColumn(			const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
-	bool					deleteColumn(			const std::string & columnName);
-	bool					setColumnDataAndType(	const std::string & columnName, const	std::vector<std::string>	& nominalData, columnType colType); ///< return true for any changes
-	bool					isColumnNameOk(			const std::string & columnName);
-	int						dataSetRowCount()		{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
 	bool					paused()				{ return _engineState == engineState::paused; }
-	DataSet				*	provideAndUpdateDataSet();
-
-	void					provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
-	void					provideStateFileName(											std::string & root,	std::string & relativePath);
-	void					provideJaspResultsFileName(										std::string & root,	std::string & relativePath);
-	void					provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
-	void					reloadColumnNames();
 
 private:
 	void					initialize();
@@ -111,15 +98,12 @@ private: // Data:
 	static Engine				*	_EngineInstance;
 	const int						_engineNum;
 	const unsigned long				_parentPID;
-	DataSet						*	_dataSet				= nullptr;
-	DatabaseInterface			*	_db						= nullptr;
 	IPCChannel					*	_channel				= nullptr;
 	ColumnEncoder				*	_extraEncodings			= nullptr;
 	engineState						_engineState			= engineState::initializing,
 									_lastRequest			= engineState::initializing;
 	Status							_analysisStatus			= Status::empty;
-	int								_analysisId,
-									_analysisRevision,
+	int								_analysisRevision,
 									_progress,
 									_ppi					= 96,
 									_numDecimals			= 3;

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2024 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "timers.h"
 #include "r_functionwhitelist.h"
 #include "otoolstuff.h"
-#include "engine.h"
+#include "enginebase.h"
 #include "r_functionwhitelist.h"
 #include <sstream>
 
@@ -32,7 +32,7 @@
 #include <windows.h>
 #endif
 
-Engine						*	rbridge_engine		= nullptr;
+EngineBase					*	rbridge_engine		= nullptr;
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
@@ -58,7 +58,7 @@ size_t _logWriteFunction(const void * buf, size_t len)
 	return len;
 }
 
-void rbridge_setEngine(Engine * engine)
+void rbridge_setEngine(EngineBase * engine)
 {
 	rbridge_engine = engine;
 }
@@ -75,7 +75,7 @@ const std::string jaspBaseTransformFunctionsR =
 		#include "jaspBase_transformFunctions.h"
 		;
 
-void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont)
+void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont)
 {
 	JASPTIMER_SCOPE(rbridge_init);
 	

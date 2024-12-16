@@ -59,18 +59,11 @@ bool PollMessagesFunctionForJaspResults()
 Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID)
-	: _engineNum(slaveNo), _parentPID(parentPID)
+	: EngineBase(parentPID), _engineNum(slaveNo), _parentPID(parentPID)
 {
 	JASPTIMER_SCOPE(Engine Constructor);
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
-
-	JASPTIMER_START(TempFiles Attach);
-	TempFiles::attach(parentPID);
-	JASPTIMER_STOP(TempFiles Attach);
-
-	if(parentPID != 0) //Otherwise we are just running to fix R packages
-		_db = new DatabaseInterface();
 
 	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 }
@@ -871,59 +864,6 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 	}
 }
 
-int Engine::getColumnType(const std::string &columnName)
-{
-	return int(!isColumnNameOk(columnName) ? columnType::unknown : provideAndUpdateDataSet()->column(columnName)->type());
-}
-
-int Engine::getColumnAnalysisId(const std::string &columnName)
-{
-	return	!isColumnNameOk(columnName)
-		? -1
-		: provideAndUpdateDataSet()->column(columnName)->analysisId();
-}
-
-std::string Engine::createColumn(const std::string &columnName)
-{
-	if(columnName.empty() || isColumnNameOk(columnName)) 
-		return "";
-
-	DataSet * data = provideAndUpdateDataSet();
-	Column  * col  = data->newColumn(columnName);
-
-	col->setAnalysisId(_analysisId);
-	col->setCodeType(computedColumnType::analysisNotComputed);
-
-	reloadColumnNames();
-
-	return rbridge_encodeColumnName(columnName.c_str());
-}
-
-bool Engine::deleteColumn(const std::string &columnName)
-{
-	if(!isColumnNameOk(columnName))
-		return false;
-	
-	DataSet * data = provideAndUpdateDataSet();
-	Column  * col  = data->column(columnName);
-	
-	if(col->analysisId() != _analysisId)
-		return false;
-	
-	data->removeColumn(columnName);
-	
-	reloadColumnNames();
-	
-	return true;
-}
-
-bool Engine::setColumnDataAndType(const std::string &columnName, const std::vector<std::string> &data, columnType colType)
-{
-	if(!isColumnNameOk(columnName))
-		return false;
-
-	return provideAndUpdateDataSet()->column(columnName)->overwriteDataAndType(data, colType);
-}
 
 void Engine::sendAnalysisResults()
 {
@@ -967,55 +907,6 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 	Utils::remove(tempFilesFromLastTime, filesToKeep);
 
 	TempFiles::deleteList(tempFilesFromLastTime);
-}
-
-DataSet * Engine::provideAndUpdateDataSet()
-{
-	JASPTIMER_RESUME(Engine::provideAndUpdateDataSet());
-	//Log::log() << "Engine::provideAndUpdateDataSet()" << std::endl;
-
-	bool setColumnNames = !_dataSet;
-
-	if(!_dataSet && _db->dataSetGetId() != -1)
-		_dataSet = new DataSet(_db->dataSetGetId());
-
-	if(_dataSet)
-		setColumnNames |= _dataSet->checkForUpdates();
-
-	if(_dataSet && setColumnNames)
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames(), true);
-
-	JASPTIMER_STOP(Engine::provideDataSet());
-
-	return _dataSet;
-}
-
-void Engine::provideStateFileName(std::string & root, std::string & relativePath)
-{
-	return TempFiles::createSpecific("state", _analysisId, root, relativePath);
-}
-
-void Engine::provideJaspResultsFileName(std::string & root, std::string & relativePath)
-{
-	return TempFiles::createSpecific("jaspResults.json", _analysisId, root, relativePath);
-}
-
-void Engine::provideSpecificFileName(const std::string & specificName, std::string & root, std::string & relativePath)
-{
-	return TempFiles::createSpecific(specificName, _analysisId, root, relativePath);
-}
-
-void Engine::provideTempFileName(const std::string & extension, std::string & root, std::string & relativePath)
-{
-	TempFiles::create(extension, _analysisId, root, relativePath);
-}
-
-bool Engine::isColumnNameOk(const std::string & columnName)
-{
-    if(columnName == "" || !provideAndUpdateDataSet())
-		return false;
-
-    return provideAndUpdateDataSet()->column(columnName);
 }
 
 void Engine::stopEngine()
@@ -1101,12 +992,6 @@ void Engine::sendEnginePaused()
 	rCodeResponse["typeRequest"]	= engineStateToString(engineState::paused);
 
 	sendString(rCodeResponse.toStyledString());
-}
-
-void Engine::reloadColumnNames()
-{
-	Log::log() << "Engine rescanning columnNames for en/decoding" << std::endl;
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
 }
 
 void Engine::resumeEngine(const Json::Value & jsonRequest)

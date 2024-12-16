@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2024 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,9 +29,8 @@
 #include <regex>
 #include "jasprcpp_interface.h"
 #include "columnencoder.h"
-#include "columntype.h"
 
-class Engine;
+class EngineBase;
 
 /// The R Bridge provides functions to the R analyses;
 /// i.e. functions to read the data set from shared memory
@@ -78,8 +77,8 @@ extern "C" {
 
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_setEngine(Engine * engine);
-	void rbridge_init(Engine * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
+	void rbridge_setEngine(EngineBase * engine);
+	void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
 	void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
 	void rbridge_memoryCleaning();
