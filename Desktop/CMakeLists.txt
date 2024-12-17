@@ -119,7 +119,7 @@ target_link_libraries(
     Qt::OpenGL
     Qt::Widgets
     Qt::Qml
-    Qt::WebEngineQuick>
+    Qt::WebEngineQuick
     Qt::WebChannel
     Qt::WebChannelQuick
     Qt::Svg
