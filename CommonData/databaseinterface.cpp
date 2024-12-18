@@ -54,12 +54,13 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 }
 
 DatabaseInterface::DatabaseInterface(bool createDb, bool inMemory)
+	: _inMemory{inMemory}
 {
 	assert(!_singleton);
 	_singleton = this;
 	
-	if(createDb)	create(inMemory);
-	else			load(inMemory);
+	if(createDb)	create();
+	else			load();
 }
 
 DatabaseInterface::~DatabaseInterface()
@@ -1353,14 +1354,14 @@ void DatabaseInterface::labelsWrite(Column *column)
 	transactionWriteEnd();
 }
 
-std::string DatabaseInterface::dbFile(bool onlyName, bool inMemory) const
+std::string DatabaseInterface::dbFile(bool onlyName) const
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dbFile);
 
 	static std::string fileName = "internal.sqlite";
 	static std::string memoryName = ":memory:";
 
-	if (inMemory)
+	if (_inMemory)
 		return memoryName;
 
 	return onlyName ? fileName : Utils::osPath(TempFiles::sessionDirName() + "/" + fileName).string();
@@ -1609,18 +1610,18 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 	}
 }
 
-void DatabaseInterface::create(bool inMemory)
+void DatabaseInterface::create()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::create);
 	assert(!_db);
 
-	if(!inMemory && std::filesystem::exists(dbFile(false, inMemory)))
+	if(!_inMemory && std::filesystem::exists(dbFile()))
 	{
-		Log::log() << "DatabaseInterface::create: Removing existing sqlite internal db at " << dbFile(false, inMemory) << std::endl;
-		std::filesystem::remove(dbFile(false, inMemory));
+		Log::log() << "DatabaseInterface::create: Removing existing sqlite internal db at " << dbFile() << std::endl;
+		std::filesystem::remove(dbFile());
 	}
 	
-	int ret = sqlite3_open_v2(dbFile(false, inMemory).c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -1628,22 +1629,22 @@ void DatabaseInterface::create(bool inMemory)
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
-		Log::log() << "Opened internal sqlite database for creation at '" << dbFile(false, inMemory) << "'." << std::endl;
+		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
 	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
 	transactionWriteEnd();
 }
 
-void DatabaseInterface::load(bool inMemory)
+void DatabaseInterface::load()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::load);
 	assert(!_db);
 
-	if(!std::filesystem::exists(dbFile(false, inMemory)))
-		throw std::runtime_error("Trying to load '" + dbFile(false, inMemory) + "' but it doesn't exist!");
+	if(!std::filesystem::exists(dbFile()))
+		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
 
-	int ret = sqlite3_open_v2(dbFile(false, inMemory).c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -1651,7 +1652,7 @@ void DatabaseInterface::load(bool inMemory)
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
-		Log::log() << "Opened internal sqlite database for loading at '" << dbFile(false, inMemory) << "'." << std::endl;
+		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
 	
 }
 

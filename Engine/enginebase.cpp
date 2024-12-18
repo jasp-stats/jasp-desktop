@@ -29,7 +29,7 @@ EngineBase::EngineBase(unsigned long sessionID, bool useMemory)
 	JASPTIMER_STOP(TempFiles Attach);
 
 	if(sessionID != 0) //Otherwise we are just running to fix R packages
-		_db = new DatabaseInterface(useMemory);
+		_db = new DatabaseInterface(false, useMemory);
 }
 
 void EngineBase::provideStateFileName(std::string & root, std::string & relativePath)
