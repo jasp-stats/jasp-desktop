@@ -20,7 +20,6 @@
 #include "knownissues.h"
 #include "boundcontrols/boundcontrol.h"
 #include "utilities/qutils.h"
-#include "models/listmodeltermsavailable.h"
 #include "controls/jasplistcontrol.h"
 #include "controls/expanderbuttonbase.h"
 #include "log.h"
@@ -31,7 +30,8 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
-#include "controls/variableslistbase.h"
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "preferencesmodelbase.h"
 
 using namespace std;
@@ -110,7 +110,7 @@ void AnalysisForm::cleanUpForm()
 }
 
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName, bool hasError)
-{	
+{
 	if(_removed)
 		return;
 
@@ -135,11 +135,10 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
 				QTimer::singleShot(0, [=](){
-					bindTo(options);
+				bindTo(options);
 					blockValueChangeSignal(false, false);
-					_analysis->boundValueChangedHandler();
+				_analysis->boundValueChangedHandler();
 				});
-
 			}
 		}
 
@@ -170,7 +169,6 @@ void AnalysisForm::filterByNameDone(const QString & name, const QString & error)
 		control->filterDoneHandler(name, error);
 }
 
-
 void AnalysisForm::addControl(JASPControl *control)
 {
 	const QString & name = control->name();
@@ -178,7 +176,7 @@ void AnalysisForm::addControl(JASPControl *control)
 	if (_analysis && control->isBound())
 	{
 		connect(control, &JASPControl::requestColumnCreation, _analysis, &AnalysisBase::requestColumnCreationHandler);
-		
+
 		connect(control, &JASPControl::usedVariablesChanged, _analysis, &AnalysisBase::onUsedVariablesChanged);
 	}
 
@@ -272,16 +270,28 @@ void AnalysisForm::setHasVolatileNotes(bool hasVolatileNotes)
 	emit hasVolatileNotesChanged();
 }
 
-bool AnalysisForm::parseOptions(Json::Value &options)
+
+QString AnalysisForm::parseOptions(QString options)
 {
-	if (_rSyntax->parseRSyntaxOptions(options))
+	Json::Reader jsonReader;
+	Json::Value	 jsonOptions;
+	Json::Value jsonResult(Json::objectValue);
+
+	QJsonDocument doc = QJsonDocument::fromJson(options.toUtf8());
+	jsonReader.parse(doc.toJson().toStdString(), jsonOptions, false);
+
+	if (!_analysis)
+		setAnalysis(new AnalysisBase(this)); // Create a dummy analyis object
+
+	if (_rSyntax->parseRSyntaxOptions(jsonOptions))
 	{
-		bindTo(options);
-		options = _analysis->boundValues();
-		return true;
+		bindTo(jsonOptions);
+		jsonOptions = _analysis->boundValues();
 	}
 
-	return false;
+	jsonResult["options"] = jsonOptions;
+	jsonResult["error"] = fq(getError());
+	return tq(jsonResult.toStyledString());
 }
 
 void AnalysisForm::_setUp()
@@ -311,7 +321,7 @@ void AnalysisForm::reset()
 
 void AnalysisForm::exportResults()
 {
-    _analysis->exportResults();
+	_analysis->exportResults();
 }
 
 QString AnalysisForm::msgsListToString(const QStringList & list) const
@@ -370,7 +380,7 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
 	std::set<std::string> controlsJsonWrong;
-	
+
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = control->boundControl();
@@ -567,7 +577,7 @@ void AnalysisForm::setTitle(QString title)
 		_analysis->setTitle(fq(title.simplified()));
 }
 
-void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
+void AnalysisForm::setOptionNameConversion(const QVariantList &conv)
 {
 	if (_rSyntax->setControlNameToRSyntaxMap(conv))
 		emit optionNameConversionChanged();
@@ -691,7 +701,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 	else
 	{
 		_valueChangedSignalsBlocked--;
-		
+
 		if (_valueChangedSignalsBlocked < 0)
 			_valueChangedSignalsBlocked = 0;
 
@@ -701,7 +711,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 				_analysis->boundValueChangedHandler();
 
 			_valueChangedEmittedButBlocked = false;
-		
+
 			if(_analysis && (notifyOnceUnblocked || _analysis->wasUpgraded())) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
 			{
 				while(_waitingRScripts.size() > 0)
@@ -713,7 +723,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 
 				for(const auto & filterName : _waitingFilters)
 					_analysis->sendFilter(filterName);
-				
+
 				_waitingFilters.clear();
 			}
 			else //Otherwise just clean it up
@@ -912,14 +922,14 @@ QString AnalysisForm::helpMD() const
 		markdown << control->helpMD() << "\n";
 
 	markdown << metaHelpMD();
-	
+
 	if(!_infoBottom.isEmpty())
 		markdown << "\n\n---\n" << _infoBottom  << "\n";
 
 	QString md = markdown.join("");
-	
+
 	_analysis->preprocessMarkdownHelp(md);
-	
+
 	return md;
 }
 

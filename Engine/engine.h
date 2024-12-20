@@ -20,7 +20,6 @@
 
 #include "enginebase.h"
 #include "enginedefinitions.h"
-#include "dataset.h"
 #include "ipcchannel.h"
 #include <json/json.h>
 #include "columnencoder.h"

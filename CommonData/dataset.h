@@ -69,6 +69,7 @@ public:
 			
 			void			loadOldComputedColumnsJson(const Json::Value & json); ///< Should act the same as the old ComputedColumns::fromJson() to allow loading "older jaspfiles"
 			stringset		findUsedColumnNames(std::string searchThis);
+			bool			initColumnWithStrings(int colIndex, const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue);
 
 			DatabaseInterface	 &	db();
 	const	DatabaseInterface	 &	db() const;

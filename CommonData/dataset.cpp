@@ -598,3 +598,24 @@ stringset DataSet::findUsedColumnNames(std::string searchThis)
 	
 	return columnsFound;
 }
+
+bool DataSet::initColumnWithStrings(int colIndex, const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue)
+{
+	Column	*	column			=	columns()[colIndex];
+				column			->	setHasCustomEmptyValues(emptyValues.size());
+				column			->	setCustomEmptyValues(emptyValues);
+				column			->	setName(newName);
+				column			->	setTitle(title);
+				column			->	beginBatchedLabelsDB();
+	bool		anyChanges		=	title != column->title() || newName != column->name();
+	columnType	prevType		=	column->type(),
+				suggestedType	=	column->setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				column			->	setType(column->type() != columnType::unknown ? column->type() : desiredType == columnType::unknown ? suggestedType : desiredType);
+				column			->	endBatchedLabelsDB();
+
+	if(orderLabelsByValue)
+		column->labelsOrderByValue();
+
+	return anyChanges || column->type() != prevType;
+}
+
