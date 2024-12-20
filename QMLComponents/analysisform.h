@@ -145,7 +145,7 @@ public:
 	Q_INVOKABLE void		refreshAnalysis();
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QString		generateWrapper()		const;
-    Q_INVOKABLE QString     parseOptions(QString options);
+	Q_INVOKABLE QString		parseOptions(QString options);
 
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void					clearControlError(JASPControl* control);
@@ -181,8 +181,8 @@ public:
 	void					sortControls(QList<JASPControl*>& controls);
 	QString					getSyntaxName(const QString& name)				const;
 	void					setHasVolatileNotes(bool hasVolatileNotes);
-    void					setActiveJASPControl(JASPControl* control, bool hasActiveFocus);
-    JASPControl*			getActiveJASPControl()	{ return _activeJASPControl; }
+	void					setActiveJASPControl(JASPControl* control, bool hasActiveFocus);
+	JASPControl*			getActiveJASPControl()	{ return _activeJASPControl; }
 
 	static const QString	rSyntaxControlName;
 		
