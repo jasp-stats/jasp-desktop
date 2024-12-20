@@ -30,8 +30,6 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include "preferencesmodelbase.h"
 
 using namespace std;
@@ -277,8 +275,8 @@ QString AnalysisForm::parseOptions(QString options)
 	Json::Value	 jsonOptions;
 	Json::Value jsonResult(Json::objectValue);
 
-	QJsonDocument doc = QJsonDocument::fromJson(options.toUtf8());
-	jsonReader.parse(doc.toJson().toStdString(), jsonOptions, false);
+	
+	jsonReader.parse(fq(options), jsonOptions, false);
 
 	if (!_analysis)
 		setAnalysis(new AnalysisBase(this)); // Create a dummy analyis object
