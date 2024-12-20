@@ -575,7 +575,7 @@ void AnalysisForm::setTitle(QString title)
 		_analysis->setTitle(fq(title.simplified()));
 }
 
-void AnalysisForm::setOptionNameConversion(const QVariantList &conv)
+void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
 {
 	if (_rSyntax->setControlNameToRSyntaxMap(conv))
 		emit optionNameConversionChanged();
