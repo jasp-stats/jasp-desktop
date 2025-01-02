@@ -518,7 +518,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		case int(specialRoles::shadowDisplay):					return tq(column->getShadow(index.row()));
 		case int(specialRoles::valuesDblList):					return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::nonFilteredNumericValuesCount):	return column->nonFilteredNumericsCount();
-		case int(specialRoles::nonFilteredLevels):				return tql(column->nonFilteredLevels());
+        case int(specialRoles::nonFilteredLevels):				return tq(column->nonFilteredLevels());
 		case int(specialRoles::computedColumnType):				return int(column->codeType());
 		case int(specialRoles::columnPkgIndex):					return index.column();
 		case int(specialRoles::lines):
@@ -551,7 +551,7 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case int(specialRoles::nonFilteredNumericValuesCount):	return column->nonFilteredNumericsCount();
-		case int(specialRoles::nonFilteredLevels):				return tql(column->nonFilteredLevels());
+        case int(specialRoles::nonFilteredLevels):				return tq(column->nonFilteredLevels());
 		case int(specialRoles::valuesDblList):					return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
 		case int(specialRoles::description):					return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
 		case int(specialRoles::filter):							return index.row() >= labels.size() || labels[index.row()]->filterAllows();

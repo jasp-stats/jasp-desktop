@@ -130,7 +130,7 @@ public:
 			Label				*	labelDoubleDummy()		{ return _doubleDummy; }
 
 			int						nonFilteredNumericsCount();
-			stringset				nonFilteredLevels();
+            stringvec				nonFilteredLevels();
 			void					nonFilteredCountersReset();
 
 			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
@@ -262,7 +262,7 @@ private:
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;
-			stringset				_nonFilteredLevels;
+            stringvec				_nonFilteredLevels;
 			int						_nonFilteredNumericsCount	= -1;
 			bool					_invalidated		= false,
 									_autoSortByValue;
