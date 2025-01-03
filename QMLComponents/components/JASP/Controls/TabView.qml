@@ -171,6 +171,14 @@ ComponentsListBase
 				}
 			}
 
+			QtControls.ToolTip
+			{
+				text			: qsTr("Double click to edit this name")
+				timeout			: jaspTheme.toolTipTimeout
+				delay			: jaspTheme.toolTipDelay
+				visible			: tabView.tabNameEditable && tabButton.hovered
+			}
+
 			onDoubleClicked:
 			{
 				if (tabView.tabNameEditable)
