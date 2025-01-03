@@ -987,9 +987,9 @@ stringvec Column::nonFilteredLevels()
 			}
 
         // Use the right label order
-        for (Label* label : _labels)
-            if (levels.find(label->label()) != levels.end())
-                _nonFilteredLevels.push_back(label->label());
+        for (std::string& label : _labelsTemp)
+            if (levels.find(label) != levels.end())
+                _nonFilteredLevels.push_back(label);
     }
 
     return _nonFilteredLevels;
