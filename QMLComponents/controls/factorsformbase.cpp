@@ -48,12 +48,17 @@ void FactorsFormBase::setUpModel()
 
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
+	Json::Value newValue = value;
 	ListModelFactorsForm::FactorVec factors;
 
-	for (const Json::Value& factor : value)
+	for (Json::Value& factor : newValue)
 	{
+		int termId = 0;
 		Terms initTerms;
-		for (const Json::Value& termJson : factor[fq(_optionKey)])
+		const Json::Value& termsJson = factor[fq(_optionKey)];
+		Json::Value valuePart = _isValueWithTypes(termsJson) ? termsJson["value"] : termsJson;
+		Json::Value typesPart = _isValueWithTypes(termsJson) ? termsJson["types"] : Json::arrayValue;
+		for (Json::Value& termJson : valuePart)
 		{
 			std::vector<std::string> components;
 
@@ -71,16 +76,31 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 			if (components.size() > 0)
 			{
 				columnTypeVec types;
-				for (const std::string& component : components)
-					types.push_back(model()->getVariableRealType(tq(component)));
-				Term term(components, types);
-				initTerms.add(term);
+				if (typesPart.size() > termId) // If the type is given, use it
+				{
+					if (typesPart[termId].isArray())
+						for (const Json::Value& jsonType : typesPart[termId])
+							types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
+					else
+						types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
+				}
+				else
+					for (const std::string& component : components)
+						types.push_back(model()->getVariableRealType(tq(component)));
+				initTerms.add(Term(components, types));
 			}
+			termId++;
 		}
+
 		factors.push_back(ListModelFactorsForm::Factor(tq(factor["name"].asString()), tq(factor["title"].asString()), initTerms));
+
+		Json::Value newTerms = Json::objectValue;
+		newTerms["value"] = valuePart;
+		newTerms["types"] = initTerms.types();
+		factor[fq(_optionKey)] = newTerms;
 	}
 
-	BoundControlBase::bindTo(value);
+	BoundControlBase::bindTo(newValue);
 	
 	_factorsModel->initFactors(factors);
 }
@@ -94,7 +114,7 @@ Json::Value FactorsFormBase::createJson() const
 		Json::Value row(Json::objectValue);
 		row["name"] = fq(baseName() + QString::number(i + startIndex()));
 		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
-		row[fq(_optionKey)] = Json::Value(Json::arrayValue);
+		row[fq(_optionKey)] = Json::Value(Json::objectValue);
 
 		result.append(row);
 	}
@@ -109,7 +129,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &value) const
 	{
 		for (const Json::Value& factor : value)
 		{
-			valid = factor.isObject() && factor["name"].isString() && factor["title"].isString() && factor[fq(_optionKey)].isArray();
+			valid = factor.isObject() && factor["name"].isString() && factor["title"].isString() && factor.isMember(fq(_optionKey));
 			if (!valid) break;
 		}
 	}
@@ -131,12 +151,11 @@ void FactorsFormBase::termsChangedHandler()
 	
 	for (const auto &factor : factors)
 	{
-		Json::Value factorJson(Json::objectValue);
-		factorJson["name"] = fq(factor.name);
-		factorJson["title"] = fq(factor.title);
-		Json::Value termsJson(Json::arrayValue);
+		const Terms& terms = factor.listView ? factor.listView->model()->terms() : factor.initTerms;
+		Json::Value valuePart(Json::arrayValue),
+					typesPart = terms.types();
 
-		for (const Term &term : factor.listView ? factor.listView->model()->terms() : factor.initTerms)
+		for (const Term &term : terms)
 		{
 			Json::Value termJson(allowInteraction() ? Json::arrayValue : Json::stringValue);
 			if (allowInteraction())
@@ -146,8 +165,14 @@ void FactorsFormBase::termsChangedHandler()
 			}
 			else
 				termJson = term.asString();
-			termsJson.append(termJson);
+			valuePart.append(termJson);
 		}
+		Json::Value factorJson(Json::objectValue),
+					termsJson(Json::objectValue);
+		factorJson["name"] = fq(factor.name);
+		factorJson["title"] = fq(factor.title);
+		termsJson["value"] = valuePart;
+		termsJson["types"] = terms.types();
 		factorJson[fq(_optionKey)] = termsJson;
 		boundValue.append(factorJson);
 	}
