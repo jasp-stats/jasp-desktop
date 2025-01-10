@@ -145,7 +145,7 @@ public:
 	void		zoomReset();
 	int 		maxEnginesAdmin() 						const;
 	bool		developerMode()							const;
-	bool		ALTNavModeActive()						const;
+	bool		ALTNavModeActive()						const override;
     bool		orderByValueByDefault()					const;
 	int			maxScaleLevels()						const override;
 	QVariantList pdfPageSizeModel()						const { return _pdfPageSizeModel; }
@@ -273,7 +273,6 @@ signals:
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
 	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
-	void ALTNavModeActiveChanged(		bool		ALTNavModeActive);
 	void aboutToChangeEmptyValues(		QStringList newValues);
 	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
 	void checkUpdatesAskUserChanged(	bool		checkAsk);

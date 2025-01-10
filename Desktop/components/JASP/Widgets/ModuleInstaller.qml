@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick					2.11
-import QtQuick.Controls			2.7 as QTCONTROLS
-import Qt.labs.folderlistmodel	2.11
-//import QtQuick.Window			2.3
-import JASP.Controls			1.0
-import JASP.Widgets				1.0
+import QtQuick
+import QtQuick.Controls			as QTCONTROLS
+import Qt.labs.folderlistmodel
+import JASP.Controls
+import JASP.Widgets
 
 QTCONTROLS.Popup
 {

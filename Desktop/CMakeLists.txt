@@ -218,7 +218,7 @@ qt_add_resources(
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
 qt_add_resources(
   JASP
-  "widgets"
+  "widgetsandtheme"
   PREFIX
   "/"
   BASE

@@ -27,6 +27,8 @@ private:
 	static QDir generateQMLCacheDir();
 #endif
 
+	static void setGlobalPropertiesInQMLContext(QQmlContext * ctxt);
+
 public slots:
 	QString		encodeAllColumnNames(	const QString	& str);
 	QString		decodeAllColumnNames(	const QString	& str);
@@ -38,6 +40,5 @@ public slots:
 
 QObject * instantiateQml(							const QUrl 	& filePath, const std::string & moduleName,																		QQmlContext * ctxt = nullptr);
 QObject * instantiateQml(const QString 	& qmlTxt, 	const QUrl & url, 		const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename, 	QQmlContext * ctxt = nullptr);
-
 
 #endif // QMLUTILS_H

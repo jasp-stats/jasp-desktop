@@ -1,8 +1,8 @@
-import QtQuick			2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts	1.3 as L
-import JASP.Widgets		1.0
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts	as L
+import JASP.Widgets
+import JASP.Controls
 
 ScrollView
 {
@@ -80,7 +80,7 @@ ScrollView
 				}
 			}
 
-			GroupBox
+			Group
 			{
 				width:			parent.width
 				

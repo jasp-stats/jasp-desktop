@@ -1,6 +1,6 @@
-import QtQuick			2.12
-import QtQuick.Controls 2.12
-import JASP.Controls	1.0 as JaspControls
+import QtQuick
+import QtQuick.Controls
+import JASP.Controls	as JaspControls
 import "FilterConstructor"
 import JASP
 

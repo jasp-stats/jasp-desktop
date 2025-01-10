@@ -21,7 +21,7 @@ import QtWebEngine
 import QtWebChannel
 import JASP
 import QtQuick.Controls
-import JASP.Controls	1.0 as JC
+import JASP.Controls		as JC
 
 Item
 {

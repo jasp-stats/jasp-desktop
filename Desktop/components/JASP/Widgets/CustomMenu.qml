@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick						2.15
-import QtQuick.Controls				2.4
-import JASP.Controls				1.0 as JASPControl
+import QtQuick
+import QtQuick.Controls
+import JASP.Controls				as JASPControl
 import Qt5Compat.GraphicalEffects
 
 FocusScope

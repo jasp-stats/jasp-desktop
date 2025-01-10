@@ -2,16 +2,16 @@
 //Comments (like this) will describe what the "approved" style is and how to use it.
 //Make sure you indent using tabs and *not* with spaces. The tabs should have a 4-space width.
 
-import QtQuick 			2.8
-import QtQuick.Layouts 	1.3
-import JASP.Controls 	1.0
-import JASP.Widgets 	1.0
+import QtQuick
+import QtQuick.Layouts
+import JASP.Controls
+import JASP.Widgets
 
 //Not exactly a style thing but every QML form should have Form as it's root:
 Form 
 {				//Opening braces should on their own line and at the exact same indent as the closing brace.
 
-	GroupBox	//A subitem is indented and always has a space between the previous subitem/property/function
+	Group	//A subitem is indented and always has a space between the previous subitem/property/function
 	{
 		title:		qsTr("A nice grouping of elements") //putting qsTr(...) around string constants allows us to make the interface translatable.
 		
