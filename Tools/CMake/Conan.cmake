@@ -28,15 +28,43 @@ if(USE_CONAN)
   if(WIN32)
 
     message(STATUS "  ${CONAN_COMPILER_RUNTIME}")
-
+    
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
-      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/conan_build
+      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/_conan_build
       -s build_type=${CMAKE_BUILD_TYPE}
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+      
+    message(STATUS "Cloning private freexl dependency")
+    set(FREEXL_VERSION "2.1.0-dev")
+    FetchContent_Declare(
+      freexl
+      GIT_REPOSITORY   https://github.com/shun2wang/conan-recipes.git
+      GIT_TAG          f014849188bddd01b9ca3ddf63dde8d2e3a45314
+    )
+    FetchContent_MakeAvailable(freexl)
+
+    if(NOT freexl_FOUND)
+        if(freexl_POPULATED)
+
+            message(STATUS "Compiling freexl dependency")
+            execute_process(
+                COMMAND_ECHO STDOUT
+                WORKING_DIRECTORY ${freexl_SOURCE_DIR}/freexl
+                COMMAND
+                conan create . --version=${FREEXL_VERSION}
+                -s build_type=${CMAKE_BUILD_TYPE}
+                -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
+                -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
+                #--test-missing
+            )
+        else()
+          message(CHECK_FAIL "build freexl failed")
+        endif()
+    endif()
 
   elseif(APPLE)
 
@@ -61,7 +89,7 @@ if(USE_CONAN)
 
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/${CONAN_RESULT_FILE})
+  if(EXISTS ${CMAKE_BINARY_DIR}/_conan_build/${CONAN_RESULT_FILE})
     message(CHECK_PASS "successful")
   else()
     message(CHECK_FAIL "unsuccessful")
@@ -71,7 +99,8 @@ if(USE_CONAN)
     )
   endif()
 
-  include(${CMAKE_BINARY_DIR}/conan_build/conan_toolchain.cmake)
+  include(${CMAKE_BINARY_DIR}/_conan_build/conan_toolchain.cmake)
+  include(${freexl_SOURCE_DIR}/freexl/test_package/build/msvc-194-x86_64-17-${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake)
 
 endif()
 
