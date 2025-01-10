@@ -5,7 +5,6 @@
 import QtQuick
 import QtQuick.Layouts
 import JASP.Controls
-import JASP.Widgets
 
 //Not exactly a style thing but every QML form should have Form as it's root:
 Form 

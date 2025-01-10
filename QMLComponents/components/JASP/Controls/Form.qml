@@ -198,7 +198,7 @@ AnalysisForm
 				{
 					id: popup
 
-					parent:				Overlay.overlay
+					parent:				QtC.Overlay.overlay
 					anchors.centerIn:	parent
 
 					width:	400  * jaspTheme.uiScale
