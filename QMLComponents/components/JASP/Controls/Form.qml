@@ -15,10 +15,10 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick			2.11
-import QtQuick.Controls 2.4
-import JASP.Controls	1.0
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls as QtC
+import JASP.Controls
+import JASP
 
 AnalysisForm
 {
@@ -194,7 +194,7 @@ AnalysisForm
 				label:				qsTr("Generate Wrapper")
 				onClicked:			popup.open()
 
-				Popup
+				QtC.Popup
 				{
 					id: popup
 

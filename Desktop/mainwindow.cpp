@@ -195,6 +195,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	ALTNavigation::registerQMLTypes("JASP");
 	ALTNavControl::ctrl()->enableAlTNavigation(_preferences->ALTNavModeActive());
+	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 
 	_dynamicModules->registerQMLTypes();
 
@@ -636,31 +637,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 
-
-	bool	debug	= false,
-			isMac	= false,
-			isLinux = false;
-
-#ifdef JASP_DEBUG
-	debug = true;
-#endif
-
-#ifdef __APPLE__
-	isMac = true;
-#endif
-
-#ifdef __linux__
-	isLinux = true;
-#endif
-
-	bool isWindows = !isMac && !isLinux;
-
-	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
-	_qml->rootContext()->setContextProperty("MACOS",				isMac);
-	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
-	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
-	_qml->rootContext()->setContextProperty("INTERACTION_SEPARATOR", Term::separator);
-
 	_qml->setOutputWarningsToStandardError(true);
 
 	setQmlImportPaths();
@@ -760,6 +736,7 @@ void MainWindow::setQmlImportPaths()
 
 	QStringList newImportPaths = originalImportPaths;
 
+	newImportPaths.append(":/jasp-stats.org/imports");
 	newImportPaths.append("qrc:///components");
 	newImportPaths.append(_dynamicModules->importPaths());
 

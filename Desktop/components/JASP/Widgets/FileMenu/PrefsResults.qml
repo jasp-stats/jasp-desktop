@@ -1,8 +1,7 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4
-import JASP.Widgets		1.0
-
-import JASP.Controls	1.0
+import QtQuick
+import QtQuick.Controls
+import JASP.Widgets
+import JASP.Controls
 
 ScrollView
 {

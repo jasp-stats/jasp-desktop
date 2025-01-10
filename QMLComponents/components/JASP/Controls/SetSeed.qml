@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,8 +17,7 @@
 //
 
 
-import QtQuick 2.8
-import JASP.Controls 1.0
+import JASP.Controls
 
 Group
 {

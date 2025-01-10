@@ -1,10 +1,10 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
-import JASP.Controls 1.0
+import JASP.Controls
 import JASP
-import FileOperation 1.0
+import FileOperation
 
 FocusScope
 {

@@ -24,6 +24,7 @@ public slots:
 	virtual void	setCurrentThemeName(QString currentThemeName)	{}
 	virtual void	setShowRSyntax(bool showRSyntax)				{}
 	virtual void	setShowAllROptions(bool showAllROptions)		{}
+	virtual bool	ALTNavModeActive()						const	{ return false; }
 
 signals:
 	void ribbonBarHeightScaleChanged(float height);
@@ -34,6 +35,7 @@ signals:
 	void interfaceFontChanged();
 	void showRSyntaxChanged();
 	void showAllROptionsChanged();
+	void ALTNavModeActiveChanged(bool ALTNavModeActive);
 
 protected:
 	static PreferencesModelBase* _singleton;

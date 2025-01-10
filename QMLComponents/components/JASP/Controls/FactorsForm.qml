@@ -1,8 +1,7 @@
-import QtQuick			2.11
-import QtQuick.Controls	2.4
-import JASP.Controls	1.0
-import JASP				1.0
-import QtQuick.Layouts  1.3
+import QtQuick
+import JASP.Controls
+import JASP
+import QtQuick.Layouts
 
 FactorsFormBase
 {

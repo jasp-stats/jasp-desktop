@@ -4,8 +4,21 @@ list(APPEND CMAKE_MESSAGE_CONTEXT QMLComponents)
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB_RECURSE QML_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "components/JASP/Controls/*.qml")
 
-add_library(QMLComponents ${SOURCE_FILES} ${HEADER_FILES})
+qt_add_qml_module(QMLComponents
+	URI JASP.Controls
+	#STATIC
+	OUTPUT_DIRECTORY "JASP/Controls"
+	RESOURCE_PREFIX /jasp-stats.org/imports
+	#PLUGIN_TARGET jaspcontrolsplugin
+	DEPENDENCIES QtQuick
+	#NO_PLUGIN_OPTIONAL
+	NO_GENERATE_PLUGIN_SOURCE
+	CLASS_NAME JASPQmlPlugin
+	SOURCES ${SOURCE_FILES} ${HEADER_FILES}
+	QML_FILES ${QML_FILES}
+)
 
 if(LINUX)
   target_link_libraries(QMLComponents PUBLIC ${_LIB_RT})
@@ -30,6 +43,7 @@ target_include_directories(
 	${PROJECT_SOURCE_DIR}/CommonData
 )
 
+
 target_link_libraries(
 	QMLComponents
 	PUBLIC
@@ -48,17 +62,5 @@ target_link_libraries(
 	$<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
 	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
 )
-
-file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
-
-qt_add_resources(
-   QMLComponents
-   "qmlComponents"
-   PREFIX
-   "/"
-   BASE
-   ${CMAKE_CURRENT_LIST_DIR}
-   FILES
-   ${QML_RESOURCE_FILES})
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
