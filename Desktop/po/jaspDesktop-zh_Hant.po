@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-01-12 07:00+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -189,7 +195,7 @@ msgstr "新增欄位"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr "刪除欄位"
+msgstr "刪除欄"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
@@ -694,15 +700,15 @@ msgstr "圖選項"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr "圖的PPI設定為: "
+msgstr "圖的每英寸像素數（PPI）設定為: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr "使用螢幕每英吋像素來設定圖型"
+msgstr "使用螢幕的每英寸像素數（PPI）來渲染圖表。"
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr "自訂PPI: "
+msgstr "自訂每英寸像素數（PPI）: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
@@ -1277,7 +1283,7 @@ msgstr "增加直行(變數)"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr "删除直行(變數)"
+msgstr "刪除欄"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
@@ -1722,7 +1728,8 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
-"您的分析結果是基於舊版的JASP ，要更改圖像的 PPI，必須先刷新它們。\n"
+"您的分析結果是基於舊版的JASP ，要更改圖像的 "
+"每英寸像素數（PPI），必須先刷新它們。\n"
 "\n"
 "刷新所有分析？"
 
@@ -2894,7 +2901,7 @@ msgstr "最後一個核取方塊"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr "變數"
+msgstr "變項"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
@@ -3680,7 +3687,7 @@ msgstr "這些變數已被刪除，因為它們是不允許的：%1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr "當未指定 BOM 時假定 CSV 是選定的代碼頁。"
+msgstr "在未指定 BOM 的情況下，假設 CSV 採用如下編碼。"
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
@@ -3983,15 +3990,15 @@ msgstr "選擇行"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr "插入左方行"
+msgstr "插入左方欄"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr "插入右方行"
+msgstr "插入右方欄"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr "刪除行"
+msgstr "刪除欄"
 
 msgctxt "DataTableView|"
 msgid "Select row"
@@ -4047,12 +4054,12 @@ msgstr "將列 “%2” 行“%3”中的值設定為“%1”"
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr "插入計算行 “%1”"
+msgstr "插入計算欄 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr "插入行 “%1”"
+msgstr "插入欄 “%1”"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4144,7 +4151,7 @@ msgstr "插入右方欄"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr "刪除行"
+msgstr "刪除欄"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
@@ -4192,7 +4199,7 @@ msgstr "插入"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr "插入空行或空列"
+msgstr "插入空欄或空列"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
@@ -4216,11 +4223,11 @@ msgstr "關閉外部資料同步"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr "在上面插入列"
+msgstr "插入上方列"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr "在下面插入列"
+msgstr "插入下方列"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
@@ -4264,11 +4271,11 @@ msgstr "Grand Budapest 風格"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr "在上面插入列"
+msgstr "插入上方列"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr "在下面插入行"
+msgstr "插入下方列"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -4591,7 +4598,7 @@ msgstr "欄位型別 "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr "計算類型： "
+msgstr "計算方式： "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
@@ -4638,7 +4645,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "外部試算表編輯器（用於數據同步）"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4652,7 +4659,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "遺漏值設定"
 
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
@@ -4706,19 +4713,19 @@ msgstr "因素"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "插入左方 \"計算變數\" 欄"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "插入右方 \"計算變數\" 欄"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "插入左方 \"R程式\" 欄"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "插入右方 \"R程式\" 欄"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
@@ -4755,19 +4762,19 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "插入左方 \"計算變數\" 欄"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "插入右方 \"計算變數\" 欄"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "插入左方 \"R程式\" 欄"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "插入右方 \"R程式\" 欄"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
@@ -4872,7 +4879,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "資料匯入設定"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4883,7 +4890,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "自動判定匯入資料之尺度：設定臨界值"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
@@ -4922,31 +4929,31 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "預設依數值排序標籤"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
-msgstr ""
+msgstr "調整欄列數"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "欄"
 
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "列"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "確定調整"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "將數據調整到設定的範圍"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "關閉，但不調整資料集的維度"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
@@ -4963,16 +4970,16 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "調整欄列數"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "調整資料集之欄數與列數"
 
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
-msgstr ""
+msgstr "將資料集維度調整為 %1 列和 %2 欄"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
@@ -5060,15 +5067,15 @@ msgstr "名義"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<首先填寫欄位名稱>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "當連續型變項被當作名義/次序類型時，允許的最大水準"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5079,11 +5086,11 @@ msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "正在載入新的資料集"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "新建資料"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
@@ -5130,23 +5137,23 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF設定"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "版面方向"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "縱向"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "橫向"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "版面大小"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
