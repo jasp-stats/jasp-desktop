@@ -38,7 +38,7 @@ class VariableInfo : public QObject
 {
 	Q_OBJECT
 public:
-	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, DataSetValues, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues, TotalLevels, PreviewScale, PreviewOrdinal, PreviewNominal, DataSetPointer };
+	enum InfoType { VariableType, VariableNames, DataSetRowCount, Labels, DoubleValues, NameRole, DataSetValue, DataSetValues, MaxWidth, SignalsBlocked, DataAvailable, TotalNumericValues, TotalLevels, PreviewScale, PreviewOrdinal, PreviewNominal };
 	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType, TransformedIconType };
 
 public:
@@ -55,7 +55,6 @@ public:
 
 	int							rowCount();
 	bool						dataAvailable();
-	DataSet					*	dataSet();
 
 signals:
 	void namesChanged(		QMap<QString, QString> changedNames);

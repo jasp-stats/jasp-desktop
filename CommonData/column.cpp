@@ -983,7 +983,7 @@ stringvec Column::nonFilteredLevels()
                         levels.insert(label->label());
 				}
 				else if(!isEmptyValue(_dbls[r]))
-                    levels.insert(ColumnUtils::doubleToString(_dbls[r]));
+					levels.insert(Utils::doubleToString(_dbls[r]));
 			}
 
         // Use the right label order
@@ -1164,7 +1164,7 @@ std::string Column::doubleToDisplayString(double dbl, bool fancyEmptyValue, bool
 	ignoreEmptyValue = ignoreEmptyValue && !std::isnan(dbl);
 	
 	if (isEmptyValue(dbl) && !ignoreEmptyValue)				return fancyEmptyValue ? EmptyValues::displayString() : "";
-	else													return ColumnUtils::doubleToString(dbl);
+	else													return Utils::doubleToString(dbl);
 }
 
 std::string Column::operator[](size_t row)
@@ -1416,7 +1416,7 @@ bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
 				dblsRef = dbl;
 	
 	_labelsTempDbls[row]	=  dbl;
-	_labelsTemp[row]		=  ColumnUtils::doubleToString(dbl);
+	_labelsTemp[row]		=  Utils::doubleToString(dbl);
 	
 	return true;
 }
@@ -1580,7 +1580,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	
 	if(justAValue && !newLabel && itsADouble)
 	{
-		const std::string valueDbl = ColumnUtils::doubleToString(newDoubleToSet);
+		const std::string valueDbl = Utils::doubleToString(newDoubleToSet);
 		newLabel = labelByValue(valueDbl);
 		newLabel = newLabel ? newLabel : labelByValueAndDisplay(valueDbl, valueDbl);
 	}

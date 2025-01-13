@@ -24,16 +24,16 @@ public:
 	Filter(DataSet * data);
 	Filter(DataSet * data, const std::string & name, bool createIfMissing = true);
 
-	DataSet					*	data()				const { return _data;					}
-	int							id()				const { return _id;						}
-	const std::string		&	name()				const { return _name;					}
-	const std::string		&	rFilter()			const { return _rFilter;				}
-	const std::string		&	generatedFilter()	const { return _generatedFilter;		}
-	const std::string		&	constructorJson()	const { return _constructorJson;		}
-	const std::string		&	constructorR()		const { return _constructorR;			}
-	const std::string		&	errorMsg()			const { return _errorMsg;				}
-	const std::vector<bool>	&	filtered()			const { return _filtered;				}
-	int							filteredRowCount()	const { return _filteredRowCount;		}
+	DataSet					*	data()				const			{ return _data;					}
+	int							id()				const			{ return _id;					}
+	const std::string		&	name()				const			{ return _name;					}
+	const std::string		&	rFilter()			const			{ return _rFilter;				}
+	const std::string		&	generatedFilter()	const			{ return _generatedFilter;		}
+	const std::string		&	constructorJson()	const			{ return _constructorJson;		}
+	const std::string		&	constructorR()		const			{ return _constructorR;			}
+	const std::string		&	errorMsg()			const			{ return _errorMsg;				}
+	const std::vector<bool>	&	filtered()			const			{ return _filtered;				}
+	int							filteredRowCount()	const			{ return _filteredRowCount;		}
 
 	void				setRFilter(			const std::string	& rFilter)			{ _rFilter			= rFilter;			dbUpdate(); }
 	void				setGeneratedFilter(	const std::string	& generatedFilter)	{ _generatedFilter	= generatedFilter;	dbUpdate(); }
@@ -52,10 +52,11 @@ public:
 	void				dbLoad();
 	bool				dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if an error is set
 	void				dbDelete();
-	void				incRevision() override;
+	void				incRevision()				override;
 	bool				checkForUpdates();
 	
 	static bool			filterNameIsFree(const std::string & filterName);
+	static Filter*		getFilterFromName(const std::string & filterName);
 
 	void				reset();
 

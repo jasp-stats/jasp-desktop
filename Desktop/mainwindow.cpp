@@ -536,6 +536,37 @@ void MainWindow::makeConnections()
 	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
+	// For Audit analyses, the Filter object is needed. As the QML objects should not have direct access to the data objects, the needed functions are set as callbacks.
+	dCSingleton->setFilterFunctions(
+		[](const std::string& name) {
+			new Filter(DataSetPackage::pkg()->dataSet(), name, true);
+		},
+		[](const std::string& name) {
+			Filter* filter = Filter::getFilterFromName(name);
+			if (filter)
+				filter->dbDelete();
+		},
+		[](const std::string& name, const std::string& rFilter) {
+			Filter* filter = Filter::getFilterFromName(name);
+			if (filter)
+				filter->setRFilter(rFilter);
+		},
+		[](const std::string& name) {
+			Filter* filter = Filter::getFilterFromName(name);
+			return filter ? filter->checkForUpdates() : false;
+		},
+		[](const std::string& name) {
+			Filter* filter = Filter::getFilterFromName(name);
+			return filter ? filter->filtered() : std::vector<bool>();
+		},
+		[](const std::string& name) {
+			Filter* filter = Filter::getFilterFromName(name);
+			return filter ? filter->filteredRowCount() : 0;
+		},
+		[](const std::string& name) {
+			return Filter::filterNameIsFree(name);
+		}
+		);
 
 	//Needed to allow for a hard split between Desktop/QMLComps:
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					dCSingleton,			&DesktopCommunicator::uiScaleChanged			);

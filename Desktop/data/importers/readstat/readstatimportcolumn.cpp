@@ -45,8 +45,8 @@ std::string ReadStatImportColumn::readstatValueToString(const readstat_value_t &
 	case READSTAT_TYPE_INT8:		return	std::to_string						(int(		readstat_int8_value(value))		);
 	case READSTAT_TYPE_INT16:		return	std::to_string						(int(		readstat_int16_value(value))	);
 	case READSTAT_TYPE_INT32:		return	std::to_string						(int(		readstat_int32_value(value))	);
-	case READSTAT_TYPE_FLOAT:		return	ColumnUtils::doubleToStringMaxPrec	(			readstat_float_value(value)		);
-	case READSTAT_TYPE_DOUBLE:		return	ColumnUtils::doubleToStringMaxPrec	(			readstat_double_value(value)	);
+	case READSTAT_TYPE_FLOAT:		return	Utils::doubleToStringMaxPrec	(			readstat_float_value(value)		);
+	case READSTAT_TYPE_DOUBLE:		return	Utils::doubleToStringMaxPrec	(			readstat_double_value(value)	);
 	case READSTAT_TYPE_STRING_REF:	throw	std::runtime_error("File contains string references and we do not support this.");
 	}
 
@@ -69,7 +69,7 @@ const stringvec &ReadStatImportColumn::labels() const
 void ReadStatImportColumn::addValue(const readstat_value_t & value)
 {
 	bool			setMiss	= readstat_value_is_tagged_missing(value) || (_readstatVariable && readstat_value_is_defined_missing(value, _readstatVariable));
-	std::string		valStr	= ColumnUtils::doubleToString(EmptyValues::missingValueDouble);
+	std::string		valStr	= Utils::doubleToString(EmptyValues::missingValueDouble);
 
 	if(readstat_value_is_tagged_missing(value)) //This is from sas/stata and actual value is NaN but there is a tag. So we use that as a value, this will be converted to NaN later anyway
 	{

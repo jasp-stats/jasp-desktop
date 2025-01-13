@@ -40,7 +40,6 @@ target_include_directories(
 	PUBLIC # JASP
 	${PROJECT_SOURCE_DIR}/Common
 	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-	${PROJECT_SOURCE_DIR}/CommonData
 )
 
 
@@ -48,7 +47,6 @@ target_link_libraries(
 	QMLComponents
 	PUBLIC
 	Common
-	CommonData
 	Qt::Core
 	Qt::Gui
 	Qt::Widgets

@@ -65,8 +65,3 @@ bool VariableInfo::dataAvailable()
 {
 	return _provider ? _provider->provideInfo(VariableInfo::DataAvailable).toBool() : false;
 }
-
-DataSet *VariableInfo::dataSet()
-{
-	return _provider ? reinterpret_cast<DataSet*>(_provider->provideInfo(VariableInfo::DataSetPointer).value<void*>()) : nullptr;
-}
