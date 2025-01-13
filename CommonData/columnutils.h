@@ -22,9 +22,6 @@ public:
 
 	static void			convertEscapedUnicodeToUTF8(			std::string & inputStr);
 	static std::string	deEuropeaniseForImport(					std::string   value);		//Convert a string to a double with a dot for a separator
-
-	static std::string	doubleToString(			double dbl, int precision = 10);
-	static std::string	doubleToStringMaxPrec(	double dbl);
 	
 	static bool			convertVecToInt(	const stringvec & values, intvec	& intValues, intset & uniqueValues);
 	static bool			convertVecToDouble(	const stringvec & values, doublevec	& doubleValues);

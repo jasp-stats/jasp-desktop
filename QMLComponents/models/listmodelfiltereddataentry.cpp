@@ -1,10 +1,9 @@
 #include "listmodelfiltereddataentry.h"
-#include "columnutils.h"
 #include "controls/tableviewbase.h"
 #include "utilities/qutils.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
-#include "filter.h"
+#include "utilities/desktopcommunicator.h"
 
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
@@ -22,17 +21,14 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	{
 		_filterName = "ListModelFilteredDataEntry_" + std::to_string(counter++);
 	}
-	while(!Filter::filterNameIsFree(_filterName));
+	while(!filterNameIsFree(_filterName));
 	
 	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler);
 }
 
 ListModelFilteredDataEntry::~ListModelFilteredDataEntry()
 {
-	if(_filter)
-		_filter->dbDelete();
-	delete _filter;
-	_filter = nullptr;
+	filterDelete();
 }
 
 void ListModelFilteredDataEntry::dataSetChangedHandler()
@@ -53,37 +49,33 @@ void ListModelFilteredDataEntry::setFilter(QString filter)
 	_tableTerms.filter = filter;
 	emit filterChanged(_tableTerms.filter);
 	
-	if(_filter)
-		_filter->setRFilter("filterResult <- {" + filter.toStdString() + "};"						"\n"
+	filterSetRScript("filterResult <- {" + filter.toStdString() + "};"						"\n"
 							"if(!is.logical(filterResult)) filterResult <- rep(TRUE, rowcount);"	"\n"
 							"  return(filterResult);"												"\n");
 }
 
 void ListModelFilteredDataEntry::runFilter()
 {
-	if(!_filter) //prob still need to bind
-		return;
-	
-	runFilterByName(tq(_filter->name()));
+	runFilterByName(tq(_filterName));
 }
 
 void ListModelFilteredDataEntry::filterDoneHandler(const QString &name, const QString & error)
 {
-	if(name.toStdString() != _filter->name())
+	if(name.toStdString() != _filterName)
 		return;
 
 	Log::log() << "ListModelFilteredDataEntry::filterDoneHandler for " << name << " and error '" << error << "'" << std::endl;
 
-	_filter->checkForUpdates();
+	filterCheckForUpdate();
 
-	setAcceptedRows(_filter->filtered());
+	setAcceptedRows(filtered());
 	
 	if(!error.isEmpty())
 		_tableView->addControlWarning(tr("Filter had error '%1'").arg(error));
 	else
 		_tableView->clearControlError();
 	
-	if(_filter->filteredRowCount() == 0)
+	if(filteredRowCount() == 0)
 		runFilter();
 	else
 		informDataSetOfInitialValues();
@@ -175,16 +167,12 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 		Log::log() << "Too many values in ListModelFilteredDataEntry" << std::endl;
 	
 	if(terms.filterName.isEmpty())
-	{
 		//We dont apparently have a previous filterName, so this is a fresh one, we need a new filter!
-		assert(!_filter && !_filterName.empty());
-		_filter = new Filter(VariableInfo::info()->dataSet(), _filterName, true);
-	}
-	else if(!_filter)
-	{
+		assert(!_filterName.empty());
+	else if(_filterName.empty())
 		_filterName = fq(terms.filterName);
-		_filter		= new Filter(VariableInfo::info()->dataSet(), _filterName, true);
-	}
+
+	filterBuild();
 
 	if (terms.colName.isEmpty())
 	{
@@ -199,7 +187,7 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	setColName(	_tableTerms.colName	);
 	setExtraCol(_tableTerms.extraCol);
 
-	_acceptedRows = _filter->filtered();
+	_acceptedRows = filtered();
 
 	_dataColumns	= _tableTerms.colNames;
 
@@ -224,10 +212,9 @@ void ListModelFilteredDataEntry::fillTable()
 	_tableTerms.rowNames.clear();
 	_tableTerms.values.clear();
 	
-	if(_filter)
-		_filter->checkForUpdates();
+	filterCheckForUpdate();
 	
-	size_t dataRows = _filter && _filter->filtered().size() > 0 ? _filter->filtered().size() : getDataSetRowCount();
+	size_t dataRows = filtered().size() > 0 ? filtered().size() : getDataSetRowCount();
 
 	if (_acceptedRows.size() != dataRows)
 		_acceptedRows = std::vector<bool>(dataRows, true);
@@ -365,7 +352,7 @@ void ListModelFilteredDataEntry::informDataSetOfInitialValues()
 		QVariantList vals;
 		for(size_t i=0; i<_initialValues.size(); i++)
 		{
-			vals.append(_acceptedRows[i] ? tq(ColumnUtils::doubleToString(_initialValues[i])) : "");
+			vals.append(_acceptedRows[i] ? tq(Utils::doubleToString(_initialValues[i])) : "");
 			if(_acceptedRows[i])
 				somethingFilled = true;
 		}
@@ -439,3 +426,42 @@ void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
 }
+
+bool ListModelFilteredDataEntry::filterNameIsFree(const std::string& name)
+{
+	return DesktopCommunicator::singleton()->filterNameIsFree(name);
+}
+
+void ListModelFilteredDataEntry::filterBuild()
+{
+	if (!_filterName.empty())
+		DesktopCommunicator::singleton()->filterBuild(_filterName);
+}
+
+void ListModelFilteredDataEntry::filterDelete()
+{
+	if (!_filterName.empty())
+		DesktopCommunicator::singleton()->filterDelete(_filterName);
+}
+
+void ListModelFilteredDataEntry::filterSetRScript(const std::string& script)
+{
+	if (!_filterName.empty())
+		DesktopCommunicator::singleton()->filterSetRScript(_filterName, script);
+}
+
+bool ListModelFilteredDataEntry::filterCheckForUpdate()
+{
+	return !_filterName.empty() ? DesktopCommunicator::singleton()->filterCheckForUpdate(_filterName) : false;
+}
+
+std::vector<bool> ListModelFilteredDataEntry::filtered()
+{
+	return !_filterName.empty() ? DesktopCommunicator::singleton()->filtered(_filterName) : std::vector<bool>();
+}
+
+int ListModelFilteredDataEntry::filteredRowCount()
+{
+	return !_filterName.empty() ? DesktopCommunicator::singleton()->filteredRowCount(_filterName) : 0;
+}
+
