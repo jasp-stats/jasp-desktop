@@ -44,6 +44,8 @@ class RSyntax;
 class AnalysisForm : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
+
 	Q_PROPERTY(QString		title					READ title					WRITE setTitle					NOTIFY titleChanged					)
 	Q_PROPERTY(QString		errors					READ errors													NOTIFY errorsChanged				)
 	Q_PROPERTY(QString		warnings				READ warnings												NOTIFY warningsChanged				)

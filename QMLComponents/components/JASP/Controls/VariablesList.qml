@@ -20,6 +20,7 @@
 import QtQuick
 import QtQuick.Controls  as QTCONTROLS
 import QtQml.Models
+import JASP.Controls
 import JASP
 
 VariablesListBase

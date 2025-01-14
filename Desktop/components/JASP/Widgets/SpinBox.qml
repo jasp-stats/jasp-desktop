@@ -97,7 +97,7 @@ Item
 	TextField
 	{
 		id:							valueField
-		validator:					JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals }
+		validator:					JaspControls.JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals }
 		anchors
 		{
 			left:					minus.right

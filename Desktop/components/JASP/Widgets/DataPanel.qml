@@ -1,6 +1,6 @@
-import QtQuick.Controls 6.0
-import QtQuick.Layouts	1.0
-import QtQuick			2.15
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick
 
 
 Rectangle

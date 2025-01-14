@@ -11,7 +11,7 @@ qt_add_qml_module(QMLComponents
 	#STATIC
 	OUTPUT_DIRECTORY "JASP/Controls"
 	RESOURCE_PREFIX /jasp-stats.org/imports
-	#PLUGIN_TARGET jaspcontrolsplugin
+	#PLUGIN_TARGET QMLComponents
 	DEPENDENCIES QtQuick
 	#NO_PLUGIN_OPTIONAL
 	NO_GENERATE_PLUGIN_SOURCE
@@ -40,6 +40,8 @@ target_include_directories(
 	PUBLIC # JASP
 	${PROJECT_SOURCE_DIR}/Common
 	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+	${CMAKE_CURRENT_LIST_DIR}/controls
+	${CMAKE_CURRENT_LIST_DIR}/rsyntax
 )
 
 

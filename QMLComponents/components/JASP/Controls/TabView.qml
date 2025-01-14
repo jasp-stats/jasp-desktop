@@ -19,7 +19,7 @@
 import QtQuick
 import QtQuick.Controls as QtControls
 import QtQuick.Layouts
-import JASP
+import JASP.Controls
 
 ComponentsListBase
 {

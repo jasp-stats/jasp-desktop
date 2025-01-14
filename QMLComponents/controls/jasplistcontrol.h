@@ -38,6 +38,7 @@ class ColumnTypesModel;
 class JASPListControl : public JASPControl
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( ListModel*			model							READ model																			NOTIFY modelChanged					)
 	Q_PROPERTY( QVariant			source							READ source								WRITE setSource								NOTIFY sourceChanged				)

@@ -72,6 +72,8 @@ private:
 class RSyntaxHighlighterQuick : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
+
 	Q_PROPERTY(QQuickTextDocument* textDocument		READ textDocument	WRITE setTextDocument NOTIFY textDocumentChanged)
 	
 public:

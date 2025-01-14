@@ -17,8 +17,8 @@
 //
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts		as L
+import JASP.Controls
 import JASP
 
 GroupBoxBase

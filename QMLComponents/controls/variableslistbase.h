@@ -29,6 +29,7 @@ class CheckBoxBase;
 class VariablesListBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( ListViewType		listViewType					READ listViewType					WRITE setListViewType					NOTIFY listViewTypeChanged					)
 	Q_PROPERTY( int					columns							READ columns						WRITE setColumns						NOTIFY columnsChanged						)

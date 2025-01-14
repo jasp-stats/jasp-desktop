@@ -26,6 +26,7 @@ class VariablesListBase;
 class VariablesFormBase : public JASPControl
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( JASPControl*			availableVariablesList			READ availableVariablesList													NOTIFY availableVariablesListChanged		)
 	Q_PROPERTY( QList<JASPControl*>		allAssignedVariablesList		READ allAssignedVariablesList												NOTIFY allAssignedVariablesListChanged		)

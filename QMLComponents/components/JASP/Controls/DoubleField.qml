@@ -18,7 +18,6 @@
 
 import QtQuick
 import JASP.Controls
-import JASP
 
 TextField
 {

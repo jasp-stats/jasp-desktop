@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 ///Setting src to an Image will put this image inverter there and enable/disable it based on a dark theme is enabled. This is especially useful for getting the negative of a plot
 ShaderEffect

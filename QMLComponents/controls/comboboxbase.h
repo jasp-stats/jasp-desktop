@@ -28,6 +28,7 @@
 class ComboBoxBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( int					currentIndex				READ currentIndex				WRITE setCurrentIndex		NOTIFY currentIndexChanged			)
 	Q_PROPERTY( QString				currentText					READ currentText				WRITE setCurrentText		NOTIFY currentTextChanged			)

@@ -17,9 +17,9 @@
 //
 
 import QtQuick
-import QtQuick.Controls 2.4 as QTC
-import QtQuick.Layouts	1.3
-import JASP				1.0
+import QtQuick.Controls as QTC
+import QtQuick.Layouts
+import JASP.Controls
 
 TextInputBase
 {

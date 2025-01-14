@@ -26,6 +26,7 @@
 class ComponentsListBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( bool			addItemManually			READ addItemManually		WRITE setAddItemManually		NOTIFY addItemManuallyChanged		)
 	Q_PROPERTY( int				minimumItems			READ minimumItems			WRITE setMinimumItems			NOTIFY minimumItemsChanged			)

@@ -31,6 +31,7 @@ class ListModel;
 class FormulaBase : public QQuickItem
 {
 	Q_OBJECT
+	QML_NAMED_ELEMENT(Formula)
 
 	Q_PROPERTY( QVariant	userMustSpecify		READ userMustSpecify		WRITE setUserMustSpecify		NOTIFY userMustSpecifyChanged		)
 	Q_PROPERTY( QVariant	lhs					READ lhs					WRITE setLhs					NOTIFY lhsChanged					)

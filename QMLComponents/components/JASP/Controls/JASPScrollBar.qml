@@ -17,8 +17,8 @@
 //
 // Code based on http://stackoverflow.com/questions/17833103/how-to-create-scrollbar-in-qtquick-2-0
 
-import QtQuick	2
-import QtQml	2
+import QtQuick
+import QtQml
 
 Item
 {

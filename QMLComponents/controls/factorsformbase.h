@@ -27,6 +27,7 @@
 class FactorsFormBase :  public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( int		initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
 	Q_PROPERTY( int		countVariables			READ countVariables										NOTIFY countVariablesChanged	)
