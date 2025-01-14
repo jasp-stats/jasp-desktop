@@ -619,3 +619,9 @@ bool DataSet::initColumnWithStrings(int colIndex, const std::string & newName, c
 	return anyChanges || column->type() != prevType;
 }
 
+bool DataSet::isFilterNameFree(const std::string& filterName)
+{
+	return -1 == db().filterGetId(filterName);
+}
+
+

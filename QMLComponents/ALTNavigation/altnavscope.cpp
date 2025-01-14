@@ -4,8 +4,6 @@
 
 #include <QQmlProperty>
 #include <QMetaObject>
-#include <QDirIterator>
-#include "log.h"
 
 ALTNavScope::ALTNavScope(QObject* attachee)
 	: QObject{attachee}

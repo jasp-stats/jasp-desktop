@@ -53,10 +53,7 @@ public:
 	bool				dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if an error is set
 	void				dbDelete();
 	void				incRevision()				override;
-	bool				checkForUpdates();
-	
-	static bool			filterNameIsFree(const std::string & filterName);
-
+	bool				checkForUpdates();	
 	void				reset();
 
 	DatabaseInterface		&	db();
