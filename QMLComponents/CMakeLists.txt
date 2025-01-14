@@ -8,10 +8,9 @@ file(GLOB_RECURSE QML_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "components/JAS
 
 qt_add_qml_module(QMLComponents
 	URI JASP.Controls
-	#STATIC
 	OUTPUT_DIRECTORY "JASP/Controls"
 	RESOURCE_PREFIX /jasp-stats.org/imports
-	#PLUGIN_TARGET QMLComponents
+	#PLUGIN_TARGET QMLComponentsPlugin
 	DEPENDENCIES QtQuick
 	#NO_PLUGIN_OPTIONAL
 	NO_GENERATE_PLUGIN_SOURCE
@@ -39,6 +38,7 @@ target_include_directories(
 	QMLComponents
 	PUBLIC # JASP
 	${PROJECT_SOURCE_DIR}/Common
+	${PROJECT_SOURCE_DIR}/CommonData
 	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 	${CMAKE_CURRENT_LIST_DIR}/controls
 	${CMAKE_CURRENT_LIST_DIR}/rsyntax
@@ -50,6 +50,7 @@ target_link_libraries(
 	QMLComponents
 	PUBLIC
 	Common
+	CommonData
 	Qt::Core
 	Qt::Gui
 	Qt::Widgets

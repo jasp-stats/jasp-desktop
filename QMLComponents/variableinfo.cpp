@@ -2,6 +2,8 @@
 #include "jasptheme.h"
 #include "QQmlContext"
 #include "QTimer"
+#include "databaseinterface.h"
+#include "dataset.h"
 
 VariableInfo* VariableInfo::_singleton = nullptr;
 
@@ -64,4 +66,16 @@ int VariableInfo::rowCount()
 bool VariableInfo::dataAvailable()
 {
 	return _provider ? _provider->provideInfo(VariableInfo::DataAvailable).toBool() : false;
+}
+
+DataSet *VariableInfo::dataSet()
+{
+	static DataSet* singleDataSet = nullptr;
+
+	if (!singleDataSet)
+	{
+		DatabaseInterface* db = new DatabaseInterface(false);
+		singleDataSet = new DataSet(db->dataSetGetId());
+	}
+	return singleDataSet;
 }

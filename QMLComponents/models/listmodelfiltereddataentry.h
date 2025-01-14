@@ -22,6 +22,7 @@
 
 #include "listmodeltableviewbase.h"
 
+class Filter;
 class ListModelFilteredDataEntry : public ListModelTableViewBase
 {
 	Q_OBJECT
@@ -74,16 +75,6 @@ private:
 	size_t						getDataSetRowCount()	const;
 	void						fillTable();
 
-	bool						filterNameIsFree(const std::string& name);
-	void						filterBuild();
-	void						filterDelete();
-	void						filterSetRScript(const std::string& script);
-	bool						filterCheckForUpdate();
-	std::vector<bool>			filtered();
-	int							filteredRowCount();
-
-
-
 	
 private:
 	boolvec						_acceptedRows;
@@ -94,6 +85,7 @@ private:
 	QStringList					_dataColumns,
 								_extraColsStr;
 	std::string					_filterName;
+	Filter					*	_filter		= nullptr;
 	bool						_informOnce		= false;
 };
 
