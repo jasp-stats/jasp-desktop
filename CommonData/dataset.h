@@ -83,6 +83,7 @@ public:
 			void					setWorkspaceEmptyValues(	const stringset& values);
 	const	std::string			&	description()																	const	{ return _description; }
 			void					setDescription(				const std::string& desc);
+	bool							isFilterNameFree(			const std::string& filterName);
 
 private:			
 			void					upgradeTo019(const Json::Value & emptyVals);

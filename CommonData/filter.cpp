@@ -170,11 +170,6 @@ bool Filter::checkForUpdates()
 		return false;
 }
 
-bool Filter::filterNameIsFree(const std::string &filterName)
-{
-	return -1 == DatabaseInterface::singleton()->filterGetId(filterName);
-}
-
 void Filter::reset()
 {
 	if(!_data->writeBatchedToDB())

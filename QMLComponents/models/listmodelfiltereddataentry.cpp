@@ -4,6 +4,7 @@
 #include "log.h"
 #include "controls/jaspcontrol.h"
 #include "filter.h"
+#include "dataset.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	: ListModelTableViewBase(parent)
@@ -21,7 +22,7 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	{
 		_filterName = "ListModelFilteredDataEntry_" + std::to_string(counter++);
 	}
-	while(!Filter::filterNameIsFree(_filterName));
+	while(!dataSet->isFilterNameFree(_filterName));
 	
 	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler);
 }
