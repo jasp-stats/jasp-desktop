@@ -3,8 +3,7 @@
 #include "utilities/qutils.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
-#include "utilities/desktopcommunicator.h"
-
+#include "filter.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	: ListModelTableViewBase(parent)
@@ -16,19 +15,23 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	connect(_tableView,				SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
 	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
 
+	DataSet* dataSet = VariableInfo::info()->dataSet();
 	static int counter = 0;
 	do
 	{
 		_filterName = "ListModelFilteredDataEntry_" + std::to_string(counter++);
 	}
-	while(!filterNameIsFree(_filterName));
+	while(!Filter::filterNameIsFree(_filterName));
 	
 	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler);
 }
 
 ListModelFilteredDataEntry::~ListModelFilteredDataEntry()
 {
-	filterDelete();
+	if(_filter)
+		_filter->dbDelete();
+	delete _filter;
+	_filter = nullptr;
 }
 
 void ListModelFilteredDataEntry::dataSetChangedHandler()
@@ -49,14 +52,18 @@ void ListModelFilteredDataEntry::setFilter(QString filter)
 	_tableTerms.filter = filter;
 	emit filterChanged(_tableTerms.filter);
 	
-	filterSetRScript("filterResult <- {" + filter.toStdString() + "};"						"\n"
+	if(_filter)
+		_filter->setRFilter("filterResult <- {" + filter.toStdString() + "};"						"\n"
 							"if(!is.logical(filterResult)) filterResult <- rep(TRUE, rowcount);"	"\n"
 							"  return(filterResult);"												"\n");
 }
 
 void ListModelFilteredDataEntry::runFilter()
 {
-	runFilterByName(tq(_filterName));
+	if(!_filter) //prob still need to bind
+		return;
+
+	runFilterByName(tq(_filter->name()));
 }
 
 void ListModelFilteredDataEntry::filterDoneHandler(const QString &name, const QString & error)
@@ -66,16 +73,16 @@ void ListModelFilteredDataEntry::filterDoneHandler(const QString &name, const QS
 
 	Log::log() << "ListModelFilteredDataEntry::filterDoneHandler for " << name << " and error '" << error << "'" << std::endl;
 
-	filterCheckForUpdate();
+	_filter->checkForUpdates();
 
-	setAcceptedRows(filtered());
+	setAcceptedRows(_filter->filtered());
 	
 	if(!error.isEmpty())
 		_tableView->addControlWarning(tr("Filter had error '%1'").arg(error));
 	else
 		_tableView->clearControlError();
 	
-	if(filteredRowCount() == 0)
+	if(_filter->filteredRowCount() == 0)
 		runFilter();
 	else
 		informDataSetOfInitialValues();
@@ -167,12 +174,16 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 		Log::log() << "Too many values in ListModelFilteredDataEntry" << std::endl;
 	
 	if(terms.filterName.isEmpty())
+	{
 		//We dont apparently have a previous filterName, so this is a fresh one, we need a new filter!
-		assert(!_filterName.empty());
-	else if(_filterName.empty())
+		assert(!_filter && !_filterName.empty());
+		_filter = new Filter(VariableInfo::info()->dataSet(), _filterName, true);
+	}
+	else if(!_filter)
+	{
 		_filterName = fq(terms.filterName);
-
-	filterBuild();
+		_filter		= new Filter(VariableInfo::info()->dataSet(), _filterName, true);
+	}
 
 	if (terms.colName.isEmpty())
 	{
@@ -187,7 +198,7 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	setColName(	_tableTerms.colName	);
 	setExtraCol(_tableTerms.extraCol);
 
-	_acceptedRows = filtered();
+	_acceptedRows = _filter->filtered();
 
 	_dataColumns	= _tableTerms.colNames;
 
@@ -212,9 +223,10 @@ void ListModelFilteredDataEntry::fillTable()
 	_tableTerms.rowNames.clear();
 	_tableTerms.values.clear();
 	
-	filterCheckForUpdate();
+	if (_filter)
+		_filter->checkForUpdates();
 	
-	size_t dataRows = filtered().size() > 0 ? filtered().size() : getDataSetRowCount();
+	size_t dataRows = _filter && _filter->filtered().size() > 0 ? _filter->filtered().size() : getDataSetRowCount();
 
 	if (_acceptedRows.size() != dataRows)
 		_acceptedRows = std::vector<bool>(dataRows, true);
@@ -425,43 +437,5 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
-}
-
-bool ListModelFilteredDataEntry::filterNameIsFree(const std::string& name)
-{
-	return DesktopCommunicator::singleton()->filterNameIsFree(name);
-}
-
-void ListModelFilteredDataEntry::filterBuild()
-{
-	if (!_filterName.empty())
-		DesktopCommunicator::singleton()->filterBuild(_filterName);
-}
-
-void ListModelFilteredDataEntry::filterDelete()
-{
-	if (!_filterName.empty())
-		DesktopCommunicator::singleton()->filterDelete(_filterName);
-}
-
-void ListModelFilteredDataEntry::filterSetRScript(const std::string& script)
-{
-	if (!_filterName.empty())
-		DesktopCommunicator::singleton()->filterSetRScript(_filterName, script);
-}
-
-bool ListModelFilteredDataEntry::filterCheckForUpdate()
-{
-	return !_filterName.empty() ? DesktopCommunicator::singleton()->filterCheckForUpdate(_filterName) : false;
-}
-
-std::vector<bool> ListModelFilteredDataEntry::filtered()
-{
-	return !_filterName.empty() ? DesktopCommunicator::singleton()->filtered(_filterName) : std::vector<bool>();
-}
-
-int ListModelFilteredDataEntry::filteredRowCount()
-{
-	return !_filterName.empty() ? DesktopCommunicator::singleton()->filteredRowCount(_filterName) : 0;
 }
 

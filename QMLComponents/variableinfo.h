@@ -55,6 +55,7 @@ public:
 
 	int							rowCount();
 	bool						dataAvailable();
+	DataSet					*	dataSet();
 
 signals:
 	void namesChanged(		QMap<QString, QString> changedNames);

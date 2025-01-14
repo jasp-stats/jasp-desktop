@@ -3,8 +3,6 @@
 #include "dataset.h"
 #include "databaseinterface.h"
 
-std::map<std::string, Filter*>	_filterMap;
-
 Filter::Filter(DataSet * data)
 	: DataSetBaseNode(dataSetBaseNodeType::filter, data), _data(data)
 { }
@@ -17,8 +15,6 @@ Filter::Filter(DataSet * data, const std::string & name, bool createIfMissing)
 	if(db().filterGetId(_name) > -1)	dbLoad();
 	else if(createIfMissing)			dbCreate();
 	else								throw std::runtime_error("Filter by name '" + _name + "' but it doesnt exist and createIfMissing=false!\nAre you sure this filter should exist?");
-
-	_filterMap[name] = this;
 }
 
 void Filter::dbCreate()
@@ -140,8 +136,6 @@ void Filter::dbDelete()
 
 	db().filterDelete(_id);
 	_id = -1;
-
-	_filterMap.erase(_name);
 }
 
 void Filter::incRevision()
@@ -179,11 +173,6 @@ bool Filter::checkForUpdates()
 bool Filter::filterNameIsFree(const std::string &filterName)
 {
 	return -1 == DatabaseInterface::singleton()->filterGetId(filterName);
-}
-
-Filter* Filter::getFilterFromName(const std::string & filterName)
-{
-	return _filterMap[filterName];
 }
 
 void Filter::reset()
