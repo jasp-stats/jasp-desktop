@@ -105,10 +105,10 @@ Item
 		onXChanged:			checkPosition(false)
 		onDraggingChanged:	checkPosition(true)
 
-		ALTNavigation.enabled:				true
-		ALTNavigation.onTagMatch:			{ arrowClicked(); }
-		ALTNavigation.requestedPostfix:		"D"
-		ALTNavigation.y:					height / 2 - 25 * jaspTheme.uiScale
+		JC.ALTNavigation.enabled:				true
+		JC.ALTNavigation.onTagMatch:			{ arrowClicked(); }
+		JC.ALTNavigation.requestedPostfix:		"D"
+		JC.ALTNavigation.y:					height / 2 - 25 * jaspTheme.uiScale
 
 		function checkPosition(forceCheck)
 		{
@@ -230,9 +230,9 @@ Item
 		visible:				hasAnalysis && !ribbonModel.dataMode
 		color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
-		ALTNavigation.enabled:				true
-		ALTNavigation.requestedPostfix:		"R"
-		ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
+		JC.ALTNavigation.enabled:				true
+		JC.ALTNavigation.requestedPostfix:		"R"
+		JC.ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
 
 		Rectangle
 		{

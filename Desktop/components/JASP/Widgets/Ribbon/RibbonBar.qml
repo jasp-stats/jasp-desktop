@@ -18,6 +18,7 @@
 
 import QtQuick
 import JASP
+import JASP.Controls
 
 
 FocusScope

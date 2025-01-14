@@ -84,6 +84,7 @@
 class ALTNavigation : public QObject
 {
 	Q_OBJECT
+	QML_ELEMENT
 	QML_ATTACHED(ALTNavScope)
 
 public:
@@ -93,11 +94,6 @@ public:
 	 * \return Attaching ALNavScope
 	 */
 	static ALTNavScope* qmlAttachedProperties(QObject *object);
-
-	/*!
-	 * \brief registers the QML types related to this subsystem under JASP
-	 */
-	static void registerQMLTypes(QString uri);
 
 };
 

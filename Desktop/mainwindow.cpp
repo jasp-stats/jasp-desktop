@@ -139,7 +139,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	qmlRegisterUncreatableType<JASPControl>						("JASP",			1, 0, "JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",			1, 0, "MessageForwarder",	"You can't touch this"				);
 
 	qmlRegisterType<DataSetView>								("JASP",			1, 0, "DataSetView"						);
@@ -150,7 +149,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
-	ALTNavigation::registerQMLTypes("JASP");
 	ALTNavControl::ctrl()->enableAlTNavigation(_preferences->ALTNavModeActive());
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 

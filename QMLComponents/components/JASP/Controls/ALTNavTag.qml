@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import JASP
+import JASP.Controls
 
 //Tag shown when alt navigation mode is enabled.
 ALTNavTagBase
