@@ -18,6 +18,7 @@ class BoundControl;
 class JASPControl : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( ControlType							controlType				READ controlType			WRITE setControlType			NOTIFY controlTypeChanged			)
 	Q_PROPERTY( QString								name					READ name					WRITE setName					NOTIFY nameChanged					)

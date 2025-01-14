@@ -26,6 +26,8 @@ class RadioButtonsGroupBase;
 class RadioButtonBase : public JASPControl
 {
 	Q_OBJECT
+	QML_ELEMENT
+
 	Q_PROPERTY(JASPControl* group READ group NOTIFY groupChanged) // Cannot have a RadioButtonsGroupBase property: compilation error in the moc stuff.
 
 public:

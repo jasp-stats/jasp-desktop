@@ -25,6 +25,7 @@
 class TextInputBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
 	Q_PROPERTY( QVariant	defaultValue		READ defaultValue			WRITE setDefaultValue		NOTIFY defaultValueChanged			)

@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QTC
 import QtQuick.Layouts
-import JASP
+import JASP.Controls
 
 
 ComboBoxBase
@@ -51,7 +51,7 @@ ComboBoxBase
 		}
 	}
 
-	ComboBox
+	QTC.ComboBox
 	{
 						id:						control
 						implicitWidth:			longestFieldWidth + (allowedTypeIcons.count > 0 ? allowedTypeIcons.width + jaspTheme.contentMargin : 0)
@@ -160,7 +160,7 @@ ComboBoxBase
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
-		popup: Popup
+		popup: QTC.Popup
 		{
 			id:				popupRoot
 			padding:		1
@@ -220,7 +220,7 @@ ComboBoxBase
 			}
 		}
 
-		delegate: ItemDelegate
+		delegate: QTC.ItemDelegate
 		{
 			implicitHeight:							jaspTheme.comboBoxHeight
 			implicitWidth:							popupView.width

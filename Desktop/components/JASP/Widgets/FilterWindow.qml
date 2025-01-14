@@ -301,7 +301,7 @@ FocusScope
 
 						TextArea
 						{
-							RSyntaxHighlighterQuick
+							JaspControls.RSyntaxHighlighterQuick
 							{
 								textDocument:		filterGeneratedEdit.textDocument
 							}
@@ -351,7 +351,7 @@ FocusScope
 						TextArea
 						{
 
-							RSyntaxHighlighterQuick
+							JaspControls.RSyntaxHighlighterQuick
 							{
 								textDocument:		filterEdit.textDocument
 							}

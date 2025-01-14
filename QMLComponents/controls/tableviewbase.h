@@ -26,6 +26,7 @@
 class TableViewBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged					)
 	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged					)

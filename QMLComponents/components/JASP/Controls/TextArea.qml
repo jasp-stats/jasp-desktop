@@ -1,7 +1,8 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4 as QTC
-import QtQuick.Layouts	1.3
-import JASP				1.0
+import QtQuick
+import QtQuick.Controls	as QTC
+import QtQuick.Layouts
+import JASP.Controls
+import JASP
 
 TextAreaBase
 {

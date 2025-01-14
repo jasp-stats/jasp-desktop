@@ -25,6 +25,7 @@
 class CheckBoxBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
+	QML_ELEMENT
 	
 public:
 				CheckBoxBase(QQuickItem* parent = nullptr);

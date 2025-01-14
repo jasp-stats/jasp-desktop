@@ -26,7 +26,8 @@
 class InputListBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
-	
+	QML_ELEMENT
+
 public:
 	InputListBase(QQuickItem* parent = nullptr);
 

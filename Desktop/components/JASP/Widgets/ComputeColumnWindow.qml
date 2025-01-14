@@ -105,7 +105,7 @@ FocusScope
 				{
 					id: computeColumnEdit
 					
-					RSyntaxHighlighterQuick
+					JaspControls.RSyntaxHighlighterQuick
 					{
 						textDocument:		computeColumnEdit.textDocument
 					}

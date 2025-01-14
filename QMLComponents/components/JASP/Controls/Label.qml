@@ -17,10 +17,9 @@
 //
 
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QtC
 
-
-Label
+QtC.Label
 {
 	font:	jaspTheme.font
 	color:	enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled

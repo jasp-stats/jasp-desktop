@@ -26,6 +26,8 @@
 class ExpanderButtonBase : public JASPControl
 {
 	Q_OBJECT
+	QML_ELEMENT
+
 public:
 	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
 

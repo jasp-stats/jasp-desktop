@@ -19,7 +19,6 @@
 import QtQuick
 import QtQml.Models
 import JASP.Controls
-import JASP
 
 InputListBase
 {

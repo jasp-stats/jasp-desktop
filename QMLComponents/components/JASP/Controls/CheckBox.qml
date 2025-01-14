@@ -18,7 +18,7 @@
 
 import QtQuick
 import QtQuick.Controls as QtC
-import JASP
+import JASP.Controls
 
 
 CheckBoxBase
