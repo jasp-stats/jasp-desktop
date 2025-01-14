@@ -18,7 +18,7 @@
 
 import QtQuick
 import QtQuick.Controls
-import JASP
+import JASP.Controls
 
 Item
 {

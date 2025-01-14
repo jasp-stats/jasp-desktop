@@ -4,6 +4,8 @@
 
 #include <QQmlProperty>
 #include <QMetaObject>
+#include <QDirIterator>
+#include "log.h"
 
 ALTNavScope::ALTNavScope(QObject* attachee)
 	: QObject{attachee}
@@ -15,7 +17,7 @@ ALTNavScope::ALTNavScope(QObject* attachee)
 		if(_attachee) //is a visual item
 		{
 			//create a visual tag
-			QQmlComponent component(qmlEngine(_attachee), QUrl("qrc:///components/JASP/Widgets/ALTNavTag.qml"), _attachee);
+			QQmlComponent component(qmlEngine(_attachee), QUrl("qrc:/jasp-stats.org/imports/JASP/Controls/components/JASP/Controls/ALTNavTag.qml"), _attachee);
 			_attachedTag = qobject_cast<ALTNavTagBase*>(component.create());
 			_attachedTag->setParentItem(_attachee);
 			_attachedTag->setParent(_attachee);

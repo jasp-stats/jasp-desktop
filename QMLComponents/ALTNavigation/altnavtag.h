@@ -14,6 +14,7 @@ class ALTNavScope;
 class ALTNavTagBase : public QQuickItem
 {
 	Q_OBJECT
+	QML_ELEMENT
 
 	Q_PROPERTY( QString		tagText			READ	getTagText		NOTIFY	tagTextChanged		);
 	Q_PROPERTY( bool		active			READ	getActive		NOTIFY	activeChanged		);
