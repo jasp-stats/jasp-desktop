@@ -60,8 +60,8 @@ jobs:
         run: |
             wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
             tar -xzf readstat-*.tar.gz && cd readstat-*/
-            ./configure --disable-werror
-            make
+            ./configure
+            make CFLAGS='-Wno-error' CXXFLAGS='-Wno-error'
             sudo make install
         
       - name: Configure JASP desktop
