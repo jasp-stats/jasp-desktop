@@ -60,7 +60,7 @@ jobs:
         run: |
             wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
             tar -xzf readstat-*.tar.gz && cd readstat-*/
-            ./configure
+            ./configure --disable-werror
             make
             sudo make install
         
