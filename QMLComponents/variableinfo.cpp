@@ -70,12 +70,8 @@ bool VariableInfo::dataAvailable()
 
 DataSet *VariableInfo::dataSet()
 {
-	static DataSet* singleDataSet = nullptr;
-
-	if (!singleDataSet)
-	{
-		DatabaseInterface* db = new DatabaseInterface(false);
-		singleDataSet = new DataSet(db->dataSetGetId());
-	}
-	return singleDataSet;
+	if(!DatabaseInterface::singleton())
+		new DatabaseInterface(false);
+	
+	return _provider ? reinterpret_cast<DataSet*>(_provider->provideInfo(VariableInfo::DataSetPointer).value<void*>()) : nullptr;
 }
