@@ -210,6 +210,26 @@ std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 	return value;
 }
 
+std::string ColumnUtils::doubleToStringMaxPrec(double dbl)
+{
+	constexpr auto max_precision{std::numeric_limits<long double>::digits10 + 1};
+	return 	doubleToString(dbl, max_precision);
+}
+
+std::string ColumnUtils::doubleToString(double dbl, int precision)
+{
+	JASPTIMER_SCOPE(ColumnUtils::doubleToString);
+	
+	if (dbl > std::numeric_limits<double>::max())		return "∞";
+	if (dbl < std::numeric_limits<double>::lowest())	return "-∞";
+	
+	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
+	conv << std::setprecision(precision);
+	conv << dbl;
+	return conv.str();
+}
+
+
 // hex should be 4 hexadecimals characters
 std::string ColumnUtils::_convertEscapedUnicodeToUTF8(std::string hex)
 {
