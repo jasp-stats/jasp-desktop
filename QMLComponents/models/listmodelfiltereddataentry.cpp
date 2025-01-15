@@ -1,11 +1,11 @@
 #include "listmodelfiltereddataentry.h"
+#include "columnutils.h"
 #include "controls/tableviewbase.h"
 #include "utilities/qutils.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
 #include "filter.h"
-#include "dataset.h"
-#include "columnutils.h"
+
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	: ListModelTableViewBase(parent)
@@ -63,13 +63,13 @@ void ListModelFilteredDataEntry::runFilter()
 {
 	if(!_filter) //prob still need to bind
 		return;
-
+	
 	runFilterByName(tq(_filter->name()));
 }
 
 void ListModelFilteredDataEntry::filterDoneHandler(const QString &name, const QString & error)
 {
-	if(name.toStdString() != _filterName)
+	if(name.toStdString() != _filter->name())
 		return;
 
 	Log::log() << "ListModelFilteredDataEntry::filterDoneHandler for " << name << " and error '" << error << "'" << std::endl;
@@ -224,7 +224,7 @@ void ListModelFilteredDataEntry::fillTable()
 	_tableTerms.rowNames.clear();
 	_tableTerms.values.clear();
 	
-	if (_filter)
+	if(_filter)
 		_filter->checkForUpdates();
 	
 	size_t dataRows = _filter && _filter->filtered().size() > 0 ? _filter->filtered().size() : getDataSetRowCount();
@@ -439,4 +439,3 @@ void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
 }
-
