@@ -545,7 +545,7 @@ void FilterLabelCommand::redo()
 	_model->setData(_model->index(_labelIndex, 0), _checked, int(DataSetPackage::specialRoles::filter));
 }
 
-MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<qsizetype> &indexes, bool up)
+MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t> &indexes, bool up)
 	: UndoModelCommandLabelChange(model), _up{up}
 {
 	if (_columnModel)
@@ -582,9 +582,9 @@ MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<
 	}
 }
 
-std::vector<qsizetype> MoveLabelCommand::_getIndexes()
+std::vector<size_t> MoveLabelCommand::_getIndexes()
 {
-	std::vector<qsizetype> indexes;
+	std::vector<size_t> indexes;
 	QStringList allLabels = DataSetPackage::pkg()->getColumnLabelsAsStringList(_colId);
 	for (const QString& label : _labels)
 	{
@@ -599,7 +599,7 @@ std::vector<qsizetype> MoveLabelCommand::_getIndexes()
 void MoveLabelCommand::redo()
 {
 	_columnModel->setChosenColumn(_colId);
-	std::vector<qsizetype> indexes = _getIndexes(); // The indexes must be recalculated each time
+	std::vector<size_t> indexes = _getIndexes(); // The indexes must be recalculated each time
 	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, _up); //through DataSetPackage to make sure signals get sent
 }
 

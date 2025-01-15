@@ -137,7 +137,7 @@ void ALTNavControl::setAltNavActive(bool value)
 	{
 		_dynamicTreeUpdate = true;
 		_currentRoot->setChildrenPrefix();
-		for(ALTNavScope* node : qAsConst(_attachedScopeMap))
+		for(ALTNavScope* node : std::as_const(_attachedScopeMap))
 		{
 			if (node->foreground())
 			{

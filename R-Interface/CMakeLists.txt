@@ -174,20 +174,15 @@ if(WIN32)
 
   target_link_libraries(
     R-Interface
-    PUBLIC # RInside
-	${_LIB_RINSIDE}
-	# R
-	${_LIB_R}
-	#
-	#${RTOOLS_LIB_JSONCPP_DLL}
-	#
-	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+    PRIVATE
+    ${_LIB_RINSIDE}
+    ${_LIB_R}
+    )
 
   target_compile_definitions(
     R-Interface
     PUBLIC JASP_R_INTERFACE_LIBRARY
 	QT_NO_DEPRECATED_WARNINGS
-	$<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
 	$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
   target_compile_definitions(
@@ -209,10 +204,8 @@ else()
     PUBLIC # JASP
            ${PROJECT_SOURCE_DIR}/Common
            ${PROJECT_SOURCE_DIR}/CommonData
-		   ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
            ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
-           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
-           # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
            ${RINSIDE_PATH}/include
@@ -221,28 +214,23 @@ else()
 
   target_link_libraries(
     R-Interface
-    PUBLIC Boost::filesystem
-           Boost::system
-           Boost::date_time
-           Boost::timer
-           Boost::chrono
-           # CPM/CMake
-           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
-           #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
-		       #$<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
-           # R
-           ${_LIB_RINSIDE}
-           $<$<PLATFORM_ID:Linux>:${_LIB_R}>
-           $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-           #
-           $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+    PRIVATE
+    Common
+    CommonData
+    Boost::system
+    Boost::date_time
+    Boost::timer
+    Boost::chrono
+    ${_LIB_RINSIDE}
+    $<$<PLATFORM_ID:Linux>:${_LIB_R}>
+    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+)
 
   target_compile_definitions(
     R-Interface
     PUBLIC JASP_R_INTERFACE_LIBRARY
            QT_NO_DEPRECATED_WARNINGS
-		   RCPP_NO_SUGAR
-           $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+           RCPP_NO_SUGAR
            $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
   if(IWYU_EXECUTABLE AND RUN_IWYU)

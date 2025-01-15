@@ -336,16 +336,16 @@ void ColumnModel::setColumnType(QString type)
 		_undoStack->pushCommand(new SetColumnTypeCommand(this, {chosenColumn()}, int(cType)));
 }
 
-std::vector<qsizetype> ColumnModel::getSortedSelection() const
+std::vector<size_t> ColumnModel::getSortedSelection() const
 {
 	if (_virtual) return {};
 
-	std::map<QString, qsizetype> mapValueToRow;
+	std::map<QString, size_t> mapValueToRow;
 
-	for(qsizetype r=0; r<qsizetype(rowCount()); r++)
+	for(size_t r=0; r<size_t(rowCount()); r++)
 		mapValueToRow[data(index(r, 0), int(DataSetPackage::specialRoles::value)).toString()] = r;
 
-	std::vector<qsizetype> out;
+	std::vector<size_t> out;
 
 	for(const QString & v : _selected)
 		out.push_back(mapValueToRow[v]);
@@ -357,7 +357,7 @@ std::vector<qsizetype> ColumnModel::getSortedSelection() const
 
 void ColumnModel::setValueMaxWidth()
 {
-	qsizetype maxWidthChars = std::max((tr("Value").size()), !column() ? 0 : column()->getMaximumWidthInCharacters(false, true));
+	size_t maxWidthChars = std::max(size_t(tr("Value").size()), !column() ? 0 : column()->getMaximumWidthInCharacters(false, true));
 	
 	double prevMaxWidth = _valueMaxWidth;
 	_valueMaxWidth = JaspTheme::fontMetrics().size(Qt::TextSingleLine, QString(maxWidthChars, 'X')).width();
@@ -368,7 +368,7 @@ void ColumnModel::setValueMaxWidth()
 
 void ColumnModel::setLabelMaxWidth()
 {
-	qsizetype maxWidthChars = std::max((tr("Label").size()), !column() ? 0 : column()->getMaximumWidthInCharacters(false, false));
+	size_t maxWidthChars = std::max(size_t(tr("Label").size()), !column() ? 0 : column()->getMaximumWidthInCharacters(false, false));
 	
 	double prevMaxWidth = _labelMaxWidth;
 	_labelMaxWidth = JaspTheme::fontMetrics().size(Qt::TextSingleLine, QString(maxWidthChars, 'X')).width();
@@ -379,7 +379,7 @@ void ColumnModel::setLabelMaxWidth()
 
 void ColumnModel::moveSelectionUp()
 {
-	std::vector<qsizetype> indexes = getSortedSelection();
+	std::vector<size_t> indexes = getSortedSelection();
 	if (_beingRefreshed || indexes.size() < 1)
 		return;
 
@@ -389,7 +389,7 @@ void ColumnModel::moveSelectionUp()
 
 void ColumnModel::moveSelectionDown()
 {
-	std::vector<qsizetype> indexes = getSortedSelection();
+	std::vector<size_t> indexes = getSortedSelection();
 	if (_beingRefreshed || indexes.size() < 1)
 		return;
 
@@ -672,9 +672,9 @@ void ColumnModel::checkCurrentColumn(QStringList, QStringList missingColumns, QM
 
 void ColumnModel::removeAllSelected()
 {
-	QMap<QString, qsizetype> mapValueToRow;
+	QMap<QString, size_t> mapValueToRow;
 
-	for(qsizetype r=0; r<qsizetype(rowCount()); r++)
+	for(size_t r=0; r<size_t(rowCount()); r++)
 		mapValueToRow[data(index(r, 0), int(DataSetPackage::specialRoles::value)).toString()] = r;
 
 	QVector<QString> selectedValues;

@@ -251,7 +251,7 @@ public:
 				void						resetFilterAllows(					size_t				columnIndex);
 				int							filteredOut(						size_t				columnIndex)				const;
 				bool						labelNeedsFilter(					size_t				columnIndex)				const;
-				void						labelMoveRows(						size_t				columnIndex, std::vector<qsizetype> rows, bool up);
+				void						labelMoveRows(						size_t				columnIndex, std::vector<size_t> rows, bool up);
 				void						labelReverse(						size_t				columnIndex);
 				bool						setFilterData(const std::string & filter, const boolvec & filterResult);
 				void						resetAllFilters();

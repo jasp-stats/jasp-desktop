@@ -47,7 +47,7 @@ public:
 	static QString	columnTypeFriendlyName(		computedColumnType compColT);
 	static QVariant	columnTypeFriendlyMapping(	computedColumnType compColT);
 
-	bool			labelNeedsFilter(qsizetype col);
+	bool			labelNeedsFilter(size_t col);
 	QString			columnNameQ();
 	QString			columnTitle()					const;
 	QString			columnDescription()				const;
@@ -161,7 +161,7 @@ signals:
 	void hasSeveralNumericValuesChanged();
 	
 private:
-	std::vector<qsizetype>	getSortedSelection()					const;
+	std::vector<size_t>	getSortedSelection()					const;
 	void					setValueMaxWidth();
 	void					clearVirtual();
 

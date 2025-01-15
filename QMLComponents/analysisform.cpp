@@ -132,7 +132,7 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
-				QTimer::singleShot(0, [=](){
+				QTimer::singleShot(0, this, [this, options](){
 					bindTo(options);
 					blockValueChangeSignal(false, false);
 					_analysis->boundValueChangedHandler();

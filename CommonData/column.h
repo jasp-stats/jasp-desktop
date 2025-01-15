@@ -7,7 +7,7 @@
 #include "utils.h"
 #include <list>
 #include "emptyvalues.h"
-
+#include <cmath>
 class DataSet;
 class Analysis;
 
@@ -133,7 +133,7 @@ public:
             stringvec				nonFilteredLevels();
 			void					nonFilteredCountersReset();
 
-			std::set<size_t>		labelsMoveRows(std::vector<qsizetype> rows, bool up);
+			std::set<size_t>		labelsMoveRows(std::vector<size_t> rows, bool up);
 			void					labelsReverse();
 			void					valuesReverse();
 			void					labelsOrderByValue(bool doDbUpdateEtc=true);
@@ -226,8 +226,8 @@ public:
 			bool					isEmptyValue(					const std::string	& val)															const;
 			bool					isEmptyValue(					const double		  val)															const;
 			
-			qsizetype				getMaximumWidthInCharactersIncludingShadow();
-			qsizetype				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, qsizetype	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
+			size_t				getMaximumWidthInCharactersIncludingShadow();
+			size_t				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, size_t	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
 			
@@ -258,7 +258,7 @@ private:
 									_labelsTempRevision	= -1,	///< When were the "temporary labels" created?
 									_labelsTempNumerics = 0,	///< Use the labelsTemp step to calculate the amount of numeric labels
 									_highestIntsId		= -1;
-			qsizetype				_labelsTempMaxWidth = 0;
+			size_t					_labelsTempMaxWidth = 0;
 			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
 			doublevec				_labelsTempDbls;
 			strintmap				_labelsTempToIndex;

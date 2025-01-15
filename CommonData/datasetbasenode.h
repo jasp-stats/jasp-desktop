@@ -2,6 +2,7 @@
 #define DATASETBASENODE_H
 
 #include "enumutilities.h"
+#include <functional>
 
 DECLARE_ENUM(dataSetBaseNodeType,	unknown, dataSet, data, filters, filter, column, label);
 

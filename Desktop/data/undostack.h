@@ -119,12 +119,12 @@ private:
 class MoveLabelCommand: public UndoModelCommandLabelChange
 {
 public:
-	MoveLabelCommand(QAbstractItemModel *model, const std::vector<qsizetype>& indexes, bool up);
+	MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t>& indexes, bool up);
 
 	void redo()					override;
 
 private:
-	std::vector<qsizetype>	_getIndexes();
+	std::vector<size_t>	_getIndexes();
 	void					_moveLabels(bool up);
 
 	QStringList				_labels;
