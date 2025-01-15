@@ -60,7 +60,7 @@ public:
 				~DatabaseInterface();
 	std::string dbFile(bool onlyPostfix = false) const;									///< Convenience function for getting the filename where sqlite db should be
 
-	static		DatabaseInterface * singleton() { return _singleton; }					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
+	static		DatabaseInterface * singleton();					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
 
 	bool		hasConnection() { return _db; }
 	void		upgradeDBFromVersion(Version originalVersion);							///< Ensures that the database has all the fields configured as required for the current JASP version, useful when loading older sqlite-containing jasp-files
