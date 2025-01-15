@@ -40,9 +40,11 @@ target_link_libraries(
 	PUBLIC
 	Common
 	LibArchive::LibArchive
+	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>
+	
+	PRIVATE 
 	SQLite::SQLite3
-	#
-	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+)
 
 target_compile_definitions(
   CommonData PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>

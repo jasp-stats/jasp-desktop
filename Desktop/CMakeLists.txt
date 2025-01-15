@@ -111,7 +111,6 @@ target_include_directories(
 target_link_libraries(
     JASP
     PUBLIC
-    Common
     CommonData
     QMLComponents
     Qt::Core

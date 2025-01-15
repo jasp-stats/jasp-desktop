@@ -49,7 +49,6 @@ target_include_directories(
 target_link_libraries(
 	QMLComponents
 	PUBLIC
-	Common
 	CommonData
 	Qt::Core
 	Qt::Gui
