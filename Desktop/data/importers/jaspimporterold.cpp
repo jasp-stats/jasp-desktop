@@ -200,7 +200,7 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 
 			if (isScalar)
 			{
-				values.push_back(Utils::doubleToString(*reinterpret_cast<double*>(buff)));
+				values.push_back(ColumnUtils::doubleToString(*reinterpret_cast<double*>(buff)));
 				labels.push_back(values.back());
 			}
 			else
