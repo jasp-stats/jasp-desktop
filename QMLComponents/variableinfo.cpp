@@ -2,8 +2,6 @@
 #include "jasptheme.h"
 #include "QQmlContext"
 #include "QTimer"
-#include "databaseinterface.h"
-#include "dataset.h"
 
 VariableInfo* VariableInfo::_singleton = nullptr;
 

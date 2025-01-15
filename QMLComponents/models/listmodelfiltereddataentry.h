@@ -85,7 +85,7 @@ private:
 	QStringList					_dataColumns,
 								_extraColsStr;
 	std::string					_filterName;
-	Filter					*	_filter		= nullptr;
+	Filter					*	_filter			= nullptr;
 	bool						_informOnce		= false;
 };
 
