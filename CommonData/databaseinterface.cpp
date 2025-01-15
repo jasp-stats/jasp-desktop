@@ -1369,6 +1369,12 @@ std::string DatabaseInterface::dbFile(bool onlyName) const
 
 DatabaseInterface *DatabaseInterface::singleton() 
 { 
+	if(!_singleton)
+	{
+		Log::log() << "No DatabaseInterface::singleton available here yet, creating an interface for internal.sqlite without recreating the dbstructure" << std::endl;
+		_singleton = new DatabaseInterface(false);
+	}
+	
 	return _singleton; 
 }
 

@@ -17,13 +17,12 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	connect(_tableView,				SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
 	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
 
-	DataSet* dataSet = VariableInfo::info()->dataSet();
 	static int counter = 0;
 	do
 	{
 		_filterName = "ListModelFilteredDataEntry_" + std::to_string(counter++);
 	}
-	while(!dataSet->isFilterNameFree(_filterName));
+	while(!Filter::filterNameIsFree(_filterName));
 	
 	connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler);
 }

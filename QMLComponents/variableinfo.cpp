@@ -70,8 +70,5 @@ bool VariableInfo::dataAvailable()
 
 DataSet *VariableInfo::dataSet()
 {
-	if(!DatabaseInterface::singleton())
-		new DatabaseInterface(false);
-	
 	return _provider ? reinterpret_cast<DataSet*>(_provider->provideInfo(VariableInfo::DataSetPointer).value<void*>()) : nullptr;
 }
