@@ -52,7 +52,7 @@ public:
 
 			bool			allColumnsPassFilter()					const;
 
-			qsizetype		getMaximumColumnWidthInCharacters(size_t columnIndex) const;
+			size_t		getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
 
 			void			setDataFile( const std::string & dataFilePath, long timestamp)	{ _dataFilePath	= dataFilePath;	_dataFileTimestamp = timestamp; dbUpdate(); }

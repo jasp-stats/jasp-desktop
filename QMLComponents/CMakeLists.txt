@@ -34,6 +34,8 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
                ${CMAKE_CURRENT_LIST_DIR}/utilities//appdirs.h)
 message(STATUS "appdirs.h is successfully generated...")
 
+target_compile_definitions(QMLComponents PUBLIC JASP_USES_QT_HERE)
+
 target_include_directories(
 	QMLComponents
 	PUBLIC # JASP
@@ -48,8 +50,8 @@ target_include_directories(
 
 target_link_libraries(
 	QMLComponents
-	PUBLIC
-	CommonData
+        PRIVATE
+        CommonData
 	Qt::Core
 	Qt::Gui
 	Qt::Widgets

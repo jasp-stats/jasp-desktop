@@ -94,7 +94,7 @@ target_include_directories(
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${PROJECT_SOURCE_DIR}/Common
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+    ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
     # ReadStat
@@ -110,7 +110,8 @@ target_include_directories(
 
 target_link_libraries(
     JASP
-    PUBLIC
+    PRIVATE
+    Common
     CommonData
     QMLComponents
     Qt::Core
@@ -164,9 +165,9 @@ if(NOT WINDOWS)
 
   target_link_libraries(
     JASP
-    PUBLIC
-      # When using Conan, we need to provide the static libraries directly, for some reason!
-      ${Iconv_LIBRARY_LIST})
+    PRIVATE
+    # When using Conan, we need to provide the static libraries directly, for some reason!
+    ${Iconv_LIBRARY_LIST})
 endif()
 
 if(LINUX)

@@ -4,6 +4,7 @@
 #include "dataset.h"
 #include "columnutils.h"
 #include "databaseinterface.h"
+#include <cassert>
 
 bool Column::_autoSortByValuesByDefault = true;
 
@@ -435,7 +436,7 @@ stringset Column::mergeOldMissingDataMap(const Json::Value &missingData)
 	stringset foundEmpty;
 	
 	std::map<std::string, Label*> displayToLabel; //Keep track of which labels we added because only those could possibly be derived from missingDataMap
-	for(qsizetype r=0;	r<_ints.size(); r++)
+	for(size_t r=0;	r<_ints.size(); r++)
 	{
 		const std::string row = std::to_string(r);
 		if(missingData.isMember(row))
@@ -940,7 +941,7 @@ int Column::labelsTempCount()
 				_labelsTemp						. push_back(doubleLabel);
 				_labelsTempDbls					. push_back(dbl);
 				_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
-				_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, qsizetype(_labelsTemp[_labelsTemp.size()-1].size()));
+				_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, size_t(_labelsTemp[_labelsTemp.size()-1].size()));
 				_labelsTempNumerics				++;
 			}
 		}
@@ -1777,7 +1778,7 @@ bool Column::labelsRemoveOrphans()
 	return idsNotUsed.size();
 }
 
-std::set<size_t> Column::labelsMoveRows(std::vector<qsizetype> rows, bool up)
+std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 {
 	JASPTIMER_SCOPE(Column::labelsMoveRows);
 	
@@ -1785,7 +1786,7 @@ std::set<size_t> Column::labelsMoveRows(std::vector<qsizetype> rows, bool up)
 
 	std::sort(rows.begin(), rows.end(), [&](const auto & l, const auto & r) { return up ? l < r : r < l; });
 	
-	replaceDoublesTillLabelsRowWithLabels(std::min(qsizetype(labelsTempCount()), rows.back() + 1));
+	replaceDoublesTillLabelsRowWithLabels(std::min(size_t(labelsTempCount()), rows.back() + 1));
 	
 	std::vector<Label*> new_labels(_labels.begin(), _labels.end());
 
@@ -2020,7 +2021,7 @@ void Column::upgradeExtractDoublesIntsFromLabels()
 {
 	_dbls.resize(_ints.size());
 	
-	for(qsizetype r=0; r<_dbls.size(); r++)
+	for(size_t r=0; r<_dbls.size(); r++)
 	{
 		Label * label = labelByIntsId(_ints[r]);
 		
@@ -2318,7 +2319,7 @@ bool Column::isEmptyValue(const double val) const
 	return _emptyValues->isEmptyValue(val);
 }
 
-qsizetype Column::getMaximumWidthInCharactersIncludingShadow()
+size_t Column::getMaximumWidthInCharactersIncludingShadow()
 {
 	bool thereIsAShadow = false;
 	
@@ -2337,9 +2338,9 @@ qsizetype Column::getMaximumWidthInCharactersIncludingShadow()
 }
 
 
-qsizetype Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlease, qsizetype	extraPad)
+size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlease, size_t	extraPad)
 {
-	qsizetype	maxWidth	= 0;
+	size_t	maxWidth	= 0;
 	std::string takeWidth;
 	
 	//Call labelsTempCount() to both find out how many there are and generate them if necessary
@@ -2349,7 +2350,7 @@ qsizetype Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesP
 		for(Label * label : labels())
 		{
 			takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
-			maxWidth	= std::max(maxWidth, qsizetype(stringUtils::approximateVisualLength(takeWidth)));
+			maxWidth	= std::max(maxWidth, size_t(stringUtils::approximateVisualLength(takeWidth)));
 		}
 	
 	

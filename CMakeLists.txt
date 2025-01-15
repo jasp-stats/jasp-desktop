@@ -11,6 +11,7 @@ if (UNIX)
 add_compile_options(-Werror=return-type)
 endif()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(APPLE)
 

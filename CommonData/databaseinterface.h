@@ -7,7 +7,8 @@
 #include "utils.h"
 #include <json/json.h>
 #include "version.h"
-
+#include <functional>
+#include <cassert>
 
 class DataSet;
 class Column;

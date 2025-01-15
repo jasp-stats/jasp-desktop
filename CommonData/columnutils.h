@@ -2,9 +2,6 @@
 #define COLUMNUTILS_H
 
 #include <string>
-#include <vector>
-#include <set>
-#include <map>
 #include "utils.h"
 
 class ColumnUtils

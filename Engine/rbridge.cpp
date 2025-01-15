@@ -27,6 +27,7 @@
 #include "enginebase.h"
 #include "r_functionwhitelist.h"
 #include <sstream>
+#include <cassert>
 
 #ifdef _WIN32
 #include <windows.h>

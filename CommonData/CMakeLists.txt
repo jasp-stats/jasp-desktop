@@ -14,7 +14,7 @@ file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 file(GLOB_RECURSE SQL_FILES		"${CMAKE_CURRENT_LIST_DIR}/*.sql")
 
-add_library(CommonData ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
+add_library(CommonData SHARED ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
 
 
 if(LINUX)
@@ -36,18 +36,16 @@ target_include_directories(
 	)
 
 target_link_libraries(
-	CommonData
-	PUBLIC
-	Common
-	LibArchive::LibArchive
-	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>
-	
-	PRIVATE 
-	SQLite::SQLite3
+    CommonData
+    PUBLIC
+    LibArchive::LibArchive #desktop needs to be able to access it
+    PRIVATE
+    Common
+    SQLite::SQLite3
 )
 
 target_compile_definitions(
-  CommonData PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+  CommonData PUBLIC
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
 				JSONCPP_NO_LOCALE_SUPPORT	)
 

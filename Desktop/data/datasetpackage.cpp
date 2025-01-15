@@ -1852,7 +1852,7 @@ bool DataSetPackage::labelNeedsFilter(size_t columnIndex) const
 }
 
 
-void DataSetPackage::labelMoveRows(size_t colIdx, std::vector<qsizetype> rows, bool up)
+void DataSetPackage::labelMoveRows(size_t colIdx, std::vector<size_t> rows, bool up)
 {
 	Column	*	column		= _dataSet->columns()[colIdx];
 	sizetset	rowsChanged = column->labelsMoveRows(rows, up);
