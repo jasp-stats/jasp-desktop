@@ -21,13 +21,13 @@ Before everything, you need to download and install the Microsoft Visual Studio 
 	- During the installation, you will be asked asked to customize your installation, in this section, here, make sure to select the followings, 
 		- From the "Workloads" tab, select the "Desktop Development with C++" item. This package includes several tools, and you should make sure that the followings are selected from the right panel,
 			- C++ code desktop features (probably pre-selected)
-			- MSVC v142 (v143) - VS 2019 (2020) C++ x64/x86 build tools
+			- MSVC v144 - VS 2022 C++ x64/x86 build tools
 			- Windows 10 SDK
 			- Just-In-Time debugger
 			- C++ profiling tools
 			- C++ CMake Tools for Windows
 		- From the "Individual Components" tab, search and select the following
-			- C++ 2019 (2022) Redistributable MSMs
+			- C++ 2022 Redistributable MSMs
 
 ### Installing Qt Creator and Qt 6
 
@@ -111,18 +111,17 @@ You should see something like below, you can edit the `default` file in `path\to
 
 ```
 [settings]
-os=Windows
-os_build=Windows
 arch=x86_64
-arch_build=x86_64
-compiler=Visual Studio
-compiler.version=16
-build_type=Debug
-[options]
+build_type=Release
+compiler=msvc
+compiler.cppstd=14
+compiler.runtime=dynamic
+compiler.runtime_type=Release
+compiler.version=194
+os=Windows
 [conf]
-tools.microsoft.msbuild:vs_version=17
 tools.cmake.cmaketoolchain:generator=Ninja
-[tool_requires]
+
 ```
 
 > 💡 Although CMake and Qt Creator will run Conan process for you, if it's your very first time configuring JASP, and you ran into any problem, you can run the Conan command manually. If things go wrong, CMake configuration will stop and tells you what you should do to resolve the Conan issue. 
