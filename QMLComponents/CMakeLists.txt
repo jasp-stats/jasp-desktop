@@ -6,17 +6,19 @@ file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 file(GLOB_RECURSE QML_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "components/JASP/Controls/*.qml")
 
-qt_add_qml_module(QMLComponents
-	URI JASP.Controls
-	OUTPUT_DIRECTORY "JASP/Controls"
-	RESOURCE_PREFIX /jasp-stats.org/imports
-	#PLUGIN_TARGET QMLComponentsPlugin
-	DEPENDENCIES QtQuick
+qt_add_qml_module(
+	QMLComponents
+	SHARED
+	URI						JASP.Controls
+	OUTPUT_DIRECTORY		"JASP/Controls"
+	RESOURCE_PREFIX			/jasp-stats.org/imports
+	#PLUGIN_TARGET			QMLComponentsPlugin
+	DEPENDENCIES			QtQuick
 	#NO_PLUGIN_OPTIONAL
 	NO_GENERATE_PLUGIN_SOURCE
-	CLASS_NAME JASPQmlPlugin
-	SOURCES ${SOURCE_FILES} ${HEADER_FILES}
-	QML_FILES ${QML_FILES}
+	CLASS_NAME				JASPQmlPlugin
+	SOURCES					${SOURCE_FILES} ${HEADER_FILES}
+	QML_FILES				${QML_FILES}
 )
 
 if(LINUX)
@@ -50,8 +52,9 @@ target_include_directories(
 
 target_link_libraries(
 	QMLComponents
-        PRIVATE
-        CommonData
+	PUBLIC
+	Common
+	CommonData
 	Qt::Core
 	Qt::Gui
 	Qt::Widgets

@@ -69,6 +69,9 @@
 
 #include "communitydefs.h"
 
+//The following seemed to be necessary for loading the plugoni
+Q_IMPORT_QML_PLUGIN(QMLComponentspslugin)
+
 using namespace std;
 using namespace Modules;
 

@@ -14,8 +14,9 @@ file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 file(GLOB_RECURSE SQL_FILES		"${CMAKE_CURRENT_LIST_DIR}/*.sql")
 
-add_library(CommonData SHARED ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
+add_library(CommonData STATIC ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
 
+add_dependencies(CommonData Common)
 
 if(LINUX)
 
@@ -33,13 +34,14 @@ target_include_directories(
 	${R_INCLUDE_PATH}
 	${R_HOME_PATH}/include
 	${RCPP_PATH}/include
+	PRIVATE
+	SQLite::SQLite3
 	)
 
 target_link_libraries(
     CommonData
-    PUBLIC
-    LibArchive::LibArchive #desktop needs to be able to access it
-    PRIVATE
+	PUBLIC
+	LibArchive::LibArchive
     Common
     SQLite::SQLite3
 )

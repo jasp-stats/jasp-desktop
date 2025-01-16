@@ -1,3 +1,4 @@
+#include <cassert>
 #include "filter.h"
 #include "timers.h"
 #include "dataset.h"

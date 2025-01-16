@@ -51,7 +51,7 @@ set(
 	"${PROJECT_SOURCE_DIR}/QMLComponents/components"
     CACHE
     PATH
-    "Path used to locate CMake modules by Qt Creator"
+	"Path used to locate QML modules by Qt Creator"
     FORCE
 )
 
@@ -110,10 +110,10 @@ target_include_directories(
 
 target_link_libraries(
     JASP
-    PRIVATE
+	PUBLIC
     Common
     CommonData
-    QMLComponents
+	QMLComponents
     Qt::Core
     Qt::Gui
     Qt::OpenGL
@@ -165,7 +165,7 @@ if(NOT WINDOWS)
 
   target_link_libraries(
     JASP
-    PRIVATE
+	PRIVATE
     # When using Conan, we need to provide the static libraries directly, for some reason!
     ${Iconv_LIBRARY_LIST})
 endif()

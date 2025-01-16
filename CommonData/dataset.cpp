@@ -1,5 +1,5 @@
 #include "log.h"
-#include <regex>
+#include <cassert>
 #include "timers.h"
 #include "dataset.h"
 #include "columnencoder.h"

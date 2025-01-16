@@ -1,10 +1,12 @@
 ﻿#include "databaseinterface.h"
 #include "columntype.h"
 #include "tempfiles.h"
+#include <sqlite3.h>
 #include "version.h"
 #include "dataset.h"
 #include "timers.h"
 #include "utils.h"
+#include <cassert>
 #include "log.h"
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
@@ -302,7 +304,7 @@ bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
 		[&](sqlite3_stmt *){ }, [&](size_t row, sqlite3_stmt * stmt)
 		{
 			int val			= sqlite3_column_int(stmt, 0);
-				changed		= changed || bools[row] != val;
+				changed		= changed || bools[row] != bool(val);
 				bools[row]	= val;
 		});
 	}

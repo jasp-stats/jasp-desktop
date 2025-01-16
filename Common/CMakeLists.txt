@@ -15,7 +15,7 @@ message(STATUS "appinfo.cpp is successfully generated...")
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-add_library(Common SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_library(Common STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
 if(LINUX)
   target_link_libraries(Common PUBLIC ${_LIB_RT})
@@ -34,12 +34,12 @@ target_include_directories(
 
 target_link_libraries(
 	Common
-        PRIVATE
+	PUBLIC
 	Boost::system
 	Boost::date_time
 	Boost::timer
 	Boost::chrono
-        $<$<BOOL:${WINDOWS}>:ntdll>
+	$<$<BOOL:${WINDOWS}>:ntdll>
   )
 
 target_compile_definitions(

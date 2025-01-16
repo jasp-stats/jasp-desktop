@@ -1,5 +1,6 @@
 #include "label.h"
 #include "column.h"
+#include <cassert>
 #include "timers.h"
 #include "databaseinterface.h"
 

@@ -2,17 +2,17 @@
 #define DATABASEINTERFACE_H
 
 #include "columntype.h"
-#include <sqlite3.h>
 #include <string>
 #include "utils.h"
 #include <json/json.h>
 #include "version.h"
 #include <functional>
-#include <cassert>
 
 class DataSet;
 class Column;
 class DatabaseInterface;
+struct sqlite3_stmt;
+struct sqlite3;
 
 ///Single point of interaction with sqlite, can later be turned into an interface for supporting other sql
 ///

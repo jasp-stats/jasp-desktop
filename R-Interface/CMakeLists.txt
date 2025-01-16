@@ -174,7 +174,6 @@ if(WIN32)
 
   target_link_libraries(
     R-Interface
-    PRIVATE
     ${_LIB_RINSIDE}
     ${_LIB_R}
     )
@@ -214,7 +213,7 @@ else()
 
   target_link_libraries(
     R-Interface
-    PRIVATE
+	PUBLIC
     Common
     CommonData
     Boost::system

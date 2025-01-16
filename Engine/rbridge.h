@@ -24,9 +24,7 @@
 #endif
 
 #include <string>
-#include <map>
-#include <set>
-#include <regex>
+#include <functional>
 #include "jasprcpp_interface.h"
 #include "columnencoder.h"
 
