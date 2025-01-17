@@ -33,7 +33,6 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <sstream>
 #include <json/json.h>
 #include <QItemSelection>
 

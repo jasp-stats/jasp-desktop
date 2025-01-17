@@ -8,7 +8,7 @@ file(GLOB_RECURSE QML_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "components/JAS
 
 qt_add_qml_module(
 	QMLComponents
-	SHARED
+	STATIC
 	URI						JASP.Controls
 	OUTPUT_DIRECTORY		"JASP/Controls"
 	RESOURCE_PREFIX			/jasp-stats.org/imports

@@ -157,7 +157,6 @@ target_link_libraries(
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
-
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 if(NOT WINDOWS)

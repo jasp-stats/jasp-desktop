@@ -41,7 +41,6 @@
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-#include "ALTNavigation/altnavigation.h"
 #include "ALTNavigation/altnavcontrol.h"
 #include "utilities/messageforwarder.h"
 
@@ -68,9 +67,10 @@
 #include <boost/iostreams/device/null.hpp>
 
 #include "communitydefs.h"
+#include <QtPlugin>
 
-//The following seemed to be necessary for loading the plugoni
-Q_IMPORT_QML_PLUGIN(QMLComponentspslugin)
+//The following seemed to be necessary for loading the plugin on Windows (making it static so it links properly)
+Q_IMPORT_PLUGIN(JASPQmlPlugin)
 
 using namespace std;
 using namespace Modules;
@@ -85,6 +85,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	assert(!_singleton);
 	_singleton = this;
 	JASPTIMER_START(MainWindowConstructor);
+
 	
 	QQuickStyle::setStyle("Basic");
 	QQuickWindow::setTextRenderType(Settings::value(Settings::GUI_USE_QT_TEXTRENDER).toBool() ?

@@ -13,7 +13,7 @@
 class JASPQmlPlugin : public QQmlEngineExtensionPlugin
 {
     Q_OBJECT
-	Q_PLUGIN_METADATA(IID "org.jasp-stats.QMLComponents")
+	Q_PLUGIN_METADATA(IID "org.jasp-stats.JASPQmlPlugin")
 
 
 	void initializeEngine(QQmlEngine *engine, const char *uri) override
