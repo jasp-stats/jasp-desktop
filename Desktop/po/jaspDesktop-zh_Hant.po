@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-01-20 01:53+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -390,7 +396,7 @@ msgstr "差異"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr "Helmert"
+msgstr "Helmert對比法"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
@@ -423,7 +429,7 @@ msgstr "變數名稱:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr "變數名稱已存在，請另外命名"
+msgstr "變數名稱已存在，請另外命名。"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
@@ -601,15 +607,15 @@ msgid ""
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 "下次開啟JASP時，接續前次最後的使用狀態 \n"
-"選擇此設定，JASP將記得之前所啟用的模組"
+"選擇此設定，JASP將記得之前所啟用的模組。"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr "開啟此選項以使用JASP模組"
+msgstr "開啟此選項，以使用JASP模組。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "瀏覽你的JASP模組文件夾"
+msgstr "瀏覽JASP的安裝目錄。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -622,7 +628,7 @@ msgstr "產生MD檔"
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD幫助檔"
+msgstr "啟用此選項將會產生qml選項中的MD幫助檔。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
@@ -634,7 +640,7 @@ msgstr "將記錄存檔"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "勾選此方格將 JASP 除錯紀錄存成檔案"
+msgstr "勾選此方格將 JASP 除錯紀錄存成檔案。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
@@ -716,7 +722,7 @@ msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
-msgstr "此設定圖的背景為白色，適用於LaTex或投稿期刊"
+msgstr "此設定圖的背景為白色，適用於LaTex或投稿期刊。"
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
@@ -748,13 +754,13 @@ msgstr "主題"
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr "改成淡色主題，此為JASP預設及原有的色調"
+msgstr "改成淡色主題，此為JASP預設及原有的色調。"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr "改成深色主題，此設定讓夜貓族的眼睛能輕鬆點"
+msgstr "改成深色主題，此設定讓夜貓族的眼睛能輕鬆點。"
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
@@ -767,7 +773,7 @@ msgstr "縮放(%): "
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr "放大或縮小介面中顯示之字體（如文字、按鍵等）"
+msgstr "放大或縮小介面中顯示之字體（如文字、按鍵等）。"
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
@@ -777,7 +783,7 @@ msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
-msgstr "設定在選項與資料視窗等處的滾動瀏覽速度"
+msgstr "設定在選項與資料視窗等處的滾動瀏覽速度。"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -788,16 +794,16 @@ msgid ""
 msgstr ""
 "改為「較安全」模式的圖形渲染模式。\n"
 "此模式將使得介面變慢，但可能解決其他像是奇怪的故障、無法顯示結果等問題。\n"
-"此設定不影響分析速度"
+"此設定不影響分析速度。"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
-msgstr "關閉所有動畫。\"安全圖形模式\"下會自動套用此設定"
+msgstr "關閉所有動畫。\"安全圖形模式\"下會自動套用此設定。"
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "因啟動\"安全圖形模式\"，動畫功能已關閉。"
+msgstr "因啟動\"安全圖形模式\"，動畫功能已關閉"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -822,11 +828,11 @@ msgstr "已套用計算新變數之語法"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "請輸入所有指令-看紅字區"
+msgstr "請輸入所有指令-看紅字區。"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr "每個新增之變數僅能有一個公式"
+msgstr "每個新增之變數僅能有一個公式。"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
@@ -863,7 +869,7 @@ msgstr "平方根"
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "模數：除法的餘數。如3除以2 餘 1"
+msgstr "模數：傳回除法的餘數。如，3%2 傳回 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
@@ -872,12 +878,12 @@ msgstr "回傳邏輯判斷與開根號運算結果"
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr "等同"
+msgstr "等同： %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr "不同"
+msgstr "不等於：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -954,12 +960,12 @@ msgstr "回傳邏輯"
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr "相同"
+msgstr "等同： %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr "不同"
+msgstr "不等於：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
@@ -1241,7 +1247,7 @@ msgstr "清除報表"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr "已清除"
+msgstr "已清除..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
@@ -1269,7 +1275,7 @@ msgstr "分析可重複"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr "設置隨機種子"
+msgstr "設置隨機種子："
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -1313,11 +1319,11 @@ msgstr "事前已知"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr "位置"
+msgstr "位置："
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "連續變數"
+msgstr "尺度："
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -1325,11 +1331,11 @@ msgstr "常態"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "平均數"
+msgstr "平均數："
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr "標準差"
+msgstr "標準差："
 
 msgctxt "SubjectivePriors|"
 msgid "t"
@@ -1401,14 +1407,14 @@ msgstr "按下此處以獲得最新版本"
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "找不到繪圖 %1 的編輯選項，故無法使用繪圖編輯功能"
+msgstr "找不到繪圖 %1 的編輯選項，故無法使用繪圖編輯功能..."
 
 #, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
-msgstr "找不到繪圖 %1 的編輯選項，即使可以進行繪圖編輯，但將無法儲存任何調整"
+msgstr "找不到繪圖 %1 的編輯選項，即使可以進行繪圖編輯，但將無法儲存任何調整..."
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1433,7 +1439,7 @@ msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr "這些元件載入了錯誤值，已將之重置為預設值"
+msgstr "這些元件載入了錯誤值，已將之重置為預設值。"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
@@ -2115,7 +2121,7 @@ msgstr "有效的 R 語法"
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr "下拉清單 %1 的未知選項  %2"
+msgstr "下拉清單 %1 的未知選項 %2"
 
 msgctxt "ActionButtons|"
 msgid "Open"
@@ -2259,10 +2265,8 @@ msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
-msgstr ""
-"無法新增檔案夾到專案資料提位置清單中。\n"
-"\n"
-"要添加新的資料提供位置（如：Google雲端硬碟），請使用線上OSF服務。"
+msgstr "無法新增檔案夾到專案資料提位置清單中。<br>要添加新的資料提供位置（如：Google"
+"雲端硬碟），請使用線上OSF服務。"
 
 #, qt-format
 msgctxt "OSF|"
@@ -2283,7 +2287,7 @@ msgstr "用戶或密碼不可空白。"
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr "輸入名稱不可空白"
+msgstr "輸入名稱不可空白。"
 
 #, qt-format
 msgctxt "OSF|"
@@ -2396,7 +2400,7 @@ msgstr "套用模型"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr "計算式未回傳數字"
+msgstr "計算式未回傳數字。"
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
@@ -2668,9 +2672,8 @@ msgid ""
 "You seem to have removed %1 from your development module directory. Without "
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
-msgstr ""
-"您可能刪除了開發模組目錄中的 %1。您的模組需要%1才能使用，請將其放回原處。目前"
-"將先保留舊的%2檔。"
+msgstr "您可能刪除了開發模組目錄中的 "
+"%1。沒有它，您的模組無法運作，請將其放回原處。目前將先保留舊的%2檔。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2679,9 +2682,9 @@ msgid ""
 "Without it your module cannot work, make sure to create one. How you "
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
-msgstr ""
-"開發模組目錄中似乎從未有過 %1。您的模組需要 %1才能使用，請確實建立之。不確定"
-"您如何能安裝此模組，您應要卸載開發模組"
+msgstr "開發模組目錄中似乎從未有過 "
+"%1。沒有它，您的模組無法運作，請務必確實建立一個模組。不確定您如何能安裝此模"
+"組，您應要卸載開發模組"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2717,9 +2720,8 @@ msgid ""
 "directory. Without it your module cannot work, make sure to create one. How "
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
-msgstr ""
-"疑似開發模組目錄中從未建置 %1文件夾，需要該檔案夾模組才能執行模組。無法得知開"
-"發模組如何安裝，請將之移除。"
+msgstr "疑似開發模組目錄中從未建置 "
+"%1文件夾，需要該檔案夾模組才能執行模組。無法得知開發模組如何安裝，請將之移除"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
@@ -2728,7 +2730,7 @@ msgstr "載入模組描述時出現問題"
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "無法從存檔中加載模組描述檔: '%1'"
+msgstr "<i>無法從存檔中加載模組描述檔: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2737,8 +2739,9 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a "
 "href=\"http://%6\">%6</a></i><br>"
 msgstr ""
-"<h3>%1</h3>版本 %2%3由 [<i></i><br><p></p><br><br><i>X63X] 創建，由 %5 維護。"
-"</i><br><i>有關更多詳細資訊，請參閱網站： <a href=“HTTP：//%6”>%6</a></i><br>"
+"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 所建立，並由 "
+"%5所維護。</i><br><i>相關資訊，請參閱網站：<a href=\"http://%6\""
+">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
@@ -2815,7 +2818,7 @@ msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
-msgstr "使用附隨的GITHUB_PAT, 或使用環境變數中的設定"
+msgstr "使用附隨的GITHUB_PAT, 或使用環境變數中的設定。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
@@ -2827,7 +2830,7 @@ msgstr "R, JAGS, 或 lavaan 語法:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr "結果與幫助"
+msgstr "結果與幫助："
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
@@ -3008,7 +3011,7 @@ msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
-msgstr "<sup>*</sup>只能以OSF帳號登入，不支持ORCID或機構帳號"
+msgstr "<sup>*</sup>只能以OSF帳號登入，不支持ORCID或機構帳號。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
@@ -3635,7 +3638,7 @@ msgstr "變數清單"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr "DropDown"
+msgstr "下拉選單"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
@@ -4747,7 +4750,7 @@ msgstr "點擊這裡更改所選變數"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr "單按此處選擇列，按住Shift鍵可多選"
+msgstr "單按此處選擇列，按住Shift鍵可多選。"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4780,7 +4783,7 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "反轉所有數值的順序"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
@@ -4814,15 +4817,16 @@ msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
-msgstr ""
+msgstr "JASP是一個開源專案，它由<a href=\"dummyLink\""
+">阿姆斯特丹大學和其他</a>教育工作者所支援開發。"
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "反應錯誤"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "功能請求"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4951,11 +4955,11 @@ msgstr "關閉，但不調整資料集的維度"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "問題諮詢"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "拜訪官網"
 
 #, qt-format
 msgctxt "QObject|"
