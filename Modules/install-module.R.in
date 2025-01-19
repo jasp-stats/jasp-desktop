@@ -37,7 +37,8 @@ options("JASP_RENV_INSTALL_OPTIONS" = list(
   OpenMx   = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   ragg     = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
   V8       = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
-  Boom     = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
+  Boom     = list(before = setMakeFlagsToOne, after  = defaultMakeFlags),
+  curl     = list(before = setMakeFlagsToOne, after  = defaultMakeFlags)
 ))
 options(renv.config.install.verbose = TRUE)
 configureVars = NULL
