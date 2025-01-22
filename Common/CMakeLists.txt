@@ -23,13 +23,14 @@ if(LINUX)
 endif()
 
 target_include_directories(
-	Common
-	PUBLIC # JASP
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-	 # R
-	 ${R_INCLUDE_PATH}
-	 ${R_HOME_PATH}/include
-	 ${RCPP_PATH}/include
+  Common
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+  # R
+  ${R_INCLUDE_PATH}
+  ${R_HOME_PATH}/include
+  ${RCPP_PATH}/include
+  ${Boost_INCLUDE_DIRS}
 	)
 
 target_link_libraries(
@@ -45,7 +46,7 @@ target_link_libraries(
 target_compile_definitions(
   Common PUBLIC
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
-				JSONCPP_NO_LOCALE_SUPPORT	)
+        JSONCPP_NO_LOCALE_SUPPORT	)
 
 if(WINDOWS)
   target_compile_definitions(
@@ -57,5 +58,6 @@ endif()
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU_EXECUTABLE})
 endif()
+
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
