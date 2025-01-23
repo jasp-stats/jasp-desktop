@@ -271,9 +271,8 @@ public:
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
 				void						resetVariableTypes();
-
-
-
+				void						emitColumnChanged(const QString &colName); //temporary until ColumnQ exists
+				
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
 													QStringList				missingColumns,

@@ -510,7 +510,31 @@ void SetLabelOriginalValueCommand::redo()
 	_columnModel->setLabelMaxWidth();
 }
 
+DeleteLabelCommand::DeleteLabelCommand(QAbstractItemModel *model, int labelIndex)
+	: UndoModelCommandSingleColumn(model), _labelIndex(labelIndex)
+{
+	setText(QObject::tr("Delete label %1 of column '%2'").arg(_labelIndex).arg(columnName()));
+}
 
+void DeleteLabelCommand::redo()
+{
+	_columnModel->_deleteLabel(_labelIndex);
+}
+
+
+AddLabelCommand::AddLabelCommand(QAbstractItemModel *model, QString value, QString label)
+: UndoModelCommandLabelChange(model), _value(value), _label(label)
+{
+	if (_columnModel)
+		setText(QObject::tr("Adding value + label '%1' + '%2' to column '%3'").arg(_value).arg(_label).arg(columnName()));
+}
+
+void AddLabelCommand::redo()
+{
+	UndoModelCommandLabelChange::redo();
+	if (_columnModel)
+		_columnModel->_addLabel(_value, _label);
+}
 
 FilterLabelCommand::FilterLabelCommand(QAbstractItemModel *model, int labelIndex, bool checked)
 	: UndoModelCommand(model), _labelIndex{labelIndex}, _checked{checked}
@@ -860,3 +884,14 @@ QString UndoModelCommand::rowName(int rowIndex) const
 	return result;
 }
 
+
+
+UndoModelCommandSingleColumn::UndoModelCommandSingleColumn(QAbstractItemModel *model)
+	: UndoModelCommandMultipleColumns(model, {qobject_cast<ColumnModel*>(model)->chosenColumn()} )
+{
+	_columnModel = qobject_cast<ColumnModel*>(model);
+	
+	if(!_columnModel)
+		throw std::runtime_error("UndoModelCommandSingleColumn needs to get passed a ColumnModel!");
+	
+}

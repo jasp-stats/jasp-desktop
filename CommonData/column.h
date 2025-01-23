@@ -112,8 +112,10 @@ public:
 			void					labelsClear(bool doIncRevision=true);
 			int						labelsAdd(			int display);
 			int						labelsAdd(			const std::string & display);
+			int						labelsAdd(			const std::string &display, const std::string &value);
 			int						labelsAdd(			const std::string & display, const std::string & description, const Json::Value & originalValue);
 			int						labelsAdd(			int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
+			void					labelsRemove(		int labelIndex);
 			int						labelsSet(int lbId,	int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
 			void					labelsRemoveByIntsId(	intset valuesToRemove, bool updateOrder = true);
 			strintmap				labelsResetValues(	int & maxValue);

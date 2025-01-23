@@ -101,6 +101,20 @@ private:
 							_oldLabel;
 };
 
+
+class AddLabelCommand: public UndoModelCommandLabelChange
+{
+public:
+	AddLabelCommand(QAbstractItemModel *model, QString value, QString label);
+	
+	void redo()					override;
+	
+private:
+	QString					_value,
+							_label;
+};
+
+
 class FilterLabelCommand: public UndoModelCommand
 {
 public:
@@ -195,7 +209,7 @@ public:
 	void redo()					override;
 
 private:
-        ComputedColumnModel*	_computedColumnModel = nullptr;
+	ComputedColumnModel*	_computedColumnModel = nullptr;
 	std::string				_name;
 	QString					_oldRCode,
 							_newRCode,
@@ -232,6 +246,26 @@ protected:
 
 private:
 	std::map<int, Json::Value>	_serializedColumns;
+};
+
+class UndoModelCommandSingleColumn : public UndoModelCommandMultipleColumns
+{
+public:
+	UndoModelCommandSingleColumn(QAbstractItemModel * model);
+	
+protected:
+	ColumnModel * _columnModel = nullptr;
+};
+
+class DeleteLabelCommand: public UndoModelCommandSingleColumn
+{
+public:
+	DeleteLabelCommand(QAbstractItemModel *model, int labelIndex);
+	
+	void redo()					override;
+	
+private:
+	int						_labelIndex = -1;
 };
 
 class DataSetTableModel;

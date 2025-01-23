@@ -83,6 +83,8 @@ public:
 	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
 	Q_INVOKABLE void setValue(int rowIndex, const QString & value);
 	Q_INVOKABLE void setLabel(int rowIndex, QString label);
+	Q_INVOKABLE void deleteLabel(int rowIndex);
+	Q_INVOKABLE void addLabel(QString value, QString label); ///< Via UndoStack
 	Q_INVOKABLE void addEmptyValue(		const QString & value);
 	Q_INVOKABLE void removeEmptyValue(	const QString & value);
 	Q_INVOKABLE void resetEmptyValues();
@@ -130,6 +132,8 @@ public slots:
 	void checkCurrentColumn( QStringList changedColumns, QStringList missingColumns, QMap<QString, QString>	changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 	void setCompactMode(bool newCompactMode);
 	void languageChangedHandler();
+	void _addLabel(QString value, QString label); ///< Directly actually add it!
+	void _deleteLabel(int labelIndex);
 
 signals:
 	void visibleChanged(bool visible);

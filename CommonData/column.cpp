@@ -740,6 +740,11 @@ int Column::labelsAdd(int display)
 
 int Column::labelsAdd(const std::string &display)
 {
+	return labelsAdd(display, display);
+}
+
+int Column::labelsAdd(const std::string &display, const std::string &value)
+{
 
 	JASPTIMER_SCOPE(Column::labelsAdd displaystring);
 
@@ -749,10 +754,10 @@ int Column::labelsAdd(const std::string &display)
 	int		anInt;
 	double	aDouble;
 	
-	Json::Value original = display;
+	Json::Value original = value;
 	
-	if		(ColumnUtils::getIntValue(		display, anInt))	original = anInt;
-	else if	(ColumnUtils::getDoubleValue(	display, aDouble))	original = aDouble;
+	if		(ColumnUtils::getIntValue(		value, anInt))		original = anInt;
+	else if	(ColumnUtils::getDoubleValue(	value, aDouble))	original = aDouble;
 
 	return labelsAdd(display, "", original);
 }
@@ -787,7 +792,52 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
 	
+	labelsTempReset();
+	
 	return _labelMapIt(label);
+}
+
+void Column::labelsRemove(int labelIndex)
+{
+	if(_labels.size() <= labelIndex)
+	{
+		//So it might be a temp label?
+		if(labelsTempCount() <= labelIndex)
+			return;
+		
+		//So we can assume that label == value and it is a double
+		double val = labelsTempValueDouble(labelIndex);
+		
+		for(size_t i=0; i<_ints.size(); i++)
+			if(_dbls[i] == val && _ints[i] == Label::DOUBLE_LABEL_VALUE)
+			{
+				_ints[i] = EmptyValues::missingValueInteger;
+				_dbls[i] = EmptyValues::missingValueDouble;
+			}
+		
+	}
+	else
+	{
+		
+		Label * label = _labels[labelIndex];
+		
+		int intsId = label->intsId();
+		
+		labelsRemoveByIntsId({intsId}, false);
+		
+		for(size_t i=0; i<_ints.size(); i++)
+			if(_ints[i] == intsId)
+			{
+				_ints[i] = EmptyValues::missingValueInteger;
+				_dbls[i] = EmptyValues::missingValueDouble;
+			}
+	}
+	
+	db().columnSetValues(_id, _ints, _dbls);
+	labelsTempReset();
+	_dbUpdateLabelOrder();
+	
+	incRevision();
 }
 
 int Column::labelsSet(int labelIndex, int value, const std::string &display, bool filterAllows, const std::string &description, const Json::Value &originalValue, int order, int id)

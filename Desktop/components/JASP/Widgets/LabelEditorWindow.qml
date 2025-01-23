@@ -22,7 +22,7 @@ FocusScope
 				top:			parent.top
 				left:			buttonColumnFlickable.right
 				right:			parent.right
-				bottom:			parent.bottom
+				bottom:			newLabelContainer.top
 				leftMargin:		jaspTheme.generalAnchorMargin
 			}
 
@@ -62,7 +62,7 @@ FocusScope
 				}
 
 				property real	filterColWidth:		60  * jaspTheme.uiScale
-				property real	remainingWidth:		width - filterColWidth
+				property real	remainingWidth:		width - (2* filterColWidth)
 				property real	valueColWidth:		Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
 				property real	labelColWidth:		Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
 				property int	selectedRow:		-1
@@ -123,6 +123,21 @@ FocusScope
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
 								width:					levelsTableView.labelColWidth;
+							}							
+							Rectangle
+							{
+								width:					1
+								height:					parent.height
+								color:					jaspTheme.uiBorder
+							}
+							Text
+							{
+								text:					qsTr("Erase")
+								font:					jaspTheme.font
+								color:					jaspTheme.textEnabled
+								leftPadding:			3 * jaspTheme.uiScale
+								anchors.verticalCenter:	parent.verticalCenter
+								width:					levelsTableView.filterColWidth;
 							}
 						}
 				}
@@ -410,11 +425,103 @@ FocusScope
 									}
 								}
 							}
+						
+							MouseArea
+							{
+								id:						deleteButton
+								width:					levelsTableView.filterColWidth;
+								height:					parent.height
+								z:						-1
+								cursorShape:			Qt.PointingHandCursor
+								
+	
+								onClicked:				
+								{
+									columnModel.deleteLabel(rowIndex);
+								}
+	
+								Image
+								{
+									source:					jaspTheme.iconPath + ("eraser.png")
+									sourceSize.width:		Math.max(40, width)
+									sourceSize.height:		Math.max(40, height)
+									width:					height
+									anchors
+									{
+										top:				deleteButton.top
+										bottom:				deleteButton.bottom
+										margins:			levelsTableView.itemVerticalPadding
+										horizontalCenter:	deleteButton.horizontalCenter
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 
+		}
+		
+		Row
+		{
+			id:					newLabelContainer
+			anchors
+			{
+				left:			parent.left
+				right:			parent.right
+				bottom:			parent.bottom
+			}
+			
+			
+			TextField
+			{
+				id:					newLevelValueInput
+				
+				displayValue:		""
+				placeholderText:	qsTr("Value")
+				control.height:		buttonColumnVariablesWindow.buttonHeight
+				
+			}
+			
+			TextField
+			{
+				id:					newLevelLabelInput
+				
+				displayValue:		""
+				placeholderText:	qsTr("Label")
+				control.height:		buttonColumnVariablesWindow.buttonHeight
+			}
+			
+			RoundedButton
+			{
+				iconSource:		jaspTheme.iconPath +  "addition-sign-small.svg"
+				onClicked:		
+				{ 
+					if(newLevelValueInput.displayValue == "" && newLevelLabelInput.displayValue == "")
+					{
+						newLevelValueInput.forceActiveFocus();
+						return
+					}
+					
+					var newValue = newLevelValueInput.displayValue
+					var newLabel = newLevelLabelInput.displayValue
+					
+					if(newLabel == "")
+						newLabel = newValue
+						
+					forceActiveFocus(); 
+					columnModel.addLabel(newValue, newLabel); 
+					
+					newLevelValueInput.displayValue = ""
+					newLevelLabelInput.displayValue = ""
+				}
+
+				toolTip:		qsTr("Add a level that's missing from the data")
+
+				height:			implicitHeight
+				implicitHeight: buttonColumnVariablesWindow.buttonHeight
+				width:			height
+			}
 		}
 
 		Flickable

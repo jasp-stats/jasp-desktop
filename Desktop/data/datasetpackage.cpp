@@ -1381,6 +1381,11 @@ void DataSetPackage::endSynchingData(	const stringvec	&	changedColumns,
 	setManualEdits(false);
 }
 
+void DataSetPackage::emitColumnChanged(const QString & colName)
+{
+	emit datasetChanged({colName}, {}, {}, false, false);
+}
+
 
 void DataSetPackage::beginLoadingData(bool informEngines)
 {

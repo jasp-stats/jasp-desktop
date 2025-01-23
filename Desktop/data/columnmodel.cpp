@@ -774,6 +774,38 @@ void ColumnModel::setLabel(int rowIndex, QString label)
 	_editing = false;
 }
 
+void ColumnModel::deleteLabel(int rowIndex)
+{
+	_undoStack->pushCommand(new DeleteLabelCommand(this, rowIndex));
+}
+
+void ColumnModel::addLabel(QString value, QString label)
+{
+	_undoStack->pushCommand(new AddLabelCommand(this, value, label));
+}
+
+void ColumnModel::_addLabel(QString value, QString label)
+{
+	if(!column())
+		return;
+	
+	column()->labelsAdd(fq(label), fq(value));
+	column()->incRevision();
+	refresh();
+	DataSetPackage::pkg()->emitColumnChanged(columnNameQ());
+}
+
+void ColumnModel::_deleteLabel(int labelIndex)
+{
+	if(!column())
+		return;
+	
+	column()->labelsRemove(labelIndex);
+	refresh();
+	DataSetPackage::pkg()->emitColumnChanged(columnNameQ());
+}
+
+
 bool ColumnModel::columnIsFiltered() const
 {
 	if(column())
@@ -819,4 +851,5 @@ void ColumnModel::languageChangedHandler()
 	emit computedTypeValuesChanged();
 	emit tabsChanged();
 }
+
 
