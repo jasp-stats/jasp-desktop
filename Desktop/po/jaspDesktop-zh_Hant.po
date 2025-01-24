@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-01-23 22:44+0000\n"
+"PO-Revision-Date: 2025-01-25 02:56+0000\n"
 "Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspdesktop/zh_Hant/>\n"
@@ -4638,22 +4638,22 @@ msgstr "欄位定義"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
+msgstr "對於 y 中的每個遺漏值，船回一個值為 TRUE 的布林向量"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
-msgstr ""
+msgstr "結合「非」運算子，來篩選出某直欄中含遺漏值（NA）的個案。"
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "資料未匯入！"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "資料有%1列，%2(%3%4)通過了篩選器"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
@@ -4663,7 +4663,7 @@ msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
-msgstr ""
+msgstr "如果某個變項的整數值種類超過此數量，則會被判定為連續變項。"
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
@@ -4679,45 +4679,45 @@ msgstr "已復製到剪貼板"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "複製除錯資訊"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "在結果中搜尋："
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "關閉搜尋欄"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "字體顏色"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "在此處輸入LaTeX："
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "按Cmd/Ctrl + Enter鍵執行；"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "單按以執行公式"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "單按可編輯此公式"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "新增%1"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "刪除上一個%1"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
@@ -4770,7 +4770,7 @@ msgstr "單按此處選擇列，按住Shift鍵可多選。"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr ""
+msgstr "將直欄'%2'的標籤'%1'的原始值，設定為  從'%3'到'%4'"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
@@ -4790,11 +4790,11 @@ msgstr "插入右方 \"R程式\" 欄"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "反轉值"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "計算變數中有錯誤：<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
@@ -4802,7 +4802,7 @@ msgstr "反轉所有數值的順序"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "更改變項類型失敗"
 
 #, qt-format
 msgctxt "DataSetPackage|"
