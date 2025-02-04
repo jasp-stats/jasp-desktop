@@ -232,11 +232,6 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 	return roles;
 }
 
-int ColumnsModel::rowCount(const QModelIndex & p) const
-{
-	return QTransposeProxyModel::rowCount(p);
-}
-
 QQmlContext* ColumnsModel::providerQMLContext() const
 {
 	return MainWindow::singleton()->giveRootQmlContext();

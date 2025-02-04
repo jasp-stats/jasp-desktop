@@ -25,8 +25,6 @@ public:
 
 				QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 				QHash<int, QByteArray>		roleNames()																			const	override;
-				int							columnCount(const QModelIndex & = QModelIndex())									const	override	{ return 1;	}
-				int							rowCount(	const QModelIndex & = QModelIndex())									const	override;
 				int							getColumnIndex(const std::string & col)												const				{ return _tableModel->getColumnIndex(col);	}
 				QStringList					getColumnNames()																	const;
 	Q_INVOKABLE	int							getColumnType(const QString & name)													const;
