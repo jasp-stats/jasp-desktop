@@ -12,14 +12,12 @@ qt_add_qml_module(
 	URI						JASP.Controls
 	OUTPUT_DIRECTORY		"JASP/Controls"
 	RESOURCE_PREFIX			/jasp-stats.org/imports
-	#PLUGIN_TARGET			QMLComponentsPlugin
 	DEPENDENCIES			QtQuick
-	#NO_PLUGIN_OPTIONAL
-	#NO_GENERATE_PLUGIN_SOURCE
-	#CLASS_NAME				JASPQmlPlugin
 	SOURCES					${SOURCE_FILES} ${HEADER_FILES}
 	QML_FILES				${QML_FILES}
 )
+
+# This define is needed for the linking
 target_compile_definitions(QMLComponents PUBLIC QT_STATICPLUGIN)
 
 if(LINUX)

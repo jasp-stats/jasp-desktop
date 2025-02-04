@@ -67,10 +67,6 @@
 #include <boost/iostreams/device/null.hpp>
 
 #include "communitydefs.h"
-#include <QtPlugin>
-
-//The following seemed to be necessary for loading the plugin on Windows (making it static so it links properly)
-Q_IMPORT_PLUGIN(JASPQmlPlugin)
 
 using namespace std;
 using namespace Modules;
