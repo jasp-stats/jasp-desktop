@@ -69,9 +69,9 @@ class JASPListControl : public JASPControl
 
 
 public:
-	JASPListControl(QQuickItem* parent);
-	
-	virtual ListModel			*	model()						const	= 0;
+    JASPListControl(QQuickItem* parent = nullptr);
+
+	virtual ListModel			*	model()						const	{ return nullptr; } // Cannot be a pure virtual function: JASPListControl would not be a default constructible object, and could not be a QML Type
 	virtual void					setUpModel();
 			void					setUp()						override;
 			void					cleanUp()					override;
