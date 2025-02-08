@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-02-09 09:01+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -3325,7 +3331,7 @@ msgstr "顯示引擎"
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr "將缺失值顯示為： "
+msgstr "將遺漏值顯示為： "
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
@@ -4423,7 +4429,7 @@ msgstr "備註: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr "使用在資料首選項中設置的值重置缺失值"
+msgstr "使用在資料首選項中設置的值重置遺漏值"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
@@ -4435,7 +4441,7 @@ msgstr "使用自訂值"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr "使用工作區中設定的值重置缺失值"
+msgstr "使用工作區中設定的值重置遺漏值"
 
 msgctxt "QObject|"
 msgid "Not computed"
