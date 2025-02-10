@@ -346,7 +346,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 				let footnoteText = (formatCellforLaTeX(sym) + ' ');
 					footnoteText += formatCellforLaTeX(optFootnotes[i]['text'].replace(/(\r\n|\n|\r|\t)/gm, ''));  // remove line breaks, \n, \r, \r\n, \t
 
-				latexCode += ('\t\t\t% \\multicolumn{' + columns + '}{p{0.5\\linewidth}}{' + footnoteText + '} \\\\\n');
+				latexCode += ('\t\t\t% \\multicolumn{' + columns + '}{p{\\linewidth}}{' + footnoteText + '} \\\\\n');
 			}
 		}
 
