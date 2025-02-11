@@ -80,6 +80,7 @@ signals:
 				void	computeColumnIconSourceChanged();
 				
 public slots:
+				void	invalidateAllColumns();
 				void	checkForDependentColumnsToBeSent(QString columnName, bool refreshMe = false);
 				void	computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 				void	computeColumnRemoved(QString columnNameQ);

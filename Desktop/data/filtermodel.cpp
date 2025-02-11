@@ -80,6 +80,7 @@ void FilterModel::setDropLevels(bool dropLevels)
 	if(DataSetPackage::filter())
 		DataSetPackage::filter()->setDropLevels(dropLevels);
 	emit dropLevelsChanged();
+	emit refreshAllCompCols();
 }
 
 bool FilterModel::_setRFilter(const QString& newRFilter)
@@ -195,13 +196,14 @@ void FilterModel::processFilterResult(int requestId)
 	if(!(DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter()))
 		return;
 	
-	int oldFilteredRowCount = DataSetPackage::pkg()->dataSet()->filter()->filteredRowCount();
+	
 
 	//Load new filter values from database
 	if(DataSetPackage::pkg()->dataSet()->filter()->dbLoadResultAndError())
 	{
 		emit filterErrorMsgChanged();
 		emit refreshAllAnalyses();
+		emit refreshAllCompCols();
 		emit filterUpdated();
 		updateStatusBar();
 	}

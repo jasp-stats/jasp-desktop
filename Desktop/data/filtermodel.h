@@ -84,6 +84,7 @@ signals:
 	void updateColumnsUsedInConstructedFilter(std::set<std::string> columnNames);
 
 	void refreshAllAnalyses();
+	void refreshAllCompCols();
 	void filterUpdated();
 
 	int sendFilter(QString generatedFilter, QString rFilter);
