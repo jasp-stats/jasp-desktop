@@ -15,6 +15,12 @@ FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 }
 
 QString FilterModel::rFilter()			const	{ return !DataSetPackage::filter() ? defaultRFilter()		: tq(DataSetPackage::filter()->rFilter());					}
+
+bool FilterModel::dropLevels() const
+{
+	return DataSetPackage::filter() && DataSetPackage::filter()->dropLevels();
+}
+
 QString FilterModel::constructorR()		const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->constructorR());				}
 QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->errorMsg());					}
 QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? DEFAULT_FILTER_GEN		: tq(DataSetPackage::filter()->generatedFilter());			}
@@ -48,6 +54,8 @@ void FilterModel::reset()
 
 void FilterModel::dataSetPackageResetDone()
 {
+	emit dropLevelsChanged();
+	
 	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())		);
 	setConstructorJson(	!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson())	);
 	_setRFilter(		!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->rFilter())			);
@@ -65,6 +73,13 @@ void FilterModel::setRFilter(QString newRFilter)
 {
 	if (_setRFilter(newRFilter))
 		sendGeneratedAndRFilter();
+}
+
+void FilterModel::setDropLevels(bool dropLevels)
+{
+	if(DataSetPackage::filter())
+		DataSetPackage::filter()->setDropLevels(dropLevels);
+	emit dropLevelsChanged();
 }
 
 bool FilterModel::_setRFilter(const QString& newRFilter)
@@ -179,6 +194,8 @@ void FilterModel::processFilterResult(int requestId)
 
 	if(!(DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter()))
 		return;
+	
+	int oldFilteredRowCount = DataSetPackage::pkg()->dataSet()->filter()->filteredRowCount();
 
 	//Load new filter values from database
 	if(DataSetPackage::pkg()->dataSet()->filter()->dbLoadResultAndError())

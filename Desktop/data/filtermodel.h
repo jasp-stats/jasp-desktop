@@ -19,6 +19,7 @@ class FilterModel : public QObject
 	Q_PROPERTY( QString filterErrorMsg		READ filterErrorMsg									NOTIFY filterErrorMsgChanged	)
 	Q_PROPERTY( bool 	hasFilter			READ hasFilter										NOTIFY hasFilterChanged			)
 	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
+	Q_PROPERTY( bool	dropLevels			READ dropLevels			WRITE setDropLevels			NOTIFY dropLevelsChanged		)
 
 public:
 	explicit					FilterModel(labelFilterGenerator * labelfilterGenerator);
@@ -26,6 +27,7 @@ public:
 				void			init();
 
 				QString			rFilter()				const;
+				bool			dropLevels()			const;
 				QString			constructorR()			const;
 				QString			statusBarText()			const	{ return _statusBarText;			}
 				QString			filterErrorMsg()		const;
@@ -47,6 +49,7 @@ public slots:
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)
 	
 	void setRFilter(		QString newRFilter);
+	void setDropLevels(		bool	dropLevels);
 	void setConstructorR(	QString newConstructorR);
 	void setGeneratedFilter(QString newGeneratedFilter);
 	void setConstructorJson(QString newconstructorJson);
@@ -70,6 +73,7 @@ public slots:
 
 signals:
 	void rFilterChanged();
+	void dropLevelsChanged();
 	void hasFilterChanged();
 	void constructorRChanged();
 	void statusBarTextChanged();
