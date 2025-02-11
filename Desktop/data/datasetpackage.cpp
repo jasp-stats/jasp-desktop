@@ -2016,11 +2016,8 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 		columnIndex = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
 	setManualEdits(true); //Don't synch with external file after editing
-#ifdef ROUGH_RESET
+
 	beginResetModel();
-#else
-	beginInsertColumns(indexForSubNode(_dataSet->dataNode()), columnIndex, columnIndex);
-#endif
 
 	_dataSet->insertColumn(columnIndex);
 	
@@ -2032,11 +2029,7 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 
 	_dataSet->incRevision();
 
-#ifdef ROUGH_RESET
 	endResetModel();
-#else
-	endInsertColumns();
-#endif
 	
 	emit datasetChanged(tq(stringvec{column->name()}), {}, {}, false, true);
 
