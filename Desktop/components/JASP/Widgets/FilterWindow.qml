@@ -238,10 +238,11 @@ FocusScope
 			JaspControls.RectangularButton
 			{
 				id:			filterDropsLevels
-				iconSource: !filterModel.dropLevels ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
+				//iconSource: !filterModel.dropLevels ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
+				text:		filterModel.dropLevels ? qsTr("Only filtered levels") : qsTr("Keep all levels")
 				onClicked:	filterModel.dropLevels = !filterModel.dropLevels
-				width:		height
-				toolTip:	(filterModel.dropLevels ? qsTr("Filtering out levels.") : qsTr("Keeping all specified levels."))
+				//width:		height
+				toolTip:	(filterModel.dropLevels ? qsTr("Click to keep all levels") : qsTr("Click to filter unused levels out, if anything at all is filtered"))
 				anchors
 				{
 					right:	parent.right
