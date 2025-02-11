@@ -35,12 +35,12 @@ class CSV
 public:
 	CSV(const std::string &path);
 
-	void open();
-	bool readLine(std::vector<std::string> &items);
-	long pos();
-	long size();
-	long numRows();
-	void close();
+	void		open();
+	bool		readLine(std::vector<std::string> &items);
+	int64_t		pos();
+	int64_t		size();
+	int64_t		numRows();
+	void		close();
 
 	enum Status { OK = 0, NotRead, Empty };
 
@@ -48,14 +48,14 @@ public:
 
 private:
 
-	int64_t _fileSize;
-	long 	_filePosition;
+	int64_t _fileSize,
+		 	_filePosition;
 
 	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4, Native };
 
-	Encoding _encoding;
-	char _delim;
-	long _numRows;
+	Encoding	_encoding;
+	char		_delim;
+	int64_t		_numRows;
 
 	bool readRaw();
 	bool readUtf8();
@@ -66,16 +66,18 @@ private:
 
 private:
 
-	Status _status;
+	Status			_status;
 
-	int _rawBufferStartPos, _rawBufferEndPos;
-	int _utf8BufferStartPos, _utf8BufferEndPos;
-	std::string _path;
-	std::ifstream _stream;
-	bool _eof;
+	int64_t			_rawBufferStartPos, 
+					_rawBufferEndPos,
+					_utf8BufferStartPos, 
+					_utf8BufferEndPos;
+	std::string		_path;
+	std::ifstream	_stream;
+	bool			_eof;
 
-	char _rawBuffer[32768];
-	char _utf8Buffer[65536];
+	char			_rawBuffer[32768],
+					_utf8Buffer[65536];
 
 	static inline bool utf16to8(char *out, char *in, int outSize, int inSize, int &written, int &read, bool bigEndian = false);
 	static inline bool utf16to32(uint32_t &out, char *in, int inSize, int &bytesRead, bool bigEndian = false);

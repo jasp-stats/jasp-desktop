@@ -24,8 +24,6 @@
 #include <stdexcept>
 
 #include "utils.h"
-#include "utilities/qutils.h"
-#include "utilities/settings.h"
 
 using namespace std;
 using boost::algorithm::trim;
@@ -545,17 +543,17 @@ bool CSV::readLine(vector<string> &items)
 	return true;
 }
 
-long CSV::pos()
+int64_t CSV::pos()
 {
 	return _filePosition;
 }
 
-long CSV::size()
+int64_t CSV::size()
 {
 	return _fileSize;
 }
 
-long CSV::numRows()
+int64_t CSV::numRows()
 {
 	return _numRows > 0 ? _numRows : 0;
 }
