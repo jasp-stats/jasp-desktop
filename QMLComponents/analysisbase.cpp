@@ -10,6 +10,8 @@ AnalysisBase::AnalysisBase(QObject* parent, Version moduleVersion)
 	: QObject(parent)
 	, _moduleVersion(moduleVersion)
 {
+	// If the parent object is the form, just use it. This is used in R-Syntax mode when the AnalysisForm::parseOptions creates a dummy AnalysisBase
+	_analysisForm = qobject_cast<AnalysisForm*>(parent);
 }
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)

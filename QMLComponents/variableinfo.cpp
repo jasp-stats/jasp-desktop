@@ -9,16 +9,7 @@ VariableInfo::VariableInfo(VariableInfoProvider* providerInfo) :
 	QObject(providerInfo->providerModel()), _provider(providerInfo)
 {
 	if (_singleton == nullptr)
-	{
 		_singleton = this;
-		QTimer::singleShot(0, [&]() { _setDataSetInfoInContext(); });
-	}
-}
-
-void VariableInfo::_setDataSetInfoInContext()
-{
-	QQmlContext* context = _provider->providerQMLContext();
-	context->setContextProperty("dataSetInfo", this);
 }
 
 VariableInfo *VariableInfo::info()

@@ -69,8 +69,6 @@ signals:
 	void dataAvailableChanged();
 
 private:	
-	void _setDataSetInfoInContext();
-
 	VariableInfoProvider *	_provider	= nullptr;
 
 	static VariableInfo *_singleton;
@@ -82,7 +80,6 @@ public:
 	virtual QVariant				provideInfo(VariableInfo::InfoType info, const QString& name = "", int row = 0)			const	= 0;
 	virtual bool					absorbInfo(VariableInfo::InfoType info, const QString& name, int row, QVariant value)			= 0;
 	virtual QAbstractItemModel*		providerModel()																			{ return nullptr;			}
-	virtual QQmlContext*			providerQMLContext()																	const	= 0;
 };
 
 class VariableInfoConsumer

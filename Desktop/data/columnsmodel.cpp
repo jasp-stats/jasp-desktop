@@ -232,11 +232,6 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 	return roles;
 }
 
-QQmlContext* ColumnsModel::providerQMLContext() const
-{
-	return MainWindow::singleton()->giveRootQmlContext();
-}
-
 QStringList ColumnsModel::getColumnNames() const
 {
 	QStringList result;
