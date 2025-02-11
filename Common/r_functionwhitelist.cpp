@@ -98,6 +98,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"lag",
 	"lapply",
 	"length",
+	"levels",
 	"library",
 	"list",
 	"local",

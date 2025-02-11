@@ -91,6 +91,9 @@ DataSet * EngineBase::provideAndUpdateDataSet()
 
 	if(_dataSet && setColumnNames)
 		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames(), true);
+	
+	if(_dataSet)
+		jaspRCPP_setShouldDropLevels(_dataSet->filter()->shouldDropLevels());
 
 	JASPTIMER_STOP(EngineBase::provideAndUpdateDataSet());
 

@@ -30,10 +30,11 @@
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet();
 Rcpp::DataFrame jaspRCPP_readFilterDataSet();
+Rcpp::DataFrame jaspRCPP_readCompColDataSet();
 Rcpp::DataFrame jaspRCPP_readDataSetRequested();
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(		SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(	SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax);
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax, bool dropLevels);
 
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP extension);
@@ -102,7 +103,7 @@ typedef std::string		(*enDecodeFuncDef)			(std::string);
 void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
 
 RBridgeColumnType*		jaspRCPP_marshallSEXPs(			SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax);
-Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
+Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false, bool dropLevels = true);
 std::string				_jaspRCPP_System (				std::string cmd);
 columnType				jaspRCPP_getColumnType(			std::string columnName);
 bool					jaspRCPP_getColumnExists(		std::string columnName);

@@ -26,6 +26,8 @@ public:
 
 	DataSet					*	data()				const { return _data;					}
 	int							id()				const { return _id;						}
+	bool						dropLevels()		const { return _dropLevels;				}
+	bool						shouldDropLevels()	const;
 	const std::string		&	name()				const { return _name;					}
 	const std::string		&	rFilter()			const { return _rFilter;				}
 	const std::string		&	generatedFilter()	const { return _generatedFilter;		}
@@ -43,6 +45,7 @@ public:
 	void				setName(			const std::string	& name)				{ _name				= name;				dbUpdate(); }
 	bool				setFilterVector(	const boolvec		& filterResult);
 	void				setFilterValueNoDB(	size_t	row, bool val);
+	void				setDropLevels(		bool	dropEm);
 	void				setRowCount(		size_t	rows);
 	void				setId(				int		id)			{ _id = id; }
 
@@ -72,6 +75,7 @@ private:
 							_constructorR		= "",
 							_errorMsg			= "",
 							_name				= "";
+	bool					_dropLevels			= true; 
 	std::vector<bool>		_filtered;
 };
 

@@ -454,7 +454,7 @@ void __freeRBridgeColumnType(RBridgeColumnType *columns, size_t colMax)
 	for (int i = 0; i < colMax; i++)
 		free(columns[i].name);
 
-	free(columns);
+	delete[](columns);
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, bool obeyFilter)
@@ -715,8 +715,19 @@ void rbridge_setupRCodeEnv(int rowCount, const std::string & dataname)
 	setupFilterEnv =	"rowcount    <- " + std::to_string(rowCount) +  ";";
 	jaspRCPP_runScript(setupFilterEnv.c_str());
 
+	rbridge_setupRCodeEnvReadData(dataname, ".readCompColDatasetToEnd()");
+}
+
+void rbridge_setupRCodeFilterEnv(int rowCount, const std::string & dataname)
+{
+	static std::string setupFilterEnv;
+
+	setupFilterEnv =	"rowcount    <- " + std::to_string(rowCount) +  ";";
+	jaspRCPP_runScript(setupFilterEnv.c_str());
+
 	rbridge_setupRCodeEnvReadData(dataname, ".readFilterDatasetToEnd()");
 }
+
 
 void rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction)
 {
@@ -757,7 +768,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	bool * arrayPointer = nullptr;
 
-	rbridge_setupRCodeEnv(rowCount);
+	rbridge_setupRCodeFilterEnv(rowCount);
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
 	rbridge_detachRCodeEnv();
 

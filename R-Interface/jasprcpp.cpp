@@ -65,6 +65,7 @@ static libraryFixerDef			_libraryFixerFunc		= nullptr;
 static std::string				_R_HOME = "";
 
 bool shouldCrashSoon = false; //Simply here to allow a developer to force a crash
+bool shouldDropLevels = true;
 
 //Ugly hack to work around windows messing up environment variables when local+codepage+utf8
 //Might not be necessary anymore due to the active codepage being set to utf8 now
@@ -142,6 +143,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".allColumnNamesDataset"]			= Rcpp::InternalFunction(&jaspRCPP_allColumnNamesDataset);
 	rInside[".readDatasetToEndNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
 	rInside[".readFilterDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
+	rInside[".readCompColDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readCompColDataSet);
 	rInside[".setColumnDataAsOrdinal"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
 	rInside[".setColumnDataAsNominal"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominal);
 	rInside[".readDataSetHeaderNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
@@ -986,7 +988,7 @@ Rcpp::DataFrame jaspRCPP_readFullDataSet()
 	size_t			colMax		= 0;
 	RBridgeColumn * colResults	= readFullDataSetCB(&colMax);
 	
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, false);
 }
 
 
@@ -995,7 +997,7 @@ Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet()
 	size_t			colMax		= 0;
 	RBridgeColumn * colResults	= readFullFilteredDataSetCB(&colMax);
 	
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, shouldDropLevels);
 }
 
 Rcpp::DataFrame jaspRCPP_readFilterDataSet()
@@ -1006,7 +1008,18 @@ Rcpp::DataFrame jaspRCPP_readFilterDataSet()
 	if(colMax == 0)
 		return Rcpp::DataFrame();
 
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, false);
+}
+
+Rcpp::DataFrame jaspRCPP_readCompColDataSet()
+{
+	size_t			colMax		= 0;
+	RBridgeColumn * colResults	= readFilterDataSetCB(&colMax);
+
+	if(colMax == 0)
+		return Rcpp::DataFrame();
+
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, shouldDropLevels);
 }
 
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
@@ -1017,7 +1030,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	
 	freeRBridgeColumnType(columnsRequested, colMax);
 
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, shouldDropLevels);
 }
 
 Rcpp::DataFrame jaspRCPP_readDataSetRequested()
@@ -1025,10 +1038,10 @@ Rcpp::DataFrame jaspRCPP_readDataSetRequested()
 	size_t				colMax				= 0;
 	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, true);
 	
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, shouldDropLevels);
 }
 
-Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax)
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax, bool dropLevels)
 {
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame();
 
@@ -1044,7 +1057,7 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn*
 			columnNames[i] = colResult.name;
 
 			if (colResult.isScale)			list[i] =						Rcpp::NumericVector(colResult.doubles,	colResult.doubles	+ colResult.nbRows);
-			else							list[i] = jaspRCPP_makeFactor(	Rcpp::IntegerVector(colResult.ints,		colResult.ints		+ colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal);
+			else							list[i] = jaspRCPP_makeFactor(	Rcpp::IntegerVector(colResult.ints,		colResult.ints		+ colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal, dropLevels);
 
 		}
 
@@ -1089,7 +1102,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 
 }
 
-Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal)
+Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal, bool dropLevels)
 {
 /*#ifdef JASP_DEBUG
 	std::cout << "jaspRCPP_makeFactor:\n\tlevels:\n\t\tnum: " << nbLevels << "\n\t\tstrs:\n";
@@ -1118,8 +1131,18 @@ Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, in
 	if(v.size() == 0)
 		return v;
 
-	static Rcpp::Function droplevels("droplevels");
-	return droplevels(Rcpp::_["x"] = v);
+	if(dropLevels)
+	{
+		static Rcpp::Function droplevels("droplevels");
+		return droplevels(Rcpp::_["x"] = v);
+	}
+	else 
+		return v;
+}
+
+void jaspRCPP_setShouldDropLevels(bool dropPlease)
+{
+	shouldDropLevels = dropPlease;	
 }
 
 void jaspRCPP_crashPlease() { shouldCrashSoon = true; }

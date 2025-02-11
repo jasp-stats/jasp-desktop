@@ -21,6 +21,7 @@ CREATE TABLE Filters (
 	constructorR	TEXT, 
 	errorMsg		TEXT,
 	revision		INT DEFAULT 0, 
+	dropLevels		INT,
 	
 	FOREIGN KEY(dataSet) REFERENCES DataSets(id)
 );

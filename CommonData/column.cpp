@@ -1338,9 +1338,9 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	
 	//At the end we make a mapping of the levels we have and need
 	//We make sure the map is up to date afterwards
-	for(int levelI=levels.size()-1; levelI >= 0; levelI--)
-		if(!levelsIncluded.count(levels[levelI]))
-			levels.erase(levels.begin() + levelI);
+	//for(int levelI=levels.size()-1; levelI >= 0; levelI--)
+	//	if(!levelsIncluded.count(levels[levelI]))
+	//		levels.erase(levels.begin() + levelI);
 	
 	strintmap levelToValueMap;
 	for(size_t levelI=0; levelI<levels.size(); levelI++)

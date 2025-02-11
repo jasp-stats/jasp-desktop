@@ -801,6 +801,7 @@ void ColumnModel::_deleteLabel(int labelIndex)
 		return;
 	
 	column()->labelsRemove(labelIndex);
+	column()->incRevision();
 	refresh();
 	DataSetPackage::pkg()->emitColumnChanged(columnNameQ());
 }

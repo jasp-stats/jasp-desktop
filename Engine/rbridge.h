@@ -84,9 +84,10 @@ extern "C" {
 
 	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData);
 
-	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);
-	void	rbridge_setupRCodeEnv(int rowCount, const std::string & dataname = "data");
-	void	rbridge_detachRCodeEnv(				const std::string & dataname = "data");
+	void	rbridge_setupRCodeEnvReadData(				const std::string & dataname, const std::string & readFunction);
+	void	rbridge_setupRCodeEnv(		int rowCount,	const std::string & dataname = "data");
+	void	rbridge_setupRCodeFilterEnv(int rowCount,	const std::string & dataname = "data");
+	void	rbridge_detachRCodeEnv(						const std::string & dataname = "data");
 
 	void freeRBridgeColumns();
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
