@@ -122,7 +122,7 @@ FocusScope
 								color:					levelsTableView.labelEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
-								width:					levelsTableView.labelColWidth;
+								width:					levelsTableView.remainingWidth - (levelsTableView.valueColWidth + 2 + (2 * levelsTableView.itemHorizontalPadding))
 							}							
 							Rectangle
 							{
@@ -135,8 +135,8 @@ FocusScope
 								text:					qsTr("Erase")
 								font:					jaspTheme.font
 								color:					jaspTheme.textEnabled
-								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
+								horizontalAlignment:	Text.AlignHCenter
 								width:					levelsTableView.filterColWidth;
 							}
 						}
@@ -426,6 +426,21 @@ FocusScope
 								}
 							}
 						
+							
+							Item
+							{
+								width:					1
+								height:					parent.height
+								
+								Rectangle
+								{
+									x:						0.5
+									width:					1
+									height:					parent.height
+									color:					jaspTheme.uiBorder
+								}
+							}
+							
 							MouseArea
 							{
 								id:						deleteButton
@@ -462,34 +477,76 @@ FocusScope
 
 		}
 		
-		Row
+		RowLayout
 		{
 			id:					newLabelContainer
 			anchors
 			{
-				left:			parent.left
+				left:			tableBackground.left
 				right:			parent.right
 				bottom:			parent.bottom
 			}
 			
+			Label
+			{
+				text:				qsTr("Add new level:")
+				height:				parent.height
+			}
 			
-			TextField
+			QTC.TextField
 			{
 				id:					newLevelValueInput
 				
-				displayValue:		""
+				font:				jaspTheme.font
+				color:				jaspTheme.textEnabled
+				selectedTextColor:	jaspTheme.white
+				selectionColor:		jaspTheme.itemSelectedColor
+				selectByMouse:		true
+				
+				text:				""
 				placeholderText:	qsTr("Value")
-				control.height:		buttonColumnVariablesWindow.buttonHeight
+				height:				buttonColumnVariablesWindow.buttonHeight
+				
+				background: Rectangle
+				{
+					
+					color:				jaspTheme.controlBackgroundColor
+					border.width:		1
+					border.color:		jaspTheme.borderColor //If the border width is zero the color is inconsequential
+					radius:				jaspTheme.borderRadius
+					width:				parent.width   - 2 // (parent+self) border width
+					height:				parent.height  - 2
+					anchors.centerIn:	parent
+				}
 				
 			}
 			
-			TextField
+			QTC.TextField
 			{
 				id:					newLevelLabelInput
 				
-				displayValue:		""
+				font:				jaspTheme.font
+				color:				jaspTheme.textEnabled
+				selectedTextColor:	jaspTheme.white
+				selectionColor:		jaspTheme.itemSelectedColor
+				selectByMouse:		true
+				
+				text:				""
 				placeholderText:	qsTr("Label")
-				control.height:		buttonColumnVariablesWindow.buttonHeight
+				height:				buttonColumnVariablesWindow.buttonHeight
+				Layout.fillWidth:	true
+				
+				background: Rectangle
+				{
+				
+					color:				jaspTheme.controlBackgroundColor
+					border.width:		1
+					border.color:		jaspTheme.borderColor //If the border width is zero the color is inconsequential
+					radius:				jaspTheme.borderRadius
+					width:				parent.width   - 2 // (parent+self) border width
+					height:				parent.height  - 2
+					anchors.centerIn:	parent
+				}
 			}
 			
 			RoundedButton
@@ -497,14 +554,14 @@ FocusScope
 				iconSource:		jaspTheme.iconPath +  "addition-sign-small.svg"
 				onClicked:		
 				{ 
-					if(newLevelValueInput.displayValue == "" && newLevelLabelInput.displayValue == "")
+					if(newLevelValueInput.text == "" && newLevelLabelInput.text == "")
 					{
 						newLevelValueInput.forceActiveFocus();
 						return
 					}
 					
-					var newValue = newLevelValueInput.displayValue
-					var newLabel = newLevelLabelInput.displayValue
+					var newValue = newLevelValueInput.text
+					var newLabel = newLevelLabelInput.text
 					
 					if(newLabel == "")
 						newLabel = newValue
@@ -512,8 +569,8 @@ FocusScope
 					forceActiveFocus(); 
 					columnModel.addLabel(newValue, newLabel); 
 					
-					newLevelValueInput.displayValue = ""
-					newLevelLabelInput.displayValue = ""
+					newLevelValueInput.text = ""
+					newLevelLabelInput.text = ""
 				}
 
 				toolTip:		qsTr("Add a level that's missing from the data")
