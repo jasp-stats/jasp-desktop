@@ -461,7 +461,8 @@ int main(int argc, char *argv[])
 			QmlUtils::configureQMLCacheDir();
 		#endif
 
-			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+			if(Settings::value(Settings::USE_ALT_LOCALE).toBool())
+				QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
 			//Now we convert all these strings in args back to an int and a char * array.
 			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)

@@ -1,3 +1,47 @@
+var currentLocale	= new Intl.Locale("en");
+var currentLocaleId = "en"
+
+function setCurrentLocaleID(id)
+{
+	currentLocale	= new Intl.Locale(id)
+	currentLocaleId = id
+}
+
+/*
+function formatFixed(value, fixIt) 
+{
+	return currentLocale.to
+}*/
+
+
+function formatMoney(_currency='EUR', amount) {
+	const formatter = new Intl.NumberFormat(currentLocaleId, {
+	  style: 'currency',
+	  currency: _currency,
+	  trailingZeroDisplay: 'stripIfInteger'
+	});
+	
+	return formatter.format(amount)
+}
+
+function formatFixed(number, digitsFrac) {
+	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac });
+	
+	return formatter.format(number)
+}
+
+function formatPrecision(number, precision) {
+	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumSignificantDigits: precision, maximumSignificantDigits: precision });
+	
+	return formatter.format(number)
+}
+
+function formatNumber(number) {
+	const formatter = new Intl.NumberFormat(currentLocaleId, { });
+	
+	return formatter.format(number)
+}
+
 function formatColumn(column, type, format, alignNumbers, combine, modelFootnotes, html = true, errorOnMixed = false) {
 	/**
 	 * Prepares the columns of a table to the required format
@@ -34,32 +78,28 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 
 		for (let rowNo = 0; rowNo < column.length; rowNo++) {
 
-			let clazz = (type === "string" && !errorOnMixed) ? "text" : "number";
-			let cell = column[rowNo];
-			let content = cell.content;
-			let formatted;
-			let combined = false;
+			let clazz		= (type === "string" && !errorOnMixed) ? "text" : "number";
+			let cell		= column[rowNo];
+			let content		= cell.content;
+			let contentNum	= parseFloat(content)
+			let isNumber	= !isNaN(contentNum)
+			let formatted	= { content: (isNumber ? formatNumber(contentNum) : content) }
+			let combined	= false;
+			
+			formatted["class"] = isNumber ? "number" : clazz
 
 			if (typeof content == "undefined") {
-				formatted = { content: "." }
+				formatted["content"] = "." 
 
 			} else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-				clazz += " combined";
-				let content = "&nbsp;";
-				if (!html) {
-					content = " ";
-				}
-				formatted = { content: content, class: clazz };
+				formatted["class"]	+= " combined";
+				formatted["content"] = html ? "&nbsp;" : " "
 				combined = true;
-
-			} else {
-				if (typeof content === "string") {
-					if (html) {
-						content = content.replace(/\u273B/g, "<small>\u273B</small>");
-						//content = content.replace(/<(\w)/gi, function(p1, p2) { return '< '+p2; }) //Makes sure there is a space between <char: a<b -> a< b // breaks any tag used in cells... like the above <small>
-					}
-				}
-				formatted = { content: content, "class": clazz };
+			} else if(!isNumber) {
+				if (typeof content === "string" && html)
+					content = content.replace(/\u273B/g, "<small>\u273B</small>");
+						
+				formatted["content"] = content
 			}
 
 			if (combined == false && cell.isStartOfGroup)
@@ -79,18 +119,23 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 		return columnCells
 	}
 
-	let formats = format.split(";");
-	let p = NaN;
-	let dp = NaN;
-	let sf = NaN;
-	let pc = false;
-	let approx = false;
-	let log10 = false;
-	dp = parseInt(window.globSet.decimals);  // NaN if not specified by user
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////			First collect the formats and their respective settings        ////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	let formats		= format.split(";");
+	let p			= NaN;
+	let dp			= parseInt(window.globSet.decimals);
+	let sf			= NaN;
+	let pc			= false;
+	let approx		= false;
+	let log10		= false;
 	let fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
-
-	for (let i = 0; i < formats.length; i++) {
-
+	let currency	= ""
+	let moneyFmt	= "monetary" 
+	
+	for (let i = 0; i < formats.length; i++) 
+	{
 		let f = formats[i];
 		if (f.match(/^p:/) !== null) {
 			// override APA style if exact p-values wanted
@@ -99,6 +144,19 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			} else {
 				p = f.substring(2);
 			}
+		}
+		
+		if(f.startsWith(moneyFmt))
+		{
+			if(f.length > moneyFmt.length) 
+			{
+				currency = f.substr(moneyFmt.length)
+				if(currency.startsWith(":"))
+					currency = currency.substring(1)
+			}
+			
+			if(currency == "")
+				currency = "EUR"
 		}
 
 		if (f.indexOf("dp:") != -1 && !fixDecimals)
@@ -117,396 +175,239 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			log10 = true;
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////	  Then try to convert all the cells to float if they werent numbers    ////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	for (var rowNo = 0; rowNo < column.length; rowNo++) {
-		var cell = column[rowNo]
-		var content = cell.content
+		let cell = column[rowNo]
+		let content = cell.content
 
 		if (typeof(content) !== "number" || typeof(content) !== "Number") {
 			if (isNaN(parseFloat(content)))  // isn't a number
 				continue
-			//SHUT UP console.warn("You are delivering a result that should be a number as a string, We will do our best :(");
 			cell.content = content = parseFloat(content)
 		}
 	}
 
+	// some vars we need for sf:
+	var upperLimit	= 1e6
+	var minLSD		= Infinity	// right most position of the least significant digit
+	var maxFSDOE	= -Infinity  // left most position of the least significant digit of the exponent in scientific notation
+	
 	if (isFinite(sf)) {
-
-		var upperLimit = 1e6
-		var minLSD = Infinity	// right most position of the least significant digit
-		var maxFSDOE = -Infinity  // left most position of the least significant digit of the exponent in scientific notation
-
-		for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-			var cell = column[rowNo]
-			var content = cell.content
-
+		//prepare some stuff we need to run "sf"
+	
+		for (var rowNo = 0; rowNo < column.length; rowNo++) 
+		{
+			let cell 	= column[rowNo]
+			let content = cell.content
+	
 			if (isNaN(parseFloat(content)))  // isn't a number
 				continue
-
-			var fsd  // position of first significant digit
-
-			if (log10)
-				fsd = content
-			else
-				fsd = fSD(content)
-
-			var lsd = fsd - sf
-
-			if (log10) {
-
-				if (content >= 6 || content <= -dp) {
-
+	
+			let fsd = log10 ? content : fSD(content) // position of first significant digit
+			let lsd = fsd - sf
+			let fsdoe
+	
+			if (log10) 
+			{
+				if (content >= 6 || content <= -dp) 
 					fsdoe = fSD(content)
-
-					if (fsdoe > maxFSDOE)
-						maxFSDOE = fsdoe
-				}
-
-			} else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-
-				var fsdoe   // first significant digit of exponent
-
-				fsdoe = fSDOE(content)
-
-				if (fsdoe > maxFSDOE)
-					maxFSDOE = fsdoe
-			}
-
-			if (lsd < minLSD) {
-
+			} 
+			else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) 
+				fsdoe = fSDOE(content)   // first significant digit of exponent
+			
+			if (fsdoe > maxFSDOE)
+				maxFSDOE = fsdoe
+	
+			if (lsd < minLSD)
 				minLSD = lsd
-			}
 		}
-
-		if (fixDecimals) {
-			minLSD = -dp
-		} else {
-			if (minLSD < -dp)
-				minLSD = -dp
-			if (minLSD > 0)
-				minLSD = 0
-		}
-
-		if (minLSD < -20)
-			minLSD = -20
-
-		for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-			var cell = column[rowNo]
-			var content = cell.content
-			var formatted
-			var isNumber = false
-
-			if (typeof content == "undefined") {
-
-				formatted = { content: "." }
-			}
-			else if (typeof content === "") {
-				let content = (html) ? "&nbsp;" : " ";
-				formatted = { content: content, "class": "number" }
-			}
-			else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-				let content = (html) ? "&nbsp;" : " ";
-				formatted = { content: content, "class": "number" }
-			}
-			else if (isNaN(parseFloat(content))) {  // isn't a number
-				formatted = { content: content, "class": "number" }
-			}
-			else if (content < p) {
-				let content = (html) ? "<&nbsp;" : "< ";
-				formatted = { content: content + p, "class": "p-value" }
-			}
-			else if (content == 0) {
-
-				var number = 0
-
-				if (log10)
-					number = 1
-
-				if (isFinite(dp))
-					formatted = { content: number.toFixed(dp), "class": "number" }
-				else
-					formatted = { content: number.toPrecision(sf), "class": "number" }
-
-				isNumber = true
-			}
-			else if (log10) {
-
-				if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
-
-					if (alignNumbers || fixDecimals) {
-						let _sign = (html) ? "&minus;" : "-";
-						formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, _sign), "class": "number" }
+	
+		minLSD = fixDecimals ? -dp : Math.min(0, Math.max(-dp, minLSD))
+		minLSD = Math.max(-20, minLSD)
+	}
+	
+	format = currency != "" ? "monetary" : pc ? "percentage" : isFinite(sf) ? "significance" : isFinite(dp) ? "decimalPoints" : "other"
+	
+	//Now that thats been determined we can format our cells
+	for (var rowNo = 0; rowNo < column.length; rowNo++) 
+	{
+		//Get the cell and set up content var everything will read
+		//and the formatted var for writing to the new cells at the end.
+		let cell 		= column[rowNo]
+		let content 	= cell.content
+		let formatted	= { content: content, class: ""} 
+		let isNumber	= format == "significance" || format == "decimalPoints" || format == "percentage" //Will set class number
+		let isPercent	= format == "percentage"		// will set class percentage
+	
+		if (typeof content == "undefined") 
+			formatted["content"] = "."
+		else if (content === "" || (combine && rowNo > 0 && column[rowNo - 1].content == content)) 
+			formatted["content"] = html ? "&nbsp;" : " "
+		else
+			switch(format)
+			{
+				case "other": //Lets try to format it as a number I guess
+				{
+					let aNumberPerhaps = parseFloat(content)
+					
+					if(!isNaN(aNumberPerhaps))
+					{
+						formatted["content"] = formatNumber(aNumberPerhaps)
+						isNumber = true 
 					}
-					else {
-						let _sign = (html) ? "&minus;" : "-";
-						formatted = { content: Math.pow(10, content).toPrecision(sf).replace(/-/g, _sign), "class": "number" }
-					}
-
-					isNumber = true
+					
+					break; 
 				}
-				else {
-
-					// var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
-					var paddingNeeded = 0
-
-					var exponent = Math.abs(Math.floor(content))
-
-					var exp = ""
-
-					while (exponent > 0) {
-
-						var digit = exponent % 10
-						exponent = Math.floor(exponent / 10)
-						exp = "" + digit + exp
+				case "monetary":
+				{
+					formatted["content"] = formatMoney(_currency=currency, content)
+					formatted["class"]	 = "monetary"
+					break;
+				}
+	
+				case "percentage":
+				{
+					if (!isNaN(parseFloat(content)))
+						formatted["content"] = "" + (100 * formatFixed(content, 0)) + (html ? "&thinsp;%" : "%")
+					break;
+				}
+	
+				case "significance":
+				{
+					if (isNaN(parseFloat(content)))  // isn't a number but we'll still give it that class
+					{
+						formatted["class"] = "number"
+						isNumber = false
 					}
-
-					if (exp.length === 0)
-						exp = "1"
-
-					exponent = exp
-
-					var mantissa
-					if (content > 0)
-						mantissa = Math.pow(10, content % 1)
-					else
-						mantissa = Math.pow(10, 1 + (content % 1))
-
-					if (mantissa > 9.99999999) {
-
-						mantissa = 1
-						exponent--
+					else if (content < p) 
+					{
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + p
+						formatted["class"]		= "p-value"
+						isNumber = false
 					}
-
-					var sign = content >= 0 ? "+" : "-"
-
-					mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
-
-					var padding
-
-					if (paddingNeeded)
-						padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
-					else
-						padding = ''
-
-					let reassembled;
-
-					if (html) {
-						if (window.globSet.normalizedNotation) {
-							reassembled = mantissa + "&times;10" + "<sup>" + padding + sign + exponent + "</sup>";
-						} else {
-							reassembled = mantissa + "e" + padding + sign + exponent;
+					else if (content == 0) 
+					{
+						let number = log10 ? 0 : 1
+						formatted["content"] = isFinite(dp) ? formatFixed(number, dp) : formatPrecision(number, sf)
+					}
+					else if (log10) 
+					{
+						if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) 
+						{
+							let pow = Math.pow(10, content)
+							formatted["content"] = alignNumbers || fixDecimals ? formatFixed(pow, -minLSD) : formatPrecision(pow, sf)
+							if(html)
+								formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
 						}
-					} else {
-						if (window.globSet.normalizedNotation) {
-							reassembled = mantissa + "×10" + "<sup>" + sign + exponent + "</sup>";
-						} else {
-							reassembled = mantissa + "e" + sign + exponent;
+						else 
+						{
+							// var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
+							let paddingNeeded 	= 0
+							let exponent 		= Math.abs(Math.floor(content))
+							let exp 			= ""
+		
+							while (exponent > 0) {
+								var digit 	= exponent % 10
+								exponent 	= Math.floor(exponent / 10)
+								exp 		= "" + digit + exp
+							}
+	
+							exponent = Number(exp == "" ? 1 : exp)
+		
+							let mantissa =  Math.pow(10, (content % 1) + (content > 0 ? 0 : 1))
+							if (mantissa > 9.99999999) 
+							{
+								mantissa = 1
+								exponent--
+							}
+							mantissa = fixDecimals ? formatFixed(mantissa, dp) : formatPrecision(mantissa, sf)
+		
+							let sign 	= content >= 0 		? "+" 	: "-"
+							let padding = !paddingNeeded 	? ''	: '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+							
+							let reassembled  = mantissa;
+								reassembled += !window.globSet.normalizedNotation ? "e" : (html ? "&times;10" : "×10") + "<sup>"
+								reassembled += html ? padding : ""
+								reassembled += sign + exponent
+								reassembled += !window.globSet.normalizedNotation ? "" : "</sup>"
+							
+								formatted["content"] = reassembled
 						}
 					}
-
-					formatted = { content: reassembled, "class": "number" }
-
-					isNumber = true
+					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp)) 
+					{
+						let decimalsExpon 		= fixDecimals ? dp : sf - 1;
+						let paddingNeeded 		= 0 									// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+						formatted["content"] 	= toExponential(content, decimalsExpon, paddingNeeded, html)
+					}
+					else 
+					{
+						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf)
+						if(html)
+							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
+					}
+	
+					break;
 				}
-			}
-			else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp)) {
-
-				var decimalsExpon = fixDecimals ? dp : sf - 1;
-				// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
-				var paddingNeeded = 0
-
-				let reassembled = toExponential(content, decimalsExpon, paddingNeeded, html)
-				formatted = { content: reassembled, "class": "number" }
-
-				isNumber = true
-			}
-			else {
-
-				if (alignNumbers || fixDecimals) {
-					let _sign = (html) ? "&minus;" : "-";
-					formatted = { content: content.toFixed(-minLSD).replace(/-/g, _sign), "class": "number" }
+				
+				case "decimalPoints":
+				{
+					if (isNaN(parseFloat(content)))  // isn't a number but we'll give it that class anyway
+					{
+						formatted["class"] = "number"
+						isNumber = false
+					}
+					else if (content < p) 
+					{
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + p
+						formatted["class"]		= "p-value"
+						isNumber = false
+					}
+					else 
+					{
+						var strContent = "";
+		
+						if (p && content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) 
+							strContent = toExponential(content, dp, 0, html)
+						else 
+						{
+							strContent = formatFixed(content, dp)
+							if(html)
+								strContent = strContent.replace(/-/g, "&minus;")
+						}
+						formatted["content"] = strContent
+					}
+					break;
 				}
-				else {
-					let _sign = (html) ? "&minus;" : "-";
-					formatted = { content: content.toPrecision(sf).replace(/-/g, _sign), "class": "number" }
-				}
-
-				isNumber = true
+				
 			}
-
-			if (typeof cell.footnotes != "undefined")
-				formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
-
-			if (cell.isStartOfGroup)
-				formatted["class"] += " new-group-row"
-
-			if (cell.isStartOfSubGroup)
-				formatted["class"] += " new-sub-group-row"
-
-			if (cell.isEndOfGroup)
-				formatted["class"] += " last-group-row"
-
-			if (isNumber && approx) {
-				let _content = (html) ? "~&thinsp;" : "~";
-				formatted.content = _content + formatted.content
-			}
-
-			columnCells[rowNo] = formatted
-		}
-	}
-	else if (isFinite(dp)) {
-
-		for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-			var cell = column[rowNo]
-			var content = cell.content
-			var formatted
-
-			var isNumber = false
-
-			if (typeof content == "undefined") {
-
-				formatted = { content: "." }
-			}
-			else if (content === "") {
-				let _content = (html) ? "&nbsp;" : " ";
-				formatted = { content: _content }
-			}
-			else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-				let _content = (html) ? "&nbsp;" : " ";
-				formatted = { content: _content, "class": "number" }
-			}
-			else if (isNaN(parseFloat(content))) {  // isn't a number
-				formatted = { content: content, "class": "number" }
-			}
-			else if (content < p) {
-				let _content = (html) ? "<&nbsp;" : "< ";
-				formatted = { content: _content + p, "class": "p-value" }
-			}
-			else if (pc) {
-				let _content = (html) ? "&thinsp;%" : "%";
-				formatted = { content: "" + (100 * content).toFixed(dp) + _content, "class": "percentage" }
-				isNumber = true
-			}
-			else {
-				var strContent;
-
-				if (p && content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) {
-					strContent = toExponential(content, dp, 0, html)
-				} else {
-					let _content = (html) ? "&minus;" : "-";
-					strContent = content.toFixed(dp).replace(/-/g, _content)
-				}
-				formatted = { content: strContent, "class": "number" }
-				isNumber = true
-			}
-
-			if (typeof cell.footnotes != "undefined")
-				formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
-
-			if (cell.isStartOfGroup)
-				formatted["class"] += " new-group-row"
-
-			if (cell.isStartOfSubGroup)
-				formatted["class"] += " new-sub-group-row"
-
-			if (cell.isEndOfGroup)
-				formatted["class"] += " last-group-row"
-
-			if (isNumber && approx) {
-				let _content = (html) ? "~&thinsp;" : "~";
-				formatted.content = _content + formatted.content
-			}
-
-			columnCells[rowNo] = formatted
-		}
-	}
-	else if (pc) {
-
-		for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-			var cell = column[rowNo]
-			var content = cell.content
-			var formatted
-
-			var isNumber = false
-
-			if (typeof content == "undefined") {
-
-				formatted = { content: "." }
-			}
-			else if (content === "") {
-				let _content = (html) ? "&nbsp" : " ";
-				formatted = { content: _content }
-			}
-			else if (isNaN(parseFloat(content))) {  // isn't a number
-				formatted = { content: content, "class": "percentage" }
-			}
-			else {
-				let _content = (html) ? "&thinsp;%" : "%";
-				formatted = { content: "" + (100 * content.toFixed(0)) + _content, "class": "percentage" }
-				isNumber = true
-			}
-
-			if (typeof cell.footnotes != "undefined")
-				formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
-
-			if (cell.isStartOfGroup)
-				formatted["class"] += " new-group-row"
-
-			if (cell.isStartOfSubGroup)
-				formatted["class"] += " new-sub-group-row"
-
-			if (cell.isEndOfGroup)
-				formatted["class"] += " last-group-row"
-
-			if (isNumber && approx) {
-				let _content = (html) ? "~&thinsp;" : "~";
-				formatted.content = _content + formatted.content
-			}
-
-			columnCells[rowNo] = formatted
-		}
-	}
-	else {
-
-		for (let rowNo = 0; rowNo < column.length; rowNo++) {
-
-			var cell = column[rowNo]
-			var content = cell.content
-			var formatted
-
-			if (typeof content == "undefined") {
-
-				formatted = { content: "." }
-			}
-			else if (content === "") {
-				let _content = (html) ? "&nbsp;" : " ";
-				formatted = { content: _content }
-			}
-			else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-				let _content = (html) ? "&nbsp;" : " ";
-				formatted = { content: _content }
-			}
-			else {
-				formatted = { content: content }
-			}
-
-			if (typeof cell.footnotes != "undefined")
-				formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
-
-			if (cell.isStartOfGroup)
-				formatted["class"] += " new-group-row"
-
-			if (cell.isStartOfSubGroup)
-				formatted["class"] += " new-sub-group-row"
-
-			if (cell.isEndOfGroup)
-				formatted["class"] += " last-group-row"
-
-			columnCells[rowNo] = formatted
-		}
+	
+		if(isNumber)
+			formatted["class"] = "number"
+	
+		if(isPercent)
+			formatted["class"] = "percentage"
+	
+		if (isNumber && approx) 
+			formatted.content = (html ? "~&thinsp;" : "~") + formatted.content
+	
+		//Finishing up:
+		if (typeof cell.footnotes != "undefined")
+			formatted["footnotes"] = getFootnotes(modelFootnotes, cell.footnotes)
+	
+		if (cell.isStartOfGroup)
+			formatted["class"] += " new-group-row"
+	
+		if (cell.isStartOfSubGroup)
+			formatted["class"] += " new-sub-group-row"
+	
+		if (cell.isEndOfGroup)
+			formatted["class"] += " last-group-row"
+	
+		//And at last assign the formatted string to its cell:
+		columnCells[rowNo] = formatted
 	}
 
 	return columnCells
@@ -913,38 +814,33 @@ function camelize (str) {
 	});
 }
 
+
+
+// It is kind of sad the below is the way to go:
+function getDecimalSeparator() 
+{
+    const numberWithDecimalSeparator = 1.1;
+	
+    return Intl.NumberFormat(currentLocaleId)        
+		.formatToParts(numberWithDecimalSeparator)
+        .find(part => part.type === 'decimal')
+        .value;
+}
+
 function toExponential(number, decimalsExpon, paddingNeeded, html) {
-	let _sign = (html) ? "&minus;" : "-";
-	var exponentiated = number.toExponential(decimalsExpon).replace(/-/g, _sign)
+	let _sign			= (html) ? "&minus;" : "-";
+	let exponentiated	= number.toExponential(decimalsExpon).replace(/-/g, _sign).replace(".", getDecimalSeparator())
+	let split			= exponentiated.split("e")
+	let mantissa		= split[0]
+	let exponent		= split[1]
+	let padding			= !paddingNeeded 	? ''	: '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+	
+	let reassembled  = mantissa;
+		reassembled += !window.globSet.normalizedNotation ? "e" : (html ? "&times;10" : "×10") + "<sup>"
+		reassembled += html ? padding : ""
+		reassembled += exponent
+		reassembled += !window.globSet.normalizedNotation ? "" : "</sup>"
 
-	var split = exponentiated.split("e")
-	var mantissa = split[0]
-	var exponent = split[1]
-	var exponentSign = exponent.substr(0, 1)
-	var exponentNum = exponent.substr(1)
-
-	var padding
-
-	if (paddingNeeded)
-		padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
-	else
-		padding = ''
-
-
-	let reassembled;
-	if (html) {
-		if (window.globSet.normalizedNotation) {
-			reassembled = mantissa + "&times;10" + "<sup>" + padding + exponentSign + exponentNum + "</sup>";
-		} else {
-			reassembled = mantissa + "e" + padding + exponentSign + exponentNum;
-		}
-	} else {
-		if (window.globSet.normalizedNotation) {
-			reassembled = mantissa + "×10" + "<sup>" + exponentSign + exponentNum + "</sup>";
-		} else {
-			reassembled = mantissa + "e" + exponentSign + exponentNum;
-		}
-	}
 
 	return reassembled;
 }

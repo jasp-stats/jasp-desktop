@@ -365,7 +365,7 @@ void ListModelFilteredDataEntry::informDataSetOfInitialValues()
 		QVariantList vals;
 		for(size_t i=0; i<_initialValues.size(); i++)
 		{
-			vals.append(_acceptedRows[i] ? tq(ColumnUtils::doubleToString(_initialValues[i])) : "");
+			vals.append(_acceptedRows[i] ? QColumnUtils::doubleToString(_initialValues[i]) : "");
 			if(_acceptedRows[i])
 				somethingFilled = true;
 		}

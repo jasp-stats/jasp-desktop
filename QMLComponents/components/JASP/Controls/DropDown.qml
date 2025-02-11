@@ -165,7 +165,7 @@ ComboBoxBase
 			id:				popupRoot
 			padding:		1
 			implicitWidth:	popupView.implicitWidth + scrollBar.width + 2*padding
-			implicitHeight: popupView.implicitHeight + 2 * padding
+			implicitHeight: Math.min(popupView.implicitHeight + 2 * padding, popupView.maxHeight)
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 
@@ -194,12 +194,13 @@ ComboBoxBase
 				currentIndex:	control.highlightedIndex
 				clip:			true
 
-				property real	maxHeight: typeof mainWindowRoot !== 'undefined' ? mainWindowRoot.height // Case Dropdowns used in Desktop
-																				 : (typeof rcmdRoot !== 'undefined' ? rcmdRoot.height // Case Dropdown used in R Command
-																													: (typeof backgroundForms !== 'undefined' ? backgroundForms.height // Case Dropdowns used in Analysis forms
-																																							  : Infinity))
+				property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height	// Case Dropdowns used in Desktop
+										 : typeof rcmdRoot			!== 'undefined' ? rcmdRoot.height			// Case Dropdown used in R Command
+										 : typeof backgroundForms	!== 'undefined' ? backgroundForms.height	// Case Dropdowns used in Analysis forms
+										 : typeof scrollPrefs		!== 'undefined' ? scrollPrefs.height		// When its used in a Prefs* page ?
+										 : Infinity
 
-
+				//onMaxHeightChanged:		messages.log("maxHeight is now " + maxHeight + " for " + popupView);
 
 				Rectangle
 				{

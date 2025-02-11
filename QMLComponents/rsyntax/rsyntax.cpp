@@ -379,7 +379,7 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 			result = QString::number(json.asUInt());
 		break;
 		case Json::realValue:
-			result = QString::number(json.asDouble());
+			result = QString::number(json.asDouble()); //This is not taking locale into account, but as its going to R this is ok I guess?
 		break;
 		case Json::arrayValue:
 			if (json.size() == 0) result = "list()";

@@ -2,6 +2,7 @@
 #include "column.h"
 #include <cassert>
 #include "timers.h"
+#include "columnutils.h"
 #include "databaseinterface.h"
 
 const int Label::DOUBLE_LABEL_VALUE			= -1; 
@@ -101,6 +102,20 @@ void Label::setInformation(Column * column, int id, int order, const std::string
 	_filterAllows	= filterAllows;
 	_description	= description;
 	_originalValue	= originalValue;
+}
+
+void Label::updateDoubleLabelsPostLocaleChange()
+{
+	if(_originalValue.isDouble() && originalValueAsString() != _label)
+	{
+		//Maybe they really arent the same, but its also possible a languagechange just changed the way the decimal separator is written...
+		double labelDouble;
+		if(ColumnUtils::getDoubleValue(_label, labelDouble) && ColumnUtils::doubleToString(labelDouble) == originalValueAsString())
+		{
+			_label = originalValueAsString();
+			dbUpdate();
+		}
+	}
 }
 
 Json::Value Label::serialize() const

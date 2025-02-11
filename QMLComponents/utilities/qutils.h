@@ -31,6 +31,7 @@
 #include <QDir>
 #include <map>
 #include <set>
+#include "utils.h"
 #include <string>
 #include <vector>
 #include <json/json.h>
@@ -76,6 +77,7 @@ QString decrypt(const QString &input);
 QString getSortableTimestamp();
 QString QJSErrorToString(QJSValue::ErrorType errorType);
 
+
 void	copyQDirRecursively(QDir copyThis, QDir toHere);
 
 QString shortenWinPaths(QString);
@@ -96,6 +98,25 @@ void set##WHAT_TO_SET(TYPE new##WHAT_TO_SET)								\
 	}																		\
 }
 
+class QColumnUtils
+{
+public:	
+	static bool					getIntValue(	const QString		& value, int	& intValue);
+	static bool					getDoubleValue(	const QString		& value, double	& doubleValue);
+	static doubleset			getDoubleValues(const QStringList	& values, bool stripNAN = true);
 
+	static bool					isIntValue(		const QString		& value);
+	static bool					isDoubleValue(	const QString		& value);
+	
+	static QLocale				currentQLocale();
+	
+	static QString				doubleToString(			double dbl, int precision = 10);
+	static QString				doubleToStringMaxPrec(	double dbl);
+	
+
+private:
+	static QString				_lastQLocaleId;
+	static QLocale				_lastQLocale;
+};
 
 #endif // QUTILS_H

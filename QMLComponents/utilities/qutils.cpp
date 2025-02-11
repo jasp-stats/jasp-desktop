@@ -26,7 +26,7 @@
 #include "appinfo.h"
 #include "simplecrypt.h"
 #include "log.h"
-#include "utils.h"
+#include "columnutils.h"
 
 
 using namespace std;
@@ -323,4 +323,55 @@ QPoint maxQModelIndex(const QItemSelection &list)
 	}
 	
 	return QPoint(c, r);
+}
+
+QLocale QColumnUtils::_lastQLocale = QLocale();
+QString QColumnUtils::_lastQLocaleId = "C";
+
+bool QColumnUtils::getIntValue(const QString &value, int &intValue)
+{
+	return ColumnUtils::getIntValue(fq(value), intValue);
+}
+
+bool QColumnUtils::getDoubleValue(const QString &value, double &doubleValue)
+{
+	return ColumnUtils::getDoubleValue(fq(value), doubleValue);
+}
+
+doubleset QColumnUtils::getDoubleValues(const QStringList &values, bool stripNAN)
+{
+	return ColumnUtils::getDoubleValues(fql(values), stripNAN);
+}
+
+bool QColumnUtils::isIntValue(const QString &value)
+{
+	return ColumnUtils::isIntValue(fq(value));
+}
+
+bool QColumnUtils::isDoubleValue(const QString &value)
+{
+	return ColumnUtils::isDoubleValue(fq(value));
+}
+
+QLocale QColumnUtils::currentQLocale()
+{
+	QString newId = tq(ColumnUtils::currentQLocaleId());
+	
+	if(newId != _lastQLocaleId)
+	{
+		_lastQLocaleId = newId;
+		_lastQLocale   = QLocale(_lastQLocaleId);
+	}
+	
+	return _lastQLocale;
+}
+
+QString QColumnUtils::doubleToString(double dbl, int precision)
+{
+	return tq(ColumnUtils::doubleToString(dbl, precision));
+}
+
+QString QColumnUtils::doubleToStringMaxPrec(double dbl)
+{
+	return tq(ColumnUtils::doubleToStringMaxPrec(dbl));
 }

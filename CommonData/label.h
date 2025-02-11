@@ -61,6 +61,8 @@ public:
 			bool				setDescription(		const std::string & description);
 			bool				setFilterAllows(	bool allowFilter);
 			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
+			
+			void				updateDoubleLabelsPostLocaleChange();
 
 			Json::Value			serialize()	const;
 

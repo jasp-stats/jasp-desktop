@@ -672,7 +672,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 {
     JASPTIMER_SCOPE(DataSetPackage::setData);
     
-	if(!index.isValid() || !_dataSet) return false;
+	if(_waitingForLanguageChange || !index.isValid() || !_dataSet) return false;
 
 	DataSetBaseNode * node = indexPointerToNode(index);
 	
@@ -1247,6 +1247,23 @@ void DataSetPackage::resetFilterCounters()
 	for(Column * col : _dataSet->columns())
 		col->nonFilteredCountersReset();
 }
+
+void DataSetPackage::prepareForLanguageChange()
+{
+	_waitingForLanguageChange = true; //Dont accept changes while the interface changes
+}
+
+void DataSetPackage::languageChangeDone()
+{
+	_waitingForLanguageChange = false; //Dont accept changes while the interface changes
+	
+	if(_dataSet)
+		_dataSet->updateLabelsPostLocaleChange();
+	
+	refresh();
+}
+
+
 
 void DataSetPackage::resetAllFilters()
 {

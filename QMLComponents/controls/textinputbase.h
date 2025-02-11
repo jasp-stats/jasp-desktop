@@ -34,7 +34,7 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType, FormulaArrayType};
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType, FormulaArrayType};
 
 	TextInputBase(QQuickItem* parent = nullptr);
 
@@ -48,8 +48,8 @@ public:
 	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
-	QVariant		defaultValue()							const	{ return _defaultValue;			}
-	QVariant		value()									const	{ return _value.isNull() ? _defaultValue : _value; } // Sometimes the value is asked before the control is setup, so in this case give the default value
+	QVariant		defaultValue()							const;
+	QVariant		value()									const; // Sometimes the value is asked before the control is setup, so in this case give the default value
 
 	const QString	&label()								const	{ return _label;				}
 	const QString	&afterLabel()							const	{ return _afterLabel;			}
@@ -67,21 +67,21 @@ signals:
 
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
-	GENERIC_SET_FUNCTION(DefaultValue,		_defaultValue,		defaultValueChanged,	QVariant	)
+	
 	GENERIC_SET_FUNCTION(Label,				_label,				labelChanged,			QString		)
 	GENERIC_SET_FUNCTION(AfterLabel,		_afterLabel,		afterLabelChanged,		QString		)
-	void setValue(const QVariant &value);
+	void setValue(			QVariant value);
+	void setDefaultValue(	QVariant value);
 
 private slots:
 	void		valueChangedSlot();
 	void		setDisplayValue();
 
 private:
-	Json::Value	_getJsonValue(const QVariant& value) const;
+	Json::Value	_getJsonValue(QVariant value) const;
 	bool		_formulaResultInBounds(double result);
 
 	QString		_getPercentValue(double val);
-	QString		_getIntegerArrayValue(const std::vector<int>& intValues);
 	QString		_getDoubleArrayValue(const std::vector<double>& dblValues);
 
 	void		_setBoundValue();

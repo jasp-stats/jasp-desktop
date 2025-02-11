@@ -16,8 +16,22 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
 
+std::string				ColumnUtils::_decimalPoint			= ".";
+std::string				ColumnUtils::_currentQLocaleId		= "C";
+ColumnUtils::toDoubleF	ColumnUtils::_extraStringToDouble;
+ColumnUtils::toIntF		ColumnUtils::_extraStringToInt;
+
+void ColumnUtils::setExtraStringToNumber(toDoubleF newDoubleFunc, toIntF newIntFunc)
+{
+	_extraStringToDouble	= newDoubleFunc;
+	_extraStringToInt		= newIntFunc;
+}
+
 bool ColumnUtils::getIntValue(const string &value, int &intValue)
 {
+	if(_extraStringToInt && _extraStringToInt(value, intValue))
+		return true;
+
 	try
 	{
 		intValue = boost::lexical_cast<int>(value);
@@ -30,20 +44,14 @@ bool ColumnUtils::getIntValue(const string &value, int &intValue)
 
 bool ColumnUtils::isIntValue(const string &value)
 {
-	try
-	{
-		boost::lexical_cast<int>(value);
-		return true;
-	}
-	catch (...)	{}
-
-	return false;
+	int dummy;
+	return getIntValue(value, dummy);
 }
 
 bool ColumnUtils::getIntValue(const double &value, int &intValue)
 {
 	JASPTIMER_SCOPE(ColumnUtils::getIntValue);
-	
+
 	try
 	{
 		double intPart;
@@ -65,19 +73,32 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 {
 	doubleValue = EmptyValues::missingValueDouble;
-	
+
 	if(value == "∞" || value == "-∞")
 	{
 		doubleValue = std::numeric_limits<double>::infinity() * (value == "-∞" ? -1 : 1);
 		return true;
 	}
+
+	if(_extraStringToDouble && _extraStringToDouble(value, doubleValue))
+		return true;
 	
 	try
 	{
-		doubleValue = boost::lexical_cast<double>(deEuropeaniseForImport(value));
+		doubleValue = boost::lexical_cast<double>((value));
 		return true;
 	}
-	catch (...) {}
+	catch (...) // If it failed try to "deEuropeanise it"
+	{
+		try
+		{
+			doubleValue = boost::lexical_cast<double>(deEuropeaniseForImport(value));
+			return true;
+		}
+		catch (...) 
+		{
+		}
+	}
 
 	return false;
 }
@@ -216,6 +237,13 @@ std::string ColumnUtils::doubleToStringMaxPrec(double dbl)
 	return 	doubleToString(dbl, max_precision);
 }
 
+ColumnUtils::doubleF ColumnUtils::_alternativeDoubleToString;
+
+void ColumnUtils::setAlternativeDoubleToString(doubleF newDoubleFunc)
+{
+	_alternativeDoubleToString = newDoubleFunc;
+}
+
 std::string ColumnUtils::doubleToString(double dbl, int precision)
 {
 	JASPTIMER_SCOPE(ColumnUtils::doubleToString);
@@ -223,7 +251,11 @@ std::string ColumnUtils::doubleToString(double dbl, int precision)
 	if (dbl > std::numeric_limits<double>::max())		return "∞";
 	if (dbl < std::numeric_limits<double>::lowest())	return "-∞";
 	
+	if(_alternativeDoubleToString)
+		return _alternativeDoubleToString(dbl, precision); //Use QString for translations
+	
 	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
+	
 	conv << std::setprecision(precision);
 	conv << dbl;
 	return conv.str();

@@ -17,22 +17,29 @@ namespace Modules { class DynamicModule; }
 class LanguageModel : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(QString		currentLanguage		READ currentLanguage			WRITE setCurrentLanguage			NOTIFY currentLanguageChanged)
+	Q_PROPERTY(QString		currentLanguage			READ currentLanguage			WRITE setCurrentLanguage			NOTIFY currentLanguageChanged		)
+	Q_PROPERTY(QLocale		currentLocale			READ currentLocale													NOTIFY currentLocaleChanged			)
+	Q_PROPERTY(bool			useAlternativeLocale	READ useAlternativeLocale		WRITE setUseAlternativeLocale		NOTIFY useAlternativeLocaleChanged	)
+	Q_PROPERTY(QStringList	altLanguages			READ altLanguages													CONSTANT							)
+	Q_PROPERTY(QStringList	altTerritories			READ altTerritories													NOTIFY altTerritoriesChanged		)
+	Q_PROPERTY(QString		currentAltLanguage		READ currentAltLanguage			WRITE setCurrentAltLanguage			NOTIFY currentAltLanguageChanged	)
+	Q_PROPERTY(QString		currentAltTerritory		READ currentAltTerritory		WRITE setCurrentAltTerritory		NOTIFY currentAltTerritoryChanged	)
+	Q_PROPERTY(QString		exampleFormatting		READ exampleFormatting												NOTIFY exampleFormattingChanged		)
 
 	struct LanguageInfo
 	{
-		static QString getLanguageCode(const QLocale& locale);
-		static bool isLanguageAllowed(const QString& language) { return _allowedLanguages.contains(language); }
-
 		LanguageInfo(const QLocale& _locale = LanguageModel::_defaultLocale, const QString& _code = getLanguageCode(LanguageModel::_defaultLocale), const QString& _qmFilename = "");
-
-		static QMap<QString, bool> _allowedLanguages;
+		
+		
+		static QString				getLanguageCode(const QLocale& locale);
+		static bool					isLanguageAllowed(const QString& language) { return _allowedLanguages.contains(language); }
+		static QMap<QString, bool>	_allowedLanguages;
 		static QString				_incompleteFlag;
 
-		QString				code;		// This is not necessary the same as locale.name(), especially with zh_Hans or zh_Hant
-		QString				entryName;	// Name used in the language dropdown
-		QLocale				locale;
-		QVector<QString>	qmFilenames;
+		QString						code,		// This is not necessary the same as locale.name(), especially with zh_Hans or zh_Hant
+									entryName;	// Name used in the language dropdown
+		QLocale						locale;
+		QVector<QString>			qmFilenames;
 	};
 
 public:
@@ -46,56 +53,89 @@ public:
 		LocalNameRole
 	};
 
-	explicit LanguageModel(QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
-	~LanguageModel() override { _singleton = nullptr; }
+	explicit								LanguageModel(QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
+											~LanguageModel() override { _singleton = nullptr; }
 
-	int						rowCount(const QModelIndex & = QModelIndex())				const override { return _languages.size(); }
-	int						columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }
-	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	void									initialize();
+	void									refreshAll();
+	
+	int										rowCount(const QModelIndex & = QModelIndex())				const override { return _languages.size(); }
+	int										columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }
+	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 
-	QHash<int, QByteArray>	roleNames() const override;
+	QHash<int, QByteArray>					roleNames() const override;
 
-	QString currentLanguageCode()											const	{ return _currentLanguageCode; }
-	QString currentLanguage()												const;
-	bool	hasDefaultLanguage()											const;
+	QString									currentLanguageCode()											const	{ return _currentLanguageCode; }
+	QString									currentLanguage()												const;
+	QLocale									currentLocale()													const;
+	bool									hasDefaultLanguage()											const;
+	bool									useAlternativeLocale()											const { return _useAlternativeLocale; }
+	QString									currentAltLanguage()											const;
+	QString									currentAltTerritory()											const;
+	QString									exampleFormatting()												const;
+	QStringList								altLanguages()													const { return _altLanguages; }
+	QStringList								altTerritories()												const { return _altTerritories; }
+	
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
-	static	QString	currentTranslationSuffix()	{ return _singleton->hasDefaultLanguage() ? "" : ("_" + _singleton->currentLanguageCode()); }
+	static	QString							currentTranslationSuffix()	{ return _singleton->hasDefaultLanguage() ? "" : ("_" + _singleton->currentLanguageCode()); }
 
-	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
-	void initialize();
-
-
+	void									setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
+	void									setDefaultLocaleFromCurrent();
+	
 public slots:
-	void setCurrentLanguage(QString language);
-	void loadModuleTranslationFiles(Modules::DynamicModule *dyn);
-	void resultsPageLoaded();
+	void									setCurrentLanguage(QString language);
+	void									setUseAlternativeLocale(bool useIt);
+	void									setCurrentAltLanguage(const QString &newCurrentAltLanguage);
+	void									setCurrentAltTerritory(const QString &newCurrentAltTerritory);
+	void									loadModuleTranslationFiles(Modules::DynamicModule *dyn);
+	void									resultsPageLoaded();
 
 signals:
-	void currentLanguageChanged();
-	void aboutToChangeLanguage();
-	void pauseEngines(bool unloadData = false);
-	void stopEngines();
-	void resumeEngines();
-
+	void									currentLanguageChanged();
+	void									currentLocaleChanged(QString);
+	void									currentAltLanguageChanged();
+	void									currentAltTerritoryChanged();
+	void									useAlternativeLocaleChanged();
+	void									exampleFormattingChanged();
+	void									altTerritoriesChanged();
+	void									aboutToChangeLanguage();
+	void									languageChangeDone();
+	void									pauseEngines(bool unloadData = false);
+	void									stopEngines();
+	void									resumeEngines();
+	
 private:
-	static LanguageModel *		_singleton;
-	static QLocale				_defaultLocale;
+	static LanguageModel *					_singleton;
+	static QLocale							_defaultLocale;
+	static QLocale							_alternativeLocale;
 
-	void					findQmFiles();
-	void					loadQmFilesForLanguage(const QString& languageCode);
-	void					loadQmFile(const QString& filename);
-	void					removeTranslators();
-	bool					isValidLocaleName(const QString& filename, QLocale & loc, QString & languageCode);
+	void									findQmFiles();
+	void									loadQmFilesForLanguage(const QString& languageCode);
+	void									loadQmFile(const QString& filename);
+	void									removeTranslators();
+	bool									isValidLocaleName(const QString& filename, QLocale & loc, QString & languageCode);
+	void									fillAltOptions();
+	void									fillAltTerritories();
+	void									setAlternativeLocaleStatic();
 
-	QApplication					* _mApp						= nullptr;
-	QTranslator						* _mTranslator				= nullptr;
-	QQmlApplicationEngine			* _qml						= nullptr;
-	QString							_currentLanguageCode,
-									_qmLocation;
-	QMap<QString, LanguageInfo>		_languages;
-	QVector<QTranslator *>			_translators;
-	bool							_shouldEmitLanguageChanged	= false;
+	QApplication						*	_mApp						= nullptr;
+	QTranslator							*	_mTranslator				= nullptr;
+	QQmlApplicationEngine				*	_qml						= nullptr;
+	QString									_currentLanguageCode,
+											_qmLocation,
+											_currentAltLanguage,
+											_currentAltTerritory;
+	QMap<QString, LanguageInfo>				_languages;
+	QVector<QTranslator *>					_translators;
+	bool									_shouldEmitLanguageChanged	= false,
+											_useAlternativeLocale;
+	QStringList								_altLanguages,
+											_altTerritories;
+	std::map<QString,QLocale::Language>		_nativeLanguageNameToEnum;
+	std::map<QString,QLocale::Territory>	_nativeTerritoryNameToEnum;
+	
+	
 };
 
 

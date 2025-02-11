@@ -160,6 +160,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync->start(_preferences->plotPPI());
 	
 	checkForUpdates();
+	
+	_languageModel->setDefaultLocaleFromCurrent(); //Make sure (Q)ColumnUtils knows whats up
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
 
@@ -169,6 +171,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 void MainWindow::checkForUpdates()
 {
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+		return;
+	
 	if(PreferencesModel::prefs()->checkUpdatesAskUser())
 	{
 		bool answer = MessageForwarder::showYesNo(
@@ -414,6 +419,7 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnModel::chooseColumn,					_columnModel,			&ColumnModel::setChosenColumnByName,						Qt::QueuedConnection);
 			
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_columnModel,			&ColumnModel::languageChangedHandler,						Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::currentLocaleChanged,				_resultsJsInterface,	&ResultsJsInterface::setLocale,								Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -433,7 +439,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::showPlotEditor,				_plotEditorModel,		&PlotEditorModel::showPlotEditor							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsMetaChanged,			_analyses,				&Analyses::resultsMetaChanged								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::allUserDataChanged,			_analyses,				&Analyses::allUserDataChanged								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		_languageModel,			&LanguageModel::resultsPageLoaded							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		_languageModel,			&LanguageModel::resultsPageLoaded,							Qt::QueuedConnection);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showRSyntaxInResults,			_analyses,				&Analyses::showRSyntaxInResults								);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
@@ -524,6 +530,8 @@ void MainWindow::makeConnections()
 
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
+	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_package,				&DataSetPackage::prepareForLanguageChange					);
+	connect(_languageModel,			&LanguageModel::languageChangeDone,					_package,				&DataSetPackage::languageChangeDone							);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				this,					&MainWindow::contactTextChanged,							Qt::QueuedConnection); //Probably not necessary but we can check once there actually are translations
@@ -1002,6 +1010,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		showInstructions = false;
 	}
 
+	_resultsJsInterface->setLocale(_languageModel->currentLocale().bcp47Name());
 	_resultsJsInterface->analysisChanged(analysis);
 
 	setPackageModified();
@@ -1243,7 +1252,7 @@ void MainWindow::closeVariablesPage()
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
 	hideProgress();
-
+	
 	if (event->operation() == FileEvent::FileNew)
 	{
 	}
@@ -1252,7 +1261,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			populateUIfromDataSet();
-
+			
 			_package->setCurrentFile(event->path());
 
 			if(event->osfPath() != "")
@@ -1374,7 +1383,7 @@ void MainWindow::populateUIfromDataSet()
 	JASPTIMER_SCOPE(MainWindow::populateUIfromDataSet);
 	bool errorFound = false;
 	stringstream errorMsg;
-
+	
 	_resultsJsInterface->setScrollAtAll(false);
 
 	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);

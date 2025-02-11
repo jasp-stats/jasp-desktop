@@ -23,7 +23,6 @@ TextField
 {
 					id:					doubleField
 					defaultValue:		0
-	property var	_prevDefaultValue:	0
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false
 	property double	min:				negativeValues ? -Infinity : 0
@@ -34,12 +33,4 @@ TextField
 					inputType:			"number"
 					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; notation: DoubleValidator.StandardNotation }
 					fieldWidth:			jaspTheme.numericFieldWidth
-
-	onDefaultValueChanged:
-	{
-		if (_prevDefaultValue == value)
-			value = defaultValue
-
-		_prevDefaultValue = defaultValue;
-	}
 }

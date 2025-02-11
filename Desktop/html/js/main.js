@@ -631,3 +631,12 @@ window.setFontFamily = function(fontFamily) {
 	document.body.style.fontFamily = fontFamily;
 }
 
+
+window.setFontFamily = function(fontFamily) {
+	document.body.style.fontFamily = fontFamily;
+}
+
+window.setLocale = function(localeId) {
+	setCurrentLocaleID(localeId); //In utils.js
+}
+

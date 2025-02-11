@@ -18,12 +18,12 @@
 
 #include "application.h"
 
-#include <QFileOpenEvent>
-#include <QString>
-
-#include "log.h"
+#include "resultstesting/compareresults.h"
 #include "utilities/settings.h"
+#include <QFileOpenEvent>
 #include <iostream>
+#include <QString>
+#include "log.h"
 
 void Application::init(QString filePath, bool newData, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
 {	
@@ -33,6 +33,9 @@ void Application::init(QString filePath, bool newData, bool unitTest, int timeOu
 		Settings::setValue(Settings::LOG_TO_FILE, true);
 
 	Dirs::setReportingDir(fq(reportingPath));
+	
+	if(unitTest)
+		resultXmlCompare::compareResults::theOne()->enableTestMode(); //So languagemodel can be aware
 
 	_mainWindow = new MainWindow(this);
 

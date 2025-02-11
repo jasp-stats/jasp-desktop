@@ -18,6 +18,13 @@ Select the language in which you would like to use JASP.
 
 If you would like to improve our translations, or to add a new language, please visit https://jasp-stats.org/translation-guidelines/
 
+### Alternative Locale
+This is by default on, and enables a selection menu of languages and territories. 
+Whatever you select here is what will determine how your numbers in JASP are formatted, such as but not limited to, whether the decimal separator is a ',' or a '.' for instance.
+It will also be used to format monetary columns in the output, and in the future also date, time and datetime columns. 
+This will also determine what kind of thousands-separators are used.
+If you disable using an alternative locale it will use the locale corresponding to the selected language.
+
 ### ALT-Navigation mode
 Turn the ALT activated navigation mode on or off.
 

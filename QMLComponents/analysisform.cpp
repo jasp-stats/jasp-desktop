@@ -386,6 +386,7 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
+
 			if (defaultOptions.isMember(name))
 				optionValue = defaultOptions[name];
 

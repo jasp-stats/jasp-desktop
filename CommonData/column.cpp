@@ -460,6 +460,18 @@ stringset Column::mergeOldMissingDataMap(const Json::Value &missingData)
 	return foundEmpty;
 }
 
+void Column::updateLabelsPostLocaleChange()
+{
+	labelsTempReset();
+	
+	beginBatchedLabelsDB();
+	
+	for(Label * label : _labels)
+		label->updateDoubleLabelsPostLocaleChange();
+	
+	endBatchedLabelsDB(true);	
+}
+
 columnType Column::setValues(const stringvec & values, const stringvec & labels, int thresholdScale, bool * aChange)
 {
 	JASPTIMER_SCOPE(Column::setValues);

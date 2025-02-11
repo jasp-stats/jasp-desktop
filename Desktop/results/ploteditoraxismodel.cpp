@@ -3,6 +3,7 @@
 #include "utilities/qutils.h"
 #include "jsonutilities.h"
 #include "log.h"
+#include "columnutils.h"
 #include "utilities/messageforwarder.h"
 #include "utils.h"
 
@@ -212,9 +213,10 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 				return false;
 			}
 
-			QString label = _labels[entry];
-			bool labelIsDouble = false;
-			double labelDouble = label.toDouble(&labelIsDouble);
+			QString		label = _labels[entry];
+			double		labelDouble;
+			bool		labelIsDouble = QColumnUtils::getDoubleValue((label), labelDouble);
+			
 			QModelIndex index2 = index;
 
 			if (labelIsDouble && (Utils::isEqual(labelDouble, oldBreak)))

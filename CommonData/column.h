@@ -226,10 +226,11 @@ public:
 			bool					isEmptyValue(					const std::string	& val)															const;
 			bool					isEmptyValue(					const double		  val)															const;
 			
-			size_t				getMaximumWidthInCharactersIncludingShadow();
-			size_t				getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, size_t	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
+			size_t					getMaximumWidthInCharactersIncludingShadow();
+			size_t					getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, size_t	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
+			void					updateLabelsPostLocaleChange();
 			
 	static	void					setAutoSortByValuesByDefault(bool autoSort);
 	static	bool					autoSortByValuesByDefault();

@@ -108,6 +108,7 @@ public slots:
 	void moveAnalyses(					quint64 fromId,				quint64 toId);
 	void setThemeCss(					QString themeName);
 	void setFontFamily();
+	void setLocale(						QString localeId);
 
 
 //end callables

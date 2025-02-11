@@ -23,7 +23,6 @@ TextField
 {
 					id:					textField
 					defaultValue:		0
-	property var	_prevDefaultValue:	0
 	property bool	negativeValues:		false
 	property int	min:				negativeValues ? -2147483647 : 0 // 2^32 - 1
 	property int	max:				2147483647
@@ -34,12 +33,4 @@ TextField
 					validator:			JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
 					cursorShape:		Qt.IBeamCursor
 					fieldWidth:			jaspTheme.numericFieldWidth
-
-	onDefaultValueChanged:
-	{
-		if (_prevDefaultValue == value)
-			value = defaultValue
-
-		_prevDefaultValue = defaultValue;
-	}
 }

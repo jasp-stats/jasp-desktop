@@ -434,6 +434,11 @@ void ResultsJsInterface::setFontFamily()
 	}
 }
 
+void ResultsJsInterface::setLocale(QString localeId)
+{
+	runJavaScript("window.setLocale(\"" + escapeJavascriptString(localeId) + "\");");
+}
+
 void ResultsJsInterface::runJavaScript(const QString & js)
 {
 	if(_resultsLoaded)	emit runJavaScriptSignal(js);

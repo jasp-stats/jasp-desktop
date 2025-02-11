@@ -85,7 +85,8 @@ public:
 			void					setWorkspaceEmptyValues(	const stringset& values);
 	const	std::string			&	description()																	const	{ return _description; }
 			void					setDescription(				const std::string& desc);
-
+			void					updateLabelsPostLocaleChange();
+			
 private:			
 			void					upgradeTo019(const Json::Value & emptyVals);
 			void					setEmptyValuesJsonOldStuff(	const Json::Value & emptyValues);

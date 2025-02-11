@@ -333,6 +333,8 @@ public slots:
 				void				checkDataSetForUpdates();
 				void				delayedRefresh();
 				void				resetFilterCounters();
+				void				prepareForLanguageChange();
+				void				languageChangeDone();
 				
 private:
 				bool				isThisTheSameThreadAsEngineSync();
@@ -366,7 +368,8 @@ private:
 								_analysesHTMLReady			= false,
 								_filterShouldRunInit		= false,
 								_dataMode					= false,
-								_manualEdits				= false;
+								_manualEdits				= false,
+								_waitingForLanguageChange	= false;
 
 	Json::Value					_analysesData,
 								_database					= Json::nullValue;
