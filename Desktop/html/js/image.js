@@ -37,7 +37,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
 
-	hasNotes:					function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
+	hasNotes:					function() {	return this.$el.hasClass('jasp-collection-item') === false || this.$el.hasClass('jasp-image');	},
 	hasCopy:					function() {	return this.model.get("error") === null;						},
 	isEditable:					function() {	return this.model.get("error") === null;						},
 	isConvertible:				function() {	return this.model.get("error") === null && this.model.get("convertible") ===  true;	},
