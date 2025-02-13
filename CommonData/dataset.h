@@ -52,8 +52,10 @@ public:
 
 			bool			allColumnsPassFilter()					const;
 
-			size_t		getMaximumColumnWidthInCharacters(size_t columnIndex) const;
+			size_t			getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
+	std::map<std::string,
+			columnType>		getColumnTypesMap();
 
 			void			setDataFile( const std::string & dataFilePath, long timestamp)	{ _dataFilePath	= dataFilePath;	_dataFileTimestamp = timestamp; dbUpdate(); }
 			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }

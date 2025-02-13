@@ -114,7 +114,8 @@ void DataSetPackage::enginesReceiveNewData()
 		else									emit enginesReceiveNewDataSignal();
 	}
 
-	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
+	ColumnEncoder::setCurrentColumnNames(	getColumnNames()); //Same place as in engine, should be fine right?
+	ColumnEncoder::setCurrentColTypePerName(getColumnTypesMap());
 }
 
 bool DataSetPackage::dataSetBaseNodeStillExists(DataSetBaseNode *node) const
@@ -1506,11 +1507,23 @@ stringvec DataSetPackage::getColumnNames()
 	stringvec names;
 
 	if(_dataSet)
-		for(const Column * col : _dataSet->columns())
-				names.push_back(col->name());
+		return _dataSet->getColumnNames();
 
 	return names;
 }
+
+
+std::map<std::string,columnType> DataSetPackage::getColumnTypesMap()
+{
+	std::map<std::string,columnType> theMap;
+
+	if(_dataSet)
+		return _dataSet->getColumnTypesMap();
+
+	return theMap;
+}
+
+
 
 bool DataSetPackage::isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals)
 {
@@ -2033,7 +2046,8 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	
 	emit datasetChanged(tq(stringvec{column->name()}), {}, {}, false, true);
 
-	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+	ColumnEncoder::setCurrentColumnNames(	getColumnNames());
+	ColumnEncoder::setCurrentColTypePerName(getColumnTypesMap());
 	
 	if(column->codeType() == computedColumnType::constructorCode || column->codeType() == computedColumnType::rCode)
 		emit columnAddedManually(tq(column->name())); //Will trigger setChosenColumn and setVisible(true) on ColumnModel, showing it to the user
@@ -2081,7 +2095,8 @@ bool DataSetPackage::insertColumns(int column, int count, const QModelIndex & ap
 
 	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), true, false);
 
-	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+	ColumnEncoder::setCurrentColumnNames(	getColumnNames());
+	ColumnEncoder::setCurrentColTypePerName(getColumnTypesMap());
 
 	return true;
 }
@@ -2116,7 +2131,8 @@ bool DataSetPackage::removeColumns(int column, int count, const QModelIndex & ap
 #endif
 	emit datasetChanged(tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	ColumnEncoder::setCurrentColumnNames(getColumnNames());
+	ColumnEncoder::setCurrentColumnNames(	getColumnNames());
+	ColumnEncoder::setCurrentColTypePerName(getColumnTypesMap());
 
 	return true;
 }

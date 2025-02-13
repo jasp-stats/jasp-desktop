@@ -136,7 +136,8 @@ bool EngineBase::setColumnDataAndType(const std::string &columnName, const std::
 
 void EngineBase::reloadColumnNames()
 {
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({}) : provideAndUpdateDataSet()->getColumnNames());
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(		provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({})			: provideAndUpdateDataSet()->getColumnNames());
+	ColumnEncoder::columnEncoder()->setCurrentColTypePerName(	provideAndUpdateDataSet() == nullptr ? std::map<std::string,columnType>()	: provideAndUpdateDataSet()->getColumnTypesMap());
 }
 
 

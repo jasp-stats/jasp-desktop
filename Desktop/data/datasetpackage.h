@@ -200,6 +200,7 @@ public:
 				void						columnsReorder(			const stringvec		& order);
 
 				stringvec					getColumnNames();
+		std::map<std::string, columnType>	getColumnTypesMap();
 				bool						isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals);
 				int							findIndexByName(const std::string & name)	const;
 
@@ -270,6 +271,7 @@ public:
 				std::string					freeNewColumnName(size_t startHere);
 				void						dbDelete();
 				void						resetVariableTypes();
+
 
 
 signals:

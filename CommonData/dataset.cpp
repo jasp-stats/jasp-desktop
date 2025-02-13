@@ -218,6 +218,18 @@ stringvec DataSet::getColumnNames()
 	return names;
 }
 
+
+std::map<std::string,columnType> DataSet::getColumnTypesMap()
+{
+	std::map<std::string,columnType> theMap;
+
+	for(const Column * col : columns())
+		theMap[col->name()] = col->type();
+
+	return theMap;
+}
+
+
 void DataSet::dbCreate()
 {
 	JASPTIMER_SCOPE(DataSet::dbCreate);
