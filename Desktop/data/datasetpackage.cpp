@@ -1043,7 +1043,7 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 
 		emit labelFilterChanged();
 		QModelIndex columnParentNode = indexForSubNode(column);
-		emit dataChanged(DataSetPackage::index(row, 0, columnParentNode),	DataSetPackage::index(row, columnCount(columnParentNode), columnParentNode), { int(specialRoles::filter) });
+		//emit dataChanged(DataSetPackage::index(row, 0, columnParentNode),	DataSetPackage::index(row, columnCount(columnParentNode), columnParentNode), { int(specialRoles::filter) });
 		emit filteredOutChanged(col);
 
 		return true;
