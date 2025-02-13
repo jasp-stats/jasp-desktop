@@ -81,6 +81,9 @@ void FilterModel::setDropLevels(bool dropLevels)
 		DataSetPackage::filter()->setDropLevels(dropLevels);
 	emit dropLevelsChanged();
 	emit refreshAllCompCols();
+	emit refreshAllAnalyses();
+
+	emit filterUpdated();
 }
 
 bool FilterModel::_setRFilter(const QString& newRFilter)

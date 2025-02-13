@@ -1025,6 +1025,11 @@ int Column::nonFilteredNumericsCount()
 			if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
 					numerics.insert(_dbls[r]);
 
+		if(!_data->filter()->shouldDropLevels())
+			for(Label * label : _labels)
+				if(label->originalValue().isDouble())
+					numerics.insert(label->originalValue().asDouble());
+
 		_nonFilteredNumericsCount = numerics.size();
 	}
 
@@ -1035,7 +1040,7 @@ stringvec Column::nonFilteredLevels()
 {
 	if (_nonFilteredLevels.empty())
 	{
-        stringset levels;
+		stringset levels;
 		for(size_t r=0; r<_data->rowCount(); r++)
 			if(_data->filter()->filtered()[r])
 			{
@@ -1043,19 +1048,23 @@ stringvec Column::nonFilteredLevels()
 				{
 					Label * label = labelByIntsId(_ints[r]);
 					if(label && !label->isEmptyValue())
-                        levels.insert(label->label());
+						levels.insert(label->label());
 				}
 				else if(!isEmptyValue(_dbls[r]))
 					levels.insert(ColumnUtils::doubleToString(_dbls[r]));
 			}
 
-        // Use the right label order
-        for (std::string& label : _labelsTemp)
-            if (levels.find(label) != levels.end())
-                _nonFilteredLevels.push_back(label);
-    }
+		if(!_data->filter()->shouldDropLevels())
+			for(Label * label : _labels)
+				levels.insert(label->label());
 
-    return _nonFilteredLevels;
+		// Use the right label order
+		for (std::string& label : _labelsTemp)
+			if (levels.find(label) != levels.end())
+				_nonFilteredLevels.push_back(label);
+	}
+
+	return _nonFilteredLevels;
 }
 
 void Column::nonFilteredCountersReset()
