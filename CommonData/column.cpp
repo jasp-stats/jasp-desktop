@@ -59,7 +59,7 @@ void Column::dbLoad(int id, bool getValues)
 	Json::Value emptyVals;
 	
 	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue);
-	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson);
+	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson, _computeFilter);
 	
 	_emptyValues->fromJson(emptyVals);
 
@@ -159,6 +159,18 @@ void Column::setDescription(const std::string &description)
 	incRevision();
 }
 
+void Column::setComputeFilter(const std::string &filter)
+{
+	JASPTIMER_SCOPE(Column::setComputeFilter);
+
+	if(_computeFilter == filter)
+		return;
+
+	_computeFilter = filter;
+	db().columnSetComputeFilter(_id, _computeFilter);
+	incRevision();
+}
+
 void Column::setType(columnType colType)
 {
 	JASPTIMER_SCOPE(Column::setType);
@@ -206,7 +218,7 @@ bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 void Column::dbUpdateComputedColumnStuff()
 {
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr(), _computeFilter);
 	incRevision();
 }
 
@@ -2319,7 +2331,7 @@ void Column::deserialize(const Json::Value &json)
 	_constructorJson	= json["constructorJson"];
 	_autoSortByValue	= json["autoSortByValue"].asBool();
 
-	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr());
+	db().columnSetComputedInfo(_id, _analysisId, _invalidated, _codeType, _rCode, _error, constructorJsonStr(), _computeFilter);
 	
 	deserializeLabelsForCopy(json["labels"]);
 

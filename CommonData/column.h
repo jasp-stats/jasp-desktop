@@ -65,6 +65,7 @@ public:
 			columnTypeChangeResult	changeType(			columnType			colType			);
 			void					setCodeType(		computedColumnType	codeType		);
 			void					setDescription(		const std::string & description		);
+			void					setComputeFilter(	const std::string & filter = ""		);
 			bool					setConstructorJson(	const Json::Value & constructorJson	);
 			bool					setConstructorJson(	const std::string & constructorJson	);
 			void					setAutoSortByValue(	bool				sort			);
@@ -99,6 +100,7 @@ public:
 			const std::string	&	error()					const	{ return _error;			}
 			const std::string	&	rCode()					const	{ return _rCode;			}
 			const std::string	&	description()			const	{ return _description;		}
+			const std::string	&	computeFilter()			const	{ return _computeFilter;		}
 				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
 				  std::string		constructorJsonStr()	const	{ return _constructorJson.toStyledString();	}
 			const Json::Value	&	constructorJson()		const	{ return _constructorJson;	}
@@ -274,7 +276,8 @@ private:
 									_title,
 									_description,
 									_error,
-									_rCode;
+									_rCode,
+									_computeFilter;
 			Json::Value				_constructorJson	= Json::objectValue;
 			doublevec				_dbls;
 			intvec					_ints;

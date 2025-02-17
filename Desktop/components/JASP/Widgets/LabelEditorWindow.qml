@@ -490,6 +490,8 @@ FocusScope
 		RowLayout
 		{
 			id:					newLabelContainer
+			spacing:			0
+			
 			anchors
 			{
 				left:			tableBackground.left
@@ -505,17 +507,18 @@ FocusScope
 			
 			QTC.TextField
 			{
-				id:					newLevelValueInput
+				id:						newLevelValueInput
 				
-				font:				jaspTheme.font
-				color:				jaspTheme.textEnabled
-				selectedTextColor:	jaspTheme.white
-				selectionColor:		jaspTheme.itemSelectedColor
-				selectByMouse:		true
+				font:					jaspTheme.font
+				color:					jaspTheme.textEnabled
+				selectedTextColor:		jaspTheme.white
+				selectionColor:			jaspTheme.itemSelectedColor
+				selectByMouse:			true
+				Layout.minimumWidth:	levelsTableView.valueColWidth
 				
-				text:				""
-				placeholderText:	qsTr("Value")
-				height:				buttonColumnVariablesWindow.buttonHeight
+				text:					""
+				placeholderText:		qsTr("Value")
+				height:					buttonColumnVariablesWindow.buttonHeight
 				
 				background: Rectangle
 				{
@@ -586,7 +589,7 @@ FocusScope
 				toolTip:		qsTr("Add a level that's missing from the data")
 
 				height:			implicitHeight
-				implicitHeight: buttonColumnVariablesWindow.buttonHeight
+				implicitHeight: buttonColumnVariablesWindow.buttonHeight - newLevelValueInput.padding
 				width:			height
 			}
 		}
