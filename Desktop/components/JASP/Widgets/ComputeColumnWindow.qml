@@ -302,8 +302,8 @@ FocusScope
 				anchors.top:		helpButton.top
 				onClicked:			{ forceActiveFocus(); computedColumnContainer.applyComputedColumn() }
 				toolTip:			qsTr("Click to compute column")
-				
 			}
+			
 
 			JaspControls.RectangularButton
 			{

@@ -52,10 +52,23 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 	if(originalVersion < "0.19.2" && !tableHasColumn("Filters", "name"))
 		runStatements("ALTER TABLE Filters  ADD COLUMN name		TEXT;");
 	
-	if(originalVersion <= "0.19.3" && !tableHasColumn("Filters", "dropLevels"))
+	if(originalVersion <= "0.19.3")
 	{
-		runStatements("ALTER TABLE Filters  ADD COLUMN dropLevels		INT;");
-		runStatements("UPDATE Filters SET dropLevels = 1;"); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
+		if(!tableHasColumn("Filters", "dropLevels"))
+		{
+			runStatements("ALTER TABLE Filters  ADD COLUMN dropLevels		INT;");
+			runStatements("UPDATE Filters SET dropLevels = 1;"); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
+		}
+		
+
+		if(!tableHasColumn("Columns", "computeFilter"))
+		{
+			runStatements("ALTER TABLE Columns  ADD COLUMN computeFilter		TEXT DEFAULT \"\";");
+			runStatements("UPDATE Filters SET dropLevels = 1;"); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
+		}
+		
+		
+		
 	}
 
 	transactionWriteEnd();
