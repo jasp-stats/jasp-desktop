@@ -75,7 +75,7 @@ private:
 							_constructorR		= "",
 							_errorMsg			= "",
 							_name				= "";
-	bool					_dropLevels			= true; 
+	bool					_dropLevels			= false; 
 	std::vector<bool>		_filtered;
 };
 

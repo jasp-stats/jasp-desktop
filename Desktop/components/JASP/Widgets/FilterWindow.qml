@@ -242,7 +242,7 @@ FocusScope
 				text:		filterModel.dropLevels ? qsTr("Only filtered levels") : qsTr("Keep all levels")
 				onClicked:	filterModel.dropLevels = !filterModel.dropLevels
 				//width:		height
-				toolTip:	(filterModel.dropLevels ? qsTr("Click to keep all levels") : qsTr("Click to filter unused levels out, if anything at all is filtered"))
+				toolTip:	(filterModel.dropLevels ? qsTr("Only those levels passing the filter are used.") : qsTr("All leves are used, regardless of whether they pass the filter."))
 				anchors
 				{
 					right:	parent.right
@@ -552,7 +552,7 @@ FocusScope
 					text:		filterModel.dropLevels ? qsTr("Only filtered levels") : qsTr("Keep all levels")
 					onClicked:	filterModel.dropLevels = !filterModel.dropLevels
 					//width:		height
-					toolTip:	(filterModel.dropLevels ? qsTr("Click to keep all levels") : qsTr("Click to filter unused levels out, if anything at all is filtered"))
+					toolTip:	(filterModel.dropLevels ? qsTr("Only those levels passing the filter are used.") : qsTr("All leves are used, regardless of whether they pass the filter."))
 					anchors
 					{
 						right:	helpButton.left

@@ -132,7 +132,7 @@ FocusScope
 							}
 							Text
 							{
-								text:					qsTr("Erase")
+								text:					qsTr("Remove")
 								font:					jaspTheme.font
 								color:					jaspTheme.textEnabled
 								anchors.verticalCenter:	parent.verticalCenter

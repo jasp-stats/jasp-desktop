@@ -79,6 +79,7 @@ void FilterModel::setDropLevels(bool dropLevels)
 {
 	if(DataSetPackage::filter())
 		DataSetPackage::filter()->setDropLevels(dropLevels);
+	
 	emit dropLevelsChanged();
 	emit refreshAllCompCols();
 	emit refreshAllAnalyses();

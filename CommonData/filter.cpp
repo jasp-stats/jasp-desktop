@@ -20,7 +20,7 @@ Filter::Filter(DataSet * data, const std::string & name, bool createIfMissing)
 
 bool Filter::shouldDropLevels() const
 {
-	return dropLevels() && filteredRowCount() != data()->rowCount();
+	return dropLevels(); // && filteredRowCount() != data()->rowCount();
 }
 
 void Filter::dbCreate()
