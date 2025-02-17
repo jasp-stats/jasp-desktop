@@ -102,7 +102,6 @@ void Column::loadComputedColumnJsonBackwardsCompatibly(const Json::Value & json)
 	setCompColStuff
 	(
 		json["invalidated"].asBool(),
-		false,
 		computedColumnTypeFromString(json["codeType"].asString()),
 		rCode,
 		json["error"].asString(),
@@ -347,7 +346,7 @@ bool Column::iShouldBeSentAgain()
 }
 
 
-void Column::setCompColStuff(bool invalidated, bool forceSourceColType, computedColumnType codeType, const std::string &rCode, const std::string &error, const Json::Value &constructorJson)
+void Column::setCompColStuff(bool invalidated, computedColumnType codeType, const std::string &rCode, const std::string &error, const Json::Value &constructorJson)
 {
 	JASPTIMER_SCOPE(Column::setCompColStuff);
 

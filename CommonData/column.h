@@ -71,7 +71,7 @@ public:
 			void					setAnalysisId(		int					analysisId		);
 			void					setIndex(			int					index			);
 			void					setInvalidated(		bool				invalidated		);
-			void					setCompColStuff(	bool				invalidated, bool forceSourceColType, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
+			void					setCompColStuff(	bool				invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
