@@ -454,8 +454,18 @@ FocusScope
 								{
 									columnModel.deleteLabel(rowIndex);
 								}
+								
+								Text
+								{
+									text:					"⌫"
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									anchors.verticalCenter:	parent.verticalCenter
+									horizontalAlignment:	Text.AlignHCenter
+									width:					levelsTableView.filterColWidth;
+								}
 	
-								Image
+								/*Image
 								{
 									source:					jaspTheme.iconPath + ("eraser.png")
 									sourceSize.width:		Math.max(40, width)
@@ -468,7 +478,7 @@ FocusScope
 										margins:			levelsTableView.itemVerticalPadding
 										horizontalCenter:	deleteButton.horizontalCenter
 									}
-								}
+								}*/
 							}
 						}
 					}
