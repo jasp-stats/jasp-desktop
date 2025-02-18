@@ -40,6 +40,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool			autoSort					READ autoSort					WRITE setAutoSort				NOTIFY autoSortChanged					)
 	Q_PROPERTY(bool			hasSeveralNumericValues		READ hasSeveralNumericValues									NOTIFY hasSeveralNumericValuesChanged	) //Only works when autosort is on
 	Q_PROPERTY(int			rowsTotal					READ rowsTotal													NOTIFY rowsTotalChanged					)
+	Q_PROPERTY(QString		computeFilter				READ computeFilter				WRITE setComputeFilter			NOTIFY computeFilterChanged				)
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -113,6 +114,9 @@ public:
 	bool autoSort() const;
 	void setAutoSort(bool newAutoSort);
 	
+	QString computeFilter() const;
+	void setComputeFilter(const QString &newComputeFilter);
+	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -164,6 +168,8 @@ signals:
 	void autoSortChanged();
 	void hasSeveralNumericValuesChanged();
 	
+	void computeFilterChanged();
+	
 private:
 	std::vector<size_t>	getSortedSelection()					const;
 	void					setValueMaxWidth();
@@ -171,7 +177,7 @@ private:
 
 	struct
 	{
-		QString				name, title, description;
+		QString				name, title, description, computeFilter;
 		columnType			type = columnType::scale;
 		computedColumnType	computedType = computedColumnType::notComputed;
 	} _dummyColumn;

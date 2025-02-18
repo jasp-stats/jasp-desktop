@@ -59,7 +59,7 @@ public:
 	int					currentIndex()								const				{ return _currentIndex;			}
 	QString				longestValue()								const				{ return _longestValue;			}
 
-	std::vector<std::string> usedVariables()						const	override;
+	stringvec			usedVariables()								const	override;
 	bool				encodeValue()								const	override	{ return containsVariables();	}
 
 

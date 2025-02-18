@@ -330,17 +330,25 @@ SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QV
 			_oldValue = columnName();
 			setText(QObject::tr("Change column name of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
+		
 		case ColumnProperty::Title:
 			_oldValue = columnModel->columnTitle();
 			setText(QObject::tr("Change column title of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
+		
 		case ColumnProperty::Description:
 			_oldValue = columnModel->columnDescription();
 			setText(QObject::tr("Change column description of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
-		case ColumnProperty::ComputedColumn:
+		
+		case ColumnProperty::ComputedColumnType:
 			_oldValue = int(computedColumnTypeFromQString(columnModel->computedType()));
 			setText(QObject::tr("Set computed type of '%1' from '%2' to '%3'").arg(columnName(), friendlyColumnType(_oldValue.toInt()), friendlyColumnType(_newValue.toInt())));
+			break;
+			
+		case ColumnProperty::ComputeFilter:
+			_oldValue = columnModel->computeFilter();
+			setText(QObject::tr("Change column compute filter of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
 		}
 	}
@@ -360,13 +368,20 @@ void SetColumnPropertyCommand::undo()
 		// As the column can be also recognize with its name, use it.
 		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_newValue.toString()), fq(_oldValue.toString()));
 		break;
+		
 	case ColumnProperty::Title:
 		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_oldValue.toString()));
 		break;
+		
+	case ColumnProperty::ComputeFilter:
+		DataSetPackage::pkg()->setColumnComputeFilter(_colId, fq(_oldValue.toString()));
+		break;
+		
 	case ColumnProperty::Description:
 		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_oldValue.toString()));
 		break;
-	case ColumnProperty::ComputedColumn:
+
+	case ColumnProperty::ComputedColumnType:
 		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_oldValue.toInt()));
 		break;
 	}
@@ -379,13 +394,20 @@ void SetColumnPropertyCommand::redo()
 	case ColumnProperty::Name:
 		DataSetPackage::pkg()->setColumnName(DataSetPackage::pkg()->getColumnIndex(_oldValue.toString()), fq(_newValue.toString()));
 		break;
+		
 	case ColumnProperty::Title:
 		DataSetPackage::pkg()->setColumnTitle(_colId, fq(_newValue.toString()));
 		break;
+		
+	case ColumnProperty::ComputeFilter:
+		DataSetPackage::pkg()->setColumnComputeFilter(_colId, fq(_newValue.toString()));
+		break;
+		
 	case ColumnProperty::Description:
 		DataSetPackage::pkg()->setColumnDescription(_colId, fq(_newValue.toString()));
 		break;
-	case ColumnProperty::ComputedColumn:
+		
+	case ColumnProperty::ComputedColumnType:
 		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_newValue.toInt()));
 		break;
 	}

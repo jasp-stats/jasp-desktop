@@ -11,21 +11,20 @@ class FilterModel : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY( QString generatedFilter		READ generatedFilter	WRITE setGeneratedFilter	NOTIFY generatedFilterChanged	)
-	Q_PROPERTY( QString rFilter				READ rFilter			WRITE setRFilter			NOTIFY rFilterChanged			)
-	Q_PROPERTY( QString constructorJson		READ constructorJson	WRITE setConstructorJson	NOTIFY constructorJsonChanged	)
-	Q_PROPERTY( QString constructorR		READ constructorR		WRITE setConstructorR		NOTIFY constructorRChanged		)
-	Q_PROPERTY( QString statusBarText		READ statusBarText									NOTIFY statusBarTextChanged		)
-	Q_PROPERTY( QString filterErrorMsg		READ filterErrorMsg									NOTIFY filterErrorMsgChanged	)
-	Q_PROPERTY( bool 	hasFilter			READ hasFilter										NOTIFY hasFilterChanged			)
-	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
-	Q_PROPERTY( bool	dropLevels			READ dropLevels			WRITE setDropLevels			NOTIFY dropLevelsChanged		)
+	Q_PROPERTY( QString			generatedFilter		READ generatedFilter	WRITE setGeneratedFilter	NOTIFY generatedFilterChanged		)
+	Q_PROPERTY( QString			rFilter				READ rFilter			WRITE setRFilter			NOTIFY rFilterChanged				)
+	Q_PROPERTY( QString			constructorJson		READ constructorJson	WRITE setConstructorJson	NOTIFY constructorJsonChanged		)
+	Q_PROPERTY( QString			constructorR		READ constructorR		WRITE setConstructorR		NOTIFY constructorRChanged			)
+	Q_PROPERTY( QString			statusBarText		READ statusBarText									NOTIFY statusBarTextChanged			)
+	Q_PROPERTY( QString			filterErrorMsg		READ filterErrorMsg									NOTIFY filterErrorMsgChanged		)
+	Q_PROPERTY( bool			hasFilter			READ hasFilter										NOTIFY hasFilterChanged				)
+	Q_PROPERTY( QString			defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged		)
+	Q_PROPERTY( bool			dropLevels			READ dropLevels			WRITE setDropLevels			NOTIFY dropLevelsChanged			)
+	Q_PROPERTY( QVariantList	filterDropDownList	READ filterDropDownList								NOTIFY filterDropDownListChanged	)
 
 public:
 	explicit					FilterModel(labelFilterGenerator * labelfilterGenerator);
-
-				void			init();
-
+	
 				QString			rFilter()				const;
 				bool			dropLevels()			const;
 				QString			constructorR()			const;
@@ -33,6 +32,7 @@ public:
 				QString			filterErrorMsg()		const;
 				QString			generatedFilter()		const;
 				QString			constructorJson()		const;
+				QVariantList	filterDropDownList()	const;
 	static		const char *	defaultRFilter();
 
 				bool			hasFilter()				const	{ return rFilter() != defaultRFilter() || constructorJson() != DEFAULT_FILTER_JSON; }
@@ -44,7 +44,8 @@ public:
 				void			updateStatusBar();
 				void			reset();
 				void			modelInit();
-
+				
+				
 public slots:
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)
 	
@@ -80,6 +81,7 @@ signals:
 	void filterErrorMsgChanged();
 	void generatedFilterChanged();
 	void constructorJsonChanged();
+	void filterDropDownListChanged();
 
 	void updateColumnsUsedInConstructedFilter(std::set<std::string> columnNames);
 

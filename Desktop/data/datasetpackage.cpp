@@ -1678,6 +1678,21 @@ void DataSetPackage::setColumnTitle(size_t columnIndex, const std::string & newT
 	refresh();
 }
 
+void DataSetPackage::setColumnComputeFilter(size_t columnIndex, const std::string & newFilter)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	
+	if (!column)
+		return;
+
+	column->setComputeFilter(newFilter);
+	
+	refresh();
+}
+
 void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string & newDescription)
 {
 	if(!_dataSet)
@@ -2061,9 +2076,10 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	
 	Column * column = _dataSet->column(columnIndex);
 
-	column->setName(			props.contains("name")		? fq(props["name"].toString())					: freeNewColumnName(columnIndex)	);
-	column->setDefaultValues(	props.contains("type")		? columnType(props["type"].toInt())				: columnType::scale					);
-	column->setCodeType(		props.contains("computed")	? computedColumnType(props["computed"].toInt())	: computedColumnType::notComputed	);
+	column->setName(			props.contains("name")			? fq(props["name"].toString())					: freeNewColumnName(columnIndex)	);
+	column->setDefaultValues(	props.contains("type")			? columnType(props["type"].toInt())				: columnType::scale					);
+	column->setCodeType(		props.contains("computed")		? computedColumnType(props["computed"].toInt())	: computedColumnType::notComputed	);
+	column->setComputeFilter(fq(props.contains("computeFilter")	? props["computeFilter"].toString()				: ""								));
 
 	_dataSet->incRevision();
 

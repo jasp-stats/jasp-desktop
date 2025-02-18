@@ -2,6 +2,7 @@
 #include "jsonutilities.h"
 #include "columnencoder.h"
 #include "timers.h"
+#include <QMap>
 
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
@@ -50,6 +51,8 @@ void FilterModel::reset()
 
 	if(DataSetPackage::pkg()->dataRowCount() > 0)
 		sendGeneratedAndRFilter();
+	
+	emit filterDropDownListChanged();
 }
 
 void FilterModel::dataSetPackageResetDone()
@@ -67,6 +70,8 @@ void FilterModel::modelInit()
 		sendGeneratedAndRFilter();
 
 	DataSetPackage::pkg()->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter
+	
+	emit filterDropDownListChanged();
 }
 
 void FilterModel::setRFilter(QString newRFilter)
@@ -313,4 +318,18 @@ void FilterModel::datasetChanged(	QStringList             changedColumns,
 
 	if(invalidateMe)
 		sendGeneratedAndRFilter();
+}
+
+
+QVariantList FilterModel::filterDropDownList() const
+{
+	typedef QMap<QString, QVariant> localMap;
+	
+	QVariantList out = { localMap({std::make_pair("value", ""), std::make_pair("label", QObject::tr("No filter"))}) };
+	
+	//Right now we only have 1 filter, but later we can add support here for multiple filters, or of filters from analyses (such as from ListModelFilteredDataEntry)
+	if(DataSetPackage::filter())
+		out.append(localMap{std::make_pair("value", tq(DataSetPackage::filter()->name())), std::make_pair("label", QObject::tr("Use filter"))});
+	
+	return out;
 }

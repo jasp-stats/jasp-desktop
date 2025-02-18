@@ -13,6 +13,7 @@ class ComputedColumnModel : public QObject
 	Q_PROPERTY(bool		computeColumnUsesRCode		READ computeColumnUsesRCode													NOTIFY computeColumnUsesRCodeChanged	)
 	Q_PROPERTY(QString	computeColumnRCode			READ computeColumnRCode				WRITE setComputeColumnRCode				NOTIFY computeColumnRCodeChanged		)
 	Q_PROPERTY(QString	computeColumnJson			READ computeColumnJson														NOTIFY computeColumnJsonChanged			)
+	Q_PROPERTY(QString	computeFilter				READ computeFilter															NOTIFY computeFilterChanged				)
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(int		columnType					READ computedColumnColumnType												NOTIFY columnTypeChanged				)
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY refreshProperties				)
@@ -26,10 +27,11 @@ public:
 				const Columns	&	computedColumns() const;
 				QString				computeColumnRCode();
 				QString				computeColumnRCodeCommentStripped();
-				QString				computeColumnError();
-				QString				computeColumnJson();
 				int					computedColumnColumnType();
 				QString				computeColumnIconSource()	const;
+				QString				computeColumnError();
+				QString				computeColumnJson();
+				QString				computeFilter();
 				Column			*	column()					const;
 				bool				computeColumnUsesRCode();
 
@@ -76,6 +78,7 @@ signals:
 				void	dataColumnAdded(QString columnName);
 				void	refreshData();
 				void	columnTypeChanged();
+				void	computeFilterChanged();
 				void	chooseColumn(QString colId);
 				void	computeColumnIconSourceChanged();
 				

@@ -25,7 +25,7 @@ protected:
 class SetColumnPropertyCommand: public UndoModelCommand
 {
 public:
-	enum class ColumnProperty { Name, Title, Description, ComputedColumn };
+	enum class ColumnProperty { Name, Title, Description, ComputedColumnType, ComputeFilter };
 
 	SetColumnPropertyCommand(QAbstractItemModel *model, QVariant newValue, ColumnProperty prop);
 

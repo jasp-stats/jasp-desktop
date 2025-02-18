@@ -19,6 +19,7 @@ ComputedColumnModel::ComputedColumnModel()
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnUsesRCodeChanged		);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeColumnIconSourceChanged	);
 	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::columnTypeChanged					);
+	connect(this,					&ComputedColumnModel::refreshProperties,		this,					&ComputedColumnModel::computeFilterChanged				);
 	
 	connect(this,					&ComputedColumnModel::refreshColumn,			DataSetPackage::pkg(),	&DataSetPackage::refreshColumn,								Qt::QueuedConnection);
 	connect(this,					&ComputedColumnModel::refreshData,				DataSetPackage::pkg(),	&DataSetPackage::refresh,									Qt::QueuedConnection);
@@ -57,6 +58,11 @@ QString ComputedColumnModel::computeColumnJson()
 	QString json = !_selectedColumn ? "" : tq(_selectedColumn->constructorJsonStr());
 
 	return json;
+}
+
+QString ComputedColumnModel::computeFilter()
+{
+	return !_selectedColumn ? "" : tq(_selectedColumn->computeFilter());
 }
 
 int ComputedColumnModel::computedColumnColumnType()

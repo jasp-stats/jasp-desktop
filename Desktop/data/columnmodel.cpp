@@ -88,7 +88,6 @@ QVariantList ColumnModel::columnTypeValues() const
 	};
 }
 
-
 QString ColumnModel::columnNameQ()
 {
 	if (_virtual) return _dummyColumn.name;
@@ -109,9 +108,10 @@ void ColumnModel::setColumnNameQ(QString newColumnName)
 			_undoStack->pushCommand(new InsertColumnCommand(_dataSetTableModel, colNr));
 
 		QMap<QString, QVariant> props;
-		props["name"] = newColumnName;
-		props["type"] = int(_dummyColumn.type);
-		props["computed"] = int(_dummyColumn.computedType);
+		props["name"]			= newColumnName;
+		props["type"]			= int(_dummyColumn.type);
+		props["computed"]		= int(_dummyColumn.computedType);
+		props["computeFilter"]	= _dummyColumn.computeFilter;
 		_undoStack->endMacro(new InsertColumnCommand(_dataSetTableModel, _currentColIndex, props));
 	}
 	else if(column())
@@ -141,7 +141,18 @@ QString ColumnModel::columnDescription() const
 {
 	if (_virtual) return _dummyColumn.description;
 
-	return QString::fromStdString(column() ? column()->description() : "");
+	return tq(column() ? column()->description() : "");
+}
+
+QString ColumnModel::computeFilter() const
+{
+	if (_virtual) 
+		return _dummyColumn.computeFilter;
+	
+	if(column())
+		return tq(column()->computeFilter());
+	
+	return "";
 }
 
 
@@ -318,7 +329,22 @@ void ColumnModel::setComputedType(QString type)
 	if (_virtual)
 		_dummyColumn.computedType = cType;
 	else if(column())
-		_undoStack->pushCommand(new SetColumnPropertyCommand(this, int(cType), SetColumnPropertyCommand::ColumnProperty::ComputedColumn));
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, int(cType), SetColumnPropertyCommand::ColumnProperty::ComputedColumnType));
+
+	emit ComputedColumnModel::singleton()->refreshProperties();
+	emit tabsChanged();
+}
+
+void ColumnModel::setComputeFilter(const QString &newComputeFilter)
+{
+	if(_beingRefreshed || !column() || column()->computeFilter() == fq(newComputeFilter))
+		return;
+
+	if (_virtual)
+		_dummyColumn.computeFilter = newComputeFilter;
+	
+	else if(column())
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newComputeFilter, SetColumnPropertyCommand::ColumnProperty::ComputeFilter));
 
 	emit ComputedColumnModel::singleton()->refreshProperties();
 	emit tabsChanged();
@@ -598,6 +624,7 @@ void ColumnModel::refresh()
 	emit columnNameChanged();
 	emit columnTitleChanged();
 	emit nameEditableChanged();
+	emit computeFilterChanged();
 	emit columnDescriptionChanged();
 	emit computedTypeValuesChanged();
 	emit hasSeveralNumericValuesChanged();
@@ -827,6 +854,7 @@ void ColumnModel::clearVirtual()
 	_dummyColumn.description.clear();
 	_dummyColumn.name.clear();
 	_dummyColumn.title.clear();
+	_dummyColumn.computeFilter.clear();
 
 	_dummyColumn.type			= columnType::scale;
 	_dummyColumn.computedType	= computedColumnType::notComputed;
@@ -852,5 +880,8 @@ void ColumnModel::languageChangedHandler()
 	emit computedTypeValuesChanged();
 	emit tabsChanged();
 }
+
+
+
 
 

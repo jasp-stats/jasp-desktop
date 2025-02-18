@@ -88,72 +88,72 @@ public:
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
 
-	int			customPPI()								const;
-	int			numDecimals()							const;
-	int			defaultPPI()							const	{ return _defaultPPI; }
-	int			plotPPI()								const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
-	bool		fixedDecimals()							const;
-	bool		exactPValues()							const;
-	bool		normalizedNotation()					const;
-	bool		useDefaultEditor()						const;
-	bool		useDefaultPPI()							const;
-	bool		whiteBackground()						const;
-	QString		plotBackground()						const;
-	double		uiScale()								override;
-	float		ribbonBarHeightScale()					const override;
-	QString		customEditor()							const;
-	QString		developerFolder()						const;
-	QString		fixedDecimalsForJS()					const;
-	QStringList	emptyValues()							const;
-	int			thresholdScale()						const;
-	bool		logToFile()								const;
-	int			logFilesMax()							const;
-	int			maxFlickVelocity()						const override;
-	bool		modulesRemember()						const;
-	QStringList	modulesRemembered()						const;
-	bool		safeGraphics()							const;
-	QString		cranRepoURL()							const;
-	QString		githubPatResolved()						const;
-	QString		githubPatCustom()						const;
-	bool		githubPatUseDefault()					const;
-	QString		interfaceFont()							const;
-	QString		codeFont()								const;
-	QString		resultFont(bool forWebEngine = false)	const;
-	QString		currentThemeName()						const;
-	QString		languageCode()							const;
-	bool		disableAnimations()						const;
-	bool		animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
-	bool		generateMarkdown()						const;
-	QStringList allInterfaceFonts()						const { return _allInterfaceFonts; }
-	QStringList allCodeFonts()							const { return _allCodeFonts; }
-	QStringList allResultFonts()						const { return _allResultFonts; }
-	QString		defaultResultFont()						const;
-	QString		defaultInterfaceFont()					const;
-	QString		defaultCodeFont()						const;
-	int			maxEngines()							const;
-	bool		windowsNoBomNative()					const;
-	int			windowsChosenCodePage()					const;
-	bool		dbShowWarning()							const;
-	QString		dataLabelNA()							const;
-	bool		guiQtTextRender()						const;
-	bool		reportingMode()							const;
-	bool		showRSyntax()							const override;
-	bool		showAllROptions()						const override;
-	bool		showRSyntaxInResults()					const;
-	void		zoomIn();
-	void		zoomOut();
-	void		zoomReset();
-	int 		maxEnginesAdmin() 						const;
-	bool		developerMode()							const;
-	bool		ALTNavModeActive()						const override;
-    bool		orderByValueByDefault()					const;
-	int			maxScaleLevels()						const override;
-	QVariantList pdfPageSizeModel()						const { return _pdfPageSizeModel; }
-	int			pdfPageSize()							const;
-	bool		pdfLandscape()							const;
-	bool		directLibpathEnabled()					const;
-	QString		directLibpathFolder()					const;
-	QString		directDevModName()						const;
+	int				customPPI()								const;
+	int				numDecimals()							const;
+	int				defaultPPI()							const	{ return _defaultPPI; }
+	int				plotPPI()								const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
+	bool			fixedDecimals()							const;
+	bool			exactPValues()							const;
+	bool			normalizedNotation()					const;
+	bool			useDefaultEditor()						const;
+	bool			useDefaultPPI()							const;
+	bool			whiteBackground()						const;
+	QString			plotBackground()						const;
+	double			uiScale()								override;
+	float			ribbonBarHeightScale()					const override;
+	QString			customEditor()							const;
+	QString			developerFolder()						const;
+	QString			fixedDecimalsForJS()					const;
+	QStringList		emptyValues()							const;
+	int				thresholdScale()						const;
+	bool			logToFile()								const;
+	int				logFilesMax()							const;
+	int				maxFlickVelocity()						const override;
+	bool			modulesRemember()						const;
+	QStringList		modulesRemembered()						const;
+	bool			safeGraphics()							const;
+	QString			cranRepoURL()							const;
+	QString			githubPatResolved()						const;
+	QString			githubPatCustom()						const;
+	bool			githubPatUseDefault()					const;
+	QString			interfaceFont()							const;
+	QString			codeFont()								const;
+	QString			resultFont(bool forWebEngine = false)	const;
+	QString			currentThemeName()						const;
+	QString			languageCode()							const;
+	bool			disableAnimations()						const;
+	bool			animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
+	bool			generateMarkdown()						const;
+	QStringList		allInterfaceFonts()						const { return _allInterfaceFonts; }
+	QStringList		allCodeFonts()							const { return _allCodeFonts; }
+	QStringList		allResultFonts()						const { return _allResultFonts; }
+	QString			defaultResultFont()						const;
+	QString			defaultInterfaceFont()					const;
+	QString			defaultCodeFont()						const;
+	int				maxEngines()							const;
+	bool			windowsNoBomNative()					const;
+	int				windowsChosenCodePage()					const;
+	bool			dbShowWarning()							const;
+	QString			dataLabelNA()							const;
+	bool			guiQtTextRender()						const;
+	bool			reportingMode()							const;
+	bool			showRSyntax()							const override;
+	bool			showAllROptions()						const override;
+	bool			showRSyntaxInResults()					const;
+	void			zoomIn();
+	void			zoomOut();
+	void			zoomReset();
+	int				maxEnginesAdmin() 						const;
+	bool			developerMode()							const;
+	bool			ALTNavModeActive()						const override;
+    bool			orderByValueByDefault()					const;
+	int				maxScaleLevels()						const override;
+	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
+	int				pdfPageSize()							const;
+	bool			pdfLandscape()							const;
+	bool			directLibpathEnabled()					const;
+	QString			directLibpathFolder()					const;
+	QString			directDevModName()						const;
 	
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
