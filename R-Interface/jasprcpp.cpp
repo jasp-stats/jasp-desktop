@@ -28,7 +28,8 @@ ReadADataSetFilterCB			readDataSetRequestedCB;
 RunCallbackCB					runCallbackCB;
 ReadADataSetCB					readFullDataSetCB,
 								readFullFilteredDataSetCB,
-								readFilterDataSetCB;
+								readFilterDataSetCB,
+								readCompColDataSetCB;
 ReadDataColumnNamesCB			readDataColumnNamesCB;
 RequestTempFileNameCB			requestTempFileNameCB,
 								requestSpecificFileNameCB;
@@ -55,6 +56,7 @@ ShouldEnDecodeDef				shouldEncodeColumnName,
 								shouldDecodeColumnName;
 
 getColNames						getAllColumnNames;
+RequestStringRBridge			computedColumnFilterCB;
 
 static logFlushDef				_logFlushFunction		= nullptr;
 static logWriteDef				_logWriteFunction		= nullptr;
@@ -100,13 +102,15 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
 	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
 	readDataSetRequestedCB						= callbacks->readDataSetRequestedCB;
+	computedColumnFilterCB						= callbacks->computedColumnFilter;
 	requestTempRootNameCB						= callbacks->requestTempRootNameCB;
 	requestTempFileNameCB						= callbacks->requestTempFileNameCB;
 	readDataColumnNamesCB						= callbacks->readDataColumnNamesCB;
 	dataSetGetColumnType						= callbacks->dataSetGetColumnType;
+	readCompColDataSetCB						= callbacks->readCompColDataSetCB;
+	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
 	dataSetCreateColumn							= callbacks->dataSetCreateColumn;
 	dataSetDeleteColumn							= callbacks->dataSetDeleteColumn;
-	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
 	readFullDataSetCB							= callbacks->readFullDataSetCB;
 	dataSetRowCount								= callbacks->dataSetRowCount;
 	runCallbackCB								= callbacks->runCallbackCB;
@@ -1014,12 +1018,14 @@ Rcpp::DataFrame jaspRCPP_readFilterDataSet()
 Rcpp::DataFrame jaspRCPP_readCompColDataSet()
 {
 	size_t			colMax		= 0;
-	RBridgeColumn * colResults	= readFilterDataSetCB(&colMax);
+	RBridgeColumn * colResults	= readCompColDataSetCB(&colMax);
 
 	if(colMax == 0)
 		return Rcpp::DataFrame();
+	
+	bool dropThoseLevels = !std::string(computedColumnFilterCB()).empty() ? shouldDropLevels : false;
 
-	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, shouldDropLevels);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax, dropThoseLevels);
 }
 
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)

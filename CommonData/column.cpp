@@ -167,6 +167,7 @@ void Column::setComputeFilter(const std::string &filter)
 		return;
 
 	_computeFilter = filter;
+	invalidate();
 	db().columnSetComputeFilter(_id, _computeFilter);
 	incRevision();
 }
@@ -619,37 +620,37 @@ bool Column::setDescriptions(strstrmap labelToDescriptionMap)
 }
 
 
-bool Column::overwriteDataAndType(stringvec data, columnType colType)
+bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 {
 	JASPTIMER_SCOPE(Column::overwriteDataAndType);
-
-	if(data.size() != _data->rowCount())
+	
+	if(computeFilter() != "")
 	{
-		if(data.size() == _data->filter()->filteredRowCount())
-		{
-			const boolvec & filtered = _data->filter()->filtered();
-			stringvec		newData;
-							newData	 . reserve(filtered.size());
+		Filter theFilter(data(), computeFilter(), false);
+		
+		const boolvec & filtered = theFilter.filtered();
+		stringvec		newData;
+						newData	 . reserve(filtered.size());
+		
+		for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < colData.size(); iFilter++)
+			newData.push_back(filtered[iFilter] ? colData[iData++] : "");
 			
-			for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < data.size(); iFilter++)
-				newData.push_back(filtered[iFilter] ? data[iData++] : "");
-				
-			data = newData;
-		}
-		else
-			data.resize(_data->rowCount());
+		colData = newData;
 	}
-
+	
+	
+	//Now to make sure that the colData is neither bigger nor smaller than the dataset:
+	colData.resize(_data->rowCount()); //Either add blanks rows add end or drop superfluous data
+	
 	bool			changes		= _type != colType,
 					toScale		= colType == columnType::scale;
-	stringvec		otherData	= data,
-				&	values		= toScale  ? data : otherData,
-				&	labels		= !toScale ? data : otherData;
+	stringvec		otherData	= colData,
+				&	values		= toScale  ? colData : otherData,
+				&	labels		= !toScale ? colData : otherData;
 	
 	// If we are going to allow users to edit things it would be nice if we didnt just throw it away so rough
 	// See: https://github.com/jasp-stats/INTERNAL-jasp/issues/2680
 	// All we have to do is find the value/label per label/value given depending on the selected columnType
-	
 	
 	strstrmap											replacePerKey;
 	std::function<std::string(const std::string &)>		getOther		= [&](const std::string & in) 
@@ -663,8 +664,8 @@ bool Column::overwriteDataAndType(stringvec data, columnType colType)
 		return replacePerKey.at(in);
 	};
 	
-	for(size_t i=0; i<data.size(); i++)
-		otherData[i] = getOther(data[i]);
+	for(size_t i=0; i<colData.size(); i++)
+		otherData[i] = getOther(colData[i]);
 	
 	setValues(values, labels, 0, &changes);
 	setType(colType);

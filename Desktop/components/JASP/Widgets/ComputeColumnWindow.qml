@@ -311,8 +311,9 @@ FocusScope
 				startValue:			""
 				currentValue:		columnModel.computeFilter
 				onValueChanged:		{
-					messages.log(`computeFilterDropDown is getting triggered at least val is ${value} and curVal is ${currentValue}`)
 					columnModel.computeFilter = currentValue
+					computedColumnContainer.applyComputedColumn()
+					
 				}
 				anchors.right:		helpButton.left
 				anchors.bottom:		parent.bottom

@@ -34,13 +34,14 @@
 #include <windows.h>
 #endif
 
-EngineBase					*	rbridge_engine		= nullptr;
-DataSet						*	rbridge_dataSet		= nullptr;
-RCallback						rbridge_callback	= NULL;
+EngineBase					*	rbridge_engine			= nullptr;
+DataSet						*	rbridge_dataSet			= nullptr;
+RCallback						rbridge_callback		= NULL;
 std::set<std::string>			filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
-ColumnEncoder				*	extraEncodings		= nullptr;
+ColumnEncoder				*	extraEncodings			= nullptr;
 ColumnEncoder::colsPlusTypes	datasetWanted;
+std::string						computedColumnFilter	= "";
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
@@ -100,6 +101,7 @@ void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMe
 		rbridge_readFullDataSet,
 		rbridge_readFullFilteredDataSet,
 		rbridge_readDataSetForFiltering,
+		rbridge_readDataSetForComputedColumns,
 		rbridge_requestJaspResultsFileSource,
 		rbridge_getColumnType,
 		rbridge_createColumn,
@@ -115,7 +117,8 @@ void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMe
 		rbridge_decodeColumnType,
 		rbridge_shouldEncodeColumnName,
 		rbridge_shouldDecodeColumnName,
-		rbridge_allColumnNames
+		rbridge_allColumnNames,
+		rbridge_computedColumnFilterIs
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
@@ -329,7 +332,20 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax,
 	return returnThis;
 }
 
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForComputedColumns(size_t * colMax)
+{
+	//So yeah, to select a different filter the obeyFilter should be replaced with a filter name, and then that applied.
+	//But given that the dropdown only shows using a filter or not and I dont want to make this PR bigger than it already is we take a shortcut here:
+	//We just obeyFilter if there is a filter selected. And then later on we can rewrite some more stuff here
+	return rbridge_readDataSetForFilteringCompCol(colMax, computedColumnFilter != "");	
+}
+
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMax)
+{
+	return rbridge_readDataSetForFilteringCompCol(colMax, false);
+}
+
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t * colMax, bool obeyFilter)
 {
 	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
 
@@ -355,7 +371,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 			datasetWanted.insert(std::make_pair(colName, columnTypeFromString(typeStr)));
 		}
 
-	return rbridge_readDataSetRequested(colMax, false);
+	return rbridge_readDataSetRequested(colMax, obeyFilter);
 }
 
 static RBridgeColumn*	datasetStatic = nullptr;
@@ -832,15 +848,21 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 }
 
 
-std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc)
+std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc, const std::string & filterToUse)
 {
 	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
-	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
+	
+	if(!rbridge_dataSet)
+		return "null"; // How would doing a computed column make any sense without data?
+	
+	computedColumnFilter = filterToUse;
+	
+	int rowCount	= computedColumnFilter == "" ? rbridge_dataSet->rowCount() : Filter(rbridge_dataSet, computedColumnFilter, false).filteredRowCount();
 
 	jaspRCPP_resetErrorMsg();
 
 	std::string rCode64(rbridge_encodeColumnNamesInScript(rCode));
-
+	
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
 
@@ -851,6 +873,8 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
+	computedColumnFilter = "";
+	
 	return result;
 }
 
@@ -901,3 +925,8 @@ extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool e
 	return names;
 }
 
+
+extern "C" const char *rbridge_computedColumnFilterIs()
+{
+	return computedColumnFilter.c_str();
+}

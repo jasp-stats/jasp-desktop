@@ -41,11 +41,14 @@ class EngineBase;
 /// rbridge handles conversions between the two through const char *.
 extern "C" {
 	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readFullDataSet(		size_t * colMax);
-	RBridgeColumn*				STDCALL rbridge_readDataSetRequested(	size_t * colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readFullFilteredDataSet(size_t * colMax);
-	RBridgeColumn*				STDCALL rbridge_readFullDataSetHelper(	size_t * colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSet(				size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSetRequested(			size_t * colMax, bool obeyFilter);
+	RBridgeColumn*				STDCALL rbridge_readFullFilteredDataSet(		size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSetHelper(			size_t * colMax, bool obeyFilter);
+	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(		size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSetForFilteringCompCol(	size_t * colMax, bool obeyFilter);
+	
+	RBridgeColumn*				STDCALL rbridge_readDataSetForComputedColumns(	size_t * colMax);
 	char**						STDCALL rbridge_readDataColumnNames(	size_t *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, size_t colMax);
 	bool						STDCALL rbridge_test(char** root);
@@ -72,30 +75,31 @@ extern "C" {
 	const char **				STDCALL rbridge_allColumnNames(			size_t & numCols,	bool encoded);
 	const char *				STDCALL rbridge_system(					const char * cmd);
 	void						STDCALL rbridge_moduleLibraryFixer(		const char * moduleLibrary);
+	const char *				STDCALL rbridge_computedColumnFilterIs();
 }
 
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_setEngine(EngineBase * engine);
-	void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
-	void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
+	void				rbridge_setEngine(EngineBase * engine);
+	void				rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
+	void				rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
-	void rbridge_memoryCleaning();
+	void				rbridge_memoryCleaning();
 
-	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData);
+	std::string			rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData);
 
-	void	rbridge_setupRCodeEnvReadData(				const std::string & dataname, const std::string & readFunction);
-	void	rbridge_setupRCodeEnv(		int rowCount,	const std::string & dataname = "data");
-	void	rbridge_setupRCodeFilterEnv(int rowCount,	const std::string & dataname = "data");
-	void	rbridge_detachRCodeEnv(						const std::string & dataname = "data");
+	void				rbridge_setupRCodeEnvReadData(				const std::string & dataname, const std::string & readFunction);
+	void				rbridge_setupRCodeEnv(		int rowCount,	const std::string & dataname = "data");
+	void				rbridge_setupRCodeFilterEnv(int rowCount,	const std::string & dataname = "data");
+	void				rbridge_detachRCodeEnv(						const std::string & dataname = "data");
 
-	void freeRBridgeColumns();
-	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
-	void freeLabels(char** labels, size_t nbLabels);
+	void				freeRBridgeColumns();
+	void				freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
+	void				freeLabels(char** labels, size_t nbLabels);
 
 	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd);
-	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode);
+	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode, const std::string & filterName);
 	void				rbridge_setLANG(						const std::string & lang);
 #endif // RBRIDGE_H

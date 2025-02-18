@@ -89,6 +89,7 @@ typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
 typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encoded);
+typedef const char*					(STDCALL *RequestStringRBridge)        ();
 
 struct RBridgeCallBacks {
 	ReadDataSetCB					readDataSetCB;
@@ -96,13 +97,14 @@ struct RBridgeCallBacks {
 	ReadDataColumnNamesCB			readDataColumnNamesCB;
 	ReadDataSetDescriptionCB		readDataSetDescriptionCB;
 	RequestPredefinedFileSourceCB	requestStateFileSourceCB;
-	RequestTempFileNameCB			requestTempFileNameCB;
-	RequestTempFileNameCB			requestSpecificFileNameCB;
+	RequestTempFileNameCB			requestTempFileNameCB,
+									requestSpecificFileNameCB;
 	RequestTempRootNameCB			requestTempRootNameCB;
 	RunCallbackCB					runCallbackCB;
-	ReadADataSetCB					readFullDataSetCB;
-	ReadADataSetCB					readFullFilteredDataSetCB;
-	ReadADataSetCB					readFilterDataSetCB;
+	ReadADataSetCB					readFullDataSetCB,
+									readFullFilteredDataSetCB,
+									readFilterDataSetCB,
+									readCompColDataSetCB;
 	RequestPredefinedFileSourceCB	requestJaspResultsFileSourceCB;
 	GetColumnType					dataSetGetColumnType;
 	CreateColumn					dataSetCreateColumn;
@@ -119,6 +121,7 @@ struct RBridgeCallBacks {
 	ShouldEnDecodeDef				shouldEncode,
 									shouldDecode;
 	getColNames						columnNames;
+	RequestStringRBridge			computedColumnFilter;
 };
 
 typedef void			(*sendFuncDef)			(const char *);

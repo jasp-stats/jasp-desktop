@@ -565,11 +565,15 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 			computeColumnResponse["columnName"]		= computeColumnNameEnc;
 			
+			Column * compCol = _dataSet->column(computeColumnName);
+			
 			
 
-			std::string computeColumnResultStr		= rbridge_evalRComputedColumn(
-						computeColumnCode, 
-						"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals))");
+			std::string useThisFilter				= compCol->computeFilter(),
+						computeColumnResultStr		= rbridge_evalRComputedColumn(
+							computeColumnCode, 
+							"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals))",
+							useThisFilter);
 	
 			computeColumnResponse["result"]			= computeColumnResultStr;
 			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
