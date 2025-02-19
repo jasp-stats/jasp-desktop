@@ -114,6 +114,7 @@ td.symbol {
 
 td {
 	text-align: right ;
+	vertical-align: middle ;
 }
 
 thead tr:nth-child(2) th:not(.separator) {
