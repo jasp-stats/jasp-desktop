@@ -897,10 +897,10 @@ We can begin actual work on the QML file, first we have to tell the engine where
 	<summary>Code</summary>
 
   ```qml
-  import QtQuick 2.11
-  import QtQuick.Layouts 1.3
-  import JASP.Controls 1.0
-  import JASP.Widgets 1.0
+  import QtQuick
+  import QtQuick.Layouts
+  import JASP.Controls
+  import JASP.Widgets
   ```
 
   If you want to import QML components from another jasp module, you can! 
@@ -914,11 +914,11 @@ In the future, we will require using qualified namespace for the import statemen
 	<summary>Code</summary>
 
   ```qml
-  import QtQuick          2.11
-  import QtQuick.Layouts  1.3
-  import JASP.Controls    1.0 as JC
-  import JASP.Theme	      1.0 as JT
-  import JASP.Widgets     1.0 as JW
+  import QtQuick
+  import QtQuick.Layouts
+  import JASP.Controls    as JC
+  import JASP.Theme	      as JT
+  import JASP.Widgets     as JW
   ```
 </details>
 
@@ -931,10 +931,10 @@ At this point we add a `Form` which will hold all our input components:
 	<summary>Code</summary>
 
   ```qml
-  import QtQuick 2.11
-  import QtQuick.Layouts 1.3
-  import JASP.Controls 1.0
-  import JASP.Widgets 1.0
+  import QtQuick
+  import QtQuick.Layouts
+  import JASP.Controls
+  import JASP.Widgets
 
   Form
   {
@@ -951,10 +951,10 @@ It's now a matter of mixing and matching the previously shown components to crea
 	<summary>Code</summary>
 
   ```qml
-  import QtQuick 2.11
-  import QtQuick.Layouts 1.3
-  import JASP.Controls 1.0
-  import JASP.Widgets 1.0
+  import QtQuick
+  import QtQuick.Layouts
+  import JASP.Controls
+  import JASP.Widgets
 
   Form
   {

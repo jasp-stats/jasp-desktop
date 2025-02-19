@@ -16,8 +16,8 @@ If you are writing an `Upgrade` for an analysis as it was in JASP before version
 Just having a `functionName` and the two `version`s would do very little and the minimal sensible change you could make is adding `newFunctionName` with a new name for the analysis.
 A very short example of that would be fixing the typo that someone could have made in 0.9 of a fictional module:
 ```qml
-import QtQuick		2.12
-import JASP.Module	1.0
+import QtQuick
+import JASP.Module
 
 Upgrades
 {
@@ -57,8 +57,8 @@ Something important to keep in mind is that a list of these `Changes` will be ap
 
 For all following examples the full QML file would look something like:
 ```qml
-import QtQuick		2.12
-import JASP.Module	1.0
+import QtQuick
+import JASP.Module
 
 Upgrades
 {

@@ -666,7 +666,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		if(_itemDelegate == nullptr)
 		{
 			_itemDelegate = new QQmlComponent(qmlEngine(this));
-			_itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey'; verticalAlignment: Text.AlignVCenter; }", QUrl());
+			_itemDelegate->setData("import QtQuick \nText { text: itemText; color: itemActive ? 'black' : 'grey'; verticalAlignment: Text.AlignVCenter; }", QUrl());
 
 			emit itemDelegateChanged();
 		}
@@ -783,7 +783,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 	if(_rowNumberDelegate == nullptr)
 	{
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
-		_rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
+		_rowNumberDelegate->setData("import QtQuick \nItem {\n"
 			"Rectangle	{ color: jaspTheme.uiBackground;	anchors.fill: parent }\n"
 			"Text		{ text: rowNumber; anchors.centerIn: parent; color: jaspTheme.textEnabled; }\n"
 		"}", QUrl());
@@ -873,7 +873,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	if(_columnHeaderDelegate == nullptr)
 	{
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
-		_columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
+		_columnHeaderDelegate->setData("import QtQuick \nItem {\n"
 			"Rectangle	{ color: jaspTheme.uiBackground;	anchors.fill: parent }\n"
 			"Text		{ text: headerText; anchors.centerIn: parent; color: jaspTheme.textEnabled; }\n"
 		"}", QUrl());
@@ -977,7 +977,7 @@ QQuickItem * DataSetView::createleftTopCorner()
 		if(_leftTopCornerDelegate == nullptr)
 		{
 			_leftTopCornerDelegate = new QQmlComponent(qmlEngine(this));
-			_leftTopCornerDelegate->setData("import QtQuick 2.9\nItem {}", QUrl());
+			_leftTopCornerDelegate->setData("import QtQuick \nItem {}", QUrl());
 		}
 
 		QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
@@ -1065,7 +1065,7 @@ void DataSetView::positionEditItem(int row, int col)
 		_editDelegate = new QQmlComponent(qmlEngine(this));
 
 		_editDelegate->setData(
-"import QtQuick 2.9"																					"\n"
+"import QtQuick"																					"\n"
 "TextInput { text: itemText; color: itemActive ? 'black' : 'grey'; verticalAlignment: Text.AlignVCenter; \n"
 " onEditingFinished:					 dataview.commitEdit(rowIndex, columnIndex, text); "									"\n"
 "}", QUrl());

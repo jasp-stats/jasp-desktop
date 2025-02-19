@@ -65,8 +65,8 @@ Click below to see an example. In the next lines, we'll dissect it to understand
 	<summary>Example</summary>
   
   ```qml
-import QtQuick 		2.12
-import JASP.Module 	1.0
+import QtQuick
+import JASP.Module
 
 Description
 {

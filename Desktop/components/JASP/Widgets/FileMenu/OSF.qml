@@ -21,7 +21,6 @@ import QtQuick.Controls as QtC
 import JASP.Controls
 import JASP.Widgets
 
-//import QtQuick.Layouts  1.3
 
 Item
 {
