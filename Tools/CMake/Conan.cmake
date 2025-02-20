@@ -42,7 +42,7 @@ if(USE_CONAN)
     set(FREEXL_VERSION "2.1.0-dev")
     FetchContent_Declare(
       freexl
-      GIT_REPOSITORY   https://github.com/shun2wang/conan-recipes.git
+      GIT_REPOSITORY   https://github.com/jasp-stats/conan-recipes.git
       GIT_TAG          f014849188bddd01b9ca3ddf63dde8d2e3a45314
     )
     FetchContent_MakeAvailable(freexl)
