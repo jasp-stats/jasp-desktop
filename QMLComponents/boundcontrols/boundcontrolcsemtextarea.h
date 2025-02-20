@@ -10,6 +10,8 @@ public:
 
 protected:
 	const char * _checkSyntaxRFunctionName() override { return "jaspSem:::checkCSemModel"; }
+	const stringvec allowedVarPrefixes = {};
+
 };
 
 #endif // BOUNDCONTROLCSEMTEXTAREA_H

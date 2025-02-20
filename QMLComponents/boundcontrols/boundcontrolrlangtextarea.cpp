@@ -78,28 +78,43 @@ void BoundControlRlangTextArea::checkSyntax()
 	QString text = _textArea->text();
 
 	// get the column names of the data set
-	_usedColumnNames.clear();
-	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), &_usedColumnNames));
+	_prefixedUsedColumnNames.clear();
+	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, {"data."}));
+
+	if(_prefixedUsedColumnNames.find("") != _prefixedUsedColumnNames.end()) {
+		_noPrefixUsedColumnNames = std::set<std::string>(_prefixedUsedColumnNames[""]);
+		_prefixedUsedColumnNames.erase(_prefixedUsedColumnNames.find("")); //just for clarity remove the noPrefix "" items
+	}
+	else
+		Log::log() << "Warning: no non prefixed entries returned from column encoder?";
+
 
 	// Create R code string
 	QString encodedColNames = "c(";
-	for (const std::string& column : _usedColumnNames)
+	for (const std::string& column : _noPrefixUsedColumnNames)
 	{
 		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
-		if (column != *_usedColumnNames.rbegin()) // avoid trailing ,
-			encodedColNames.append(", ");
+		encodedColNames.append(", ");
 	}
-	encodedColNames.append(")");
 
-	QString checkCode = tq(_checkSyntaxRFunctionName());
-	checkCode
-		.append("('")
-		.append(_textEncoded)
-		.append("', ")
-		.append(encodedColNames)
-		.append(")");
+	for(auto& prefixSet : _prefixedUsedColumnNames)
+		for (const std::string& column : prefixSet.second) {
+			encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+			encodedColNames.append(", ");
+		}
+	encodedColNames.chop(2); //remove ', '
+	if(encodedColNames.length() > 0) encodedColNames.append(")");
 
-	_textArea->runRScript(checkCode, false);
+	if(_textEncoded.length() > 0) {
+		QString checkCode = tq(_checkSyntaxRFunctionName())
+			.append("('")
+			.append(_textEncoded)
+			.append("', ")
+			.append(encodedColNames)
+			.append(")");
+
+		_textArea->runRScript(checkCode, false);
+	}
 
 }
 
@@ -114,10 +129,18 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 	boundValue["model"]			= _textEncoded.toStdString();
 
 	Json::Value columns(Json::arrayValue);
-	for (const std::string& column : _usedColumnNames)
+	for (const std::string& column : _noPrefixUsedColumnNames)
 		columns.append(ColumnEncoder::columnEncoder()->encode(column));
 
 	boundValue["columns"] = columns;
+
+	Json::Value prefixedColumns(Json::objectValue);
+	for(auto& prefixSet : _prefixedUsedColumnNames)
+		for (const std::string& column : prefixSet.second) {
+			prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
+			prefixedColumns[prefixSet.first].append(ColumnEncoder::columnEncoder()->encode(column));
+		}
+	boundValue["prefixedColumns"] = prefixedColumns;
 
 	setBoundValue(boundValue, !_control->form()->wasUpgraded());
 
