@@ -41,7 +41,7 @@ protected:
 	std::map<std::string, stringset>		_prefixedUsedColumnNames;
 	QString									_textEncoded;
 	virtual const char *					_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
-	const stringset							allowedVarPrefixes = {"data."};
+	const stringset							_allowedVarPrefixes = {"data."};
 
 
 };

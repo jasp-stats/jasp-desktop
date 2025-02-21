@@ -79,7 +79,7 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_prefixedUsedColumnNames.clear();
-	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, {"data."}));
+	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, _allowedVarPrefixes));
 
 	if(_prefixedUsedColumnNames.find("") != _prefixedUsedColumnNames.end()) {
 		_noPrefixUsedColumnNames = std::set<std::string>(_prefixedUsedColumnNames[""]);
