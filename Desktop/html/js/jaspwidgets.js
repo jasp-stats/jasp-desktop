@@ -36,8 +36,10 @@ class SvgToPng {
 		if (svgs.length > 0) {
 			svgs.forEach(svg => {
 				const canvas = document.createElement('canvas');
-				const svgWidth = svg.width ? svg.width.baseVal.value : svg.getAttribute("width")
-				const svgHeight = svg.height ? svg.height.baseVal.value : svg.getAttribute("Height")
+				const svgWidth = svg.width ? svg.width.baseVal.value : svg.getAttribute("width");
+				const svgHeight = svg.height ? svg.height.baseVal.value : svg.getAttribute("height");
+				const svgDisplay = window.getComputedStyle(svg, null).display;
+				const svgVerticalAlign = window.getComputedStyle(svg, null).verticalAlign;
 				canvas.width = parseFloat(svgWidth) * 1.5;
 				canvas.height = parseFloat(svgHeight) * 1.5;
 				const img = new Image();
@@ -49,6 +51,8 @@ class SvgToPng {
 					newImg.src = pngDataUrl;
 					newImg.width = svgWidth;
 					newImg.height = svgHeight;
+					newImg.style.display = svgDisplay ? svgDisplay : "inline-block";
+					newImg.style.verticalAlign = svgVerticalAlign ? svgVerticalAlign : "middle";
 					if (svg.parentNode)
 						svg.parentNode.replaceChild(newImg, svg);
 				};
