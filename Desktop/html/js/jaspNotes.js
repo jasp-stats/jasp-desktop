@@ -233,7 +233,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			return self.$el;
 		};
 		this.closeButton.setAction(function () {
-
+			self.clear();
 			self.setVisibilityAnimate(false);
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
@@ -264,11 +264,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	},
 
 	clear: function () {
-
 		this.model.set('format', 'html');
 		this.model.set('text', '');
 		this.model.set('delta', {});
 		this.model.set('deltaAvailable', false);
+	
+		if (this.$quill)
+			this.$quill.setContents([]);
 	},
 
 	isTextboxEmpty: function () {
