@@ -418,6 +418,15 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			});
 		});
 
+		// temporary solution for https://github.com/slab/quill/issues/4507
+		self.$quill.on('composition-start', () => {
+			self.$quill.root.dataset.placeholder = '';
+		})
+	  
+		self.$quill.on('composition-end', () => {
+			self.$quill.root.dataset.placeholder = self.$quill.options.placeholder;
+		})
+		
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.on('mousedown', (event) => {
 			event.preventDefault();
