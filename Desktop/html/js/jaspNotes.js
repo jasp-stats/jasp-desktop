@@ -230,6 +230,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.closeButton = new JASPWidgets.ActionView({ className: "jasp-closer" });
 		var self = this;
 		this.closeButton.actionTargetElement = function () {
+			self.closeButton.$el.attr("title", i18n("Remove this note"))
+					.tooltip({position: {my:"center bottom-15", at:"center top"}});
 			return self.$el;
 		};
 		this.closeButton.setAction(function () {
