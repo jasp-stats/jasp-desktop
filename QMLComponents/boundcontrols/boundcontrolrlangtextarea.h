@@ -35,12 +35,14 @@ public:
 	QString		rScriptDoneHandler(const QString &result)				override;
 
 protected:
+	virtual const char *					_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
+
+protected:
     RSyntaxHighlighter*	_rLangHighlighter		= nullptr;
 
 	stringset								_noPrefixUsedColumnNames;
 	std::map<std::string, stringset>		_prefixedUsedColumnNames;
 	QString									_textEncoded;
-	virtual const char *					_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
 	const stringset							_allowedVarPrefixes = {"data."};
 
 
