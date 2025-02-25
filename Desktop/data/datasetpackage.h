@@ -315,6 +315,8 @@ signals:
 				void				columnsBeingRemoved(				int columnIndex, int count);
 				void				workspaceEmptyValuesChanged();
 				void				descriptionChanged();
+				void				refreshAllAnalyses();
+				void				refreshAllCompCols();
 
 public slots:
 				void				refresh()							{ beginResetModel(); endResetModel(); }

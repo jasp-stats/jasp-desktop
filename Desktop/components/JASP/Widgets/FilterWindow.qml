@@ -228,27 +228,11 @@ FocusScope
 				anchors
 				{
 					left:	showInactiveFilteredButtonEasy.right
-					right:	filterDropsLevels.left
+					right:	parent.right
 					bottom: parent.bottom
 					top:	rRectangularButton.top
 				}
 
-			}
-			
-			JaspControls.RectangularButton
-			{
-				id:			filterDropsLevels
-				//iconSource: !filterModel.dropLevels ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
-				text:		filterModel.dropLevels ? qsTr("Only filtered levels") : qsTr("Keep all levels")
-				onClicked:	filterModel.dropLevels = !filterModel.dropLevels
-				//width:		height
-				toolTip:	(filterModel.dropLevels ? qsTr("Only those levels passing the filter are used.") : qsTr("All leves are used, regardless of whether they pass the filter."))
-				anchors
-				{
-					right:	parent.right
-					bottom:	parent.bottom
-					top:	rRectangularButton.top
-				}
 			}
 		}
 
@@ -543,22 +527,6 @@ FocusScope
 					onClicked:		{ forceActiveFocus(); filterWindow.applyAndSendFilter(filterEdit.text) }
 
 					toolTip:		qsTr("Click to apply filter")
-				}
-
-				JaspControls.RectangularButton
-				{
-					id:			filterDropsLevelsC
-					//iconSource: !filterModel.dropLevels ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
-					text:		filterModel.dropLevels ? qsTr("Only filtered levels") : qsTr("Keep all levels")
-					onClicked:	filterModel.dropLevels = !filterModel.dropLevels
-					//width:		height
-					toolTip:	(filterModel.dropLevels ? qsTr("Only those levels passing the filter are used.") : qsTr("All leves are used, regardless of whether they pass the filter."))
-					anchors
-					{
-						right:	helpButton.left
-						bottom:	parent.bottom
-						top:	closeRectangularButton.top
-					}
 				}
 
 				JaspControls.RectangularButton

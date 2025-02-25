@@ -1736,6 +1736,9 @@ void DataSetPackage::setColumnDropLevels(size_t columnIndex, dropLevelsType drop
 	column->setDropLevels(dropLevels);
 
 	refresh();
+	
+	emit refreshAllCompCols();
+	emit refreshAllAnalyses();
 }
 
 

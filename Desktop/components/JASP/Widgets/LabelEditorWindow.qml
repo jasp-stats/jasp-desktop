@@ -621,6 +621,17 @@ FocusScope
 				
 				RoundedButton
 				{
+					id:			dropLevelsButton
+					iconSource: columnModel.dropLevels == "keep" ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
+					onClicked:	columnModel.dropLevels = (columnModel.dropLevels == "keep" ? "drop" : "keep")
+					width:		height
+					toolTip:	(columnModel.dropLevels == "keep" ? qsTr("Keeping levels, so all levels are passed to the analysis, both filtered out ones and those added later manually.") : qsTr("Dropping levels, so only those levels in the (possibly filtered) data get sent to the analysis."))
+					height:			buttonColumnVariablesWindow.buttonHeight
+					implicitHeight: buttonColumnVariablesWindow.buttonHeight
+				}
+				
+				RoundedButton
+				{
 					iconSource:		jaspTheme.iconPath +  "menu-column-order-by-values.svg"
 					onClicked:		{ forceActiveFocus(); columnModel.toggleAutoSortByValues(); }
 	

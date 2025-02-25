@@ -641,6 +641,7 @@ void ColumnModel::refresh()
 	endResetModel();
 
 	emit autoSortChanged();
+	emit dropLevelsChanged();
 	emit columnNameChanged();
 	emit columnTitleChanged();
 	emit nameEditableChanged();
