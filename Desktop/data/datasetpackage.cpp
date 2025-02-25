@@ -1637,6 +1637,7 @@ void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newNa
 	{
 		setManualEdits(true);
 		emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
+		enginesReceiveNewData();
 	}
 	refresh(); //We do refresh in any case because then the emptied name of the column in variableswindow will get filled again
 }
