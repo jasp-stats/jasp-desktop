@@ -350,6 +350,11 @@ SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QV
 			_oldValue = columnModel->computeFilter();
 			setText(QObject::tr("Change column compute filter of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
+			
+		case ColumnProperty::DropLevels:
+			_oldValue = columnModel->dropLevels();
+			setText(QObject::tr("Change column drop levels of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
+			break;
 		}
 	}
 	else
@@ -384,6 +389,10 @@ void SetColumnPropertyCommand::undo()
 	case ColumnProperty::ComputedColumnType:
 		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_oldValue.toInt()));
 		break;
+		
+	case ColumnProperty::DropLevels:
+		DataSetPackage::pkg()->setColumnDropLevels(_colId, dropLevelsTypeFromQString(_oldValue.toString()));
+		break;
 	}
 }
 
@@ -409,6 +418,10 @@ void SetColumnPropertyCommand::redo()
 		
 	case ColumnProperty::ComputedColumnType:
 		DataSetPackage::pkg()->setColumnComputedType(_colId, computedColumnType(_newValue.toInt()));
+		break;
+		
+	case ColumnProperty::DropLevels:
+		DataSetPackage::pkg()->setColumnDropLevels(_colId, dropLevelsTypeFromQString(_newValue.toString()));
 		break;
 	}
 

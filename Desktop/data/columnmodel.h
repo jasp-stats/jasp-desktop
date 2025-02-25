@@ -41,6 +41,7 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(bool			hasSeveralNumericValues		READ hasSeveralNumericValues									NOTIFY hasSeveralNumericValuesChanged	) //Only works when autosort is on
 	Q_PROPERTY(int			rowsTotal					READ rowsTotal													NOTIFY rowsTotalChanged					)
 	Q_PROPERTY(QString		computeFilter				READ computeFilter				WRITE setComputeFilter			NOTIFY computeFilterChanged				)
+	Q_PROPERTY(QString		dropLevels					READ dropLevels					WRITE setDropLevels				NOTIFY dropLevelsChanged				)
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -61,6 +62,7 @@ public:
 	QStringList		emptyValues()					const;
 	bool			hasSeveralNumericValues()		const;
 	int				rowsTotal()						const;
+	QString			dropLevels()					const;
 
 
 	bool			setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
@@ -103,6 +105,7 @@ public:
 	void setLabelMaxWidth();
 	void setUseCustomEmptyValues(bool useCustomMissingValues);
 	void setCustomEmptyValues(const QStringList& customMissingValues);
+	void setDropLevels(		QString	dropLevels);
 
 	QVariantList tabs()		const;
 
@@ -144,13 +147,14 @@ signals:
 	void filteredOutChanged();
 	void columnNameChanged();
 	void allFiltersReset();
-	void labelFilterChanged();
 	void rowWidthChanged();
+	void dropLevelsChanged();
+	void labelFilterChanged();
 	void valueMaxWidthChanged();
+	void columnDescriptionChanged();
 	void labelMaxWidthChanged();
 	void chosenColumnChanged();
 	void columnTitleChanged();
-	void columnDescriptionChanged();
 	void computedTypeChanged();
 	void computedTypeEditableChanged();
 	void computedTypeValuesChanged();

@@ -21,7 +21,6 @@ CREATE TABLE Filters (
 	constructorR	TEXT, 
 	errorMsg		TEXT,
 	revision		INT DEFAULT 0, 
-	dropLevels		INT,
 	
 	FOREIGN KEY(dataSet) REFERENCES DataSets(id)
 );
@@ -36,7 +35,8 @@ CREATE TABLE Columns
 	columnType			TEXT,
 	computeFilter		TEXT DEFAULT "",
 	colIdx				INT, 
-	autoSortByValue		INT,	
+	autoSortByValue		INT,
+	dropLevels			INT,
 	invalidated			INT		NULL,
 	codeType			TEXT	NULL, 
 	rCode				TEXT	NULL, 

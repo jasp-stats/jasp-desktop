@@ -74,6 +74,7 @@ public:
 			void					setInvalidated(		bool				invalidated		);
 			void					setCompColStuff(	bool				invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	Json::Value & constructorJson);
 			void					setDefaultValues(	enum columnType		columnType = columnType::unknown);
+			void					setDropLevels(		dropLevelsType		dropEm);
 
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
@@ -92,6 +93,8 @@ public:
 			int						id()					const	{ return _id;				}
 			int						analysisId()			const	{ return _analysisId;		}
 			bool					isComputed()			const	{ return _codeType != computedColumnType::notComputed && _codeType != computedColumnType::analysisNotComputed;	}
+			dropLevelsType			dropLevels()			const	{ return _dropLevels;		}
+			bool					shouldDropLevels()		const	{ return _dropLevels != dropLevelsType::keep; }
 			bool					invalidated()			const	{ return _invalidated;		}
 			bool					autoSortByValue()		const	{ return _autoSortByValue;	}
 			computedColumnType		codeType()				const	{ return _codeType;			}
@@ -271,6 +274,7 @@ private:
 			int						_nonFilteredNumericsCount	= -1;
 			bool					_invalidated		= false,
 									_autoSortByValue;
+			dropLevelsType			_dropLevels			= dropLevelsType::noChoice;
 			computedColumnType		_codeType			= computedColumnType::notComputed;
 			std::string				_name,
 									_title,

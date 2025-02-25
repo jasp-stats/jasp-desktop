@@ -137,6 +137,20 @@ void ColumnModel::setColumnTitle(const QString & newColumnTitle)
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newColumnTitle, SetColumnPropertyCommand::ColumnProperty::Title));
 }
 
+void ColumnModel::setDropLevels(QString dropLevels)
+{
+	if (_beingRefreshed)
+		return;
+
+	dropLevelsType dropEm = dropLevelsType::drop;
+	
+	try { dropEm = dropLevelsTypeFromQString(dropLevels); } catch(...){} 
+
+	if(column())
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, dropLevelsTypeToQString(dropEm), SetColumnPropertyCommand::ColumnProperty::DropLevels));
+}
+
+
 QString ColumnModel::columnDescription() const
 {
 	if (_virtual) return _dummyColumn.description;
@@ -198,6 +212,11 @@ int ColumnModel::rowsTotal() const
 	return rowCount();	
 }
 
+QString ColumnModel::dropLevels() const
+{
+	return dropLevelsTypeToQString(_virtual || !column() || column()->dropLevels() == dropLevelsType::noChoice ? dropLevelsType::drop : column()->dropLevels());
+}
+
 bool ColumnModel::hasSeveralNumericValues() const
 {
 	if(!column())
@@ -225,6 +244,7 @@ void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
 
 	_undoStack->pushCommand(new SetCustomEmptyValuesCommand(this, customEmptyValues));
 }
+
 
 void ColumnModel::addEmptyValue(const QString & value)
 {

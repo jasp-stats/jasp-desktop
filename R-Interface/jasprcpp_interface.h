@@ -43,14 +43,15 @@
 extern "C" {
 
 struct RBridgeColumn {
-  char*   name;
-  bool    isScale;
-  bool    isOrdinal;
-  double* doubles;
-  int*    ints;
-  char**  labels;
-  size_t  nbRows;
-  size_t  nbLabels;
+  char*		name;
+  bool		isScale;
+  bool		isOrdinal;
+  bool		dropLevels;
+  double*	doubles;
+  int*		ints;
+  char**	labels;
+  size_t	nbRows;
+  size_t	nbLabels;
 } ;
 
 struct RBridgeColumnDescription {

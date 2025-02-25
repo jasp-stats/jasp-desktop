@@ -99,9 +99,9 @@ public:
 	int			filterGetId(			const std::string & name);
 	bool		filterSelect(			int filterIndex,			boolvec & bools);																	///< Loads result and errorMsg and returns whether there was a change in either of those.
 	void		filterWrite(			int filterIndex,	const	boolvec & values);																	///< Overwrites the current filter values, no checks are done on the size. If too few the rest is TRUE nd superfluous bools are ignored.
-	int			filterInsert(			int dataSetId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "", bool dropLevels=true);		///< Inserts a new Filter row into Filters and creates an empty FilterValues_#id. It returns id
-	void		filterUpdate(			int filterIndex,	const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "", bool dropLevels=true);		///< Updates an existing Filter row in Filters
-	void		filterLoad(				int filterIndex,		  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision, std::string & name, bool & dropLevels);			///< Loads an existing Filter row into arguments
+	int			filterInsert(			int dataSetId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Inserts a new Filter row into Filters and creates an empty FilterValues_#id. It returns id
+	void		filterUpdate(			int filterIndex,	const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Updates an existing Filter row in Filters
+	void		filterLoad(				int filterIndex,		  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision, std::string & name);			///< Loads an existing Filter row into arguments
 	void		filterClear(			int filterIndex);																					///< Clears all values in Filter
 	void		filterDelete(			int filterIndex);
 	int			filterGetDataSetId(		int filterIndex);
@@ -125,16 +125,17 @@ public:
 
 	//id stuff:
 	int			columnGetDataSetId(			int columnId);
-	void		columnDelete(				int columnId, bool cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
-	void		columnSetType(				int columnId, columnType colType);
-	void		columnSetAutoSort(			int columnId, bool sort);
-	void		columnSetInvalidated(		int columnId, bool invalidated);
-	void		columnSetName(				int columnId, const std::string & name);
-	void		columnSetTitle(				int columnId, const std::string & title);
-	void		columnSetEmptyVals(			int columnId, const std::string & emptyValsJson);
-	void		columnSetDescription(		int columnId, const std::string & description);
-	void		columnSetComputeFilter(		int columnId, const std::string & description);
-	void		columnGetBasicInfo(			int columnId,		std::string & name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort);
+	void		columnDelete(				int columnId, bool					cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
+	void		columnSetType(				int columnId, columnType			colType);
+	void		columnSetAutoSort(			int columnId, bool					sort);
+	void		columnSetInvalidated(		int columnId, bool					invalidated);
+	void		columnSetDropLevels(		int columnId, int					dropLevels);
+	void		columnSetName(				int columnId, const std::string &	name);
+	void		columnSetTitle(				int columnId, const std::string &	title);
+	void		columnSetEmptyVals(			int columnId, const std::string &	emptyValsJson);
+	void		columnSetDescription(		int columnId, const std::string &	description);
+	void		columnSetComputeFilter(		int columnId, const std::string &	computeFilter);
+	void		columnGetBasicInfo(			int columnId,		std::string &	name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels);
 	void		columnSetComputedInfo(		int columnId, int analysisId,  bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	std::string & constructorJson, const std::string & computeFilter);
 	void		columnGetComputedInfo(		int columnId, int &analysisId, bool & invalidated, computedColumnType & codeType,		std::string & rCode,		std::string & error,		Json::Value & constructorJson, std::string & computeFilter);
 	void		columnSetValues(			int columnId, const intvec	  & ints, const doublevec & dbls);

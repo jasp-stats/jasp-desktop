@@ -425,7 +425,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		if (requestedType == columnType::unknown)
 			requestedType = colType;
 
-		resultCol.nbRows = filteredRowCount;
+		resultCol.nbRows		= filteredRowCount;
+		resultCol.dropLevels	= column->shouldDropLevels();
 		
 		if (requestedType == columnType::scale)
 		{

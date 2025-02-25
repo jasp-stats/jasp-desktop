@@ -234,6 +234,7 @@ public:
 				stringvec					getColumnDataStrs(					size_t				columnIndex);
 				void						setColumnName(						size_t				columnIndex, const std::string	& newName);
 				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
+				void						setColumnDropLevels(				size_t					columnIndex, dropLevelsType dropLevels);
 				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
 				void						setColumnComputedType(				size_t				columnIndex, computedColumnType	type);
 				void						setColumnComputedType(				const std::string &	columnName,	computedColumnType	type);

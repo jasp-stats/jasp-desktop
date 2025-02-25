@@ -57,9 +57,13 @@ void Column::dbLoad(int id, bool getValues)
 	db().transactionReadBegin();
 	
 	Json::Value emptyVals;
+	int dropLevelsTypeInt = static_cast<int>(_dropLevels);
 	
-	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue);
+	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue, dropLevelsTypeInt);
 	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson, _computeFilter);
+	
+	try { _dropLevels = dropLevelsType(dropLevelsTypeInt); } catch(...){}
+	
 	
 	_emptyValues->fromJson(emptyVals);
 
@@ -428,6 +432,20 @@ void Column::setDefaultValues(enum columnType columnType)
 	labelsClear();
 	
 	dbUpdateValues(false);
+}
+
+void Column::setDropLevels(dropLevelsType dropEm)
+{
+	JASPTIMER_SCOPE(Column::setDropLevels);
+	
+	if(_dropLevels == dropEm)
+		return;
+	
+	_dropLevels = dropEm;
+	
+	db().columnSetDropLevels(_id, static_cast<int>(_dropLevels));
+	
+	incRevision();
 }
 
 void Column::dbUpdateValues(bool labelsTempCanBeMaintained)
@@ -1037,7 +1055,7 @@ int Column::nonFilteredNumericsCount()
 			if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
 					numerics.insert(_dbls[r]);
 
-		if(!_data->filter()->shouldDropLevels())
+		if(!shouldDropLevels())
 			for(Label * label : _labels)
 				if(label->originalValue().isDouble())
 					numerics.insert(label->originalValue().asDouble());
@@ -1066,7 +1084,7 @@ stringvec Column::nonFilteredLevels()
 					levels.insert(ColumnUtils::doubleToString(_dbls[r]));
 			}
 
-		if(!_data->filter()->shouldDropLevels())
+		if(!shouldDropLevels())
 			for(Label * label : _labels)
 				levels.insert(label->label());
 

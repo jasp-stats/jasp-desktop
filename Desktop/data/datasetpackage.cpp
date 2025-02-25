@@ -1724,6 +1724,21 @@ void DataSetPackage::setColumnComputedType(size_t columnIndex, computedColumnTyp
 	refresh();
 }
 
+void DataSetPackage::setColumnDropLevels(size_t columnIndex, dropLevelsType dropLevels)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	if (!column)
+		return;
+
+	column->setDropLevels(dropLevels);
+
+	refresh();
+}
+
+
 void DataSetPackage::setColumnComputedType(const std::string & columnName, computedColumnType type)
 {
 	setColumnComputedType(getColumnIndex(columnName), type);

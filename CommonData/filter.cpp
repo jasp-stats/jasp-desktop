@@ -18,15 +18,10 @@ Filter::Filter(DataSet * data, const std::string & name, bool createIfMissing)
 	else								throw std::runtime_error("Filter by name '" + _name + "' but it doesnt exist and createIfMissing=false!\nAre you sure this filter should exist?");
 }
 
-bool Filter::shouldDropLevels() const
-{
-	return dropLevels(); // && filteredRowCount() != data()->rowCount();
-}
-
 void Filter::dbCreate()
 {
 	assert(_id == -1);
-	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name, _dropLevels);
+	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
 }
 
 void Filter::dbUpdate()
@@ -37,7 +32,7 @@ void Filter::dbUpdate()
 
 	db().transactionWriteBegin();
 	if(!_data->writeBatchedToDB())
-		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name, _dropLevels);
+		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
 
 	incRevision();
 	db().transactionWriteEnd();
@@ -64,7 +59,7 @@ void Filter::dbLoad()
 	db().transactionReadBegin();
 	
 	std::string nameInDB = "";
-	db().filterLoad(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _revision, nameInDB, _dropLevels);
+	db().filterLoad(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _revision, nameInDB);
 	assert(nameInDB == _name);
 
 	_filteredRowCount	= 0;
@@ -114,12 +109,6 @@ bool Filter::setFilterVector(const boolvec & filterResult)
 void Filter::setFilterValueNoDB(size_t row, bool val)
 {
 	_filtered[row] = val;
-}
-
-void Filter::setDropLevels(bool dropEm)
-{
-	_dropLevels = dropEm;
-	dbUpdate();
 }
 
 void Filter::setRowCount(size_t rows)

@@ -34,7 +34,7 @@ Rcpp::DataFrame jaspRCPP_readCompColDataSet();
 Rcpp::DataFrame jaspRCPP_readDataSetRequested();
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(		SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(	SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax, bool dropLevels);
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax);
 
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP extension);
