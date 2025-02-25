@@ -519,6 +519,7 @@ FocusScope
 				text:					""
 				placeholderText:		qsTr("Value")
 				height:					buttonColumnVariablesWindow.buttonHeight
+				onEditingFinished:		if(activeFocus)	addLevelButton.clicked()
 				
 				background: Rectangle
 				{
@@ -531,6 +532,8 @@ FocusScope
 					height:				parent.height  - 2
 					anchors.centerIn:	parent
 				}
+				
+				
 				
 			}
 			
@@ -548,6 +551,7 @@ FocusScope
 				placeholderText:	qsTr("Label")
 				height:				buttonColumnVariablesWindow.buttonHeight
 				Layout.fillWidth:	true
+				onEditingFinished:	if(activeFocus)	addLevelButton.clicked()
 				
 				background: Rectangle
 				{
@@ -564,6 +568,7 @@ FocusScope
 			
 			RoundedButton
 			{
+				id:				addLevelButton
 				iconSource:		jaspTheme.iconPath +  "addition-sign-small.svg"
 				onClicked:		
 				{ 

@@ -178,6 +178,8 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 					if (roles.contains(int(DataSetPackage::specialRoles::selected)))
 						context->setContextProperty("itemSelected",	_model->data(row, col, _model->getRole("selected")));
 					
+					context->setContextProperty("itemFiltered",		_model->data(row, col, _model->filtered(row, col)));
+					
 					if (roles.contains(Qt::DisplayRole))
 					{
 						//Changes here should be considered also for DataSetView::setStyleDataItem:

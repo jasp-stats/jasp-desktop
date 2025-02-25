@@ -485,7 +485,7 @@ FocusScope
 					iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
 					onClicked:	dataSetModel.showInactive = !dataSetModel.showInactive
 					width:		height
-					toolTip:	(dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
+					toolTip:	(!dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
 					anchors
 					{
 						left:	easyRectangularButton.right
