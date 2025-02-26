@@ -133,6 +133,7 @@ public slots:
 	void setRowWidth(double len);
 	void onChosenColumnChanged();
 	void refresh();
+	void refreshUnselect();
 	void checkRemovedColumns(int columnIndex, int count);
 	void checkInsertedColumns(const QModelIndex & parent, int first, int last);
 	void openComputedColumn(const QString & name);

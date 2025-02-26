@@ -665,13 +665,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
 					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
-					toolTip:		qsTr("Reverse order of all labels")
+					toolTip:		!columnModel.autoSort ? qsTr("Reverse order of all labels") : qsTr("Turn automatically ordering off to reverse order of all labels")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					visible:		!columnModel.autoSort
-					enabled:		columnModel.rowsTotal > 1
+					enabled:		!columnModel.autoSort && columnModel.rowsTotal > 1
 				}
 	
 				RoundedButton
@@ -679,13 +678,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 	
 					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.selectedRow--; }
-					toolTip:		qsTr("Move selected labels up")
+					toolTip:		!columnModel.autoSort ? qsTr("Move selected labels up") : qsTr("Turn automatically ordering off to move labels up manually")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		levelsTableView.selectedRow > 0
-					visible:		!columnModel.autoSort
+					enabled:		!columnModel.autoSort && levelsTableView.selectedRow > 0
 				}
 	
 				RoundedButton
@@ -693,13 +691,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 	
 					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.selectedRow++; }
-					toolTip:		qsTr("Move selected labels down")
+					toolTip:		!columnModel.autoSort ? qsTr("Move selected labels down") : qsTr("Turn automatically ordering off to move labels down manually")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		levelsTableView.selectedRow >= 0 && levelsTableView.selectedRow < columnModel.rowCount() - 1
-					visible:		!columnModel.autoSort
+					enabled:		!columnModel.autoSort && levelsTableView.selectedRow >= 0 && levelsTableView.selectedRow < columnModel.rowCount() - 1
 				}
 	
 				RoundedButton

@@ -58,8 +58,8 @@ Rectangle
 												 : _pressed ? jaspTheme.buttonColorPressed
 															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
 																															: jaspTheme.buttonColor
-	border.color:						(filterButtonRoot.hovered || selected) ? jaspTheme.buttonBorderColorHovered
-																			   : jaspTheme.buttonBorderColor
+	border.color:						enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
+																							: jaspTheme.buttonBorderColor
 	border.width:						1
 
 
@@ -82,9 +82,9 @@ Rectangle
 		anchors.fill:				parent
 		acceptedButtons:			Qt.LeftButton
 		hoverEnabled:				true
-		cursorShape:				Qt.PointingHandCursor
+		cursorShape:				filterButtonRoot.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 		onClicked:					filterButtonRoot.clicked();
-		visible:					filterButtonRoot.enabled
+		//visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}
 
