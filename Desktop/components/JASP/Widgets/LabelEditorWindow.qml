@@ -233,7 +233,6 @@ FocusScope
 								onClicked:				
 								{
 									columnModel.setChecked(rowIndex, !itemFiltered); // Case when all labels are unchecked.
-									columnModel.setSelected(rowIndex,true);
 								}
 	
 								Image

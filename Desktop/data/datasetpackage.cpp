@@ -1038,8 +1038,8 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 		bool before = column->hasFilter();
 		labels[row]->setFilterAllows(newAllowValue);
 
-		if(before != column->hasFilter())
-			notifyColumnFilterStatusChanged(col); //basically resetModel now
+		
+		notifyColumnFilterStatusChanged(col); //basically resetModel now
 
 		emit labelFilterChanged();
 		QModelIndex columnParentNode = indexForSubNode(column);

@@ -20,9 +20,20 @@ FocusScope
 
 	Connections
 	{
-		target:						filterModel
-		function onFilterErrorMsgChanged()	{ if (filterModel.filterErrorMsg.length > 0) open();	}
+		target:	 filterModel
 		function onRFilterChanged()			{ absorbModelRFilter();				}
+		function onFilterErrorMsgChanged()	
+		{ 
+			if (filterModel.filterErrorMsg.length > 0 && !visible) 
+			{
+				open();	
+				
+				//Now this might be caused by some labelfilter, or something. However, the filterwindow by default does not show the generatedFilter
+				//Maybe its better to open it on the R display then?
+				if(filterModel.isJustGeneratedFilter())
+					filterContainer.showEasyFilter = false
+			}
+		}
 	}
 
 	function toggle()

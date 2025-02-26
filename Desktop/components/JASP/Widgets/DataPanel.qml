@@ -23,7 +23,7 @@ Rectangle
 			objectName:					"filterWindow"
 			SplitView.minimumHeight:	desiredMinimumHeight
 			SplitView.preferredHeight:	desiredHeight
-			SplitView.maximumHeight:	rootDataset.height * 0.8
+			SplitView.maximumHeight:	splitViewData.height
 
 		}
 
@@ -32,7 +32,7 @@ Rectangle
 			id:							variablesWindow
 			SplitView.minimumHeight:	calculatedMinimumHeight
 			SplitView.preferredHeight:	calculatedPreferredHeight
-			SplitView.maximumHeight:	calculatedMaximumHeight
+			SplitView.maximumHeight:	splitViewData.height
 		}
 
 		DataTableView

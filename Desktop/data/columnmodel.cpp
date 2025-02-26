@@ -786,6 +786,8 @@ bool ColumnModel::setChecked(int rowIndex, bool checked)
 	
 	if(_beingRefreshed || checked == data(index(rowIndex,0), int(DataSetPackage::specialRoles::filter)).toBool())
 		return true; //Its already that value
+	
+	setSelected(rowIndex, true);
 
 	_editing = true;
 	_undoStack->pushCommand(new FilterLabelCommand(this, rowIndex, checked));

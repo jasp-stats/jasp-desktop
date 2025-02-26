@@ -38,6 +38,11 @@ const char * FilterModel::defaultRFilter()
 	return defaultFilter.c_str();
 }
 
+bool FilterModel::isJustGeneratedFilter() const
+{
+	return rFilter() == defaultRFilter() && constructorJson() == DEFAULT_FILTER_JSON;
+}
+
 void FilterModel::reset()
 {
 	_setGeneratedFilter(DEFAULT_FILTER_GEN	);

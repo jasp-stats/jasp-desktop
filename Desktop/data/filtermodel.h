@@ -37,6 +37,7 @@ public:
 
 
 	Q_INVOKABLE void			resetRFilter()				{ applyRFilter(defaultRFilter()); }
+	Q_INVOKABLE bool			isJustGeneratedFilter() const;
 				void			sendGeneratedAndRFilter();
 
 				void			updateStatusBar();

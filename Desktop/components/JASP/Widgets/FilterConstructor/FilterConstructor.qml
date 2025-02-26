@@ -12,8 +12,8 @@ Item
 				property real	fontPixelSize:			baseFontSize * preferencesModel.uiScale
 				property real	blockDim:				baseBlockDim * preferencesModel.uiScale
 				property var	allKeys:				["number", "boolean", "string", "variable"]
-	readonly	property real	desiredMinimumHeight:	operatorsRow.height + hints.height + applyFilter.height + blockDim * 4
-	readonly	property real	desiredHeight:			operatorsRow.height + hints.height + applyFilter.height + functieLijst.contentHeight
+	readonly	property real	desiredMinimumHeight:	operatorsRow.height	+ applyFilter.height + blockDim * 4
+	readonly	property real	desiredHeight:			operatorsRow.height + applyFilter.height + blockDim * 12
 				property real	extraSpaceUnderColumns:	0
 				property bool	somethingChanged:		false
 				property bool	isColumnConstructor:	false

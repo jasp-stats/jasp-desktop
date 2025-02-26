@@ -33,7 +33,7 @@ FocusScope
 
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
 	property real calculatedMinimumHeight:		calculatedBaseHeight * 1.5
-	property real calculatedPreferredHeight:	Math.max(parent.height / 2, calculatedBaseHeight * 4)
+	property real calculatedPreferredHeight:	calculatedBaseHeight * 4
 	property real calculatedMaximumHeight:		!tabView.visible ? calculatedBaseHeight :  0.90 * parent.height
 
 	Connections
@@ -66,7 +66,7 @@ FocusScope
 
 		property int minWidth: 500 * preferencesModel.uiScale
 		
-		onHeightChanged: columnModel.setCompactMode(height < variablesContainer.calculatedPreferredHeight)
+		onHeightChanged: columnModel.setCompactMode(height < calculatedBaseHeight * 3)
 					
 		anchors
 		{
