@@ -635,18 +635,23 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 					? columnType::ordinal
 					: columnType::scale;
 			
-			stringvec preview = !col ? stringvec() : col->previewTransform(colTypeWanted);
+			stringvec	preview		= !col ? stringvec()	: col->previewTransform(colTypeWanted);
+			QString		description = !col ? ""				: tq(col->description()).trimmed();
 			
+			if(!description.isEmpty())
+				description = tr("Column description:") + " " + description;
+
 			if(preview.size() != 4)
-				return QVariant();
+				return description; //Its either "" or something useful
 			
 			QString	levelsTotal		= tq(preview[0]),
 					levelsNums		= tq(preview[1]),
 					vals			= tq(preview[2]),
 					empties			= tq(preview[3]);
 			
-			if(colTypeWanted == columnType::scale)
-				return	tr("There are %1 total levels, of which %2 have a numeric value.\nAs a '%3' it looks like: %4\n%5")
+			return (description != "" ? description + "\n" : "") +
+					(colTypeWanted == columnType::scale 
+					?	tr("There are %1 total levels, of which %2 have a numeric value.\nAs a '%3' it looks like: %4\n%5")
 						.arg(levelsTotal)
 						.arg(levelsNums)
 						.arg(VariableInfo::getTypeFriendly(colTypeWanted))
@@ -655,12 +660,12 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 							empties == "" 
 							? "" 
 							: tr("Implicit missing values: %1").arg(empties)
-						);
-			else
-				return tr("There are %1 total levels.\nAs a '%2' it looks like: %3")
+						)
+						
+					:	tr("There are %1 total levels.\nAs a '%2' it looks like: %3")
 					.arg(levelsTotal)
 					.arg(VariableInfo::getTypeFriendly(colTypeWanted))
-					.arg(vals);
+					.arg(vals));
 		}
 		}
 	}
@@ -1666,6 +1671,7 @@ void DataSetPackage::setColumnDescription(size_t columnIndex, const std::string 
 		return;
 
 	column->setDescription(newDescription);
+	
 	refresh();
 }
 
