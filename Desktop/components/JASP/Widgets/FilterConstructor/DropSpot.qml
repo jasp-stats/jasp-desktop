@@ -15,29 +15,36 @@ DropArea {
 	width:  implicitWidth
 	height: implicitHeight
 	keys: ["all"]
-	property real originalWidth: defaultText.length * filterConstructor.blockDim * 0.4
-	property bool acceptsDrops: true
+	property real	originalWidth: defaultText.length * filterConstructor.blockDim * 0.4
+	property bool	acceptsDrops: true
 	property string defaultText: acceptsDrops ? "..." : shouldShowX ? "y" : ""
-	property bool droppedShouldBeNested: false
-	property bool shouldShowX: false
-	property bool iWasChecked: false
+	property bool	droppedShouldBeNested: false
+	property bool	shouldShowX: false
+	property bool	iWasChecked: false
 
 	implicitWidth:	Math.max(dropText.contentWidth, acceptsDrops ? filterConstructor.blockDim * 5 : 0)
 	implicitHeight: filterConstructor.blockDim
 
-	property bool beingDragHovered: false
-	property color dragHoverColor: jaspTheme.blue
+	property bool	beingDragHovered: false
+	property color	dragHoverColor: jaspTheme.blue
 
 	Rectangle
 	{
-		id: dragMarker
-		z: -3
-		visible: containsDrag || beingDragHovered
-		radius: width
-		anchors.fill: parent
-		border.color: dragTarget.dragHoverColor
-		border.width: 3
-		color: "transparent"
+		id:				dragMarker
+		z:				-3
+		visible:		containsDrag || beingDragHovered
+		radius:			width
+		anchors.fill:	parent
+		border.color:	dragTarget.dragHoverColor
+		border.width:	3
+		color:			"transparent"
+	}
+	
+	MouseArea
+	{
+		anchors.fill:	parent	
+		z:				-100
+		onClicked:		if(dropTextInput.visible) dropTextInput.forceActiveFocus()
 	}
 
 	function checkCompletenessFormulas()
@@ -87,7 +94,7 @@ DropArea {
 		dragHoverColor = foundOneValidDragKey ? jaspTheme.green : jaspTheme.red
 
 		originalWidth = width
-		width = drag.source.width
+		width = Math.max(drag.source.width, originalWidth)
 	}
 
 	onExited:
