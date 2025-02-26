@@ -58,14 +58,15 @@ public:
 	DataSet					*	dataSet();
 
 signals:
+	void refresh();
 	void namesChanged(		QMap<QString, QString> changedNames);
-	void columnsChanged(	QStringList changedColumns);
-	void columnTypeChanged(	QString colName);
-	void labelsChanged(		QString columnName, QMap<QString, QString> changedLabels);
-	void labelsReordered(	QString columnName);
-	void dataSetChanged();
 	void filterChanged();
+	void labelsChanged(		QString columnName, QMap<QString, QString> changedLabels);
+	void columnsChanged(	QStringList changedColumns);
+	void dataSetChanged();
 	void rowCountChanged();
+	void labelsReordered(	QString columnName);
+	void columnTypeChanged(	QString colName);
 	void dataAvailableChanged();
 
 private:	

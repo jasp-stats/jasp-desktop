@@ -28,6 +28,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered	);
 	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged		);
 	connect(this, &ColumnsModel::dataSetChanged,						info, &VariableInfo::dataSetChanged		);
+	connect(this, &ColumnsModel::modelReset,							info, &VariableInfo::refresh			);
 	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged	);
 	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged	);

@@ -133,6 +133,7 @@ void SourceItem::connectModels()
 		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
 		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
+		connect(variableInfo,	&VariableInfo::refresh,				controlModel, &ListModel::refresh );
 	}
 
 	if (_sourceListModel)
