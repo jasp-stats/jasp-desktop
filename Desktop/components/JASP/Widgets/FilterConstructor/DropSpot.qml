@@ -11,7 +11,6 @@ DropArea {
 	property string __debugName: "DropSpot " + (parent !== undefined && parent.__debugName !== undefined ? parent.__debugName : "???")
 
 	property var dropKeys: [ "number", "boolean", "string", "variable" ]
-	property alias dropProxy: dragTarget
 
 	width:  implicitWidth
 	height: implicitHeight
@@ -23,7 +22,7 @@ DropArea {
 	property bool shouldShowX: false
 	property bool iWasChecked: false
 
-	implicitWidth: dropText.contentWidth
+	implicitWidth:	Math.max(dropText.contentWidth, acceptsDrops ? filterConstructor.blockDim * 5 : 0)
 	implicitHeight: filterConstructor.blockDim
 
 	property bool beingDragHovered: false
