@@ -1318,3 +1318,16 @@ void JaspTheme::updateFontMetrics()
 	if(currentTheme())
 		_fontMetrics = QFontMetricsF(currentTheme()->font());
 }
+
+float JaspTheme::columnTypeScaleHovered() const
+{
+	return _columnTypeScaleHovered;
+}
+
+void JaspTheme::setColumnTypeScaleHovered(float newColumnTypeScaleHovered)
+{
+	if (qFuzzyCompare(_columnTypeScaleHovered, newColumnTypeScaleHovered))
+		return;
+	_columnTypeScaleHovered = newColumnTypeScaleHovered;
+	emit columnTypeScaleHoveredChanged();
+}

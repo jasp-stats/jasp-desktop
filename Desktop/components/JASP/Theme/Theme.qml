@@ -70,6 +70,7 @@ JaspTheme
 
 	//Scales:
 	ribbonScaleHovered:					1.1
+	columnTypeScaleHovered:				1.2
 
 	//Color definitions:
 	white:								"white"

@@ -46,6 +46,7 @@ Item
 		id:				colIcon
 		source:			filterConstructor.forceColumnInputs === "" ? columnIcon : computedColumnsInterface.computeColumnIconSource
 		width:			height
+		scale:			iconMouseArea.containsMouse ? jaspTheme.columnTypeScaleHovered : 1
 		sourceSize
 		{
 			width:		width * 2
@@ -60,8 +61,10 @@ Item
 		
 		MouseArea
 		{
+			id:					iconMouseArea
 			enabled:			changeTypeAllowed
 			anchors.fill:		parent
+			hoverEnabled:		true
 			onClicked:
 			{
 				var functionCall      = function (index)

@@ -664,7 +664,7 @@ bool ListModel::sourceColumnTypeChanged(Term sourceTerm)
 			term.setTypes(types);
 			QModelIndex ind = index(i, 0);
 
-			emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole});
+			emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole, ListModel::ColumnPreviewRole});
 			emit columnTypeChanged(term);
 
 			change = true;

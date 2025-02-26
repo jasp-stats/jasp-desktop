@@ -18,6 +18,8 @@ class JaspTheme : public QQuickItem
 
 	Q_PROPERTY(float              uiScale                         READ uiScale                                                                  NOTIFY uiScaleChanged                         )
 	Q_PROPERTY(float              ribbonScaleHovered              READ ribbonScaleHovered              WRITE setRibbonScaleHovered              NOTIFY ribbonScaleHoveredChanged              )
+	Q_PROPERTY(float              columnTypeScaleHovered          READ columnTypeScaleHovered          WRITE setColumnTypeScaleHovered          NOTIFY columnTypeScaleHoveredChanged          )
+	
 
 	//Colors (base):
 	Q_PROPERTY(QColor             white                           READ white                           WRITE setWhite                           NOTIFY whiteChanged                           )
@@ -321,7 +323,10 @@ public:
 	QString				themeName()							const	{ return _themeName;					}
 	static QString		currentIconPath();
 	bool				isDark()							const	{ return _isDark;						}
-
+	
+	float columnTypeScaleHovered() const;
+	void setColumnTypeScaleHovered(float newColumnTypeScaleHovered);
+	
 signals:
 	void currentThemeReady(JaspTheme * newTheme);
 	void uiScaleChanged(float uiScale);
@@ -456,7 +461,9 @@ signals:
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged();
 	void isDarkChanged(bool isDark);
-
+	
+	void columnTypeScaleHoveredChanged();
+	
 public slots:
 	void setRibbonScaleHovered(float ribbonScaleHovered);
 	void setWhite(QColor white);
@@ -599,6 +606,7 @@ private:
 	static JaspTheme		* _currentTheme;
 
 	float				_ribbonScaleHovered,
+						_columnTypeScaleHovered,
 						_uiScale				= 1,	///< default for when in R, otherwise ignored
 						_maximumFlickVelocity	= 801;	///< default for when in R, otherwise ignored
 
