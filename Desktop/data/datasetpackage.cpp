@@ -1037,6 +1037,8 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 
 		bool before = column->hasFilter();
 		labels[row]->setFilterAllows(newAllowValue);
+		
+		
 
 		
 		notifyColumnFilterStatusChanged(col); //basically resetModel now
@@ -1045,6 +1047,14 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 		QModelIndex columnParentNode = indexForSubNode(column);
 		//emit dataChanged(DataSetPackage::index(row, 0, columnParentNode),	DataSetPackage::index(row, columnCount(columnParentNode), columnParentNode), { int(specialRoles::filter) });
 		emit filteredOutChanged(col);
+		
+		if(column->dropLevels() == dropLevelsType::noChoice && !newAllowValue) //No choice was made yet, but the user disabled a label, so I guess they dont want all labels
+		{
+			column->setDropLevels(dropLevelsType::drop);
+			//To be sure everything is updated:
+			emit refreshAllCompCols();
+			emit refreshAllAnalyses();
+		}
 
 		return true;
 	}

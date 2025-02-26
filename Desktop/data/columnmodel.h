@@ -98,14 +98,14 @@ public:
 	double valueMaxWidth()		const	{ return _valueMaxWidth;	}
 	double labelMaxWidth()		const	{ return _labelMaxWidth;	}
 
-	void setColumnTitle(const QString & newColumnTitle);
-	void setColumnDescription(const QString & newColumnDescription);
-	void setComputedType(QString computedType);
-	void setColumnType(QString type);
+	void setColumnTitle(			const QString &		newColumnTitle);
+	void setColumnDescription(		const QString &		newColumnDescription);
+	void setComputedType(			QString				computedType);
+	void setColumnType(				QString				type);
 	void setLabelMaxWidth();
-	void setUseCustomEmptyValues(bool useCustomMissingValues);
-	void setCustomEmptyValues(const QStringList& customMissingValues);
-	void setDropLevels(		QString	dropLevels);
+	void setUseCustomEmptyValues(	bool				useCustomMissingValues);
+	void setCustomEmptyValues(		const QStringList&	customMissingValues);
+	void setDropLevels(				QString				dropLevels);
 
 	QVariantList tabs()		const;
 
