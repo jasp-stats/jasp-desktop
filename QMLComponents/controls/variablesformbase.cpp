@@ -22,7 +22,8 @@
 
 VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 {
-	_controlType = ControlType::VariablesForm;
+	_controlType			= ControlType::VariablesForm;
+	_useControlMouseArea	= false;
 }
 
 void VariablesFormBase::componentComplete()

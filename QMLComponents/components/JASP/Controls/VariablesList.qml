@@ -405,13 +405,8 @@ VariablesListBase
 				property bool	containsDragItem:		variablesList.itemContainingDrag === itemRectangle
 				property bool	isVirtual:				(typeof model.type !== "undefined") && model.type.includes("virtual")
 				property bool	isVariable:				(typeof model.type !== "undefined") && model.type.includes("variable")
-				property string	preview:				!isVariable || (typeof model.preview === "undefined") ? "" : model.preview
-				property string	toolTip:				(!itemRectangle.typeChangeable							? "" : qsTr("Click icon to change column type")) +
-														(!(itemRectangle.typeChangeable && colName.truncated)	? "" : "\n\n" ) +
-														(!colName.truncated										? "" : model.name ) + 
-														(!(preview != "" && 
-														(itemRectangle.typeChangeable || colName.truncated)) ? "" : "\n\n" ) +
-														preview
+				property string	preview:				!isVariable || (typeof model.preview     === "undefined") ? "" : model.preview.trim()
+				property string	toolTip:				formatToolTip(itemRectangle.typeChangeable, colName.truncated, model.description.trim(), preview)
 				property bool	isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool	draggable:				variablesList.draggable && model.selectable
 				property string	columnType:				isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
@@ -419,6 +414,26 @@ VariablesListBase
 				property bool	typeChangeable:			variablesList.allowTypeChange && (allowedTypeIcons.count === 0 || allowedTypeIcons.count > 1) && icon.visible
 
 				enabled: !variablesList.draggable || model.selectable
+				
+				function formatToolTip(typeChangeAble, colNameTrunc, descriptionV, previewV)
+				{
+					var stringList = []
+					
+					if(colNameTrunc)
+						stringList.push(model.name)
+					
+					if(typeChangeAble)
+						stringList.push(qsTr("Click icon to change column type"))
+					
+					if(descriptionV !== "")
+						stringList.push(qsTr("Column description: ") + descriptionV)
+
+					if(previewV !== "")
+						stringList.push(previewV)
+					
+					return stringList.join("\n\n");
+					
+				}
 
 				function setRelative(draggedRect)
 				{
@@ -543,7 +558,7 @@ VariablesListBase
 
 					drag.target:	itemRectangle.draggable ? parent : null
 					hoverEnabled:	true
-					cursorShape:	Qt.PointingHandCursor
+					cursorShape:	itemRectangle.typeChangeable && mouseX < icon.width ? Qt.PointingHandCursor : Qt.OpenHandCursor
 
 					onDoubleClicked: (mouse)=>
 					{

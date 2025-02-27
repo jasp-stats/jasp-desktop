@@ -636,21 +636,16 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 					: columnType::scale;
 			
 			stringvec	preview		= !col ? stringvec()	: col->previewTransform(colTypeWanted);
-			QString		description = !col ? ""				: tq(col->description()).trimmed();
 			
-			if(!description.isEmpty())
-				description = tr("Column description:") + " " + description;
-
 			if(preview.size() != 4)
-				return description; //Its either "" or something useful
+				return "";
 			
 			QString	levelsTotal		= tq(preview[0]),
 					levelsNums		= tq(preview[1]),
 					vals			= tq(preview[2]),
 					empties			= tq(preview[3]);
 			
-			return (description != "" ? description + "\n" : "") +
-					(colTypeWanted == columnType::scale 
+			return 	(colTypeWanted == columnType::scale 
 					?	tr("There are %1 total levels, of which %2 have a numeric value.\nAs a '%3' it looks like: %4\n%5")
 						.arg(levelsTotal)
 						.arg(levelsNums)

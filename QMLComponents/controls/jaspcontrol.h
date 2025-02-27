@@ -285,7 +285,7 @@ protected:
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,
-							_initializedWithValue	= false,
+							_initializedWithValue		= false,
 							_debug						= false,
 							_parentDebug				= false,
 							_hasError					= false,

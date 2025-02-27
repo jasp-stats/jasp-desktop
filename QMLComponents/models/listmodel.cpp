@@ -51,6 +51,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
 		roles[ColumnPreviewRole]			= "preview";
+		roles[ColumnDescriptionRole]		= "description";
 		roles[ColumnRealTypeRole]			= "columnRealType";
 		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
@@ -312,6 +313,11 @@ columnType ListModel::getVariableType(const QString& name) const
 	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
 }
 
+QString ListModel::getVariableDescription(const QString &name) const
+{
+	return requestInfo(VariableInfo::ColumnDescription, name).toString();
+}
+
 columnType ListModel::getVariableRealType(const QString& name) const
 {
 	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
@@ -507,6 +513,9 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		
 	case ListModel::ColumnPreviewRole:
 		return (!listView()->containsVariables() || term.size() != 1) ? "" : getVariablePreview(term.asQString());
+		
+	case ListModel::ColumnDescriptionRole:
+		return (!listView()->containsVariables() || term.size() != 1) ? "" : getVariableDescription(term.asQString());
 	
 	case ListModel::ColumnTypeRole:
 	case ListModel::ColumnRealTypeRole:

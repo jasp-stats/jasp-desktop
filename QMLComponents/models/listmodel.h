@@ -48,6 +48,7 @@ public:
 		ColumnPreviewRole,
 		ColumnRealTypeRole,
 		ColumnTypeIconRole,
+		ColumnDescriptionRole,
 		ColumnTypeDisabledIconRole,
 		RowComponentRole,
 		ValueRole,
@@ -82,24 +83,25 @@ public:
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
-	const RowControlMap	&			getAllRowControls()											const		{ return _rowControlsMap;				}
-	RowControlsValues				getTermsWithComponentValues()								const;
-	RowControls*					getRowControls(const QString& key)							const		{ return _rowControlsMap.value(key);	}
-	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
+	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
+	RowControlsValues				getTermsWithComponentValues()									const;
+	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}
+	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
-			QStringList				allLevels(const Terms& terms)								const;
+			QStringList				allLevels(const Terms& terms)									const;
 			void					setVariableType(int index, columnType type);
-			columnType				getVariableType(	const QString& name)					const;
-			Json::Value				getVariableTypes(bool onlyChanged = false)					const;
+			columnType				getVariableType(	const QString& name)						const;
+			QString					getVariableDescription(	const QString& name)					const;
+			Json::Value				getVariableTypes(bool onlyChanged = false)						const;
 			Json::Value				getVariableTypes(const Terms& terms, bool onlyChanged = false)	const;
-			columnType				getVariableRealType(const QString& name)					const;
-			QString					getVariablePreview(	const QString& name)					const;
-			QStringList				getUsedTypes()												const;
+			columnType				getVariableRealType(const QString& name)						const;
+			QString					getVariablePreview(	const QString& name)						const;
+			QStringList				getUsedTypes()													const;
 
-			Terms					checkTermsTypes(const Terms& terms)							const;
-			Terms					checkTermsTypes(const std::vector<Term>& terms)				const;
-	virtual Terms					termsFromIndexes(	const QList<int>& indexes)				const;
-	virtual QList<int>				indexesFromTerms(	const Terms		& terms)				const;
+			Terms					checkTermsTypes(const Terms& terms)								const;
+			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
+	virtual Terms					termsFromIndexes(	const QList<int>& indexes)					const;
+	virtual QList<int>				indexesFromTerms(	const Terms		& terms)					const;
 
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
