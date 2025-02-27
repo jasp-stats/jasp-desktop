@@ -56,6 +56,11 @@ QString ColumnsModel::getColumnIcon(columnType colType) const
 	return VariableInfo::getIconFile(colType, VariableInfo::DefaultIconType);
 }
 
+QString ColumnsModel::getColumnDescription(const QString &name) const
+{
+	return provideInfo(VariableInfo::ColumnDescription, name).toString().trimmed();
+}
+
 QString ColumnsModel::getColumnIconTransform(int colType) const
 {
 	return getColumnIconTransform(columnType(colType));

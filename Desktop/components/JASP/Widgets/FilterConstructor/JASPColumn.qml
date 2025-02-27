@@ -11,9 +11,8 @@ Item
 	property int	columnType:			columnsModel.getColumnType(columnName)
 	property int	columnTypeUser:		-1
 	property int	columnTypeHere:		columnTypeUser != -1 ? columnTypeUser : columnType
-	property string toolTip:			qsTr("Click icon to change column type") + 
-											(columnType == columnTypeUser || columnTypeUser == -1 ? "" : ("\n\n%1:\n\n").arg(qsTr("Transformed to")) + columnsModel.getColumnTransformedToolTip(columnName, columnTypeUser))
-
+	property string preview:			(columnType == columnTypeUser || columnTypeUser == -1 ? "" : columnsModel.getColumnTransformedToolTip(columnName, columnTypeUser))
+	property string toolTip:			formatToolTip(changeTypeAllowed, colName.contentWidth > colName.width, columnsModel.getColumnDescription(columnName), preview)
 	property real	maxSize:			baseFontSize * 10 * preferencesModel.uiScale
 					height:				filterConstructor.blockDim
 					implicitWidth:		colName.x + colName.width
@@ -23,6 +22,29 @@ Item
 	property bool	changeTypeAllowed:	true
 	property var	dragKeys:			isNumerical ? ["number"]	: isOrdinal ? ["string", "ordered"] : ["string"]
 	property string typeString:			isNumerical ? "scale"		: isOrdinal ? "ordinal"				: "nominal"
+					
+					
+	//colName can elide
+	function formatToolTip(typeChangeAble, colNameTrunc, descriptionV, previewV)
+	{
+		var stringList = []
+		
+		if(colNameTrunc)
+			stringList.push(columnName)
+		
+		if(typeChangeAble)
+			stringList.push(qsTr("Click icon to change column type"))
+		
+		if(descriptionV !== "")
+			stringList.push(qsTr("Column description: ") + descriptionV)
+
+		if(previewV !== "")
+			stringList.push(previewV)
+		
+		return stringList.join("\n\n");
+		
+	}
+					
 					
 	Connections
 	{
@@ -88,7 +110,7 @@ Item
 				customMenu.menuMinIsMin	= true
 			}
 
-			cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+			cursorShape:		enabled ? Qt.PointingHandCursor : Qt.OpenHandCursor
 		}
 	}
 

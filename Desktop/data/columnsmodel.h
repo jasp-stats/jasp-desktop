@@ -33,6 +33,7 @@ public:
 	Q_INVOKABLE	QString						getColumnIcon(int columnType)														const;
 	Q_INVOKABLE	QString						getColumnIcon(int columnType, bool isTransformed)									const;
 				QString						getColumnIcon(columnType colType)													const;
+	Q_INVOKABLE QString						getColumnDescription(const QString & name)											const;
 	Q_INVOKABLE	QString						getColumnIconTransform(int columnType)												const;
 				QString						getColumnIconTransform(columnType colType)											const;
 

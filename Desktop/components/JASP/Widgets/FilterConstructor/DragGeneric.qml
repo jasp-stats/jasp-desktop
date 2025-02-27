@@ -51,7 +51,7 @@ MouseArea
 	property var oldParent: null
 
 	hoverEnabled: true
-	cursorShape: (containsMouse && shownChild.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.PointingHandCursor : Qt.ArrowCursor
+	cursorShape: (containsMouse && shownChild.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.OpenHandCursor : Qt.ArrowCursor
 	acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 	property bool shouldShowHoverOutline:	false
