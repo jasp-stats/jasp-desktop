@@ -72,6 +72,11 @@ int EngineBase::getColumnAnalysisId(const std::string &columnName)
 		: provideAndUpdateDataSet()->column(columnName)->analysisId();
 }
 
+int EngineBase::getColumnOriginalIndex(const std::string &columnName)
+{
+	return provideAndUpdateDataSet()->getColumnIndex(columnName);
+}
+
 DataSet * EngineBase::provideAndUpdateDataSet()
 {
 	JASPTIMER_RESUME(EngineBase::provideAndUpdateDataSet());

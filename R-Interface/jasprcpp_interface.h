@@ -107,7 +107,8 @@ struct RBridgeCallBacks {
 	GetColumnType					dataSetGetColumnType;
 	CreateColumn					dataSetCreateColumn;
 	DeleteColumn					dataSetDeleteColumn;
-	GetColumnAnalysisId				dataSetGetColumnAnalysisId;
+	GetColumnAnalysisId				dataSetGetColumnAnalysisId,
+									dataSetGetColumnOriginalIndex;
 	SetColumnDataAndType			dataSetColumnAsDataAndType;
 	DataSetRowCount					dataSetRowCount;
 	EnDecodeDef						encoder,

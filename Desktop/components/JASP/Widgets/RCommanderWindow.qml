@@ -120,7 +120,7 @@ Window
 						selectByMouse:		true
 						readOnly:			true
 
-						RSyntaxHighlighterQuick
+						JC.RSyntaxHighlighterQuick
 						{
 							textDocument:		outputWindow.textDocument
 						}
@@ -198,7 +198,7 @@ Window
 						TextArea
 						{
 							
-							RSyntaxHighlighterQuick
+							JC.RSyntaxHighlighterQuick
 							{
 								textDocument:		codeEntry.textDocument
 							}

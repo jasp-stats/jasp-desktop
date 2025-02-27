@@ -105,6 +105,7 @@ void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMe
 		rbridge_createColumn,
 		rbridge_deleteColumn,
 		rbridge_getColumnAnalysisId,
+		rbridge_getColumnOriginalIndex,
 		rbridge_setColumnDataAndType,
 		rbridge_dataSetRowCount,
 		rbridge_encodeColumnName,
@@ -568,6 +569,16 @@ extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 	return rbridge_engine->getColumnAnalysisId(colName);
+}
+
+
+extern "C" int STDCALL rbridge_getColumnOriginalIndex(const char * columnName)
+{
+	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
+		return  rbridge_engine->getColumnOriginalIndex(columnName);
+
+	JASP_COLUMN_DECODE_HERE_STORED_colName;
+	return rbridge_engine->getColumnOriginalIndex(colName);
 }
 
 extern "C" const char * STDCALL rbridge_createColumn(const char * columnName)

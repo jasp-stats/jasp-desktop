@@ -217,7 +217,9 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"which.min",
 	"xtabs",
 	"YeoJohnson",
-	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop",
+	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText",
+	
+	"function", "stop",
 	"normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
 	"replaceNA",
 	//Some distribution related stuff:

@@ -31,6 +31,7 @@ public:
 	bool					setColumnDataAndType(		const std::string & columnName, const	std::vector<std::string>	& nominalData, columnType colType); ///< return true for any changes
 	int						getColumnType(				const std::string & columnName);
 	int						getColumnAnalysisId(		const std::string & columnName);
+	int						getColumnOriginalIndex(		const std::string & columnName);
 	DataSet				*	provideAndUpdateDataSet();
 	void					provideJaspResultsFileName(										std::string & root,	std::string & relativePath);
 	void					provideStateFileName(											std::string & root,	std::string & relativePath);

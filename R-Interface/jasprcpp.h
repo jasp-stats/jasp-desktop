@@ -107,6 +107,7 @@ std::string				_jaspRCPP_System (				std::string cmd);
 columnType				jaspRCPP_getColumnType(			std::string columnName);
 bool					jaspRCPP_getColumnExists(		std::string columnName);
 int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
+int						jaspRCPP_getColumnOriginalIndex(std::string columnName);
 std::string				jaspRCPP_createColumn(			std::string columnName);
 bool					jaspRCPP_deleteColumn(			std::string columnName);
 void					jaspRCPP_crashPlease();
