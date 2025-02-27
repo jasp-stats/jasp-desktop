@@ -11,6 +11,10 @@ if (UNIX)
 add_compile_options(-Werror=return-type)
 endif()
 
+if(WIN32)
+  add_compile_options(/utf-8)  #Make sure to compile in utf-8 on the locale code page.
+endif()
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(APPLE)
