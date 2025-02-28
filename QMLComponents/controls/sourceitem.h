@@ -101,6 +101,7 @@ private:
 	static SourceValuesType					_readValues(JASPListControl* _listControl, const QVariant& _values);
 
 	void									_setUp();
+	void									_findModelAndControl();
 	Terms									_readAllTerms();
 
 private slots:
@@ -109,7 +110,8 @@ private slots:
 	void									_rSourceChanged(const QString& name);
 
 private:
-	JASPListControl		*			_targetListControl			= nullptr;
+	JASPListControl		*			_targetListControl			= nullptr,
+						*			_sourceListControl			= nullptr;
 	QString							_sourceName,
 									_rowControlName;
 	QStringList						_sourceFilter;

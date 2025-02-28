@@ -117,7 +117,6 @@ void VariablesListBase::setUpModel()
 
 	case ListViewType::AvailableInteraction:
 		_isBound				= false;
-		_termsAreInteractions	= true;
 		_draggableModel			= new ListModelInteractionAvailable(this);
 		break;
 
@@ -159,8 +158,6 @@ void VariablesListBase::setUpModel()
 		
 	case ListViewType::Interaction:
 	{
-		_termsAreInteractions = true;
-
 		bool	interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool(),
 				addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
 
@@ -272,9 +269,16 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	if (form()) form()->blockValueChangeSignal(false);
 }
 
+bool VariablesListBase::containsInteractions() const
+{
+	if (_listViewType == ListViewType::AvailableInteraction || _listViewType == ListViewType::Interaction)
+		return true;
+
+	return JASPListControl::containsInteractions();
+}
+
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
-	Log::log() << "LOG setDropKeys " << name() << ": " << dropKeys.join('/') << std::endl;
 	if (dropKeys != _dropKeys)
 	{
 		_dropKeys = dropKeys;
@@ -331,8 +335,8 @@ void VariablesListBase::_setRelations()
 				assignedModel->setAvailableModel(availableModel);
 				availableModel->addAssignedModel(assignedModel);
 				addDependency(availableModel->listView());
-				setContainsVariables();
-				setContainsInteractions();
+				emit containsVariablesChanged();
+				emit containsInteractionsChanged();
 
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
 				if (_listViewType == ListViewType::Interaction || (columns() > 1 && _listViewType != ListViewType::RepeatedMeasures))

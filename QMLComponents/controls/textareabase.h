@@ -60,8 +60,11 @@ public:
 	ListModelTermsAvailable*	availableModel()							const				{ return _model;										}
 	void						setUp()												override;
 	void						setUpModel()										override;
+	bool						containsVariables()							const	override;
+
 
 	void						rScriptDoneHandler(const QString &result)			override;
+	BoundControl			*	boundControl()										override	{ return isBound() ? _boundControl : nullptr;			}
 
 	TextType					textType()									const				{ return _textType;										}
 	bool						hasScriptError()							const				{ return _hasScriptError;								}
@@ -71,6 +74,7 @@ public:
 
 	bool autoCheckSyntax()								const	{	return _autoCheckSyntax;	}
 	bool checkSyntax()									const	{	return _checkSyntax;		}
+
 
 public slots:
 	GENERIC_SET_FUNCTION(TextType,			_textType,			textTypeChanged,		TextType	)
@@ -91,7 +95,7 @@ signals:
 
 protected slots:
 	void	termsChangedHandler()		override;
-    
+
 protected:
 	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 

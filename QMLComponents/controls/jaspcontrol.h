@@ -38,7 +38,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								initialized				READ initialized											NOTIFY initializedChanged			)
 	Q_PROPERTY( bool								shouldStealHover		READ shouldStealHover		WRITE setShouldStealHover		NOTIFY shouldStealHoverChanged		)
 	Q_PROPERTY( QQuickItem						*	childControlsArea		READ childControlsArea		WRITE setChildControlsArea											)
-	Q_PROPERTY( JASPControl						*	parentListView			READ parentListViewEx										NOTIFY parentListViewChanged		)
+	Q_PROPERTY( JASPListControl					*	parentListView			READ parentListView											NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQuickItem						*	innerControl			READ innerControl			WRITE setInnerControl			NOTIFY innerControlChanged			)
 	Q_PROPERTY( QQuickItem						*	background				READ background				WRITE setBackground				NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator			READ focusIndicator			WRITE setFocusIndicator			NOTIFY focusIndicatorChanged		)
@@ -140,7 +140,6 @@ public:
 	AnalysisForm	*	form()						const	{ return _form;						}
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;		}
 	JASPListControl	*	parentListView()			const	{ return _parentListView;			}
-	JASPControl		*	parentListViewEx()			const;
 	QString				parentListViewKey()			const	{ return _parentListViewKey;		}
 	QQuickItem		*	innerControl()				const	{ return _innerControl;				}
 	QQuickItem		*	background()				const	{ return _background;				}

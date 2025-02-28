@@ -211,36 +211,40 @@ void JASPControl::componentComplete()
 		// The control is created dynamically, this is the case for row components.
 		// They are created either from a ListView (or a TableView): when all terms of the ListView are set, the row components are created, and then initialized (via rhe ListModel::setUpRowControls function).
 		// Here the parent ListView and the key for this control is stored.
-		setUp();
-
-		JASPListControl* listView = nullptr;
+		JASPListControl* parentlistView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");
 		if (!listViewVar.isNull())
-			listView = listViewVar.value<JASPListControl*>();
+			parentlistView = listViewVar.value<JASPListControl*>();
 		else
 		{
 			QVariant tableViewVar = context->contextProperty("tableView");
 			if (!tableViewVar.isNull())
-				listView = tableViewVar.value<JASPListControl*>();
+				parentlistView = tableViewVar.value<JASPListControl*>();
 		}
 
-		if (listView && listView != this)
+		if (parentlistView && parentlistView != this)
 		{
-			_parentListView = listView;
+			_parentListView = parentlistView;
+			emit parentListViewChanged();
 
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				connect(listView->model(), &ListModel::oneTermChanged, this, &JASPControl::parentListViewKeyChanged);
+				connect(parentlistView->model(), &ListModel::oneTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
-
-			listView->addRowControl(_parentListViewKey, this);
-
-			emit parentListViewChanged();
 		}
+
+		JASPListControl* listControl = qobject_cast<JASPListControl*>(this);
+		if (listControl)
+			listControl->setUpModel();
+		if (parentlistView)
+			parentlistView->addRowControl(_parentListViewKey, this);
+
+		// Setup must be done after _parentListView & _parentListViewKey are set (if they exist), so that if the control has a source, the right source is found.
+		setUp();
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)
@@ -702,12 +706,6 @@ bool JASPControl::childHasWarning() const
 	return _hasWarning;
 }
 
-// This method is just for the parentListView property that needs a JASPControl (JASPListControl is unknown in QML).
-JASPControl *JASPControl::parentListViewEx() const
-{
-	return _parentListView;
-}
-
 bool JASPControl::hovered() const
 {
 	if (_mouseAreaObj)
@@ -715,8 +713,6 @@ bool JASPControl::hovered() const
 	else
 		return false;
 }
-
-
 
 QString JASPControl::humanFriendlyLabel() const
 {

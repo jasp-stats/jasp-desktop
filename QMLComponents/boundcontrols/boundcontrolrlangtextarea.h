@@ -36,9 +36,9 @@ public:
 
 protected:
 	virtual const char *					_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
+	void									_setBoundValues();
 
-protected:
-    RSyntaxHighlighter*	_rLangHighlighter		= nullptr;
+	RSyntaxHighlighter*						_rLangHighlighter		= nullptr;
 
 	stringset								_noPrefixUsedColumnNames;
 	std::map<std::string, stringset>		_prefixedUsedColumnNames;

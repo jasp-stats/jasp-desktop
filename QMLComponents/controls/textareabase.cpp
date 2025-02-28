@@ -42,10 +42,18 @@ void TextAreaBase::setUpModel()
 	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem)
 	{
 		_model = new ListModelTermsAvailable(this);
-		_model->setNeedsSource(_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeCSem);
+		_model->setNeedsSource(_textType == TextType::TextTypeCSem);
 
 		JASPListControl::setUpModel();
 	}
+}
+
+bool TextAreaBase::containsVariables() const
+{
+	if (_textType == TextType::TextTypeLavaan)
+		return true;
+
+	return JASPListControl::containsVariables();
 }
 
 void TextAreaBase::setUp()
@@ -53,7 +61,7 @@ void TextAreaBase::setUp()
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
-    case TextType::TextTypeLavaan:		_boundControl = new BoundControlRlangTextArea(this);	break;
+	case TextType::TextTypeLavaan:		_boundControl = new BoundControlRlangTextArea(this);	break;
     case TextType::TextTypeRcode:		_boundControl = new BoundControlRlangTextArea(this);	break;
 	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
 	case TextType::TextTypeCSem:		_boundControl = new BoundControlCSemTextArea(this);		break;

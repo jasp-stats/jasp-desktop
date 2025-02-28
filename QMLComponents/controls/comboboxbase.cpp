@@ -141,7 +141,8 @@ Json::Value ComboBoxBase::createJson() const
 
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::stringValue || optionValue.type() == Json::objectValue;
+	return optionValue.type() == Json::stringValue ||
+		(optionValue.type() == Json::objectValue && optionValue.isMember("value") && optionValue["value"].isString());
 }
 
 void ComboBoxBase::setUp()

@@ -44,7 +44,7 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 
 void JASPListControl::setUpModel()
 {
-	if (model() && form())	form()->addModel(model());
+	if (model() && form() && !_parentListView)	form()->addModel(model());
 
 	emit modelChanged();
 }
@@ -52,93 +52,50 @@ void JASPListControl::setUpModel()
 void JASPListControl::_setupSources()
 {
 	for (SourceItem* sourceItem : _sourceItems)
-	{
-		if (sourceItem->sourceListModel())
-		{
-			JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
-			disconnect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
-			disconnect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
-		}
 		delete sourceItem;
-	}
-	_sourceItems.clear();
 
 	_sourceItems = SourceItem::readAllSources(this);
+}
+
+bool JASPListControl::containsVariables() const
+{
+	// If it is an assigned variablesList, check whether the available variablesList contains variables
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
+	if (assignedModel && assignedModel->availableModel() && assignedModel->availableModel()->listView()->containsVariables())
+		return true;
+
+	// If not check the sources: if one is the DataSet, or one contains variables (and the source is neither a control of this source, or the levels of this source), then return true
+	for (SourceItem* sourceItem : _sourceItems)
+	{
+		if (sourceItem->isAnalysisDataSet())
+			return true;
+		else if (sourceItem->sourceListModel() && sourceItem->sourceListModel()->listView() != this)
+		{
+			if (sourceItem->sourceListModel()->listView()->containsVariables() && sourceItem->rowControlName().isEmpty() && !sourceItem->sourceFilter().contains("levels"))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+bool JASPListControl::containsInteractions() const
+{
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
+	if (assignedModel && assignedModel->availableModel() && assignedModel->availableModel()->listView()->containsInteractions())
+		return true;
 
 	for (SourceItem* sourceItem : _sourceItems)
 	{
 		if (sourceItem->sourceListModel())
 		{
 			JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
-			connect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
-			connect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
+			if (sourceControl != this && (sourceControl->containsInteractions() || sourceItem->generateInteractions()))
+				return true;
 		}
 	}
 
-	setContainsVariables();
-	setContainsInteractions();
-}
-
-void JASPListControl::setContainsVariables()
-{
-	bool containsVariables = _containsVariables;
-
-	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
-	if (assignedModel && assignedModel->availableModel())
-		containsVariables = assignedModel->availableModel()->listView()->containsVariables();
-
-	if (!containsVariables)
-	{
-		for (SourceItem* sourceItem : _sourceItems)
-		{
-			if (sourceItem->isAnalysisDataSet())	containsVariables = true;
-			else if (sourceItem->sourceListModel())
-			{
-				if (sourceItem->sourceListModel()->listView()->containsVariables() && sourceItem->rowControlName().isEmpty() && !sourceItem->sourceFilter().contains("levels"))
-					containsVariables = true;
-			}
-		}
-	}
-
-	if (_containsVariables != containsVariables)
-	{
-		_containsVariables = containsVariables;
-		emit containsVariablesChanged();
-	}
-}
-
-void JASPListControl::setContainsInteractions()
-{
-	bool containsInteractions = false;
-
-	if (_termsAreInteractions)
-		containsInteractions = true;
-
-	if (!containsInteractions)
-	{
-		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
-		if (assignedModel && assignedModel->availableModel())
-			containsInteractions = assignedModel->availableModel()->listView()->containsInteractions();
-	}
-
-	if (!containsInteractions)
-	{
-		for (SourceItem* sourceItem : _sourceItems)
-		{
-			if (sourceItem->sourceListModel())
-			{
-				JASPListControl* sourceControl = sourceItem->sourceListModel()->listView();
-				if (sourceControl->containsInteractions() || sourceItem->generateInteractions())
-					containsInteractions = true;
-			}
-		}
-	}
-
-	if (_containsInteractions != containsInteractions)
-	{
-		_containsInteractions = containsInteractions;
-		emit containsInteractionsChanged();
-	}
+	return false;
 }
 
 void JASPListControl::termsChangedHandler()

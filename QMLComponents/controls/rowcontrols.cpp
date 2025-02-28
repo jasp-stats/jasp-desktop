@@ -51,6 +51,9 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	_rowObject->setParent(_parentModel);
 	_context = context;
 
+	_initialized = true;
+	emit initializedChanged();
+
 	if (_rowObject)	_initializeControls();
 	else			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 }

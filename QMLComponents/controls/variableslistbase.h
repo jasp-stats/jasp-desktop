@@ -63,6 +63,7 @@ public:
 	bool						addRowControl(const QString& key, JASPControl* control)											override;
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
+	bool						containsInteractions()																	const	override;
 
 signals:
 	void listViewTypeChanged();

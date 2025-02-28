@@ -90,6 +90,13 @@ void BoundControlRlangTextArea::checkSyntax()
 		Log::log() << "Warning: no non prefixed entries returned from column encoder?";
 
 
+	if (!_textArea->initialized())
+	{
+		// Do not run the engine to check the script if the control in not yet initialized
+		_setBoundValues();
+		return;
+	}
+
 	// Create R code string
 	QString encodedColNames = "c(";
 	for (const std::string& column : _noPrefixUsedColumnNames)
@@ -124,15 +131,27 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 	if (!result.isEmpty())
 		return result;
 
+	_setBoundValues();
+	return QString();
+}
+
+void BoundControlRlangTextArea::_setBoundValues()
+{
 	Json::Value boundValue(Json::objectValue);
 
 	boundValue["modelOriginal"] = _textArea->text().toStdString();
 	boundValue["model"]			= _textEncoded.toStdString();
 
 	Json::Value columns(Json::arrayValue);
-	for (const std::string& column : _noPrefixUsedColumnNames)
-		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+	Terms	terms;
 
+	for (const std::string& column : _noPrefixUsedColumnNames)
+	{
+		terms.add(Term(column, _textArea->getVariableType(tq(column))));
+		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+	}
+
+	_textArea->model()->initTerms(terms);
 	boundValue["columns"] = columns;
 
 	Json::Value prefixedColumns(Json::objectValue);
@@ -145,7 +164,4 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 	boundValue["prefixedColumns"] = prefixedColumns;
 
 	setBoundValue(boundValue, !_control->form()->wasUpgraded());
-
-	return QString();
-
 }

@@ -100,8 +100,8 @@ public:
 			int						maxRows()					const			{ return _maxRows;				}
 			bool					addEmptyValue()				const			{ return _addEmptyValue;		}
 			const QString		&	placeholderText()			const			{ return _placeHolderText;		}
-			bool					containsVariables()			const			{ return _containsVariables;	}
-			bool					containsInteractions()		const			{ return _containsInteractions;	}
+	virtual	bool					containsVariables()			const;
+	virtual bool					containsInteractions()		const;
 			bool					encodeValue()				const override	{ return containsVariables() || containsInteractions();	}
 			bool					useSourceLevels()			const			{ return _useSourceLevels;		}
 			void					setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
@@ -153,10 +153,6 @@ signals:
 			void					allowedColumnsChanged();
 			void					allowedColumnsIconsChanged();
 
-public slots:
-			void					setContainsVariables();
-			void					setContainsInteractions();
-
 protected slots:
 	virtual void					termsChangedHandler();
 			void					_termsChangedHandler();
@@ -201,9 +197,6 @@ protected:
 	QVariant				_rSource;
 	QVariant				_values;
 	bool					_addEmptyValue						= false,
-							_containsVariables					= false,
-							_containsInteractions				= false,
-							_termsAreInteractions				= false,
 							_useSourceLevels					= false,
 							_addAvailableVariablesToAssigned	= false,
 							_allowAnalysisOwnComputedColumns	= true,

@@ -43,7 +43,7 @@ SourceItem::SourceItem(
 	QString modelUse			= map["use"].toString().trimmed();
 
 	_sourceName					= map["name"].toString();
-	_rowControlName				= map["controlName"].toString();
+	_rowControlName				= map["rowControlName"].toString();
 	_sourceFilter				= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
 	_conditionExpression		= map["condition"].toString();
 	_values						= values;
@@ -51,11 +51,12 @@ SourceItem::SourceItem(
 	_discardSources				= discardSources;
 	_rSources					= rSources;
 
-	_isValuesSource				= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isDataSetVariables			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
-	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
-	_noInteractions				= map.contains("noInteraction")				? map["noInteraction"].toBool()				: false;
-	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
+	_sourceListControl			= map.contains("listControl")				? map["listControl"].value<JASPListControl*>()	: nullptr;
+	_isValuesSource				= map.contains("isValuesSource")			? map["isValuesSource"].toBool()				: false;
+	_isDataSetVariables			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()			: false;
+	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()		: false;
+	_noInteractions				= map.contains("noInteraction")				? map["noInteraction"].toBool()					: false;
+	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()				: Qt::DisplayRole;
 	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt())	: JASPControl::CombinationType::NoCombination;
 	if (isInfoProviderModel(_sourceNativeModel))									_isDataSetVariables = true;
 	if (_sourceFilter.contains("levels"))											_targetListControl->setUseSourceLevels(true);
@@ -93,9 +94,87 @@ SourceItem::SourceItem(JASPListControl *listControl)
 	_setUp();
 }
 
+void SourceItem::_setUp()
+{
+	if (_isValuesSource)
+		// Add a ListModelLabelValueTerms to contain the values given in the source
+		_sourceNativeModel = new ListModelLabelValueTerms(_targetListControl, _values);
+	else if (_isDataSetVariables)
+	{
+		_sourceNativeModel	= infoProviderModel();
+		_nativeModelRole	= requestInfo(VariableInfo::NameRole).toInt();
+	}
+	else if (_targetListControl->form() && !_sourceName.isEmpty())
+	{
+		// If we are in a form and we have the name of the source, search for the source model in the form
+		_sourceNativeModel = _sourceListModel = _targetListControl->form()->getModel(_sourceName);
+		if (!_sourceListModel && _targetListControl->parentListView())
+		{
+			// If no model is found, but we are in a control created dynamically by its parent, the source control might be another control created dynamicatlly by this parent.
+			// If all controls are not yet created, we have to wait for the initialization of the rowControls
+			RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentListViewKey());
+			if (rowControls && !rowControls->initialized())
+			{
+				connect(rowControls, &RowControls::initializedChanged, this, &SourceItem::_findModelAndControl);
+				return;
+			}
+		}
+	}
+
+	_findModelAndControl();
+}
+
+void SourceItem::_findModelAndControl()
+{
+	if (_targetListControl->form() && !_sourceName.isEmpty() && !_sourceListModel && _targetListControl->parentListView())
+	{
+		// Case when we are in a form, we have source name, but not yet the corresponding control. The rowControls should be here initialized
+		RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentListViewKey());
+		if (rowControls)
+			_sourceListControl = qobject_cast<JASPListControl*>(rowControls->getJASPControl(_sourceName));
+	}
+
+	if (_sourceNativeModel || _isRSource || _sourceListControl)
+	{
+		if (_sourceNativeModel)
+		{
+			_sourceListModel = qobject_cast<ListModel*>(_sourceNativeModel);
+			if (_sourceListModel)
+				_sourceListControl = _sourceListModel->listView();
+		}
+		else if (_sourceListControl)
+			_sourceNativeModel = _sourceListModel = _sourceListControl->model();
+
+		if (_sourceListControl) _targetListControl->addDependency(_sourceListControl);
+
+		// Do not connect before this control (and the controls of the source) are completely initialized
+		// The source could send some data to this control before it is completely ready for it.
+		if (_targetListControl->initialized()) connectModels();
+		else connect(_targetListControl, &JASPControl::initializedChanged, this, &SourceItem::connectModels);
+	}
+	else if (_rSources.length() == 0)
+	{
+		// Could not find the source control: add an error
+		if (_sourceName.isEmpty())
+		{
+			if (_targetListControl->form())	_targetListControl->addControlError(QObject::tr("No name given for the source of %1").arg(_targetListControl->name()));
+			else							_targetListControl->addControlError(QObject::tr("No source given for %1").arg(_targetListControl->name()));
+		}
+		else								_targetListControl->addControlError(QObject::tr("Cannot find component %1 for the source of %2").arg(_sourceName).arg(_targetListControl->name()));
+	}
+
+}
+
 void SourceItem::connectModels()
 {
 	if (!_targetListControl->initialized() || _connected) return;
+
+	if (!_sourceNativeModel && _sourceListControl)
+	{
+		// The source model was maybe not yet made. But as the source control is now initialized, we should find it.
+		_sourceName = _sourceListControl->name();
+		_sourceNativeModel = _sourceListModel = _sourceListControl->model();
+	}
 
 	ListModel *controlModel = _targetListControl->model();
 	AnalysisForm* form		= _targetListControl->form();
@@ -134,6 +213,8 @@ void SourceItem::connectModels()
 		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
 		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 		connect(variableInfo,	&VariableInfo::refresh,				controlModel, &ListModel::refresh );
+
+		emit _targetListControl->containsVariablesChanged();
 	}
 
 	if (_sourceListModel)
@@ -144,6 +225,16 @@ void SourceItem::connectModels()
 		connect(_sourceListModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(_sourceListModel,		&ListModel::filterChanged,			controlModel, &ListModel::filterChanged );
 		connect(_sourceListModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
+	}
+
+	if (_sourceListControl && _sourceListControl != _targetListControl)
+	{
+		connect(_sourceListControl,		&JASPListControl::containsVariablesChanged,		_targetListControl, &JASPListControl::containsVariablesChanged);
+		connect(_sourceListControl,		&JASPListControl::containsInteractionsChanged,	_targetListControl, &JASPListControl::containsInteractionsChanged);
+
+		// Update the containsVariables and containsInteractions property of the target control
+		emit _targetListControl->containsVariablesChanged();
+		emit _targetListControl->containsInteractionsChanged();
 	}
 
 	_connected = true;
@@ -192,36 +283,7 @@ void SourceItem::_rSourceChanged(const QString& name)
 		_targetListControl->model()->sourceTermsReset();
 }
 
-void SourceItem::_setUp()
-{
-	if (_isValuesSource)											_sourceNativeModel = new ListModelLabelValueTerms(_targetListControl, _values);
-	else if (_targetListControl->form() && !_sourceName.isEmpty())	_sourceNativeModel = _targetListControl->form()->getModel(_sourceName);
-	else if (_isDataSetVariables)
-	{
-		_sourceNativeModel		= infoProviderModel();
-		_nativeModelRole	= requestInfo(VariableInfo::NameRole).toInt();
-	}
 
-	if (_sourceNativeModel || _isRSource)
-	{
-		_sourceListModel = qobject_cast<ListModel*>(_sourceNativeModel);
-		if (_sourceListModel)	_targetListControl->addDependency(_sourceListModel->listView());
-
-		// Do not connect before this control (and the controls of the source) are completely initialized
-		// The source could sent some data to this control before it is completely ready for it.
-		if (_targetListControl->initialized()) connectModels();
-		else connect(_targetListControl, &JASPControl::initializedChanged, this, &SourceItem::connectModels);
-	}
-	else if (_rSources.length() == 0)
-	{
-		if (_sourceName.isEmpty())
-		{
-			if (_targetListControl->form())		_targetListControl->addControlError(QObject::tr("No name given for the source of %1").arg(_targetListControl->name()));
-			else							_targetListControl->addControlError(QObject::tr("No source given for %1").arg(_targetListControl->name()));
-		}
-		else								_targetListControl->addControlError(QObject::tr("Cannot find component %1 for the source of %2").arg(_sourceName).arg(_targetListControl->name()));
-	}
-}
 
 QList<QVariant> SourceItem::getListVariant(QVariant var)
 {
@@ -284,22 +346,22 @@ QString SourceItem::_readRSourceName(const QString& sourceNameExt, QString& sour
 QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, const QVariant& source, SourceItem::SourceValuesType& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& nativeModel)
 {
 	QMap<QString, QVariant> map;
-	QString sourceName, sourceControl, sourceUse;
+	QString sourceName, sourceControlName, sourceUse;
 
 	JASPControl* sourceItem = source.value<JASPControl*>();
-	if (sourceItem)										sourceName = sourceItem->name();
-	else if (source.typeId() == QMetaType::QString)	sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
+	if (sourceItem)									sourceName = sourceItem->name();
+	else if (source.typeId() == QMetaType::QString)	sourceName = _readSourceName(source.toString(), sourceControlName, sourceUse);
 	else if (source.canConvert<QMap<QString, QVariant> >())
 	{
 		map = source.toMap();
 		if (map.contains("id"))
 		{
-			JASPControl* sourceItem2 = map["id"].value<JASPControl*>();
-			if (sourceItem2)	sourceName = sourceItem2->name();
+			sourceItem = map["id"].value<JASPControl*>();
+			if (sourceItem)	sourceName = sourceItem->name();
 		}
 
 		if (map.contains("name"))
-			sourceName = _readSourceName(map["name"].toString(), sourceControl, sourceUse);
+			sourceName = _readSourceName(map["name"].toString(), sourceControlName, sourceUse);
 
 		if (map.contains("use"))
 		{
@@ -354,9 +416,10 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 			}
 		}
 	}
-	map["name"]			= sourceName;
-	map["controlName"]	= sourceControl;
-	map["use"]			= sourceUse;
+	map["name"]				= sourceName;
+	map["rowControlName"]	= sourceControlName;
+	map["use"]				= sourceUse;
+	map["listControl"]		= QVariant::fromValue(qobject_cast<JASPListControl*>(sourceItem));
 	return map;
 }
 

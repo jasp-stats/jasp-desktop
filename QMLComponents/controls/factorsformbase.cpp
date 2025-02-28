@@ -28,7 +28,6 @@ FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 {
 	_controlType			= ControlType::FactorsForm;
 	_useControlMouseArea	= false;
-	_containsVariables		= true;
 	_mayUseFormula			= false;
 	_useTermsInRSyntax		= false;
 }

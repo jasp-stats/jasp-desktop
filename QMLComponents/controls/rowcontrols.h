@@ -49,6 +49,10 @@ public:
 	JASPControl*								getJASPControl(const QString& name)					{ return _rowJASPControlMap.contains(name) ? _rowJASPControlMap[name] : nullptr; }
 	bool										addJASPControl(JASPControl* control);
 	void										disconnectControls();
+	bool										initialized()								const	{ return _initialized; }
+
+signals:
+	void										initializedChanged();
 
 private:
 
@@ -60,6 +64,7 @@ private:
 	QMap<QString, JASPControl*>				_rowJASPControlMap;
 	QQmlContext*							_context;
 	QMap<QString, Json::Value>				_initialValues;
+	bool									_initialized	= false;
 };
 
 #endif // ROWCOMPONENTS_H

@@ -45,6 +45,7 @@ public:
 	void			bindTo(const Json::Value& value)					override;
 	ListModel*		model()										const	override	{ return _factorsModel; }
 	void			setUpModel()										override;
+	bool			containsVariables()							const	override	{ return true; };
 
 	Q_INVOKABLE	void	addFactor()													{ _factorsModel->addFactor();						}
 	Q_INVOKABLE void	removeFactor()												{ _factorsModel->removeFactor();					}

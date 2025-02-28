@@ -280,6 +280,8 @@ ComponentsListBase
 			topMargin	: 2 * preferencesModel.uiScale
 			left		: parent.left
 			right		: parent.right
+			leftMargin	: 1 // Remove border line
+			rightMargin	: 1
 		}
 
 		currentIndex		: itemTabBar.currentIndex
@@ -294,10 +296,14 @@ ComponentsListBase
 				id:	tabViewWrapper
 				property var rowComponentItem: model.rowComponent
 
-				width	: rowComponentItem ? rowComponentItem.width : 0
+				width	: itemStack.width
 				height	: rowComponentItem ? rowComponentItem.height : 0
 
-				Component.onCompleted: rowComponentItem.parent = tabViewWrapper
+				Component.onCompleted:
+				{
+					rowComponentItem.parent = tabViewWrapper
+					rowComponentItem.width = Qt.binding(function() {return itemStack.width})
+				}
 			}
 		}
 	}

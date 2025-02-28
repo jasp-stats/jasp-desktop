@@ -217,8 +217,8 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 	connect(this,			&ListModelAvailableInterface::labelsChanged,		assignedModel,				&ListModelAssignedInterface::sourceLabelsChanged		);
 	connect(this,			&ListModelAvailableInterface::labelsReordered,		assignedModel,				&ListModelAssignedInterface::sourceLabelsReordered		);
 	connect(this,			&ListModelAvailableInterface::filterChanged,		assignedModel,				&ListModelAssignedInterface::filterChanged				);
-	connect(listView(),		&JASPListControl::containsVariablesChanged,			assignedModel->listView(),	&JASPListControl::setContainsVariables					);
-	connect(listView(),		&JASPListControl::containsInteractionsChanged,		assignedModel->listView(),	&JASPListControl::setContainsInteractions				);
+	connect(listView(),		&JASPListControl::containsVariablesChanged,			assignedModel->listView(),	&JASPListControl::containsVariablesChanged				);
+	connect(listView(),		&JASPListControl::containsInteractionsChanged,		assignedModel->listView(),	&JASPListControl::containsInteractionsChanged			);
 }
 
 void ListModelAvailableInterface::removeAssignedModel(ListModelAssignedInterface *assignedModel)
