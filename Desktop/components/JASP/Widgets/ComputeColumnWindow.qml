@@ -319,7 +319,6 @@ FocusScope
 				anchors.bottom:		parent.bottom
 				toolTip:			qsTr("Select a filter to use for this computed column")
 				control.height:		applyComputedColumnButton.height
-				control.padding:	0
 			}
 
 			JaspControls.RectangularButton

@@ -8,7 +8,9 @@ ComboBoxBase
 {
 	id:					comboBox
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
-	implicitWidth:		setLabelAbove ? Math.max(control.width, rectangleLabel.width) : (rectangleLabel.width + jaspTheme.labelSpacing + control.width)
+	implicitWidth:		controlLabel.visible
+							? (setLabelAbove ? Math.max(control.width, rectangleLabel.width) : (rectangleLabel.width + jaspTheme.labelSpacing + control.width))
+							: control.width
 	background:			useExternalBorder ? externalControlBackground : control.background
 	innerControl:		control
 	title:				label
