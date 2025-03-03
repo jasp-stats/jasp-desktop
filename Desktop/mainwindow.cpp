@@ -1452,6 +1452,11 @@ void MainWindow::_openDbJson()
 
 void MainWindow::openGitHubBugReport() const
 {
+	static bool alreadyOpened = false;
+
+	if (alreadyOpened) return;
+	alreadyOpened = true;
+
 	bool openGitHubUserRegistration = false;
 
 	if(!Settings::value(Settings::USER_HAS_GITHUB_ACCOUNT).toBool())
