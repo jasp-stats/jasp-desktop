@@ -1470,42 +1470,28 @@ void MainWindow::openGitHubBugReport() const
 		}
 	}
 
-	std::stringstream fillIt;
+	std::stringstream systemInfo, debugInfo;
 
-	try			{ fillIt << "* JASP version: " << AppInfo::version.asString()	<< std::endl; }
-	catch(...)	{ fillIt << "* JASP version: ???\n"; }
+	try			{ systemInfo << "* JASP version: " << AppInfo::version.asString()	<< std::endl; }
+	catch(...)	{ systemInfo << "* JASP version: ???" << std::endl; }
 
-	try			{ fillIt <<	"* OS name and version: " << QSysInfo::prettyProductName() << std::endl; }
-	catch(...)	{ fillIt << "* OS name and version: ???\n"; }
+	try			{ systemInfo <<	"* OS name and version: " << QSysInfo::prettyProductName() << std::endl; }
+	catch(...)	{ systemInfo << "* OS name and version: ???" << std::endl; }
 
-	fillIt	<<	"<!--- Please fill in the following fields: -->\n"
-				"* Analysis: \n"
-				"* Bug description:\n"
-				"* Expected behaviour:\n"
-				"<!--- Steps to reproduce means, what actions should we take in JASP to reproduce the bug you encountered? --->\n"
-				"#### Steps to reproduce:\n"
-				"1. Go to '...'\n"
-				"2. Click on '....'\n"
-				"3. Scroll down to '....'\n"
-				"4. See error\n";
+	try			{ systemInfo << "* Commit used: " << AboutModel::commitUrl() << std::endl; }
+	catch(...)	{ systemInfo << "Commit couldn't be found\n"; }
 
-	fillIt <<	"\n\n\n"
-				"-----------------------------------------------------------------------\n"
-				"<!--- A note from the developers:\nIf possible please attach your data and/or JASP file to the issue, this makes solving the bug a lot easier."
-				" If you would prefer to not make your data publicly available then you could also mail us.\n"
-				"Note that github requires you to zip the file to upload it here.\n-->\n\n"
-				"### Debug information:\n" << _engineSync->currentStateForDebug();
-
-	try			{ fillIt << "\n[Commit used](" << AboutModel::commitUrl() << ")\n"; }
-	catch(...)	{ fillIt << "Commit couldn't be found\n"; }
+	try			{ debugInfo << "Debug information: " << _engineSync->currentStateForDebug() << std::endl; }
+	catch(...)	{ debugInfo << "No debug information found"; }
 
 	try
 	{
-		QString percentEncodedIssue = QUrl::toPercentEncoding(tq(fillIt.str()));
+		QString systemInfoStr	= QUrl::toPercentEncoding(tq(systemInfo.str())),
+				debugInfoStr	= QUrl::toPercentEncoding(tq(debugInfo.str()));
 
-		const char * baseIssueUrl = "https://github.com/jasp-stats/jasp-issues/issues/new?labels=bug&title=JASP+crashed&body=";
+		QString baseIssueUrl = "https://github.com/jasp-stats/jasp-issues/issues/new?template=crash-report.yml&title=JASP+crashed";
 
-		QUrl issueUrl = baseIssueUrl + percentEncodedIssue;
+		QUrl issueUrl = baseIssueUrl + "&system-info=" + systemInfoStr + "&log=" + debugInfoStr;
 
 		QDesktopServices::openUrl(issueUrl);
 
@@ -1533,10 +1519,7 @@ void MainWindow::fatalError()
 		exiting = true;
 		if(MessageForwarder::showYesNo(tr("Error"), tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
 			tr("JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team."), tr("Report"), tr("Exit")))
-		{
-			//QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
 			openGitHubBugReport();
-		}
 		else
 			emit exitSignal(2);
 	}
