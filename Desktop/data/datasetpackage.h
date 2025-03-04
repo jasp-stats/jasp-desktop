@@ -317,6 +317,7 @@ signals:
 				void				descriptionChanged();
 				void				refreshAllAnalyses();
 				void				refreshAllCompCols();
+				void				setDataMode(bool mode);
 
 public slots:
 				void				refresh()							{ beginResetModel(); endResetModel(); }
