@@ -24,8 +24,8 @@ import JASP
 GroupBoxBase
 {
 	id						: groupBox
-	implicitWidth			: Math.max(label.realWidth, contentArea.x + contentArea.implicitWidth)
-	implicitHeight			: label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight
+	implicitWidth			: hasChildren ? Math.max(label.realWidth, contentArea.x + contentArea.implicitWidth) : 0
+	implicitHeight			: hasChildren ? ((label.visible ? (label.realHeight + jaspTheme.titleBottomMargin) : 0) + contentArea.implicitHeight) : 0
 	L.Layout.leftMargin		: indent ? jaspTheme.indentationLength : 0
 	isBound					: false
 	childControlsArea		: contentArea
@@ -43,6 +43,7 @@ GroupBoxBase
 			property alias	label:				label
 			property alias	preferredWidth:		contentArea.width
 			property int	textFormat:			Text.AutoText
+			property bool	hasChildren:		contentArea.count > 0
 
 			property var	_allAlignableFields:		[]
 			property bool	_childrenConnected:	false

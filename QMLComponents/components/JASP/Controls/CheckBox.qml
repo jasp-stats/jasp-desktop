@@ -25,17 +25,17 @@ CheckBoxBase
 {
 	id:					checkBox
 	implicitWidth:		childrenOnSameRow
-							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
-							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + control.spacing + childControlsArea.implicitWidth)
+							? control.implicitWidth + (childControlsArea.hasChildren ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + (childControlsArea.hasChildren ? control.spacing + childControlsArea.implicitWidth : 0))
 	implicitHeight:		childrenOnSameRow
 							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
-							: control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+							: control.implicitHeight + (childControlsArea.hasChildren ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
 	innerControl:		control
 	title:				text
 
-	default property alias	content:				childControlsArea.children
+	default property alias	content:				childControlsArea.content
 			property alias	control:				control
 			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
@@ -120,7 +120,7 @@ CheckBoxBase
 		}
 	}
 
-	GridLayout
+	Group // Use Group instead of GridLayout so that the label / control fields can be aligned.
 	{
 		id:				childControlsArea
 		anchors
@@ -131,15 +131,14 @@ CheckBoxBase
 			leftMargin: childrenOnSameRow ? jaspTheme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
 		}
 		enabled:		enableChildrenOnChecked ? control.checked : true
-		visible:		children.length > 0
-		columns:		childrenOnSameRow ? children.length : 1
-		rowSpacing:		jaspTheme.rowGroupSpacing
+		visible:		hasChildren
+		columns:		childrenOnSameRow ? childControlsArea.content.length : 1
 		columnSpacing:	jaspTheme.columnGridSpacing
 	}
 
 	Component.onCompleted:
 	{
-		if (childControlsArea.children.length > 0)
+		if (childControlsArea.hasChildren)
 		{
 			if (childrenOnSameRow)
 			{
