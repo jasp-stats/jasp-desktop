@@ -112,6 +112,7 @@ public:
 	
 	static QString				doubleToString(			double dbl, int precision = 10);
 	static QString				doubleToStringMaxPrec(	double dbl);
+	static QString				decimalPoint();
 	
 
 private:

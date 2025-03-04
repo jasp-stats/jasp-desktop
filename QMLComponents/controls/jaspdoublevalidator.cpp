@@ -35,22 +35,16 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	// check range of value
 	double value;
 	bool isNumber	= QColumnUtils::getDoubleValue(	s, value);
-	//int intVal;
-	//bool isInt		= QColumnUtils::getIntValue(	s, intVal);
-	
-	//Maybe the number is formatted in some crazy way, because of locales
-	QString toEnglish = isNumber ? QString::number(value) : s;
 	
 	// check length of decimal places
-    QString point = ".";
-	int indexPoint = toEnglish.indexOf(point);
+	int indexPoint = s.indexOf(QColumnUtils::decimalPoint());
 
 	if (indexPoint != -1)
 	{
 		if (decimals() == 0)
 			return QValidator::Invalid;
 		
-		int lengthDecimals = toEnglish.length() - indexPoint - 1;
+		int lengthDecimals = s.length() - indexPoint - 1;
 		if (lengthDecimals > decimals())
 			return QValidator::Invalid;
 	}
@@ -58,7 +52,7 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 
 	if (!isNumber)
 	{
-		if (s == point)
+		if (s == QColumnUtils::decimalPoint())
 			value = 0;
 		else
 			return QValidator::Invalid;

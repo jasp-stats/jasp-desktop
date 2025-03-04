@@ -1,10 +1,9 @@
 #ifndef COLUMNUTILS_H
 #define COLUMNUTILS_H
 
-#include <functional>
 #include <string>
-#include "utils.h"
 #include <locale>
+#include "utils.h"
 #include <functional>
 
 class ColumnUtils

@@ -375,3 +375,8 @@ QString QColumnUtils::doubleToStringMaxPrec(double dbl)
 {
 	return tq(ColumnUtils::doubleToStringMaxPrec(dbl));
 }
+
+QString QColumnUtils::decimalPoint()
+{
+	return tq(ColumnUtils::decimalPoint());
+}
