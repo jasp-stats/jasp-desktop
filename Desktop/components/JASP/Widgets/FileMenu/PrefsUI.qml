@@ -222,6 +222,7 @@ ScrollView
 						onValueChanged:				if(value != "") languageModel.currentAltLanguage = value
 						addEmptyValue:				false
 						KeyNavigation.tab:			alternativeLocaleTerritory
+						control.width:				Math.max(alternativeLocaleLanguage.control.implicitWidth, alternativeLocaleTerritory.control.implicitWidth)
 					}
 					
 					DropDown
@@ -234,6 +235,7 @@ ScrollView
 						onValueChanged:				if(value != "") languageModel.currentAltTerritory = value
 						addEmptyValue:				false
 						KeyNavigation.tab:			altnavcheckbox
+						control.width:				Math.max(alternativeLocaleLanguage.control.implicitWidth, alternativeLocaleTerritory.control.implicitWidth)
 					}
 					
 				}
