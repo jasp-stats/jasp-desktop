@@ -28,15 +28,6 @@ TextInputBase::TextInputBase(QQuickItem* parent)
 	_controlType = ControlType::TextField;
 }
 
-QString TextInputBase::_getPercentValue(double dblVal)
-{
-	double doubleValue = dblVal * 100; // The value is stored as a double from 0...1, but is displayed as a percent number
-	doubleValue = std::max(0., std::min(100., doubleValue));
-
-	int decimals = property("decimals").toInt();
-	return QColumnUtils::currentQLocale().toString(doubleValue, 'f', decimals);
-}
-
 QString TextInputBase::_getDoubleArrayValue(const std::vector<double>& doubleValues)
 {
 	QString value;
@@ -76,7 +67,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		else if (value.isString() && !QColumnUtils::getDoubleValue(tq(value.asString()), dblVal))
 			dblVal = NAN;
 			
-		_value = dblVal; //Stored as the user enters (so 0-100), but sent in json / 100 through _getPercentValue
+		_value = dblVal; //Stored as the user enters (so 0-100), but sent in json / 100 through
 		//This mean the "bound value" is 0...1 so:
 		if(_inputType == TextInputType::PercentIntputType)
 			_value = dblVal * 100.0;

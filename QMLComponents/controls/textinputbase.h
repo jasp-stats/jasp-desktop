@@ -81,7 +81,6 @@ private:
 	Json::Value	_getJsonValue(QVariant value) const;
 	bool		_formulaResultInBounds(double result);
 
-	QString		_getPercentValue(double val);
 	QString		_getDoubleArrayValue(const std::vector<double>& dblValues);
 
 	void		_setBoundValue();
