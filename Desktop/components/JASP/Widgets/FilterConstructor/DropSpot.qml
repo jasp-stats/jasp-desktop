@@ -115,7 +115,7 @@ DropArea {
 		//console.log(__debugName," onContainsItemChanged to " + (containsItem !== null ? containsItem.__debugName : "null"))
 
 		if(containsItem === null)
-			width = Qt.binding(function(){ return dropText.contentWidth })
+			width = Qt.binding(function(){ return dragTarget.implicitWidth })
 		iWasChecked = false
 
 	}
