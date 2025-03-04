@@ -63,6 +63,8 @@ public:
 	bool			hasSeveralNumericValues()		const;
 	int				rowsTotal()						const;
 	QString			dropLevels()					const;
+	bool			autoSort()						const;
+	QString			computeFilter()					const;
 
 
 	bool			setData(const QModelIndex & index, const QVariant & value,	int role = Qt::EditRole)			override;
@@ -106,6 +108,8 @@ public:
 	void setUseCustomEmptyValues(	bool				useCustomMissingValues);
 	void setCustomEmptyValues(		const QStringList&	customMissingValues);
 	void setDropLevels(				QString				dropLevels);
+	void setAutoSort(				bool				newAutoSort);
+	void setComputeFilter(			const QString &		newComputeFilter);
 
 	QVariantList tabs()		const;
 
@@ -114,11 +118,6 @@ public:
 	bool compactMode()		const;
 	
 	
-	bool autoSort() const;
-	void setAutoSort(bool newAutoSort);
-	
-	QString computeFilter() const;
-	void setComputeFilter(const QString &newComputeFilter);
 	
 public slots:
 	void filteredOutChangedHandler(int col);
@@ -171,11 +170,10 @@ signals:
 	void compactModeChanged();
 	void autoSortChanged();
 	void hasSeveralNumericValuesChanged();
-	
 	void computeFilterChanged();
 	
 private:
-	std::vector<size_t>	getSortedSelection()					const;
+	std::vector<size_t>		getSortedSelection()					const;
 	void					setValueMaxWidth();
 	void					clearVirtual();
 

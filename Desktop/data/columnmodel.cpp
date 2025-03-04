@@ -736,7 +736,7 @@ void ColumnModel::removeAllSelected()
 		if (mapValueToRow.contains(selectedValue))
 		{
 			int selectedRow = int(mapValueToRow[selectedValue]);
-			emit dataChanged(ColumnModel::index(selectedRow, 0), ColumnModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
+			refresh(); //emit dataChanged(ColumnModel::index(selectedRow, 0), ColumnModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 }
@@ -751,24 +751,26 @@ void ColumnModel::setSelected(int row, int modifier)
 		{
 			QString rowValue = data(index(i, 0), int(DataSetPackage::specialRoles::value)).toString();
 			_selected.insert(rowValue);
-			emit dataChanged(ColumnModel::index(i, 0), ColumnModel::index(i, 0), {int(DataSetPackage::specialRoles::selected)});
+			refresh(); //emit dataChanged(ColumnModel::index(i, 0), ColumnModel::index(i, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 	else if (modifier & Qt::ControlModifier)
 	{
 		QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
 		_selected.insert(rowValue);
-		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
+		refresh(); //emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
 	else
 	{
 		QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
 		bool disableCurrent = _selected.count(rowValue) > 0;
 		removeAllSelected();
+		
 		if (!disableCurrent)	_selected.insert(rowValue);
 		else					_selected.erase(rowValue);
-		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
+		refresh(); //emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
+	
 	_lastSelected = row;
 
 }
@@ -777,7 +779,7 @@ void ColumnModel::unselectAll()
 {
 	_selected.clear();
 	_lastSelected = -1;
-	emit dataChanged(ColumnModel::index(0, 0), ColumnModel::index(rowCount(), 0), {int(DataSetPackage::specialRoles::selected)});
+	refresh(); //emit dataChanged(ColumnModel::index(0, 0), ColumnModel::index(rowCount(), 0), {int(DataSetPackage::specialRoles::selected)});
 }
 
 bool ColumnModel::setChecked(int rowIndex, bool checked)
