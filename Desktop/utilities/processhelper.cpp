@@ -31,6 +31,8 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 		custom_R_library = ":" + env.value("JASP_R_Library");
 #endif
 #ifdef _WIN32
+	//set R_TMP_DIR to appdata dir for win appcontainers
+	env.insert("TMPDIR", AppDirs::RtmpDir());
 #if defined(ARCH_32)
 #define ARCH_SUBPATH "i386"
 #else

@@ -107,8 +107,7 @@ private:
 	sem_t										*	_semaphoreOut			= nullptr,
 												*	_semaphoreIn			= nullptr;
 #elif defined _WIN32
-	HANDLE											_semaphoreOut,
-													_semaphoreIn;
+	uint64_t										_msgID 					= 0;
 #else
 	boost::interprocess::named_semaphore		*	_semaphoreOut			= nullptr,
 												*	_semaphoreIn			= nullptr;

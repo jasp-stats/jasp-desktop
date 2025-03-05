@@ -98,7 +98,7 @@ Engine::~Engine()
 
 void Engine::run()
 {
-	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
+	while(_engineState != engineState::stopped)
 	{
 		static bool initDone = false;
 		if(!initDone && _engineState == engineState::initializing) //Do this first, otherwise receiveMessages possibly triggers some other functions

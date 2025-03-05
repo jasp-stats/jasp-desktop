@@ -23,6 +23,9 @@
 #include "utils.h"
 #include "dirs.h"
 
+#include <chrono>
+#include <thread>
+
 #ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
 namespace boost {
 namespace interprocess {
@@ -152,24 +155,6 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 		while (sem_trywait(_semaphoreIn) == 0) ; // do nothing
 		while (sem_trywait(_semaphoreOut) == 0); // do nothing
 
-	}
-#elif defined _WIN32
-
-	string inName  = (_semaphoreInName);
-	string outName = (_semaphoreOutName);
-
-	LPCSTR inLPCSTR  = inName.c_str();
-	LPCSTR outLPCSTR = outName.c_str();
-
-	if (isSlave == false)
-	{
-		_semaphoreIn  = CreateSemaphoreA(NULL, 0, 1, inLPCSTR);
-		_semaphoreOut = CreateSemaphoreA(NULL, 0, 1, outLPCSTR);
-	}
-	else
-	{
-		_semaphoreIn  = OpenSemaphoreA(SYNCHRONIZE,								false, inLPCSTR);
-		_semaphoreOut = OpenSemaphoreA(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	false, outLPCSTR);
 	}
 
 #else
@@ -357,6 +342,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	{
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
+		data.append(std)
 		_dataOut->assign(data.begin(), data.end());
 	}
 	catch (boost::interprocess::bad_alloc &e)	{ goto retryAfterDoublingMemory; }
@@ -376,7 +362,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 #ifdef __APPLE__
 	sem_post(_semaphoreOut);
 #elif defined _WIN32
-	ReleaseSemaphore(_semaphoreOut, 1, NULL);
+	_msgID = ++_msgID % 10;
 #else
 	_semaphoreOut->post();
 #endif
@@ -404,7 +390,12 @@ bool IPCChannel::receive(string &data, int timeout)
 		try
 		{
 			rebindMemoryInIfSizeChanged();
+			#ifdef _WIN32
+			data.assign(_dataIn->c_str(), _dataIn->size() - 1); // remove trailing message id
+			#else
 			data.assign(_dataIn->c_str(), _dataIn->size());
+			#endif
+
 		}
 		catch(std::exception & e)
 		{
@@ -423,7 +414,7 @@ bool IPCChannel::receive(string &data, int timeout)
 
 bool IPCChannel::tryWait(int timeout)
 {
-	bool messageWaiting;
+	bool messageWaiting = false;
 
 #ifdef __APPLE__
 
@@ -437,9 +428,12 @@ bool IPCChannel::tryWait(int timeout)
 	}
 
 #elif defined _WIN32
-
-	messageWaiting = (WaitForSingleObject(_semaphoreIn, timeout) == WAIT_OBJECT_0);
-
+	std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+	std::string newMsgID = _dataIn->back();
+	if(newMsgID != _msgID) {
+		messageWaiting = true;
+		_msgID = newMsgID;
+	}
 #else
 
 	if (timeout > 0)

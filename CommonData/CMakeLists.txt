@@ -51,10 +51,11 @@ target_compile_definitions(
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
 				JSONCPP_NO_LOCALE_SUPPORT	)
 
-if(APPLE)
+if(APPLE OR WINDOWS)
   target_compile_definitions(CommonData PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
-elseif(WINDOWS)
+endif()
 
+if(WINDOWS)
   target_compile_definitions(
     CommonData
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
