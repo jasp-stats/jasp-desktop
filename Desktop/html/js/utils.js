@@ -25,7 +25,7 @@ function formatMoney(_currency='EUR', amount) {
 }
 
 function formatFixed(number, digitsFrac) {
-	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac });
+	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac, maximumFractionDigits: digitsFrac});
 	
 	return formatter.format(number)
 }
@@ -165,8 +165,23 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 		if (f.indexOf("sf:") != -1)
 			sf = f.substring(3);
 
-		if (f.indexOf("pc") != -1)
+		if (f.indexOf("pc") != -1 || f.indexOf("percentage") != -1)
+		{
 			pc = true;
+
+			if(!fixDecimals)
+				dp = 2	
+
+			let colonPos 	= f.indexOf(":") 
+			
+
+			if(colonPos != -1)
+			{
+				let pcDP = f.substr(colonPos + 1);
+				if(!isNaN(parseFloat(pcDP)))
+					dp = parseFloat(pcDP)
+			}
+		}
 
 		if (f.indexOf("~") != -1)
 			approx = true;
@@ -270,7 +285,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				case "percentage":
 				{
 					if (!isNaN(parseFloat(content)))
-						formatted["content"] = "" + (100 * formatFixed(content, 0)) + (html ? "&thinsp;%" : "%")
+						formatted["content"] = "" + (formatFixed(content * 100, dp)) + (html ? "&thinsp;%" : "%")
 					break;
 				}
 	

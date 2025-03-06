@@ -252,7 +252,7 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 
 QString TextInputBase::friendlyName() const
 {
-	switch (_inputType)
+	switch (_inputType)	
 	{
 	case TextInputType::IntegerInputType:			return tr("Integer Field");
 	case TextInputType::NumberInputType:			return tr("Double Field");
