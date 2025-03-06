@@ -139,13 +139,13 @@ public:
 			void					labelsOrderByValue(bool doDbUpdateEtc=true);
 
 			std::string				operator[](	size_t row); ///< Display value/label for row
-			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false, columnType asType = columnType::unknown)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
-			std::string				getDisplay(	size_t row,	bool fancyEmptyValue = true)									const;
-			std::string				getShadow(	size_t row,	bool fancyEmptyValue = true)									const;
-			std::string				getLabel(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false)	const;
-			stringvec				valuesAsStrings()																		const;
-			stringvec				labelsAsStrings()																		const;
-			stringvec				displaysAsStrings()																		const;
+			std::string				getValue(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false, bool sepas = true, columnType asType = columnType::unknown)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
+			std::string				getDisplay(	size_t row,	bool fancyEmptyValue = true, bool sepas = true)									const;
+			std::string				getShadow(	size_t row,	bool fancyEmptyValue = true, bool sepas = true)									const;
+			std::string				getLabel(	size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false, bool sepas = true)	const;
+			stringvec				valuesAsStrings()																						const;
+			stringvec				labelsAsStrings()																						const;
+			stringvec				displaysAsStrings()																						const;
 			stringvec				dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels = true)			; ///< values is output! If filter is of different length than the data an error is thrown, if length is zero it is ignored. useLabels indicates whether the levels will be based on the label or on the value as specified in the label editor.
 			doublevec				dataAsRDoubles(const boolvec & filter)													const; ///< If filter is of different length than the data an error is thrown, if length is zero it is ignored
 
@@ -216,7 +216,7 @@ public:
 			void					deserializeLabelsForCopy(	const Json::Value & info);
 			void					deserializeLabelsForRevert(	const Json::Value & info);
 			std::string				getUniqueName(const std::string& name)									const;
-			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false)					const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
+			std::string				doubleToDisplayString(	double dbl, bool fancyEmptyValue = true, bool ignoreEmptyValues = false, bool sepas=true)	const; ///< fancyEmptyValue is the user-settable empty value label, for saving to csv this might be less practical though, so turn it off
 			stringvec				previewTransform(columnType transformType);
 			
 			bool					hasCustomEmptyValues()													const;

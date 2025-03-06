@@ -1123,7 +1123,21 @@ std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue
 	return std::to_string(key);
 }
 
-std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue, columnType asType) const
+std::string Column::getDisplay(size_t row, bool fancyEmptyValue, bool sepas) const
+{
+	return _type == columnType::scale	
+		?	getValue(row, fancyEmptyValue, false, sepas)
+		:	getLabel(row, fancyEmptyValue, false, sepas);
+}
+
+std::string Column::getShadow(size_t row, bool fancyEmptyValue, bool sepas) const
+{
+	return _type != columnType::scale	
+		?	getValue(row, fancyEmptyValue, true, sepas)
+		:	getLabel(row, fancyEmptyValue, true, sepas);
+}
+
+std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas, columnType asType) const
 {
 	if(asType == columnType::unknown)
 		asType = _type;
@@ -1131,7 +1145,7 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 	if (row < rowCount())
 	{
 		if (asType == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue);
+			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
 
 		else if (_ints[row] != EmptyValues::missingValueInteger)
 		{
@@ -1145,26 +1159,12 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 	return fancyEmptyValue ? EmptyValues::displayString() : "";
 }
 
-std::string Column::getDisplay(size_t row, bool fancyEmptyValue) const
-{
-	return _type == columnType::scale	
-		?	getValue(row, fancyEmptyValue)
-		:	getLabel(row, fancyEmptyValue);
-}
-
-std::string Column::getShadow(size_t row, bool fancyEmptyValue) const
-{
-	return _type != columnType::scale	
-		?	getValue(row, fancyEmptyValue, true)
-		:	getLabel(row, fancyEmptyValue, true);
-}
-
-std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue) const
+std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas) const
 {
 	if (row < rowCount())
 	{
 		if (_ints[row] == Label::DOUBLE_LABEL_VALUE)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue);
+			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
 		else
 			return _getLabelDisplayStringByValue(_ints[row], ignoreEmptyValue);
 	}
@@ -1172,12 +1172,12 @@ std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 	return fancyEmptyValue ? EmptyValues::displayString() : "";
 }
 
-std::string Column::doubleToDisplayString(double dbl, bool fancyEmptyValue, bool ignoreEmptyValue) const
+std::string Column::doubleToDisplayString(double dbl, bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas) const
 {
 	ignoreEmptyValue = ignoreEmptyValue && !std::isnan(dbl);
 	
 	if (isEmptyValue(dbl) && !ignoreEmptyValue)				return fancyEmptyValue ? EmptyValues::displayString() : "";
-	else													return ColumnUtils::doubleToString(dbl);
+	else													return ColumnUtils::doubleToString(dbl, sepas);
 }
 
 std::string Column::operator[](size_t row)
@@ -2382,7 +2382,7 @@ stringvec Column::previewTransform(columnType transformType)
 		
 		
 		for(int count = 0; count < _ints.size() && count < showThisMany; count++)
-			someValues << (count > 0 ? ", " : "") << (transformType == columnType::scale ? getValue(count, true, false, transformType) : '"' + getLabel(count, true) + '"');
+			someValues << (count > 0 ? ", " : "") << (transformType == columnType::scale ? getValue(count, true, false, true, transformType) : '"' + getLabel(count, true) + '"');
 		
 		if(_ints.size() > showThisMany)
 			someValues << ", ...";

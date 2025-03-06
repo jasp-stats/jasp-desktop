@@ -67,7 +67,7 @@ public:
 
 	QString									currentLanguageCode()											const	{ return _currentLanguageCode; }
 	QString									currentLanguage()												const;
-	QLocale									currentLocale()													const;
+	const QLocale &							currentLocale()													const;
 	bool									hasDefaultLanguage()											const;
 	bool									useAlternativeLocale()											const { return _useAlternativeLocale; }
 	QString									currentAltLanguage()											const;
@@ -126,7 +126,7 @@ private:
 											_qmLocation,
 											_currentAltLanguage,
 											_currentAltTerritory;
-	QMap<QString, LanguageInfo>				_languages;
+	std::map<QString, LanguageInfo>			_languages;
 	QVector<QTranslator *>					_translators;
 	bool									_shouldEmitLanguageChanged	= false,
 											_useAlternativeLocale;

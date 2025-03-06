@@ -26,6 +26,7 @@
 #include "appinfo.h"
 #include "simplecrypt.h"
 #include "log.h"
+
 #include "columnutils.h"
 
 
@@ -353,6 +354,11 @@ bool QColumnUtils::isDoubleValue(const QString &value)
 	return ColumnUtils::isDoubleValue(fq(value));
 }
 
+void QColumnUtils::setNumberOptionsOnQLocale(QLocale & locale)
+{
+	locale.setNumberOptions(QLocale::OmitGroupSeparator);
+}
+
 QLocale QColumnUtils::currentQLocale()
 {
 	QString newId = tq(ColumnUtils::currentQLocaleId());
@@ -361,6 +367,7 @@ QLocale QColumnUtils::currentQLocale()
 	{
 		_lastQLocaleId = newId;
 		_lastQLocale   = QLocale(_lastQLocaleId);
+		setNumberOptionsOnQLocale(_lastQLocale);
 	}
 	
 	return _lastQLocale;

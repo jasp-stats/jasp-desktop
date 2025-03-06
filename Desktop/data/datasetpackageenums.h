@@ -16,6 +16,7 @@ DECLARE_ENUM(
 		columnType, 
 		description, 
 		maxColString, 
+		noSepaDisplay, // basically "display" but then without the nice separators
 		shadowDisplay, 
 		valueLabelPair, 
 		maxRowHeaderString, 

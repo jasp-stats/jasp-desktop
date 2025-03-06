@@ -9,9 +9,9 @@
 class ColumnUtils
 {
 public:
-	typedef std::function<std::string(double, int)>		doubleF;
-	typedef std::function<bool(std::string, double&)>	toDoubleF;
-	typedef std::function<bool(std::string, int&)>		toIntF;
+	typedef std::function<std::string(double, int, bool)>		doubleF;
+	typedef std::function<bool(std::string, double&)>			toDoubleF;
+	typedef std::function<bool(std::string, int&)>				toIntF;
 
 	friend class PreferencesModel;
 
@@ -26,8 +26,8 @@ public:
 	static void					convertEscapedUnicodeToUTF8(			std::string & inputStr);
 	static std::string			deEuropeaniseForImport(					std::string   value);		//Convert a string to a double with a dot for a separator
 
-	static std::string			doubleToString(			double dbl, int precision = 10);
-	static std::string			doubleToStringMaxPrec(	double dbl);
+	static std::string			doubleToString(			double dbl,	bool sepas = true, int precision = 10);
+	static std::string			doubleToStringMaxPrec(	double dbl,	bool sepas = true);
 	
 	static bool					convertVecToInt(	const stringvec & values, intvec	& intValues, intset & uniqueValues);
 	static bool					convertVecToDouble(	const stringvec & values, doublevec	& doubleValues);

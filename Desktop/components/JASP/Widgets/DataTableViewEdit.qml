@@ -16,7 +16,7 @@ Item
 	TextInput
 	{
 		id:						editItem
-		text:					itemText
+		text:					itemTextEdit
 		color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		font:					jaspTheme.font
 		clip:					true

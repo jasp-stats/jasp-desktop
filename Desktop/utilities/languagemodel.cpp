@@ -51,6 +51,11 @@ LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString&
 	if (!_qmFilename.isEmpty())		qmFilenames.push_back(_qmFilename);
 }
 
+void LanguageModel::setAlternativeLocaleStatic()
+{
+	_alternativeLocale = QLocale(_nativeLanguageNameToEnum[_currentAltLanguage], _nativeTerritoryNameToEnum[_currentAltTerritory]);	
+}
+
 LanguageModel::LanguageModel(QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
 	: QAbstractListModel(parent),
 	  _mApp(app),
@@ -58,7 +63,7 @@ LanguageModel::LanguageModel(QApplication *app, QQmlApplicationEngine *qml, QObj
 	  _qml(qml)
 {
 	assert(!_singleton);
-
+	
 	_singleton = this;
 	_qmLocation = tq(Dirs::resourcesDir()) + "Translations";
 
@@ -182,7 +187,8 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	if (index.row() < 0 || index.row() >= rowCount())
 		return QVariant();
 
-	QString languageCode = _languages.keys()[index.row()];
+	
+	QString languageCode = std::next(_languages.begin(), index.row())->first;
 
 	QString result;
 	switch(role)
@@ -190,7 +196,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	case NameRole:
 	case Qt::DisplayRole:
 	case LabelRole:
-	case ValueRole:			result = _languages[languageCode].entryName; break;
+	case ValueRole:			result = _languages.at(languageCode).entryName; break;
 	case NationFlagRole:	result = "qrc:/translations/images/flag_" + languageCode + ".png"; break;
 	case LocalNameRole:		result = languageCode; break;
 	default: result = "";
@@ -220,7 +226,7 @@ void LanguageModel::setCurrentLanguage(QString language)
 		return;
 	
 	QString languageCode = language.split(" ")[0];
-	if (languageCode == _currentLanguageCode || languageCode.isEmpty() || !_languages.contains(languageCode))
+	if (languageCode == _currentLanguageCode || languageCode.isEmpty() || !_languages.count(languageCode))
 		return;
 
 	_currentLanguageCode = languageCode;
@@ -237,16 +243,21 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 	
 	QLocale::setDefault(currentLocale());
 	
-	static ColumnUtils::doubleF altFuncToString = [&](double dbl, int precision)
+	static ColumnUtils::doubleF altFuncToString = [&](double dbl, int precision, bool sepas)
 	{
-		return fq(currentLocale().toString(dbl, 'g', precision));
+		QLocale loc(currentLocale());
+		
+		if(!sepas)
+			QColumnUtils::setNumberOptionsOnQLocale(loc);
+		
+		return fq(loc.toString(dbl, 'g', precision));
 	};
 
 	static ColumnUtils::toDoubleF altFuncToDouble = [&](const std::string & str, double & dbl)
 	{
-		bool isDouble = false;
-		dbl = currentLocale().toDouble(tq(str), &isDouble);
-
+		bool	isDouble	= false;
+				dbl			= currentLocale().toDouble(tq(str), &isDouble);
+		
 		if(!isDouble)
 			dbl = EmptyValues::missingValueDouble;
 
@@ -374,7 +385,7 @@ void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
 			continue;
 		}
 
-		if (!_languages.contains(languageCode))
+		if (!_languages.count(languageCode))
 		{
 			Log::log() << "Not a Jasp supported language in: " << fi.fileName().toStdString()  << std::endl ;
 			continue;
@@ -428,7 +439,7 @@ void LanguageModel::findQmFiles()
 			continue;
 		}
 
-		if (!_languages.contains(languageCode))
+		if (!_languages.count(languageCode))
 		{
 			Log::log() << "Language (" << QLocale::languageToString(loc.language()) << ") not registered in LanguageModel, adding it now" << std::endl;
 			_languages[languageCode] = LanguageInfo(loc, languageCode, fi.filePath());
@@ -486,20 +497,18 @@ void LanguageModel::removeTranslators()
 
 QString LanguageModel::currentLanguage() const
 {
-	const LanguageInfo & li = _languages[_currentLanguageCode];
-	return li.entryName;
+	return _languages.at(_currentLanguageCode).entryName;
 }
 
-QLocale LanguageModel::currentLocale() const
+const QLocale & LanguageModel::currentLocale() const
 {
 	
-	return useAlternativeLocale() ? _alternativeLocale : _languages[_currentLanguageCode].locale;
+	return useAlternativeLocale() ? _alternativeLocale : _languages.at(_currentLanguageCode).locale;
 }
 
 bool LanguageModel::hasDefaultLanguage() const
 {
-	const LanguageInfo & li = _languages[_currentLanguageCode];
-	return li.locale == _defaultLocale;
+	return _languages.at(_currentLanguageCode).locale == _defaultLocale;
 }
 
 QString LanguageModel::currentAltLanguage() const
@@ -522,10 +531,6 @@ void LanguageModel::setCurrentAltLanguage(const QString &newCurrentAltLanguage)
 	refreshAll();
 }
 
-void LanguageModel::setAlternativeLocaleStatic()
-{
-	_alternativeLocale = QLocale(_nativeLanguageNameToEnum[_currentAltLanguage], _nativeTerritoryNameToEnum[_currentAltTerritory]);	
-}
 
 QString LanguageModel::currentAltTerritory() const
 {

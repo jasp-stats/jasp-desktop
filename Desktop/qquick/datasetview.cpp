@@ -182,6 +182,7 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 					{
 						//Changes here should be considered also for DataSetView::setStyleDataItem:
 						context->setContextProperty("itemText",			_model->data(row, col));
+						context->setContextProperty("itemTextEdit",		_model->data(row, col, _model->getRole("noSepaDisplay")));
 						context->setContextProperty("itemShadowText",	_model->data(row, col, _model->getRole("shadowDisplay")));
 						context->setContextProperty("itemLabel",		_model->data(row, col, _model->getRole("label")));
 						context->setContextProperty("itemValue",		_model->data(row, col, _model->getRole("value")));
@@ -1889,6 +1890,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	//The first four also get updated in DataSetView::modelDataChanged!
 	//If adding or changes behaviour also do that there
 	previousContext->setContextProperty("itemText",			text);
+	previousContext->setContextProperty("itemTextEdit",		_model->data(row, col, _model->getRole("noSepaDisplay")));
 	previousContext->setContextProperty("itemShadowText",	_model->data(row, col, _model->getRole("shadowDisplay")));
 	previousContext->setContextProperty("itemLabel",		_model->data(row, col, _model->getRole("label")));
 	previousContext->setContextProperty("itemValue",		_model->data(row, col, _model->getRole("value")));
