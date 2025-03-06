@@ -87,19 +87,14 @@ void TextInputBase::bindTo(const Json::Value& value)
 		break;
 	}
 	case TextInputType::FormulaType:
-	case TextInputType::FormulaArrayType:
 	{
-		QString strValue;
-		if (value.isString())	
-			strValue = tq(value.asString());
-		_value = strValue;
+		_value = value.isString() ? tq(value.asString())
+								  : (value.isNumeric() ? QColumnUtils::doubleToString(value.asDouble()) : QVariant());
 		setIsRCode();
 
-		if (!strValue.isEmpty())
-		{
-			if (_inputType == TextInputType::FormulaType)	runRScript("as.character("   + strValue + ")",					true);
-			else											runRScript("paste(as.array(" + strValue + "), collapse=\"|\")",	true);
-		}
+		if (!_value.isNull())
+			runRScript("as.character(" + _value.toString() + ")", true);
+
 		break;
 	}
 	case TextInputType::ComputedColumnType:
@@ -155,8 +150,7 @@ bool TextInputBase::isJsonValid(const Json::Value &value) const
 	bool valid = false;
 	switch (_inputType)
 	{
-	case TextInputType::DoubleArrayInputType:
-	case TextInputType::FormulaArrayType:		valid = value.isArray();						break;
+	case TextInputType::DoubleArrayInputType:	valid = value.isArray();						break;
 	default:									valid = value.isNumeric() || value.isString();	break;
 	}
 	return valid;
@@ -174,7 +168,6 @@ void TextInputBase::setUp()
 	else if (type == "checkColumn")		_inputType = TextInputType::CheckColumnFreeOrMineType;
 	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
 	else if (type == "formula")			_inputType = TextInputType::FormulaType;
-	else if (type == "formulaArray")	_inputType = TextInputType::FormulaArrayType;
 	else								_inputType = TextInputType::StringInputType;
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
@@ -270,7 +263,6 @@ QString TextInputBase::friendlyName() const
 	case TextInputType::ComputedColumnType:			return tr("Add Computed Column Field");
 	case TextInputType::CheckColumnFreeOrMineType:	return tr("Column-name-is-free field");
 	case TextInputType::FormulaType:				return tr("Formula Field");
-	case TextInputType::FormulaArrayType:			return tr("Formulas Field");
 	case TextInputType::StringInputType:
 	default:										return tr("Text Field");
 	}
@@ -365,6 +357,7 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 	
 	switch (_inputType)
 	{
+	case TextInputBase::FormulaType:			return fq(value.toString()); // Keep it as string and do not try to make it an integer or a double
 	case TextInputType::IntegerInputType:		return isInt ? valueInt : 0;
 	case TextInputType::NumberInputType:		return isDbl ? valueDbl : 0;
 	case TextInputType::PercentIntputType:		return std::min(std::max(isDbl ? valueDbl : 0, 0.0), 100.0) / 100;
@@ -454,7 +447,7 @@ void TextInputBase::setDefaultValue(QVariant value)
 
 void TextInputBase::_setBoundValue()
 {
-	if (_inputType == TextInputType::FormulaType || _inputType == TextInputType::FormulaArrayType)
+	if (_inputType == TextInputType::FormulaType)
 	{
 		QString strValue = _value.toString();
 
@@ -468,11 +461,7 @@ void TextInputBase::_setBoundValue()
 				setBoundValue(fq(strValue));
 				emit formulaCheckSucceeded();
 			}
-			else if (_inputType == TextInputType::FormulaType)
-				runRScript("as.character(" + strValue + ")", true);
-			else
-				runRScript("paste(as.array(" + strValue + "), collapse=\"|\")", true);
-
+			runRScript("as.character(" + strValue + ")", true);
 		}
 	}
 	else setBoundValue(_getJsonValue(_value));

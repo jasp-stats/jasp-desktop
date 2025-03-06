@@ -43,7 +43,6 @@ QVariant ExpandDataProxyModel::data(int row, int col, int role) const
 	}
 	case int(dataPkgRoles::value):					return "";
 	case int(dataPkgRoles::columnType):				return int(columnType::scale);
-//	case int(dataPkgRoles::itemInputValue):			return "string"; ???
 	default:										return QVariant();
 	}
 

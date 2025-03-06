@@ -34,7 +34,7 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType, FormulaArrayType};
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType};
 
 	TextInputBase(QQuickItem* parent = nullptr);
 

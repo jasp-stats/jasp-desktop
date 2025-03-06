@@ -332,7 +332,6 @@ TableViewBase
 							tableView.setButtons()
 						}
 						editable:				tableView.enabled && itemEditable && tableView.getEditable(columnIndex, rowIndex)
-						multiple:				itemInputType === "formulaArray"
 					}
 				}
 
