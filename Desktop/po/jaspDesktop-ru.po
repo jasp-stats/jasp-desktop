@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-07 02:27+0000\n"
+"Last-Translator: Alexander Matveev <avmcsmu@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 "X-Language: ru\n"
 "X-Qt-Contexts: true\n"
 
@@ -3872,15 +3878,15 @@ msgstr "Сохранить"
 
 msgctxt "Computer|"
 msgid "JASP Files"
-msgstr ""
+msgstr "JASP файлы"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Экспорт результата в формате HTML или PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTML файлы"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
@@ -3888,24 +3894,23 @@ msgstr ""
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Экспорт данных в CSV"
 
 msgctxt "Computer|"
 msgid "CSV Files"
-msgstr ""
+msgstr "CSV файлы"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr "Синхронизация"
+msgstr "Синхронизация данных"
 
 msgctxt "Computer|"
 msgid "Data Files"
-msgstr ""
+msgstr "Файлы данных"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<не выбрано>"
 
 #, fuzzy
 msgctxt "ListModelInputValue|"
@@ -3915,12 +3920,11 @@ msgstr "Новое значение"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "Строка %1"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr "Прочее"
+msgstr "Прочие настройки"
 
 #, fuzzy
 msgctxt "PrefsResults|"
@@ -3929,11 +3933,11 @@ msgstr "Показать синтаксис R"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "Добавить синтаксис R в каждый анализ"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "Показать R синтаксис"
 
 #, fuzzy
 msgctxt "ResultMenuModel|"
@@ -3946,15 +3950,15 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваши изменения будут потеряны если вы их не сохраните."
 
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
-msgstr ""
+msgstr "Вы хотите сохранить ваши изменения в Фильтре?"
 
 msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваши изменения будут потеряны если вы не сохраните их."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -3983,55 +3987,55 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Bold"
-msgstr ""
+msgstr "Жирный"
 
 msgctxt "MainPage|"
 msgid "Italic"
-msgstr ""
+msgstr "Курсив"
 
 msgctxt "MainPage|"
 msgid "Underline"
-msgstr ""
+msgstr "Подчеркивание"
 
 msgctxt "MainPage|"
 msgid "Link"
-msgstr ""
+msgstr "Ссылка"
 
 msgctxt "MainPage|"
 msgid "Formula"
-msgstr ""
+msgstr "Формула"
 
 msgctxt "MainPage|"
 msgid "Code Block"
-msgstr ""
+msgstr "Блок кода"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "Заголовок"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "Нумерованный список"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "Ненумерованный список"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "Цвет фона"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "Нижний индекс"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "Верхний индекс"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "Цитата"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
@@ -4043,19 +4047,19 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "Кегль"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "Очистить форматирование"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "Кликните здесь для добавления текста"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Скопировано в буфер обмена"
 
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
@@ -4063,138 +4067,141 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "LaTeX код скопирован в буфер обмена"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "Введение:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "Вывод:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Переключиться в режим редактирования данных"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "Выделить все"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Вырезать"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
 #, fuzzy
 msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "Копировать"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "Вставить"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Очистить ячейки"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Вернуть: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Повторить: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "Выбрать колонку"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Вставить столбец впереди"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Вставить столбец после"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "Удалить колонку"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "Выбрать строку"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "Удалить строку"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "Закрыть окно фильтра"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "Переименовать колонку"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "Переименовать"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "Переименовать колонку %1 в %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "Закрыть без переименования колонок"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
@@ -4213,12 +4220,12 @@ msgstr "Метка"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "Колонка %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "Установить значение '%1' в строке %2 колонки '%3'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4228,22 +4235,22 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "Вставить колонку '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "Удалить колонку '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "Удалить строку %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "Установить метку для значения '%1' колонки '%2' с '%3' на '%4'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4281,7 +4288,7 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Изменить R фильтр"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4301,7 +4308,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Перезагрузить файл с данными"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4310,63 +4317,63 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Вставить колонку впереди"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Вставить колонку после"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Удалить колонку"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Удалить строку"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Очистить ячейки"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Вернуть"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Повторить"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Анализ(ы)"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Переключить JASP в режим анализа"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Редактировать данные"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Переключить JASP в режим редактирования данных"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Новые данные"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Открыть рабочую область без данных"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Вставить"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Вставить пустые колонки или строки"
 
 #, fuzzy
 msgctxt "RibbonModel|"
@@ -4375,11 +4382,11 @@ msgstr "Удалить"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Удалить колонки или строки"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Синхронизация"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
@@ -4387,19 +4394,19 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Отключить синхронизацию внешних данных"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Вставить строку выше"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Вставить строку ниже"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Цветовая палитра"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
@@ -4417,48 +4424,49 @@ msgctxt "ColorPalette|"
 msgid "Viridis"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Серый"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Синий"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Спортивные команды: NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Гранд Будапешт"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Вставить строку выше"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Вставить строку ниже"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Отменить изменения, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Повторить изменения, %1+shift+Z или %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Оменить %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -4486,11 +4494,11 @@ msgstr ""
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Связаться с JASP"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP поддерживается следующими организациями:"
 
 #, fuzzy
 msgctxt "WavyWindow|"
@@ -4509,7 +4517,7 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Контакты"
 
 msgctxt "AboutModel|"
 msgid ""
@@ -4520,11 +4528,11 @@ msgstr ""
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "и %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Сброс до стандартных значений"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
@@ -4532,7 +4540,7 @@ msgstr ""
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Добавить пропущенное значение"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
@@ -4591,20 +4599,20 @@ msgstr "Сбросить все фильтры для всех столбцов"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Рисунок"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Настройки рабочей области"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Имя: %1"
 
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr ""
+msgstr "Описание: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
@@ -4612,7 +4620,7 @@ msgstr ""
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Показать настройки рабочей области"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
@@ -4636,11 +4644,11 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Колонки созданные в ходе анализа"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Колонки добавленные при анализе"
 
 #, fuzzy
 msgctxt "QObject|"
@@ -4663,11 +4671,11 @@ msgstr ""
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Редактор меток"
 
 msgctxt "ColumnModel|"
 msgid "Missing values"
-msgstr ""
+msgstr "Пропущенные значения"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4707,7 +4715,7 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Установить пустые значения для колонки '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
@@ -4727,11 +4735,11 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Неподдерживаемые видео сервисы"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP допускает использование только следующих видео сервисов:"
 
 msgctxt "MainPage|"
 msgid ""
@@ -4740,7 +4748,7 @@ msgstr ""
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP Сообщество"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Community"
@@ -4770,15 +4778,15 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Сообщество"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
-msgstr ""
+msgstr "Имя: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Тип столбца: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
@@ -4790,7 +4798,7 @@ msgstr ""
 
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
-msgstr ""
+msgstr "Длинный формат имени: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
@@ -4802,7 +4810,7 @@ msgstr ""
 
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
-msgstr ""
+msgstr "Описание: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
@@ -4820,7 +4828,7 @@ msgstr ""
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Данные не загружены!"
 
 #, qt-format
 msgctxt "FilterModel|"
@@ -4839,7 +4847,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Сбросить типы загруженных переменных"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
@@ -4847,15 +4855,15 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Скопировано в буфер обмена"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "Скопировать отладочную информацию"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "Искать в результатах:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
@@ -4863,11 +4871,11 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Цвет шрифта"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "Вставить LaTeX :"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
@@ -4875,21 +4883,21 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Кликните для применения формулы"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Кликните для редактирования формулы"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Добавить %1"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Удалить последнее %1"
 
 #, fuzzy
 msgctxt "FactorsFormBase|"
@@ -4919,7 +4927,7 @@ msgstr "Нажмите здесь, чтобы изменить шкалу изм
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "Добавить столбец"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
