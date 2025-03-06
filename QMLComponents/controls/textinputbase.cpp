@@ -269,29 +269,14 @@ QString TextInputBase::friendlyName() const
 
 QVariant TextInputBase::defaultValue() const	
 { 
-	switch(_defaultValue.typeId())
-	{
-	case QMetaType::Double:
-		return tq(ColumnUtils::doubleToString(_defaultValue.toDouble()));
-				
-	default:
-		return _defaultValue;
-	}
+	return _defaultValue;
 }
 
 QVariant TextInputBase::value() const	
 { 
 	QVariant showThis = _value.isNull() ? _defaultValue : _value; 
 	
-	switch(showThis.typeId())
-	{
-	case QMetaType::Double:
-		return QColumnUtils::doubleToString(showThis.toDouble());
-				
-	default:
-		return showThis;
-	}
-	
+	return showThis;	
 }
 
 void TextInputBase::checkIfColumnIsFreeOrMine()
