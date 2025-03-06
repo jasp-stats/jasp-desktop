@@ -161,3 +161,6 @@
 [submodule "Modules/jaspBfpack"]
 	path = Modules/jaspBfpack
 	url = https://github.com/jasp-stats/jaspBfpack
+[submodule "Modules/jaspRem"]
+	path = Modules/jaspRem
+	url = https://github.com/juliuspfadt/jaspRem
