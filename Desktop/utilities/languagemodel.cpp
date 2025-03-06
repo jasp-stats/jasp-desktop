@@ -80,10 +80,11 @@ void LanguageModel::initialize()
 
 	findQmFiles();
 
-	_currentLanguageCode	= Settings::value(Settings::PREFERRED_LANGUAGE)	.toString();
-	_useAlternativeLocale	= Settings::value(Settings::USE_ALT_LOCALE)		.toBool();
-	_currentAltLanguage		= Settings::value(Settings::ALT_LOCALE_LANGUAGE).toString();
-	_currentAltTerritory	= Settings::value(Settings::ALT_LOCALE_REGION)	.toString();
+	_currentLanguageCode	= Settings::value(Settings::PREFERRED_LANGUAGE		).toString();
+	_useAlternativeLocale	= Settings::value(Settings::USE_ALT_LOCALE			).toBool();
+	_currentAltLanguage		= Settings::value(Settings::ALT_LOCALE_LANGUAGE		).toString();
+	_currentAltTerritory	= Settings::value(Settings::ALT_LOCALE_REGION		).toString();
+	_useThousandSeps		= Settings::value(Settings::USE_THOUSAND_SEPARATORS	).toBool();
 	
 	fillAltOptions();
 	
@@ -247,8 +248,8 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 	{
 		QLocale loc(currentLocale());
 		
-		if(!sepas)
-			QColumnUtils::setNumberOptionsOnQLocale(loc);
+		if(!sepas || !useThousandSeps())
+			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
 		
 		return fq(loc.toString(dbl, 'g', precision));
 	};
@@ -561,6 +562,24 @@ void LanguageModel::setCurrentAltTerritory(const QString &newCurrentAltTerritory
 	emit currentAltTerritoryChanged();
 	
 	Settings::setValue(Settings::ALT_LOCALE_REGION, _currentAltTerritory);
+	
+	refreshAll();
+}
+
+bool LanguageModel::useThousandSeps() const
+{
+	return _useThousandSeps;
+}
+
+void LanguageModel::setUseThousandSeps(bool newUseThousandSeps)
+{
+	if (_useThousandSeps == newUseThousandSeps)
+		return;
+	
+	_useThousandSeps = newUseThousandSeps;
+	emit useThousandSepsChanged();
+	
+	Settings::setValue(Settings::USE_THOUSAND_SEPARATORS, _useThousandSeps);
 	
 	refreshAll();
 }

@@ -114,7 +114,7 @@ public:
 	static QString				doubleToStringMaxPrec(	double dbl);
 	static QString				decimalPoint();
 	
-	static void					setNumberOptionsOnQLocale(QLocale & locale);
+        static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
 	
 
 private:

@@ -25,6 +25,8 @@ function formatMoney(_currency='EUR', amount) {
 }
 
 function formatFixed(number, digitsFrac) {
+	if(isNaN(digitsFrac))
+		digitsFrac = 0
 	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac, maximumFractionDigits: digitsFrac});
 	
 	return formatter.format(number)
@@ -177,7 +179,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			if(colonPos != -1)
 			{
 				let pcDP = f.substr(colonPos + 1);
-				
+
 				if(!isNaN(parseFloat(pcDP)))
 					dp = parseFloat(pcDP)
 			}

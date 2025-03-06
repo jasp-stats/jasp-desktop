@@ -354,7 +354,7 @@ bool QColumnUtils::isDoubleValue(const QString &value)
 	return ColumnUtils::isDoubleValue(fq(value));
 }
 
-void QColumnUtils::setNumberOptionsOnQLocale(QLocale & locale)
+void QColumnUtils::setOmitGroupSeparatorOnQLocale(QLocale & locale)
 {
 	locale.setNumberOptions(QLocale::OmitGroupSeparator);
 }
@@ -367,7 +367,7 @@ QLocale QColumnUtils::currentQLocale()
 	{
 		_lastQLocaleId = newId;
 		_lastQLocale   = QLocale(_lastQLocaleId);
-		setNumberOptionsOnQLocale(_lastQLocale);
+		setOmitGroupSeparatorOnQLocale(_lastQLocale);
 	}
 	
 	return _lastQLocale;
