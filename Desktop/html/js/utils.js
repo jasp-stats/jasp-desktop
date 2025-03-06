@@ -130,7 +130,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	let pc			= false;
 	let approx		= false;
 	let log10		= false;
-	let fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
+	let fixDecimals = typeof dp === 'number' && dp >= 0;
 	let currency	= ""
 	let moneyFmt	= "monetary" 
 	
@@ -142,7 +142,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			if (window.globSet.pExact) {
 				sf = 4;
 			} else {
-				p = f.substring(2);
+				p = Number(f.substring(2));
 			}
 		}
 		
@@ -160,10 +160,10 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 		}
 
 		if (f.indexOf("dp:") != -1 && !fixDecimals)
-			dp = f.substring(3);
+			dp = Number(f.substring(3));
 
 		if (f.indexOf("sf:") != -1)
-			sf = f.substring(3);
+			sf = Number(f.substring(3));
 
 		if (f.indexOf("pc") != -1 || f.indexOf("percentage") != -1)
 		{
@@ -174,10 +174,10 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 
 			let colonPos 	= f.indexOf(":") 
 			
-
 			if(colonPos != -1)
 			{
 				let pcDP = f.substr(colonPos + 1);
+				
 				if(!isNaN(parseFloat(pcDP)))
 					dp = parseFloat(pcDP)
 			}

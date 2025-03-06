@@ -123,7 +123,8 @@ void ResultsJsInterface::setNormalizedNotationHandler(bool normalized)
 void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 {
 	if (numDecimals == "")
-		numDecimals = "\"\"";
+		numDecimals = "-1";
+	
 	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
 	runJavaScript(js);
 }
@@ -141,7 +142,7 @@ void ResultsJsInterface::setGlobalJsValues()
 
 	QString js = "window.globSet.pExact = " + exactPValueString;
 	js += "; window.globSet.normalizedNotation = " + normalizedNotationString;
-	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
+	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "-1" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
 	runJavaScript(js);
 }
