@@ -55,6 +55,7 @@ set(JASP_EXTRA_MODULES
         "jaspProphet"
         "jaspQualityControl"
         "jaspReliability"
+        "jaspRem"
         "jaspRobustTTests"
         "jaspSem"
         "jaspSurvival"
