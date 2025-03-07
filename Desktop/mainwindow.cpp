@@ -1457,7 +1457,8 @@ void MainWindow::openGitHubBugReport() const
 	if (alreadyOpened) return;
 	alreadyOpened = true;
 
-	bool openGitHubUserRegistration = false;
+	bool	openGitHubUserRegistration = false,
+			openBrowseFolder = false;
 
 	if(!Settings::value(Settings::USER_HAS_GITHUB_ACCOUNT).toBool())
 	{
@@ -1486,6 +1487,28 @@ void MainWindow::openGitHubBugReport() const
 	try			{ systemInfo << "* Commit used: " << AboutModel::commitUrl() << std::endl; }
 	catch(...)	{ systemInfo << "Commit couldn't be found\n"; }
 
+	try
+	{
+		if (!_preferences->logToFile())
+			debugInfo << tr("No log files are available. To get more information, please turn logging on. For this: open the file menu (the blue hamburger button left top), navigate to Advanced Preferences and check the 'Log to file' checkbox.") << std::endl;
+		else
+		{
+			QDir logDir(AppDirs::logDir());
+			QFileInfoList files = logDir.entryInfoList(QDir::Files, QDir::Time);
+
+			debugInfo << tr("Please drag and drop these log files into this issue: ") << std::endl;
+			for (const QFileInfo& file : files)
+			{
+				debugInfo << "* " << file.fileName() << std::endl;
+				if (file.fileName().contains("Desktop")) // The Engine log files are newer, the Desktop file is the oldest log file
+					break;
+			}
+			debugInfo << std::endl;
+			openBrowseFolder = true;
+		}
+	}
+	catch(...)	{ debugInfo << "No Log files path found"; }
+
 	try			{ debugInfo << "Debug information: " << _engineSync->currentStateForDebug() << std::endl; }
 	catch(...)	{ debugInfo << "No debug information found"; }
 
@@ -1505,6 +1528,9 @@ void MainWindow::openGitHubBugReport() const
 			{
 				QDesktopServices::openUrl(QUrl("https://github.com/join"));
 			});
+
+		if(openBrowseFolder)
+			MessageForwarder::browseOpenFile(tr("Drag and drop the log files"), AppDirs::logDir(), "Log files (*.log)");
 
 		emit exitSignal(1);
 	}
