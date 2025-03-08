@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-08 03:23+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5365,40 +5371,39 @@ msgstr "双击以编辑此名称"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "选择界面语言"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
-msgstr ""
+msgstr "以其他语言或区域的格式显示数字"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "使用下面指定的区域设置来显示数字格式和货币。"
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "备选语言"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "备选区域"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "列说明： "
 
-#, fuzzy
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
 msgstr "点击图标更改变量类型"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "列说明： "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
-msgstr ""
+msgstr "您需要选择已有文件夹来安装开发模块，您选择了“%1”，但它不存在。"
