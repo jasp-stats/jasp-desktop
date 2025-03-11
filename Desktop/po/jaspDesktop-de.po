@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-11 16:17+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 "X-Language: de_DE\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5458,7 +5464,7 @@ msgstr "Willkommen zum Ziehen-&-Ablegen-Filter!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr "Klicken Sie auf das Piktogramm, um den Spaltentyp zu ändern"
+msgstr "Auf Piktogramm klicken, um Spaltentyp zu ändern"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5523,13 +5529,13 @@ msgstr ""
 "Typ oder ändern Sie die \"Maximal zulässigen Stufen für Metrisch\" im Menü "
 "Einstellungen / Daten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
-"Die minimale Anzahl von numerischen Werten ist %1. Variable %2 hat nur %3 "
+"Minimale Anzahl numerischer Werte ist %1. Variable %2 hat nur %3 "
 "verschiedene numerische Werte"
 
 #, qt-format
@@ -5613,36 +5619,38 @@ msgstr "Doppelklicken, um diesen Namen zu ändern"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "Sprachauswahl"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
+"Verwenden Sie eine andere Sprache und gebietsabhängige Anzeige für Zahlen"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr ""
+"Verwenden Sie die unten angegebene Sprachumgebung für die Anzeige von Zahlen "
+"und Währung."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "Andere Sprache"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "Anderes Gebiet"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "Spaltenbeschreibung: "
 
-#, fuzzy
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr "Klicken Sie auf das Piktogramm, um den Spaltentyp zu ändern"
+msgstr "Auf Piktogramm klicken, um Spaltentyp zu ändern"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "Spaltenbeschreibung: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5650,3 +5658,5 @@ msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr ""
+"Zum Installieren eines Entwicklungsmoduls müssen Sie einen vorhandenen "
+"Ordner auswählen; Sie haben '%1' ausgewählt, der aber nicht existiert."
