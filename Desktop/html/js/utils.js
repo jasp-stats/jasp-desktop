@@ -87,7 +87,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			let cell		= column[rowNo];
 			let content		= cell.content;
 			let contentNum	= parseFloat(content)
-			let isNumber	= !isNaN(contentNum)
+			let isNumber	= !isNaN(contentNum) && clazz == "number"
 			let formatted	= { content: (isNumber ? formatNumber(contentNum) : content) }
 			let combined	= false;
 			
