@@ -88,10 +88,11 @@ void LanguageModel::initialize()
 	
 	fillAltOptions();
 	
-	if(resultXmlCompare::compareResults::theOne()->testMode())
+	if(resultXmlCompare::compareResults::theOne()->testMode()) //in testmode we run usa locale without thousands separators
 	{
 		_currentLanguageCode	= defaultLanguageCode;
 		_useAlternativeLocale	= true;
+		_useThousandSeps		= false;
 		_currentAltLanguage		= _defaultLocale.nativeLanguageName();
 		_currentAltTerritory	= _defaultLocale.nativeTerritoryName();
 	}
