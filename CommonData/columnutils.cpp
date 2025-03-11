@@ -20,6 +20,15 @@ std::string				ColumnUtils::_decimalPoint			= ".";
 std::string				ColumnUtils::_currentQLocaleId		= "C";
 ColumnUtils::toDoubleF	ColumnUtils::_extraStringToDouble;
 ColumnUtils::toIntF		ColumnUtils::_extraStringToInt;
+ColumnUtils::doubleF	ColumnUtils::_alternativeDoubleToString;
+ColumnUtils::currencyF	ColumnUtils::_alternativeCurrencyToString;
+
+
+void ColumnUtils::setAlternativeDoubleToString(doubleF newDoubleFunc, currencyF newCurrencyFunc)
+{
+	_alternativeDoubleToString		= newDoubleFunc;
+	_alternativeCurrencyToString	= newCurrencyFunc;
+}
 
 void ColumnUtils::setExtraStringToNumber(toDoubleF newDoubleFunc, toIntF newIntFunc)
 {
@@ -237,11 +246,12 @@ std::string ColumnUtils::doubleToStringMaxPrec(double dbl, bool sepas)
 	return 	doubleToString(dbl, sepas, max_precision);
 }
 
-ColumnUtils::doubleF ColumnUtils::_alternativeDoubleToString;
-
-void ColumnUtils::setAlternativeDoubleToString(doubleF newDoubleFunc)
+string ColumnUtils::currencyString(double money, const std::string &symbol, bool sepas)
 {
-	_alternativeDoubleToString = newDoubleFunc;
+	if(!_alternativeCurrencyToString)
+		return doubleToString(money, sepas);
+	
+	return _alternativeCurrencyToString(money, symbol, sepas);
 }
 
 std::string ColumnUtils::doubleToString(double dbl, bool sepas, int precision)

@@ -253,6 +253,16 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 		
 		return fq(loc.toString(dbl, 'g', precision));
 	};
+	
+	static ColumnUtils::currencyF altFuncCurToString = [&](double dbl, const std::string & symbol, bool sepas)
+	{
+		QLocale loc(currentLocale());
+		
+		if(!sepas || !useThousandSeps())
+			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
+		
+		return fq(loc.toCurrencyString(dbl, tq(symbol)));
+	};
 
 	static ColumnUtils::toDoubleF altFuncToDouble = [&](const std::string & str, double & dbl)
 	{
@@ -276,12 +286,12 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 		return isInt;
 	};
 	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
-	ColumnUtils::setAlternativeDoubleToString(	altFuncToString						);
+	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
 	ColumnUtils::setExtraStringToNumber(		altFuncToDouble, altFuncToInt		);
 	ColumnUtils::setCurrentQLocaleId(			fq(currentLocale().bcp47Name())		);
 	ColumnUtils::setDecimalPoint(				fq(currentLocale().decimalPoint())	);
 	
-	emit currentLocaleChanged(currentLocale().bcp47Name());
+	emit currentLocaleChanged(currentLocale().bcp47Name(), useThousandSeps());
 	emit exampleFormattingChanged();
 }
 
@@ -340,7 +350,7 @@ void LanguageModel::resultsPageLoaded()
 	
 	_shouldEmitLanguageChanged = false;
 	emit currentLanguageChanged();
-	emit currentLocaleChanged(currentLocale().bcp47Name());
+	emit currentLocaleChanged(currentLocale().bcp47Name(), useThousandSeps());
 	emit resumeEngines();
 }
 
@@ -547,7 +557,7 @@ QString LanguageModel::exampleFormatting() const
 	examples.push_back(QColumnUtils::doubleToString(1.234567890));
 	examples.push_back(QColumnUtils::doubleToString(12345.67890));
 	examples.push_back(QColumnUtils::doubleToString(1234567890));
-	examples.push_back(cur.toCurrencyString(10000000.10, "€"));
+	examples.push_back(QColumnUtils::currencyString(10000000.10, "€"));
 	
 	return examples.join("\n");
 	
@@ -578,6 +588,7 @@ void LanguageModel::setUseThousandSeps(bool newUseThousandSeps)
 	
 	_useThousandSeps = newUseThousandSeps;
 	emit useThousandSepsChanged();
+	emit currentLocaleChanged(currentLocale().bcp47Name(), useThousandSeps());
 	
 	Settings::setValue(Settings::USE_THOUSAND_SEPARATORS, _useThousandSeps);
 	

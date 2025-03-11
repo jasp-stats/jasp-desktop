@@ -97,7 +97,7 @@ public slots:
 
 signals:
 	void									currentLanguageChanged();
-	void									currentLocaleChanged(QString);
+	void									currentLocaleChanged(QString, bool);
 	void									currentAltLanguageChanged();
 	void									currentAltTerritoryChanged();
 	void									useAlternativeLocaleChanged();

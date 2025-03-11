@@ -367,7 +367,7 @@ QLocale QColumnUtils::currentQLocale()
 	{
 		_lastQLocaleId = newId;
 		_lastQLocale   = QLocale(_lastQLocaleId);
-		setOmitGroupSeparatorOnQLocale(_lastQLocale);
+		setOmitGroupSeparatorOnQLocale(_lastQLocale); // here we always set it, and this locale can then be used in qmlcomponents, always omitting thousands separators!
 	}
 	
 	return _lastQLocale;
@@ -381,6 +381,11 @@ QString QColumnUtils::doubleToString(double dbl, int precision)
 QString QColumnUtils::doubleToStringMaxPrec(double dbl)
 {
 	return tq(ColumnUtils::doubleToStringMaxPrec(dbl));
+}
+
+QString QColumnUtils::currencyString(double money, const QString &symbol)
+{
+	return tq(ColumnUtils::currencyString(money, fq(symbol)));
 }
 
 QString QColumnUtils::decimalPoint()

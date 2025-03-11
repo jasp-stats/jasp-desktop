@@ -1010,7 +1010,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		showInstructions = false;
 	}
 
-	_resultsJsInterface->setLocale(_languageModel->currentLocale().bcp47Name());
+	_resultsJsInterface->setLocale(_languageModel->currentLocale().bcp47Name(), _languageModel->useThousandSeps());
 	_resultsJsInterface->analysisChanged(analysis);
 
 	setPackageModified();

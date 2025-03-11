@@ -1,10 +1,12 @@
 var currentLocale	= new Intl.Locale("en");
 var currentLocaleId = "en"
+var useThousandsSeparators = true
 
-function setCurrentLocaleID(id)
+function setCurrentLocaleID(id, useThousandsSeps)
 {
-	currentLocale	= new Intl.Locale(id)
-	currentLocaleId = id
+	currentLocale			= new Intl.Locale(id)
+	currentLocaleId			= id
+	useThousandsSeparators	= useThousandsSeps
 }
 
 /*
@@ -16,9 +18,10 @@ function formatFixed(value, fixIt)
 
 function formatMoney(_currency='EUR', amount) {
 	const formatter = new Intl.NumberFormat(currentLocaleId, {
-	  style: 'currency',
-	  currency: _currency,
-	  trailingZeroDisplay: 'stripIfInteger'
+		style: 'currency',
+		currency: _currency,
+		trailingZeroDisplay: 'stripIfInteger',
+		useGrouping: useThousandsSeparators
 	});
 	
 	return amount == "." ? amount : formatter.format(amount)
@@ -27,19 +30,19 @@ function formatMoney(_currency='EUR', amount) {
 function formatFixed(number, digitsFrac) {
 	if(isNaN(digitsFrac))
 		digitsFrac = 0
-	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac, maximumFractionDigits: digitsFrac});
+	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac, maximumFractionDigits: digitsFrac, useGrouping: useThousandsSeparators});
 	
 	return formatter.format(number)
 }
 
 function formatPrecision(number, precision) {
-	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumSignificantDigits: precision, maximumSignificantDigits: precision });
+	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumSignificantDigits: precision, maximumSignificantDigits: precision, useGrouping: useThousandsSeparators });
 	
 	return formatter.format(number)
 }
 
 function formatNumber(number) {
-	const formatter = new Intl.NumberFormat(currentLocaleId, { });
+	const formatter = new Intl.NumberFormat(currentLocaleId, { useGrouping: useThousandsSeparators });
 	
 	return formatter.format(number)
 }

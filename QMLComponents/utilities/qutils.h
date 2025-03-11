@@ -110,11 +110,13 @@ public:
 	
 	static QLocale				currentQLocale();
 	
+	static QString				decimalPoint();
 	static QString				doubleToString(			double dbl, int precision = 10);
 	static QString				doubleToStringMaxPrec(	double dbl);
-	static QString				decimalPoint();
+	static QString				currencyString(			double money, const QString &symbol = QString());
 	
-        static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
+	
+    static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
 	
 
 private:

@@ -190,8 +190,19 @@ ScrollView
 				startValue: 				languageModel.currentLanguage
 				onValueChanged: 			languageModel.currentLanguage = value
 
-				KeyNavigation.tab: 			useAlternativeLocale
+				KeyNavigation.tab: 			useThousandsSeparator
 				
+			}
+			
+			CheckBox
+			{
+				id:							useThousandsSeparator
+				label:						qsTr("Use thousands separators")
+				checked:					languageModel.useThousandSeps
+				onCheckedChanged:			languageModel.useThousandSeps = checked
+				toolTip:					qsTr("Disable to remove thousands separators from all numbers.")
+				
+				KeyNavigation.tab:			useAlternativeLocale
 			}
 			
 			CheckBox
