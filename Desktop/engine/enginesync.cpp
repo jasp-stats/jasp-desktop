@@ -971,6 +971,95 @@ void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
 }
 #endif 
 
+
+//###########################################################################################################################################
+
+#ifdef _WIN32
+
+#include "userenv.h"
+#include <atlsecurity.h>
+
+bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE type, ACCESS_MASK accessMask) {
+	PACL oldAcl, newAcl = nullptr;
+	DWORD status;
+	EXPLICIT_ACCESS access;
+	do {
+		access.grfAccessMode = GRANT_ACCESS;
+		access.grfAccessPermissions = accessMask;
+		access.grfInheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+		access.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+		access.Trustee.pMultipleTrustee = nullptr;
+		access.Trustee.ptstrName = (PWSTR)appContainerSid;
+		access.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+		access.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
+
+		status = GetNamedSecurityInfo(name, type, DACL_SECURITY_INFORMATION, nullptr, nullptr, &oldAcl, nullptr, nullptr);
+		if (status != ERROR_SUCCESS)
+			return false;
+
+		status = SetEntriesInAcl(1, &access, oldAcl, &newAcl);
+		if (status != ERROR_SUCCESS)
+			return false;
+
+		status = SetNamedSecurityInfo(name, type, DACL_SECURITY_INFORMATION, nullptr, nullptr, newAcl, nullptr);
+		if (status != ERROR_SUCCESS)
+			break;
+	} while (false);
+
+	if (newAcl)
+		::LocalFree(newAcl);
+
+	return status == ERROR_SUCCESS;
+}
+
+
+STARTUPINFOEX si = { sizeof(si) };
+void createContainer() {
+	std::wstring containerName = L"_jasp_jaspEngines";
+	PSID appContainerSid;
+	auto hr = ::CreateAppContainerProfile(containerName.c_str(), containerName.c_str(), containerName.c_str(), nullptr, 0, &appContainerSid);
+	if (FAILED(hr)) {
+		// see if AppContainer SID already exists
+		hr = ::DeriveAppContainerSidFromAppContainerName(containerName.c_str(), &appContainerSid);
+		if (FAILED(hr))
+			throw std::runtime_error("Could not get a appcontainer PSID");
+	}
+
+	SECURITY_CAPABILITIES sc = { 0 };
+	sc.AppContainerSid = appContainerSid;
+
+	si = { sizeof(si) };
+	PROCESS_INFORMATION pi;
+	SIZE_T size;
+
+	::InitializeProcThreadAttributeList(nullptr, 1, 0, &size);
+	auto buffer = std::make_unique<BYTE[]>(size);
+	si.lpAttributeList = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(buffer.get());
+	if (!::InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, &size))
+		throw std::runtime_error("Failure initializing appcontainer");
+	if (!::UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, &sc, sizeof(sc), nullptr, nullptr))
+		throw std::runtime_error("Failure initializing appcontainer");
+
+	// set security for files/folders
+	auto toWString = [&](std::string x) {return std::wstring(x.begin(), x.end());};
+	std::vector<std::wstring> readWriteList = {	toWString(Dirs::tempDir()),
+												toWString(AppDirs::appData(false).toStdString()), //entire appdata dir might want to give more fine grained access when R pkgs are installed here
+												toWString(AppDirs::appData().toStdString())}; //logdir
+	std::vector<std::wstring> readList = {AppDirs::programDir().filesystemAbsolutePath().wstring()};
+
+	for(auto& file : readWriteList)
+		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+
+	for(auto& file : readWriteList)
+		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+
+}
+
+#endif
+
+//###########################################################################################################################################
+
+
 //Should this function go to EngineRepresentation?
 QProcess * EngineSync::startSlaveProcess(int channel)
 {
@@ -979,10 +1068,8 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
 
-#ifndef JASP_DEBUG
 #ifdef _WIN32
 	fixPATHForWindows(env);
-#endif
 #endif
 	
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
@@ -1011,12 +1098,50 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	is inherited by the new process. If the parameter is FALSE, the handles
 	are not inherited.
 	*/
+	std::wstring containerName = L"_jasp_jaspEngines2";
+	PSID appContainerSid;
+	auto hr = ::CreateAppContainerProfile(containerName.c_str(), containerName.c_str(), containerName.c_str(), nullptr, 0, &appContainerSid);
+	if (FAILED(hr)) {
+		// see if AppContainer SID already exists
+		hr = ::DeriveAppContainerSidFromAppContainerName(containerName.c_str(), &appContainerSid);
+		if (FAILED(hr))
+			throw std::runtime_error("Could not get a appcontainer PSID");
+	}
 
-	slave->setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args)
+	SECURITY_CAPABILITIES sc = { 0 };
+	sc.AppContainerSid = appContainerSid;
+
+	STARTUPINFOEX si = { sizeof(si) };
+	PROCESS_INFORMATION pi;
+	SIZE_T size;
+
+	::InitializeProcThreadAttributeList(nullptr, 1, 0, &size);
+	auto buffer = std::make_unique<BYTE[]>(size);
+	si.lpAttributeList = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(buffer.get());
+	if (!::InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, &size))
+		throw std::runtime_error("Failure initializing appcontainer");
+	if (!::UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, &sc, sizeof(sc), nullptr, nullptr))
+		throw std::runtime_error("Failure initializing appcontainer");
+
+	// set security for files/folders
+	auto toWString = [&](std::string x) {return std::wstring(x.begin(), x.end());};
+	std::vector<std::wstring> readWriteList = {	toWString(Dirs::tempDir()),
+											   toWString(AppDirs::appData(false).toStdString()), //entire appdata dir might want to give more fine grained access when R pkgs are installed here
+											   toWString(AppDirs::appData().toStdString()),//logdir
+											};
+	std::vector<std::wstring> readList = {AppDirs::programDir().filesystemAbsolutePath().wstring()};
+
+	for(auto& file : readWriteList)
+		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+
+	for(auto& file : readList)
+		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+
+	slave->setCreateProcessArgumentsModifier([&] (QProcess::CreateProcessArguments *args)
 	{
-#ifndef QT_DEBUG
 		args->inheritHandles = false;
-#endif
+		args->flags = args->flags | EXTENDED_STARTUPINFO_PRESENT;
+	    args->startupInfo = (LPSTARTUPINFO)&si;
 	});
 #endif
 

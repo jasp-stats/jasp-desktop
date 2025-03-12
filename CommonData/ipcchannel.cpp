@@ -25,6 +25,8 @@
 
 #include <chrono>
 #include <thread>
+#include <filesystem>
+#include <fstream>
 
 #ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
 namespace boost {
@@ -42,6 +44,10 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
+#ifdef _WIN32
+std::thread IPCChannel::heartbeatThread;
+#endif
+
 IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	:
 	  _baseName(		name + "_" + std::to_string(channelNumber)	),
@@ -51,6 +57,7 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	  _channelNumber(	channelNumber								),
 	  _isSlave(			isSlave										)
 {
+
 	Log::log() << "IPCChannel(" << name << ", " << channelNumber << ", " << (isSlave ? "slave" : "master") << ");" << std::endl;
 
 	Log::log() << (!_isSlave ? "Creating control memory" : "Opening control memory") << std::endl;
@@ -157,7 +164,7 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 
 	}
 
-#else
+#elif !defined(_WIN32)
 
 	if (_isSlave == false)
 	{
@@ -176,6 +183,17 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 
 #endif
 
+#ifdef _WIN32
+	_jaspHeartBeatPath = (std::filesystem::path(Dirs::tempDir()) /  (name + "_heartbeat")).string();
+	const auto p1 = std::chrono::system_clock::now();
+	_lastHeartBeatTimestamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
+
+	if(!_isSlave && heartbeatThread.get_id() == std::thread::id()) {  //doki doki
+		heartbeatThread = std::thread(IPCChannel::heartbeat, _jaspHeartBeatPath, _heatbeatDelayS);
+		heartbeatThread.detach();
+	}
+#endif
+
 	//Log::log() << "IPCChannel init done" << std::endl;
 }
 
@@ -191,7 +209,6 @@ void IPCChannel::findConstructMutexes()
 	_mutexIn  = _memoryControl->find_or_construct<interprocess::interprocess_mutex>(_mutexInName.c_str())();
 	_mutexOut = _memoryControl->find_or_construct<interprocess::interprocess_mutex>(_mutexOutName.c_str())();
 }
-
 
 void IPCChannel::findConstructDataStrings()
 {
@@ -211,6 +228,59 @@ void IPCChannel::findConstructAllAgain()
 	findConstructMutexes();
 	findConstructDataStrings();
 }
+
+#ifdef _WIN32
+
+bool IPCChannel::heartbeat(string path, unsigned int delayS)
+{
+	while(true) {
+		ofstream out;
+		out.open(path);
+		const auto p1 = std::chrono::system_clock::now();
+		uint64_t stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
+		out << stamp << std::endl;
+		out.close();
+		std::this_thread::sleep_for(std::chrono::seconds(delayS));
+	}
+
+	return false;
+}
+
+
+bool IPCChannel::jaspAlive()
+{
+	if(!_isSlave)
+		return true; //if jasp asks its obviously alive
+
+	ifstream in;
+	in.open(_jaspHeartBeatPath);
+	if(!in.is_open()) {
+		Log::log() << "Could not find heartbeat file" << std::endl;
+		return false;
+	}
+
+	uint64_t stamp;
+	in >> stamp;
+	in.close();
+
+	if(stamp != _lastHeartBeatTimestamp) {
+		_lastHeartBeatTimestamp = stamp;
+		return true;
+	}
+
+	const auto p1 = std::chrono::system_clock::now();
+	stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
+	Log::log() << "!!!" << stamp - _lastHeartBeatTimestamp << std::endl;
+
+	if(stamp - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
+	{
+		Log::log() << "heartbeat time limit exceeded" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+#endif
 
 void IPCChannel::catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis)
 {
@@ -342,8 +412,13 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	{
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
-		data.append(std)
-		_dataOut->assign(data.begin(), data.end());
+#ifdef _WIN32
+			_dataOut->assign(std::to_string(_msgIDSend % 10).c_str()); // prefix a one character msg ID
+			_msgIDSend++;
+			_dataOut->append(data.c_str(), data.length());
+#else
+			_dataOut->assign(data.begin(), data.end());
+#endif
 	}
 	catch (boost::interprocess::bad_alloc &e)	{ goto retryAfterDoublingMemory; }
 	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
@@ -361,9 +436,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 
 #ifdef __APPLE__
 	sem_post(_semaphoreOut);
-#elif defined _WIN32
-	_msgID = ++_msgID % 10;
-#else
+#elif !defined (_WIN32 )
 	_semaphoreOut->post();
 #endif
 
@@ -385,13 +458,14 @@ bool IPCChannel::receive(string &data, int timeout)
 	{
 		_mutexIn->lock();
 
+#ifndef _WIN32
 		while (tryWait()); // clear it completely
-
+#endif
 		try
 		{
 			rebindMemoryInIfSizeChanged();
 			#ifdef _WIN32
-			data.assign(_dataIn->c_str(), _dataIn->size() - 1); // remove trailing message id
+			data.assign(_dataIn->c_str() + 1, _dataIn->size() - 1); // remove message id prefix
 			#else
 			data.assign(_dataIn->c_str(), _dataIn->size());
 			#endif
@@ -429,10 +503,14 @@ bool IPCChannel::tryWait(int timeout)
 
 #elif defined _WIN32
 	std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-	std::string newMsgID = _dataIn->back();
-	if(newMsgID != _msgID) {
-		messageWaiting = true;
-		_msgID = newMsgID;
+	if(_dataIn->length()) {
+		try{
+			uint64_t newMsgID = std::stoull(std::string(1, _dataIn->front()));
+			if(newMsgID != _msgIDRecv) {
+				messageWaiting = true;
+				_msgIDRecv = newMsgID;
+			}
+		} catch(std::exception& e) {Log::log()<< "Failure getting msgID: " << e.what() << std::endl;}
 	}
 #else
 
