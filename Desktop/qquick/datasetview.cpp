@@ -178,9 +178,9 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 					if (roles.contains(int(DataSetPackage::specialRoles::selected)))
 						context->setContextProperty("itemSelected",	_model->data(row, col, _model->getRole("selected")));
 					
-					context->setContextProperty("itemFiltered",		_model->data(row, col, _model->filtered(row, col)));
+					context->setContextProperty("itemFiltered",		_model->data(row, col, _model->getRole("filter")));
 					
-					if (roles.contains(Qt::DisplayRole))
+					if (roles.contains(Qt::DisplayRole) || int(DataSetPackage::specialRoles::value) || int(DataSetPackage::specialRoles::label) || int(DataSetPackage::specialRoles::shadowDisplay))
 					{
 						//Changes here should be considered also for DataSetView::setStyleDataItem:
 						context->setContextProperty("itemText",			_model->data(row, col));
@@ -1897,7 +1897,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemActive",		active);
 	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("itemSelected",		_model->data(row, col, _model->getRole("selected")));
-	previousContext->setContextProperty("itemFiltered",		_model->filtered(row, col));
+	previousContext->setContextProperty("itemFiltered",		_model->data(row, col, _model->getRole("filter")));
 	previousContext->setContextProperty("itemInputType",	_model->data(row, col, _model->getRole("itemInputValue")));
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
