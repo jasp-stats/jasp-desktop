@@ -849,6 +849,7 @@ void ColumnModel::_addLabel(QString value, QString label)
 	column()->incRevision();
 	refresh();
 	DataSetPackage::pkg()->emitColumnChanged(columnNameQ());
+	DataSetPackage::pkg()->setDataMode(true);
 }
 
 void ColumnModel::_deleteLabel(int labelIndex)
