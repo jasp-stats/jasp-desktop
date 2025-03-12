@@ -558,17 +558,14 @@ void DeleteLabelCommand::redo()
 
 
 AddLabelCommand::AddLabelCommand(QAbstractItemModel *model, QString value, QString label)
-: UndoModelCommandLabelChange(model), _value(value), _label(label)
+: UndoModelCommandSingleColumn(model), _value(value), _label(label)
 {
-	if (_columnModel)
-		setText(QObject::tr("Adding value + label '%1' + '%2' to column '%3'").arg(_value).arg(_label).arg(columnName()));
+	setText(QObject::tr("Adding value + label '%1' + '%2' to column '%3'").arg(_value).arg(_label).arg(columnName()));
 }
 
 void AddLabelCommand::redo()
 {
-	UndoModelCommandLabelChange::redo();
-	if (_columnModel)
-		_columnModel->_addLabel(_value, _label);
+	_columnModel->_addLabel(_value, _label);
 }
 
 FilterLabelCommand::FilterLabelCommand(QAbstractItemModel *model, int labelIndex, bool checked)

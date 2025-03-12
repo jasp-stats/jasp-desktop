@@ -102,18 +102,6 @@ private:
 };
 
 
-class AddLabelCommand: public UndoModelCommandLabelChange
-{
-public:
-	AddLabelCommand(QAbstractItemModel *model, QString value, QString label);
-	
-	void redo()					override;
-	
-private:
-	QString					_value,
-							_label;
-};
-
 
 class FilterLabelCommand: public UndoModelCommand
 {
@@ -266,6 +254,18 @@ public:
 	
 private:
 	int						_labelIndex = -1;
+};
+
+class AddLabelCommand: public UndoModelCommandSingleColumn
+{
+public:
+	AddLabelCommand(QAbstractItemModel *model, QString value, QString label);
+
+	void redo()					override;
+
+private:
+	QString					_value,
+							_label;
 };
 
 class DataSetTableModel;

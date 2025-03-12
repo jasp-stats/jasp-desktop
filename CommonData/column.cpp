@@ -2304,7 +2304,7 @@ void Column::deserializeLabelsForRevert(const Json::Value & labels)
 	
 	endBatchedLabelsDB();
 	
-	/* The following is already implied by endBatchedLabelsDB because it deletes all labels first anyway
+	/* The following is already implied by endBatchedLabelsDB because it deletes all labels first anyway (There are some issues when an operation changed _labels though, in that case it might be better to deserialize the column!)
 	for(int id : missingLbls)
 	{
 		Label * deleteMe = 	_labelByIntsIdMap[id];
