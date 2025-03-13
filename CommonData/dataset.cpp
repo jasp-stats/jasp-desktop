@@ -113,7 +113,7 @@ void DataSet::columnsReorder(stringvec order)
 		{
 			if(!orderSet.count(col->name()))
 			{
-				order.insert(order.begin() + i + compCols.size(), col->name());
+				order.insert(order.begin() + i, col->name()); //Put the computed column right in the data where it used to be
 				orderSet.insert(col->name());
 			}
 			
