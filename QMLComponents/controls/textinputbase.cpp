@@ -88,8 +88,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 	case TextInputType::FormulaType:
 	{
-		_value = value.isString() ? tq(value.asString())
-								  : (value.isNumeric() ? QColumnUtils::doubleToString(value.asDouble()) : QVariant());
+		_value = value.isString() ? tq(value.asString()) : value.isNumeric() ? value.asDouble() : QVariant();
 		setIsRCode();
 
 		if (!_value.isNull())
@@ -357,7 +356,7 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 	
 	switch (_inputType)
 	{
-	case TextInputBase::FormulaType:			return fq(value.toString()); // Keep it as string and do not try to make it an integer or a double
+	case TextInputBase::FormulaType:			return isDbl ? Json::Value(valueDbl) : fq(value.toString()); // Keep it as string and do not try to make it an integer or a double
 	case TextInputType::IntegerInputType:		return isInt ? valueInt : 0;
 	case TextInputType::NumberInputType:		return isDbl ? valueDbl : 0;
 	case TextInputType::PercentIntputType:		return std::min(std::max(isDbl ? valueDbl : 0, 0.0), 100.0) / 100;
