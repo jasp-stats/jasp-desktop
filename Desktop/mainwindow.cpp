@@ -812,12 +812,12 @@ void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
 		logFileDir.remove(logs[i].fileName());
 }
 
-void MainWindow::openFolderExternally(QDir folder)
+void MainWindow::openFolderExternally(QDir folder) const
 {
 	QDesktopServices::openUrl(QUrl::fromLocalFile(folder.absolutePath()));
 }
 
-void MainWindow::showLogFolder()
+void MainWindow::showLogFolder() const
 {
 	openFolderExternally(AppDirs::logDir());
 }
@@ -1530,7 +1530,7 @@ void MainWindow::openGitHubBugReport() const
 			});
 
 		if(openBrowseFolder)
-			MessageForwarder::browseOpenFile(tr("Drag and drop the log files"), AppDirs::logDir(), "Log files (*.log)");
+			showLogFolder();
 
 		emit exitSignal(1);
 	}

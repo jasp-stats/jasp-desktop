@@ -171,8 +171,8 @@ public slots:
 
 	static QString	versionString();
 
-	void	openFolderExternally(QDir folder);
-	void	showLogFolder();
+	void	openFolderExternally(QDir folder) const;
+	void	showLogFolder() const;
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 
