@@ -59,12 +59,22 @@ if(USE_CONAN)
                 -s build_type=${CMAKE_BUILD_TYPE}
                 -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
                 -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
-                #--test-missing
+                --test-missing
             )
         else()
           message(CHECK_FAIL "build freexl failed")
         endif()
     endif()
+
+    # find conan_toolchain.cmake generated in local
+    file(GLOB_RECURSE CONAN_TOOLCHAIN_PATH ${freexl_SOURCE_DIR}/freexl/test_package/build/*/generators/conan_toolchain.cmake)
+    list(GET CONAN_TOOLCHAIN_PATH 0 CONAN_TOOLCHAIN_PATH)
+    if (EXISTS ${CONAN_TOOLCHAIN_PATH})
+        get_filename_component(CONAN_TOOLCHAIN_PATH_DIR ${CONAN_TOOLCHAIN_PATH} DIRECTORY)
+        message(STATUS "freexl conan toolchain directory: ${CONAN_TOOLCHAIN_PATH_DIR}")
+    else ()
+        message(FATAL_ERROR "freexl conan toolchain not found!")
+    endif ()
 
   elseif(APPLE)
 
@@ -100,7 +110,7 @@ if(USE_CONAN)
   endif()
 
   include(${CMAKE_BINARY_DIR}/_conan_build/conan_toolchain.cmake)
-  include(${freexl_SOURCE_DIR}/freexl/test_package/build/msvc-194-x86_64-17-${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake)
+  include(${CONAN_TOOLCHAIN_PATH})
 
 endif()
 
