@@ -37,3 +37,19 @@ void ImportColumn::setTitle(const std::string & title)
 {
 	_title = stringUtils::trimAndRemoveEscapes(title);
 }
+
+bool ImportColumn::containsAnythingAtAll()
+{
+	if(_name != "" || _title != "")
+		return true;
+	
+	for(auto & v : allValuesAsStrings())
+		if(v != "")
+			return true;
+	
+	for(auto & l : allLabelsAsStrings())
+		if(l != "")
+			return true;	
+	
+	return false;
+}

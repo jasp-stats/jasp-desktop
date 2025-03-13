@@ -27,6 +27,7 @@ public:
 			const	std::string		&	name()									const;
 			void						setName(const std::string & name);
 			void						setTitle(const std::string & title);
+			bool						containsAnythingAtAll();
 					
 protected:
 	ImportDataSet * _importDataSet;
