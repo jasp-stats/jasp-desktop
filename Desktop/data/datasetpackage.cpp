@@ -2039,7 +2039,7 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 	setManualEdits(true); //set manual edits here so external synching is turned off, endSynchingData also just reset it, so thats why it is way down here
 }
 
-QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString, QVariant>& props)
+QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString, QVariant>& props, bool setManualEditsPar)
 {
 	if(columnIndex < 0)
 		columnIndex = 0;
@@ -2047,7 +2047,8 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	if(columnIndex > dataColumnCount())
 		columnIndex = dataColumnCount(); //the column will be created if necessary but only if it is in a logical place. So the end of the vector
 
-	setManualEdits(true); //Don't synch with external file after editing
+	if(setManualEditsPar)
+		setManualEdits(true); //Don't synch with external file after editing
 
 	beginResetModel();
 
@@ -2074,9 +2075,9 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	return QString::fromStdString(column->name());
 }
 
-QString DataSetPackage::appendColumnSpecial(const QMap<QString, QVariant>& props)
+QString DataSetPackage::appendColumnSpecial(const QMap<QString, QVariant>& props, bool setManualEdits)
 {
-	return insertColumnSpecial(dataColumnCount(), props);
+	return insertColumnSpecial(dataColumnCount(), props, setManualEdits);
 }
 
 
@@ -2527,7 +2528,7 @@ stringset DataSetPackage::columnsCreatedByAnalysis(Analysis * analysis)
 
 Column * DataSetPackage::createComputedColumn(const std::string & name, columnType type, computedColumnType desiredType, Analysis * analysis)
 {
-	QString nameTemp = insertColumnSpecial(dataColumnCount(), { std::make_pair("computed", int(desiredType)) });
+	QString nameTemp = insertColumnSpecial(dataColumnCount(), { std::make_pair("computed", int(desiredType)) }, false);
 
 	Column	* newComputedColumn = DataSetPackage::pkg()->dataSet()->column(nameTemp.toStdString());
 
