@@ -270,7 +270,6 @@ bool IPCChannel::jaspAlive()
 
 	const auto p1 = std::chrono::system_clock::now();
 	stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
-	Log::log() << "!!!" << stamp - _lastHeartBeatTimestamp << std::endl;
 
 	if(stamp - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
 	{

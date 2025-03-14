@@ -1098,7 +1098,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	is inherited by the new process. If the parameter is FALSE, the handles
 	are not inherited.
 	*/
-	std::wstring containerName = L"_jasp_jaspEngines2";
+	std::wstring containerName = L"_jasp_jaspEngines7";
 	PSID appContainerSid;
 	auto hr = ::CreateAppContainerProfile(containerName.c_str(), containerName.c_str(), containerName.c_str(), nullptr, 0, &appContainerSid);
 	if (FAILED(hr)) {
@@ -1135,7 +1135,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
 
 	for(auto& file : readList)
-		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+		AllowNamedObjectAccess(appContainerSid, file.data(), SE_FILE_OBJECT, FILE_EXECUTE | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_LIST_DIRECTORY);//TODO
 
 	slave->setCreateProcessArgumentsModifier([&] (QProcess::CreateProcessArguments *args)
 	{
@@ -1146,7 +1146,6 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 #endif
 
 	slave->start(engineExe, args);
-
 	return slave;
 }
 
