@@ -40,6 +40,7 @@
 #include "log.h"
 #include "utilities/processhelper.h"
 #include "dirs.h"
+#include "utilities/wincontainermanager.h"
 
 using namespace boost::interprocess;
 
@@ -971,6 +972,7 @@ void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
 }
 #endif 
 
+
 //Should this function go to EngineRepresentation?
 QProcess * EngineSync::startSlaveProcess(int channel)
 {
@@ -979,10 +981,8 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
 
-#ifndef JASP_DEBUG
 #ifdef _WIN32
 	fixPATHForWindows(env);
-#endif
 #endif
 	
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
@@ -999,28 +999,13 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	slave->setWorkingDirectory(QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath());
 
 #ifdef _WIN32
-	/*
-	On Windows, QProcess uses the Win32 API function CreateProcess to
-	start child processes.In some casedesirable to fine-tune
-	the parameters that are passed to CreateProcess.
-	This is done by defining a CreateProcessArgumentModifier function and passing it
-	to setCreateProcessArgumentsModifier
-
-	bInheritHandles [in]
-	If this parameter is TRUE, each inheritable handle in the calling process
-	is inherited by the new process. If the parameter is FALSE, the handles
-	are not inherited.
-	*/
-
-	slave->setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args)
-	{
-#ifndef QT_DEBUG
-		args->inheritHandles = false;
-#endif
-	});
-#endif
-
+	if(PreferencesModel::prefs()->engineSandbox())
+		WinContainerManager::launchSandboxedEngine(slave, engineExe, args);
+	else
+		slave->start(engineExe, args);
+#else
 	slave->start(engineExe, args);
+#endif
 
 	return slave;
 }

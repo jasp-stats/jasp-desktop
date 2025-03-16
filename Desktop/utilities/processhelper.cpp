@@ -2,6 +2,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 #include "log.h"
+#include "dirs.h"
 
 QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootStrap)
 {
@@ -31,6 +32,10 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 		custom_R_library = ":" + env.value("JASP_R_Library");
 #endif
 #ifdef _WIN32
+		//set R_TMP_DIR to appdata dir for win appcontainers if anyone ever change tmp behaviour it will fallback to this
+		env.insert("TMPDIR", AppDirs::RtmpDir());
+		//normal tmp dir parsing yields different results in container/non containers so we pass it explicitly
+		env.insert("JASP_TMP_DIR", QString(Dirs::tempDir().c_str()));
 #if defined(ARCH_32)
 #define ARCH_SUBPATH "i386"
 #else

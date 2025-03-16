@@ -41,6 +41,7 @@
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -52,6 +53,21 @@ string Dirs::tempDir()
 
 	if (p != "")
 		return p;
+
+#ifdef _WIN32
+	//lets just read it from the environment if the anwser is found there
+	p = "C:/Users/rdoff/AppData/Local/JASP/temp";
+		return p;
+	if(ProcessInfo::inWinContainer()) {
+		char* buf = nullptr;
+		size_t sz = 0;
+		if(_dupenv_s(&buf, &sz, "JASP_TMP_DIR") == 0 && buf != nullptr) {
+			p = std::string(buf, sz);
+			free(buf);
+			return p;
+		}
+	}
+#endif
 
 	string dir;
 	std::filesystem::path pa;

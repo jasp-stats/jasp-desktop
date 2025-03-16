@@ -130,6 +130,16 @@ QString AppDirs::appData(bool roaming)
 		return processPath(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
 }
 
+QString AppDirs::RtmpDir() {
+	QString tmp = appData(false) + "/R_TMP_DIR/";
+	QDir tmpDir(tmp);
+
+	if(!tmpDir.exists())
+		tmpDir.mkpath(".");
+	
+	return tmpDir.absolutePath();
+}
+
 /**
  * @brief 		This returns the path to R home directory, where `bin/`, `lib/`, `library/`, etc.
  *          	are located.
