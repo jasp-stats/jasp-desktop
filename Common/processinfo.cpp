@@ -90,3 +90,35 @@ bool ProcessInfo::isParentRunning()
 	return getppid() != 1;
 #endif
 }
+
+
+#ifdef _WIN32
+//https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-for-legacy-applications-
+bool ProcessInfo::inWinContainer()
+{
+	HANDLE tokenHandle{};
+	DWORD isAppContainer{};
+	DWORD tokenInformationLength{ sizeof(DWORD) };
+
+	if (!::OpenProcessToken(
+			GetCurrentProcess(),
+			TOKEN_QUERY,
+			&tokenHandle))
+	{
+		return false; //if this fails we just assume this is not a container
+	}
+
+	if (!::GetTokenInformation(
+			tokenHandle,
+			TOKEN_INFORMATION_CLASS::TokenIsAppContainer,
+			&isAppContainer,
+			tokenInformationLength,
+			&tokenInformationLength
+			))
+	{
+		return false; //if this fails we just assume this is not a container
+	}
+
+	return isAppContainer;
+}
+#endif

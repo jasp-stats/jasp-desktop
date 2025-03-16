@@ -30,6 +30,55 @@ bool MessageForwarder::useNativeFileDialogs()
 	return DesktopCommunicator::singleton()->useNativeFileDialog();
 }
 
+bool MessageForwarder::engineSandbox()
+{
+	return DesktopCommunicator::singleton()->engineSandbox();
+}
+
+QString MessageForwarder::constrainToSandboxResult(const QString &selectedPath, bool file, bool save)
+{
+	if(!engineSandbox() || selectedPath == "")
+		return selectedPath;
+
+	QString agg = "";
+	auto sandbox = QDir(AppDirs::sandboxedDocuments()).filesystemAbsolutePath();
+	for(auto& path : selectedPath.split(";")) {
+		QFileInfo info(path);
+		auto fileName = info.fileName();
+		auto dir = info.dir();
+
+		QString res = path;
+		auto target = dir.filesystemAbsolutePath();
+		if(!std::filesystem::equivalent(sandbox, target)) {
+			if(!file) {
+				res = AppDirs::sandboxedDocuments();
+			}
+			else {
+				res = QDir(AppDirs::sandboxedDocuments()).filePath(fileName);
+			}
+
+			if(save && file)
+				showWarning(tr("Sandbox warning"), tr("You want to save a file outside of the sandbox directory! We will correct the path to: ") + res);
+			else if(!save && file)
+				showWarning(tr("Sandbox warning"), tr("You want to load a file outside of the sandbox directory! This will fail please move the file to: ") + res);
+			else
+				showWarning(tr("Sandbox warning"), tr("The jasp engine is running in security sandbox mode and only has access to: ") + res);
+		}
+		agg += res + ";";
+	}
+	agg.chop(1);
+
+	return agg;
+}
+
+QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
+{
+	if(!engineSandbox())
+		return initialPath;
+
+	return AppDirs::sandboxedDocuments();
+}
+
 MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)
@@ -132,12 +181,12 @@ QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QS
 
 QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filter, bool multiple)
 {
-	return browseOpenFile(caption, AppDirs::documents(), filter, multiple);
+	return browseOpenFile(caption, constrainToSandboxStartDir(AppDirs::documents()), filter, multiple);
 }
 
 QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filter)
 {
-	return browseSaveFile(caption, AppDirs::documents(), filter);
+	return browseSaveFile(caption, constrainToSandboxStartDir(AppDirs::documents()), filter);
 }
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedExtension)
@@ -185,5 +234,5 @@ QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
 
 QString MessageForwarder::browseOpenFolder(QString caption)
 {
-	return browseOpenFolder(caption, AppDirs::documents());
+	return browseOpenFolder(caption, constrainToSandboxStartDir(AppDirs::documents()));
 }

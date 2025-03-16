@@ -504,6 +504,8 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::interfaceFontChanged,			dCSingleton,			&DesktopCommunicator::interfaceFontChanged		);
 	connect(_preferences,			&PreferencesModel::currentJaspThemeChanged,			dCSingleton,			&DesktopCommunicator::currentJaspThemeChanged	);
 	connect(dCSingleton,			&DesktopCommunicator::useNativeFileDialogSignal,	_preferences,			&PreferencesModel::useNativeFileDialog			);
+	connect(dCSingleton,			&DesktopCommunicator::engineSandboxSignal,			_preferences,			&PreferencesModel::engineSandbox				);
+
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::refreshAllCompCols,					_computedColumnsModel,	&ComputedColumnModel::invalidateAllColumns,					Qt::QueuedConnection);

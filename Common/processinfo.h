@@ -31,6 +31,10 @@ public:
 
 	static bool isParentRunning();
 
+#ifdef _WIN32
+	static bool inWinContainer();
+#endif
+
 };
 
 #endif // PROCESS_H

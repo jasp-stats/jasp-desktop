@@ -14,13 +14,14 @@ public:
 	static DesktopCommunicator * singleton();
 
 	bool useNativeFileDialog();
+	bool engineSandbox();
 
 signals:
 	void currentJaspThemeChanged();
 	void uiScaleChanged();
 	void interfaceFontChanged();
 	bool useNativeFileDialogSignal(); //< For internal use only, `bool useNativeFileDialog();` is what you want
-	
+	bool engineSandboxSignal();
 private:
 	static DesktopCommunicator * _singleton;
 };
