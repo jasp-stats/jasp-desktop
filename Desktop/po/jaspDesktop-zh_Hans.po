@@ -2417,10 +2417,6 @@ msgid "Percentage Field"
 msgstr "百分比字段"
 
 msgctxt "TextInputBase|"
-msgid "Integers Field"
-msgstr "整数字段"
-
-msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "双精度字段"
 
@@ -2851,10 +2847,6 @@ msgstr "深色主题"
 msgctxt "PrefsUI|"
 msgid "Preferred language"
 msgstr "首选语言"
-
-msgctxt "PrefsUI|"
-msgid "Choose language  "
-msgstr "选择语言  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
@@ -3468,12 +3460,6 @@ msgstr "显示引擎"
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "选择现有文件夹"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '$1' but it doesn't exist."
-msgstr "要安装开发模块，您需要选择现有文件夹，您选择的“$1”文件夹不存在。"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
@@ -4729,7 +4715,7 @@ msgstr "添加 %1"
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr "删除最后 %1"
+msgstr "移除此 %1"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
@@ -5246,10 +5232,6 @@ msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "点击图标更改变量类型"
 
-msgctxt "JASPColumn|"
-msgid "Transformed to"
-msgstr "变换为"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Column-name-is-free 字段"
@@ -5380,3 +5362,57 @@ msgstr "设置顶部分析菜单栏的高度尺寸。"
 msgctxt "TabView|"
 msgid "Double click to edit this name"
 msgstr "双击以编辑此名称"
+
+msgctxt "PrefsUI|"
+msgid "Choose language"
+msgstr "选择界面语言"
+
+msgctxt "PrefsUI|"
+msgid "Use an alternative language and territory dependent display for numbers"
+msgstr "以其他语言或区域的格式显示数字"
+
+msgctxt "PrefsUI|"
+msgid "Use the locale specified below for display of numbers and currency."
+msgstr "使用下面指定的区域设置来显示数字格式和货币。"
+
+msgctxt "PrefsUI|"
+msgid "Alt. language"
+msgstr "备选语言"
+
+msgctxt "PrefsUI|"
+msgid "Alt. territory"
+msgstr "备选区域"
+
+msgctxt "JASPColumn|"
+msgid "Column description: "
+msgstr "列说明： "
+
+msgctxt "VariablesList|"
+msgid "Click icon to change column type"
+msgstr "点击图标更改变量类型"
+
+msgctxt "VariablesList|"
+msgid "Column description: "
+msgstr "列说明： "
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr "您需要选择已有文件夹来安装开发模块，您选择了“%1”，但它不存在。"
+
+msgctxt "MainPage|"
+msgid "Remove this note"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"No log files are available. To get more information, please turn logging on. "
+"For this: open the file menu (the blue hamburger button left top), navigate "
+"to Advanced Preferences and check the 'Log to file' checkbox."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Please drag and drop these log files into this issue: "
+msgstr ""

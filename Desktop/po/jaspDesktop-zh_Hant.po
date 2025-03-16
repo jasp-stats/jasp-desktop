@@ -2409,10 +2409,6 @@ msgid "Percentage Field"
 msgstr "百分比欄位"
 
 msgctxt "TextInputBase|"
-msgid "Integers Field"
-msgstr "整數欄位"
-
-msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "小數位數"
 
@@ -2842,10 +2838,6 @@ msgstr "深色主題"
 msgctxt "PrefsUI|"
 msgid "Preferred language"
 msgstr "語言偏好"
-
-msgctxt "PrefsUI|"
-msgid "Choose language  "
-msgstr "選擇語言  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
@@ -3473,12 +3465,6 @@ msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "選擇現有資料夾"
 
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '$1' but it doesn't exist."
-msgstr "要安裝開發模組，您需要選擇現有資料夾，您選擇了“$1”，但它不存在。"
-
 msgctxt "Reporter|"
 msgid "No datafile"
 msgstr "無數據檔"
@@ -3683,7 +3669,7 @@ msgstr "這些變數已被刪除，因為它們是不允許的：%1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr "在未指定 BOM 的情況下，假設 CSV 採用如下編碼。"
+msgstr "在未指定 BOM 的情況下，假設 CSV 採用如下的編碼。"
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
@@ -5211,10 +5197,6 @@ msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr ""
 
-msgctxt "JASPColumn|"
-msgid "Transformed to"
-msgstr ""
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr ""
@@ -5337,4 +5319,58 @@ msgstr "設定頂部分析功能列的高度尺寸。"
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use an alternative language and territory dependent display for numbers"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use the locale specified below for display of numbers and currency."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Alt. language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Alt. territory"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Column description: "
+msgstr ""
+
+msgctxt "VariablesList|"
+msgid "Click icon to change column type"
+msgstr ""
+
+msgctxt "VariablesList|"
+msgid "Column description: "
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Remove this note"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"No log files are available. To get more information, please turn logging on. "
+"For this: open the file menu (the blue hamburger button left top), navigate "
+"to Advanced Preferences and check the 'Log to file' checkbox."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Please drag and drop these log files into this issue: "
 msgstr ""

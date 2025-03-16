@@ -511,10 +511,10 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 		{
 			if(ColumnUtils::getIntValue(values[i], tmpInt))
 				ints.insert(tmpInt);
-			else
+			else if(!isEmptyValue(values[i]))
 				onlyInts = false;
 			
-			if(!ColumnUtils::getDoubleValue(values[i], tmpDbl))
+			if(!ColumnUtils::getDoubleValue(values[i], tmpDbl) && !isEmptyValue(values[i]))
 				onlyDoubles = false;
 		}
 	}

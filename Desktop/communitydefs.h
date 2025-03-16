@@ -43,7 +43,8 @@ const QStringList & bronzeTier()
 	{
 		"Vrije Universiteit Amsterdam – EMFC/RC program",
 		"NSDSK Academy (The Dutch Foundation for the Deaf and Hard of Hearing Child)",
-		"The Department of Communication at Appalachian State University"
+		"The Department of Communication at Appalachian State University",
+		"Birmingham Newman University"
 	};
 
 	return list;

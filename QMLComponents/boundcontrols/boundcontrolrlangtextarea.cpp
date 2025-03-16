@@ -142,25 +142,29 @@ void BoundControlRlangTextArea::_setBoundValues()
 	boundValue["modelOriginal"] = _textArea->text().toStdString();
 	boundValue["model"]			= _textEncoded.toStdString();
 
-	Json::Value columns(Json::arrayValue);
-	Terms	terms;
+	Json::Value columns(Json::arrayValue),
+				value(Json::arrayValue);
+	Terms		terms;
 
 	for (const std::string& column : _noPrefixUsedColumnNames)
 	{
 		terms.add(Term(column, _textArea->getVariableType(tq(column))));
 		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+		value.append(column);
 	}
 
 	_textArea->model()->initTerms(terms);
-	boundValue["columns"] = columns;
+	boundValue["columns"]	= columns;
+	boundValue["value"]		= value;
+	boundValue["types"]		= terms.types();
 
 	Json::Value prefixedColumns(Json::objectValue);
-	for(auto& prefixSet : _prefixedUsedColumnNames)
-		for (const std::string& column : prefixSet.second) 
-		{
-			prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
+	for(auto& prefixSet : _prefixedUsedColumnNames) {
+		prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
+		for (const std::string& column : prefixSet.second) {
 			prefixedColumns[prefixSet.first].append(ColumnEncoder::columnEncoder()->encode(column));
 		}
+	}
 	boundValue["prefixedColumns"] = prefixedColumns;
 
 	setBoundValue(boundValue, !_control->form()->wasUpgraded());

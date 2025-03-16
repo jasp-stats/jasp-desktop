@@ -230,10 +230,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.closeButton = new JASPWidgets.ActionView({ className: "jasp-closer" });
 		var self = this;
 		this.closeButton.actionTargetElement = function () {
+			self.closeButton.$el.attr("title", i18n("Remove this note"))
+					.tooltip({position: {my:"center bottom-15", at:"center top"}});
 			return self.$el;
 		};
 		this.closeButton.setAction(function () {
-
+			self.clear();
 			self.setVisibilityAnimate(false);
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
@@ -264,11 +266,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	},
 
 	clear: function () {
-
 		this.model.set('format', 'html');
 		this.model.set('text', '');
 		this.model.set('delta', {});
 		this.model.set('deltaAvailable', false);
+	
+		if (this.$quill)
+			this.$quill.setContents([]);
 	},
 
 	isTextboxEmpty: function () {
@@ -414,6 +418,15 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			});
 		});
 
+		// temporary solution for https://github.com/slab/quill/issues/4507
+		self.$quill.on('composition-start', () => {
+			self.$quill.root.dataset.placeholder = '';
+		})
+	  
+		self.$quill.on('composition-end', () => {
+			self.$quill.root.dataset.placeholder = self.$quill.options.placeholder;
+		})
+		
 		// Custom mouse events for the toolbar
 		this.$quillToolbar.on('mousedown', (event) => {
 			event.preventDefault();

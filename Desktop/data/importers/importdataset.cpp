@@ -91,13 +91,19 @@ void ImportDataSet::buildDictionary()
 			_nameToColMap[col->name()] = col;
 
 	//Lets name the unnamed columns the same way csv does
-	size_t curCol = 0;
+	
 
-	for(ImportColumn * col : *this)
+	for(size_t curCol = 0; curCol < _columns.size(); curCol++)
 	{
-		curCol++;
+		ImportColumn * col = _columns[curCol];
 		
-		if(col->name() == "")
+		if(!col->containsAnythingAtAll()) //Ignore very empty columns
+		{
+			_columns.erase(_columns.begin() + curCol);
+			curCol--;
+			delete col;
+		}
+		else if(col->name() == "")
 		{
 			std::string newName;
 			do

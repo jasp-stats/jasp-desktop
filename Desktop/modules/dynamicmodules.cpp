@@ -543,8 +543,9 @@ void DynamicModules::refreshDeveloperModule(bool R, bool Qml)
 
 void DynamicModules::installJASPDeveloperModule()
 {
-	bool directLibpathEnabled = Settings::value(Settings::DIRECT_LIBPATH_ENABLED).toBool();
-	QString modulePath = directLibpathEnabled ? Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+	bool	directLibpathEnabled	= Settings::value(Settings::DIRECT_LIBPATH_ENABLED).toBool();
+	QString modulePath				= directLibpathEnabled ? Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+
 	if(modulePath == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
@@ -552,7 +553,9 @@ void DynamicModules::installJASPDeveloperModule()
 	}
 	else if(!QDir(modulePath).exists())
 	{
-		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '$1' but it doesn't exist.").arg(modulePath));
+		Log::log() << modulePath << " doesnt seem to exist according to QDir, it gives: '" << QDir(modulePath).absolutePath() << "'." << std::endl;
+
+		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '%1' but it doesn't exist.").arg(modulePath));
 		return;
 	}
 

@@ -152,6 +152,7 @@ public slots:
 	void showAbout();
 	void showContact();
 	void showCommunity();
+	void fatalError();
 
 	void saveKeyPressed();
 	void saveAsKeyPressed();
@@ -170,8 +171,8 @@ public slots:
 
 	static QString	versionString();
 
-	void	openFolderExternally(QDir folder);
-	void	showLogFolder();
+	void	openFolderExternally(QDir folder) const;
+	void	showLogFolder() const;
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 
@@ -261,7 +262,6 @@ private slots:
 	void analysisAdded(Analysis *analysis);
 	void resendResultsToWebEngine();
 
-	void fatalError();
 	void closeVariablesPage();
 	void showProgress();
 	void hideProgress();

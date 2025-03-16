@@ -2521,10 +2521,6 @@ msgid "Percentage Field"
 msgstr "Prozent-Feld"
 
 msgctxt "TextInputBase|"
-msgid "Integers Field"
-msgstr "Ganzzahliges Feld"
-
-msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "Doubles-Präzisions-Feld"
 
@@ -2978,10 +2974,6 @@ msgstr "Dunkles Farbschema"
 msgctxt "PrefsUI|"
 msgid "Preferred language"
 msgstr "Spracheinstellung"
-
-msgctxt "PrefsUI|"
-msgid "Choose language  "
-msgstr "Sprache wählen  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
@@ -3647,14 +3639,6 @@ msgstr "Engines anzeigen"
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "Vorhandenes Verzeichnis auswählen"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '$1' but it doesn't exist."
-msgstr ""
-"Zur Installation eines Entwicklungsmoduls müssen Sie ein bestehendes "
-"Verzeichnis auswählen; Sie haben '$1' ausgewählt, aber es existiert nicht."
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
@@ -5474,12 +5458,7 @@ msgstr "Willkommen zum Ziehen-&-Ablegen-Filter!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr "Klicken Sie auf das Piktogramm, um den Spaltentyp zu ändern"
-
-#, fuzzy
-msgctxt "JASPColumn|"
-msgid "Transformed to"
-msgstr "Transformiert nach"
+msgstr "Auf Piktogramm klicken, um Spaltentyp zu ändern"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5544,13 +5523,13 @@ msgstr ""
 "Typ oder ändern Sie die \"Maximal zulässigen Stufen für Metrisch\" im Menü "
 "Einstellungen / Daten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
-"Die minimale Anzahl von numerischen Werten ist %1. Variable %2 hat nur %3 "
+"Minimale Anzahl numerischer Werte ist %1. Variable %2 hat nur %3 "
 "verschiedene numerische Werte"
 
 #, qt-format
@@ -5631,3 +5610,62 @@ msgstr "Legen Sie den Skalierungsgrad der Höhe des Menübandes fest."
 msgctxt "TabView|"
 msgid "Double click to edit this name"
 msgstr "Doppelklicken, um diesen Namen zu ändern"
+
+msgctxt "PrefsUI|"
+msgid "Choose language"
+msgstr "Sprachauswahl"
+
+msgctxt "PrefsUI|"
+msgid "Use an alternative language and territory dependent display for numbers"
+msgstr ""
+"Verwenden Sie eine andere Sprache und gebietsabhängige Anzeige für Zahlen"
+
+msgctxt "PrefsUI|"
+msgid "Use the locale specified below for display of numbers and currency."
+msgstr ""
+"Verwenden Sie die unten angegebene Sprachumgebung für die Anzeige von Zahlen "
+"und Währung."
+
+msgctxt "PrefsUI|"
+msgid "Alt. language"
+msgstr "Andere Sprache"
+
+msgctxt "PrefsUI|"
+msgid "Alt. territory"
+msgstr "Anderes Gebiet"
+
+msgctxt "JASPColumn|"
+msgid "Column description: "
+msgstr "Spaltenbeschreibung: "
+
+msgctxt "VariablesList|"
+msgid "Click icon to change column type"
+msgstr "Auf Piktogramm klicken, um Spaltentyp zu ändern"
+
+msgctxt "VariablesList|"
+msgid "Column description: "
+msgstr "Spaltenbeschreibung: "
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+"Zum Installieren eines Entwicklungsmoduls müssen Sie einen vorhandenen "
+"Ordner auswählen; Sie haben '%1' ausgewählt, der aber nicht existiert."
+
+msgctxt "MainPage|"
+msgid "Remove this note"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"No log files are available. To get more information, please turn logging on. "
+"For this: open the file menu (the blue hamburger button left top), navigate "
+"to Advanced Preferences and check the 'Log to file' checkbox."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Please drag and drop these log files into this issue: "
+msgstr ""

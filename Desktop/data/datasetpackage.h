@@ -120,8 +120,8 @@ public:
 				bool				insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
 				bool				removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				QString				insertColumnSpecial(int column, const QMap<QString, QVariant>& props);
-				QString				appendColumnSpecial(			const QMap<QString, QVariant>& props);
+				QString				insertColumnSpecial(int column, const QMap<QString, QVariant>& props, bool setManualEdits=true);
+				QString				appendColumnSpecial(			const QMap<QString, QVariant>& props, bool setManualEdits=true);
 
 				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
 				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }

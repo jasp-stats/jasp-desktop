@@ -4,6 +4,7 @@
 #include "resultstesting/compareresults.h"
 #include "results/resultsjsinterface.h"
 #include "modules/dynamicmodule.h"
+#include "emptyvalues.h"
 #include "columnutils.h"
 #include <QDirIterator>
 #include <QDebug>
@@ -246,6 +247,9 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 		bool isDouble = false;
 		dbl = currentLocale().toDouble(tq(str), &isDouble);
 
+		if(!isDouble)
+			dbl = EmptyValues::missingValueDouble;
+
 		return isDouble;
 	};
 
@@ -253,6 +257,9 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 	{
 		bool isInt = false;
 		intVal = currentLocale().toInt(tq(str), &isInt);
+
+		if(!isInt)
+			intVal = EmptyValues::missingValueInteger;
 
 		return isInt;
 	};

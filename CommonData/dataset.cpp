@@ -98,13 +98,30 @@ int DataSet::columnIndex(const Column * col) const
 	return -1;
 }
 
-void DataSet::columnsReorder(const stringvec &order)
+void DataSet::columnsReorder(stringvec order)
 {
-	assert(order.size() == _columns								.size());
-	
-	stringset	orderSet(order.begin(), order.end()),
+	//Perhaps the new order is derived from a synched datafile, which lacks any computed columns.
+	stringset	compCols,
+				orderSet(order.begin(), order.end()),
 				colSet;
 	
+	for(size_t i=0; i<_columns.size(); i++)
+	{
+		Column * col = _columns[i];
+		
+		if(col->codeType() != computedColumnType::notComputed)
+		{
+			if(!orderSet.count(col->name()))
+			{
+				order.insert(order.begin() + i, col->name()); //Put the computed column right in the data where it used to be
+				orderSet.insert(col->name());
+			}
+			
+			compCols.insert(col->name());
+		}
+	}
+	
+	assert(order.size() == _columns.size());
 	assert(order.size() == orderSet.size());
 	
 	std::map<std::string, Column*> nameColMap;

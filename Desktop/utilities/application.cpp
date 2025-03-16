@@ -90,6 +90,7 @@ bool Application::notify(QObject *receiver, QEvent *event)
 	catch (std::exception &e)
 	{
 		Log::log() << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << std::endl;
+		_mainWindow->fatalError();
 		throw e;
 	}
 	catch (...)

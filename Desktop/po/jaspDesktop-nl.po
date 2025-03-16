@@ -2501,10 +2501,6 @@ msgid "Percentage Field"
 msgstr "Percentageveld"
 
 msgctxt "TextInputBase|"
-msgid "Integers Field"
-msgstr "Gehele-getallenveld"
-
-msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "Dubbele-precisieveld"
 
@@ -2950,10 +2946,6 @@ msgstr "Donker schema"
 msgctxt "PrefsUI|"
 msgid "Preferred language"
 msgstr "Voorkeurstaal"
-
-msgctxt "PrefsUI|"
-msgid "Choose language  "
-msgstr "Kies taal  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
@@ -3614,14 +3606,6 @@ msgstr "Toon engines"
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "Selecteer een bestaande map"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '$1' but it doesn't exist."
-msgstr ""
-"Om een ontwikkelingsmodule te installeren moet je een bestaande map "
-"selecteren, je hebt '$1' geselecteerd maar die bestaat niet."
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
@@ -5434,10 +5418,6 @@ msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "Klik op het pictogram om het kolomtype te wijzigen"
 
-msgctxt "JASPColumn|"
-msgid "Transformed to"
-msgstr "Getransformeerd naar"
-
 msgctxt "FilterModel|"
 msgid ""
 "Above you see the code that JASP generates for both value filtering and the "
@@ -5580,4 +5560,59 @@ msgstr ""
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use an alternative language and territory dependent display for numbers"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use the locale specified below for display of numbers and currency."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Alt. language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Alt. territory"
+msgstr ""
+
+msgctxt "JASPColumn|"
+msgid "Column description: "
+msgstr ""
+
+#, fuzzy
+msgctxt "VariablesList|"
+msgid "Click icon to change column type"
+msgstr "Klik op het pictogram om het kolomtype te wijzigen"
+
+msgctxt "VariablesList|"
+msgid "Column description: "
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Remove this note"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"No log files are available. To get more information, please turn logging on. "
+"For this: open the file menu (the blue hamburger button left top), navigate "
+"to Advanced Preferences and check the 'Log to file' checkbox."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Please drag and drop these log files into this issue: "
 msgstr ""

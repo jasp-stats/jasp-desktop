@@ -21,7 +21,7 @@ function formatMoney(_currency='EUR', amount) {
 	  trailingZeroDisplay: 'stripIfInteger'
 	});
 	
-	return formatter.format(amount)
+	return amount == "." ? amount : formatter.format(amount)
 }
 
 function formatFixed(number, digitsFrac) {

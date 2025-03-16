@@ -439,7 +439,7 @@ Item
 				"Unsupported video services":			qsTr("Unsupported video services"),			"Input LaTeX here:":				qsTr("Input LaTeX here:"),		
 				"Press `Cmd/Ctrl + Enter` to apply;":	qsTr("Press `Cmd/Ctrl + Enter` to apply;"),	"Click to apply formula":			qsTr("Click to apply formula"), 
 				"Click to edit this formula":			qsTr("Click to edit this formula"),			"Citations copied to clipboard":	qsTr("Citations copied to clipboard"), 	
-				"LaTeX code copied to clipboard":		qsTr("LaTeX code copied to clipboard"),	
+				"LaTeX code copied to clipboard":		qsTr("LaTeX code copied to clipboard"),		"Remove this note":					qsTr("Remove this note"),
 				
 				"JASP only allows the following videoservices:":								qsTr("JASP only allows the following videoservices:"), 
 				"Contact the JASP team to request adding another videoservice to the list." :	qsTr("Contact the JASP team to request adding another videoservice to the list.")

@@ -2327,10 +2327,6 @@ msgid "Preferred language"
 msgstr "Idioma preferido"
 
 msgctxt "PrefsUI|"
-msgid "Choose language  "
-msgstr "Elixir idioma  "
-
-msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
 msgstr "Modo gráfico seguro"
 
@@ -3126,10 +3122,6 @@ msgid "Percentage Field"
 msgstr "Campo de Porcentaxe"
 
 msgctxt "TextInputBase|"
-msgid "Integers Field"
-msgstr "Campo de Enteiros"
-
-msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "Campo de Dobres Precisións"
 
@@ -3636,14 +3628,6 @@ msgstr "Amosar os procedementos"
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "Escoller un cartafol xa existente"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '$1' but it doesn't exist."
-msgstr ""
-"Para instalar un módulo de desenvolvemento, precisas escoller un cartafol xa "
-"existente; escolliches '$1' pero non existe."
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
@@ -5458,10 +5442,6 @@ msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "Fai clic na icona para cambiar o tipo de columna"
 
-msgctxt "JASPColumn|"
-msgid "Transformed to"
-msgstr "Transformado en"
-
 msgctxt "FilterModel|"
 msgid ""
 "Above you see the code that JASP generates for both value filtering and the "
@@ -5607,3 +5587,61 @@ msgstr "Establecer a escala da altura da cinta."
 msgctxt "TabView|"
 msgid "Double click to edit this name"
 msgstr "Fai dobre clic para editar este nome"
+
+msgctxt "PrefsUI|"
+msgid "Choose language"
+msgstr "Elixir idioma"
+
+msgctxt "PrefsUI|"
+msgid "Use an alternative language and territory dependent display for numbers"
+msgstr ""
+"Usar un idioma alternativo e unha visualización dependente do territorio "
+"para os números"
+
+msgctxt "PrefsUI|"
+msgid "Use the locale specified below for display of numbers and currency."
+msgstr "Usar o localismo indicado abaixo para amosar os números e a moeda."
+
+msgctxt "PrefsUI|"
+msgid "Alt. language"
+msgstr "Idioma alternativo"
+
+msgctxt "PrefsUI|"
+msgid "Alt. territory"
+msgstr "Territorio alternativo"
+
+msgctxt "JASPColumn|"
+msgid "Column description: "
+msgstr "Descripción de columna: "
+
+msgctxt "VariablesList|"
+msgid "Click icon to change column type"
+msgstr "Fai clic na icona para cambiar o tipo de columna"
+
+msgctxt "VariablesList|"
+msgid "Column description: "
+msgstr "Descripción de columna: "
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+"Para instalar un módulo de desenvolvemento necesitas escoller un cartafol "
+"existente; escolliches '%1' pero non existe."
+
+msgctxt "MainPage|"
+msgid "Remove this note"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"No log files are available. To get more information, please turn logging on. "
+"For this: open the file menu (the blue hamburger button left top), navigate "
+"to Advanced Preferences and check the 'Log to file' checkbox."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Please drag and drop these log files into this issue: "
+msgstr ""
