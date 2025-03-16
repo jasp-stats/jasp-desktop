@@ -161,6 +161,7 @@ GET_PREF_FUNC_INT(	pdfPageSize,				Settings::PDF_PAGESIZE								)
 GET_PREF_FUNC_BOOL( directLibpathEnabled,		Settings::DIRECT_LIBPATH_ENABLED					)
 GET_PREF_FUNC_STR(	directLibpathFolder,		Settings::DIRECT_LIBPATH_FOLDER						)
 GET_PREF_FUNC_STR(	directDevModName,			Settings::DIRECT_DEVMOD_NAME						)
+GET_PREF_FUNC_BOOL(	engineSandbox,				Settings::ENGINE_SANDBOX							)
 
 
 int PreferencesModel::maxEngines() const
@@ -341,6 +342,7 @@ SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeCha
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
 SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
 SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directDevModNameChanged,		Settings::DIRECT_DEVMOD_NAME						)
+SET_PREF_FUNCTION(				bool,		setEngineSandbox,			engineSandbox,				engineSandboxChanged,			Settings::ENGINE_SANDBOX							)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
