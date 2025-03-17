@@ -12,14 +12,14 @@ std::wstring toWString(const std::string& in) {
 }
 
 
-bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE type, ACCESS_MASK accessMask) {
+bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE type, ACCESS_MASK accessMask, DWORD inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) {
 	PACL oldAcl, newAcl = nullptr;
 	DWORD status;
 	EXPLICIT_ACCESS access;
 	do {
 		access.grfAccessMode = GRANT_ACCESS;
 		access.grfAccessPermissions = accessMask;
-		access.grfInheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+		access.grfInheritance = inheritance;
 		access.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
 		access.Trustee.pMultipleTrustee = nullptr;
 		access.Trustee.ptstrName = (PWSTR)appContainerSid;
@@ -112,14 +112,22 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
 	}
 
-	const std::vector<std::string> _readExecuteList = {
-		AppDirs::programDir().filesystemAbsolutePath().string() //we can make this finer
-	};
+
+	//We have to exclude all Qt dlls because the QtWebengine is crazy... :(
+	std::vector<std::string> _readExecuteList = {AppDirs::programDir().absolutePath().toStdString()};
+	// auto exedir = AppDirs::programDir();
+	// auto entries = exedir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+	// AllowNamedObjectAccess(appContainerSid, toWString(exedir.absolutePath().toStdString()).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+
+	// for(auto& entry : entries) {
+	// 	if(!entry.contains("Qt", Qt::CaseInsensitive))
+	// 		_readExecuteList.push_back((exedir.absolutePath() + entry).toStdString());
+	// }
 
 	if(!checkIfAccessible(si, _readExecuteList)) {
 		for(auto& file : _readExecuteList)
-			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS); //FILE_EXECUTE | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_LIST_DIRECTORY);
-	}
+			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+	}	
 
 	//set the startup info for the engine
 	engineProcess->setCreateProcessArgumentsModifier([si] (QProcess::CreateProcessArguments *args)
