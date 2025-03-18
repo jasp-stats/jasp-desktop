@@ -463,49 +463,8 @@ void SetWorkspacePropertyCommand::redo()
 		DataSetPackage::pkg()->setDescription(_newValue.toString());
 }
 
-
-UndoModelCommandLabelChange::UndoModelCommandLabelChange(QAbstractItemModel *model)
-	: UndoModelCommand(model)
-{
-	_columnModel = qobject_cast<ColumnModel*>(model);
-	if (_columnModel)
-	{
-		_colId			= _columnModel->chosenColumn();
-		Column * col	= _columnModel->column();
-		_oldLabels		= col ? col->serializeLabels() : Json::nullValue;
-	}
-	else
-	{
-		Log::log() << "Try to set a label name with a wrong model!" << std::endl;
-		setObsolete(true);
-	}
-}
-
-void UndoModelCommandLabelChange::undo()
-{
-	if(_oldLabels.isNull())
-		return;
-	
-	assert(_columnModel && _model);
-	_columnModel->setChosenColumn(_colId);
-	
-	Column * col = _columnModel->column();
-	
-	if(col)
-	{
-		col->deserializeLabelsForRevert(_oldLabels);
-		DataSetPackage::pkg()->refresh();
-	}
-}
-
-void UndoModelCommandLabelChange::redo()
-{
-	if(_columnModel && (!_columnModel->column() || _columnModel->column()->id() != _colId))
-		_columnModel->setChosenColumn(_colId);	
-}
-
 SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel)
-	: UndoModelCommandLabelChange(model), _labelIndex{labelIndex}, _newLabel{newLabel}
+    : UndoModelCommandSingleColumn(model), _labelIndex{labelIndex}, _newLabel{newLabel}
 {
 	if (_columnModel)
 	{
@@ -522,13 +481,13 @@ SetLabelCommand::SetLabelCommand(QAbstractItemModel *model, int labelIndex, QStr
 
 void SetLabelCommand::redo()
 {
-	UndoModelCommandLabelChange::redo();
+    UndoModelCommandSingleColumn::redo(); //Makes sure we select the right column first
 	_model->setData(_model->index(_labelIndex, 0), _newLabel, int(DataSetPackage::specialRoles::label));
 	_columnModel->setLabelMaxWidth();
 }
 
 SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue)
-	: UndoModelCommandLabelChange(model), _labelIndex{labelIndex}, _newOriginalValue{originalValue}
+    : UndoModelCommandSingleColumn(model), _labelIndex{labelIndex}, _newOriginalValue{originalValue}
 {
 	if (_columnModel)
 	{
@@ -545,7 +504,7 @@ SetLabelOriginalValueCommand::SetLabelOriginalValueCommand(QAbstractItemModel *m
 
 void SetLabelOriginalValueCommand::redo()
 {
-	UndoModelCommandLabelChange::redo();
+    UndoModelCommandSingleColumn::redo(); //Makes sure we select the right column first
 	_model->setData(_model->index(_labelIndex, 0), _newOriginalValue, int(DataSetPackage::specialRoles::value));
 	_columnModel->setLabelMaxWidth();
 }
@@ -558,6 +517,7 @@ DeleteLabelCommand::DeleteLabelCommand(QAbstractItemModel *model, int labelIndex
 
 void DeleteLabelCommand::redo()
 {
+    UndoModelCommandSingleColumn::redo(); //Makes sure we select the right column first
 	_columnModel->_deleteLabel(_labelIndex);
 }
 
@@ -569,6 +529,7 @@ AddLabelCommand::AddLabelCommand(QAbstractItemModel *model, QString value, QStri
 
 void AddLabelCommand::redo()
 {
+    UndoModelCommandSingleColumn::redo(); //Makes sure we select the right column first
 	_columnModel->_addLabel(_value, _label);
 }
 
@@ -606,10 +567,12 @@ void FilterLabelCommand::redo()
 }
 
 MoveLabelCommand::MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t> &indexes, bool up)
-	: UndoModelCommandLabelChange(model), _up{up}
+    : UndoModelCommandSingleColumn(model), _up{up}
 {
-	if (_columnModel)
-	{
+
+    if (_columnModel)
+    {
+        _colId = _columnModel->chosenColumn();
 		_labels.clear();
 
 		QStringList allLabels = DataSetPackage::pkg()->getColumnLabelsAsStringList(_colId);
@@ -658,7 +621,7 @@ std::vector<size_t> MoveLabelCommand::_getIndexes()
 
 void MoveLabelCommand::redo()
 {
-	_columnModel->setChosenColumn(_colId);
+    UndoModelCommandSingleColumn::redo(); //Makes sure we select the right column first
 	std::vector<size_t> indexes = _getIndexes(); // The indexes must be recalculated each time
 	DataSetPackage::pkg()->labelMoveRows(_colId, indexes, _up); //through DataSetPackage to make sure signals get sent
 }
@@ -929,5 +892,20 @@ UndoModelCommandSingleColumn::UndoModelCommandSingleColumn(QAbstractItemModel *m
 	
 	if(!_columnModel)
 		throw std::runtime_error("UndoModelCommandSingleColumn needs to get passed a ColumnModel!");
-	
+
+    _colId = _columnModel->chosenColumn();
+}
+
+void UndoModelCommandSingleColumn::redo()
+{
+    if(_columnModel)
+        _columnModel->setChosenColumn(_colId);
+}
+
+void UndoModelCommandSingleColumn::undo()
+{
+    UndoModelCommandMultipleColumns::undo();
+
+    if(_columnModel)
+        _columnModel->setChosenColumn(_colId);
 }

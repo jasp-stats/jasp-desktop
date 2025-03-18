@@ -58,51 +58,6 @@ private:
 							_oldValue;
 };
 
-class UndoModelCommandLabelChange: public UndoModelCommand
-{
-public:
-	UndoModelCommandLabelChange(QAbstractItemModel *model);
-	
-	void undo()					override;
-	void redo()					override;
-	
-	
-protected:
-	ColumnModel*			_columnModel = nullptr;
-	int						_colId		= -1;
-	Json::Value				_oldLabels	= Json::nullValue;
-};
-
-
-class SetLabelCommand: public UndoModelCommandLabelChange
-{
-public:
-	SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel);
-	
-	void redo()					override;
-	
-private:
-	int						_labelIndex = -1;
-	QString					_newLabel,
-							_oldLabel;
-};
-
-class SetLabelOriginalValueCommand: public UndoModelCommandLabelChange
-{
-public:
-	SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue);
-	
-	void redo()					override;
-	
-private:
-	int						_labelIndex = -1;
-	QString					_newOriginalValue,
-							_oldOriginalValue,
-							_oldLabel;
-};
-
-
-
 class FilterLabelCommand: public UndoModelCommand
 {
 public:
@@ -116,21 +71,6 @@ private:
 	int						_colId		= -1,
 							_labelIndex = -1;
 	bool					_checked	= false;
-};
-
-class MoveLabelCommand: public UndoModelCommandLabelChange
-{
-public:
-	MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t>& indexes, bool up);
-
-	void redo()					override;
-
-private:
-	std::vector<size_t>	_getIndexes();
-	void					_moveLabels(bool up);
-
-	QStringList				_labels;
-	bool					_up			= false;
 };
 
 class ReverseLabelCommand: public UndoModelCommand
@@ -239,9 +179,13 @@ private:
 class UndoModelCommandSingleColumn : public UndoModelCommandMultipleColumns
 {
 public:
-	UndoModelCommandSingleColumn(QAbstractItemModel * model);
+    UndoModelCommandSingleColumn(QAbstractItemModel * model);
+
+    void    redo() override;
+    void    undo() override;
 	
 protected:
+    int						_colId		= -1;
 	ColumnModel * _columnModel = nullptr;
 };
 
@@ -266,6 +210,51 @@ public:
 private:
 	QString					_value,
 							_label;
+};
+
+
+class SetLabelCommand: public UndoModelCommandSingleColumn
+{
+public:
+    SetLabelCommand(QAbstractItemModel *model, int labelIndex, QString newLabel);
+
+    void redo()					override;
+
+private:
+    int						_labelIndex = -1;
+    QString					_newLabel,
+        _oldLabel;
+};
+
+class SetLabelOriginalValueCommand: public UndoModelCommandSingleColumn
+{
+public:
+    SetLabelOriginalValueCommand(QAbstractItemModel *model, int labelIndex, QString originalValue);
+
+    void redo()					override;
+
+private:
+    int						_labelIndex = -1;
+    QString					_newOriginalValue,
+                            _oldOriginalValue,
+                            _oldLabel;
+};
+
+
+class MoveLabelCommand: public UndoModelCommandSingleColumn
+{
+public:
+    MoveLabelCommand(QAbstractItemModel *model, const std::vector<size_t>& indexes, bool up);
+
+    void redo()					override;
+
+private:
+
+    std::vector<size_t>     _getIndexes();
+    void					_moveLabels(bool up);
+
+    QStringList				_labels;
+    bool					_up			= false;
 };
 
 class DataSetTableModel;
