@@ -122,7 +122,7 @@ private:
 												*	_semaphoreIn			= nullptr;
 #elif defined _WIN32
 	uint64_t										_msgIDSend				= 0;
-	uint64_t										_msgIDRecv				= 0;
+	uint64_t										_msgIDRecv				= 1;
 #else
 	boost::interprocess::named_semaphore		*	_semaphoreOut			= nullptr,
 												*	_semaphoreIn			= nullptr;
