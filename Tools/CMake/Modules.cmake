@@ -24,7 +24,6 @@ set(JASP_TEST_MODULE	"jaspDescriptives"	CACHE STRING	"Which module other than ja
 if(NOT JASP_TEST_BUILD)
 set(JASP_COMMON_MODULES
         "jaspTTests"
-        "jaspAnova"
 )
 
 set(JASP_EXTRA_MODULES
