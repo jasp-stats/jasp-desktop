@@ -169,8 +169,8 @@ FocusScope
 
 						onClicked:			(mouse)=>
 						{
-							columnModel.setSelected(rowIndex, mouse.modifiers);
 							parent.forceActiveFocus(); //To take focus out of some TextInput
+							columnModel.setSelected(rowIndex, mouse.modifiers);
 						}
 						
 						onDoubleClicked:	(mouse)=>
@@ -278,13 +278,8 @@ FocusScope
 									cursorShape:		Qt.IBeamCursor
 									z:					3
 									onClicked:			valueInput.forceActiveFocus()
-									anchors
-									{
-										fill:			parent
-										topMargin:		levelsTableView.itemVerticalPadding
-										bottomMargin:	levelsTableView.itemVerticalPadding
-									}
-									
+									anchors.fill:		parent
+
 									TextInput
 									{
 										id:					valueInput
@@ -297,7 +292,13 @@ FocusScope
 										z:					1
 		
 										leftPadding:		3 * jaspTheme.uiScale
-										anchors.fill:		parent
+
+										anchors
+										{
+											fill:			parent
+											topMargin:		levelsTableView.itemVerticalPadding
+											bottomMargin:	levelsTableView.itemVerticalPadding
+										}
 										
 		
 										verticalAlignment:	Text.AlignVCenter
@@ -329,7 +330,7 @@ FocusScope
 											{
 												chosenColumnWas = columnModel.chosenColumn
 												columnModel.removeAllSelected()
-												columnModel.setSelected(rowIndex,true);
+												columnModel.setSelected(rowIndex, 0);
 											}
 										}
 									}
@@ -365,12 +366,8 @@ FocusScope
 									z:					3
 									onClicked:			labelInput.forceActiveFocus()
 									
-									anchors
-									{
-										fill:			parent
-										topMargin:		levelsTableView.itemVerticalPadding
-										bottomMargin:	levelsTableView.itemVerticalPadding
-									}
+									anchors.fill:		parent
+
 									
 									TextInput
 									{
@@ -385,7 +382,12 @@ FocusScope
 										//width:				contentWidth
 										leftPadding:		3 * jaspTheme.uiScale
 										
-										anchors.fill:		parent
+										anchors
+										{
+											fill:			parent
+											topMargin:		levelsTableView.itemVerticalPadding
+											bottomMargin:	levelsTableView.itemVerticalPadding
+										}
 										
 		
 										verticalAlignment:	Text.AlignVCenter
@@ -418,7 +420,7 @@ FocusScope
 											{
 												chosenColumnWas = columnModel.chosenColumn
 												columnModel.removeAllSelected()
-												columnModel.setSelected(rowIndex,true);
+												columnModel.setSelected(rowIndex, 0);
 											}
 										}	
 									}

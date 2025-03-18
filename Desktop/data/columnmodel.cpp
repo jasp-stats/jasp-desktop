@@ -736,7 +736,7 @@ void ColumnModel::removeAllSelected()
 		if (mapValueToRow.contains(selectedValue))
 		{
 			int selectedRow = int(mapValueToRow[selectedValue]);
-			refresh(); //emit dataChanged(ColumnModel::index(selectedRow, 0), ColumnModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
+            emit dataChanged(ColumnModel::index(selectedRow, 0), ColumnModel::index(selectedRow, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 }
@@ -751,14 +751,14 @@ void ColumnModel::setSelected(int row, int modifier)
 		{
 			QString rowValue = data(index(i, 0), int(DataSetPackage::specialRoles::value)).toString();
 			_selected.insert(rowValue);
-			emit dataChanged(ColumnModel::index(i, 0), ColumnModel::index(i, 0), {int(DataSetPackage::specialRoles::selected), int(DataSetPackage::specialRoles::filter), int(DataSetPackage::specialRoles::value), int(DataSetPackage::specialRoles::label)});
+            emit dataChanged(ColumnModel::index(i, 0), ColumnModel::index(i, 0), {int(DataSetPackage::specialRoles::selected)});
 		}
 	}
 	else if (modifier & Qt::ControlModifier)
 	{
 		QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
 		_selected.insert(rowValue);
-		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected), int(DataSetPackage::specialRoles::filter), int(DataSetPackage::specialRoles::value), int(DataSetPackage::specialRoles::label)});
+        emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
 	else
 	{
@@ -768,7 +768,7 @@ void ColumnModel::setSelected(int row, int modifier)
 		
 		if (!disableCurrent)	_selected.insert(rowValue);
 		else					_selected.erase(rowValue);
-		emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected), int(DataSetPackage::specialRoles::filter), int(DataSetPackage::specialRoles::value), int(DataSetPackage::specialRoles::label)});
+        emit dataChanged(ColumnModel::index(row, 0), ColumnModel::index(row, 0), {int(DataSetPackage::specialRoles::selected)});
 	}
 	
 	_lastSelected = row;

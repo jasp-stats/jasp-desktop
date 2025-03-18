@@ -16,11 +16,11 @@ class ColumnModel : public DataSetTableProxy
 {
 	Q_OBJECT
 
-	Q_PROPERTY(int			filteredOut					READ filteredOut												NOTIFY filteredOutChanged				)
+    Q_PROPERTY(int			filteredOut					READ filteredOut                                                NOTIFY filteredOutChanged				)
 	Q_PROPERTY(int			chosenColumn				READ chosenColumn				WRITE setChosenColumn			NOTIFY chosenColumnChanged				)
-	Q_PROPERTY(bool			visible						READ visible					WRITE setVisible				NOTIFY visibleChanged					)
-	Q_PROPERTY(QString		columnName					READ columnNameQ				WRITE setColumnNameQ			NOTIFY columnNameChanged				)
-	Q_PROPERTY(QString		columnTitle					READ columnTitle				WRITE setColumnTitle			NOTIFY columnTitleChanged				)
+    Q_PROPERTY(bool			visible						READ visible                    WRITE setVisible                NOTIFY visibleChanged					)
+    Q_PROPERTY(QString		columnName					READ columnNameQ                WRITE setColumnNameQ            NOTIFY columnNameChanged				)
+    Q_PROPERTY(QString		columnTitle					READ columnTitle                WRITE setColumnTitle            NOTIFY columnTitleChanged				)
 	Q_PROPERTY(QString		columnDescription			READ columnDescription			WRITE setColumnDescription		NOTIFY columnDescriptionChanged			)
 	Q_PROPERTY(double		rowWidth					READ rowWidth					WRITE setRowWidth				NOTIFY rowWidthChanged					)
 	Q_PROPERTY(double		valueMaxWidth				READ valueMaxWidth												NOTIFY valueMaxWidthChanged				)
@@ -33,15 +33,15 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(QString		currentColumnType			READ currentColumnType			WRITE setColumnType				NOTIFY columnTypeChanged				)
 	Q_PROPERTY(QVariantList	columnTypeValues			READ columnTypeValues											NOTIFY columnTypeValuesChanged			)
 	Q_PROPERTY(bool			useCustomEmptyValues		READ useCustomEmptyValues		WRITE setUseCustomEmptyValues	NOTIFY useCustomEmptyValuesChanged		)
-	Q_PROPERTY(QStringList	emptyValues					READ emptyValues				WRITE setCustomEmptyValues		NOTIFY emptyValuesChanged				)
+    Q_PROPERTY(QStringList	emptyValues					READ emptyValues                WRITE setCustomEmptyValues		NOTIFY emptyValuesChanged				)
 	Q_PROPERTY(QVariantList	tabs						READ tabs														NOTIFY tabsChanged						)
-	Q_PROPERTY(bool 		isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
-	Q_PROPERTY(bool			compactMode					READ compactMode				WRITE setCompactMode			NOTIFY compactModeChanged				)
+    Q_PROPERTY(bool         isVirtual					READ isVirtual													NOTIFY isVirtualChanged					)
+    Q_PROPERTY(bool			compactMode					READ compactMode                WRITE setCompactMode            NOTIFY compactModeChanged				)
 	Q_PROPERTY(bool			autoSort					READ autoSort					WRITE setAutoSort				NOTIFY autoSortChanged					)
-	Q_PROPERTY(bool			hasSeveralNumericValues		READ hasSeveralNumericValues									NOTIFY hasSeveralNumericValuesChanged	) //Only works when autosort is on
+    Q_PROPERTY(bool			hasSeveralNumericValues		READ hasSeveralNumericValues                                    NOTIFY hasSeveralNumericValuesChanged	) //Only works when autosort is on
 	Q_PROPERTY(int			rowsTotal					READ rowsTotal													NOTIFY rowsTotalChanged					)
 	Q_PROPERTY(QString		computeFilter				READ computeFilter				WRITE setComputeFilter			NOTIFY computeFilterChanged				)
-	Q_PROPERTY(QString		dropLevels					READ dropLevels					WRITE setDropLevels				NOTIFY dropLevelsChanged				)
+    Q_PROPERTY(QString		dropLevels					READ dropLevels					WRITE setDropLevels				NOTIFY dropLevelsChanged                )
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
