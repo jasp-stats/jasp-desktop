@@ -56,13 +56,12 @@ string Dirs::tempDir()
 
 #ifdef _WIN32
 	//lets just read it from the environment if the anwser is found there
-	p = "C:/Users/rdoff/AppData/Local/JASP/temp";
-		return p;
 	if(ProcessInfo::inWinContainer()) {
+		Log::log() << "In sandbox win container!" << std::endl;
 		char* buf = nullptr;
 		size_t sz = 0;
 		if(_dupenv_s(&buf, &sz, "JASP_TMP_DIR") == 0 && buf != nullptr) {
-			p = std::string(buf, sz);
+			p = std::string(buf);
 			free(buf);
 			return p;
 		}
