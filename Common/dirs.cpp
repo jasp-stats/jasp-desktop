@@ -42,6 +42,7 @@
 #include "appinfo.h"
 #include <iostream>
 #include <cstdlib>
+#include "log.h"
 
 using namespace std;
 
