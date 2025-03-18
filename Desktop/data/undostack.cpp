@@ -310,7 +310,12 @@ void UndoModelCommandMultipleColumns::undo()
 	
 	for(int col : _cols)
 		if(!_serializedColumns[col].isNull())
+        {
+            QString oldName = tq(DataSetPackage::pkg()->dataSet()->column(col)->name());
 			DataSetPackage::pkg()->dataSet()->column(col)->deserialize(_serializedColumns[col]);
+            DataSetPackage::pkg()->emitColumnChanged(oldName);
+            DataSetPackage::pkg()->emitColumnChanged(tq(DataSetPackage::pkg()->dataSet()->column(col)->name()));
+        }
 
 	
 	DataSetPackage::pkg()->refresh();
@@ -555,7 +560,6 @@ void DeleteLabelCommand::redo()
 {
 	_columnModel->_deleteLabel(_labelIndex);
 }
-
 
 AddLabelCommand::AddLabelCommand(QAbstractItemModel *model, QString value, QString label)
 : UndoModelCommandSingleColumn(model), _value(value), _label(label)
