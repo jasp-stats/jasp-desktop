@@ -124,8 +124,8 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 			_readExecuteList.push_back((exedir.absolutePath() + entry).toStdString());
 	}
 
-	if(!checkIfAccessible(si, _readExecuteList)) {
-		for(auto& file : _readExecuteList)
+	//if(!checkIfAccessible(si, _readExecuteList)) {
+		for(auto& file : _readExecuteList) {
 			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
 	}	
 
