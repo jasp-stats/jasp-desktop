@@ -114,15 +114,15 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 
 	//We have to exclude all Qt dlls because the QtWebengine is crazy... :(
-	std::vector<std::string> _readExecuteList = {AppDirs::programDir().absolutePath().toStdString()};
-	// auto exedir = AppDirs::programDir();
-	// auto entries = exedir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-	// AllowNamedObjectAccess(appContainerSid, toWString(exedir.absolutePath().toStdString()).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+	std::vector<std::string> _readExecuteList = {};
+	auto exedir = AppDirs::programDir();
+	auto entries = exedir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+	AllowNamedObjectAccess(appContainerSid, toWString(exedir.absolutePath().toStdString()).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS, NO_INHERITANCE);
 
-	// for(auto& entry : entries) {
-	// 	if(!entry.contains("Qt", Qt::CaseInsensitive))
-	// 		_readExecuteList.push_back((exedir.absolutePath() + entry).toStdString());
-	// }
+	for(auto& entry : entries) {
+		if(!entry.contains("Qt", Qt::CaseInsensitive))
+			_readExecuteList.push_back((exedir.absolutePath() + entry).toStdString());
+	}
 
 	if(!checkIfAccessible(si, _readExecuteList)) {
 		for(auto& file : _readExecuteList)
