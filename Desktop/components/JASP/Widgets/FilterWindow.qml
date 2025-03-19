@@ -129,6 +129,9 @@ FocusScope
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "prod";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "zScores";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("Standardizes the variable") }
 
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";			functionName: "rowMean";		toolTip: qsTr("rowwise mean") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";			functionName: "rowSum";			toolTip: qsTr("rowwise sum") }
+
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "min";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("returns minimum of values") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "max";			functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns maximum of values") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "mean";			functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("mean") }

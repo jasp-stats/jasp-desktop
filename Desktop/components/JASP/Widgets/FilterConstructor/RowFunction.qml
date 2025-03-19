@@ -4,39 +4,56 @@ import QtQuick
 Item
 {
 	id: funcRoot
-	objectName: "Function"
-	property string __debugName: "Function " + functionName
+	objectName: "RowFunction"
+	property string __debugName: "RowFunction " + functionName
 
-	property int initialWidth: filterConstructor.blockDim * 3
-	property string functionName: "sum"
-	property string friendlyFunctionName: functionName //By default exactly the same unless we need to add some fancy unicode
+	property int initialWidth: filterConstructor.blockDim * 6
+	property string functionName: "rowSum"
+	property string friendlyFunctionName: functionName.endsWith("NaRm") ? functionName.substring(0, functionName.length-4) : functionName //By default exactly the same unless we need to add some fancy unicode
 	property bool acceptsDrops: true
 
-	property var parameterNames: []
-	property var parameterDropKeys: [[]]
+	property int parameterCount: 1
+	property list<Item> droppedItems: []
+
+
+
+	property variant functionNameToBaseFunc: {
+	"rowMean":				"mean",
+	"rowMeanNaRm":			"mean",
+	"rowSum":				"sum",
+	"rowSumNaRm":			"sum",
+	"rowSD":				"sd",
+	"rowSDNaRm":			"sd",
+	"rowVariance":			"variance",
+	"rowVarianceNaRm":		"variance",
+	"rowMedian":			"median",
+	"rowMedianNaRm":		"median",
+	"rowMin":				"min",
+	"rowMinNaRm":			"min",
+	"rowMax":				"max",
+	"rowMaxNaRm":			"max"
+	}
+
 
 	property variant functionNameToImageSource: { "sum": jaspTheme.iconPath + "/sum.png", "prod": jaspTheme.iconPath + "/product.png", "sd": jaspTheme.iconPath + "/sigma.png", "var": jaspTheme.iconPath + "/variance.png", "!": jaspTheme.iconPath + "/negative.png", "sqrt":jaspTheme.iconPath + "/rootHead.png"}
-	property string functionImageSource: functionNameToImageSource[functionName] !== undefined ? functionNameToImageSource[functionName] : ""
+	property string functionImageSource: functionNameToBaseFunc[functionName] !== undefined && functionNameToImageSource[functionNameToBaseFunc[functionName]] !== undefined ? functionNameToImageSource[functionNameToBaseFunc[functionName]] : ""
 	property bool isNested: false
-	property var booleanReturningFunctions: ["!", "hasSubstring", "is.na"]
 
-	readonly property bool isIfElse: functionName === "ifelse"
-	property var ifElseReturn: ["string", "number", "boolean"]
-	property var dragKeys: isIfElse ? ifElseReturn : booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
+
+	property var dragKeys: [ "number" ]
+
 
 	readonly property bool isMean: functionName === "mean"
-	readonly property bool isAbs:  functionName === "abs"
-	readonly property bool isRoot: functionName === "sqrt"
 	readonly property bool drawMeanSpecial: false
-	readonly property bool showParentheses: !drawMeanSpecial && (parameterNames.length > 1 || isAbs || functionImageSource === "")
+	readonly property bool showParentheses: !drawMeanSpecial && (parameterCount > 1 || functionImageSource === "")
 
 	property real extraMeanWidth: (drawMeanSpecial ? 10 * preferencesModel.uiScale : 0)
 
-	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "median"]
-	property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
+	//property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "median"]
+	//property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
+	//I guess we just only do the NaRm version here.
 
-	height: funcRoot.isRoot && !funcRoot.acceptsDrops ? filterConstructor.blockDim  //If in the operatorselector bar then force same height as other operators
-													  : meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
+	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
 	width: functionDef.width + haakjesLinks.width + dropRow.width + haakjesRechts.width + extraMeanWidth
 
 	function shouldDrag(mouseX, mouseY)
@@ -51,10 +68,10 @@ Item
 	{
 		var compounded = functionName + "("
 
-		for(var i=0; i<funcRoot.parameterNames.length; i++)
+		for(var i=0; i<parameterCount; i++)
 				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "null" : dropRepeat.itemAt(i).returnR())
 
-		compounded += extraParameterCode + ")"
+		compounded += ")"
 
 		return compounded
 	}
@@ -68,10 +85,10 @@ Item
 	Item
 	{
 		id: meanBar
-		visible: funcRoot.drawMeanSpecial || funcRoot.isRoot
+		visible: funcRoot.drawMeanSpecial
 		height: visible ? 6 * preferencesModel.uiScale : 0
 
-		anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
+		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.top: parent.top
 
@@ -83,7 +100,7 @@ Item
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.top: parent.top
-			anchors.topMargin: funcRoot.isRoot ? 0 : Math.max(1, 3 * preferencesModel.uiScale)
+			anchors.topMargin: Math.max(1, 3 * preferencesModel.uiScale)
 
 			height: Math.max(1, 3 * preferencesModel.uiScale)
 		}
@@ -96,7 +113,7 @@ Item
 		anchors.bottom: parent.bottom
 
 		x: extraMeanWidth / 2
-		width: functionImgRoot.visible ? functionImgRoot.width : functionText.visible ? functionText.width : functionImg.width
+		width: functionText.visible ? functionText.width : functionImg.width
 
 		Text
 		{
@@ -109,7 +126,7 @@ Item
 			verticalAlignment:		Text.AlignVCenter
 			horizontalAlignment:	Text.AlignHCenter
 
-			text:					funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : friendlyFunctionName
+			text:					funcRoot.drawMeanSpecial ? "" : friendlyFunctionName
 			font.pixelSize:			filterConstructor.fontPixelSize
 			font.family:			jaspTheme.font.family
 
@@ -121,9 +138,9 @@ Item
 		{
 			id:						functionImg
 
-			visible:				(!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
+			visible:				(!funcRoot.acceptsDrops) && functionImageSource !== ""
 
-			source:					funcRoot.isRoot && !funcRoot.acceptsDrops ? jaspTheme.iconPath + "/sqrtSelector.png" : functionImageSource //workaround for operatorselector bar
+			source:					functionImageSource
 
 
 			height:					filterConstructor.blockDim
@@ -133,21 +150,6 @@ Item
 
 			anchors.verticalCenter: parent.verticalCenter
 
-		}
-
-		Image
-		{
-			id:					functionImgRoot
-
-			visible:			funcRoot.isRoot &&  funcRoot.acceptsDrops
-
-			source:				functionImageSource
-			anchors.top:		parent.top
-			anchors.bottom:		parent.bottom
-			width:				filterConstructor.blockDim
-			sourceSize.width:	filterConstructor.blockDim * 2
-			sourceSize.height:	filterConstructor.blockDim * 3
-			smooth:				true
 		}
 	}
 
@@ -163,24 +165,10 @@ Item
 		horizontalAlignment:	Text.AlignHCenter
 
 		width:					showParentheses ? filterConstructor.blockDim / 3 : 0
-		text:					! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
+		text:					! showParentheses ? "" : "("
 		font.pixelSize:			filterConstructor.fontPixelSize
 		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
-
-		Rectangle
-		{
-			anchors.top: parent.top
-			anchors.bottom: parent.bottom
-			anchors.margins: 2
-			anchors.horizontalCenter: parent.horizontalCenter
-
-			color: jaspTheme.black
-			width: 2
-
-			visible: funcRoot.isAbs
-		}
-
 	}
 
 
@@ -202,13 +190,13 @@ Item
 		Repeater
 		{
 			id:		dropRepeat
-			model:	funcRoot.parameterNames
+			model:	parameterCount
 			//anchors.fill: parent
 
 			property var rowWidthCalc: function()
 			{
 				var widthOut = 0
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				for(var i=0; i<parameterCount; i++)
 					widthOut += dropRepeat.itemAt(i).width
 				return widthOut
 			}
@@ -216,7 +204,7 @@ Item
 			property var rowHeightCalc: function()
 			{
 				var heightOut = filterConstructor.blockDim
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				for(var i=0; i<parameterCount; i++)
 					heightOut = Math.max(dropRepeat.itemAt(i).height, heightOut)
 
 				return heightOut
@@ -227,7 +215,7 @@ Item
 			{
 				var dropSpot = null
 
-				for(var i=funcRoot.parameterNames.length-1; i>=0; i--)
+				for(var i=parameterCount-1; i>=0; i--)
 				{
 					var prevDropSpot = dropSpot
 					dropSpot = dropRepeat.itemAt(i).getDropSpot()
@@ -250,7 +238,7 @@ Item
 			{
 				var dropSpot = null
 
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				for(var i=0; i<parameterCount; i++)
 				{
 					var prevDropSpot = dropSpot
 					dropSpot = dropRepeat.itemAt(i).getDropSpot()
@@ -273,21 +261,21 @@ Item
 
 			function convertToJSON()
 			{
-				var jsonObj = { "nodeType":"Function", "functionName": functionName, "arguments":[] }
+				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "parameterCount": parameterCount }
 
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				for(var i=0; i<parameterCount; i++)
 				{
 					var dropSpot = dropRepeat.itemAt(i).getDropSpot()
 					var argJson = dropSpot.containsItem === null ? null : dropSpot.containsItem.convertToJSON()
-					jsonObj.arguments.push({ "name": funcRoot.parameterNames[i], "dropKeys": funcRoot.parameterDropKeys[i], "argument": argJson})
+					jsonObj.arguments.push({ "name": i, "argument": argJson})
 				}
 				return jsonObj
 			}
 
 			function getParameterDropSpot(param)
 			{
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
-					if(funcRoot.parameterNames[i] === param)
+				for(var i=0; i<parameterCount; i++)
+					if(i == param)
 						return dropRepeat.itemAt(i).getDropSpot()
 
 				return null
@@ -300,7 +288,16 @@ Item
 				dropRow.height	= Qt.binding(rowHeightCalc)
 			}
 
-			onItemAdded:	rebindSize()
+			onItemAdded:
+			{
+				rebindSize()
+
+
+				for(var i=0; i<funcRoot.parameterCount; i++)
+					if(funcRoot.droppedItems.length > i)
+						dropRepeat.itemAt(i).getDropSpot().containsItem = funcRoot.droppedItems[i]
+
+			}
 			onItemRemoved:	rebindSize()
 
 			Item
@@ -334,17 +331,38 @@ Item
 
 					acceptsDrops: funcRoot.acceptsDrops
 
-					defaultText: funcRoot.parameterNames[index]
-					dropKeys: funcRoot.parameterDropKeys[index]
+					defaultText: "..."
+					dropKeys: ["number"]
 
-					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.drawMeanSpecial
-					shouldShowX: funcRoot.parameterNames <= 1
+					droppedShouldBeNested: parameterCount === 1 && !funcRoot.drawMeanSpecial
+					shouldShowX: false
+
+					onContainsItemChanged:
+					{
+						//First make the list of what is there now:
+						var itsFull = true;
+						funcRoot.droppedItems = []
+
+						for(var i=0; i<parameterCount; i++)
+							if(dropRepeat.itemAt(i).getDropSpot().containsItem != null)
+								funcRoot.droppedItems.push(dropRepeat.itemAt(i).getDropSpot().containsItem)
+							else
+								itsFull = false;
+
+						if(itsFull) //Then apparently this one just got filled?
+						{
+							for(var i=0; i<funcRoot.parameterCount; i++)
+								dropRepeat.itemAt(i).getDropSpot().containsItem = null;
+
+							funcRoot.parameterCount++; //Is this enough to trigger the creation of new dropSpots?
+						}
+					}
 				}
 
 				Text
 				{
 					id:					comma
-					text:				index < funcRoot.parameterNames.length - 1 ? ", " : ""
+					text:				index < parameterCount - 1 ? ", " : ""
 
 					font.pixelSize:		filterConstructor.fontPixelSize
 					font.family:		jaspTheme.font.family
@@ -369,22 +387,10 @@ Item
 		horizontalAlignment:	Text.AlignHCenter
 
 		width:					 showParentheses ? filterConstructor.blockDim / 3 : 0
-		text:					!showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
+		text:					!showParentheses ? "" : ")"
 		font.pixelSize:			filterConstructor.fontPixelSize
 		font.family:			jaspTheme.font.family
 		color:					jaspTheme.textEnabled
 
-		Rectangle
-		{
-			anchors.top: parent.top
-			anchors.bottom: parent.bottom
-			anchors.margins: 2
-			anchors.horizontalCenter: parent.horizontalCenter
-
-			color: jaspTheme.black
-			width: 2
-
-			visible: funcRoot.isAbs
-		}
 	}
 }
