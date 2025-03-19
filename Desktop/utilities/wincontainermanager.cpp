@@ -45,6 +45,47 @@ bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE typ
 	return status == ERROR_SUCCESS;
 }
 
+bool grantAccessToExeDir() {
+
+	auto grantStandardRead = [](std::wstring path, std::wstring group) {
+	PACL oldAcl, newAcl = nullptr;
+	DWORD status;
+	EXPLICIT_ACCESS access;
+	do {
+			access.grfAccessMode = GRANT_ACCESS;
+			access.grfAccessPermissions = STANDARD_RIGHTS_READ;
+			access.grfInheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+			access.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+			access.Trustee.pMultipleTrustee = nullptr;
+			access.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
+			access.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+			access.Trustee.ptstrName = group.data();
+
+			status = GetNamedSecurityInfo(path.c_str(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr, nullptr, &oldAcl, nullptr, nullptr);
+			if (status != ERROR_SUCCESS)
+				return false;
+
+			status = SetEntriesInAcl(1, &access, oldAcl, &newAcl);
+			if (status != ERROR_SUCCESS)
+				return false;
+
+			status = SetNamedSecurityInfo(path.data(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr, nullptr, newAcl, nullptr);
+			if (status != ERROR_SUCCESS)
+				break;
+		} while (false);
+
+		if (newAcl)
+			::LocalFree(newAcl);
+
+		return status == ERROR_SUCCESS;
+	};
+
+	std::wstring exedir = AppDirs::programDir().absolutePath().toStdWString();
+	bool res = grantStandardRead(exedir, L"ALL APPLICATION PACKAGES");
+	res &= grantStandardRead(exedir, L"ALL RESTRICTED APP PACKAGES");
+	return res;
+}
+
 bool checkIfAccessible(STARTUPINFOEX si, const std::vector<std::string>& paths)
 {
 	QDir programDir					= AppDirs::programDir();
@@ -99,7 +140,6 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 		throw std::runtime_error("Failure setting appcontainer attr list");
 
 
-
 	//handle the file permissions of the container
 	const std::vector<std::string> _fullAccessList = {
 		Dirs::tempDir(),
@@ -112,22 +152,10 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
 	}
 
-
-	//We have to exclude all Qt dlls because the QtWebengine is crazy... :(
-	std::vector<std::string> _readExecuteList = {};
-	auto exedir = AppDirs::programDir();
-	auto entries = exedir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-	AllowNamedObjectAccess(appContainerSid, toWString(exedir.absolutePath().toStdString()).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS, NO_INHERITANCE);
-
-	for(auto& entry : entries) {
-		if(!entry.contains("Qt", Qt::CaseInsensitive))
-			_readExecuteList.push_back(exedir.absoluteFilePath(entry).toStdString());
+	//give access to exedir if needed
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()})) {
+		grantAccessToExeDir();
 	}
-
-	//if(!checkIfAccessible(si, _readExecuteList)) {
-		for(auto& file : _readExecuteList) {
-			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
-	}	
 
 	//set the startup info for the engine
 	engineProcess->setCreateProcessArgumentsModifier([si] (QProcess::CreateProcessArguments *args)
