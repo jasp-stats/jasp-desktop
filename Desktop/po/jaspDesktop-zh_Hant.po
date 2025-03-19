@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-19 17:26+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.11-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -5319,39 +5325,39 @@ msgstr "設定頂部分析功能列的高度尺寸。"
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "快按兩下可編輯此名稱"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "選擇介面語言"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
-msgstr ""
+msgstr "以其他語言或區域的格式顯示數字"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "使用下面指定的區域設置來顯示數字格式和貨幣。"
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "替代語言"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "替代區域"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "欄說明： "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "點擊圖示可更改變數類型"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "欄說明： "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
