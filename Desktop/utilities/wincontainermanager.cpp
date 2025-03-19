@@ -121,7 +121,7 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 	for(auto& entry : entries) {
 		if(!entry.contains("Qt", Qt::CaseInsensitive))
-			_readExecuteList.push_back((exedir.absolutePath() + entry).toStdString());
+			_readExecuteList.push_back(exedir.absoluteFilePath(entry).toStdString());
 	}
 
 	//if(!checkIfAccessible(si, _readExecuteList)) {
