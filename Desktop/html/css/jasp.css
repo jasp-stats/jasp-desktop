@@ -114,8 +114,8 @@ td.symbol {
 
 /* Customed superscripts and subscripts to maintain consistent vertical alignment and line height */
 td sub, td sup {
-	font-size: 75%;
-	line-height: 0;
+	font-size: 70%;
+	line-height: 1em;
 	position: relative;
 	vertical-align: baseline;
 }
@@ -131,6 +131,8 @@ td sub {
 td {
 	text-align: right ;
 	vertical-align: middle ;
+	padding-top: .1em;
+	padding-bottom: .1em;
 }
 
 thead tr:nth-child(2) th:not(.separator) {
