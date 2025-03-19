@@ -109,6 +109,15 @@ QString AppDirs::documents()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 }
 
+QString AppDirs::sandboxedDocuments()
+{
+	const QString name = "JASP_Sandbox";
+	QDir res(AppDirs::documents());
+	res.mkdir(name);
+	res.cd(name);
+	return res.absolutePath();
+}
+
 QString AppDirs::logDir()	
 {
 	QString path = appData();

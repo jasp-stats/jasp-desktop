@@ -11,7 +11,6 @@ std::wstring toWString(const std::string& in) {
 	return std::wstring(in.begin(), in.end());
 }
 
-
 bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE type, ACCESS_MASK accessMask, DWORD inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) {
 	PACL oldAcl, newAcl = nullptr;
 	DWORD status;
@@ -144,7 +143,8 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 	const std::vector<std::string> _fullAccessList = {
 		Dirs::tempDir(),
 		AppDirs::appData(false).toStdString(), //entire appdata dir, might want to give more fine grained access when R pkgs are installed here
-		AppDirs::appData().toStdString() //logdir
+		AppDirs::appData().toStdString(), //logdir
+		AppDirs::sandboxedDocuments().toStdString()
 	};
 
 	if(!checkIfAccessible(si, _fullAccessList)) {

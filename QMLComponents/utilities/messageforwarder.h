@@ -50,19 +50,24 @@ public:
 public slots:
 	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }
 	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
-	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter, bool multiple = false)											{ return browseOpenFile(caption, browsePath, filter, multiple); }
-	QString			browseOpenFileDocumentsQML(QString caption, QString filter, bool multiple = false)														{ return browseOpenFileDocuments(caption, filter, multiple); }
+	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter, bool multiple = false)					{ return constrainToSandboxResult(browseOpenFile(caption, constrainToSandboxStartDir(browsePath), filter, multiple)); }
+	QString			browseOpenFileDocumentsQML(QString caption, QString filter, bool multiple = false)								{ return constrainToSandboxResult(browseOpenFileDocuments(caption, filter, multiple)); }
 
-	QString			browseSaveFileQML(QString caption, QString browsePath, QString filter)																	{ return browseSaveFile(caption, browsePath, filter); }
-	QString			browseSaveFileDocumentsQML(QString caption, QString filter)																				{ return browseSaveFileDocuments(caption, filter); }
-	QString			browseOpenFolderQML(QString caption, QString browsePath)																				{ return browseOpenFolder(caption, browsePath);}
-	QString			browseOpenFolderQML(QString caption)																									{ return browseOpenFolder(caption);}
+	QString			browseSaveFileQML(QString caption, QString browsePath, QString filter)											{ return constrainToSandboxResult(browseSaveFile(caption, constrainToSandboxStartDir(browsePath), filter), true, true); }
+	QString			browseSaveFileDocumentsQML(QString caption, QString filter)														{ return constrainToSandboxResult(browseSaveFileDocuments(caption, filter), true, true); }
+	QString			browseOpenFolderQML(QString caption, QString browsePath)														{ return constrainToSandboxResult(browseOpenFolder(caption, constrainToSandboxStartDir(browsePath)), false);}
+	QString			browseOpenFolderQML(QString caption)																			{ return constrainToSandboxResult(browseOpenFolder(caption), false);}
 
 	void			log(QString msg);
 
 private:
-	static		bool					useNativeFileDialogs();
+	static		bool				useNativeFileDialogs();
+	static		bool				engineSandbox();
 	static		MessageForwarder	* _singleton;
+
+	//these functions constrain the in/out folder/file to the sandbox
+	static		QString				constrainToSandboxResult(const QString& selectedPath, bool file = true, bool save = false);
+	static		QString				constrainToSandboxStartDir(const QString& initialPath);
 };
 
 #endif // MESSAGEFORWARDER_H
