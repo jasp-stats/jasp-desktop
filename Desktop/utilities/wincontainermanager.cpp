@@ -53,7 +53,7 @@ bool grantAccessToExeDir() {
 	EXPLICIT_ACCESS access;
 	do {
 			access.grfAccessMode = GRANT_ACCESS;
-			access.grfAccessPermissions = STANDARD_RIGHTS_READ;
+			access.grfAccessPermissions = GENERIC_EXECUTE | GENERIC_READ;
 			access.grfInheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
 			access.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
 			access.Trustee.pMultipleTrustee = nullptr;
