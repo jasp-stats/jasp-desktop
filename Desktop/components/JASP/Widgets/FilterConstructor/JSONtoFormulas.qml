@@ -44,6 +44,15 @@ Item
 			for(var i=0; i<jsonObj.arguments.length; i++)
 				convertJSONtoItem(jsonObj.arguments[i].argument, funcObj.getParameterDropSpot(jsonObj.arguments[i].name))
 		}
+		else if(jsonObj.nodeType === "RowFunction")
+		{
+		
+			var funcObj = createRowFunction(jsonObj.functionName, atoolTip)
+			funcObj.releaseHere(dropItHere)
+
+			for(var i=0; i<jsonObj.arguments.length; i++)
+				convertJSONtoItem(jsonObj.arguments[i].argument, funcObj.getParameterDropSpot(jsonObj.arguments[i].name))
+		}
 		else if(jsonObj.nodeType === "Number")
 				createNumber(jsonObj.value, toolTip).releaseHere(dropItHere)
 		else if(jsonObj.nodeType === "String")
@@ -56,6 +65,7 @@ Item
 	function createOperatorVertical(operator, toolTip)			{ return operatorvertComp.createObject(scriptColumn,	{ "toolTipText": toolTip, "operator": operator } ) }
 	function createFunction(functionName, parameterNames,
 							parameterDropKeys, toolTip)			{ return functionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"parameterNames": parameterNames, "parameterDropKeys": parameterDropKeys } ) }
+	function createRowFunction(functionName,parameters,toolTip)	{ return rowFunctionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"droppedItems": parameters } ) }
 	function createNumber(number, toolTip)						{ return numberComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": number } ) }
 	function createString(text, toolTip)						{ return stringComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "text": text } ) }
 	function createColumn(columnName, columnTypeUser, toolTip)	{ return columnComp.createObject(scriptColumn,			{ "columnName": columnName,	"columnTypeUser": columnTypeUser } ) }
@@ -64,6 +74,7 @@ Item
 	Component { id: operatorComp;		OperatorDrag			{ } }
 	Component { id: operatorvertComp;	OperatorVerticalDrag	{ } }
 	Component { id: functionComp;		FunctionDrag			{ } }
+	Component { id: rowFunctionComp;	RowFunctionDrag			{ } }
 	Component { id: numberComp;			NumberDrag				{ } }
 	Component { id: stringComp;			StringDrag				{ } }
 	Component {	id: columnComp;			ColumnDrag				{ } }

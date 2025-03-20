@@ -21,12 +21,14 @@ DropArea {
 	property bool	droppedShouldBeNested: false
 	property bool	shouldShowX: false
 	property bool	iWasChecked: false
+	property bool	ignoreEmpty: false
 
 	implicitWidth:	Math.max(dropText.contentWidth, acceptsDrops ? filterConstructor.blockDim * 5 : 0)
 	implicitHeight: filterConstructor.blockDim
 
 	property bool	beingDragHovered: false
 	property color	dragHoverColor: jaspTheme.blue
+	
 
 	Rectangle
 	{
@@ -193,8 +195,8 @@ DropArea {
 					createString(text)
 			}
 
-			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value,  "canBeDragged": true, "acceptsDrops": true } ) ) }
-			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text":  string, "canBeDragged": true, "acceptsDrops": true } ) ) }
+			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value } ) ) }
+			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text":  string } ) ) }
 
 
 			function setCreatedObjectUp(obj)
@@ -212,7 +214,7 @@ DropArea {
 		{
 			id: errorMarker
 			z: -2
-			visible: (dragTarget.iWasChecked && dragTarget.containsItem === null)
+			visible: (dragTarget.iWasChecked && (dragTarget.containsItem === null && !ignoreEmpty))
 			radius: width
 			anchors.fill: parent
 			color: "#BB0000"

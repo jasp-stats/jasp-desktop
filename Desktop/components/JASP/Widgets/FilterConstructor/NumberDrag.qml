@@ -7,6 +7,7 @@ DragGeneric {
 	shownChild: showMe
 	property string __debugName: "NumberDrag"
 
+	
 	Number
 	{
 		id: showMe

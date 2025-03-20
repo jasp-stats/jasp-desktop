@@ -1,5 +1,5 @@
+import JASP
 import QtQuick
-
 
 Item
 {
@@ -12,9 +12,8 @@ Item
 	property string friendlyFunctionName: functionName.endsWith("NaRm") ? functionName.substring(0, functionName.length-4) : functionName //By default exactly the same unless we need to add some fancy unicode
 	property bool acceptsDrops: true
 
-	property int parameterCount: 1
-	property list<Item> droppedItems: []
-
+	property int parameterCount: droppedItems.length
+	property alias droppedItems: dropRepeat.dropped
 
 
 	property variant functionNameToBaseFunc: {
@@ -66,10 +65,11 @@ Item
 
 	function returnR()
 	{
-		var compounded = functionName + "("
+		var compounded = functionName + "NaRm("
 
 		for(var i=0; i<parameterCount; i++)
-				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAtIndex(i) === null ? "null" : dropRepeat.itemAtIndex(i).returnR())
+				if(dropRepeat.itemAt(i) !== null && dropRepeat.dropped[i] != "null"  && dropRepeat.dropped[i] != "") 
+					compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i).returnR())
 
 		compounded += ")"
 
@@ -180,41 +180,26 @@ Item
 
 		x: haakjesLinks.width + haakjesLinks.x
 
-		width:	dropRepeat.implicitWidth
-		height: dropRepeat.implicitHeight
-
+	
 		property real implicitWidthDrops: parent.acceptsDrops ? funcRoot.initialWidth / 4 : 0
+		
+		JSONtoFormulas
+		{
+			id:			jsonConverterRow
+			objectName: "jsonConverterRow"
+			
+			visible: false
+		}
 
-
-
-		ListView
+		Repeater
 		{
 			id:				dropRepeat
-			model:			funcRoot.parameterCount
-			reuseItems:		false
-			cacheBuffer:	400
+			model:			parameterCount
 			//anchors.fill: parent
+					
+			property list<string> dropped: ["null"]
 			
-			width:			contentWidth
-			height:			contentHeight
-			orientation:	Qt.Horizontal
 
-			property var rowWidthCalc: function()
-			{
-				var widthOut = 0
-				for(var i=0; i<parameterCount; i++)
-					widthOut += dropRepeat.itemAtIndex(i).width
-				return widthOut
-			}
-
-			property var rowHeightCalc: function()
-			{
-				var heightOut = filterConstructor.blockDim
-				for(var i=0; i<parameterCount; i++)
-					heightOut = Math.max(dropRepeat.itemAtIndex(i).height, heightOut)
-
-				return heightOut
-			}
 
 			///This also goes down the tree
 			property var rightMostEmptyDropSpot: function()
@@ -224,7 +209,7 @@ Item
 				for(var i=parameterCount-1; i>=0; i--)
 				{
 					var prevDropSpot = dropSpot
-					dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
+					dropSpot = dropRepeat.itemAt(i).getDropSpot()
 
 					if(dropSpot.containsItem !== null)
 					{
@@ -247,7 +232,7 @@ Item
 				for(var i=0; i<parameterCount; i++)
 				{
 					var prevDropSpot = dropSpot
-					dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
+					dropSpot = dropRepeat.itemAt(i).getDropSpot()
 
 					if(dropSpot.containsItem === null)
 						return prevDropSpot //its ok if it is null. we just cant find anything here
@@ -259,7 +244,7 @@ Item
 			{
 				var thereIsOne = false
 				for(var i=0; i<dropRepeat.count; i++)
-					if(dropRepeat.itemAtIndex(i).checkCompletenessFormulas())
+					if(dropRepeat.itemAt(i).checkCompletenessFormulas(true))
 						thereIsOne = true
 
 				return thereIsOne
@@ -267,12 +252,12 @@ Item
 
 			function convertToJSON()
 			{
-				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "parameterCount": parameterCount }
+				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "droppedItems": parameters }
 
 				for(var i=0; i<parameterCount; i++)
 				{
-					var dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
-					
+					var dropSpot = dropRepeat.itemAt(i).getDropSpot()
+
 					if(dropSpot.containsItem !== null)
 						jsonObj.arguments.push({ "name": i, "argument": dropSpot.containsItem.convertToJSON()})
 				}
@@ -283,13 +268,40 @@ Item
 			{
 				for(var i=0; i<parameterCount; i++)
 					if(i == param)
-						return dropRepeat.itemAtIndex(i).getDropSpot()
+						return dropRepeat.itemAt(i).getDropSpot()
 
 				return null
 
 			}
+			
+			onItemAdded:
+			{
+				//rebindSize()
+				messages.log("dropRepeat.dropped is: ")
+				for(var i=0; i<parameterCount; i++)
+				{
+					messages.log(dropRepeat.dropped[i])
+					if(dropRepeat.itemAt(i) != null)
+					{
+						var dropSpot = dropRepeat.itemAt(i).getDropSpot()
+						if(dropSpot.containsItem == null && dropRepeat.dropped[i] != "" && dropRepeat.dropped[i] != "null")
+						{
+							messages.log("Converting onItemAdded stored json to item: " + dropRepeat.dropped[i] + " to fill " + dropSpot.containsItem)
+							var jsonObjHere = JSON.parse(dropRepeat.dropped[i])
+							jsonConverterRow.convertJSONtoItem(jsonObjHere, dropSpot) 	
+						}
+					}
+				}
+			
+			
+			}
+			//onItemRemoved:  rebindSize()
+			
+		
+			
 
-			delegate:	Item
+
+			Item
 			{
 				implicitWidth:		spot.width + comma.width
 				implicitHeight:		spot.height
@@ -301,7 +313,7 @@ Item
 					if(spot.containsItem != null)
 						return spot.containsItem.returnR();
 					else
-						return "null"
+						return ""
 				}
 
 				function getDropSpot() { return spot }
@@ -310,7 +322,18 @@ Item
 				{
 					return spot.checkCompletenessFormulas()
 				}
-
+				
+				Component.onCompleted: 
+				{
+	
+					if(spot.containsItem == null && dropRepeat.dropped[index] != "" && dropRepeat.dropped[index] != "null")
+					{
+						messages.log("Converting onCompleted stored json to item: " + dropRepeat.dropped[index] + " to fill " + spot.containsItem)
+						var jsonObjHere = JSON.parse(dropRepeat.dropped[index])
+						jsonConverterRow.convertJSONtoItem(jsonObjHere, spot) 	
+					}
+				}
+				
 
 
 				DropSpot 
@@ -323,27 +346,45 @@ Item
 					dropKeys:			["number"]
 
 					droppedShouldBeNested: funcRoot.parameterCount === 1 && !funcRoot.drawMeanSpecial
-					shouldShowX: false
-
-					onContainsItemChanged:
+					shouldShowX:		false
+					ignoreEmpty:		true
+					
+					onSomethingDropped:
 					{
-						//First make the list of what is there now:
-						var itsFull = true;
-						funcRoot.droppedItems = []
-
-						for(var i=0; i<parameterCount; i++)
-							if(dropRepeat.itemAtIndex(i).getDropSpot().containsItem != null)
-								funcRoot.droppedItems.push(dropRepeat.itemAtIndex(i).getDropSpot().containsItem)
-							else
-								itsFull = false;
-
-						if(itsFull) //Then apparently this one just got filled?
+						if(spot.containsItem != null)
 						{
-							for(var i=0; i<funcRoot.parameterCount; i++)
-								dropRepeat.itemAtIndex(i).getDropSpot().containsItem = null;
+							print("containsItem="+(spot.containsItem))
+							//First make the list of what is there now:
+							var itsFull = true;
+							
+							var jsonStr = JSON.stringify(spot.containsItem.convertToJSON())
+							
+							messages.log("Converted dropped thing to: " + dropRepeat.dropped[index] + " inserting at index " + index)
+							
+							if(dropRepeat.dropped[index] == jsonStr)
+							{
+								messages.log("Already there ")
+							}
+							else
+							{
+								messages.log("Before insert dropped is: ")
+								for(var i=0; i<parameterCount; i++)
+									messages.log(dropRepeat.dropped[i])
+								
+								dropRepeat.dropped[index] = jsonStr
+							}
+	
+							for(var i=0; i<parameterCount; i++)
+								if(dropRepeat.dropped[i] == "null")
+									itsFull = false;
 
-							funcRoot.parameterCount++; //Is this enough to trigger the creation of new dropSpots?
+							if(itsFull) //Then apparently this one just got filled?
+							{
+								dropRepeat.dropped.push("null")
+							}
 						}
+						else
+							dropRepeat.dropped[index] = "null"
 					}
 				}
 

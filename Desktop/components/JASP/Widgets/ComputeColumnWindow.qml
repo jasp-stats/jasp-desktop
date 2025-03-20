@@ -185,6 +185,15 @@ FocusScope
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: qsTr("rounds y to n decimals") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: qsTr("returns number of elements in y") }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("median") }
+					
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowMean";		toolTip: qsTr("Rowwise mean") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowSum";			toolTip: qsTr("Rowwise sum") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowSD";			toolTip: qsTr("Rowwise standard deviation") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowVariance";	toolTip: qsTr("Rowwise variance") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowMedian";		toolTip: qsTr("Rowwise median") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowMin";			toolTip: qsTr("Rowwise minimum") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";	functionName: "rowMax";			toolTip: qsTr("Rowwise maximum") }
+					
 
 					ListElement	{ type: "separator" }
 					ListElement	{ type: "function";	friendlyFunctionName:	"";						functionName: "log";			functionParameters: "y";				functionParamTypes: "number";						toolTip: qsTr("natural logarithm") }

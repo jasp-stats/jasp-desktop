@@ -28,7 +28,7 @@
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <QAction>
 #include <QMenuBar>
-
+#include <exception>
 #include <iostream>
 
 #include "log.h"
@@ -653,6 +653,8 @@ void MainWindow::loadQML()
 	Log::log() << "Loading CommunityWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
 	Log::log() << "Loading MainWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
+	if(!DataSetView::mainDataViewer())
+		throw std::runtime_error("The main data viewer did not load, without which JASP cannot run.");
 	
 	//To make sure we connect to the "main datasetview":
 	connect(_preferences, &PreferencesModel::uiScaleChanged,			DataSetView::mainDataViewer(),	&DataSetView::viewportChangedDelayed);

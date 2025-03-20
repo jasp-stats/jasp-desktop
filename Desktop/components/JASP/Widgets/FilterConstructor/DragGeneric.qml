@@ -224,7 +224,6 @@ MouseArea
 
 			shouldShowHoverOutline = false
 			this.removeAncestorsHoverOutlines()
-
 		}
 
 		scriptColumn.focus = true

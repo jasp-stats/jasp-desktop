@@ -122,26 +122,33 @@ FocusScope
 				functionModel: ListModel
 				{
 
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "abs";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("absolute value") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sd";				functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("standard deviation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "var";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("variance") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sum";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("summation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "prod";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "zScores";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("Standardizes the variable") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Abs");					*/ functionName: "abs";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("absolute value") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Standard deviation");	*/ 	functionName: "sd";				functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("standard deviation") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Variance");			*/ 	functionName: "var";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("variance") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Sum");					*/ functionName: "sum";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("summation") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Product");				*/ functionName: "prod";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("ZScores");				*/ functionName: "zScores";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("Standardizes the variable") }
 
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";			functionName: "rowMean";		toolTip: qsTr("rowwise mean") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	"";			functionName: "rowSum";			toolTip: qsTr("rowwise sum") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise mean") ;				*/	functionName: "rowMean";		toolTip: qsTr("Rowwise mean") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise sum") ;				*/	functionName: "rowSum";			toolTip: qsTr("Rowwise sum") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise standard deviation");	*/	functionName: "rowSD";			toolTip: qsTr("Rowwise standard deviation") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise variance") ;			*/	functionName: "rowVariance";	toolTip: qsTr("Rowwise variance") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise median") ;				*/	functionName: "rowMedian";		toolTip: qsTr("Rowwise median") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise minimum") ;			*/	functionName: "rowMin";			toolTip: qsTr("Rowwise minimum") }
+					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise maximum") ;			*/	functionName: "rowMax";			toolTip: qsTr("Rowwise maximum") }
+					
+					
 
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "min";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("returns minimum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "max";			functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns maximum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "mean";			functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("mean") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "sign";			functionParameters: "values";			functionParamTypes: "number";									toolTip: qsTr("returns the sign of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "round";			functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: qsTr("rounds y to n decimals") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "length";			functionParameters: "y";				functionParamTypes: "string:number";									toolTip: qsTr("returns number of elements in y") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "median";			functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "ifelse";			functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "hasSubstring";	functionParameters: "string,substring";	functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
-					ListElement	{ type: "function";	friendlyFunctionName:	"";				functionName: "is.na";			functionParameters: "y";				functionParamTypes: "string:number:boolean";									toolTip: qsTr("Combine with not-operator to filter out rows with missing values (NA) for a column.") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Min");			*/	functionName: "min";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("returns minimum of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Max");			*/	functionName: "max";			functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns maximum of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Mean");			*/	functionName: "mean";			functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("mean") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Sign");			*/	functionName: "sign";			functionParameters: "values";			functionParamTypes: "number";									toolTip: qsTr("returns the sign of values") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Round");		*/		functionName: "round";			functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: qsTr("rounds y to n decimals") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Length");		*/		functionName: "length";			functionParameters: "y";				functionParamTypes: "string:number";									toolTip: qsTr("returns number of elements in y") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Median");		*/		functionName: "median";			functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("IfElse");		*/		functionName: "ifelse";			functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("HasSubstring");	*/	functionName: "hasSubstring";	functionParameters: "string,substring";	functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
+					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Is.NA");		*/		functionName: "is.na";			functionParameters: "y";				functionParamTypes: "string:number:boolean";									toolTip: qsTr("Combine with not-operator to filter out rows with missing values (NA) for a column.") }
 				}
 
 				function askIfChanged(closeFunc)
