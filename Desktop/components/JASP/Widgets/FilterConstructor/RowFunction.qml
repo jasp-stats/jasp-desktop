@@ -69,7 +69,7 @@ Item
 		var compounded = functionName + "("
 
 		for(var i=0; i<parameterCount; i++)
-				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "null" : dropRepeat.itemAt(i).returnR())
+				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAtIndex(i) === null ? "null" : dropRepeat.itemAtIndex(i).returnR())
 
 		compounded += ")"
 
@@ -180,24 +180,30 @@ Item
 
 		x: haakjesLinks.width + haakjesLinks.x
 
-		width:	0
-		height: 0
+		width:	dropRepeat.implicitWidth
+		height: dropRepeat.implicitHeight
 
 		property real implicitWidthDrops: parent.acceptsDrops ? funcRoot.initialWidth / 4 : 0
 
 
 
-		Repeater
+		ListView
 		{
-			id:		dropRepeat
-			model:	parameterCount
+			id:				dropRepeat
+			model:			funcRoot.parameterCount
+			reuseItems:		false
+			cacheBuffer:	400
 			//anchors.fill: parent
+			
+			width:			contentWidth
+			height:			contentHeight
+			orientation:	Qt.Horizontal
 
 			property var rowWidthCalc: function()
 			{
 				var widthOut = 0
 				for(var i=0; i<parameterCount; i++)
-					widthOut += dropRepeat.itemAt(i).width
+					widthOut += dropRepeat.itemAtIndex(i).width
 				return widthOut
 			}
 
@@ -205,7 +211,7 @@ Item
 			{
 				var heightOut = filterConstructor.blockDim
 				for(var i=0; i<parameterCount; i++)
-					heightOut = Math.max(dropRepeat.itemAt(i).height, heightOut)
+					heightOut = Math.max(dropRepeat.itemAtIndex(i).height, heightOut)
 
 				return heightOut
 			}
@@ -218,7 +224,7 @@ Item
 				for(var i=parameterCount-1; i>=0; i--)
 				{
 					var prevDropSpot = dropSpot
-					dropSpot = dropRepeat.itemAt(i).getDropSpot()
+					dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
 
 					if(dropSpot.containsItem !== null)
 					{
@@ -241,7 +247,7 @@ Item
 				for(var i=0; i<parameterCount; i++)
 				{
 					var prevDropSpot = dropSpot
-					dropSpot = dropRepeat.itemAt(i).getDropSpot()
+					dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
 
 					if(dropSpot.containsItem === null)
 						return prevDropSpot //its ok if it is null. we just cant find anything here
@@ -251,12 +257,12 @@ Item
 
 			function checkCompletenessFormulas()
 			{
-				var allComplete = true
+				var thereIsOne = false
 				for(var i=0; i<dropRepeat.count; i++)
-					if(!dropRepeat.itemAt(i).checkCompletenessFormulas())
-						allComplete = false
+					if(dropRepeat.itemAtIndex(i).checkCompletenessFormulas())
+						thereIsOne = true
 
-				return allComplete
+				return thereIsOne
 			}
 
 			function convertToJSON()
@@ -265,9 +271,10 @@ Item
 
 				for(var i=0; i<parameterCount; i++)
 				{
-					var dropSpot = dropRepeat.itemAt(i).getDropSpot()
-					var argJson = dropSpot.containsItem === null ? null : dropSpot.containsItem.convertToJSON()
-					jsonObj.arguments.push({ "name": i, "argument": argJson})
+					var dropSpot = dropRepeat.itemAtIndex(i).getDropSpot()
+					
+					if(dropSpot.containsItem !== null)
+						jsonObj.arguments.push({ "name": i, "argument": dropSpot.containsItem.convertToJSON()})
 				}
 				return jsonObj
 			}
@@ -276,34 +283,18 @@ Item
 			{
 				for(var i=0; i<parameterCount; i++)
 					if(i == param)
-						return dropRepeat.itemAt(i).getDropSpot()
+						return dropRepeat.itemAtIndex(i).getDropSpot()
 
 				return null
 
 			}
 
-			function rebindSize()
+			delegate:	Item
 			{
-				dropRow.width	= Qt.binding(rowWidthCalc)
-				dropRow.height	= Qt.binding(rowHeightCalc)
-			}
-
-			onItemAdded:
-			{
-				rebindSize()
-
-
-				for(var i=0; i<funcRoot.parameterCount; i++)
-					if(funcRoot.droppedItems.length > i)
-						dropRepeat.itemAt(i).getDropSpot().containsItem = funcRoot.droppedItems[i]
-
-			}
-			onItemRemoved:	rebindSize()
-
-			Item
-			{
-				width: spot.width + comma.width
-				height: spot.height
+				implicitWidth:		spot.width + comma.width
+				implicitHeight:		spot.height
+				width:				implicitWidth
+				height:				implicitHeight
 
 				function returnR()
 				{
@@ -322,19 +313,16 @@ Item
 
 
 
-				DropSpot {
-					id: spot
+				DropSpot 
+				{
+					id:					spot
 
-					height: implicitHeight
-					implicitWidth: originalWidth
-					implicitHeight: filterConstructor.blockDim
+					acceptsDrops:		funcRoot.acceptsDrops
 
-					acceptsDrops: funcRoot.acceptsDrops
+					defaultText:		"..."
+					dropKeys:			["number"]
 
-					defaultText: "..."
-					dropKeys: ["number"]
-
-					droppedShouldBeNested: parameterCount === 1 && !funcRoot.drawMeanSpecial
+					droppedShouldBeNested: funcRoot.parameterCount === 1 && !funcRoot.drawMeanSpecial
 					shouldShowX: false
 
 					onContainsItemChanged:
@@ -344,15 +332,15 @@ Item
 						funcRoot.droppedItems = []
 
 						for(var i=0; i<parameterCount; i++)
-							if(dropRepeat.itemAt(i).getDropSpot().containsItem != null)
-								funcRoot.droppedItems.push(dropRepeat.itemAt(i).getDropSpot().containsItem)
+							if(dropRepeat.itemAtIndex(i).getDropSpot().containsItem != null)
+								funcRoot.droppedItems.push(dropRepeat.itemAtIndex(i).getDropSpot().containsItem)
 							else
 								itsFull = false;
 
 						if(itsFull) //Then apparently this one just got filled?
 						{
 							for(var i=0; i<funcRoot.parameterCount; i++)
-								dropRepeat.itemAt(i).getDropSpot().containsItem = null;
+								dropRepeat.itemAtIndex(i).getDropSpot().containsItem = null;
 
 							funcRoot.parameterCount++; //Is this enough to trigger the creation of new dropSpots?
 						}
