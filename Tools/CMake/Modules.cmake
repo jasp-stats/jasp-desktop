@@ -43,7 +43,7 @@ set(JASP_EXTRA_MODULES
 		"jaspCochrane"
 		"jaspDistributions"
 		"jaspEquivalenceTTests"
-		"jaspesci"
+		"jaspEsci"
 		"jaspJags"
 		"jaspLearnBayes"
 		"jaspLearnStats"
