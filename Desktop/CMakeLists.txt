@@ -31,6 +31,7 @@ message(STATUS "preferencesmodel.cpp is successfully generated...")
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 
@@ -71,6 +72,13 @@ add_custom_command(
   COMMENT "------ Updating the Resources")
 
 add_dependencies(JASP JASPEngine)
+
+if(WINDOWS)
+  # this little program checks for file permissions
+  message(STATUS "We will build the windows app container permission checker")
+  add_executable(ContainerFilePermissionChecker "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
+  add_dependencies(JASP ContainerFilePermissionChecker)
+endif()
 
 if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)

@@ -407,9 +407,22 @@ ScrollView
 				defaultValue:		Math.max(preferencesModel.maxEnginesAdmin, 4)
 				stepSize:			1
 
-				KeyNavigation.tab:	showEnginesWindow
+				KeyNavigation.tab:	engineSandbox
 				activeFocusOnTab:			true
 				text:				qsTr("Maximum number of engines: ")
+			}
+
+			CheckBox
+			{
+				id:					engineSandbox
+				visible:			Qt.platform.os === "windows" && preferencesModel.developerMode
+				enabled:			Qt.platform.os === "windows" && preferencesModel.developerMode
+				label:				qsTr("Sandbox engines")
+				checked:			preferencesModel.engineSandbox
+				onCheckedChanged:	preferencesModel.engineSandbox = checked
+				toolTip:			qsTr("Strengthen security on Windows by isolating Engines running R-code")
+
+				KeyNavigation.tab:		showEnginesWindow
 			}
 
 			RoundedButton

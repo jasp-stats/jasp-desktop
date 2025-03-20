@@ -41,8 +41,10 @@ public:
 	static QString userModulesDir();
 	static QString bundledModulesDir();
 	static QString documents();
+ 	static QString sandboxedDocuments();
 	static QString logDir();
 	static QString appData(bool roaming = true);
+	static QString RtmpDir();
 	static QString rHome();
 	static QDir    programDir();
 	static QString renvRootLocation();

@@ -276,7 +276,7 @@ if(WIN32)
   # include(InstallRequiredSystemLibraries)
   # install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 
-  install(TARGETS JASP JASPEngine RUNTIME DESTINATION .)
+  install(TARGETS JASP JASPEngine ContainerFilePermissionChecker RUNTIME DESTINATION .)
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")

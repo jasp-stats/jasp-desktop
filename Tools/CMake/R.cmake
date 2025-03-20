@@ -669,6 +669,13 @@ elseif(WIN32)
       ${HASH_INDEX}
       R_PACKAGE_HASH)
 
+      # Remove this before merging
+      set(R_VERSION_NAME "R-4.4.3-win-containerable")
+      set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
+      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+      set(R_PACKAGE_HASH "D322E263E8EA55BDBD161B0EE57C76994DBE70DA")
+      ######
+
     fetchcontent_declare(
       r_win_exe
       URL ${R_DOWNLOAD_URL}

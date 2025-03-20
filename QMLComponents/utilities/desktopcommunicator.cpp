@@ -25,4 +25,13 @@ bool DesktopCommunicator::useNativeFileDialog()
 #endif
 }
 
+bool DesktopCommunicator::engineSandbox()
+{
+#ifdef BUILDING_JASP
+	return emit engineSandboxSignal();
+#else
+	return false;
+#endif
+}
+
 DesktopCommunicator * DesktopCommunicator::_singleton = nullptr;

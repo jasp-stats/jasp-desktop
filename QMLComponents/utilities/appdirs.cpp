@@ -109,6 +109,15 @@ QString AppDirs::documents()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 }
 
+QString AppDirs::sandboxedDocuments()
+{
+	const QString name = "JASP_Sandbox";
+	QDir res(AppDirs::documents());
+	res.mkdir(name);
+	res.cd(name);
+	return res.absolutePath();
+}
+
 QString AppDirs::logDir()	
 {
 	QString path = appData();
@@ -128,6 +137,16 @@ QString AppDirs::appData(bool roaming)
 		return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 	else
 		return processPath(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+}
+
+QString AppDirs::RtmpDir() {
+	QString tmp = appData(false) + "/R_TMP_DIR/";
+	QDir tmpDir(tmp);
+
+	if(!tmpDir.exists())
+		tmpDir.mkpath(".");
+	
+	return tmpDir.absolutePath();
 }
 
 /**

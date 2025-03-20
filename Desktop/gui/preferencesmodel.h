@@ -79,6 +79,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
 	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
+	Q_PROPERTY(bool			engineSandbox			READ engineSandbox				WRITE setEngineSandbox				NOTIFY engineSandboxChanged				)
 
 
 public:
@@ -154,13 +155,15 @@ public:
 	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
+	bool			engineSandbox()							const;
+
 	
 	bool checkUpdatesAskUser() const;
 	void setCheckUpdatesAskUser(bool newCheckUpdatesAskUser);
 	
 	bool checkUpdates() const;
 	void setCheckUpdates(bool newCheckUpdates);
-	
+
 public slots:
 	bool useNativeFileDialog()					const;
 	void setUiScale(					double		uiScale);
@@ -226,6 +229,8 @@ public slots:
 	void setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
 	void setDirectLibpathFolder(		QString		libpath);
 	void setDirectDevModName(			QString		 name);
+	void setEngineSandbox(				bool		engineSandbox);
+
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -283,6 +288,7 @@ signals:
 	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
 	void directLibpathFolderChanged();
 	void directDevModNameChanged(		QString name);
+	void engineSandboxChanged(			bool		engineSandbox);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);

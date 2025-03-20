@@ -41,6 +41,8 @@
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>
+#include <cstdlib>
+#include "log.h"
 
 using namespace std;
 
@@ -52,6 +54,20 @@ string Dirs::tempDir()
 
 	if (p != "")
 		return p;
+
+#ifdef _WIN32
+	//lets just read it from the environment if the anwser is found there
+	if(ProcessInfo::inWinContainer()) {
+		Log::log() << "In sandbox win container!" << std::endl;
+		char* buf = nullptr;
+		size_t sz = 0;
+		if(_dupenv_s(&buf, &sz, "JASP_TMP_DIR") == 0 && buf != nullptr) {
+			p = std::string(buf);
+			free(buf);
+			return p;
+		}
+	}
+#endif
 
 	string dir;
 	std::filesystem::path pa;
