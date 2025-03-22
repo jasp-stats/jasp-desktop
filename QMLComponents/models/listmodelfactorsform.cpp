@@ -165,6 +165,7 @@ void ListModelFactorsForm::titleChangedSlot(int row, QString title)
 	_factors[row].title = title;
 
 	emit dataChanged(index(row, 0), index(row,0));
+	emit _factorsForm->factorsTitlesChanged();
 }
 
 void ListModelFactorsForm::resetModelTerms()

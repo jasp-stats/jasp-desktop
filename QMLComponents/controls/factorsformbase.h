@@ -29,13 +29,16 @@ class FactorsFormBase :  public JASPListControl, public BoundControlBase
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY( int		initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
-	Q_PROPERTY( int		countVariables			READ countVariables										NOTIFY countVariablesChanged	)
-	Q_PROPERTY(QString	baseName				READ baseName				WRITE setBaseName			NOTIFY baseNameChanged			)
-	Q_PROPERTY(QString	baseTitle				READ baseTitle				WRITE setBaseTitle			NOTIFY baseTitleChanged			)
-	Q_PROPERTY(int		startIndex				READ startIndex				WRITE setStartIndex			NOTIFY startIndexChanged		)
-	Q_PROPERTY(bool		nested					READ nested					WRITE setNested				NOTIFY nestedChanged			)
-	Q_PROPERTY(bool		allowInteraction		READ allowInteraction		WRITE setAllowInteraction	NOTIFY allowInteractionChanged	)
+	Q_PROPERTY( int			initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
+	Q_PROPERTY( int			countVariables			READ countVariables										NOTIFY countVariablesChanged	)
+	Q_PROPERTY(QString		baseName				READ baseName				WRITE setBaseName			NOTIFY baseNameChanged			)
+	Q_PROPERTY(QString		baseTitle				READ baseTitle				WRITE setBaseTitle			NOTIFY baseTitleChanged			)
+	Q_PROPERTY(int			startIndex				READ startIndex				WRITE setStartIndex			NOTIFY startIndexChanged		)
+	Q_PROPERTY(bool			nested					READ nested					WRITE setNested				NOTIFY nestedChanged			)
+	Q_PROPERTY(bool			allowInteraction		READ allowInteraction		WRITE setAllowInteraction	NOTIFY allowInteractionChanged	)
+	Q_PROPERTY(QStringList	factorsNames			READ factorsNames										NOTIFY factorsNamesChanged		)
+	Q_PROPERTY(QStringList	factorsTitles			READ factorsTitles										NOTIFY factorsTitlesChanged		)
+	Q_PROPERTY(QVariantList	factorsItems			READ factorsItems										NOTIFY factorsItemsChanged		)
 
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
@@ -55,11 +58,14 @@ public:
 	int					initNumberFactors()						const				{ return _initNumberFactors;						}
 	int					countVariables()						const				{ return _initialized ? _factorsModel->countVariables() : 0; }
 	JASPListControl*	availableVariablesList()				const				{ return _availableVariablesListItem;				}
-	QString				baseName()								const				{ return _baseName;		}
-	QString				baseTitle()								const				{ return _baseTitle;	}
-	int					startIndex()							const				{ return _startIndex;	}
-	bool				nested()								const				{ return _nested;		}
-	bool				allowInteraction()						const				{ return _allowInteraction;		}
+	QString				baseName()								const				{ return _baseName;			}
+	QString				baseTitle()								const				{ return _baseTitle;		}
+	int					startIndex()							const				{ return _startIndex;		}
+	bool				nested()								const				{ return _nested;			}
+	bool				allowInteraction()						const				{ return _allowInteraction;	}
+	QStringList			factorsNames()							const;
+	QStringList			factorsTitles()							const;
+	QVariantList		factorsItems()							const;
 
 	GENERIC_SET_FUNCTION(BaseName			, _baseName			, baseNameChanged			, QString		)
 	GENERIC_SET_FUNCTION(BaseTitle			, _baseTitle		, baseTitleChanged			, QString		)
@@ -75,6 +81,9 @@ signals:
 	void startIndexChanged();
 	void nestedChanged();
 	void allowInteractionChanged();
+	void factorsNamesChanged();
+	void factorsTitlesChanged();
+	void factorsItemsChanged();
 
 protected slots:
 	void			termsChangedHandler() override;

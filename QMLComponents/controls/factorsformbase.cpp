@@ -43,6 +43,15 @@ void FactorsFormBase::setUpModel()
 	_availableVariablesListItem = qobject_cast<JASPListControl *>(availableListVariant.value<QObject *>());
 
 	connect(this, &FactorsFormBase::initializedChanged, this, &FactorsFormBase::countVariablesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsNamesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsTitlesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsItemsChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsNamesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsTitlesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsItemsChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsNamesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsTitlesChanged);
+	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsItemsChanged);
 }
 
 void FactorsFormBase::bindTo(const Json::Value& value)
@@ -194,4 +203,47 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms, Qt::QueuedConnection);
 	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::countVariablesChanged);
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::ensureNesting);
+
+	listView->setInitialized();
 }
+
+QStringList FactorsFormBase::factorsNames() const
+{
+	QStringList names;
+
+	if (!_factorsModel)
+		return names;
+
+	for (auto factorModel : _factorsModel->getFactors())
+		names.append(factorModel.name);
+
+	return names;
+}
+
+QStringList FactorsFormBase::factorsTitles() const
+{
+	QStringList titles;
+
+	if (!_factorsModel)
+		return titles;
+
+	for (auto factorModel : _factorsModel->getFactors())
+		titles.append(factorModel.title);
+
+	return titles;
+}
+
+QVariantList FactorsFormBase::factorsItems() const
+{
+	QVariantList items;
+
+	if (!_factorsModel)
+		return items;
+
+	for (auto factorModel : _factorsModel->getFactors())
+		items.append(QVariant::fromValue(factorModel.listView));
+
+	return items;
+}
+
+
