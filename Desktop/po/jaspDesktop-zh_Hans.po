@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-22 11:00+0000\n"
+"PO-Revision-Date: 2025-03-22 20:11+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspdesktop/zh_Hans/>\n"
@@ -5425,67 +5425,66 @@ msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr "选择用于此计算列的筛选器"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "移除"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "添加新的水平："
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "添加数据中缺失的水平"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
-msgstr ""
+msgstr "保留水平，因此所有水平都会传递给分析，包括筛选掉的水平和之后手动添加的水平。"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
-msgstr ""
+msgstr "丢弃水平，因此只有（可能经过筛选的）数据中的那些水平才会被发送到分析。"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "关闭自动排序功能以便对所有标签进行逆序排列"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "关闭自动排序功能以便手动上移标签"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "关闭自动排序功能以便可以手动下移标签"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "无过滤器"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "使用过滤器"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "将“%1”的列计算过滤器从“%2”更改为“%3”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "将“%1”的列拖放水平从“%2”更改为“%3”"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "删除列‘%2’的标签 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "正在将值 + 标签“%1”+“%2”添加到列“%3”"
