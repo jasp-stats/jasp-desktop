@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-22 11:00+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.11-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5417,7 +5423,7 @@ msgstr "请将这些 .log 文件拖放到 GitHub 评论区（您可能需要先�
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "选择用于此计算列的筛选器"
 
 #, fuzzy
 msgctxt "LabelEditorWindow|"
