@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-22 10:53+0000\n"
+"PO-Revision-Date: 2025-03-22 20:11+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -5713,7 +5713,7 @@ msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
 msgstr ""
 "Stellen Sie automatisches Sortieren aus, um die Reihenfolge aller "
-"Bezeichnungen umzudrehen"
+"Beschriftungen umzudrehen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
@@ -5725,11 +5725,11 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Kein Filter"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Filter verwenden"
 
 #, qt-format
 msgctxt "QObject|"
