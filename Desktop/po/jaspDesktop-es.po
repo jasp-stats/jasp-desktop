@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-03-22 10:53+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.11-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2177,11 +2183,11 @@ msgstr "Duplicar"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Quitar"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr "Eliminar Todo"
+msgstr "Quitar todo"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
@@ -4387,7 +4393,7 @@ msgstr "Insertar columnas o filas vacías"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Quitar"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
@@ -5675,69 +5681,78 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "Elige un filtro para utilizar para esta columna calculada"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Quitar"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "Añadir nuevo nivel:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "Añadir un nivel que está ausente en los datos"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
 msgstr ""
+"Manteniedo los niveles, de modo que todos los niveles se pasan al análisis, "
+"tanto los filtrados como los añadidos manualmente después."
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
 msgstr ""
+"Quitando niveles, de modo que solo se envían al análisis aquellos niveles en "
+"los datos (posiblemente filtrados)."
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
 msgstr ""
+"Desactivar la ordenación automática para la ordenación inversa de todas las "
+"etiquetas"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
 msgstr ""
+"Desactivar la ordenación automática para mover arriba las etiquetas "
+"manualmente"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
 msgstr ""
+"Desactivar la ordenación automática para mover abajo las etiquetas "
+"manualmente"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Sin filtro"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Usar filtro"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Cambiar el filtro de cálculo de columnas de '%1' de '%2' a '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Cambiar los niveles de eliminación de columnas de '%1' de '%2' a '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Eliminar la etiqueta %1 de la columna '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "Añadir valor + etiqueta '%1' + '%2' a la columna '%3'"
