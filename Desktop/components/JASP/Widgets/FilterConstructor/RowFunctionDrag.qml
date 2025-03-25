@@ -1,7 +1,8 @@
 import QtQuick
 
-DragGeneric {
-	shownChild: showMe
+DragGeneric 
+{
+	shownChild:			showMe
 	property string __debugName: "RowFunctionDrag"
 
 	property alias functionName:			showMe.functionName

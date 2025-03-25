@@ -105,15 +105,15 @@ ListView
 
 		onDoubleClicked: alternativeDropFunctionDef()
 
-		Component { id: operatorComp;		OperatorDrag			{ toolTipText: listToolTip; operator: listOperator;		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
-		Component { id: operatorvertComp;	OperatorVerticalDrag	{ toolTipText: listToolTip; operator: listOperator;		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
-		Component { id: functionComp;		FunctionDrag			{ toolTipText: listToolTip; functionName: listFunction;	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
-		Component { id: rowFunctionComp;	RowFunctionDrag			{ toolTipText: listToolTip; functionName: listFunction;	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
+		Component { id: operatorComp;		OperatorDrag			{ toolTipText: listToolTip; operator: listOperator;			acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
+		Component { id: operatorvertComp;	OperatorVerticalDrag	{ toolTipText: listToolTip; operator: listOperator;			acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
+		Component { id: functionComp;		FunctionDrag			{ toolTipText: listToolTip; functionName: listFunction;		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
+		Component { id: rowFunctionComp;	RowFunctionDrag			{ toolTipText: listToolTip; functionName: listRFunction;	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: numberComp;			NumberDrag				{ toolTipText: listToolTip; value: listNumber;									alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: stringComp;			StringDrag				{ toolTipText: listToolTip; text: listText;										alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth - listOfStuff.widthMargin; Rectangle { height: 1; color: jaspTheme.black; width: parent.width ; anchors.centerIn: parent }  } }
 		Component { id: defaultComp;		Text					{ text: "Something wrong!"; color: jaspTheme.red }  }
-		Component {	id: columnComp;			ColumnDrag				{ columnName: listColName;	columnTypeUser:	-1;			acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; maxSize: listOfStuff.maxWidth } }
+		Component {	id: columnComp;			ColumnDrag				{ columnName: listColName;	columnTypeUser:	-1;				acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; maxSize: listOfStuff.maxWidth } }
 	}
 
 

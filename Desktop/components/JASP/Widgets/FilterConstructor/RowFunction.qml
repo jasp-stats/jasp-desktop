@@ -106,31 +106,27 @@ Item
 		}
 	}
 
-	Item
+	Row
 	{
 		id: functionDef
 		anchors.top: funcRoot.isRoot ? parent.top : meanBar.bottom
 		anchors.bottom: parent.bottom
 
 		x: extraMeanWidth / 2
-		width: functionText.visible ? functionText.width : functionImg.width
 
 		Text
 		{
 			id:						functionText
 
-			anchors.top:			parent.top
-			anchors.bottom:			parent.bottom
+
 			color:					jaspTheme.textEnabled
 
 			verticalAlignment:		Text.AlignVCenter
 			horizontalAlignment:	Text.AlignHCenter
 
-			text:					funcRoot.drawMeanSpecial ? "" : friendlyFunctionName
+			text:					functionImg.visible ? "row" : funcRoot.drawMeanSpecial ? "" : friendlyFunctionName
 			font.pixelSize:			filterConstructor.fontPixelSize
 			font.family:			jaspTheme.font.family
-
-			visible:				!functionImg.visible
 		}
 
 
@@ -138,7 +134,7 @@ Item
 		{
 			id:						functionImg
 
-			visible:				(!funcRoot.acceptsDrops) && functionImageSource !== ""
+			visible:				functionImageSource !== ""
 
 			source:					functionImageSource
 
