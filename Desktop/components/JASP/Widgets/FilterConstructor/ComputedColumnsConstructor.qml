@@ -377,16 +377,16 @@ FocusScope
 	function jsonChanged()
 	{
 		//.replace(/\s/g,'')
-		//console.log("last: ",jsonConverterComputedColumns.lastProperlyconstructorJson.replace(/\s/g,''))
+		//console.log("last: ",jsonConverter.lastProperlyconstructorJson.replace(/\s/g,''))
 		//console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
 
-		return jsonConverterComputedColumns.lastProperlyconstructorJson !== JSON.stringify(returnFilterJSON())
+		return jsonConverter.lastProperlyconstructorJson !== JSON.stringify(returnFilterJSON())
 	}
 
 	JSONtoFormulas
 	{
-		id: jsonConverterComputedColumns
-		objectName: "jsonConverterComputedColumns"
+		id: jsonConverter
+		objectName: "jsonConverter"
 
 		visible: false
 	}
@@ -400,7 +400,7 @@ FocusScope
 		trashCan.destroyAll();
 		if(jsonString !== "")
 		{
-			jsonConverterComputedColumns.convertJSONtoFormulas(jsonString)
+			jsonConverter.convertJSONtoFormulas(jsonString)
 			checkAndApplyFilter()
 		}
 

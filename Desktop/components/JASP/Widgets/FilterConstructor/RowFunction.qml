@@ -251,15 +251,7 @@ Item
 
 			function convertToJSON()
 			{
-				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "droppedItems": droppedItems }
-
-				for(var i=0; i<parameterCount; i++)
-				{
-					var dropSpot = dropRepeat.itemAt(i).getDropSpot()
-
-					if(dropSpot.containsItem !== null)
-						jsonObj.arguments.push({ "name": i, "argument": dropSpot.containsItem.convertToJSON()})
-				}
+				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "droppedItems": funcRoot.droppedItems }
 				return jsonObj
 			}
 
@@ -268,6 +260,9 @@ Item
 				for(var i=0; i<parameterCount; i++)
 					if(i == param)
 						return dropRepeat.itemAt(i).getDropSpot()
+				
+				if(param > 0 && param < parameterCount)
+					return dropRepeat.itemAt(param).getDropSpot()
 
 				return null
 

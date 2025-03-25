@@ -62,7 +62,7 @@ DropArea {
 				//console.log("problem! ",parent.objectName," doesnt contain a dragger in dropper")
 			return containsItem.checkCompletenessFormulas()
 		}
-		return false
+		return ignoreEmpty
 	}
 
 	onEntered: (drag)=>
