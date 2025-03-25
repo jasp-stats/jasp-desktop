@@ -67,9 +67,14 @@ Item
 	{
 		var compounded = functionName + "NaRm("
 
+		var filledEntries = []
+		
 		for(var i=0; i<parameterCount; i++)
-				if(dropRepeat.itemAt(i) !== null && dropRepeat.dropped[i] != "null"  && dropRepeat.dropped[i] != "") 
-					compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i).returnR())
+				if(dropRepeat.itemAt(i) !== null && dropRepeat.dropped[i] != "null"  && dropRepeat.dropped[i] != "")
+					filledEntries.push(dropRepeat.itemAt(i).returnR())
+		
+		for(var i=0; i<filledEntries.length; i++)
+			compounded += (i > 0 ? ", " : "") + filledEntries[i]
 
 		compounded += ")"
 
@@ -195,11 +200,15 @@ Item
 			property var rightMostEmptyDropSpot: function()
 			{
 				var dropSpot = null
+				var prevDropSpot = dropSpot
+				var firstSpot = null
 
 				for(var i=parameterCount-1; i>=0; i--)
 				{
-					var prevDropSpot = dropSpot
+					prevDropSpot = dropSpot
 					dropSpot = dropRepeat.itemAt(i).getDropSpot()
+					if(firstSpot == null)
+						firstSpot = dropSpot
 
 					if(dropSpot.containsItem !== null)
 					{
@@ -211,14 +220,14 @@ Item
 					}
 					//else dropSpot now contains a DropSpot with space, but lets loop back to the beginning to see if we can go further left
 				}
-				return dropSpot
+				return firstSpot
 			}
 
 			//this does not go down the tree
 			property var leftMostFilledDropSpot: function()
 			{
 				var dropSpot = null
-
+				
 				for(var i=0; i<parameterCount; i++)
 				{
 					var prevDropSpot = dropSpot
