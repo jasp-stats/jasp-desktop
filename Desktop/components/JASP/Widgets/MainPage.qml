@@ -313,6 +313,9 @@ Item
 
 			url:					resultsJsInterface.resultsPageUrl
 
+			settings.allowWindowActivationFromJavaScript: false
+			settings.javascriptCanOpenWindows: false
+
 			onContextMenuRequested: (request) => request.accepted = true
 
 			backgroundColor:		jaspTheme.uiBackground
