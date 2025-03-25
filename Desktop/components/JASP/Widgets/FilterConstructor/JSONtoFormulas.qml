@@ -46,8 +46,9 @@ Item
 		}
 		else if(jsonObj.nodeType === "RowFunction")
 		{
-			var rfuncObj = createRowFunction(jsonObj.functionName, jsonObj.droppedItems,  toolTip)
+			var rfuncObj = createRowFunction(jsonObj.functionName, ["null"],  toolTip)
 			rfuncObj.releaseHere(dropItHere)
+			rfuncObj.droppedItems = jsonObj.droppedItems
 		}
 		else if(jsonObj.nodeType === "Number")
 				createNumber(jsonObj.value, toolTip).releaseHere(dropItHere)

@@ -224,7 +224,8 @@ MouseArea
 
 			shouldShowHoverOutline = false
 			this.removeAncestorsHoverOutlines()
-			parent.somethingDropped();
+			if(parent != scriptColumn)
+				parent.somethingDropped();
 
 		}
 
