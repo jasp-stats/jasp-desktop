@@ -140,7 +140,7 @@ ScrollView
 				id:					developerMode
 				label:				qsTr("Developer mode")
 				checked:			preferencesModel.developerMode
-				onCheckedChanged:	preferencesModel.developerMode = checked
+				onCheckedChanged:	{preferencesModel.developerMode = checked; preferencesModel.engineSandbox = !checked;}
 				toolTip:			qsTr("To use JASP Modules enable this option.")
 				
 				KeyNavigation.tab:	generateMarkdown
@@ -415,8 +415,8 @@ ScrollView
 			CheckBox
 			{
 				id:					engineSandbox
-				visible:			Qt.platform.os === "windows" && preferencesModel.developerMode
-				enabled:			Qt.platform.os === "windows" && preferencesModel.developerMode
+				visible:			Qt.platform.os === "windows"
+				enabled:			Qt.platform.os === "windows"
 				label:				qsTr("Sandbox engines")
 				checked:			preferencesModel.engineSandbox
 				onCheckedChanged:	preferencesModel.engineSandbox = checked

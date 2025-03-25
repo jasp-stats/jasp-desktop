@@ -342,7 +342,6 @@ SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeCha
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
 SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
 SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directDevModNameChanged,		Settings::DIRECT_DEVMOD_NAME						)
-SET_PREF_FUNCTION(				bool,		setEngineSandbox,			engineSandbox,				engineSandboxChanged,			Settings::ENGINE_SANDBOX							)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
@@ -588,5 +587,13 @@ void PreferencesModel::setDirectLibpathFolder(QString libpath)
 	{
 		Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
 		emit directLibpathFolderChanged();
+	}
+}
+
+void PreferencesModel::setEngineSandbox(bool engineSandbox) {
+        if(engineSandbox != PreferencesModel::engineSandbox()) {
+	        Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
+		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));
+		emit engineSandboxChanged(engineSandbox);
 	}
 }
