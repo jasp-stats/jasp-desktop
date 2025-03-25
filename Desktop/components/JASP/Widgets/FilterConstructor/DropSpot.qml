@@ -29,6 +29,7 @@ DropArea {
 	property bool	beingDragHovered: false
 	property color	dragHoverColor: jaspTheme.blue
 	
+	signal somethingDropped();
 
 	Rectangle
 	{

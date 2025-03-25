@@ -13,7 +13,7 @@ Item
 	property bool acceptsDrops: true
 
 	property int parameterCount: droppedItems.length
-	property alias droppedItems: dropRepeat.dropped
+	property list<string> droppedItems: ["null"]
 
 
 	property variant functionNameToBaseFunc: {
@@ -183,13 +183,7 @@ Item
 	
 		property real implicitWidthDrops: parent.acceptsDrops ? funcRoot.initialWidth / 4 : 0
 		
-		JSONtoFormulas
-		{
-			id:			jsonConverterRow
-			objectName: "jsonConverterRow"
-			
-			visible: false
-		}
+
 
 		Repeater
 		{
@@ -197,7 +191,7 @@ Item
 			model:			parameterCount
 			//anchors.fill: parent
 					
-			property list<string> dropped: ["null"]
+			property alias dropped: funcRoot.droppedItems
 			
 
 
@@ -252,7 +246,7 @@ Item
 
 			function convertToJSON()
 			{
-				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "droppedItems": parameters }
+				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "arguments":[], "droppedItems": droppedItems }
 
 				for(var i=0; i<parameterCount; i++)
 				{
@@ -288,7 +282,7 @@ Item
 						{
 							messages.log("Converting onItemAdded stored json to item: " + dropRepeat.dropped[i] + " to fill " + dropSpot.containsItem)
 							var jsonObjHere = JSON.parse(dropRepeat.dropped[i])
-							jsonConverterRow.convertJSONtoItem(jsonObjHere, dropSpot) 	
+							jsonConverter.convertJSONtoItem(jsonObjHere, dropSpot) 	
 						}
 					}
 				}
@@ -330,7 +324,7 @@ Item
 					{
 						messages.log("Converting onCompleted stored json to item: " + dropRepeat.dropped[index] + " to fill " + spot.containsItem)
 						var jsonObjHere = JSON.parse(dropRepeat.dropped[index])
-						jsonConverterRow.convertJSONtoItem(jsonObjHere, spot) 	
+						jsonConverter.convertJSONtoItem(jsonObjHere, spot) 	
 					}
 				}
 				

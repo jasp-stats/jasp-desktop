@@ -47,11 +47,11 @@ Item
 		else if(jsonObj.nodeType === "RowFunction")
 		{
 		
-			var funcObj = createRowFunction(jsonObj.functionName, atoolTip)
-			funcObj.releaseHere(dropItHere)
+			var rfuncObj = createRowFunction(jsonObj.functionName, jsonObj.droppedItems,  atoolTip)
+			rfuncObj.releaseHere(dropItHere)
 
 			for(var i=0; i<jsonObj.arguments.length; i++)
-				convertJSONtoItem(jsonObj.arguments[i].argument, funcObj.getParameterDropSpot(jsonObj.arguments[i].name))
+				convertJSONtoItem(jsonObj.arguments[i].argument, rfuncObj.getParameterDropSpot(jsonObj.arguments[i].name))
 		}
 		else if(jsonObj.nodeType === "Number")
 				createNumber(jsonObj.value, toolTip).releaseHere(dropItHere)
