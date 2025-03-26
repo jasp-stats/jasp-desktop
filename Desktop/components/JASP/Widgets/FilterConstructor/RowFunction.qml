@@ -273,7 +273,7 @@ Item
 			onItemAdded:
 			{
 				//rebindSize()
-				messages.log("dropRepeat.dropped is: ")
+				//messages.log("dropRepeat.dropped is: ")
 				for(var i=0; i<parameterCount; i++)
 				{
 					messages.log(dropRepeat.dropped[i])
@@ -282,7 +282,7 @@ Item
 						var dropSpot = dropRepeat.itemAt(i).getDropSpot()
 						if(dropSpot.containsItem == null && dropRepeat.dropped[i] != "" && dropRepeat.dropped[i] != "null")
 						{
-							messages.log("Converting onItemAdded stored json to item: " + dropRepeat.dropped[i] + " to fill " + dropSpot.containsItem)
+							//messages.log("Converting onItemAdded stored json to item: " + dropRepeat.dropped[i] + " to fill " + dropSpot.containsItem)
 							var jsonObjHere = JSON.parse(dropRepeat.dropped[i])
 							jsonConverter.convertJSONtoItem(jsonObjHere, dropSpot) 	
 						}
@@ -324,7 +324,7 @@ Item
 	
 					if(spot.containsItem == null && dropRepeat.dropped[index] != "" && dropRepeat.dropped[index] != "null")
 					{
-						messages.log("Converting onCompleted stored json to item: " + dropRepeat.dropped[index] + " to fill " + spot.containsItem)
+						//messages.log("Converting onCompleted stored json to item: " + dropRepeat.dropped[index] + " to fill " + spot.containsItem)
 						var jsonObjHere = JSON.parse(dropRepeat.dropped[index])
 						jsonConverter.convertJSONtoItem(jsonObjHere, spot) 	
 					}
@@ -352,29 +352,28 @@ Item
 					{
 						if(spot.containsItem != null)
 						{
-							print("containsItem="+(spot.containsItem))
 							//First make the list of what is there now:
 							var itsFull = true;
 							
 							var jsonStr = JSON.stringify(spot.containsItem.convertToJSON())
 							
-							messages.log("Converted dropped thing to '" + jsonStr + "' and it was: " + dropRepeat.dropped[index] + " at index " + index)
+							//messages.log("Converted dropped thing to '" + jsonStr + "' and it was: " + dropRepeat.dropped[index] + " at index " + index)
 							
 							if(dropRepeat.dropped[index] == jsonStr)
 							{
-								messages.log("Already there ")
+								//messages.log("Already there ")
 							}
 							else
 							{
-								messages.log("Before insert dropped is: ")
+								/*messages.log("Before insert dropped is: ")
 								for(var i=0; i<parameterCount; i++)
-									messages.log(dropRepeat.dropped[i])
+									messages.log(dropRepeat.dropped[i])*/
 								
 								dropRepeat.dropped[index] = jsonStr
 								
-								messages.log("After insert dropped is: ")
+								/*messages.log("After insert dropped is: ")
 								for(var i=0; i<parameterCount; i++)
-									messages.log(dropRepeat.dropped[i])
+									messages.log(dropRepeat.dropped[i])*/
 							}
 	
 							for(var i=0; i<parameterCount; i++)
