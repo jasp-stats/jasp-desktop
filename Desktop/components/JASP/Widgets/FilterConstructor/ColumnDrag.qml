@@ -2,9 +2,9 @@ import QtQuick
 
 DragGeneric 
 {
-	property string columnName:		"?"
-	property int    columnTypeUser:	-1
-
+	property alias columnName:		showMe.columnName
+	property alias  columnTypeUser:	showMe.columnTypeUser
+	property alias  columnTypeDrop:	showMe.columnTypeDrop
 					shownChild:		showMe
 					dragKeys:		showMe.dragKeys
     property bool	acceptsDrops:	true
@@ -15,8 +15,6 @@ DragGeneric
 	JASPColumn
 	{
 		id:						showMe
-		columnName:				parent.columnName
-		columnTypeUser:			parent.columnTypeUser
 		changeTypeAllowed:		parent.acceptsDrops
 
 		x:						parent.dragX

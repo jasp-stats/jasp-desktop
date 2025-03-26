@@ -343,7 +343,10 @@ Item
 					shouldShowX:		false
 					ignoreEmpty:		true
 					
-					onSomethingDropped:
+					onSomethingDropped:		handleContainsItemChange()
+					onContainsItemChanged:	handleContainsItemChange()
+						
+					function handleContainsItemChange()
 					{
 						if(spot.containsItem != null)
 						{

@@ -56,6 +56,8 @@ MouseArea
 
 	property bool shouldShowHoverOutline:	false
 	property bool showHighlight:			shownChild !== null ? !shownChild.acceptsDrops : false
+	
+	signal wasDroppedOn();
 
 	Rectangle
 	{
@@ -226,6 +228,8 @@ MouseArea
 			this.removeAncestorsHoverOutlines()
 			if(parent != scriptColumn)
 				parent.somethingDropped();
+			
+			this.wasDroppedOn()
 
 		}
 

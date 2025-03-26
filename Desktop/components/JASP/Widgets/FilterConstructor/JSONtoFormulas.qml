@@ -55,7 +55,7 @@ Item
 		else if(jsonObj.nodeType === "String")
 				createString(jsonObj.text, toolTip).releaseHere(dropItHere)
 		else if(jsonObj.nodeType === "Column")
-				createColumn(jsonObj.columnName, jsonObj.columnTypeUser, toolTip).releaseHere(dropItHere)
+				createColumn(jsonObj.columnName, jsonObj.columnTypeUser, jsonObj.columnTypeDrop != undefined ? jsonObj.columnTypeDrop : -1, toolTip).releaseHere(dropItHere)
 	}
 
 	function createOperator(operator, toolTip)					{ return operatorComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "operator": operator } ) }
@@ -66,7 +66,8 @@ Item
 							   droppedItems,toolTip)			{ return rowFunctionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"droppedItems": droppedItems } ) }
 	function createNumber(number, toolTip)						{ return numberComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": number } ) }
 	function createString(text, toolTip)						{ return stringComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "text": text } ) }
-	function createColumn(columnName, columnTypeUser, toolTip)	{ return columnComp.createObject(scriptColumn,			{ "columnName": columnName,	"columnTypeUser": columnTypeUser } ) }
+	function createColumn(columnName, columnTypeUser,
+						  columnTypeDrop, toolTip)				{ return columnComp.createObject(scriptColumn,			{ "columnName": columnName,	"columnTypeUser": columnTypeUser, "columnTypeDrop": columnTypeDrop } ) }
 
 
 	Component { id: operatorComp;		OperatorDrag			{ } }
