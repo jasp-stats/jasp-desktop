@@ -140,7 +140,7 @@ ScrollView
 				id:					developerMode
 				label:				qsTr("Developer mode")
 				checked:			preferencesModel.developerMode
-				onCheckedChanged:	{preferencesModel.developerMode = checked; preferencesModel.engineSandbox = !checked;}
+				onCheckedChanged:	preferencesModel.developerMode = checked
 				toolTip:			qsTr("To use JASP Modules enable this option.")
 				
 				KeyNavigation.tab:	generateMarkdown

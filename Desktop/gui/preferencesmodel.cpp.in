@@ -29,6 +29,7 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 	connect(this,					&PreferencesModel::dataLabelNAChanged,			this, &PreferencesModel::dataLabelNAChangedSlot			);
 	connect(this,					&PreferencesModel::guiQtTextRenderChanged,		this, &PreferencesModel::onGuiQtTextRenderChanged,		Qt::QueuedConnection);
+	connect(this,					&PreferencesModel::developerModeChanged,		this, [&](){ this->setEngineSandbox(!this->developerMode()); } );
 	
 	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
 
