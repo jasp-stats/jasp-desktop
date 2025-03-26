@@ -58,6 +58,7 @@ MouseArea
 	property bool showHighlight:			shownChild !== null ? !shownChild.acceptsDrops : false
 	
 	signal wasDroppedOn();
+	signal jsonChanged();
 
 	Rectangle
 	{
@@ -172,7 +173,7 @@ MouseArea
 				return
 			}
 
-            if(leftDropSpot !== null && this.tryLeftApplication(dropTarget)) //maybe gobble something up instead of the other way 'round?
+            if(this.tryLeftApplication(dropTarget)) //maybe gobble something up instead of the other way 'round?
                return
 		}
 
@@ -230,7 +231,10 @@ MouseArea
 				this.removeAncestorsHoverOutlines()
 			
 			if(parent != scriptColumn)
+			{
 				parent.somethingDropped();
+				filterConstructor.somethingChanged = true;
+			}
 			
 			this.wasDroppedOn()
 
@@ -260,7 +264,7 @@ MouseArea
 			}
 		}
 
-		return lastScriptScrap.returnEmptyRightMostDropSpot(true)
+		return lastScriptScrap.returnEmptyRightMostDropSpot()
 	}
 
 	//onParentChanged: { console.log(__debugName," onParentChanged parent == ", parent === null ? "null" : parent === undefined ? "undefined" : parent.__debugName, " alternativeDropFunction == ", alternativeDropFunction === null ? "null" : alternativeDropFunction === undefined ? "undefined" : alternativeDropFunction)	}

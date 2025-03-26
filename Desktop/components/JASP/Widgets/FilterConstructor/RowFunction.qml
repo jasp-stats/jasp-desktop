@@ -14,7 +14,13 @@ Item
 
 	property int parameterCount: droppedItems.length
 	property list<string> droppedItems: ["null"]
+	
+	onDroppedItemsChanged: {
+		filterConstructor.somethingChanged = true
+		funcRoot.jsonChanged()
+	}
 
+	signal jsonChanged();
 
 	property variant functionNameToBaseFunc: {
 	"rowMean":				"mean",
@@ -200,27 +206,23 @@ Item
 			property var rightMostEmptyDropSpot: function()
 			{
 				var dropSpot = null
-				var prevDropSpot = dropSpot
-				var firstSpot = null
 
 				for(var i=parameterCount-1; i>=0; i--)
 				{
-					prevDropSpot = dropSpot
 					dropSpot = dropRepeat.itemAt(i).getDropSpot()
-					if(firstSpot == null)
-						firstSpot = dropSpot
+
 
 					if(dropSpot.containsItem !== null)
 					{
 						var subResult = dropSpot.containsItem.returnEmptyRightMostDropSpot()
-						if(subResult === null) // cant put anything there but maybe we can return the previous (and thus empty dropspot?)
-							return prevDropSpot //its ok if it is null. we just cant find anything here
-						else
+						if(subResult !== null) // cant put anything there but maybe we can return the previous (and thus empty dropspot?)
 							return subResult
 					}
-					//else dropSpot now contains a DropSpot with space, but lets loop back to the beginning to see if we can go further left
+					else 
+						return dropSpot;
 				}
-				return firstSpot
+				
+				return null
 			}
 
 			//this does not go down the tree
@@ -251,7 +253,7 @@ Item
 
 			function convertToJSON()
 			{
-				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "droppedItems": funcRoot.droppedItems }
+				var jsonObj = { "nodeType":"RowFunction", "functionName": functionName, "droppedItems": funcRoot.droppedItems.length > 0 ?  funcRoot.droppedItems : ["null"] }
 				return jsonObj
 			}
 
@@ -328,8 +330,7 @@ Item
 					}
 				}
 				
-
-
+				
 				DropSpot 
 				{
 					id:					spot
@@ -343,8 +344,9 @@ Item
 					shouldShowX:		false
 					ignoreEmpty:		true
 					
-					onSomethingDropped:		handleContainsItemChange()
-					onContainsItemChanged:	handleContainsItemChange()
+					onSomethingDropped:		spot.handleContainsItemChange()
+					onContainsItemChanged:	if(!containsItem) spot.handleContainsItemChange()
+					onJsonChanged:			spot.handleContainsItemChange()
 						
 					function handleContainsItemChange()
 					{
@@ -356,7 +358,7 @@ Item
 							
 							var jsonStr = JSON.stringify(spot.containsItem.convertToJSON())
 							
-							messages.log("Converted dropped thing to: " + dropRepeat.dropped[index] + " inserting at index " + index)
+							messages.log("Converted dropped thing to '" + jsonStr + "' and it was: " + dropRepeat.dropped[index] + " at index " + index)
 							
 							if(dropRepeat.dropped[index] == jsonStr)
 							{
@@ -369,6 +371,10 @@ Item
 									messages.log(dropRepeat.dropped[i])
 								
 								dropRepeat.dropped[index] = jsonStr
+								
+								messages.log("After insert dropped is: ")
+								for(var i=0; i<parameterCount; i++)
+									messages.log(dropRepeat.dropped[i])
 							}
 	
 							for(var i=0; i<parameterCount; i++)
@@ -377,11 +383,13 @@ Item
 
 							if(itsFull) //Then apparently this one just got filled?
 							{
-								dropRepeat.dropped.push("null")
+								dropRepeat.dropped.push("null")								
 							}
 						}
 						else
+						{
 							dropRepeat.dropped[index] = "null"
+						}
 					}
 				}
 

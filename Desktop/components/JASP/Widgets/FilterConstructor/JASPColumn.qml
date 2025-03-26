@@ -23,25 +23,33 @@ Item
 	property bool	changeTypeAllowed:	true
 	property var	dragKeys:			columnTypeDrop == -1 ? ["number", "string", "ordered"] : isNumerical ? ["number"]	: isOrdinal ? ["string", "ordered"] : ["string"]
 	property string typeString:			isNumerical ? "scale"		: isOrdinal ? "ordinal"				: "nominal"
+					
+	onColumnTypeHereChanged: {
+		filterConstructor.somethingChanged = true	
+	}
 	
 	Connections
 	{
 		id:			dropHandler
 		target:		parent
 		enabled:	parent.objectName == "DragGeneric" && parent.parent != undefined && parent.parent.objectName == "DropSpot"
-		function onWasDroppedOn() {
+		
+		function	onWasDroppedOn() 
+		{
 			columnTypeDrop = -1;
 			
 
 			if(columnTypeUser != -1 && dropAccepts(columnTypeToRelevantString(columnTypeUser)))
 			{
 				columnTypeDrop = columnTypeUser;
+				filterConstructor.somethingChanged = true
 				return;
 			}
 			
 			if(dropAccepts(columnTypeToRelevantString(columnType)))
 			{
 				columnTypeDrop = columnType;
+				filterConstructor.somethingChanged = true
 				return;
 			}
 						
@@ -50,6 +58,7 @@ Item
 				if(dropAccepts(columnTypeToRelevantString(listTypes[i])))
 				{
 					columnTypeDrop = listTypes[i];
+					filterConstructor.somethingChanged = true
 					return;
 				}
 		}
@@ -190,7 +199,7 @@ Item
 	function shouldDrag(mouseX, mouseY)			{ return true }
 	function returnEmptyRightMostDropSpot()		{ return null }
 	function returnFilledRightMostDropSpot()	{ return null }
-	function returnR()							{ return columnTypeUser == -1 ? columnName : columnName + "." + typeString }
+	function returnR()							{ return columnName + "." + typeString }
 	function checkCompletenessFormulas()		{ return true }
 	function convertToJSON()
 	{

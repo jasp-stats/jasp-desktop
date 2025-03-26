@@ -30,6 +30,17 @@ DropArea {
 	property color	dragHoverColor: jaspTheme.blue
 	
 	signal somethingDropped();
+	signal jsonChanged();
+	
+	Connections
+	{
+		target:		containsItem
+		enabled:	containsItem != null
+		function onJsonChanged()
+		{
+			dragTarget.jsonChanged();	
+		}
+	}
 
 	Rectangle
 	{

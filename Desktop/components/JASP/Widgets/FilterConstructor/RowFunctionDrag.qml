@@ -2,6 +2,7 @@ import QtQuick
 
 DragGeneric 
 {
+	id:					dragMe
 	shownChild:			showMe
 	property string __debugName: "RowFunctionDrag"
 
@@ -13,6 +14,16 @@ DragGeneric
 	dragKeys:								showMe.dragKeys
 
 	function getParameterDropSpot(param)		{ return showMe.getParameterDropSpot(param) }
+	
+	Connections
+	{
+		target:		showMe
+		enabled:	showMe != undefined
+		function onJsonChanged()
+		{
+			dragMe.jsonChanged();	
+		}
+	}
 
 	RowFunction
 	{
