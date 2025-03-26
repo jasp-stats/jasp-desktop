@@ -221,7 +221,7 @@ Item
 
 				return heightOut
 			}
-
+			
 			///This also goes down the tree
 			property var rightMostEmptyDropSpot: function()
 			{
@@ -229,21 +229,21 @@ Item
 
 				for(var i=funcRoot.parameterNames.length-1; i>=0; i--)
 				{
-					var prevDropSpot = dropSpot
 					dropSpot = dropRepeat.itemAt(i).getDropSpot()
 
 					if(dropSpot.containsItem !== null)
 					{
 						var subResult = dropSpot.containsItem.returnEmptyRightMostDropSpot()
-						if(subResult === null) // cant put anything there but maybe we can return the previous (and thus empty dropspot?)
-							return prevDropSpot //its ok if it is null. we just cant find anything here
-						else
+						if(subResult !== null) // cant put anything there but maybe we can return the previous (and thus empty dropspot?)
 							return subResult
 					}
-					//else dropSpot now contains a DropSpot with space, but lets loop back to the beginning to see if we can go further left
+					else 
+						return dropSpot;
 				}
-				return dropSpot
+				
+				return null
 			}
+			
 
 			//this does not go down the tree
 			property var leftMostFilledDropSpot: function()
