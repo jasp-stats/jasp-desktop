@@ -225,7 +225,10 @@ MouseArea
 			parent.containsItem = this
 
 			shouldShowHoverOutline = false
-			this.removeAncestorsHoverOutlines()
+			
+			if(this.removeAncestorsHoverOutlines != undefined)
+				this.removeAncestorsHoverOutlines()
+			
 			if(parent != scriptColumn)
 				parent.somethingDropped();
 			

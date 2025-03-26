@@ -118,7 +118,10 @@ DropArea {
 		//console.log(__debugName," onContainsItemChanged to " + (containsItem !== null ? containsItem.__debugName : "null"))
 
 		if(containsItem === null)
-			width = Qt.binding(function(){ return dragTarget.implicitWidth })
+		{
+			width			= Qt.binding(function(){ return dragTarget.implicitWidth		})
+			dropText.text	= Qt.binding(function(){ return dragTarget.defaultText			})
+		}
 		iWasChecked = false
 
 	}
@@ -211,19 +214,21 @@ DropArea {
 			}
 		}
 
-		Rectangle
-		{
-			id: errorMarker
-			z: -2
-			visible: (dragTarget.iWasChecked && (dragTarget.containsItem === null && !ignoreEmpty))
-			radius: width
-			anchors.fill: parent
-			color: "#BB0000"
-		}
+		
 	}
 
 	Component { id: numberComp; NumberDrag {}}
 	Component { id: stringComp; StringDrag {}}
+	
+	Rectangle
+	{
+		id: errorMarker
+		z: -2
+		visible: (dragTarget.iWasChecked && (dragTarget.containsItem === null && !ignoreEmpty))
+		radius: width
+		anchors.fill: parent
+		color: "#BB0000"
+	}
 
 
 }
