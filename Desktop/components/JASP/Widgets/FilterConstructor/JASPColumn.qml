@@ -25,14 +25,19 @@ Item
 	property string typeString:			isNumerical ? "scale"		: isOrdinal ? "ordinal"				: "nominal"
 					
 	onColumnTypeHereChanged: {
-		filterConstructor.somethingChanged = true	
+		filterConstructor.somethingChanged = true
 	}
+	
+	onColumnTypeUserChanged:		if(dropHandler.enabled) dropHandler.onWasDroppedOn(); else columnTypeDrop = -1;
+	onColumnTypeDropChanged:		filterConstructor.somethingChanged = true;
 	
 	Connections
 	{
 		id:			dropHandler
 		target:		parent
 		enabled:	parent.objectName == "DragGeneric" && parent.parent != undefined && parent.parent.objectName == "DropSpot"
+		
+		function onEnabledChanged() {	if(!enabled) columnTypeDrop = 1; }
 		
 		function	onWasDroppedOn() 
 		{
@@ -42,14 +47,12 @@ Item
 			if(columnTypeUser != -1 && dropAccepts(columnTypeToRelevantString(columnTypeUser)))
 			{
 				columnTypeDrop = columnTypeUser;
-				filterConstructor.somethingChanged = true
 				return;
 			}
 			
 			if(dropAccepts(columnTypeToRelevantString(columnType)))
 			{
 				columnTypeDrop = columnType;
-				filterConstructor.somethingChanged = true
 				return;
 			}
 						
@@ -58,7 +61,6 @@ Item
 				if(dropAccepts(columnTypeToRelevantString(listTypes[i])))
 				{
 					columnTypeDrop = listTypes[i];
-					filterConstructor.somethingChanged = true
 					return;
 				}
 		}
@@ -113,10 +115,7 @@ Item
 			}
 		}
 	}
-	
-	onColumnTypeUserChanged:		filterConstructor.somethingChanged = true;
-	onColumnTypeDropChanged:		filterConstructor.somethingChanged = true;
-	
+
 
 	Image
 	{
