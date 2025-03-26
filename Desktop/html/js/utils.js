@@ -298,15 +298,15 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 						formatted["class"]		= "p-value"
 						isNumber = false
 					}
+					else if (content == 0)
+					{
+						formatted["content"] = "0"
+					}
 					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp))
 					{
 						let decimalsExpon 		= fixDecimals ? dp : sf - 1;
 						let paddingNeeded 		= 0 									// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
 						formatted["content"] 	= toExponential(content, decimalsExpon, paddingNeeded, html)
-					}
-					else if (content == 0)
-					{
-						formatted["content"] = isFinite(dp) ? formatFixed(content, dp) : formatPrecision(content, sf)
 					}
 					else 
 					{
