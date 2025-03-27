@@ -300,7 +300,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content == 0)
 					{
-						formatted["content"] = "0"
+						formatted["content"] = isFinite(dp) ? formatFixed(content, dp) : formatPrecision(content, sf)
 					}
 					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp))
 					{
