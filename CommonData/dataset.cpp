@@ -51,10 +51,15 @@ void DataSet::dbDelete()
 
 	if(_filter && _filter->id() != -1)
 		_filter->dbDelete();
+	delete _filter;
 	_filter = nullptr;
 
 	for(Column * col : _columns)
+	{
 		col->dbDelete(false);
+		delete col;
+	}
+	_columns.clear();
 
 	db().dataSetDelete(_dataSetID);
 

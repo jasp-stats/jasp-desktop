@@ -33,21 +33,21 @@ class RSyntax : public QObject
 public:
 	RSyntax(AnalysisForm *form);
 
-	AnalysisForm*					form()											const	{ return _form;					}
-	QVariantList					controlNameToRSyntaxMap()						const;
+	AnalysisForm*					form()																	const	{ return _form;	}
+	QVariantList					controlNameToRSyntaxMap()												const;
 	bool							setControlNameToRSyntaxMap(const QVariantList& conv);
 
-	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false) const;
-	QString							generateWrapper()								const;
-	QString							getRSyntaxFromControlName(JASPControl* control)	const;
-	QString							getRSyntaxFromControlName(const QString& name)	const;
-	QString							getControlNameFromRSyntax(const QString& name)	const;
+	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false)		const;
+	QString							generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData)	const;
+	QString							getRSyntaxFromControlName(JASPControl* control)							const;
+	QString							getRSyntaxFromControlName(const QString& name)							const;
+	QString							getControlNameFromRSyntax(const QString& name)							const;
 	void							setUp();
 	void							addFormula(FormulaBase* formula);
-	FormulaBase*					getFormula(const QString& name)					const;
-	bool							parseRSyntaxOptions(Json::Value& options)		const;
-	void							addError(const QString& msg)					const;
-	bool							hasError()										const;
+	FormulaBase*					getFormula(const QString& name)											const;
+	bool							parseRSyntaxOptions(Json::Value& options)								const;
+	void							addError(const QString& msg)											const;
+	bool							hasError()																const;
 
 	static QString					FunctionOptionIndent,
 									FunctionLineIndent;
@@ -59,9 +59,9 @@ signals:
 
 private:
 
-	QString							_analysisFullName()											const;
-	QString							_transformInteractionTerms(ListModel* model)				const;
-	bool							_areTermsVariables(ListModel* model, const Terms& terms)	const;
+	QString							_analysisFullName()														const;
+	QString							_transformInteractionTerms(ListModel* model)							const;
+	bool							_areTermsVariables(ListModel* model, const Terms& terms)				const;
 
 	AnalysisForm*					_form							= nullptr;
 	QVector<FormulaBase*>			_formulas;

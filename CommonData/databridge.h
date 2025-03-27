@@ -16,15 +16,15 @@
 //
 
 
-#ifndef ENGINEBASE_H
-#define ENGINEBASE_H
+#ifndef DATABRIDGE_H
+#define DATABRIDGE_H
 
 #include "dataset.h"
 
-class EngineBase
+class DataBridge
 {
 public:
-	EngineBase(unsigned long sessionID, bool useMemory = false);
+	DataBridge(unsigned long sessionID, bool useMemory = false);
 
 	std::string				createColumn(				const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
 	bool					deleteColumn(				const std::string & columnName);
@@ -38,14 +38,16 @@ public:
 	void					provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
 	void					provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
 	int						dataSetRowCount()		{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
+	void 					updateOptionsAccordingToMeta(Json::Value & options);
 
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
 	void					reloadColumnNames();
+
 
 	DataSet				*	_dataSet		= nullptr;
 	DatabaseInterface	*	_db				= nullptr;
 	int						_analysisId		= -1;
 };
 
-#endif // ENGINEBASE_H
+#endif // DATABRIDGE_H

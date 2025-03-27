@@ -64,6 +64,7 @@ public:
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
+	Q_INVOKABLE QString generateWrapper();
 
 	bool				needsRefresh()				const	override;
 	bool				wasUpgraded()				const	override	{ return _wasUpgraded; }

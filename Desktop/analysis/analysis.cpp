@@ -34,13 +34,13 @@
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  AnalysisBase(Analyses::analyses(), moduleVersion),
-	  _id(				id),
-	  _name(			analysisEntry->function()),
-	  _qml(				analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
-	  _titleDefault(	analysisEntry->title()),
-	  _title(			title == "" ? _titleDefault : title),
-	  _moduleData(		analysisEntry),
-	  _dynamicModule(	_moduleData->dynamicModule())
+		_id(				id),
+		_name(			analysisEntry->function()),
+		_qml(			analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
+		_titleDefault(	analysisEntry->title()),
+		_title(			title == "" ? _titleDefault : title),
+		_moduleData(		analysisEntry),
+		_dynamicModule(	_moduleData->dynamicModule())
 {
 	if(_moduleVersion.isEmpty() && _dynamicModule)
 		_moduleVersion = _dynamicModule->version();
@@ -615,6 +615,16 @@ QString	Analysis::fullHelpPath(QString helpFileName)
 void Analysis::duplicateMe()
 {
 	Analyses::analyses()->duplicateAnalysis(_id);
+}
+
+QString Analysis::generateWrapper()
+{
+	return _analysisForm->generateWrapper(
+					tq(_name),
+					tq(_moduleData->dynamicModule()->name()),
+					tq(_qml),
+					_moduleData->preloadData()
+	);
 }
 
 void Analysis::showDependenciesOnQMLForObject(QString uniqueName)

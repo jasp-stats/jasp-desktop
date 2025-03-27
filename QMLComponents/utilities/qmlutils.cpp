@@ -9,6 +9,7 @@
 #include "jaspcontrol.h"
 #include "altnavpostfixassignmentstrategy.h"
 #include "variableinfo.h"
+#include "messageforwarder.h"
 
 #ifdef linux
 #include <QtGlobal>
@@ -200,6 +201,7 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 	ctxt->setContextProperty("WINDOWS",					isWindows);
 	ctxt->setContextProperty("INTERACTION_SEPARATOR",	Term::separator);
 	ctxt->setContextProperty("dataSetInfo",				VariableInfo::info());
+	ctxt->setContextProperty("messages",				MessageForwarder::msgForwarder());
 
 	qmlRegisterUncreatableType<JASPControl>(					"JASP",		1, 0, "JASP",					"Impossible to create JASP Object");
 	qmlRegisterUncreatableType<ALTNavPostfixAssignmentStrategy>("JASP",		1, 0, "AssignmentStrategy",		"Can't make it"	);

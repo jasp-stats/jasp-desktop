@@ -1676,7 +1676,7 @@ void DatabaseInterface::create()
 
 	if(ret != SQLITE_OK)
 	{
-		Log::log() << "Couldnt open sqlite internal db, because of: " << (_db ? sqlite3_errmsg(_db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		Log::log() << "Couldnt open sqlite internal db (" << dbFile() << "), because of: " << (_db ? sqlite3_errmsg(_db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else

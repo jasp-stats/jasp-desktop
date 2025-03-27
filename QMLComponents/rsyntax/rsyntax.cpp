@@ -142,11 +142,11 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	return result;
 }
 
-QString RSyntax::generateWrapper() const
+QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData) const
 {
 	QString result = "\
 #\n\
-# Copyright (C) 2013-2024 University of Amsterdam\n\
+# Copyright (C) 2013-2025 University of Amsterdam\n\
 #\n\
 # This program is free software: you can redistribute it and/or modify\n\
 # it under the terms of the GNU General Public License as published by\n\
@@ -162,10 +162,10 @@ QString RSyntax::generateWrapper() const
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\
 #\n\
 \n\
-# This is a generated file. Don't change it\n\
+# This is a generated file. Don't change it!\n\
 \n\
 ";
-	result += _form->name() + " <- function(\n";
+	result += analysisName + " <- function(\n";
 	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
@@ -205,7 +205,7 @@ QString RSyntax::generateWrapper() const
 	}
 
 	result += ") {\n\n"
-	+ FunctionLineIndent + "defaultArgCalls <- formals(" + _analysisFullName() + ")\n"
+	+ FunctionLineIndent + "defaultArgCalls <- formals(" + moduleName + "::" + analysisName + ")\n"
 	+ FunctionLineIndent + "defaultArgs <- lapply(defaultArgCalls, eval)\n"
 	+ FunctionLineIndent + "options <- as.list(match.call())[-1L]\n"
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
@@ -213,6 +213,11 @@ QString RSyntax::generateWrapper() const
 	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
 	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n"
 	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
+
+	result += "\n"
+	+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(data)) {\n"
+	+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSet(data)\n"
+	+ FunctionLineIndent + "}\n\n";
 
 	for (FormulaBase* formula : _formulas)
 	{
@@ -222,7 +227,7 @@ QString RSyntax::generateWrapper() const
 		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + formula->name() + " <- as.formula(" + formula->name() + ")\n"
 		+ FunctionLineIndent + FunctionLineIndent + "}\n"
 		+ FunctionLineIndent + FunctionLineIndent + "options$" + formula->name() + " <- jaspBase::jaspFormula(" + formula->name() + ", data)\n"
-		+ FunctionLineIndent + "}\n\n";
+		+ FunctionLineIndent + "}\n";
 	}
 
 	if (optionsWithFormula.length() > 0)
@@ -239,12 +244,11 @@ QString RSyntax::generateWrapper() const
 		result += ")\n"
 		+ FunctionLineIndent + "for (name in optionsWithFormula) {\n"
 		+ FunctionLineIndent + FunctionLineIndent + "if ((name %in% optionsWithFormula) && inherits(options[[name]], \"formula\")) options[[name]] = jaspBase::jaspFormula(options[[name]], data)"
-		+ FunctionLineIndent + "}\n"
-		+ "\n";
+		+ FunctionLineIndent + "}\n";
 	}
 
-	result += ""
-	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + _analysisFullName() + "\", data, options, version))\n"
+	result += "\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + "))\n"
 	+ "}";
 
 	return result;

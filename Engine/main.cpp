@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
 		Engine e(0, 0);
 		
-		rbridge_setEngine(&e);
+		rbridge_setDataBridge(&e);
 		
 
 		_moduleLibraryFixer(singleArg, true, true);

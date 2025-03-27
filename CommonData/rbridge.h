@@ -28,7 +28,7 @@
 #include "jasprcpp_interface.h"
 #include "columnencoder.h"
 
-class EngineBase;
+class DataBridge;
 
 /// The R Bridge provides functions to the R analyses;
 /// i.e. functions to read the data set from shared memory
@@ -80,8 +80,8 @@ extern "C" {
 
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
-	void				rbridge_setEngine(EngineBase * engine);
-	void				rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont);
+	void				rbridge_setDataBridge(DataBridge * dataBridge);
+	void				rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont, bool insideJasp = true);
 	void				rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
 	void				rbridge_memoryCleaning();

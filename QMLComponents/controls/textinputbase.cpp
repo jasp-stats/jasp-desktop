@@ -198,7 +198,7 @@ void TextInputBase::setDisplayValue()
 	QString showThis = _value.toString();
 	
 	if(isInt)
-		showThis = QColumnUtils::currentQLocale().toString(valueInt);
+		showThis = QString::number(valueInt); //QColumnUtils::currentQLocale().toString(valueInt);
 
 	else if(isDbl)
 		showThis = QColumnUtils::doubleToString(valueDbl);

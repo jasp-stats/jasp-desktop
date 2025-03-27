@@ -24,7 +24,7 @@
 #include "timers.h"
 #include "r_functionwhitelist.h"
 #include "otoolstuff.h"
-#include "enginebase.h"
+#include "databridge.h"
 #include "r_functionwhitelist.h"
 #include <sstream>
 #include <cassert>
@@ -34,7 +34,7 @@
 #include <windows.h>
 #endif
 
-EngineBase					*	rbridge_engine			= nullptr;
+DataBridge					*	data_bridge				= nullptr;
 DataSet						*	rbridge_dataSet			= nullptr;
 RCallback						rbridge_callback		= NULL;
 std::set<std::string>			filterColumnsUsed;
@@ -61,9 +61,9 @@ size_t _logWriteFunction(const void * buf, size_t len)
 	return len;
 }
 
-void rbridge_setEngine(EngineBase * engine)
+void rbridge_setDataBridge(DataBridge * dataBridge)
 {
-	rbridge_engine = engine;
+	data_bridge = dataBridge;
 }
 
 const std::string jaspBaseDistributionSamplersR =
@@ -78,11 +78,11 @@ const std::string jaspBaseTransformFunctionsR =
 		#include "jaspBase_transformFunctions.h"
 		;
 
-void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont)
+void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
-	
-	rbridge_setEngine(engine);
+
+	rbridge_setDataBridge(dataBridge);
 	
 	Log::log() << "Setting extraEncodings." << std::endl;
 	extraEncodings = extraEncoder;
@@ -125,7 +125,7 @@ void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMe
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
 	static std::string initRCode	 = jaspBaseDistributionSamplersR + "\n" + jaspBaseFriendlyConstructorFunctionsR + "\n" + jaspBaseTransformFunctionsR;
-	
+
 	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
 					AppInfo::version.asString()	.c_str(),
@@ -138,7 +138,8 @@ void rbridge_init(EngineBase * engine, sendFuncDef sendToDesktopFunction, pollMe
 					rbridge_moduleLibraryFixer,
 					resultFont,
 					tempDirStatic.c_str(),
-					initRCode.c_str()
+					initRCode.c_str(),
+					insideJasp
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
@@ -205,13 +206,13 @@ extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 
 extern "C" bool STDCALL rbridge_requestJaspResultsFileSource(const char** root, const char **relativePath)
 {
-	if (!rbridge_engine)
+	if (!data_bridge)
 		return false;
 
 	static std::string _root;
 	static std::string _relativePath;
 
-	rbridge_engine->provideJaspResultsFileName(_root, _relativePath);
+	data_bridge->provideJaspResultsFileName(_root, _relativePath);
 
 	*root = _root.c_str();
 	*relativePath = _relativePath.c_str();
@@ -221,13 +222,13 @@ extern "C" bool STDCALL rbridge_requestJaspResultsFileSource(const char** root, 
 
 extern "C" bool STDCALL rbridge_requestStateFileSource(const char** root, const char **relativePath)
 {
-	if (!rbridge_engine)
+	if (!data_bridge)
 		return false;
 
 	static std::string _root;
 	static std::string _relativePath;
 
-	rbridge_engine->provideStateFileName(_root, _relativePath);
+	data_bridge->provideStateFileName(_root, _relativePath);
 
 	*root = _root.c_str();
 	*relativePath = _relativePath.c_str();
@@ -236,12 +237,12 @@ extern "C" bool STDCALL rbridge_requestStateFileSource(const char** root, const 
 
 extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char** root, const char** relativePath)
 {
-	if (!rbridge_engine)
+	if (!data_bridge)
 		return false;
 
 	static std::string _root, _relativePath;
 
-	rbridge_engine->provideTempFileName(extensionAsString, _root, _relativePath);
+	data_bridge->provideTempFileName(extensionAsString, _root, _relativePath);
 	*root			= _root.c_str();
 	*relativePath	= _relativePath.c_str();
 	return true;
@@ -249,14 +250,14 @@ extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsStrin
 
 extern "C" bool STDCALL rbridge_requestSpecificFileName(const char* specificFilename, const char** root, const char** relativePath)
 {
-	if (!rbridge_engine)
+	if (!data_bridge)
 		return false;
 
 	static std::string _root, _relativePath, _specific;
 
 	_specific = specificFilename;
 
-	rbridge_engine->provideSpecificFileName(_specific, _root, _relativePath);
+	data_bridge->provideSpecificFileName(_specific, _root, _relativePath);
 
 	*root			= _root.c_str();
 	*relativePath	= _relativePath.c_str();
@@ -287,7 +288,7 @@ std::string rbridge_runModuleCall(const std::string &name, const std::string &ti
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != nullptr)
-		rbridge_dataSet		= rbridge_engine->provideAndUpdateDataSet();
+		rbridge_dataSet		= data_bridge->provideAndUpdateDataSet();
 	
 	datasetWanted = datasetColsTypes;
 
@@ -306,7 +307,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullFilteredDataSet(size_t * colMa
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax, bool obeyFilter)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	if(rbridge_dataSet == nullptr)
 		return nullptr;
@@ -347,7 +348,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t * colMax, bool obeyFilter)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	const Columns & columns = rbridge_dataSet->columns();
 
@@ -382,7 +383,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if (colHeaders == nullptr)
 		return nullptr;
 
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	if(rbridge_dataSet == nullptr)
 		return nullptr;
@@ -500,7 +501,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 
 extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	if(!rbridge_dataSet)
 	{
@@ -542,7 +543,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 
 	lastColMax				= colMax;
 	resultCols				= static_cast<RBridgeColumnDescription*>(calloc(colMax, sizeof(RBridgeColumnDescription)));
-	rbridge_dataSet			= rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet			= data_bridge->provideAndUpdateDataSet();
 	const Columns & columns	= rbridge_dataSet->columns();
 
 	for (int colNo = 0; colNo < colMax; colNo++)
@@ -573,42 +574,42 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return rbridge_engine->getColumnType(columnName);
+		return data_bridge->getColumnType(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
-	return rbridge_engine->getColumnType(colName);
+	return data_bridge->getColumnType(colName);
 }
 
 extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return  rbridge_engine->getColumnAnalysisId(columnName);
+		return  data_bridge->getColumnAnalysisId(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
-	return rbridge_engine->getColumnAnalysisId(colName);
+	return data_bridge->getColumnAnalysisId(colName);
 }
 
 
 extern "C" int STDCALL rbridge_getColumnOriginalIndex(const char * columnName)
 {
 	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
-		return  rbridge_engine->getColumnOriginalIndex(columnName);
+		return  data_bridge->getColumnOriginalIndex(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
-	return rbridge_engine->getColumnOriginalIndex(colName);
+	return data_bridge->getColumnOriginalIndex(colName);
 }
 
 extern "C" const char * STDCALL rbridge_createColumn(const char * columnName)
 {
 	static std::string lastColumnName;
-	lastColumnName = rbridge_engine->createColumn(columnName);
+	lastColumnName = data_bridge->createColumn(columnName);
 
 	return lastColumnName.c_str();
 }
 
 extern "C" bool STDCALL rbridge_deleteColumn(const char * columnName)
 {
-	return rbridge_engine->deleteColumn(columnName);
+	return data_bridge->deleteColumn(columnName);
 }
 
 extern "C" bool STDCALL rbridge_setColumnDataAndType(const char* columnName, const char ** nominalData, size_t length, int _columnType)
@@ -617,12 +618,12 @@ extern "C" bool STDCALL rbridge_setColumnDataAndType(const char* columnName, con
 
 	std::vector<std::string> nominals(nominalData, nominalData + length);
 
-	return rbridge_engine->setColumnDataAndType(colName, nominals, columnType(_columnType));
+	return data_bridge->setColumnDataAndType(colName, nominals, columnType(_columnType));
 }
 
 extern "C" int	STDCALL rbridge_dataSetRowCount()
 {
-	return rbridge_engine->dataSetRowCount();
+	return data_bridge->dataSetRowCount();
 }
 
 void rbridge_memoryCleaning()
@@ -766,7 +767,7 @@ void rbridge_detachRCodeEnv(const std::string & dataname)
 
 std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	if(rbridge_dataSet == nullptr)
 		throw filterException("rbridge_dataSet == nullptr!");
@@ -828,7 +829,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
 
 	jaspRCPP_resetErrorMsg();
@@ -851,13 +852,13 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 
 std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc, const std::string & filterToUse)
 {
-	rbridge_dataSet = rbridge_engine->provideAndUpdateDataSet();
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 	
 	if(!rbridge_dataSet)
 		return "null"; // How would doing a computed column make any sense without data?
 	
 	computedColumnFilter = filterToUse;
-	
+
 	int rowCount	= computedColumnFilter == "" ? rbridge_dataSet->rowCount() : Filter(rbridge_dataSet, computedColumnFilter, false).filteredRowCount();
 
 	jaspRCPP_resetErrorMsg();

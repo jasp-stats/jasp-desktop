@@ -6,6 +6,11 @@
 class PreferencesModelBase : public QObject
 {
 	Q_OBJECT
+
+	Q_PROPERTY(bool		animationsOn		READ animationsOn											NOTIFY animationsOnChanged		)
+	Q_PROPERTY(bool		showRSyntax			READ showRSyntax			WRITE setShowRSyntax			NOTIFY showRSyntaxChanged		)
+	Q_PROPERTY(bool		developerMode		READ developerMode			WRITE setDeveloperMode			NOTIFY developerModeChanged		)
+
 public:
 	explicit PreferencesModelBase(QObject *parent = nullptr);
 	~PreferencesModelBase() { _singleton = nullptr; }
@@ -16,6 +21,8 @@ public:
 	virtual bool	showAllROptions()		const	{ return false; }
 	virtual int		maxScaleLevels()		const	{ return 100;	}
 	virtual float	ribbonBarHeightScale()	const	{ return 1.0;	}
+	virtual bool	animationsOn()			const	{ return false; }
+	virtual bool	developerMode()			const	{ return false;	}
 
 	static PreferencesModelBase* preferences();
 
@@ -25,6 +32,7 @@ public slots:
 	virtual void	setShowRSyntax(bool showRSyntax)				{}
 	virtual void	setShowAllROptions(bool showAllROptions)		{}
 	virtual bool	ALTNavModeActive()						const	{ return false; }
+	virtual void	setDeveloperMode(bool developerMode)			{};
 
 signals:
 	void ribbonBarHeightScaleChanged(float height);
@@ -35,7 +43,12 @@ signals:
 	void interfaceFontChanged();
 	void showRSyntaxChanged();
 	void showAllROptionsChanged();
-	void ALTNavModeActiveChanged(bool ALTNavModeActive);
+	void ALTNavModeActiveChanged(	bool	ALTNavModeActive);
+	void animationsOnChanged();
+	void languageCodeChanged();
+	void developerModeChanged(		bool	developerMode);
+
+
 
 protected:
 	static PreferencesModelBase* _singleton;

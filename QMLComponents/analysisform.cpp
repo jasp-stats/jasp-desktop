@@ -81,9 +81,9 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-QString AnalysisForm::generateWrapper() const
+QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData)
 {
-	return _rSyntax->generateWrapper();
+	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, preloadData);
 }
 
 QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const
@@ -282,28 +282,41 @@ void AnalysisForm::setHasVolatileNotes(bool hasVolatileNotes)
 	emit hasVolatileNotesChanged();
 }
 
+void AnalysisForm::clearAllErrors()
+{
+	for (QQuickItem* item : _controlErrorMessageCache)
+	{
+		JASPControl* control = item->property("control").value<JASPControl*>();
+		if (control)
+		{
+			item->setProperty("control", QVariant());
+			control->setHasError(false);
+			control->setHasWarning(false);
+		}
+	}
+}
 
-QString AnalysisForm::parseOptions(QString options)
+bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg)
 {
 	Json::Reader jsonReader;
-	Json::Value	 jsonOptions;
-	Json::Value jsonResult(Json::objectValue);
-
 	
-	jsonReader.parse(fq(options), jsonOptions, false);
+	jsonReader.parse(rawOptions, parsedOptions, false);
 
-	if (!_analysis)
-		setAnalysis(new AnalysisBase(this)); // Create a dummy analyis object
+	clearAllErrors(); // Remove old error in case
 
-	if (_rSyntax->parseRSyntaxOptions(jsonOptions))
+	if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 	{
-		bindTo(jsonOptions);
-		jsonOptions = _analysis->boundValues();
+		bindTo(parsedOptions);
+		parsedOptions = _analysis->boundValues();
 	}
 
-	jsonResult["options"] = jsonOptions;
-	jsonResult["error"] = fq(getError());
-	return tq(jsonResult.toStyledString());
+	if (hasError())
+	{
+		errorMsg = fq(getError(true));
+		return false;
+	}
+
+	return true;
 }
 
 void AnalysisForm::_setUp()
@@ -508,8 +521,10 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
 		controlErrorMessageItem->setProperty("closeable", closeable);
+		controlErrorMessageItem->setProperty("testIt", "ZZZZ");
+		controlErrorMessageItem->setProperty("messageError", message);
 		controlErrorMessageItem->setParentItem(container);
-		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
+		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, temporary));
 	}
 
 	if (warning)	control->setHasWarning(true);
@@ -529,13 +544,21 @@ bool AnalysisForm::hasError()
 	return false;
 }
 
-QString AnalysisForm::getError()
+QString AnalysisForm::getError(bool withControlName)
 {
 	QString message;
 
 	for (QQuickItem* item : _controlErrorMessageCache)
-		if (item->property("control").value<JASPControl*>() != nullptr)
-			message += (message != "" ? ", " : "") + item->property("message").toString();
+	{
+		JASPControl* control = item->property("control").value<JASPControl*>();
+		if (control != nullptr)
+		{
+			if (!message.isEmpty()) message +=  ", ";
+			if (withControlName && !control->name().isEmpty() && control->name() != rSyntaxControlName)
+				message += control->name() + ": ";
+			message += item->property("messageError").toString();
+		}
+	}
 
 	return message;
 }

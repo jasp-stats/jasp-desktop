@@ -213,7 +213,7 @@ AnalysisForm
 						applyScriptInfo:			""
 						control.readOnly:			true
 						control.selectByKeyboard:	true
-						onVisibleChanged:			if (visible) 	text = form.generateWrapper()
+						onVisibleChanged:			if (visible) 	text = jaspAnalysis.generateWrapper()
 					}
 				}
 			}

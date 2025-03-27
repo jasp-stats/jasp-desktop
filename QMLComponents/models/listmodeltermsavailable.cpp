@@ -33,11 +33,7 @@ void ListModelTermsAvailable::resetTermsFromSources()
 			addedTerms.add(term);
 
 	if (oldTerms != termsAvailable)
-	{
-		beginResetModel();
 		initTerms(termsAvailable);
-		endResetModel();
-	}
 
 	if (addedTerms.size() > 0 || removedTerms.size() > 0)
 		emit availableTermsReset(addedTerms, removedTerms);

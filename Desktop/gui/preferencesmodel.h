@@ -28,7 +28,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(float		ribbonBarHeightScale	READ ribbonBarHeightScale		WRITE setRibbonBarHeightScale		NOTIFY ribbonBarHeightScaleChanged		)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
-	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
 	Q_PROPERTY(bool			directLibpathEnabled	READ directLibpathEnabled		WRITE setDirectLibpathEnabled		NOTIFY directLibpathEnabledChanged		)
 	Q_PROPERTY(QString		directLibpathFolder		READ directLibpathFolder		WRITE setDirectLibpathFolder		NOTIFY directLibpathFolderChanged		)
@@ -52,7 +51,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
 	Q_PROPERTY(QStringList	emptyValues				READ emptyValues													NOTIFY emptyValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
-	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 	Q_PROPERTY(QStringList	allCodeFonts			READ allCodeFonts				CONSTANT																	)
 	Q_PROPERTY(QString		defaultInterfaceFont	READ defaultInterfaceFont		CONSTANT																	)
@@ -68,7 +66,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
 	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
-	Q_PROPERTY(bool			showRSyntax				READ showRSyntax				WRITE setShowRSyntax				NOTIFY showRSyntaxChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
 	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
 	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
@@ -127,7 +124,7 @@ public:
 	QString			currentThemeName()						const;
 	QString			languageCode()							const;
 	bool			disableAnimations()						const;
-	bool			animationsOn()							const { return !disableAnimations() && !safeGraphics(); }
+	bool			animationsOn()							const override { return !disableAnimations() && !safeGraphics(); }
 	bool			generateMarkdown()						const;
 	QStringList		allInterfaceFonts()						const { return _allInterfaceFonts; }
 	QStringList		allCodeFonts()							const { return _allCodeFonts; }
@@ -149,7 +146,7 @@ public:
 	void			zoomOut();
 	void			zoomReset();
 	int				maxEnginesAdmin() 						const;
-	bool			developerMode()							const;
+	bool			developerMode()							const override;
 	bool			ALTNavModeActive()						const override;
     bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;
@@ -164,7 +161,6 @@ public:
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
 	bool			useConfigurationFile()					const;
-
 
 	
 	bool checkUpdatesAskUser() const;
@@ -185,7 +181,7 @@ public slots:
 	void setCustomEditor(				QString		customEditor);
 	void setFixedDecimals(				bool		fixedDecimals);
 	void setUseDefaultPPI(				bool		useDefaultPPI);
-	void setDeveloperMode(				bool		developerMode);
+	void setDeveloperMode(				bool		developerMode)					override;
 	void setWhiteBackground(			bool		whiteBackground);
 	void setPlotBackground(				QString		plotBackground);
 	void setDeveloperFolder(			QString		developerFolder);
@@ -260,7 +256,6 @@ signals:
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
 	void emptyValuesChanged();
-	void developerModeChanged(			bool		developerMode);
 	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
 	void plotBackgroundChanged(			QString		plotBackground);
@@ -277,11 +272,9 @@ signals:
 	void resultFontChanged(				QString		resultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
-	void languageCodeChanged();
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 	void disableAnimationsChanged(		bool		disableAnimations);
 	void generateMarkdownChanged(		bool		generateMarkdown);
-	void animationsOnChanged();
 	void lcCtypeChanged();
 	void restartAllEngines();
 	void maxEnginesChanged(				int			maxEngines);

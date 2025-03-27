@@ -59,7 +59,7 @@ bool PollMessagesFunctionForJaspResults()
 Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID)
-	: EngineBase(parentPID), _engineNum(slaveNo), _parentPID(parentPID)
+	: DataBridge(parentPID), _engineNum(slaveNo), _parentPID(parentPID)
 {
 	JASPTIMER_SCOPE(Engine Constructor);
 	assert(_EngineInstance == NULL);
@@ -307,73 +307,7 @@ void Engine::runFilterByName(const std::string & name)
 	_engineState = engineState::idle;
 }
 
-void Engine::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
-{
-	JASPTIMER_SCOPE(Engine::updateOptionsAccordingToMeta);
-	
-	std::function<void(Json::Value&,Json::Value&)> recursiveUpdate;
-	recursiveUpdate = [&recursiveUpdate, this](Json::Value & options, Json::Value & meta)
-	{
-		if(meta.isNull())
-			return;
-		
-		Json::Value loadFilteredData = !meta.isObject() || !meta.isMember("loadFilteredData") ? Json::nullValue : meta["loadFilteredData"];
-		
-		switch(options.type())
-		{
-		case Json::arrayValue:
-			for(int i=0; i<options.size() && i < meta.size(); i++)
-				recursiveUpdate(options[i], meta.type() == Json::arrayValue ? meta[i] : meta);
-				
-			return;
-	
-		case Json::objectValue:
-			for(const std::string & memberName : options.getMemberNames())
-				if(memberName != ".meta" && meta.isMember(memberName))
-					recursiveUpdate(options[memberName], meta[memberName]);
-			
-			if(loadFilteredData.isObject())
-			{
-				const std::string	colName = loadFilteredData["column"].asString(),
-									filterN	= loadFilteredData["filter"].asString();
-				DataSet			*	data	= provideAndUpdateDataSet();
-				Column			*	col		= data->column(colName);
-				
-				if(!col)
-					return;
-				
-				Filter			*	filter	= new Filter(data, filterN, false);
-				
-				if(col && filter)
-				{
-					Json::Value rowIndices	= Json::arrayValue,
-								values		= Json::arrayValue;
-					doublevec	dbls		= col->dataAsRDoubles({}); //We dont pass a filter because we need to know the rowindices.
-					
-					for(size_t r=0; r<dbls.size(); r++)
-						if(filter->filtered()[r])
-						{
-							rowIndices	.append(int(r+1));
-							values		.append(dbls[r]);
-						}
-					
-					options["rowIndices"]	= rowIndices;
-					options["values"]		= values;
-				}					
-				delete filter;
-			}
-			return;
-	
-		default:
-			return;
-		}
-	};
-	
-	recursiveUpdate(encodedOptions, encodedOptions[".meta"]);
-	
-	
-	//Log::log() << "After updating options according to their meta it is now:\n" << encodedOptions << std::endl;
-}
+
 
 void Engine::runFilter(const std::string & filter, const std::string & generatedFilter, int filterRequestId)
 {

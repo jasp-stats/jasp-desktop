@@ -96,7 +96,6 @@ public:
 public slots:
 	void					runScriptRequestDone(		const QString		&	result, const QString & requestId, bool hasError);
 	void					filterByNameDone(			const QString		&	name,	const QString & error);
-	void					setAnalysis(				AnalysisBase		*	analysis);
 	void					boundValueChangedHandler(	JASPControl			*	control);
 	void					setOptionNameConversion(	const QVariantList	&	conv);
 	void					setTitle(					QString					title);
@@ -145,17 +144,25 @@ public:
 	Q_INVOKABLE void		addFormError(const QString& message);
 	Q_INVOKABLE void		addFormWarning(const QString& message);
 	Q_INVOKABLE void		refreshAnalysis();
+<<<<<<< HEAD
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QString		generateWrapper()		const;
 	Q_INVOKABLE QString		parseOptions(QString options);
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue) const;
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const;
+=======
+	Q_INVOKABLE bool		initialized()																const	{ return _initialized; }
+>>>>>>> da1ff77df (Make it work)
 
+	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData);
+	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
+	void					setAnalysis(AnalysisBase *	analysis);
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void					clearControlError(JASPControl* control);
+	void					clearAllErrors();
 	void					cleanUpForm();
 	bool					hasError();
-	QString					getError();
+	QString					getError(bool withControlName = false);
 
 	bool					isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->isOwnComputedColumn(col) : false; }
 

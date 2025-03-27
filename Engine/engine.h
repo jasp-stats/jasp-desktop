@@ -18,7 +18,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "enginebase.h"
+#include "databridge.h"
 #include "enginedefinitions.h"
 #include "ipcchannel.h"
 #include <json/json.h>
@@ -27,7 +27,7 @@
 /// The Engine handles communication between Desktop and R
 /// It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
 /// It also contains some utility functions for use by rbridge and by extension R
-class Engine : public EngineBase
+class Engine : public DataBridge
 {
 public:
 	typedef engineAnalysisStatus Status;
@@ -64,7 +64,6 @@ private:
 	void					receiveLogCfg(					const Json::Value & jsonRequest);
 	void					receiveSettings(				const Json::Value & jsonRequest);
 	void					absorbSettings(					const Json::Value & json);
-	void 					updateOptionsAccordingToMeta(					  Json::Value & options);
 
 	void					runAnalysis();
 	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);

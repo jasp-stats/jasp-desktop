@@ -42,7 +42,7 @@ Rectangle
 	property int containerWidth	: container ? (container === form ? form.availableWidth : container.width) : 0
 	property int paddingWidth	: 10 * jaspTheme.uiScale
 	property int paddingHeight	: 6 * jaspTheme.uiScale
-	property alias message		: messageText.text
+	property string messageError: ""
 
 	onContainerWidthChanged:	if (visible)				showMessage()
 	onControlChanged:			if (!control)				controlErrorMessage.opacity = 0
@@ -104,13 +104,12 @@ Rectangle
 		positionMessage();
 	}
 
-	function showMessage(message, temporary)
+	function showMessage(temporary)
 	{
 		messageTimer.stop();
-		if (!message || !control || !container) return;
+		if (!control || !container) return;
 
 		controlErrorMessage.tmp	= temporary
-		messageText.text		= message
 		messageText.wrapMode	= Text.NoWrap
 
 		positionMessage();
@@ -178,5 +177,6 @@ Rectangle
 		anchors.left			: parent.left
 		anchors.leftMargin		: 2 * jaspTheme.uiScale
 		textFormat				: Text.RichText
+		text					: messageError
 	}
 }

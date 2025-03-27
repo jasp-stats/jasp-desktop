@@ -144,6 +144,7 @@ endif()
 add_subdirectory(Common)
 add_subdirectory(CommonData)
 add_subdirectory(QMLComponents)
+add_subdirectory(SyntaxInterface)
 
 if(NOT WIN32)
   add_subdirectory(R-Interface)
