@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-27 17:05+0000\n"
+"PO-Revision-Date: 2025-03-29 03:07+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -5748,7 +5748,7 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Löschen von Beschriftung %1 aus Spalte '%2'"
 
 #, qt-format
 msgctxt "QObject|"
