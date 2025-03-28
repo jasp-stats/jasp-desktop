@@ -1243,7 +1243,7 @@ void JaspTheme::setThemeName(QString themeName)
 	_themeName = themeName;
 	emit themeNameChanged(_themeName);
 
-	setIconPath("qrc:/icons/" + _themeName + "/");
+	setIconPath("qrc:/jasp-stats.org/imports/JASP/Controls/icons/" + _themeName + "/");
 
 	if(_currentTheme == this)
 		emit currentThemeNameChanged();

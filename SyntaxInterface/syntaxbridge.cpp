@@ -296,8 +296,8 @@ void addContextObjects(QQmlApplicationEngine* engine)
 	if (engine->rootContext()->contextProperty("jaspTheme").isNull())
 	{
 		JaspTheme* defaultJaspTheme = new JaspTheme();
-		defaultJaspTheme->setIconPath("/default/");
-		engine->rootContext()->setContextProperty("jaspTheme",				defaultJaspTheme);
+		defaultJaspTheme->setThemeName("lightTheme");
+		engine->rootContext()->setContextProperty("jaspTheme",			defaultJaspTheme);
 	}
 
 	qmlRegisterUncreatableMetaObject(JASPControl::staticMetaObject, // static meta object

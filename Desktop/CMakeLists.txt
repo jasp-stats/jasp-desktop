@@ -210,18 +210,6 @@ qt_add_resources(
   FILES
   ${TRANSLATION_RESOURCE_FILES})
 
-file(GLOB_RECURSE ICONS_RESOURCE_FILES
-     "${CMAKE_CURRENT_LIST_DIR}/resources/icons/*")
-qt_add_resources(
-  JASP
-  "icons"
-  PREFIX
-  "/"
-  BASE
-  "${CMAKE_CURRENT_LIST_DIR}/resources"
-  FILES
-  ${ICONS_RESOURCE_FILES})
-
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
 qt_add_resources(
   JASP
