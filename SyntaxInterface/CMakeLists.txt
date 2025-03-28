@@ -40,6 +40,7 @@ target_compile_definitions(
 	SyntaxInterface
 	PUBLIC
 		SYNTAX_INTERFACE_LIBRARY
+                JASP_R_INTERFACE_LIBRARY
 	)
 
 
