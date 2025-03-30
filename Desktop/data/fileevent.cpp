@@ -119,7 +119,7 @@ const std::string FileEvent::databaseStr() const
 
 QString FileEvent::getProgressMsg() const
 {
-	//jasp = 0, html, csv, txt, tsv, sav, zsav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown
+	//jasp = 0, html, csv, txt, tsv, sav, zsav, ods, xls, xlsx, pdf, sas7bdat, sas7bcat, por, xpt, dta, database, rdata, rds, empty, unknown
 	switch(_operation)
 	{
 	case FileEvent::FileOpen:
@@ -139,6 +139,8 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::sas7bcat:	return tr("Importing SAS File");
 		case Utils::FileType::dta:		return tr("Importing STATA File");
 		case Utils::FileType::jasp:		return tr("Loading JASP File");
+		case Utils::FileType::rdata:
+		case Utils::FileType::rds:      return tr("Loading R Data File");
 		default:						return tr("Loading File");
 		}
 		break;

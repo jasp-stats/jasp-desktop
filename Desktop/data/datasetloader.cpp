@@ -26,6 +26,7 @@
 #include "importers/odsimporter.h"
 #include "importers/readstatimporter.h"
 #include "importers/excelimporter.h"
+#include "importers/rdataimporter.h"
 
 
 #include <QFileInfo>
@@ -56,6 +57,8 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	if( boost::iequals(ext,".xls") ||
 		boost::iequals(ext,".xlsx"))							return new ExcelImporter();
 	if(	ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
+	if( boost::iequals(ext,".rdata") ||
+        boost::iequals(ext,".rds"))                             return new RDataImporter(ext);
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }

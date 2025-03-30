@@ -117,6 +117,8 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/QMLComponents
     # ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
+    # librdata
+    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBRDATA_H}>
     ${LIBREADSTAT_INCLUDE_DIRS}
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
@@ -124,6 +126,7 @@ target_include_directories(
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     ${LIBFREEXL_INCLUDE_DIRS}
+    ${LIBRDATA_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -168,11 +171,16 @@ target_link_libraries(
     ${LIBREADSTAT_LIBRARIES}
     # MinGW's ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
+    # librdata -----------------------------------
+    ${LIBRDATA_LIBRARIES}
+    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBRDATA_DLL_A}>
     # JSONCPP
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
     # R-Framework --------------------------------
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+    # librdata
+    ${LIBRDATA_LIBRARIES}
 )
 
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)

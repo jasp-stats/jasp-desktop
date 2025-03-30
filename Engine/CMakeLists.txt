@@ -81,6 +81,8 @@ if(WINDOWS)
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}
             ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBRDATA_DLL}
+            ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_ZLIB_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBICONV_DLL}

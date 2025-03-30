@@ -420,6 +420,7 @@ if(WIN32)
           ${RTOOLS_LIBWINPTHREAD_DLL}
           #${RTOOLS_LIBJSONCPP_DLL}
           ${RTOOLS_LIBREADSTAT_DLL}
+          ${RTOOLS_LIBRDATA_DLL}
           ${RTOOLS_ZLIB_DLL}
           ${RTOOLS_LIBICONV_DLL}
           ${_LIB_R_INTERFACE_DLL}

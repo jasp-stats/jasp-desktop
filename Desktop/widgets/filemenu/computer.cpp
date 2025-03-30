@@ -39,13 +39,14 @@ FileEvent *Computer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = tr("All Data Sets %1").arg("(*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt);;")
+	QString filter = tr("All Data Sets %1").arg("(*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt *.rdata *.rds);;")
 					+ tr("JASP Files %1").arg("(*.jasp);;")
 					+ tr("CSV Text Files %1").arg("(*.csv *.txt *.tsv);;")
 					+ tr("Spreadsheet Files %1").arg("(*.ods *.xls *.xlsx);;")
 					+ tr("SPSS Files %1").arg("(*.sav *.zsav *.por)") + ";;"
 					+ tr("Stata Files %1").arg("(*.dta);;")
-					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt)");
+					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt);;")
+					+ tr("R Data files %1").arg("*.rdata *.rds");
 
 	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
