@@ -250,7 +250,7 @@ ScrollView
 
 					text:				preferencesModel.localConfigurationPATH
 					onEditingFinished:	preferencesModel.localConfigurationPATH = text
-					nextEl:				directLibpathDevModEnabled
+					nextEl:				logToFile
 
 					height:				browseLocalconfButton.height
 					anchors
