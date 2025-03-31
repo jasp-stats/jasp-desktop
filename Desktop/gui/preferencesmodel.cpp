@@ -10,6 +10,7 @@
 #include "preferencesmodelbase.h"
 #include <QQuickWindow>
 #include "githubpat.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 using namespace std;
 
@@ -108,6 +109,28 @@ void PreferencesModel::browseDeveloperLibPathFolder()
 		setDirectLibpathFolder(folder);
 }
 
+void PreferencesModel::browseConfigurationFile()
+{
+	QString defaultfolder = JASPConfiguration::getInstance()->getDefaultConfigurationPath();
+	if (defaultfolder.isEmpty())
+	{
+#ifdef _WIN32
+		defaultfolder = "c:\\";
+#else
+		defaultfolder = "~";
+#endif
+	}
+
+	QString folder = MessageForwarder::browseOpenFile(tr("Select a file..."), defaultfolder, "");
+
+	if (!folder.isEmpty())
+	{
+		setLocalConfigurationPATH(folder);
+		JASPConfiguration::getInstance()->processConfiguration();
+	}
+
+}
+
 
 #define GET_PREF_FUNC(TYPE, NAME, SETTING, TO_FUNC)	TYPE PreferencesModel::NAME() const { return Settings::value(SETTING).TO_FUNC; }
 #define GET_PREF_FUNC_BOOL(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toBool())
@@ -164,6 +187,9 @@ GET_PREF_FUNC_BOOL( directLibpathEnabled,		Settings::DIRECT_LIBPATH_ENABLED					
 GET_PREF_FUNC_STR(	directLibpathFolder,		Settings::DIRECT_LIBPATH_FOLDER						)
 GET_PREF_FUNC_STR(	directDevModName,			Settings::DIRECT_DEVMOD_NAME						)
 GET_PREF_FUNC_BOOL(	engineSandbox,				Settings::ENGINE_SANDBOX							)
+GET_PREF_FUNC_STR(	localConfigurationPATH,		Settings::LOCAL_CONFIGURATION_PATH              	)
+GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION                     	)
+GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
 
 
 int PreferencesModel::maxEngines() const
@@ -344,6 +370,9 @@ SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeCha
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
 SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
 SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directDevModNameChanged,		Settings::DIRECT_DEVMOD_NAME						)
+SET_PREF_FUNCTION(				QString,	setLocalConfigurationPATH,	localConfigurationPATH,		localConfigurationPATHChanged,	Settings::LOCAL_CONFIGURATION_PATH					)
+SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		remoteConfigurationChanged,     Settings::REMOTE_CONFIGURATION  					)
+SET_PREF_FUNCTION(				QString,	setRemoteConfigurationURL,	remoteConfigurationURL,		remoteConfigurationURLChanged,	Settings::REMOTE_CONFIGURATION_URL					)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)

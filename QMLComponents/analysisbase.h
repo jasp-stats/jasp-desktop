@@ -45,6 +45,10 @@ public:
 	virtual				void				destroyForm();
 	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 
+	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue)										const	{ return defaultValue;		}
+	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)		const	{ return defaultValue;		}
+	virtual bool optionLocked(const QString& name) const { return false; };
+
 						const Json::Value &	boundValues()												const	{ return _boundValues;		}
 						const Json::Value &	orgBoundValues()											const	{ return _orgBoundValues;	}
 						const Json::Value &	boundValue(const std::string& name,

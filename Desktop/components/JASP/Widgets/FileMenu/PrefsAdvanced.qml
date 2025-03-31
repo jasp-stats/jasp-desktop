@@ -167,8 +167,99 @@ ScrollView
 				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
-				KeyNavigation.tab:		directLibpathDevModEnabled
+				KeyNavigation.tab:		useRemoteConf
 				activeFocusOnTab:		true
+			}
+		}
+
+		PrefsGroupRect
+		{
+			title:				qsTr("Configuration File Options")
+
+			CheckBox
+			{
+				id:					useRemoteConf
+				label:				qsTr("Use remote configuration file.")
+				checked:			preferencesModel.remoteConfiguration
+				onCheckedChanged:	preferencesModel.remoteConfiguration = checked
+				toolTip:			qsTr("Use the remote configuration file pointed to by URL")
+
+				KeyNavigation.tab:		remoteConfURL
+			}
+
+			Item
+			{
+				id:		remoteConfItem
+				width:	parent.width
+				height:	cranRepoUrl.height
+				enabled: preferencesModel.remoteConfiguration
+
+				Label
+				{
+					id:		remoteSettingsLabel
+					text:	qsTr("Configuration URL: ")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					remoteConfURL
+
+					text:				preferencesModel.remoteConfigurationURL
+					onEditingFinished:	preferencesModel.remoteConfigurationURL = text
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			remoteSettingsLabel.right
+						right:			parent.right
+					}
+
+					KeyNavigation.tab:	localconf
+				}
+			}
+
+			Item
+			{
+				id:					localconf
+				//enabled:			!preferencesModel.remoteConfiguration
+				width:				parent.width
+				height:				browseLocalconfButton.height
+
+				RectangularButton
+				{
+					id:					browseLocalconfButton
+					text:				qsTr("Select configuration file")
+					onClicked:			preferencesModel.browseConfigurationFile()
+					anchors.left:		parent.left
+					toolTip:			qsTr("Select configuration file.")
+
+					KeyNavigation.tab:		browseLocalconfFolderText.textInput
+					activeFocusOnTab:		true
+				}
+
+				PrefsTextInput
+				{
+					id:					browseLocalconfFolderText
+
+					text:				preferencesModel.localConfigurationPATH
+					onEditingFinished:	preferencesModel.localConfigurationPATH = text
+					nextEl:				directLibpathDevModEnabled
+
+					height:				browseLocalconfButton.height
+					anchors
+					{
+						left:			browseLocalconfButton.right
+						right:			parent.right
+						top:			parent.top
+					}
+				}
 			}
 		}
 

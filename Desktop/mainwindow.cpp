@@ -127,6 +127,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
+	_jaspConfiguration		= JASPConfiguration::getInstance(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -160,6 +161,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync->start(_preferences->plotPPI());
 	
 	checkForUpdates();
+
+	QTimer::singleShot(0, this, [&]() { _jaspConfiguration->processConfiguration();  });
 	
 	_languageModel->setDefaultLocaleFromCurrent(); //Make sure (Q)ColumnUtils knows whats up
 
@@ -494,7 +497,9 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
 	connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
 	connect(_preferences,			&PreferencesModel::orderByValueByDefaultChanged,	[&](){	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault()); });
-	
+	connect(_preferences,			&PreferencesModel::remoteConfigurationChanged,      _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+	connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,   _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+
 	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
@@ -547,6 +552,7 @@ void MainWindow::makeConnections()
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
 	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
+	connect(_jaspConfiguration,		&JASPConfiguration::configurationProcessed,			this,					&MainWindow::loadModulesFromUserConfiguration				);
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
@@ -2147,3 +2153,17 @@ void MainWindow::resetVariableTypes()
 {
 	DataSetPackage::pkg()->resetVariableTypes();
 }
+
+void MainWindow::loadModulesFromUserConfiguration(QString state)
+{
+	if(state == "FAIL")
+		return;
+
+	for(const QString& moduleName : *_jaspConfiguration->getAdditionalModules())
+	{
+		auto button = _ribbonModel->ribbonButtonModel(moduleName.toStdString());
+		int index = _ribbonModel->ribbonButtonModelIndex(button);
+		_ribbonModel->setModuleEnabled(index, true);
+	}
+}
+

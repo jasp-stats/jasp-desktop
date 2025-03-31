@@ -104,7 +104,10 @@ const Settings::Setting Settings::Values[] = {
 	{"directLibpathFolder",			""		},
 	{"directDevModName",			""		},
 	{"ribbonBarHeightScale",		1.0		},
-	{"engineSandbox",				false	}
+	{"engineSandbox",				false	},
+	{"remoteConfiguration",			false   },
+	{"remoteConfigurationURL",		""      },
+	{"localConfigurationPath",		""		}
 };	
 
 QVariant Settings::value(Settings::Type key)

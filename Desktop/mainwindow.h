@@ -54,6 +54,7 @@
 #include "widgets/filemenu/filemenu.h"
 #include "data/workspacemodel.h"
 #include "utilities/languagemodel.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 using namespace std;
 
@@ -279,6 +280,7 @@ private slots:
 	void onDataModeChanged(bool dataMode);
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
+	void loadModulesFromUserConfiguration(QString state);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
@@ -324,6 +326,7 @@ private:
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
 	WorkspaceModel				*	_workspaceModel			= nullptr;
+	JASPConfiguration           *   _jaspConfiguration      = nullptr;
 
 	QSettings						_settings;
 

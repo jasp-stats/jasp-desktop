@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QFile>
 #include "log.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 using namespace std;
 using Modules::Upgrader;
@@ -111,6 +112,11 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		analysis->setUpgradeMsgs(msgs);
 
 	return analysis;
+}
+
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, Json::Value* options)
+{
+	return create(Json::nullValue, analysisEntry, _nextId++, Analysis::Empty, true, "", "", options);
 }
 
 Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, std::string moduleVersion, Json::Value *options)
@@ -524,9 +530,16 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 Analysis* Analyses::createAnalysis(const QString& module, const QString& analysis)
 {
 	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
+	Json::Value options = JASPConfiguration::getInstance()->getAnalysisOptionValues(module, analysis);
 
-	if (dynamicModule)	return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
-	else				return nullptr;
+	if (dynamicModule) {
+		if(options != Json::nullValue)
+			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)), &options);
+		else
+			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
+	}
+	else
+		return nullptr;
 
 }
 
