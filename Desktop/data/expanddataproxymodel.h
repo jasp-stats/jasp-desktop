@@ -5,21 +5,22 @@
 #include "utils.h"
 #include "undostack.h"
 
-class ExpandDataProxyModel : public QObject
+class ExpandDataProxyModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
 public:
 	explicit					ExpandDataProxyModel(QObject *parent);
 
-	int							rowCount(			bool includeVirtuals = true)													const;
-	int							columnCount(		bool includeVirtuals = true)													const;
-	QVariant					headerData(			int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const;
-	void						setData(			int row, int col, const QVariant &value, int role);
-	Qt::ItemFlags				flags(				int row, int column)															const;
-	QModelIndex					index(				int row, int column, const QModelIndex &parent = QModelIndex())					const;
-	QVariant					data(				int row, int column, int role = Qt::DisplayRole)								const;
-	bool						filtered(			int row, int column)															const;
+	int							rowCount(			const QModelIndex &parent = QModelIndex())										const	override;
+	int							columnCount(		const QModelIndex &parent = QModelIndex())										const	override;
+	QVariant					data(				const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
+	QVariant					headerData(			int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const	override;
+	bool						setData(			const QModelIndex &index, const QVariant &value, int role)								override;
+	Qt::ItemFlags				flags(				const QModelIndex &index)														const	override;
+	QModelIndex					index(				int row, int column, const QModelIndex &parent = QModelIndex())					const	override;
+	QModelIndex					parent(				const QModelIndex &index)														const	override;
+
 	bool						isRowVirtual(		int row)																		const;
 	bool						isColumnVirtual(	int col)																		const;
 	bool						expandDataSet()																						const { return _expandDataSet; }
@@ -42,8 +43,6 @@ public:
 	void						copyColumns(		int startCol, const std::vector<Json::Value>& copiedColumns);
 	Json::Value					serializedColumn(	int col);
 
-	int							getRole(const std::string& roleName)														const;
-
 	void						undo()				{ _undoStack->undo(); }
 	void						redo()				{ _undoStack->redo(); }
 	QString						undoText()			{ return _undoStack->undoText(); }
@@ -54,12 +53,9 @@ signals:
 	void						undoChanged();
 
 protected:
-	void						_setRolenames();
-
 	QAbstractItemModel*			_sourceModel			= nullptr;
 	bool						_expandDataSet			= false;
 
-	strintmap					_roleNameToRole;
 	UndoStack*					_undoStack				= nullptr;
 
 	const int	EXTRA_COLS				= 7;

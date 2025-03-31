@@ -240,7 +240,7 @@ TableViewBase
 			boundsMovement	: Flickable.StopAtBounds
 			clip:			true
 
-			DataSetView
+			DataSetViewBase
 			{
 				z:						-1
 				id:						theView
