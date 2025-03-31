@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-31 04:24+0000\n"
+"PO-Revision-Date: 2025-04-01 00:00+0000\n"
 "Last-Translator: Marko Bojović <bojovicmarko@outlook.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "sr/>\n"
@@ -1838,10 +1838,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"Није могуће отворити датотеку јер:\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "Чување није успело"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1850,20 +1852,25 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"Није могуће сачувати датотеку.\n"
+"\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "Да ли имате GitHub налог?"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
 msgstr ""
+"Да бисте могли да пријавите грешку, морате да имате GitHub налог, да ли "
+"имате такав налог?"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "Придружите се GitHub-у"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1875,10 +1882,17 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"Отворићемо вам две странице у вашем веб претраживачу.\n"
+"Друга ће бити страница „Придружи се ГитХуб-у“ на којој се можете "
+"регистровати за налог на GitHub-у.\n"
+"Прва ће бити страница за пријаву која води до делимично попуњеног извештаја "
+"о грешци након што се пријавите са својим новим GitHub налогом.\n"
+"\n"
+"Молимо вас да тамо унесете све информације које недостају."
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "GitHub не може бити отворен"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1886,6 +1900,9 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"Нешто је пошло по злу што вас је довело до GitHub-а.\n"
+"Још увек можете да пријавите грешку тако што ћете отићи на https://"
+"github.com/jasp-stats/jasp-issues/issues"
 
 msgctxt "MainWindow|"
 msgid "Error"
@@ -1897,6 +1914,8 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"ЈАСП је доживео неочекивану интерну грешку:\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1904,14 +1923,17 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP не може да настави и затвориће се.\n"
+"\n"
+"Били бисмо вам захвални ако бисте ову грешку пријавили JASP тиму."
 
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "Извештај"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "Изађи"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1920,6 +1942,10 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"JASP је покренут без повезане датотеке података (csv, sav or ods file). "
+"Међутим, за уређивање података, JASP покреће едитор табела заснован на овој "
+"датотеци и синхронизује податке приликом чувања. Да ли ова датотека већ "
+"постоји или желите да је креирате?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1927,6 +1953,10 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP је покренут са онлајн датотеком података (csv, sav или ods фајл). "
+"Међутим, за уређивање података, JASP захтева да датотека буде на вашем "
+"рачунару. Да ли ова датотека већ постоји на вашем рачунару или желите да је "
+"креирате?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1934,22 +1964,25 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP је покренут са датотеком која је само за читање (вероватно из примера). "
+"Да бисте уредили податке, JASP мора да уписује у датотеку. Да ли ова "
+"датотека већ постоји на вашем рачунару или желите да је креирате?"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "Покрените уређивач табела"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "Креирај датотеку података"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "Пронађите фајл са подацима"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "Покрени уређивач"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1957,6 +1990,8 @@ msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
+"Није могуће покренути уређивач: %1. Проверите поставке уређивача у менију за "
+"поставке."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1964,19 +1999,21 @@ msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
+"Није подешен подразумевани едитор табела за датотеку %1. Подесите "
+"одговарајући едитор у Поставкама."
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "Уклони све анализе"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "Да ли заиста желите да уклоните све анализе?"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "Учитавање повезаног модула %1 није успело"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -1985,19 +2022,22 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"Учитавање повезаног модула %1 fније успело са следећом грешком:\n"
+"\n"
+"%2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "Грешка при учитавању надоградњи"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "Приликом учитавања надоградњи за %1 дошло је до грешке: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "Надоградње није било могуће прочитати"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -2006,6 +2046,11 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"Неопходна надоградња за читање старијих JASP-фајлова није могла бити "
+"прочитана...\n"
+"Још увек можете користити JASP и чак читати (неке) старије фајлове, али неке "
+"опције можда неће бити исправно схваћене, а неке анализе могу у потпуности "
+"отказати учитавање."
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
@@ -2228,23 +2273,23 @@ msgstr "Фајл са подацима"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "Корисничко име и/или лозинка нису тачни. Покушајте поново."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSF сервис није доступан. Проверите интернет конекцију."
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "Грешка у истеку времена за конекцију. Проверите интернет везу."
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF грешка"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "Пројекти"
 
 msgctxt "OSF|"
 msgid ""
@@ -2252,10 +2297,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"Фајлови се не могу додати у листу пројеката.\n"
+"\n"
+"За додавање новог пројекта користите OSF услуге на мрежи."
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "Провајдери података"
 
 msgctxt "OSF|"
 msgid ""
@@ -2264,48 +2312,57 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
+"Датотеке се не могу додати у листу провајдера података пројекта.\n"
+"\n"
+"За додавање новог провајдера података (нпр. Google Drive) користите OSF "
+"услуге на мрежи."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "Датотеке се не могу додати у '%1' из непознатог разлога.."
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "Типови датотека"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "Отварање фајла из OSF-а није успело"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "Дошло је до грешке и директоријум није могао бити креиран."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"Нови директоријум се не може додати у листу пројеката.<br>За додавање новог "
+"пројекта користите OSF услуге на мрежи."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"Нови директоријум се не може додати у листу провајдера података пројекта. "
+"<br> За додавање новог провајдера података (нпр. Google Drive) користите OSF "
+"услуге на мрежи."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "Нови директоријум се не може додати у '%1' из непознатог разлога."
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "Фолдер"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "Пријава"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
@@ -2460,42 +2517,42 @@ msgstr "Поље за текст"
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "Вредност (%1) мора бити %2"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "Изворни модел %1 мора бити из листе фактора"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "Погрешна врста извора за VariableList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "Није пронађена повезана листа за VariablesList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr ""
+msgstr "Погрешна врста повезане листе (%1) fпронађена за VariablesList %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "Није наведен назив за извор %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "Није наведен извор за %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "Компонента %1 није пронађена за извор %2"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
@@ -2503,7 +2560,7 @@ msgstr "Стандардизира варијаблу"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "враћа true ако стринг бар једном садржи подстринг"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
@@ -2511,25 +2568,24 @@ msgstr "Стандардизира варијаблу"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "враћа true ако стринг бар једном садржи подстринг"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Наслов"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "Одредите секвенцу"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "из"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
 msgstr "до"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "steps"
 msgstr "степенице"
@@ -2590,12 +2646,12 @@ msgstr "Учитавање надоградњи за модул %1 није ус
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
+msgstr "Дошло је до грешке при покретању модула из директоријума %1, грешка: %2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "Дошло је до грешке при учитавању модула %1, грешка: '%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2603,6 +2659,7 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
+"Дошло је до грешке при брисању датотека за модул %1 на путањи '%2' грешка: %3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2610,11 +2667,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"Грешка при инсталацији модула %1 порука о грешци:\n"
+"%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
-msgstr ""
+msgstr "Није могуће инсталирати модул јер %1 не постоји."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2625,58 +2684,69 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
+"Није могуће инсталирати модул јер је име '%1' резервисано за развојни модул."
+"\n"
+"Промените назив (у DESCRIPTION и description.json) и покушајте поново. IАко "
+"нисте аутор овог модула и не знате како то да урадите, контактирајте: %2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "Изаберите фолдер"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"Да бисте инсталирали развојни модул, потребно је да изаберете фолдер који "
+"желите да надгледате и учитате. То можете урадити у менију Датотека, под "
+"Поставке->Напредно."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "Проблем при покретању модула"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"Дошло је до проблема при учитавању програмерског модула:\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "Недостају фајлови или фасцикле"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
+"Изабрани фолдер се не може инсталирати као програмерски модул јер не садржи "
+"све неопходне датотеке и фолдере."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "Креирајте inst/Description.qml фајл,"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "Креирајте R директоријум који садржи ваш аналитички код."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "Креирајте inst/qml директоријум са вашим формуларима за опције."
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
+msgstr "Креирајте **inst/icons** директоријум са иконицама за дугмад на траке."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "Недостаје %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2685,6 +2755,9 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"Изгледа да сте уклонили %1 из директоријума развојног модула. Без њега ваш "
+"модул не може да ради, будите сигурни да га вратите. За сада ће ваша стари "
+"%2 фајл бити задржана."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2694,11 +2767,14 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Изгледа да никад нисте имали %1 у директоријуму развојног модула. Без њега "
+"ваш модул не може да ради, будите сигурни да га креирате. Начин на који сте "
+"инсталирали модул је нејасан, па ће развојни модул сада бити деинсталиран"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1 је уклоњено!"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2706,11 +2782,13 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
+"Изгледа да сте уклонили %1 али ова датотека је неопходна за рад модула. "
+"Развојни модул ће сада бити деинсталиран."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "Недостаје фолдер %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2719,6 +2797,9 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
+"Изгледа да сте уклонили фолдер %1 из директоријума развојног модула. Без "
+"њега модул не може да функционише — осигурајте се да га вратите. За сада ће "
+"стари фолдер остати сачуван."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2728,15 +2809,18 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Изгледа да нисте ни имали директоријум %1 у свом развојном модулу. Без њега "
+"модул не може да ради — осигурајте се да га креирате. Начин инсталације је "
+"нејасан, па ће развојни модул сада бити деинсталиран"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "Грешка при учитавању описа модула"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>Није могуће учитати опис модула из архиве: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2745,11 +2829,14 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a "
 "href=\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>Верзија %2</i><br><p>%3</p><br><br><i>Направио %4 а одржавају "
+"%5.</i><br><i>Погледајте веб страницу за више детаља: <a href=\"http://%6\""
+">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr ""
+msgstr "Број колоне у извору је већи од броја колона %1"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2757,6 +2844,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
 msgstr ""
+"Примењена је погрешна надоградња, тражила се функција '%1' али ова "
+"надоградња је за: '%2'"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2764,6 +2853,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
 msgstr ""
+"Погрешна надоградња: очекивана верзија '%1' али ова надоградња је за верзију:"
+" '%2' или нижу"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2775,22 +2866,28 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"Надоградња је прекинута због откривене петље!\n"
+"\n"
+"Ако је %1 заузет, временом се поново достиже.\n"
+"\n"
+"Ово се дефинитивно не би требало догодити. Можда аутор модула '%2' може "
+"помоћи"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "Списак нивоа фактора"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
+msgstr "Само 1 доступна листа може бити постављена у VariablesForm"
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "У Variables Form нема доступне листе"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Фактор"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
@@ -2798,105 +2895,107 @@ msgstr "Ниво"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Нови фактор"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Нови ниво"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "Запамтите омогућене модуле"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Користите подразумевани PAT за Github"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
 msgstr ""
+"Користите унапред дефинисани GITHUB_PAT или, ако постоји, онај дефинисан у "
+"променљивама окружења."
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "Приватни GITHUB_PAT:"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R, JAGS или lavaan код:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "Резултат и помоћ:"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "Светла тема"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "Тамна тема"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Преферирани језик"
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "Безбедан графички режим"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "Онемогући анимације"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "Користите основне дијалоге за датотеке"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "Изаберите развојни модул кликом овде"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Прикажи главни мени"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "Прикажи мени модула"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "Лепо груписање елемената"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "Овде можете унети цео број: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Ово је невероватно користан савет, зар не?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "Прво поље за потврду"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "Друго поље за потврду"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "Последње поље за потврду"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "Варијабле"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Подели"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2904,6 +3003,10 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"JASP је наишао на проблем при преузимању познатих проблема за ову верзију. "
+"Вероватно није успео да се повеже са сервером. Не брините, JASP ће и даље "
+"радити исправно, само можда неће моћи да вас обавести о неколико мањих "
+"познатих проблема."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2911,6 +3014,9 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"JASP је наишао на проблем при учитавању познатих проблема за ову верзију. "
+"Ово не мора бити озбиљан проблем, али ако се настави да се јавља, можете "
+"контактирати JASP тим за помоћ."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -2919,6 +3025,9 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP је наишао на проблем ('%1') при учитавању познатих проблема за ову "
+"верзију. Ово није нужно критичан проблем, али ако се настави да се јавља, "
+"можете се обратити JASP тиму за помоћ."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2926,19 +3035,23 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
+"Нема подразумеваног едитора табела за датотеку %1. Желите ли да извезете "
+"податке у CSV датотеку и покренете едитор за њу?"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "Генериши датотеку података у CSV формату"
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "Откажи"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr ""
+"Иницијализација модула током покретања JASP-а није успела. Да ли желите да "
+"уклоните модул?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2948,15 +3061,19 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"Грешка при покретању модула у JASP-у:\n"
+"%1\n"
+"\n"
+"Да ли желите да уклоните овај модул?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "Покретање модела %1 неуспешно"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "Модул недостаје"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2966,18 +3083,21 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"Изгледа да уграђени модул %1 није правилно инсталиран и због тога не може да "
+"се учита.\n"
+"није правилно инсталиран и због тога не може да се учита."
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "Извршите R код у конзоли"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "Додај са леве стране"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "Додај са десне стране"
 
 msgctxt "TableView|"
 msgid "Delete"
@@ -2985,61 +3105,63 @@ msgstr "Избриши"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "враћа знак вредности"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup> само пријава преко OSF налога, ORCID или институционална "
+"пријава нису подржани."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "Очисти инсталиране модуле и пакете"
 
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "Ово ће избрисати фолдере 'renv' и 'Modules' у апликационим подацима."
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Windows решење"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "Погледајте документацију за више информација "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Опције корисничког интерфејса"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "враћа знак вредности"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr ""
+msgstr "Ознака"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "Означите #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "Уметните квачицу лево"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "Уметните квачицу десно"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "Обриши квачицу"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "Очисти корисничке модуле и пакете"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3048,42 +3170,47 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"Чишћење ваших модула и пакета ће осигурати да користите само оне који су део "
+"JASP-а. \n"
+"\n"
+"Рестартујте JASP након тога!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "Чисто"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i>На Linux-у се увек користи подразумевани едитор за табеле.</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "Откажи"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "Ресетуј подразумевано"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Прикажи наслов"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "Прикажи осу"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "Откуцаји"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "Положај"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
@@ -3095,11 +3222,11 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "Ограничења:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "Сачувај слику као"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3131,7 +3258,7 @@ msgstr ""
 
 msgctxt "ModuleInstaller|"
 msgid "Install"
-msgstr ""
+msgstr "Инсталирај"
 
 msgctxt "ModuleInstaller|"
 msgid "Press this to install your selected Module"
@@ -3143,11 +3270,11 @@ msgstr ""
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "Не приказуј поново"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "База података"
 
 msgctxt "Database|"
 msgid ""
@@ -3170,15 +3297,15 @@ msgstr ""
 
 msgctxt "Database|"
 msgid "Hostname"
-msgstr ""
+msgstr "Име хоста"
 
 msgctxt "Database|"
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "Име"
 
 msgctxt "Database|"
 msgid "Browse"
@@ -3186,35 +3313,35 @@ msgstr "Преглед"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "Корисничко име"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "Лозинка"
 
 msgctxt "Database|"
 msgid "Remember me"
-msgstr ""
+msgstr "Запамти ме"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "Повежите се са базом података"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "Упит"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "Извршити"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "Преглед података"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "Учитајте у JASP"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
@@ -3260,7 +3387,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "Веза није успела"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3285,11 +3412,11 @@ msgstr ""
 
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
-msgstr ""
+msgstr "IBM DB2"
 
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
-msgstr ""
+msgstr "MySQL драјвер"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
@@ -3309,11 +3436,11 @@ msgstr ""
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "Није повезан са базом података!"
 
 msgctxt "ResourceButtons|"
 msgid "Database"
-msgstr ""
+msgstr "База података"
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
@@ -3403,23 +3530,23 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "Прикажи машине"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "Изаберите постојећу фасциклу"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "Прикажи R синтаксу"
 
 msgctxt "MainPage|"
 msgid "Hide input options"
-msgstr ""
+msgstr "Сакриј опције уноса"
 
 msgctxt "MainPage|"
 msgid "Show input options"
-msgstr ""
+msgstr "Прикажи опције уноса"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3438,7 +3565,7 @@ msgstr ""
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Додајте анализу"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
@@ -3475,11 +3602,11 @@ msgstr ""
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "Није пронађен извор у Формули"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Режим извештавања"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
@@ -3487,7 +3614,7 @@ msgstr ""
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Нема датотеке са подацима"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3500,11 +3627,11 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Непозната грешка"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "Није наведено име у опису формуле"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3642,39 +3769,39 @@ msgstr "Сачувај"
 
 msgctxt "Computer|"
 msgid "JASP Files"
-msgstr ""
+msgstr "JASP фајлови"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Извезите резултат HTML или PDF"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTML фајлови"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
-msgstr ""
+msgstr "Преносиви формат документа"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Извезите податке као CSV"
 
 msgctxt "Computer|"
 msgid "CSV Files"
-msgstr ""
+msgstr "CSV фајлови"
 
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr ""
+msgstr "Синхронизуј податке"
 
 msgctxt "Computer|"
 msgid "Data Files"
-msgstr ""
+msgstr "Датотеке са фајловима"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<нема избора>"
 
 msgctxt "ListModelInputValue|"
 msgid "New Value"
@@ -3683,23 +3810,23 @@ msgstr "Нова вредност"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "Ред %1"
 
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "Разне опције"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "Прикажи R синтаксу"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "Додајте R синтаксу за сваку анализу"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "Прикажи R синтаксу"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
@@ -3707,28 +3834,28 @@ msgstr "Сакри R синтаксу"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
-msgstr ""
+msgstr "Да ли желите да сачувате промене у израчунатој колони?"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваше промене ће бити изгубљене ако их не сачувате."
 
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
-msgstr ""
+msgstr "Да ли желите да сачувате промене у филтеру?"
 
 msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваше промене ће бити изгубљене ако их не сачувате."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
-msgstr ""
+msgstr "Да ли желите да сачувате промене у %1 фајлу?"
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваше промене ће бити изгубљене ако их не сачувате."
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
@@ -4637,7 +4764,7 @@ msgstr ""
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
-msgstr ""
+msgstr "Фактор"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
