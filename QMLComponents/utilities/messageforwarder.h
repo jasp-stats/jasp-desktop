@@ -2,6 +2,7 @@
 #define MESSAGEFORWARDER_H
 
 #include <QQuickItem>
+#include <qmessagebox.h>
 #include <string>
 
 ///
@@ -20,6 +21,8 @@ public:
 	~MessageForwarder() { _singleton = nullptr;}
 
 	static MessageForwarder * msgForwarder() { return _singleton; }
+
+	static QMessageBox* getInfoBox(const QString& title, const QString& message);
 
 	static void showWarning(QString title, QString message);
 	static void showWarning(std::string title, std::string message)		{ showWarning(QString::fromStdString(title),	QString::fromStdString(message));	}

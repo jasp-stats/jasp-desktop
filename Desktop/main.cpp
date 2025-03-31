@@ -508,12 +508,7 @@ int main(int argc, char *argv[])
 			{
 				Log::log() << "We need to recreate junctions!" << std::endl;
 
-				QMessageBox *msgBox = new QMessageBox(nullptr);
-				msgBox->setIcon( QMessageBox::Information );
-				msgBox->setText("JASP is setting a few things up. Just a moment please.");
-				QPushButton *btn =  msgBox->addButton( "OK", QMessageBox::AcceptRole );
-				msgBox->setAttribute(Qt::WA_DeleteOnClose); // delete pointer after close
-				msgBox->setModal(false);
+				QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating Junctions, one moment please", "Creating Junctions, one moment please");
 				msgBox->show();
 
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
@@ -521,7 +516,7 @@ int main(int argc, char *argv[])
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
 					exit(254);
 				}
-				msgBox->hide();
+				msgBox->close();
 			}
 #endif
 			a.init(filePathQ, newData, unitTest, timeOut, save, logToFile, dbJson, reportingDir);

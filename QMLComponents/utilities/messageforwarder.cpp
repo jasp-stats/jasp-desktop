@@ -81,6 +81,18 @@ QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
 
 MessageForwarder * MessageForwarder::_singleton = nullptr;
 
+QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &message)
+{
+	QMessageBox *msgBox = new QMessageBox(nullptr);
+	msgBox->setIcon( QMessageBox::Information );
+	msgBox->setWindowTitle(title);
+	msgBox->setText(message);
+	QPushButton *btn =  msgBox->addButton( "OK", QMessageBox::AcceptRole );
+	msgBox->setAttribute(Qt::WA_DeleteOnClose); // delete pointer after close
+	msgBox->setModal(false);
+	return msgBox;
+}
+
 void MessageForwarder::showWarning(QString title, QString message)
 {
 	QMessageBox box;

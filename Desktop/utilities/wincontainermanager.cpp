@@ -6,6 +6,7 @@
 #include <atlsecurity.h>
 #include "log.h"
 #include "utilities/appdirs.h"
+#include "utilities/messageforwarder.h"
 
 std::wstring toWString(const std::string& in) {
 	return std::wstring(in.begin(), in.end());
@@ -154,7 +155,10 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 	//give access to exedir if needed
 	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()})) {
+		QMessageBox* box = MessageForwarder::getInfoBox(QString("Intializing JASP security sandbox"), QString("Intializing JASP security sandbox"));
+		box->show();
 		grantAccessToExeDir();
+		box->close();
 	}
 
 	//set the startup info for the engine
