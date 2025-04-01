@@ -138,7 +138,7 @@ bool JASPConfigurationTOMLParser::toQVariant(const toml::node &node, QVariant& r
 {
 	switch (node.type()) {
 	case toml::node_type::string:
-		res.setValue(node.value<std::string>().value());
+		res.setValue(QString(node.value<std::string>().value().c_str()));
 		break;
 	case toml::node_type::integer:
 		res.setValue(node.value<int64_t>().value());
