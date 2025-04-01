@@ -513,6 +513,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 
 	size_t prevSize = _ints.size();
 	
+	JASPTIMER_RESUME(Column::setValues set size etc);
+	
 	_dbls.resize(values.size());
 	_ints.resize(values.size());
 	
@@ -522,6 +524,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 		_dbls[resetRow] = EmptyValues::missingValueDouble;
 	}
 	
+	JASPTIMER_STOP(Column::setValues set size etc);
+	
 	bool	onlyDoubles = true, 
 			onlyInts	= true;
 	
@@ -530,6 +534,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	intset	ints;  // to suggest whether this is a scalar or not we need to know whether we have more than treshold ints or not.
 	int		tmpInt;
 	double	tmpDbl;
+	
+	JASPTIMER_RESUME(Column::setValues call setValue and count integers);
 	
 	for(size_t i=0; i<values.size(); i++)
 	{
@@ -552,6 +558,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	if(labelsRemoveOrphans() && aChange)
 		(*aChange) = true;
 	
+	JASPTIMER_STOP(Column::setValues call setValue and count integers);
+	
 	
 	dbUpdateValues(false);
 	
@@ -571,6 +579,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	std::set<double> doublesNonNA;
 	std::set<Label*> labelsNonNA;
 	
+	JASPTIMER_RESUME(Column::setValues count labels);
+	
 	for(size_t i=0; i<_ints.size(); i++)
 	{
 		int value = _ints[i];
@@ -585,6 +595,8 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 		else if(!isEmptyValue(_dbls[i]))
 			doublesNonNA.insert(_dbls[i]);
 	}
+	
+	JASPTIMER_STOP(Column::setValues count labels);
 	
 	size_t howManyLabelLike = doublesNonNA.size() && labelsNonNA.size();
 
@@ -1668,13 +1680,15 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 
 bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
 {
-	JASPTIMER_SCOPE(Column::setValue(size_t row, const std::string & value, const std::string & label, writeToDB));
+	JASPTIMER_SCOPE(Column::setValue(stringstring));
     
 	//If value != "" and label == "" that means we got copy pasted stuff in the viewer. And we just dont have labels, but we can treat it like we are editing
 	//if both are "" we just want to clear the cell
 	//the assumption is that this is not direct user-input, but internal jasp stuff.
 	if(value == "" && label == "")
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
+	
+	JASPTIMER_RESUME(Column::setValue(stringstring) INIT);
 	
 	bool	labelIsValue	= value == label,
 			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
@@ -1684,24 +1698,32 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	Label * newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
 	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
 	
+	JASPTIMER_STOP(Column::setValue(stringstring) INIT);
+	
 	if(justAValue && !newLabel && itsADouble)
 	{
+		JASPTIMER_SCOPE(Column::setValue(stringstring) search label);
 		const std::string valueDbl = ColumnUtils::doubleToString(newDoubleToSet);
 		newLabel = labelByValue(valueDbl);
 		newLabel = newLabel ? newLabel : labelByValueAndDisplay(valueDbl, valueDbl);
 	}
+	
+	JASPTIMER_RESUME(Column::setValue(stringstring) search label some more);
 	
 	if(justAValue && !newLabel)
 		newLabel = labelByValueAndDisplay(value, value);
 	
 	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
-		
+	
+	JASPTIMER_STOP(Column::setValue(stringstring) search label some more);
+	
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
 		return setValue(row, newDoubleToSet, writeToDB);
 
 	if(newLabel)
 	{
+		JASPTIMER_SCOPE(Column::setValue(stringstring) newLabel thing);
 		if(newLabel->originalValue().isDouble())
 			newDoubleToSet = newLabel->originalValue().asDouble();
 		else 
@@ -1712,6 +1734,7 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		
 	if(itsADouble && (labelIsValue || justAValue))
 	{
+		JASPTIMER_SCOPE(Column::setValue(stringstring) old double there);
 		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
 		//This should mean that the label has this old double as a original value!
 		if(	oldLabel
@@ -1798,7 +1821,7 @@ Label * Column::labelByDisplay(const std::string & display) const
 
 Labelset Column::labelsByDisplay(const std::string & display) const
 {
-	JASPTIMER_SCOPE(Column::labelByDisplay);
+	JASPTIMER_SCOPE(Column::labelsByDisplay);
 
 	Labels found;
 	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&display](Label * label)
@@ -1817,7 +1840,7 @@ Label * Column::labelByValue(const std::string & value) const
 
 Labelset Column::labelsByValue(const std::string & value) const
 {
-	JASPTIMER_SCOPE(Column::labelByValue);
+	JASPTIMER_SCOPE(Column::labelsByValue);
 
 	Labels found;
 	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&value](Label * label)
