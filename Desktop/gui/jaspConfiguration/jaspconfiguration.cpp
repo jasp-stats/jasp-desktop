@@ -92,15 +92,15 @@ void JASPConfiguration::processConfiguration()
 					conf->write(payload);
 					conf->close();
 					Log::log() << "Stored local copy of remote configuration" << std::endl;
-					emit this->configurationProcessed("REMOTE");
+					emit this->configurationProcessed(configState::REMOTE);
 				}
 				catch (std::runtime_error& e)
 				{
 					Log::log() << "Failed to process remote configuration: " << e.what() << std::endl;
 					if(!localOK)
-						emit this->configurationProcessed("FAIL");
+						emit this->configurationProcessed(configState::FAIL);
 					else
-						emit this->configurationProcessed("LOCAL");
+						emit this->configurationProcessed(configState::LOCAL);
 					return;
 				}
 			});
@@ -111,7 +111,7 @@ void JASPConfiguration::processConfiguration()
 			connect(reply, &QNetworkReply::sslErrors, this, &JASPConfiguration::sslErrors);
 		}
 		else
-			emit configurationProcessed("LOCAL");
+			emit configurationProcessed(configState::LOCAL);
 	}
 }
 

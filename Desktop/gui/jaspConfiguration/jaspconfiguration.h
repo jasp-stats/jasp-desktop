@@ -27,6 +27,7 @@
 #include <QVariant>
 #include <QFile>
 #include "version.h"
+#include "configtype.h"
 #include "json/json.h"
 
 class JASPConfiguration : public QObject
@@ -68,7 +69,7 @@ public slots:
 	void processConfiguration();
 
 signals:
-	void configurationProcessed(QString result);
+	void configurationProcessed(configState result);
 
 private slots:
 	void sslErrors(const QList<QSslError> &errors);

@@ -280,7 +280,7 @@ private slots:
 	void onDataModeChanged(bool dataMode);
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();
-	void loadModulesFromUserConfiguration(QString state);
+	void loadModulesFromUserConfiguration(configState state);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

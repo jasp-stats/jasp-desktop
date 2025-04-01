@@ -2156,16 +2156,15 @@ void MainWindow::resetVariableTypes()
 	DataSetPackage::pkg()->resetVariableTypes();
 }
 
-void MainWindow::loadModulesFromUserConfiguration(QString state)
+void MainWindow::loadModulesFromUserConfiguration(configState state)
 {
-	if(state == "FAIL")
+	if(state == configState::FAIL)
 		return;
 
 	for(const QString& moduleName : *_jaspConfiguration->getAdditionalModules())
 	{
 		auto button = _ribbonModel->ribbonButtonModel(moduleName.toStdString());
-		int index = _ribbonModel->ribbonButtonModelIndex(button);
-		_ribbonModel->setModuleEnabled(index, true);
+		_ribbonModel->setModuleEnabled(_ribbonModel->ribbonButtonModelIndex(button), true);
 	}
 }
 
