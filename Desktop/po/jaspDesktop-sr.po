@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-01 20:39+0000\n"
+"PO-Revision-Date: 2025-04-01 23:57+0000\n"
 "Last-Translator: Marko Bojović <bojovicmarko@outlook.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "sr/>\n"
@@ -3631,30 +3631,31 @@ msgstr "Учитавање надоградњи је дало следећу(е)
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "Није могуће пронаћи израз %1 у формули"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "Извор %1 у формули није пронађен"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "Извор %1 у формули није листа променљивих"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "Не могу се пронаћи ставка %1 наведена у опису формуле"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Није пронађен извор у формули randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"randomEffects у формули може се користити само са ставком ComponentsList"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
@@ -3666,7 +3667,7 @@ msgstr "Режим извештавања"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "Да ли би JASP требало да ради у режиму извештаја или не."
 
 msgctxt "Reporter|"
 msgid "No datafile"
@@ -3680,6 +3681,11 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP је покренут у режиму извештаја, али jasp датотека није повезана са "
+"датотеком података.\n"
+"Ово значи да не може бити ажурирања...\n"
+"\n"
+"Да ли ипак желите да наставите?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
@@ -3692,16 +3698,16 @@ msgstr "Није наведено име у опису формуле"
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "Контрола са ознаком '%1' нема назив"
 
 msgctxt "JASPControl|"
 msgid "A control has no name"
-msgstr ""
+msgstr "Контрола нема назив"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "Назив опције '%1' је резервисана реч"
 
 #, qt-format
 msgctxt "JASPControl|"
@@ -3716,7 +3722,7 @@ msgstr "Контрола и формула имају исто име '%1'"
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "Формула са именом '%1' е дефинисана два пута"
 
 #, qt-format
 msgctxt "RSyntax|"
@@ -3725,52 +3731,52 @@ msgstr "Контрола и формула имају исто име '%1'"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "Анализа није пронађена"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "Није функција анализе: <module name>::<analysis name>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R се поново покреће"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R инсталира или учитава модул %1"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R је заустављен"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R чека наредбе"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "Листа променљивих"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "Падајући мени"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "Приказ картице"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "Образац варијабли"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Прикажи све опције"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "R конзола"
 
 msgctxt "RCommander|"
 msgid " and "
@@ -3778,38 +3784,39 @@ msgstr " и "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "има неодабрани модул"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "је изабрао модул "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Кликните на фајл испод за синхронизацију или користите "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "Ова варијабла је уклоњена јер није дозвољена: %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "Ове варијабле су уклоњене јер нису дозвољене: %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
+"Подразумева се да је CSV изабрани кодни страница, када није наведен BOM."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "Изаберите кодну страницу овде"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "Копија од %1"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
@@ -3817,7 +3824,7 @@ msgstr "Сакри R синтаксу"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "Генериши омотач"
 
 msgctxt "Computer|"
 msgid "Save"
@@ -3915,249 +3922,249 @@ msgstr "Ваше промене ће бити изгубљене ако их н�
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
-msgstr ""
+msgstr "Користи Qt-ово исцртавање текста"
 
 msgctxt "PrefsUI|"
 msgid "Accessibility options"
-msgstr ""
+msgstr "Опције приступачности"
 
 msgctxt "PrefsUI|"
 msgid "ALT-Navigation mode"
-msgstr ""
+msgstr "ALT-навигациони режим"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr ""
+msgstr "Да ли је ALT-навигациони режим активан или не."
 
 msgctxt "MainPage|"
 msgid "Bold"
-msgstr ""
+msgstr "Подебљано"
 
 msgctxt "MainPage|"
 msgid "Italic"
-msgstr ""
+msgstr "Курзив"
 
 msgctxt "MainPage|"
 msgid "Underline"
-msgstr ""
+msgstr "Подвуци"
 
 msgctxt "MainPage|"
 msgid "Link"
-msgstr ""
+msgstr "Линк"
 
 msgctxt "MainPage|"
 msgid "Formula"
-msgstr ""
+msgstr "Формула"
 
 msgctxt "MainPage|"
 msgid "Code Block"
-msgstr ""
+msgstr "Кодни блок"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "Заглавље"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "Уређена листа"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "Неуређена листа"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "Боја позадине"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "Подпис"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "Натпис"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "Цитатни блок"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr ""
+msgstr "Додај увлачење"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
-msgstr ""
+msgstr "Уклони увлачење"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "Величина фонта"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "Обришите форматирање"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "Кликните овде да додате текст"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Копирано у међуспремник"
 
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr ""
+msgstr "Цитати су копирани у међуспремник"
 
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "LaTeX код је копиран у међуспремник"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "Увод:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "Закључак:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Пребаците се на режим за уређивање података"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr ""
+msgstr "Означи све"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Исеци"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
 msgctxt "DataTableView|"
 msgid "Copy"
-msgstr ""
+msgstr "Копирај"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "Налепи"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Очисти ћелије"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Поништи: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Понови: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "Изаберите колону"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Уметни колону испред"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Уметни колону после"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "Избриши колону"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "Изаберите ред"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "Избришите ред"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "Затворите прозор филтера"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "Преименуј колону"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "Преименуј"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "Преименуј колону %1 у %2"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "Затворите без преименовања колоне"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Затвори прозор варијабле"
 
 msgctxt "ColumnModel|"
 msgid "Value"
-msgstr ""
+msgstr "Вредност"
 
 msgctxt "ColumnModel|"
 msgid "Label"
-msgstr ""
+msgstr "Ознака"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "Колона %1"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4497,7 +4504,7 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Value"
-msgstr ""
+msgstr "Вредност"
 
 msgctxt "LabelEditorWindow|"
 msgid "Label"
