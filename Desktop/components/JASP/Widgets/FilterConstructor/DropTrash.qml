@@ -22,7 +22,7 @@ DropArea
 		anchors.centerIn:	parent
 		height:				sizer * parent.iconPadding
 		width:				(sizer / aspect) * parent.iconPadding
-		source:				somethingHovers ? jaspTheme.iconPath + "/trashcan_open.png" : jaspTheme.iconPath + "/trashcan.png"
+		source:				somethingHovers || trashCan.containsDrag ? jaspTheme.iconPath + "/trashcan_open.png" : jaspTheme.iconPath + "/trashcan.png"
 		sourceSize.width:	160 / aspect
 		sourceSize.height:	160
 		smooth:				true
