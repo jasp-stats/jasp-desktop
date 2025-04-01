@@ -33,9 +33,6 @@ class JASPConfiguration : public QObject
 {
 	Q_OBJECT
 public:
-	//read and parse local and remote configuration
-	void processConfiguration();
-
 	//QML programming constants interface
 	Q_INVOKABLE bool constantExists(const QString& constant, const QString& module = "", const QString& analysis = "");
 	Q_INVOKABLE QVariant getConstant(const QString& constant, const QVariant& defaultValue = QVariant(), const QString& module = "", const QString& analysis = "");
@@ -67,7 +64,8 @@ public:
 
 public slots:
     void remoteChanged();
-
+	//read and parse local and remote configuration
+	void processConfiguration();
 
 signals:
 	void configurationProcessed(QString result);

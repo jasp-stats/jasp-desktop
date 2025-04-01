@@ -68,49 +68,51 @@ Json::Value JASPConfiguration::getAnalysisOptionValues(const QString &module, co
 void JASPConfiguration::processConfiguration()
 {
 	clear();
-	bool localOK = processLocal();
+	if(Settings::value(Settings::USE_CONFIGURATION_FILE).toBool()) {
+		bool localOK = processLocal();
 
-	//read, parse & save remote settings
-    if(Settings::value(Settings::REMOTE_CONFIGURATION).toBool())
-    {
-        auto conn = std::make_shared<QMetaObject::Connection>();
-		*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [=, this](QNetworkReply* reply) {
-			QObject::disconnect(*conn);
-			reply->deleteLater();
+		//read, parse & save remote settings
+		if(Settings::value(Settings::REMOTE_CONFIGURATION).toBool())
+		{
+			auto conn = std::make_shared<QMetaObject::Connection>();
+			*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [=, this](QNetworkReply* reply) {
+				QObject::disconnect(*conn);
+				reply->deleteLater();
 
-			try
-			{
-				if(reply->error())
-					throw std::runtime_error("Error fetching remote configuration file " + reply->request().url().toString().toStdString() + " : " + reply->errorString().toStdString());
-				QByteArray payload = reply->readAll();
-				clear();
-                if(!JASPConfigurationParser::getParser(JASPConfigurationParser::Format::TOML)->parse(this, payload))
-					throw std::runtime_error("Parsing failed");
+				try
+				{
+					if(reply->error())
+						throw std::runtime_error("Error fetching remote configuration file " + reply->request().url().toString().toStdString() + " : " + reply->errorString().toStdString());
+					QByteArray payload = reply->readAll();
+					clear();
+					if(!JASPConfigurationParser::getParser(JASPConfigurationParser::Format::TOML)->parse(this, payload))
+						throw std::runtime_error("Parsing failed");
 
-				auto conf = getDefaultConfFile(true);
-				conf->write(payload);
-				conf->close();
-				Log::log() << "Stored local copy of remote configuration" << std::endl;
-				emit this->configurationProcessed("REMOTE");
-			}
-			catch (std::runtime_error& e)
-			{
-				Log::log() << "Failed to process remote configuration: " << e.what() << std::endl;
-				if(!localOK)
-					emit this->configurationProcessed("FAIL");
-				else
-					emit this->configurationProcessed("LOCAL");
-				return;
-			}
-        });
+					auto conf = getDefaultConfFile(true);
+					conf->write(payload);
+					conf->close();
+					Log::log() << "Stored local copy of remote configuration" << std::endl;
+					emit this->configurationProcessed("REMOTE");
+				}
+				catch (std::runtime_error& e)
+				{
+					Log::log() << "Failed to process remote configuration: " << e.what() << std::endl;
+					if(!localOK)
+						emit this->configurationProcessed("FAIL");
+					else
+						emit this->configurationProcessed("LOCAL");
+					return;
+				}
+			});
 
-        //make the request
-		QNetworkRequest request(Settings::value(Settings::REMOTE_CONFIGURATION_URL).toString());
-        QNetworkReply* reply = _networkManager.get(request);
-        connect(reply, &QNetworkReply::sslErrors, this, &JASPConfiguration::sslErrors);
-    }
-    else
-		emit configurationProcessed("LOCAL");
+			//make the request
+			QNetworkRequest request(Settings::value(Settings::REMOTE_CONFIGURATION_URL).toString());
+			QNetworkReply* reply = _networkManager.get(request);
+			connect(reply, &QNetworkReply::sslErrors, this, &JASPConfiguration::sslErrors);
+		}
+		else
+			emit configurationProcessed("LOCAL");
+	}
 }
 
 bool JASPConfiguration::processLocal()
@@ -133,6 +135,7 @@ bool JASPConfiguration::processLocal()
 void JASPConfiguration::clear()
 {
 	_definedConstants.clear();
+	_analysisOptions.clear();
 	_modulesToLoad.clear();
 }
 

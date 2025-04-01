@@ -83,6 +83,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
+	Q_PROPERTY(bool			useConfigurationFile	READ useConfigurationFile		WRITE setUseConfigurationFile		NOTIFY useConfigurationFileChanged		)
 
 
 public:
@@ -162,6 +163,8 @@ public:
 	QString			localConfigurationPATH()				const;
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
+	bool			useConfigurationFile()					const;
+
 
 	
 	bool checkUpdatesAskUser() const;
@@ -240,6 +243,8 @@ public slots:
 	void setLocalConfigurationPATH(		QString		path);
 	void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
+	void setUseConfigurationFile(		bool		newUseConfigurationFile);
+
 
 	
 signals:
@@ -302,6 +307,7 @@ signals:
 	void localConfigurationPATHChanged(	QString		path);
 	void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
+	void useConfigurationFileChanged(	bool		enabled);
 
 private slots:
 	void dataLabelNAChangedSlot(QString label);

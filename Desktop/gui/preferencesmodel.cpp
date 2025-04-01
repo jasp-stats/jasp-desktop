@@ -190,6 +190,7 @@ GET_PREF_FUNC_BOOL(	engineSandbox,				Settings::ENGINE_SANDBOX							)
 GET_PREF_FUNC_STR(	localConfigurationPATH,		Settings::LOCAL_CONFIGURATION_PATH              	)
 GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION                     	)
 GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
+GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					)
 
 
 int PreferencesModel::maxEngines() const
@@ -373,6 +374,7 @@ SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directD
 SET_PREF_FUNCTION(				QString,	setLocalConfigurationPATH,	localConfigurationPATH,		localConfigurationPATHChanged,	Settings::LOCAL_CONFIGURATION_PATH					)
 SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		remoteConfigurationChanged,     Settings::REMOTE_CONFIGURATION  					)
 SET_PREF_FUNCTION(				QString,	setRemoteConfigurationURL,	remoteConfigurationURL,		remoteConfigurationURLChanged,	Settings::REMOTE_CONFIGURATION_URL					)
+SET_PREF_FUNCTION(				bool,   	setUseConfigurationFile, 	useConfigurationFile,		useConfigurationFileChanged,    Settings::USE_CONFIGURATION_FILE  					)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
