@@ -369,7 +369,7 @@ void DataSetView::columnsDelete(int col)
 		col = _expandedModel->sourceModel()->columnCount() - 1;
 
 	if(columnA == -1 || columnA > col || columnB < col || (columnA == col && columnB == col))
-		_model->removeColumns(col, 1);
+		_expandedModel->removeColumns(col, 1);
 	else
 	{
 		//Go through all columns and make separate removals for each contiguously selected set of columns
