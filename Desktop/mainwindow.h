@@ -326,7 +326,7 @@ private:
 	Reporter					*	_reporter				= nullptr;
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
 	WorkspaceModel				*	_workspaceModel			= nullptr;
-	JASPConfiguration           *   _jaspConfiguration      = nullptr;
+	JASPConfiguration			*   _jaspConfiguration      = nullptr;
 
 	QSettings						_settings;
 
