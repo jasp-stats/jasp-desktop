@@ -192,16 +192,19 @@ bool JASPConfiguration::addOption(const QString& key, const QVariant& value, boo
 	if(!(_analysisOptions.contains(moduleName) && _analysisOptions[moduleName].contains(analysisName)))
 		_analysisOptions[moduleName][analysisName] = Json::Value(Json::objectValue);
 
-	//TODO fix very suboptimal way of doing things
-	if(value.userType() == QMetaType::Double)
-		_analysisOptions[moduleName][analysisName][key.toStdString()] = value.value<double>();
-	else if(value.userType() == QMetaType::LongLong)
-		_analysisOptions[moduleName][analysisName][key.toStdString()] = static_cast<int64_t>(value.value<long long>());
-	else if(value.userType() == QMetaType::Bool)
-		_analysisOptions[moduleName][analysisName][key.toStdString()] = value.value<bool>();
-	else if(value.canConvert<QString>())
-		_analysisOptions[moduleName][analysisName][key.toStdString()] = value.toString().toStdString();
-
+	Json::Value & option = _analysisOptions[moduleName][analysisName][key.toStdString()];
+	
+	switch(value.userType())
+	{
+	case QMetaType::Double:			option = value.value<double>();								break;
+	case QMetaType::LongLong:		option = static_cast<int64_t>(value.value<long long>());	break;
+	case QMetaType::Bool:			option = value.value<bool>();								break;
+	default:					
+		if(value.canConvert<QString>()) 
+									option = value.toString().toStdString();
+		break;
+	}
+	
 	return true;
 }
 
