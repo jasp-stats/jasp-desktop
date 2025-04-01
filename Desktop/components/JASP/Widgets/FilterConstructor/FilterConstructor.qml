@@ -264,6 +264,7 @@ Item
 					anchors.right: parent.right
 
 					height: Math.min(60 * preferencesModel.uiScale, scrollScriptColumn.height)
+					z:		1000
 				}
 
 			}

@@ -87,7 +87,7 @@ DropArea {
 		}
 
 		var ancestry = parent
-		while(ancestry !== null)
+		while(ancestry != null)
 		{
 			if((ancestry.objectName === "DragGeneric" && ancestry.dragChild === drag.source) || ancestry === drag.source)
 			{

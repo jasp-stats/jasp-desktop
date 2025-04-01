@@ -240,6 +240,7 @@ FocusScope
 				anchors.right: parent.right
 
 				height: Math.min(60, scrollScriptColumn.height)
+				z:		1000
 			}
 
 

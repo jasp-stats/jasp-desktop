@@ -144,14 +144,23 @@ MouseArea
 	
 	function dropTargetIsOK(dropTarget)
 	{
-		var foundAtLeastOneMatchingKey = false;
-		
-		if(dropTarget !== null && dropTarget.objectName === "DropSpot")
-			for(var dragI=0; dragI<dragKeys.length; dragI++)
-				if(dropTarget.dropKeys.indexOf(dragKeys[dragI]) >= 0)
-					foundAtLeastOneMatchingKey = true
+		if(dropTarget === null)
+			return false;
 
-		return foundAtLeastOneMatchingKey
+		switch(dropTarget.objectName)
+		{
+			case "DropTrash":	
+				return true;
+				
+			case "DropSpot":	
+			{
+				for(var dragI=0; dragI<dragKeys.length; dragI++)
+					if(dropTarget.dropKeys.indexOf(dragKeys[dragI]) >= 0)
+						return true;
+			}
+		}
+		
+		return false;
 	}
 
 	function releaseHere(dropTarget)
@@ -179,7 +188,7 @@ MouseArea
 
 		//console.log("Second half of release here")
 
-		if(dropTarget != scriptColumn && dropTarget !== null && !dropTargetIsOK(dropTarget))
+		if(dropTarget != scriptColumn && !dropTargetIsOK(dropTarget))
 		{
 			this.releaseHere(scriptColumn)
 			return
