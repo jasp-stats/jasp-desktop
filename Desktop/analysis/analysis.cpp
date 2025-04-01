@@ -620,8 +620,8 @@ void Analysis::duplicateMe()
 QString Analysis::generateWrapper()
 {
 	return _analysisForm->generateWrapper(
-					tq(_name),
 					tq(_moduleData->dynamicModule()->name()),
+					tq(_name),
 					tq(_qml),
 					_moduleData->preloadData()
 	);

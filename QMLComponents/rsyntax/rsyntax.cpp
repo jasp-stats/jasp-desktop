@@ -86,8 +86,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 
 
 	result = _analysisFullName() + "(" + newLine;
-	if (showAllOptions)
-		result += indent + "data = NULL," + newLine;
+	result += indent + "data = NULL," + newLine;
 	result += indent + "version = \"" + _form->version() + "\"";
 
 	QStringList formulaSources;
