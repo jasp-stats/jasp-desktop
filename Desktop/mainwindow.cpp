@@ -497,8 +497,10 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::showRSyntaxInResultsChanged,		_analyses,				&Analyses::showRSyntaxInResults								);
 	connect(_preferences,			&PreferencesModel::ALTNavModeActiveChanged,			ALTNavControl::ctrl(),	&ALTNavControl::enableAlTNavigation							);
 	connect(_preferences,			&PreferencesModel::orderByValueByDefaultChanged,	[&](){	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault()); });
-	connect(_preferences,			&PreferencesModel::remoteConfigurationChanged,      _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
-	connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,   _jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+	connect(_preferences,			&PreferencesModel::remoteConfigurationChanged,		_jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+	connect(_preferences,			&PreferencesModel::remoteConfigurationURLChanged,	_jaspConfiguration,		&JASPConfiguration::remoteChanged							);
+	connect(_preferences,			&PreferencesModel::useConfigurationFileChanged,	_jaspConfiguration,		&JASPConfiguration::processConfiguration					);
+
 
 	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
