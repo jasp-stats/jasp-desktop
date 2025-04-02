@@ -1508,12 +1508,15 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 
 	do
 	{
+		JASPTIMER_RESUME(DatabaseInterface::_runStatements prepare);
 		ret	= sqlite3_prepare_v2(_db, current, total - (current - start), &dbStmt, &tail);
+		JASPTIMER_STOP(DatabaseInterface::_runStatements prepare);
 		row = 0;
 
 		if(bindParameters)
 			(*bindParameters)(dbStmt);
 
+		JASPTIMER_RESUME(DatabaseInterface::_runStatements run statements);
 		if(ret == SQLITE_OK && dbStmt)
 		{
 			do
@@ -1539,6 +1542,8 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				row++;
 			}
 			while((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
+
+			JASPTIMER_STOP(DatabaseInterface::_runStatements run statements);
 
 			ret = sqlite3_finalize(dbStmt);
 			dbStmt = nullptr;

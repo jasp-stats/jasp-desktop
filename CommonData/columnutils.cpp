@@ -81,6 +81,8 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 
 bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 {
+	JASPTIMER_SCOPE(ColumnUtils::getDoubleValue);
+
 	doubleValue = EmptyValues::missingValueDouble;
 
 	if(value == "∞" || value == "-∞")

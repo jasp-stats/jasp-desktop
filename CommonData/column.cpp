@@ -541,8 +541,7 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	{
 		if(setValue(i, values[i], labels.size() ? labels[i] : "", false) && aChange)
 			(*aChange) = true;
-		
-		
+				
 		if(values[i] != "" || (labels.size() && labels[i] != ""))
 		{
 			if(ColumnUtils::getIntValue(values[i], tmpInt))
@@ -1704,7 +1703,7 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	return setValue(row, userEntered, labelButOnlyFromSpreadsheetPaste, writeToDB);
 }
 
-bool Column::setValue(size_t row, const std::string & value, const std::string & label, bool writeToDB)
+bool Column::setValue(size_t row, std::string value, const std::string & label, bool writeToDB)
 {
 	JASPTIMER_SCOPE(Column::setValue(stringstring));
     
@@ -1716,51 +1715,49 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 	
 	JASPTIMER_RESUME(Column::setValue(stringstring) INIT);
 	
+	double	newDoubleToSet	= EmptyValues::missingValueDouble,
+			oldDouble		= _dbls[row];
+	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
 	bool	labelIsValue	= value == label,
 			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
-	double	newDoubleToSet	= EmptyValues::missingValueDouble,
-			oldDouble		= _dbls[row];	
-	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
-	Label * newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
-	Label * oldLabel		= _ints[row] == Label::DOUBLE_LABEL_VALUE ? nullptr : labelByIntsId(_ints[row]);
-	
-	JASPTIMER_STOP(Column::setValue(stringstring) INIT);
-	
-	if(justAValue && !newLabel && itsADouble)
-	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) search label);
-		const std::string valueDbl = ColumnUtils::doubleToString(newDoubleToSet);
-		newLabel = labelByValue(valueDbl);
-		newLabel = newLabel ? newLabel : labelByValueAndDisplay(valueDbl, valueDbl);
-	}
-	
-	JASPTIMER_RESUME(Column::setValue(stringstring) search label some more);
+
+	if(itsADouble)
+		value = ColumnUtils::doubleToString(newDoubleToSet);
+
+	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label),
+			* oldLabel		= labelByIntsId(_ints[row]);
 	
 	if(justAValue && !newLabel)
 		newLabel = labelByValueAndDisplay(value, value);
+
+	JASPTIMER_STOP(Column::setValue(stringstring) INIT);
+
+	JASPTIMER_RESUME(Column::setValue(stringstring) search label some more);
 	
 	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 	
 	JASPTIMER_STOP(Column::setValue(stringstring) search label some more);
 	
+
+
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
+	{
+		JASPTIMER_SCOPE(Column::setValue(stringstring) doulbe and no labels);
 		return setValue(row, newDoubleToSet, writeToDB);
+	}
 
 	if(newLabel)
 	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) newLabel thing);
-		if(newLabel->originalValue().isDouble())
-			newDoubleToSet = newLabel->originalValue().asDouble();
-		else 
-			ColumnUtils::getDoubleValue(value, newDoubleToSet);
-		
+		JASPTIMER_SCOPE(Column::setValue(stringstring) newlabel);
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 	}
+
+	JASPTIMER_STOP(Column::setValue(stringstring) last leg);
 		
 	if(itsADouble && (labelIsValue || justAValue))
 	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) old double there);
+		JASPTIMER_SCOPE(Column::setValue(stringstring) a double replacing a label);
 		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
 		//This should mean that the label has this old double as a original value!
 		if(	oldLabel
@@ -1773,8 +1770,12 @@ bool Column::setValue(size_t row, const std::string & value, const std::string &
 		return setValue(row, newDoubleToSet, writeToDB);
 	}
 	else
+	{
+		JASPTIMER_SCOPE(Column::setValue(stringstring) make a new label);
+
 		//there is no new label yet for this and so lets make one
 		return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
+	}
 }
 
 bool Column::setValue(size_t row, int value, bool writeToDB)
@@ -1836,7 +1837,7 @@ Label *Column::labelByIntsId(int value) const
 {
 	JASPTIMER_SCOPE(Column::labelByValue);
 
-	return value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
+	return value != Label::DOUBLE_LABEL_VALUE && value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
 }
 
 Label * Column::labelByDisplay(const std::string & display) const
