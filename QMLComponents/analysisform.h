@@ -144,16 +144,9 @@ public:
 	Q_INVOKABLE void		addFormError(const QString& message);
 	Q_INVOKABLE void		addFormWarning(const QString& message);
 	Q_INVOKABLE void		refreshAnalysis();
-<<<<<<< HEAD
-	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
-	Q_INVOKABLE QString		generateWrapper()		const;
-	Q_INVOKABLE QString		parseOptions(QString options);
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue) const;
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const;
-=======
-	Q_INVOKABLE bool		initialized()																const	{ return _initialized; }
->>>>>>> da1ff77df (Make it work)
-
+	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData);
 	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
 	void					setAnalysis(AnalysisBase *	analysis);
