@@ -147,7 +147,9 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 
 	gl_extraEncodings->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
-	ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
+	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
+
+	rbridge_setWantedCols(analysisColsTypes);
 
 	static std::string result;
 	result = parsedOptions.toStyledString();

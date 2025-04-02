@@ -284,6 +284,11 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
+void rbridge_setWantedCols(const ColumnEncoder::colsPlusTypes& datasetColsTypes)
+{
+	datasetWanted = datasetColsTypes;
+}
+
 std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
