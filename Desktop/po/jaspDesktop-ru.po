@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-02 13:19+0000\n"
-"Last-Translator: Иван Рудаков <riv@polygene.ru>\n"
+"PO-Revision-Date: 2025-04-02 13:20+0000\n"
+"Last-Translator: Alexander Matveev <avmcsmu@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "ru/>\n"
 "Language: ru\n"
@@ -3870,7 +3870,7 @@ msgstr "HTML файлы"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
-msgstr "Portable Document Format (PDF)"
+msgstr "Portable Document Format"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
