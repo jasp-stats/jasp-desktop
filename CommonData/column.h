@@ -42,6 +42,7 @@ class Column : public DataSetBaseNode
 {
 public:
 	typedef std::map<std::pair<std::string, std::string>, Label*>	LabelByStrStr;
+	typedef std::map<std::string, Labelset>							LabelsByStr;
 
 									Column(DataSet * data, int id = -1);
 									~Column();
@@ -254,7 +255,7 @@ protected:
 			doublevec				valuesNumericOrdered();			
 			std::map<Label*,size_t> valuesAlphabeticalOffsets();
 			int						_labelMapIt(Label *label);
-
+			void					_labelMapUpdates(Label *label, const std::string & previousDisplay, const std::string & previousOriginal);
 private:
 			DataSet			* const	_data;
 			EmptyValues		* const	_emptyValues;
@@ -290,6 +291,8 @@ private:
 									_labelByNonEmptyIndex;
 			std::map<Label*, int>	_labelNonEmptyIndexByLabel;
 			LabelByStrStr			_labelByValDis;
+			LabelsByStr				_labelsByValue,
+									_labelsByDisplay;
 			int						_batchedLabelDepth	= 0;
 	static	bool					_autoSortByValuesByDefault;
 			

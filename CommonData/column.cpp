@@ -747,6 +747,8 @@ void Column::labelsClear(bool doIncRevision)
 	db().labelsClear(_id);
 	_labels.clear();
 	_labelByIntsIdMap.clear();
+	_labelsByDisplay.clear();
+	_labelsByValue.clear();
 	_labelByValDis.clear();
 	_highestIntsId = 0;
 	
@@ -815,8 +817,10 @@ int Column::labelsAdd(const std::string & display, const std::string & descripti
 
 int Column::_labelMapIt(Label * label)
 {
-	_labelByIntsIdMap[label->intsId()]		= label;
-	_labelByValDis[label->origValDisplay()]	= label;
+	_labelByIntsIdMap	[ label->intsId()				] =			label;
+	_labelsByDisplay	[ label->labelDisplay()			].insert(	label);
+	_labelByValDis		[ label->origValDisplay()		] =			label;
+	_labelsByValue		[ label->originalValueAsString()].insert(	label);
 
 	_highestIntsId = std::max(_highestIntsId, label->intsId());
 
@@ -917,7 +921,7 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 {
 	if (valuesToRemove.empty()) return;
 
-	JASPTIMER_SCOPE(Column::labelsRemoveValues);
+	JASPTIMER_SCOPE(Column::labelsRemoveByIntsId);
 
 	_labels.erase(
 		std::remove_if(
@@ -1539,7 +1543,8 @@ bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
 
 void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
-	auto oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), label->labelDisplay());
+	auto prevOrigV	= Label::originalValueAsString(this, previousOriginal);
+	auto oldValDis	= std::make_pair(prevOrigV, label->labelDisplay());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
 	
 	if(merged)
@@ -1556,13 +1561,35 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 		if(_ints[r] == label->intsId())
 			_dbls[r] = theDouble;
 
-	_labelByValDis.erase(oldValDis);
-	_labelByValDis[label->origValDisplay()] = label;
+	_labelMapUpdates(label, label->labelDisplay(), prevOrigV);
 
 	if(merged)
 		_dbUpdateLabelOrder();
 	
 	dbUpdateValues();
+}
+
+void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay, const std::string & previousOriginal)
+{
+	auto oldValDis	= std::make_pair(previousOriginal, previousDisplay);
+
+	_labelByValDis.erase(oldValDis);
+	_labelByValDis[label->origValDisplay()] = label;
+
+	bool	valueChanged	= previousOriginal != label->originalValueAsString(),
+			displayChanged	= previousDisplay  != label->labelDisplay();
+
+	if(valueChanged)
+	{
+		_labelsByValue[previousOriginal]				.erase(label);
+		_labelsByValue[label->originalValueAsString()]	.insert(label);
+	}
+
+	if(displayChanged)
+	{
+		_labelsByDisplay[previousDisplay]				.erase(label);
+		_labelsByDisplay[label->labelDisplay()]			.insert(label);
+	}
 }
 
 void Column::labelsHandleAutoSort(bool doDbUpdateEtc)
@@ -1585,8 +1612,7 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 	//And that its new location is free:
 	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
 
-	_labelByValDis.erase(oldValDis);
-	_labelByValDis[label->origValDisplay()] = label;
+	_labelMapUpdates(label, previousDisplay, label->originalValueAsString());
 	
 	if(merged)
 		_dbUpdateLabelOrder();
@@ -1607,7 +1633,8 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 
 void Column::labelValDisplayChanged(Label *label, const std::string &previousDisplay, const Json::Value &previousOriginal)
 {
-	auto	oldValDis	= std::make_pair(Label::originalValueAsString(this, previousOriginal), previousDisplay),
+	auto	oldOrigValS	= Label::originalValueAsString(this, previousOriginal);
+	auto	oldValDis	= std::make_pair(oldOrigValS, previousDisplay),
 			newValDis	= std::make_pair(label->originalValueAsString(), label->labelDisplay());
 	bool	merged		= _labelByValDis.count(label->origValDisplay()) != 0;
 	
@@ -1627,8 +1654,7 @@ void Column::labelValDisplayChanged(Label *label, const std::string &previousDis
 		if(_ints[r] == label->intsId())
 			_dbls[r] = newOrigValDbl;
 	
-	_labelByValDis.erase(oldValDis);
-	_labelByValDis[label->origValDisplay()] = label;
+	_labelMapUpdates(label, previousDisplay, label->originalValueAsString());
 
 	if(merged)
 		_dbUpdateLabelOrder();
@@ -1823,32 +1849,19 @@ Labelset Column::labelsByDisplay(const std::string & display) const
 {
 	JASPTIMER_SCOPE(Column::labelsByDisplay);
 
-	Labels found;
-	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&display](Label * label)
-	{
-		return label->label() == display;
-	});
-	
-	return Labelset(found.begin(), found.end());
+	return _labelsByDisplay.count(display) ? _labelsByDisplay.at(display) : Labelset{};
 }
 
 Label * Column::labelByValue(const std::string & value) const
 {
 	Labelset labels		= labelsByValue(value);
-	return labels.size() == 0 ? nullptr : *labels.begin();	
+	return labels.size() == 0 ? nullptr : *labels.begin();
 }
 
 Labelset Column::labelsByValue(const std::string & value) const
 {
 	JASPTIMER_SCOPE(Column::labelsByValue);
-
-	Labels found;
-	std::copy_if(_labels.begin(), _labels.end(), std::back_inserter(found), [&value](Label * label)
-	{
-		return label->originalValueAsString() == value;
-	});
-	
-	return Labelset(found.begin(), found.end());
+	return _labelsByValue.count(value) ? _labelsByValue.at(value) : Labelset{};
 }
 
 Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
@@ -1893,6 +1906,8 @@ void Column::labelsMergeDuplicateInto(Label * labelPrime)
 
 bool Column::labelsRemoveOrphans()
 {
+	JASPTIMER_SCOPE(Column::labelsRemoveOrphans);
+
 	intset idsNotUsed;
 	
 	for(size_t labelIndex=0; labelIndex < _labels.size(); labelIndex++)
@@ -2261,12 +2276,10 @@ Json::Value	Column::serializeLabels() const
 
 void Column::deserializeLabelsForCopy(const Json::Value & labels)
 {
+	labelsClear();
 	labelsTempReset();
 
 	beginBatchedLabelsDB();
-	_labelByIntsIdMap.clear();
-	_labelByValDis.clear();
-	_labels.clear();
 
 	if (labels.isArray())
 		for (const Json::Value& labelJson : labels)
