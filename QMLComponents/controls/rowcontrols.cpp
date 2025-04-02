@@ -133,5 +133,8 @@ void RowControls::disconnectControls()
 		if (listControl)
 			for (SourceItem* source : listControl->sourceItems())
 				source->disconnectModels();
+		control->setParent(nullptr);
+		control->blockSignals(true);
+		control->deleteLater();
 	}
 }

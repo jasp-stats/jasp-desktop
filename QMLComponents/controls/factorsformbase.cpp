@@ -43,13 +43,10 @@ void FactorsFormBase::setUpModel()
 	_availableVariablesListItem = qobject_cast<JASPListControl *>(availableListVariant.value<QObject *>());
 
 	connect(this, &FactorsFormBase::initializedChanged, this, &FactorsFormBase::countVariablesChanged);
-	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsNamesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsTitlesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsItemsChanged);
-	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsNamesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsTitlesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::rowsInserted, this, &FactorsFormBase::factorsItemsChanged);
-	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsNamesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsTitlesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsItemsChanged);
 }
@@ -207,28 +204,21 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	listView->setInitialized();
 }
 
-QStringList FactorsFormBase::factorsNames() const
+
+QVariantList FactorsFormBase::factorsTitles() const
 {
-	QStringList names;
-
-	if (!_factorsModel)
-		return names;
-
-	for (auto factorModel : _factorsModel->getFactors())
-		names.append(factorModel.name);
-
-	return names;
-}
-
-QStringList FactorsFormBase::factorsTitles() const
-{
-	QStringList titles;
+	QVariantList titles;
 
 	if (!_factorsModel)
 		return titles;
 
 	for (auto factorModel : _factorsModel->getFactors())
-		titles.append(factorModel.title);
+	{
+		QMap<QString, QVariant> map;
+		map["label"] = factorModel.title;
+		map["value"] = factorModel.name;
+		titles.append(map);
+	}
 
 	return titles;
 }
