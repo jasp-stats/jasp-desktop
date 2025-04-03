@@ -29,12 +29,10 @@ private slots:
 	
 protected:
     virtual ImportDataSet*		loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;
-	void						initColumn(QVariant colIndex, ImportColumn *importColumn);
 	
 
 private:
 	void _syncPackage(
-			ImportDataSet									*	syncDataSet,
 			const std::vector<std::pair<std::string, int>>	&	newColumns,
 			const std::vector<std::pair<int, std::string>>	&	changedColumns,
 			const stringset									&	missingColumns,

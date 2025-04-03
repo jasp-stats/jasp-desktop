@@ -105,7 +105,7 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 		bool keepWaiting = true;
 		while(keepWaiting)
 		{
-			QThread::sleep(1);	
+			QThread::sleep(std::chrono::nanoseconds(10000));
 			_serialFinishing.lock();
 			keepWaiting = _waitingFor.size() > 0;
 			_serialFinishing.unlock();
@@ -125,11 +125,11 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
-	_synching = true;
-	long timeBeginS = Utils::currentSeconds();
-	
-	ImportDataSet *	importDataSet	= loadFile(locator, progress);
-	bool			rowCountChanged	= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
+					_synching			= true;
+					_progressCallback	= progress;
+	long			timeBeginS		= Utils::currentSeconds();
+					_importDataSet	= loadFile(locator, progress);
+	bool			rowCountChanged	= _importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
 	int				syncColNo		= 0;
 
 	std::vector<std::pair<std::string, int> >	newColumns;
@@ -144,7 +144,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		if (DataSetPackage::pkg()->isColumnComputed(colName)) // make sure "missing" columns aren't actually computed columns
 			missingColumns.erase(colName);
 
-	for (ImportColumn *syncColumn : *importDataSet)
+	for (ImportColumn *syncColumn : *_importDataSet)
 	{
 		std::string syncColumnName = syncColumn->name();
 		
@@ -158,7 +158,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 
 			if(DataSetPackage::pkg()->isColumnDifferentFromStringValues(syncColumnName, syncColumn->title(), syncColumn->allValuesAsStrings(), syncColumn->allLabelsAsStrings(), syncColumn->allEmptyValuesAsStrings()))
 			{
-				Log::log() << "Something changed in column: " << syncColumnName << std::endl;
+				//Log::log() << "Something changed in column: " << syncColumnName << std::endl;
 				changedColumns.push_back(std::pair<int, std::string>(syncColNo, syncColumnName));
 			}
 		}
@@ -171,7 +171,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 			for (auto newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
 			{
 				const std::string	& newColName	= newColIt->first;
-				ImportColumn		* newColumn		= importDataSet->getColumn(newColName);
+				ImportColumn		* newColumn		= _importDataSet->getColumn(newColName);
 
 				if(!DataSetPackage::pkg()->isColumnDifferentFromStringValues(nameMissing, newColumn->title(), newColumn->allValuesAsStrings(), newColumn->allLabelsAsStrings(), newColumn->allEmptyValuesAsStrings()))
 				{
@@ -185,39 +185,16 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		missingColumns.erase(changeNameColumnIt.first);
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
-			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged);
+			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged);
 
 	DataSetPackage::pkg()->setManualEdits(false);
-	delete importDataSet;
+	delete _importDataSet;
 	
 	long totalS = (Utils::currentSeconds() - timeBeginS);
 	Log::log() << "Synching '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
 }
 
-void Importer::initColumn(QVariant colIndex, ImportColumn *importColumn)
-{
-       JASPTIMER_SCOPE(Importer::initColumn);
-	   
-	   Column * column = colIndex.typeId() == QMetaType::Int 
-				 ? DataSetPackage::pkg()->dataSet()->column(colIndex.toInt())
-				 : DataSetPackage::pkg()->dataSet()->column(fq(colIndex.toString()));
-	   
-	   column->initFromStrings(
-				   importColumn->name(),
-				   importColumn->allValuesAsStrings(),
-				   importColumn->allLabelsAsStrings(),
-				   importColumn->title(),
-				   importColumn->getColumnType(),
-				   importColumn->allEmptyValuesAsStrings(),
-				   DataSetPackage::thresholdScale(),
-				   DataSetPackage::orderByValueByDefault());
-	   
-}
-
-
-
 void Importer::_syncPackage(
-		ImportDataSet									*	syncDataSet,
 		const std::vector<std::pair<std::string, int>>	&	newColumns,
 		const std::vector<std::pair<int, std::string>>	&	changedColumns, // import col index and original (old) col name
 		const stringset									&	missingColumns,
@@ -245,27 +222,59 @@ void Importer::_syncPackage(
 	}
 
 	int colNo = DataSetPackage::pkg()->columnCount();
-	DataSetPackage::pkg()->setDataSetRowCount(syncDataSet->rowCount());
+	DataSetPackage::pkg()->setDataSetRowCount(_importDataSet->rowCount());
+	
+	_waitingFor.clear();
+	std::vector<InitColumnTask*> tasks;
 
 	for (const auto & indexColChanged : changedColumns)
 	{
-		Log::log() << "Column changed " << indexColChanged.second << std::endl;
+		//Log::log() << "Column changed " << indexColChanged.second << std::endl;
 
 		std::string colName	= indexColChanged.second;
 		_changedColumns.push_back(colName);
-		initColumn(tq(colName), syncDataSet->getColumn(indexColChanged.first));
+		
+		ImportColumn	* importColumn	= _importDataSet->getColumn(indexColChanged.first);
+		Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(colName);
+		InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn);
+		
+		connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
+		
+		tasks.push_back(task);
+		_waitingFor.insert(importColumn);
 	}
+	
+
 
 	if (newColumns.size() > 0)
 	{
 		for (auto it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
 		{
-			DataSetPackage::pkg()->increaseDataSetColCount(syncDataSet->rowCount());
+			DataSetPackage::pkg()->increaseDataSetColCount(_importDataSet->rowCount());
 			Log::log() << "New column " << it->first << std::endl;
 			
-
-			initColumn(DataSetPackage::pkg()->dataColumnCount() - 1, syncDataSet->getColumn(it->first));
+			
+			ImportColumn	* importColumn	= _importDataSet->getColumn(it->first);
+			Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(DataSetPackage::pkg()->dataColumnCount() - 1);
+			InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn);
+			
+			connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
+			
+			tasks.push_back(task);
+			_waitingFor.insert(importColumn);
 		}
+	}
+	
+	for(auto * task : tasks)
+		QThreadPool::globalInstance()->start(task);
+	
+	bool keepWaiting = true;
+	while(keepWaiting)
+	{
+		QThread::sleep(std::chrono::nanoseconds(10000));
+		_serialFinishing.lock();
+		keepWaiting = _waitingFor.size() > 0;
+		_serialFinishing.unlock();
 	}
 
 	if (missingColumns.size() > 0)

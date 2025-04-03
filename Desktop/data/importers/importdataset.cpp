@@ -11,10 +11,6 @@ ImportDataSet::ImportDataSet(Importer *importer) : QObject(importer), _importer(
 
 ImportDataSet::~ImportDataSet()
 {
-	JASPTIMER_SCOPE(ImportDataSet::~ImportDataSet());
-	
-	for (ImportColumn * col : _columns)
-		delete col;
 }
 
 void ImportDataSet::addColumn(ImportColumn *column)
