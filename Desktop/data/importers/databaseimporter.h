@@ -14,7 +14,6 @@ public:
 	DatabaseImporter() : Importer() {}
 	
 	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
-	void initColumn(QVariant colId, ImportColumn * importColumn) override;
 	
 	DatabaseConnectionInfo _info;
 };

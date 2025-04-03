@@ -1732,32 +1732,19 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 
 	JASPTIMER_STOP(Column::setValue(stringstring) INIT);
 
-	JASPTIMER_RESUME(Column::setValue(stringstring) search label some more);
-	
 	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 	
-	JASPTIMER_STOP(Column::setValue(stringstring) search label some more);
-	
-
-
 	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
-	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) doulbe and no labels);
 		return setValue(row, newDoubleToSet, writeToDB);
-	}
 
 	if(newLabel)
-	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) newlabel);
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
-	}
 
 	JASPTIMER_STOP(Column::setValue(stringstring) last leg);
 		
 	if(itsADouble && (labelIsValue || justAValue))
 	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) a double replacing a label);
 		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
 		//This should mean that the label has this old double as a original value!
 		if(	oldLabel
@@ -1770,12 +1757,9 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 		return setValue(row, newDoubleToSet, writeToDB);
 	}
 	else
-	{
-		JASPTIMER_SCOPE(Column::setValue(stringstring) make a new label);
-
 		//there is no new label yet for this and so lets make one
 		return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
-	}
+
 }
 
 bool Column::setValue(size_t row, int value, bool writeToDB)
@@ -2549,3 +2533,20 @@ stringvec Column::previewTransform(columnType transformType)
 }
 
 
+bool Column::initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue)
+{
+									setHasCustomEmptyValues(emptyValues.size());
+									setCustomEmptyValues(emptyValues);
+									setName(newName);
+									setTitle(title);
+									beginBatchedLabelsDB();
+	
+	bool		anyChanges		=	title != Column::title() || newName != name();
+	columnType	prevType		=	type(),
+				suggestedType	=	setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);			
+	if(orderLabelsByValue)			labelsOrderByValue();
+									endBatchedLabelsDB();
+
+	return anyChanges || type() != prevType;
+}

@@ -1,6 +1,8 @@
 #ifndef IMPORTER_H
 #define IMPORTER_H
 
+#include <QObject>
+#include <QMutex>
 #include <boost/function.hpp>
 #include "importdataset.h"
 
@@ -11,9 +13,9 @@ class ImportColumn;
 ///
 /// Base class for all importers
 /// These are always run in a different thread (through AsyncLoader) than the rest of the application
-class Importer
+class Importer : public QObject
 {
-	Q_DECLARE_TR_FUNCTIONS(Importer)
+	Q_OBJECT
 public:
 	Importer();
 	virtual ~Importer();
@@ -21,16 +23,14 @@ public:
     void syncDataSet(const std::string &locator, std::function<void (int)> progressCallback);
 	
 	virtual bool importerDeliversLabels() const { return true; } //They all do except csv, so for synchronization to work we want labels to be ignored for csv when synching, this to allow people to enter better labels and not lose them on every sync
-
-protected:
-    virtual ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;
-
-	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
-	virtual void initColumn(QVariant colId, ImportColumn *importColumn);
-
-	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values, const std::vector<std::string> & labels=stringvec(), const std::string & title="", columnType desiredTyp = columnType::unknown, const stringset & emptyValues = {});
 	
-	bool	_synching = false;
+private slots:
+	void						importColumnFinished(ImportColumn *column);
+	
+protected:
+    virtual ImportDataSet*		loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;
+	void						initColumn(QVariant colIndex, ImportColumn *importColumn);
+	
 
 private:
 	void _syncPackage(
@@ -41,6 +41,16 @@ private:
 			const strstrmap									&	changeNameColumns,
 			const stringvec									&	newOrder,	///<can be empty
 			bool											rowCountChanged);
+	
+protected:
+	bool						_synching = false;
+	
+private:	
+	ImportDataSet *				_importDataSet;
+	QMutex						_serialFinishing;
+	std::set<ImportColumn*>		_waitingFor;
+	std::function<void(int)>	_progressCallback;
+	
 };
 
 #endif // IMPORTER_H

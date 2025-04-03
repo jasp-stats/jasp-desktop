@@ -7,6 +7,7 @@
 #include <json/json.h>
 #include "version.h"
 #include <functional>
+#include <mutex>
 
 class DataSet;
 class Column;
@@ -179,6 +180,7 @@ private:
 
 	sqlite3	*	_db = nullptr;
 	bool		_inMemory = false;
+	std::mutex	_transactionMutex;
 
 	static			std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
 	static const	std::string _dbConstructionSql;

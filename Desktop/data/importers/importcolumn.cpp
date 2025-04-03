@@ -53,3 +53,8 @@ bool ImportColumn::containsAnythingAtAll()
 	
 	return false;
 }
+
+void ImportColumn::finish()
+{
+	emit finished(this);
+}

@@ -80,6 +80,7 @@ public:
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
 
+			bool					initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue);
 			bool					overwriteDataAndType(	stringvec		data, columnType colType);
 			
 			bool					allLabelsPassFilter()	const;

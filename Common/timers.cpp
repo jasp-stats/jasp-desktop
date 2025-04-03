@@ -4,10 +4,16 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <mutex>
 static std::map<std::string, boost::timer::cpu_timer *> * timers = nullptr;
+
+
 
 boost::timer::cpu_timer * _getTimer(std::string timerName)
 {
+	static std::mutex dontClobberYourself;
+	
+	dontClobberYourself.lock();
 
 	//Log::log() << "getTimer! "<< timerName << std::endl;
 
@@ -19,8 +25,10 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 		(*timers)[timerName] = new boost::timer::cpu_timer(); //starts automatically
 		(*timers)[timerName]->stop();
 	}
+	
+	dontClobberYourself.unlock();
 
-	return (*timers)[timerName];
+	return timers->at(timerName);
 }
 
 void _printAllTimers()

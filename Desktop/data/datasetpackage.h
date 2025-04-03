@@ -186,7 +186,6 @@ public:
 				void				setLoaded(bool loaded = true);
 				void				setDescription(const QString& description);
 				
-				bool						initColumnWithStrings(			QVariant			colId,		const std::string & newName, const stringvec	& values, const stringvec	& labels=stringvec(),	const std::string & title = "", columnType desiredType = columnType::unknown, const stringset & emptyValues = stringset());
 				void						initializeComputedColumns();
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const intvec & colTypes, const QStringList & colNames, const std::vector<boolvec> & selected = {}); ///< If selected.size() >0 it is assumed to be the same size as labels/values. And it will make sure that it will only overwrite values where it is `true`
@@ -261,6 +260,8 @@ public:
 				std::vector<bool>			filterVector();
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->filter()->setFilterVector(newFilterVector); }
 				
+	static		int							thresholdScale();
+	static		int							orderByValueByDefault();
 				const stringset&			workspaceEmptyValues()										const;
 				void						setWorkspaceEmptyValues(const stringset& emptyValues, bool resetModel = true);
 				void						setDefaultWorkspaceEmptyValues();
@@ -274,6 +275,8 @@ public:
 				void						dbDelete();
 				void						resetVariableTypes();
 				void						emitColumnChanged(const QString &colName); //temporary until ColumnQ exists
+				
+				
 				
 				
 signals:

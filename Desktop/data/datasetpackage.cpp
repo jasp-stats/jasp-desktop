@@ -164,16 +164,13 @@ void DataSetPackage::generateEmptyData()
 		return;
 	}
 
-	const int INIT_COL = 1;
-	const int INIT_ROW = 1;
-
 	beginLoadingData();
 
 	if(!_dataSet)
 		createDataSet();
-	setDataSetSize(INIT_COL, INIT_ROW);
-	doublevec emptyValues(INIT_ROW, EmptyValues::missingValueDouble);
-	initColumnWithStrings(0, freeNewColumnName(0), {""});
+	
+	setDataSetSize(1, 1);
+	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault());
 
 	endLoadingData();
 	emit newDataLoaded();
@@ -1514,14 +1511,14 @@ int DataSetPackage::getColIndex(QVariant colID)
 		return _dataSet->getColumnIndex(fq(colID.toString()));
 }
 
-bool DataSetPackage::initColumnWithStrings(QVariant colId, const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues)
+int DataSetPackage::thresholdScale()
 {
-	JASPTIMER_SCOPE(DataSetPackage::initColumnWithStrings);
-	
-	return _dataSet->initColumnWithStrings(
-				getColIndex(colId), newName, values, labels, title, desiredType, emptyValues,
-				Settings::value(Settings::THRESHOLD_SCALE).toInt(),
-				PreferencesModel::prefs()->orderByValueByDefault());
+	return PreferencesModel::prefs()->thresholdScale();
+}
+
+int DataSetPackage::orderByValueByDefault()
+{
+	return PreferencesModel::prefs()->orderByValueByDefault();
 }
 
 void DataSetPackage::initializeComputedColumns()

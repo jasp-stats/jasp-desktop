@@ -1740,43 +1740,60 @@ bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::
 void DatabaseInterface::transactionWriteBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteBegin);
-	assert(_transactionReadDepth == 0);
+	
+	_transactionMutex.lock();
+	assert(_transactionReadDepth == 0);	
 	
 	if(_transactionWriteDepth++ == 0)
 		runStatements("BEGIN EXCLUSIVE"); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
+	
+	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionReadBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadBegin);
+	
+	_transactionMutex.lock();
 	assert(_transactionWriteDepth == 0);
 	
 	if(_transactionReadDepth++ == 0)
 		runStatements("BEGIN DEFERRED");
+	
+	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionWriteEnd(bool rollback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteEnd);
+	
+	_transactionMutex.lock();
 	assert(_transactionWriteDepth > 0);
 	
 	if(rollback)	
 	{
 		runStatements("ROLLBACK");
 		_transactionWriteDepth = 0;
+		_transactionMutex.unlock();
 		throw std::runtime_error("Rollback!"); //Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
 	}	
 	else if(--_transactionWriteDepth == 0)
 		runStatements("COMMIT");
+	
+	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionReadEnd()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadEnd);
+	
+	_transactionMutex.lock();
 	assert(_transactionReadDepth > 0);
 	
 	if(--_transactionReadDepth == 0)
 		runStatements("COMMIT");
+	
+	_transactionMutex.unlock();
 }
 
 

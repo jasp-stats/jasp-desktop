@@ -10,6 +10,7 @@
 #include <fstream>
 #include "utils.h"
 #include <codecvt>
+#include <mutex>
 #include <fstream>
 
 std::ofstream Log::_logFile;// = bofstream();
