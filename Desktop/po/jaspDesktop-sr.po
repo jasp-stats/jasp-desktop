@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-01 23:57+0000\n"
+"PO-Revision-Date: 2025-04-03 15:07+0000\n"
 "Last-Translator: Marko Bojović <bojovicmarko@outlook.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "sr/>\n"
@@ -4169,90 +4169,92 @@ msgstr "Колона %1"
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "Подесите вредност на '%1' у реду %2 колона '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "Уметни израчунату колону '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "Уметни колону '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "Уклони колону '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "Уклони ред %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "Подесите ознаку за вредност '%1' колоне '%2' са '%3' на '%4'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Филтрирајте редове који имају ознаку '%1' у колони '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Уклони филтер за редове који имају ознаку '%1' у колони '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "Помери нагоре ознаку '%1' колоне '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "Помери надоле ознаку '%1' колоне '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "Помери нагоре ознаке колоне '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "Помери надоле ознаке колоне '%1'"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "Промените филтер за превлачење и испуштање"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Промените R филтер"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr ""
+msgstr "Направите израчунату колону са именом '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr ""
+msgstr "Подесите код на израчунату колону са именом '%1'"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP има повезану датотеку података, али сте је изменили. Да ли желите да "
+"поново учитате из повезане датотеке или да направите нову датотеку?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Поново учитај датотеку података"
 
 #, qt-format
 msgctxt "QObject|"
