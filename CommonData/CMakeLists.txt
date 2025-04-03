@@ -75,20 +75,6 @@ if(APPLE OR WINDOWS)
 endif()
 
 if(WINDOWS)
-	message(CHECK_START "Setting path to libR-Interface.dll")
-	set(_LIB_R_INTERFACE_DLL
-		"${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
-		CACHE STRING "Path to libR-Interface.dll")
-	message(STATUS "  ${_LIB_R_INTERFACE_DLL}")
-
-	message(CHECK_START "Setting path to libR-Interface.dll.a")
-	set(_LIB_R_INTERFACE_STATIC_DLL_A
-		"${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
-		CACHE STRING "Path to libR-Interface.dll.a")
-	message(STATUS "  ${_LIB_R_INTERFACE_STATIC_DLL_A}")
-
-	message(STATUS "libR-Interface will be build if it is missing.")
-
   target_compile_definitions(
     CommonData
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED

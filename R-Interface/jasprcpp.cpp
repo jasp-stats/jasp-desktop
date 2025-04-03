@@ -16,10 +16,10 @@
 //
 
 #include "jasprcpp.h"
-#include <fstream>
-#include "tempfiles.h"
 #include <Rinternals.h>
+#ifndef JASP_NO_RINSIDE
 #include "RInside.h"
+#endif
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";
@@ -136,8 +136,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_systemFunc				= systemFunc;
 	_libraryFixerFunc		= libraryFixerFunc;
 
+#ifndef JASP_NO_RINSIDE
 	if (_insideJASP)
 		new RInside();
+#endif
 
 	auto rEnvironment = Rcpp::Environment::global_env();
 	R_TempDir = (char*)tempDir;
@@ -307,7 +309,9 @@ void STDCALL jaspRCPP_init_jaspBase()
 
 void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * modulesFolder, const char * linkFolder, const char * junctionsFilePath)
 {
+#ifndef JASP_NO_RINSIDE
 	new RInside();
+#endif
 	auto rEnvironment = Rcpp::Environment::global_env();
 	
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;

@@ -139,102 +139,92 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
-  #message(CHECK_START "Checking for 'libjsoncpp-25.dll'")
-  #find_file(
-  #  RTOOLS_LIB_JSONCPP_DLL
-  #  NAMES libjsoncpp-25.dll
-  #  PATHS ${RTOOLS_PATH}/bin REQUIRED
-  #  NO_DEFAULT_PATH)
+  add_library(R-Interface			SHARED ${SOURCE_FILES} ${HEADER_FILES})
+  add_library(R-InterfaceNoRInside	SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
-  #if(RTOOLS_LIB_JSONCPP_DLL)
-  #  message(CHECK_PASS "found.")
-  #  message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
-  #else()
-  #  message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
-  #  message(FATAL_ERROR "libjsoncpp-25.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
-  #endif()
+  set(R_INTERFACE_INCLUDE_DIRS
+		${CMAKE_CURRENT_LIST_DIR}
+		${PROJECT_SOURCE_DIR}/../Common
+		${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
+		${PROJECT_SOURCE_DIR}/../CommonData
+		${R_INCLUDE_PATH}
+		${RCPP_PATH}/include
+		${RTOOLS_PATH}/include
+  )
 
-  add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
+  set(R_INTERFACE_LIBS
+		Common
+		CommonData
+		Boost::system
+		Boost::date_time
+		Boost::timer
+		Boost::chrono
+		${_LIB_R}
+  )
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 
-  target_include_directories(
-    R-Interface
-    PUBLIC # JASP
-	${CMAKE_CURRENT_LIST_DIR}
-	${PROJECT_SOURCE_DIR}/../Common
-	${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
-	${PROJECT_SOURCE_DIR}/../CommonData
-	# R
-	${R_INCLUDE_PATH}
-	${RCPP_PATH}/include
-	${RINSIDE_PATH}/include
-	# Boost and jsoncpp
-	${RTOOLS_PATH}/include)
+  target_include_directories(R-Interface			PUBLIC ${R_INTERFACE_INCLUDE_DIRS} ${RINSIDE_PATH}/include)
+  target_include_directories(R-InterfaceNoRInside	PUBLIC ${R_INTERFACE_INCLUDE_DIRS})
 
-  target_link_libraries(
-    R-Interface
-    ${_LIB_RINSIDE}
-    ${_LIB_R}
-    )
+  target_link_libraries(R-Interface					PUBLIC ${R_INTERFACE_LIBS} ${_LIB_RINSIDE})
+  target_link_libraries(R-InterfaceNoRInside		PUBLIC ${R_INTERFACE_LIBS})
 
-  target_compile_definitions(
-    R-Interface
-    PUBLIC JASP_R_INTERFACE_LIBRARY
-	QT_NO_DEPRECATED_WARNINGS
-	$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
-  target_compile_definitions(
-    R-Interface
-    PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-	BOOST_USE_WINDOWS_H
-	NOMINMAX
-	RCPP_NO_SUGAR
-	WIN32_LEAN_AND_MEAN)
+  target_compile_definitions(R-Interface			PUBLIC JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS
+															BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED BOOST_USE_WINDOWS_H
+															NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
+															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
+  target_compile_definitions(R-InterfaceNoRInside	PUBLIC JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS
+															BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED BOOST_USE_WINDOWS_H
+															NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
+															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
+															JASP_NO_RINSIDE)
 
 else()
   # Linux and macOS
 
 
   add_library(R-Interface ${SOURCE_FILES} ${HEADER_FILES})
+  add_library(R-InterfaceNoRInside ${SOURCE_FILES} ${HEADER_FILES})
 
-  target_include_directories(
-    R-Interface
-    PUBLIC # JASP
-           ${PROJECT_SOURCE_DIR}/Common
-           ${PROJECT_SOURCE_DIR}/CommonData
-           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-           ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
-           ${R_INCLUDE_PATH}
-           ${RCPP_PATH}/include
-           ${RINSIDE_PATH}/include
-           #
-           ${Boost_INCLUDE_DIRS})
+  set(R_INTERFACE_INCLUDE_DIRS
+		${PROJECT_SOURCE_DIR}/Common
+		${PROJECT_SOURCE_DIR}/CommonData
+		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
+		${R_INCLUDE_PATH}
+		${RCPP_PATH}/include
+		${Boost_INCLUDE_DIRS}
+	)
 
-  target_link_libraries(
-    R-Interface
-	PUBLIC
-    Common
-    CommonData
-    Boost::system
-    Boost::date_time
-    Boost::timer
-    Boost::chrono
-    ${_LIB_RINSIDE}
-    $<$<PLATFORM_ID:Linux>:${_LIB_R}>
-    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-)
+  set(R_INTERFACE_LIBS
+		Common
+		CommonData
+		Boost::system
+		Boost::date_time
+		Boost::timer
+		Boost::chrono
+		$<$<PLATFORM_ID:Linux>:${_LIB_R}>
+		$<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+	)
 
-  target_compile_definitions(
-    R-Interface
-    PUBLIC JASP_R_INTERFACE_LIBRARY
-           QT_NO_DEPRECATED_WARNINGS
-           RCPP_NO_SUGAR
-           $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
+
+  target_include_directories(R-Interface			PUBLIC ${R_INTERFACE_INCLUDE_DIRS} ${RINSIDE_PATH}/include)
+  target_include_directories(R-InterfaceNoRInside	PUBLIC ${R_INTERFACE_INCLUDE_DIRS})
+
+  target_link_libraries(R-Interface					PUBLIC ${R_INTERFACE_LIBS} ${_LIB_RINSIDE})
+  target_link_libraries(R-InterfaceNoRInside		PUBLIC ${R_INTERFACE_LIBS})
+
+  target_compile_definitions(R-Interface			PUBLIC	JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS RCPP_NO_SUGAR
+															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
+  target_compile_definitions(R-InterfaceNoRInside	PUBLIC	JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS RCPP_NO_SUGAR
+															  $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
+															  JASP_NO_RINSIDE)
 
   if(IWYU_EXECUTABLE AND RUN_IWYU)
-    set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
-                                                 ${IWYU_EXECUTABLE})
+	set_target_properties(R-Interface			PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU_EXECUTABLE})
+	set_target_properties(R-InterfaceNoRInside	PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU_EXECUTABLE})
   endif()
 
 endif()
