@@ -13,21 +13,27 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 {
 	static std::mutex dontClobberYourself;
 	
-	dontClobberYourself.lock();
-
 	//Log::log() << "getTimer! "<< timerName << std::endl;
 
 	if(timers == nullptr)
-		timers = new std::map<std::string, boost::timer::cpu_timer *>();
+	{
+		dontClobberYourself.lock();
+		if(timers == nullptr)
+			timers = new std::map<std::string, boost::timer::cpu_timer *>();
+		dontClobberYourself.unlock();
+	}
 
 	if(timers->count(timerName) == 0)
 	{
-		(*timers)[timerName] = new boost::timer::cpu_timer(); //starts automatically
-		(*timers)[timerName]->stop();
+		dontClobberYourself.lock();
+		if(timers->count(timerName) == 0)
+		{
+			(*timers)[timerName] = new boost::timer::cpu_timer(); //starts automatically
+			(*timers)[timerName]->stop();
+		}
+		dontClobberYourself.unlock();
 	}
 	
-	dontClobberYourself.unlock();
-
 	return timers->at(timerName);
 }
 
