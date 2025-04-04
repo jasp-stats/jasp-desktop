@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-03 15:07+0000\n"
+"PO-Revision-Date: 2025-04-05 03:06+0000\n"
 "Last-Translator: Marko Bojović <bojovicmarko@outlook.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "sr/>\n"
@@ -4259,250 +4259,257 @@ msgstr "Поново учитај датотеку података"
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "Иницијализација модула у току: %1"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Уметни колону испред"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Уметни колону после"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Избриши колону"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Избришите ред"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Очисти ћелије"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Поништи"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Понови"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Анализе"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Пребаците JASP на режим анализе"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Уреди податке"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Пребаците JASP у режим за уређивање података"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Нови подаци"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Отворите радни простор без података"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Уметните"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Уметните празне колоне или редове"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
-msgstr ""
+msgstr "Уклони"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Уклоните колоне или редове"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Синхронизација"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "Укључи синхронизацију са спољним подацима"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Искључи синхронизацију са спољним подацима"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Уметни ред изнад"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Уметни ред испод"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Палета боја"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Далтонизам"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "Далтонизам #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "Далтонизам #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Viridis"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Сива"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Плава"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Спортски тимови: НБА"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Велика Будимпешта"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Уметни ред изнад"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Уметни ред испод"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Опозови промене, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Понови промене, %1+shift+Z или %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Опозовите %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "Понови %2 (%1+shift+Z или %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Отвори датотеку података са подразумеваним едитором табела"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "Уклони %1 колоне из '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "Уклони редове %1 до %2"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "Копирајте колоне '%1' у '%2'"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Контактирајте JASP"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP подржавају следеће институције:"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution joins the JASP Community"
-msgstr ""
+msgstr "Предложите вашој институцији да се придружи JASP заједници"
 
 msgctxt "WavyWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "О JASP-у"
 
 msgctxt "WavyWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Затвори"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "Копирајте колону '%1' у колону број '%2'"
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Контакт"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"Овај програм се пружа КАКАВ ЈЕСТЕ, без НИКАКВЕ ГАРАНЦИЈЕ БИЛО КОЈЕ ВРСТЕ, "
+"УКЉУЧУЈУЋИ ГАРАНЦИЈУ ДИЗАЈНА, ПРИЛИКА ЗА ПРОДАЈУ И ПРИКЛАДНОСТ ЗА ОДРЕЂЕНУ "
+"НАМЕНУ."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "и %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Ресетујте са стандардним вредностима"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
 msgstr ""
+"Ресетујте недостајуће вредности помоћу стандардних JASP вредности које "
+"недостају"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Додајте вредност која недостаје"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Подесите тренутни радни простор са овим вредностима"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr ""
+"Подесите вредности које недостају тренутном радном простору са овим "
+"вредностима"
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "Овде уредите ознаке или изаберите које вредности треба филтрирати."
 
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
-msgstr ""
+msgstr "Филтер"
 
 msgctxt "LabelEditorWindow|"
 msgid "Value"
@@ -4510,177 +4517,181 @@ msgstr "Вредност"
 
 msgctxt "LabelEditorWindow|"
 msgid "Label"
-msgstr ""
+msgstr "Ознака"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "Помери изабране ознаке нагоре"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "Помери изабране ознаке надоле"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr ""
+msgstr "Обрнути редослед свих ознака"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr ""
+msgstr "Ресетуј све ознаке филтера за ову колону"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr ""
+msgstr "Ресетуј све филтер ознаке за све колоне"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Слика"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Подешавања радног простора"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Име: %1"
 
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr ""
+msgstr "Опис: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
 msgstr ""
+"Ресетуј недостајуће вредности са онимa постављеним у Подешавањима података"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Прикажи подешавања радног простора"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Користите прилагођене вредности"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
+"Ресетујте недостајуће вредности помоћу оних постављених у вашем радном "
+"простору"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "Није израчунато"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "Израчунато помоћу R кода"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "Израчунато превлачењем и испуштањем"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Колона генерисана анализом"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Колона додата анализом"
 
 msgctxt "QObject|"
 msgid "Scale"
-msgstr ""
+msgstr "Скала"
 
 msgctxt "QObject|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ординал"
 
 msgctxt "QObject|"
 msgid "Nominal"
-msgstr ""
+msgstr "Номинал"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Дефиниција израчунате колоне"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Уредник етикета"
 
 msgctxt "ColumnModel|"
 msgid "Missing values"
-msgstr ""
+msgstr "Недостајуће вредности"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Промените назив колоне '%1' из '%2' у '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Промените наслов колоне '%1' из '%2' у '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Промените опис колоне'%1' из '%2' у '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Подесите израчунати тип '%1' са '%2' на '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Промените опис радног простора из '%1' у '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "Користи прилагођене празне вредности за колону '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "Користи подразумеване празне вредности за колону '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Постави празне вредности за колону'%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Подесите празне вредности радног простора"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Прикажи вредности које недостају у радном простору"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Отвара подешавања за вредности које недостају у радном простору"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Уградите веб видео"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Неподржани видео сервиси"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP дозвољава само следеће видео услуге:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"Контактирајте JASP тим да затражите додавање другог видео сервиса на листу."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP заједница"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4706,126 +4717,130 @@ msgstr ""
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Заједница"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
-msgstr ""
+msgstr "Име: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Тип колоне: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Израчунати тип: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "Прикажи анализу родитеља"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
-msgstr ""
+msgstr "Дуго име: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Унесите описнији назив колоне>"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Затвори прозор варијабле"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
-msgstr ""
+msgstr "Опис: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Дефиниција колоне"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
+msgstr "враћа логички вектор са TRUE за сваку недостајућу вредност у y"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"Комбинујте са not-оператором да филтрирате редове са недостајућим "
+"вредностима (NA) за колону."
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Нема учитаних података!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Подаци имају %1 редова, %2 (%3%4%) прошли кроз филтер"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "Екстерни уређивач табела (за синхронизацију података)"
 
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
+"Ако променљива има више различитих целобројних вредности од овог ограничења, "
+"тумачиће се као скала."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Ресетуј типове учитаних променљивих"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "Подешавање недостајућих вредности"
 
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Копирано у међуспремник"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "Копирај информације за отклањање грешака"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "Тражи у резултатима:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "Затворите траку за претрагу"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Боја фонта"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "Унесите LaTeX овде:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "Притисните `Cmd/Ctrl + Enter` да би сте применили;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Кликните да бисте применили формулу"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Кликните да бисте уредили ову формулу"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Додајте %1"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Уклони последњи%1"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
@@ -4833,173 +4848,176 @@ msgstr "Фактор"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Убаци колону конструктора пре"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Убаци колону конструктора после"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Убаци R колону пре"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Убаци R колону после"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "Кликните овде да промените тип колоне"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "Додај колону"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "Израчунато анализом"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "Двапут кликните овде да промените подешавања варијабле"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "Двапут кликните овде да затворите прозор варијабле"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Кликните овде да промените изабрану варијаблу"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "Кликните овде да изаберете ред, држите shift за избор више."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"Поставите оригиналну вредност  са '%3' на '%4' за ознаку '%1' колоне '%2'"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Убаци колону конструктора пре"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Убаци колону конструктора после"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Убаци R колону пре"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Убаци R колону после"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "Обрнуте вредности"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "Израчуната колона има грешку:<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "Обрнути редослед свих нумеричких вредности"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "Промена типа колоне није успела"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "Колона '%1' је генерисана анализом и њен тип је фиксиран."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "Подесите тип на '%1' за колону(е) '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr ""
+msgstr "Обрнуте вредности колоне(а) '%1'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr ""
+msgstr "Обрнуте ознаке колоне '%1'"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "Наручите ознаке по вредностима"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
+"JASP је пројекат отвореног кода уз структурну подршку <a href=\"dummyLink\""
+">Универзитета у Амстердаму &amp; others</a>."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "Пријавите грешке"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "Захтевајте функције"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "Уметните %2 колоне на %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "Уметните %2 реда у %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr ""
+msgstr "Налепите вредности у ред '%1' колоне '%2'"
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
-msgstr ""
+msgstr "Резање свих података"
 
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
-msgstr ""
+msgstr "Мултиномијална Chi2 табела"
 
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
-msgstr ""
+msgstr "JAGS табела"
 
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
-msgstr ""
+msgstr "Табела прилагођених контраста"
 
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
-msgstr ""
+msgstr "Филтрирана табела за унос података"
 
 msgctxt "TableViewBase|"
 msgid "Grid Table"
-msgstr ""
+msgstr "Табела мреже"
 
 msgctxt "TableViewBase|"
 msgid "Table"
-msgstr ""
+msgstr "Табла"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "Дупла поља"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "Подешавања увоза"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5007,20 +5025,23 @@ msgid ""
 "scalars. Think 1 million+ rows of random floating point numbers.\n"
 "If you find that loading of such a file is slow you can disable this option."
 msgstr ""
+"Ово може успорити учитавање веома великих скупова података са много скалара. "
+"Мислите на милион + редова случајних бројева са покретним зарезом.\n"
+"Ако уочите да је учитавање такве датотеке споро, можете искључити ову опцију."
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "Праг за скалу"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
-msgstr ""
+msgstr "Уклони %1 редова"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
-msgstr ""
+msgstr "Уклони %1 колона"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -5046,55 +5067,76 @@ msgid ""
 "\n"
 "<a href=\"%6\">Click here for the current list of educators</a>\n"
 msgstr ""
+"<h3>Community</h3>\n"
+"Високообразовне институције које учествују у JASP заједници заједнички "
+"подржавају одржавање и даљи развој JASP-а, пружајући тако незаменљиву "
+"образовну услугу сопственим студентима и студентима других институција широм "
+"света.\n"
+"\n"
+"Ако ваша институција још није део JASP заједнице, можете <a href=\"%1\""
+">предложити да се придруже</a>.\n"
+"Испод су едукатори који су помогли у овом издању:\n"
+"\n"
+"<i><b>Златни едукатори:</b></i>\n"
+"%2\n"
+"                 \n"
+"<i><b>Сребрни едукатори:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Бронзани едукатори:</b></i>\n"
+"%4\n"
+"\n"
+"<a href=\"%6\">Кликните овде за тренутни списак едукатора</a>\n"
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "Подразумевано поређај ознаке према вредности"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Промени величину података"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "Колоне"
 
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "Редови"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "Промени величину"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "Промените величину података да бисте поставили вредности"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "Затворите без промене величине података"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "Поставите питање"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "Посетите веб сајт"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr ""
+"Укључи/искључи аутоматско сортирање ознака према вредностима за колону '%1'"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Промени величину података"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "Промените величину скупа података"
 
 #, qt-format
 msgctxt "DataSetView|"
@@ -5103,7 +5145,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Проверите ажурирања"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
@@ -5134,7 +5176,7 @@ msgstr ""
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Имплицитне недостајуће вредности: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5145,7 +5187,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Проверите ажурирања"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5162,11 +5204,11 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 msgctxt "MainWindow|"
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
@@ -5175,19 +5217,19 @@ msgstr ""
 
 msgctxt "VariableInfo|"
 msgid "Scale"
-msgstr ""
+msgstr "Скала"
 
 msgctxt "VariableInfo|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ординал"
 
 msgctxt "VariableInfo|"
 msgid "Nominal"
-msgstr ""
+msgstr "Номинал"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Непознато"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
@@ -5206,86 +5248,86 @@ msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "Учитавање новог скупа података"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "Ново"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Увоз Excel фајла"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Сви скупови података %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP фајлови %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "CSV текстуални фајлови %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "Датотеке прорачунских табела %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS фајлови %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Фајлови стања %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS фајлови %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF подешавања"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "Оријентација"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "Портрет"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Пејзаж"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Величина странице"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Филтер је обрисан\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Филтер је примењен\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "Унесите све аргументе - погледајте поља означена црвеном бојом.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
@@ -5295,11 +5337,11 @@ msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "Добродошли у филтер за превлачење и испуштање!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Кликните на икону да бисте променили тип колоне"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5314,31 +5356,31 @@ msgstr ""
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Поље за име колоне је слободно"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "Колона '%1' већ постоји и није креирана овом анализом."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "Филтер је имао грешку '%1'"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Аутоматски распоредите ознаке по њиховој вредности"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "Минимални број нивоа је %1. Варијабла %2 има само%3 новое"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "Максималан број нивоа је %1. Варијабла %2 има %3 новое."
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5365,11 +5407,11 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Режим програмера"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Развојни модул"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable direct libpath mode"
@@ -5383,7 +5425,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Изворни фолдер:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Libpath:"
@@ -5395,7 +5437,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Назив модула:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
@@ -5407,7 +5449,7 @@ msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "Освежите модул за програмере "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
@@ -5415,7 +5457,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
-msgstr ""
+msgstr "Скала на траци (%): "
 
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
@@ -5423,39 +5465,39 @@ msgstr ""
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "Двапут кликните да бисте изменили ово име"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "Изаберите језик"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
-msgstr ""
+msgstr "Користи алтернативни приказ бројева зависан од језика и региона"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "Користите локална подешавања наведена испод за приказ бројева и валуте."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "Aлтер. језик"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "Алтер. територија"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "Опис колоне: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Кликните на икону да бисте променили тип колоне"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "Опис колоне: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5463,10 +5505,12 @@ msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr ""
+"Да бисте инсталирали развојни модул, морате одабрати постојећи фолдер, "
+"изабрали сте '%1' али он не постоји."
 
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "Уклоните ову напомену"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5474,14 +5518,18 @@ msgid ""
 "For this: open the file menu (the blue hamburger button left top), navigate "
 "to Advanced Preferences and check the 'Log to file' checkbox."
 msgstr ""
+"Нема доступних датотека евиденције. Да бисте добили више информација, молимо "
+"вас да се пријавите. За то: отворите мени датотека (плави дугме са три "
+"линије у горњем левом углу), идите на Напредна подешавања и штиклирајте "
+"'Евидентирај у датотеку'."
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr ""
+msgstr "Превуците и отпустите ове датотеке евиденције у овај проблем: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "Изаберите филтер који ћете користити за ову израчунату колону"
 
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
@@ -5489,60 +5537,64 @@ msgstr "Уклони"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "Додајте нови ниво:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "Додај ниво који недостаје у подацима"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
 msgstr ""
+"Чување нивоа, тако да сви нивои буду прослеђени анализи, укључујући и "
+"филтриране и оне који су касније ручно додати."
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
 msgstr ""
+"Одбацују се нивои, тако да се само они нивои који су у (филтрираним) "
+"подацима шаљу на анализу."
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "Искључите аутоматско сортирање да бисте обрнули редослед свих ознака"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "Искључите аутоматско сортирање да бисте ручно померали ознаке нагоре"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "Искључите аутоматско сортирање да бисте ручно померали ознаке надоле"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Без филтера"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Користите филтер"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Промените филтер за израчунавање колоне '%1' из '%2' у '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Промените нивое пада колоне '%1' из '%2' у '%3'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Избриши ознаку %1 колоне '%2'"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "Додавање вредности + ознаке '%1' + '%2' у колону '%3'"
