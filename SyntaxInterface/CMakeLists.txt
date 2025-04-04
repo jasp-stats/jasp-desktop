@@ -28,8 +28,8 @@ target_link_libraries(
 	PUBLIC
 		Common
 		CommonData
-		$<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC_DLL_A}>
-		$<$<NOT:$<PLATFORM_ID:Windows>>:R-InterfaceNoRInside>
+                $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_NORINSIDE_STATIC_DLL_A}>
+		$<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
 		QMLComponentsplugin
 		Qt::Core
 		Qt::Quick
@@ -40,7 +40,7 @@ target_compile_definitions(
 	SyntaxInterface
 	PUBLIC
 		SYNTAX_INTERFACE_LIBRARY
-		JASP_R_INTERFACE_LIBRARY
+                JASP_R_INTERFACE_LIBRARY
 	)
 
 

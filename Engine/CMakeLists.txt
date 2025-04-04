@@ -87,6 +87,8 @@ if(WINDOWS)
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}
             ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_NORINSIDE_DLL}
+            ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the dependencies (if necessary)")
 
 endif()

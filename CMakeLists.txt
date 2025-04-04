@@ -144,13 +144,21 @@ if(WIN32)
   set(_LIB_R_INTERFACE_DLL
 	  "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
 	  CACHE STRING "Path to libR-Interface.dll")
+  set(_LIB_R_INTERFACE_NORINSIDE_DLL
+          "${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll"
+          CACHE STRING "Path to libR-InterfaceNoRInside.dll" FORCE)
   message(STATUS "  ${_LIB_R_INTERFACE_DLL}")
+  message(STATUS "  ${_LIB_R_INTERFACE_NORINSIDE_DLL}")
 
   message(CHECK_START "Setting path to libR-Interface.dll.a")
   set(_LIB_R_INTERFACE_STATIC_DLL_A
 	  "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
 	  CACHE STRING "Path to libR-Interface.dll.a")
+  set(_LIB_R_INTERFACE_NORINSIDE_STATIC_DLL_A
+          "${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a"
+          CACHE STRING "Path to libR-InterfaceNoRInside.dll.a" FORCE)
   message(STATUS "  ${_LIB_R_INTERFACE_STATIC_DLL_A}")
+  message(STATUS "  ${_LIB_R_INTERFACE_NORINSIDE_STATIC_DLL_A}")
 
   message(STATUS "libR-Interface will be build if it is missing.")
 

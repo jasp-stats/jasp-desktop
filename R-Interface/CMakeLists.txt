@@ -144,23 +144,12 @@ if(WIN32)
 
   set(R_INTERFACE_INCLUDE_DIRS
 		${CMAKE_CURRENT_LIST_DIR}
-		${PROJECT_SOURCE_DIR}/../Common
 		${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
-		${PROJECT_SOURCE_DIR}/../CommonData
 		${R_INCLUDE_PATH}
 		${RCPP_PATH}/include
-		${RTOOLS_PATH}/include
   )
 
-  set(R_INTERFACE_LIBS
-		Common
-		CommonData
-		Boost::system
-		Boost::date_time
-		Boost::timer
-		Boost::chrono
-		${_LIB_R}
-  )
+  set(R_INTERFACE_LIBS ${_LIB_R})
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 
