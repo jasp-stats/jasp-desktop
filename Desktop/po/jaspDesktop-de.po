@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-30 04:00+0000\n"
+"PO-Revision-Date: 2025-04-04 15:07+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -5735,15 +5735,15 @@ msgctxt "QObject|"
 msgid "Use filter"
 msgstr "Filter verwenden"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Ändern des Berechnungsfilters von Spalte '%1' von '%2' auf '%3'"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Ändern der Stufen-Auslassung von Spalte '%1' von '%2' auf '%3'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5830,14 +5830,19 @@ msgid ""
 "You want to save a file outside of the sandbox directory! We will correct "
 "the path to: "
 msgstr ""
+"Sie wollen eine Datei außerhalb des Sandbox-Verzeichnisses speichern! Wir "
+"werden den Pfad korrigieren auf: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to load a file outside of the sandbox directory! This will fail "
 "please move the file to: "
 msgstr ""
+"Sie wollen eine Datei von außerhalb des Sandbox-Verzeichnisses laden! Dies "
+"wird fehlschlagen, bitte verschieben Sie die Datei nach: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr ""
+"Die JASP-Engine läuft im Sandbox-Sicherheitsmodus und hat nur Zugriff auf: "
