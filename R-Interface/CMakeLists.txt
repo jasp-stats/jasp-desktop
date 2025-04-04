@@ -171,13 +171,9 @@ if(WIN32)
   target_link_libraries(R-InterfaceNoRInside		PUBLIC ${R_INTERFACE_LIBS})
 
 
-  target_compile_definitions(R-Interface			PUBLIC JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS
-															BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED BOOST_USE_WINDOWS_H
-															NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
+  target_compile_definitions(R-Interface			PUBLIC JASP_R_INTERFACE_LIBRARY NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
 															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
-  target_compile_definitions(R-InterfaceNoRInside	PUBLIC JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS
-															BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED BOOST_USE_WINDOWS_H
-															NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
+  target_compile_definitions(R-InterfaceNoRInside	PUBLIC JASP_R_INTERFACE_LIBRARY NOMINMAX RCPP_NO_SUGAR WIN32_LEAN_AND_MEAN
 															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
 															JASP_NO_RINSIDE)
 
@@ -189,22 +185,12 @@ else()
   add_library(R-InterfaceNoRInside ${SOURCE_FILES} ${HEADER_FILES})
 
   set(R_INTERFACE_INCLUDE_DIRS
-		${PROJECT_SOURCE_DIR}/Common
-		${PROJECT_SOURCE_DIR}/CommonData
 		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json
 		${R_INCLUDE_PATH}
 		${RCPP_PATH}/include
-		${Boost_INCLUDE_DIRS}
 	)
 
   set(R_INTERFACE_LIBS
-		Common
-		CommonData
-		Boost::system
-		Boost::date_time
-		Boost::timer
-		Boost::chrono
 		$<$<PLATFORM_ID:Linux>:${_LIB_R}>
 		$<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 	)
@@ -216,9 +202,9 @@ else()
   target_link_libraries(R-Interface					PUBLIC ${R_INTERFACE_LIBS} ${_LIB_RINSIDE})
   target_link_libraries(R-InterfaceNoRInside		PUBLIC ${R_INTERFACE_LIBS})
 
-  target_compile_definitions(R-Interface			PUBLIC	JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS RCPP_NO_SUGAR
+  target_compile_definitions(R-Interface			PUBLIC	RCPP_NO_SUGAR
 															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
-  target_compile_definitions(R-InterfaceNoRInside	PUBLIC	JASP_R_INTERFACE_LIBRARY QT_NO_DEPRECATED_WARNINGS RCPP_NO_SUGAR
+  target_compile_definitions(R-InterfaceNoRInside	PUBLIC	RCPP_NO_SUGAR
 															  $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
 															  JASP_NO_RINSIDE)
 
