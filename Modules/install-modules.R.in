@@ -1,0 +1,61 @@
+MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
+LOCAL_MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules", "local")
+BUNDLE_DOWNLOAD_DIR <- file.path("@PROJECT_BINARY_DIR@", "Modules", "downloads")
+
+mkdir <- function(paths) {
+  for (path in paths)
+    if (!dir.exists(path))
+      dir.create(path, recursive = TRUE)
+}
+mkdir(c(MODULES_DIR, LOCAL_MODULES_DIR, BUNDLE_DOWNLOAD_DIR))
+
+
+.libPaths("@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@")
+library("jaspModuleBundleManager")
+
+#check which bundles need downloading
+remoteBundleURLS = read.delim("@MODULES_SOURCE_PATH@/remote-bundles.txt", header = FALSE)[[1]]
+remoteBundleDownloaded = c()
+if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
+    tryCatch({
+        remoteBundleDownloaded = read.delim("@MODULES_BINARY_PATH@/bundles-downloaded.txt", header = FALSE)[[1]]
+        remoteBundleDownloaded = remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleDownloaded)))]
+    }, error = function(e) { remoteBundleDownloaded = c() })
+}
+toDownload = remoteBundleURLS[!remoteBundleURLS %in% remoteBundleDownloaded]
+
+#download and write a file with all our successes
+if(length(toDownload)) {
+    cat("We will download: ", paste(toDownload, sep=' '), '\n')
+    download <- function(url) {
+        req <- tryCatch({
+            curl::curl_fetch_disk(url, file.path(BUNDLE_DOWNLOAD_DIR, basename(url)))
+        }, error = function(e) { print(e); list(status_code=404) })
+        if(req$status_code != 200)
+        return(FALSE)
+        TRUE
+    }
+    res <- sapply(toDownload, download)
+    downloaded = unique(c(remoteBundleDownloaded[remoteBundleDownloaded %in% remoteBundleURLS], toDownload[res]))
+    write(downloaded, "@MODULES_BINARY_PATH@/bundles-downloaded.txt")
+
+    if(!all(res)) {
+        toDownload = toDownload[!res]
+        cat("Unable to download the following bundles: ", paste(toDownload, sep = ' '), '\n')
+    }
+
+    #clean up the download folder a bit by removing all bundles we where not instructed to download
+    files = list.files(BUNDLE_DOWNLOAD_DIR)
+    leftover = files[! files %in% basename(downloaded)]
+    file.remove(file.path(BUNDLE_DOWNLOAD_DIR, leftover))
+
+
+    # use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
+    toInstall = file.path(BUNDLE_DOWNLOAD_DIR, basename(downloaded))
+    toInstall = c(toInstall, file.path(LOCAL_MODULES_DIR, list.files(LOCAL_MODULES_DIR, pattern='*.JASPModule')))
+    install <- function(bundlePath) {
+        jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
+    }
+    sapply(toInstall, install)
+
+}

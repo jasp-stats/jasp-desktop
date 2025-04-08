@@ -16,36 +16,35 @@
 
 //
 //	NOTICE:
-//		`appinfo.cpp` is generated from `appinfo.cpp.in` and you should edit 
+//		`appinfo.cpp` is generated from `appinfo.cpp.in` and you should edit
 //		that file instead if you want your changes to reflect in the app
 //
 
 #ifndef ACTIVEMODULES_H
 #define ACTIVEMODULES_H
 
+#include <vector>
+#include <set>
+#include <string>
+
 /**
  * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
- * 
+ *
  * @details 	This class exists only to dynamically adjust the active modules of the ribbon, in
  *           	case we decide not to have them all. So, the changes in `JASP_COMMON_MODULES` and
- *           	`JASP_EXTRA_MODULES` variables in `Tools/CMake/Modules.cmake` will be reflected 
+ *           	`JASP_EXTRA_MODULES` variables in `Tools/CMake/Modules.cmake` will be reflected
  *           	here. By commenting any of the modules in the CMake file, they'll be excluded from
  *           	the build, and will not be available to JASP.
  */
 class ActiveModules {
 public:
 
-	static std::vector<std::string> getActiveCommonModules() {
-		return {
-			"@JASP_COMMON_MODULES_QUOTED@"
-		};
-	}
+	static std::vector<std::string> getActiveCommonModules();
 
-	static std::vector<std::string> getActiveExtraModules() {
-		return {
-			"@JASP_EXTRA_MODULES_QUOTED@"
-		};
-	}
+	static std::vector<std::string> getActiveExtraModules();
+
+private:
+	static const std::set<std::string> defaultExtraModules; //only theses modules will be marked as extra. (usefull while developing)
 };
 
 #endif // ACTIVEMODULES_H

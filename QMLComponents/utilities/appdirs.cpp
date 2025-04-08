@@ -80,7 +80,7 @@ QString AppDirs::bundledModulesDir()
 #ifdef _WIN32
 	auto env = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment();
 	bool useAppdata =  env != DynamicRuntimeInfo::MSIX;
-	folder = useAppdata ? programDir().absoluteFilePath("Modules") + '/' : appData(false) + "/BundledJASPModules_" + QString(AppInfo::version.asString(4).c_str()) + "_" + QString(AppInfo::gitCommit.substr(0, 7).c_str()) + "_" + QString(AppInfo::builddate.c_str()).replace(":", "-").replace(" ", "") + "/";
+	folder = useAppdata ? programDir().absoluteFilePath("Modules/module_libs") + '/' : appData(false) + "/BundledJASPModules_" + QString(AppInfo::version.asString(4).c_str()) + "_" + QString(AppInfo::gitCommit.substr(0, 7).c_str()) + "_" + QString(AppInfo::builddate.c_str()).replace(":", "-").replace(" ", "") + "/";
 #elif __APPLE__
 	 folder = programDir().absoluteFilePath("../Modules/");
 #elif FLATPAK_USED
