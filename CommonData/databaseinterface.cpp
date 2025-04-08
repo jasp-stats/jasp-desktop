@@ -668,7 +668,7 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 		const size_t rowPercent = std::max(1, int(totalRows) / 100);
 		static size_t lastRow = 0;
 		
-		if(progressRow - lastRow > rowPercent)
+		if(progressRow - lastRow > rowPercent || progressRow >= totalRows - 1)
 		{
 			progressCallback(float(progressRow) / float(totalRows));
 			lastRow = progressRow;
