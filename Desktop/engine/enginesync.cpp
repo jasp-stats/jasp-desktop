@@ -1284,6 +1284,28 @@ void EngineSync::killEngine(int channelNumber)
 		}
 }
 
+void EngineSync::stopOrKillEngine(int channelNumber)
+{
+	for(auto * engine : _engines)
+		if(engine->channelNumber() == channelNumber)
+		{
+			if(!engine->stopped())
+				engine->stopEngine();
+			
+			long theTimeIsNow = Utils::currentSeconds();
+			
+			while(Utils::currentSeconds() - theTimeIsNow < 10 && !engine->stopped())
+			{
+				engine->processReplies();	
+			}
+			
+			if(!engine->stopped() && !engine->killed())
+				engine->killEngine();
+			
+			return;
+		}
+}
+
 void EngineSync::processLogCfgRequests()
 {
 	if (_logCfgRequested.size() == 0)

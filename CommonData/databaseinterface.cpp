@@ -696,9 +696,6 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 	};
 
 	runStatements(statement.str(), prepare, processRow);
-	
-	//Nu nog alle labels
-	...
 
 	transactionReadEnd();
 }

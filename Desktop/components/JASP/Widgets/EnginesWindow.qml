@@ -96,7 +96,7 @@ Window
 				if(mouse.button == Qt.MiddleButton || mouse.button == Qt.RightButton)
 				{
 					//messages.log("killing!");
-					engineSync.killEngine(model.channel);
+					engineSync.stopOrKillEngine(model.channel);
 				}
 			}
 		}

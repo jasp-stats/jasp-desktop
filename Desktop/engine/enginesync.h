@@ -84,6 +84,7 @@ public slots:
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); resumeEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	void		killModuleEngine(Modules::DynamicModule * mod);
 	void		killEngine(int channelNumber);
+	void		stopOrKillEngine(int channelNumber);
 	void		enginesPrepareForData();
 	void		enginesReceiveNewData();
 	bool		isModuleInstallRequestActive(const QString & moduleName);

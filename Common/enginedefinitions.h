@@ -29,9 +29,9 @@ struct unexpectedEngineReply  : public std::runtime_error
 #define ENGINE_KILLTIME 750
 
 ///After how many seconds is an engine allowed to shutdown due to boredom?
-#define ENGINE_BORED_SHUTDOWN (5 * 60)
+#define ENGINE_BORED_SHUTDOWN (60 * 60)
 
 ///Engines need some time between closing and starting to avoid problems with shared memory
-#define ENGINE_COOLDOWN 50
+#define ENGINE_COOLDOWN 1
 
 #endif // ENGINEDEFINITIONS_H
