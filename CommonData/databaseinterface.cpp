@@ -5,6 +5,7 @@
 #include "version.h"
 #include "dataset.h"
 #include "timers.h"
+#include <thread>
 #include "utils.h"
 #include <cassert>
 #include "log.h"
@@ -652,51 +653,115 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 		return;
 
 	transactionReadBegin();
-
-	std::stringstream statement;
-
-	statement << "SELECT ";
-
-	for(Column * col : data->columns())
-		statement << "Column_" << col->id() << "_INT" << ", Column_" << col->id() << "_DBL, ";
-
-	statement << filterTableName(data->filter()->id()) << " FROM " << dataSetName(data->id()) << " ORDER BY rowNumber";
-
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt) {};
-
-	const size_t	rowCount	= dataSetRowCount(data->id());
-
-	for(Column * col : data->columns())
-		col->setRowCount(rowCount);
-
-	data->filter()->setRowCount(rowCount);
-
-    size_t rowPercent = std::max(1, int(rowCount) / 100);
-
-	std::function<void(size_t, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
+	
+	//Set up some functions and such for concurrent loading:
+	std::mutex	progressMutex;
+	size_t 		totalRows	= data->rowCount(), // for progressbar
+				progressRow = 0;
+	
+	
+	std::function<void(float)> localProgressBar = [&](int rows)
 	{
-        if(row % rowPercent == 0)
-            progressCallback(float(row) / float(rowCount));
-
-		int colCount = sqlite3_column_count(stmt);
-
-		assert(colCount == data->columns().size() * 2 + 1);
-
-		for(size_t colI=0; colI<data->columns().size(); colI++)
+		progressMutex.lock();
+		progressRow += rows;
+		
+		const size_t rowPercent = std::max(1, int(totalRows) / 100);
+		static size_t lastRow = 0;
+		
+		if(progressRow - lastRow > rowPercent)
 		{
-			Column * col = data->columns()[colI];
-			
-			if(!sqlite3_column_text(	stmt, colI*2) && !sqlite3_column_text(	stmt, 1+colI*2)) //If string is NULL then column value is NULL, so empty!
-				col->setValue(row, EmptyValues::missingValueInteger,		EmptyValues::missingValueDouble,		false);
-			else
-				col->setValue(row, sqlite3_column_int(stmt, colI*2),		_doubleTroubleReader(stmt, colI*2 + 1),	false);
+			progressCallback(float(progressRow) / float(totalRows));
+			lastRow = progressRow;
 		}
-
-		data->filter()->setFilterValueNoDB(row, sqlite3_column_int(stmt, colCount - 1));
+		progressMutex.unlock();
 	};
+	
+	auto loadBatchOfColumns = [&](Columns group, size_t groupNum)
+	{
+		std::stringstream statement;
+	
+		statement << "SELECT ";
+	
+		for(Column * col : group)
+			statement << "Column_" << col->id() << "_INT" << ", Column_" << col->id() << "_DBL, ";
+	
+		statement << filterTableName(data->filter()->id()) << " FROM " << dataSetName(data->id()) << " ORDER BY rowNumber";
+	
+		std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt) {};
+	
+		const size_t	rowCount	= dataSetRowCount(data->id());
+	
+		for(Column * col : group)
+			col->setRowCount(rowCount);
+	
+		if(groupNum == 0)
+			data->filter()->setRowCount(rowCount);
+	
+		const size_t rowPercent = std::max(1, int(rowCount) / 100);
+	
+		size_t prevRowSent = 0;
+		
+		std::function<void(size_t, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
+		{
+			if(row % rowPercent == 0 || row == rowCount - 1)
+			{
+				localProgressBar(row-prevRowSent);
+				prevRowSent = row;
+			}
+	
+			int colCount = sqlite3_column_count(stmt);
+	
+			assert(colCount == group.size() * 2 + 1);
+	
+			for(size_t colI=0; colI<group.size(); colI++)
+			{
+				
+				Column * col = group[colI];
+				
+				if(!sqlite3_column_text(	stmt, colI*2) && !sqlite3_column_text(	stmt, 1+colI*2)) //If string is NULL then column value is NULL, so empty!
+					col->setValue(row, EmptyValues::missingValueInteger,		EmptyValues::missingValueDouble,		false);
+				else
+					col->setValue(row, sqlite3_column_int(stmt, colI*2),		_doubleTroubleReader(stmt, colI*2 + 1),	false);
+			}
+	
+			if(groupNum == 0)
+				data->filter()->setFilterValueNoDB(row, sqlite3_column_int(stmt, colCount - 1));
+		};
+	
+		runStatements(statement.str(), prepare, processRow);
+	};
+	
+	//Ok, split up columns into some groups so we can use multiple threads
+	
+	size_t	groupCount	= std::max((unsigned int)1, std::thread::hardware_concurrency()),
+			groupSize	= data->columns().size() / groupCount,
+			groupSize0	= data->columns().size() - groupSize * (groupCount-1);
+			totalRows	= data->rowCount() * groupCount; // for progressbar
+			
 
-	runStatements(statement.str(), prepare, processRow);
-
+	std::vector<std::thread>	threads;
+	
+	size_t	curCol	= 0,
+			nextEnd = groupSize0;
+	
+	for(size_t group=0; group < groupCount; group++)
+	{
+		Columns cols;
+		for(size_t c = curCol; c < nextEnd; c++)
+			cols.push_back(data->column(c));
+		
+		
+		threads.push_back(std::thread([cols, group, &loadBatchOfColumns]()
+		{
+			loadBatchOfColumns(cols, group);
+		}));
+		
+		nextEnd += groupSize;
+	}
+	
+	for(std::thread & t : threads)
+		t.join();
+		
 	transactionReadEnd();
 }
 
