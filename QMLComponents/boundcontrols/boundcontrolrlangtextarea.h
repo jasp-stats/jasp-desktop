@@ -25,7 +25,9 @@
 class BoundControlRlangTextArea : public BoundControlTextArea
 {
 public:
-    BoundControlRlangTextArea(TextAreaBase* textArea);
+	enum class RLangType {Lavaan, CSem, MetaSem};
+
+	BoundControlRlangTextArea(TextAreaBase* textArea, RLangType type = RLangType::Lavaan);
 
 	bool		isJsonValid(const Json::Value& optionValue)		const	override;
 	Json::Value	createJson()									const	override;
@@ -35,7 +37,8 @@ public:
 	QString		rScriptDoneHandler(const QString &result)				override;
 
 protected:
-	virtual const char *					_checkSyntaxRFunctionName() { return "jaspSem:::checkLavaanModel"; }
+	RLangType								_langType				= RLangType::Lavaan;
+	const char *							_checkSyntaxRFunctionName();
 	void									_setBoundValues();
 
 	RSyntaxHighlighter*						_rLangHighlighter		= nullptr;

@@ -23,10 +23,9 @@
 #include "analysisform.h"
 #include <QQuickTextDocument>
 
-BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea)
-	: BoundControlTextArea(textArea)
+BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLangType type)
+	: BoundControlTextArea(textArea), _langType(type)
 {
-
 	QVariant textDocumentVariant = textArea->property("textDocument");
 	QQuickTextDocument* textDocumentQQuick = textDocumentVariant.value<QQuickTextDocument *>();
 	if (textDocumentQQuick)
@@ -66,9 +65,6 @@ bool BoundControlRlangTextArea::isJsonValid(const Json::Value &value) const
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;
-	//If we have modelOriginal the rest follows automatically because of checkSyntax and the result
-	//if (!value["model"].isString())			return false;
-	//if (!value["columns"].isArray())		return false;
 
 	return true;
 }
@@ -99,20 +95,40 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// Create R code string
 	QString encodedColNames = "c(";
-	for (const std::string& column : _noPrefixUsedColumnNames)
-	{
-		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
-		encodedColNames.append(", ");
-	}
 
-	for(auto& prefixSet : _prefixedUsedColumnNames)
-		for (const std::string& column : prefixSet.second) {
-			encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+	if (_langType == RLangType::MetaSem)
+	{
+		stringset sourceVariables;
+		Terms sourceColumns = _textArea->model()->getSourceTerms();
+		QString separator = _textArea->variableSeparator();
+
+		for (const Term& term : sourceColumns)
+		{
+			QStringList variables = term.asQString().split(separator);
+			for (const QString& variable : variables)
+				sourceVariables.insert(fq(variable));
+		}
+
+		for (const std::string& variable : sourceVariables)
+			encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(variable)) + "', ");
+	}
+	else
+	{
+		for (const std::string& column : _noPrefixUsedColumnNames)
+		{
+			encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
 			encodedColNames.append(", ");
 		}
-	encodedColNames.chop(2); //remove ', '
-	
-	if(encodedColNames.length() > 0) 
+
+		for(auto& prefixSet : _prefixedUsedColumnNames)
+			for (const std::string& column : prefixSet.second) {
+				encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+				encodedColNames.append(", ");
+			}
+		encodedColNames.chop(2); //remove ', '
+	}
+
+	if(encodedColNames.length() > 0)
 		encodedColNames.append(")");
 
 	if(_textEncoded.length() > 0) {
@@ -169,4 +185,15 @@ void BoundControlRlangTextArea::_setBoundValues()
 	boundValue["prefixedColumns"] = prefixedColumns;
 
 	setBoundValue(boundValue, !_control->form()->wasUpgraded());
+}
+
+const char* BoundControlRlangTextArea::_checkSyntaxRFunctionName()
+{
+	switch (_langType)
+	{
+	case RLangType::CSem:		return "jaspSem:::checkCSemModel";
+	case RLangType::MetaSem:	return "jaspMetaAnalysis::checkMetaModel";
+	case RLangType::Lavaan:
+	default:					return "jaspSem:::checkLavaanModel";
+	}
 }
