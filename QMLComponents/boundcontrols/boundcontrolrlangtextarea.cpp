@@ -110,7 +110,7 @@ void BoundControlRlangTextArea::checkSyntax()
 		}
 
 		for (const std::string& variable : sourceVariables)
-			encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(variable)) + "', ");
+			encodedColNames.append("'" + variable + "', ");
 	}
 	else
 	{
