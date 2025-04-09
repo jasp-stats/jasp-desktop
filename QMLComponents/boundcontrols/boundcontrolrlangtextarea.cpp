@@ -95,6 +95,22 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// Create R code string
 	QString encodedColNames = "c(";
+	bool firstCol = true;
+
+	for (const std::string& column : _noPrefixUsedColumnNames)
+	{
+		if (!firstCol) encodedColNames.append(", ");
+		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+		firstCol = false;
+	}
+
+	for(auto& prefixSet : _prefixedUsedColumnNames)
+		for (const std::string& column : prefixSet.second)
+		{
+			if (!firstCol) encodedColNames.append(", ");
+			encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+			firstCol = false;
+		}
 
 	if (_langType == RLangType::MetaSem)
 	{
@@ -110,26 +126,14 @@ void BoundControlRlangTextArea::checkSyntax()
 		}
 
 		for (const std::string& variable : sourceVariables)
-			encodedColNames.append("'" + variable + "', ");
-	}
-	else
-	{
-		for (const std::string& column : _noPrefixUsedColumnNames)
 		{
-			encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
-			encodedColNames.append(", ");
+			if (!firstCol) encodedColNames.append(", ");
+			encodedColNames.append("'" + variable + "'");
+			firstCol = false;
 		}
-
-		for(auto& prefixSet : _prefixedUsedColumnNames)
-			for (const std::string& column : prefixSet.second) {
-				encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
-				encodedColNames.append(", ");
-			}
-		encodedColNames.chop(2); //remove ', '
 	}
 
-	if(encodedColNames.length() > 0)
-		encodedColNames.append(")");
+	encodedColNames.append(")");
 
 	if(_textEncoded.length() > 0) {
 		QString checkCode = QString("%1('%2', %3)")
