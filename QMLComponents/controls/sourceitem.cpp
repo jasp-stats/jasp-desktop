@@ -213,8 +213,6 @@ void SourceItem::connectModels()
 		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
 		connect(variableInfo,	&VariableInfo::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 		connect(variableInfo,	&VariableInfo::refresh,				controlModel, &ListModel::refresh );
-
-		emit _targetListControl->containsVariablesChanged();
 	}
 
 	if (_sourceListModel)
@@ -231,10 +229,6 @@ void SourceItem::connectModels()
 	{
 		connect(_sourceListControl,		&JASPListControl::containsVariablesChanged,		_targetListControl, &JASPListControl::containsVariablesChanged);
 		connect(_sourceListControl,		&JASPListControl::containsInteractionsChanged,	_targetListControl, &JASPListControl::containsInteractionsChanged);
-
-		// Update the containsVariables and containsInteractions property of the target control
-		emit _targetListControl->containsVariablesChanged();
-		emit _targetListControl->containsInteractionsChanged();
 	}
 
 	_connected = true;

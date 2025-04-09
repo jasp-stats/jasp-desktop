@@ -55,6 +55,11 @@ void JASPListControl::_setupSources()
 		delete sourceItem;
 
 	_sourceItems = SourceItem::readAllSources(this);
+
+	// Update the containsVariables and containsInteractions property once the sources are set
+	emit containsVariablesChanged();
+	emit containsInteractionsChanged();
+
 }
 
 bool JASPListControl::containsVariables() const
