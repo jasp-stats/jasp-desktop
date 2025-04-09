@@ -937,133 +937,133 @@
           {
             "name": "Type 1 Instrument Capability",
             "path": "Type1InstrumentCapability.jasp",
-            "description": "包含同一主零件的 50 个连续测量值的数据集。 <br><br> 示例 JASP 文件演示了 Type 1 Instrument Capability 的使用。<br><br> <i>来自 的真实数据<\/i>",
+            "description": "包含同一主零件的 50 个连续测量值的数据集。 <br><br> 示例 JASP 文件演示了 Type 1 Instrument Capability 的使用。<br><br> <i>合成数据<\/i>",
             "kind": "file",
             "associated_datafile": "Type1InstrumentCapability.csv"
           },
           {
             "name": "Linearity Study",
             "path": "LinearityStudy.jasp",
-            "description": "数据集包含五个不同部件的 12 次重复测量以及每个部件的参考值。 <br><br> 示例 JASP 文件演示了线性研究的用法。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "数据集包含五个不同部件的 12 次重复测量以及每个部件的参考值。 <br><br> 示例 JASP 文件演示了线性研究的用法。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "LinearityStudy.csv"
           },
           {
             "name": "Gauge r & R Study (Long Format)",
             "path": "GaugerRLongFormat.jasp",
-            "description": "包含十个不同部分的长格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与长格式数据的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含十个不同部分的长格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与长格式数据的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "GaugerRLongFormat.csv"
           },
           {
             "name": "Gauge r & R Study (Wide Format)",
             "path": "GaugerRWideFormat.jasp",
-            "description": "包含十个不同部分的宽格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与宽格式数据的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含十个不同部分的宽格式测量值的数据集。 每个零件由三名不同的操作员测量三次。 <br><br> 示例 JASP 文件演示了 Gauge r & R Study 与宽格式数据的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "GaugerRWideFormat.csv"
           },
           {
             "name": "Gauge r & R Study for Non-Replicable Measurement Systems (Long Format)",
             "path": "GaugerRNestedLongFormat.jasp",
-            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个部分只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个部件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据将所有测量值组织在一个列中。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与长格式数据的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个部分只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个部件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据将所有测量值组织在一个列中。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与长格式数据的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "GaugerRNestedLongFormat.csv"
           },
           {
             "name": "Gauge r & R Study for Non-Replicable Measurement Systems  (Wide Format)",
             "path": "GaugerRNestedWideFormat.jasp",
-            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个零件只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个零件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据按行组织。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与宽格式数据的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含 15 个不同零件的测量数据的数据集，这些零件代表制造过程中整个实际（或预期）变化范围。 测量通过破坏性测试完成； 因此每个零件只能测量一次。 可以识别一批足够相似的零件，可以合理地将它们视为同一零件。 这意味着批次中每个零件的感兴趣的测量特性都是相同的。 这很重要，因为观察到的批次内变化用于估计测量系统的重复性。 每个操作员测量每批次的两个零件。 在测量之前将部件随机化。 数据按行组织。 <br><br> 示例 JASP 文件演示了 Gauge r & R（非重复）与宽格式数据的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "GaugerRNestedWideFormat.csv"
           },
           {
             "name": "Attribute Agreement Analysis (Long Format)",
             "path": "AttributesAgreementAnalysisLongFormat.jasp",
-            "description": "包含长格式的 15 个不同零件的二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的属性一致性分析。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含长格式的 15 个不同零件的二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的属性一致性分析。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "AttributesAgreementAnalysisLongFormat.csv"
           },
           {
             "name": "Attribute Agreement Analysis (Wide Format)",
             "path": "AttributesAgreementAnalysisWideFormat.jasp",
-            "description": "包含 15 个不同零件的宽格式二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的属性一致性分析。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含 15 个不同零件的宽格式二进制评级（是/否）的数据集。 三位评分者对每个零件评分三次。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的属性一致性分析。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "AttributesAgreementAnalysisWideFormat.csv"
           },
           {
             "name": "Range Method Study (Long Format)",
             "path": "RangeMethodDataLongFormat.jasp",
-            "description": "包含长格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的范围方法研究。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含长格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用长格式数据的范围方法研究。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "RangeMethodDataLongFormat.csv"
           },
           {
             "name": "Range Method Study (Wide Format)",
             "path": "RangeMethodDataWideFormat.jasp",
-            "description": "包含宽格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用范围方法研究来处理宽格式数据。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含宽格式的五个不同零件的两次重复测量的数据集。 <br><br> 示例 JASP 文件演示了如何使用范围方法研究来处理宽格式数据。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "RangeMethodDataWideFormat.csv"
           },
           {
             "name": "Variables Charts for Subgroups (Long Format)",
             "path": "SubgroupChartLongFormat.jasp",
-            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了使用长格式数据的子组变量图表。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了使用长格式数据的子组变量图表。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "SubgroupChartLongFormat.csv"
           },
           {
             "name": "Variables Charts for Subgroups (Wide Format)",
             "path": "SubgroupChartWideFormat.jasp",
-            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的子组变量图表。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用宽格式数据的子组变量图表。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "SubgroupChartWideFormat.csv"
           },
           {
             "name": "Variables Charts for Individuals",
             "path": "IndividualChartStages.jasp",
-            "description": "包含一年内每个月产量的数据集。 添加指定每个月阶段的列。 <br><br> 示例 JASP 文件演示了个人变量图表的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含一年内每个月产量的数据集。 添加指定每个月阶段的列。 <br><br> 示例 JASP 文件演示了个人变量图表的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "IndividualChartStages.csv"
           },
           {
             "name": "Attributes Chart (P Chart)",
             "path": "PAttributesChart.jasp",
-            "description": "包含 20 个月内检测到的缺陷数量以及相应（可变）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 P 图表的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含 20 个月内检测到的缺陷数量以及相应（可变）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 P 图表的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "PAttributesChart.csv"
           },
           {
             "name": "Attributes Chart (NP Chart)",
             "path": "NPAttributesChart.jasp",
-            "description": "包含 20 个月内检测到的缺陷数量以及相应（固定）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 NP 图表的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含 20 个月内检测到的缺陷数量以及相应（固定）样本大小的数据集。 <br><br> 示例 JASP 文件演示了属性图表的 NP 图表的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "NPAttributesChart.csv"
           },
           {
             "name": "Process Capability Study (Long Format)",
             "path": "ProcessCapabilityStudyLongFormat.jasp",
-            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用长格式数据进行过程能力研究。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含在 20 个不同时间点以长格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了如何使用长格式数据进行过程能力研究。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "ProcessCapabilityStudyLongFormat.csv"
           },
           {
             "name": "Process Capability Study (Wide Format)",
             "path": "ProcessCapabilityStudyWideFormat.jasp",
-            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了过程能力研究与宽格式数据的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含在 20 个不同时间点以宽格式进行的 100 次测量的数据集。 在每个时间点进行 5 次测量。 <br><br> 示例 JASP 文件演示了过程能力研究与宽格式数据的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "ProcessCapabilityStudyWideFormat.csv"
           },
           {
             "name": "Analyze Design - Factorial Design",
             "path": "FactorialDesignAnalysis.jasp",
-            "description": "包含在不同设置组合下运行的机器的产量的数据集。 <br><br> 示例 JASP 文件演示了因子设计分析的使用。<br><br> <i>来自 的综合数据。<\/i>",
+            "description": "包含在不同设置组合下运行的机器的产量的数据集。 <br><br> 示例 JASP 文件演示了因子设计分析的使用。<br><br> <i>合成数据。<\/i>",
             "kind": "file",
             "associated_datafile": "FactorialDesignAnalysis.csv"
           },
           {
             "name": "Analyze Design - Response Surface Design",
             "path": "ResponseSurfaceDesignAnalysis.jasp",
-            "description": "包含热处理零件椭圆度测量值的数据集，通过统计设计的实验进行研究，目的是提高产量。 <br><br> 示例 JASP 文件演示了响应面设计的分析。<br><br> <i>Real data from.<\/i>",
+            "description": "包含热处理零件椭圆度测量值的数据集，通过统计设计的实验进行研究，目的是提高产量。 <br><br> 示例 JASP 文件演示了响应面设计的分析。<br><br> <i>真实数据。<\/i>",
             "kind": "file",
             "associated_datafile": "ResponseSurfaceDesignAnalysis.csv"
           }
