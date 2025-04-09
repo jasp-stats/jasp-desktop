@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.5)
 
 # Because Qt implementation is a bit buggy,
 # when this is fixed, the setup will be even nicer.
