@@ -5,6 +5,7 @@
 #include "filtermodel.h"
 #include "computedcolumnmodel.h"
 #include "utilities/qutils.h"
+#include "timers.h"
 
 UndoStack* UndoStack::_undoStack = nullptr;
 
@@ -202,6 +203,8 @@ PasteSpreadsheetCommand::PasteSpreadsheetCommand(QAbstractItemModel *model, int 
 	const std::vector<std::vector<QString> > & values, const std::vector<std::vector<QString> > & labels, const std::vector<boolvec> & selected, const QStringList& colNames)
 	: UndoModelCommand(model), _dataSetTableModel(qobject_cast<DataSetTableModel*>(_model)), _row{row}, _col{col}, _newValues{values}, _newLabels{labels}, _newColNames{colNames}, _selected{selected}
 {
+	JASPTIMER_SCOPE(PasteSpreadsheetCommand::PasteSpreadsheetCommand);
+	
 	setText(QObject::tr("Paste values at row '%1' column '%2'").arg(rowName(_row)).arg(columnName(_col)));
 	
 	if(!_dataSetTableModel)
@@ -300,12 +303,16 @@ void ColumnToggleAutoSortByValuesCommand::redo()
 UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns(QAbstractItemModel *model, intset cols)
 : UndoModelCommand(model), _cols{cols}
 {
+	JASPTIMER_SCOPE(UndoModelCommandMultipleColumns::UndoModelCommandMultipleColumns);
+	
 	for(int col : _cols)
 		_serializedColumns[col] = DataSetPackage::pkg()->dataSet()->column(col) ? DataSetPackage::pkg()->dataSet()->column(col)->serialize() : Json::nullValue;
 }
 
 void UndoModelCommandMultipleColumns::undo()
 {
+	JASPTIMER_SCOPE(UndoModelCommandMultipleColumns::undo);
+	
 	QStringList changed;
 	
 	for(int col : _cols)

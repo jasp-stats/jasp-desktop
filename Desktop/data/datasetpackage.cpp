@@ -683,7 +683,9 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 
 	case dataSetBaseNodeType::column:
 		if(node)
-		{
+		{    
+			JASPTIMER_SCOPE(DataSetPackage::setData Column);
+
 			Column	* column	= dynamic_cast<Column*>(node);
 			//DataSet * data		= column->data();
 
@@ -778,6 +780,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 	
 	case dataSetBaseNodeType::label:
 	{
+		JASPTIMER_SCOPE(DataSetPackage::setData Label);
+		
 		Column * column = dynamic_cast<Column*>(node->parent());
 		
 		int parColCount = columnCount(index.parent()),

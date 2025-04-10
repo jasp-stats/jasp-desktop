@@ -660,7 +660,7 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 				progressRow = 0;
 	
 	
-	std::function<void(float)> localProgressBar = [&](int rows)
+	std::function<void(float)> localProgressBar = [&progressMutex, &progressRow, &totalRows, &progressCallback](int rows)
 	{
 		progressMutex.lock();
 		progressRow += rows;
@@ -676,7 +676,7 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 		progressMutex.unlock();
 	};
 	
-	auto loadBatchOfColumns = [&](Columns group, size_t groupNum)
+	auto loadBatchOfColumns = [this, data, &localProgressBar](Columns group, size_t groupNum)
 	{
 		std::stringstream statement;
 	
@@ -747,8 +747,8 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 	for(size_t group=0; group < groupCount; group++)
 	{
 		Columns cols;
-		for(size_t c = curCol; c < nextEnd; c++)
-			cols.push_back(data->column(c));
+		for(; curCol < nextEnd; curCol++)
+			cols.push_back(data->column(curCol));
 		
 		
 		threads.push_back(std::thread([cols, group, &loadBatchOfColumns]()

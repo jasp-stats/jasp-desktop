@@ -3,7 +3,9 @@
 #ifdef PROFILE_JASP
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <vector>
+#include <thread>
 #include <mutex>
 static std::map<std::string, boost::timer::cpu_timer *> * timers = nullptr;
 
@@ -14,6 +16,9 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 	static std::mutex dontClobberYourself;
 	
 	//Log::log() << "getTimer! "<< timerName << std::endl;
+	std::stringstream timerNameStream;
+	timerNameStream << timerName << std::this_thread::get_id();
+	timerName = timerNameStream.str();
 
 	if(timers == nullptr)
 	{
