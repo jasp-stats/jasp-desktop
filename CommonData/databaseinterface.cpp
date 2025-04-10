@@ -576,11 +576,11 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 	//Clear the entire dataset, then insert each row, including filter.
 	// But maybe we should update instead, maybe it speeds up the application?
 	//As this data isnt synced anyway this shouldnt be a problem because it'd be invalidated after a single edit anyway
-	runStatements("DELETE FROM " + dataSetName(data->id()));
+	runStatements("DELETE FROM " + dataSetName(data->id()) + " WHERE rowNumber > " + std::to_string(columns.front()->rowCount()));
 
 	std::stringstream statement;
 	
-	statement << "INSERT INTO " << dataSetName(data->id()) << " (";
+	statement << "INSERT OR REPLACE INTO " << dataSetName(data->id()) << " (";
 
 	//Add columnnames for data we want to insert
 	for(Column * col : columns)
@@ -638,7 +638,13 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 
 			return true;
 		});
-
+	
+	
+	//lets also write the labels now:
+	for(Column * col : columns)
+		if(col->batchedLabelDepth())
+			col->endBatchedLabelsDB();
+	
 	transactionWriteEnd();
 }
 
@@ -1448,7 +1454,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 			labelIter++;
 		};
 		
-		_runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+		_runStatementsRepeatedly("INSERT OR REPLACE INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
 			{
 				(*bindParams) = &_bindParams;
 				

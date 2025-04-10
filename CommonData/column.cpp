@@ -69,7 +69,7 @@ void Column::dbLoad(int id, bool getValues)
 	db().labelsLoad(this);
 	
 	if(getValues)
-	{		
+	{
 		db().columnGetValues(_id, _ints, _dbls);
 	}
 
@@ -2250,7 +2250,7 @@ stringvec Column::previewTransform(columnType transformType)
 }
 
 
-bool Column::initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue)
+bool Column::initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished)
 {
 									setHasCustomEmptyValues(emptyValues.size());
 									setCustomEmptyValues(emptyValues);
@@ -2263,7 +2263,7 @@ bool Column::initFromStrings(const std::string & newName, const stringvec &value
 				suggestedType	=	setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);			
 	if(orderLabelsByValue)			labelsOrderByValue();
-									endBatchedLabelsDB();
+	if(!leaveBatchedUnfinished)		endBatchedLabelsDB();
 
 	return anyChanges || type() != prevType;
 }

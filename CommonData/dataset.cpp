@@ -77,12 +77,13 @@ void DataSet::beginBatchedToDB()
 
 void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Columns columns)
 {
-	assert(_writeBatchedToDB);
-	_writeBatchedToDB = false;
 	
 	if(columns.size() == 0)
 		columns = _columns;
-
+	
+	assert(columns.size() != _columns.size() || _writeBatchedToDB);
+	_writeBatchedToDB = false;
+	
 	db().dataSetBatchedValuesUpdate(this, columns, progressCallback);
 	incRevision(); //Should trigger reload at engine end
 }

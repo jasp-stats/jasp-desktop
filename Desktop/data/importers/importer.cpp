@@ -31,7 +31,8 @@ public:
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
 					DataSetPackage::thresholdScale(),
-					DataSetPackage::orderByValueByDefault());
+					DataSetPackage::orderByValueByDefault(),
+					true); //Leave batched unfinished by neglecting to call endBatchedLabelsDB() for now, this we can just do all at the end in the dataset for all columns that are still in label batch mode
 		
 		_importColumn->finish();
 	}
