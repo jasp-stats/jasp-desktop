@@ -32,7 +32,6 @@ Column::Column(DataSet * data, int id)
 
 Column::~Column()
 {
-	labelsTempReset();
 	delete _emptyValues;
 	delete _doubleDummy;
 }
@@ -204,7 +203,7 @@ void Column::setHasCustomEmptyValues(bool hasCustom)
 	_emptyValues->setHasCustomEmptyValues(hasCustom);
 	db().columnSetEmptyVals(_id, _emptyValues->toJson().toStyledString());
 	
-	incRevision(false);
+	incRevision();
 }
 
 bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
@@ -217,7 +216,7 @@ bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
 	_emptyValues->setEmptyValues(customEmptyValues, _emptyValues->hasEmptyValues());
 	db().columnSetEmptyVals(_id, _emptyValues->toJson().toStyledString());
 	
-	incRevision(false);
+	incRevision();
 	
 	return true;
 }
@@ -237,7 +236,7 @@ void Column::setInvalidated(bool invalidated)
 	
 	_invalidated = invalidated;
 	db().columnSetInvalidated(_id, _invalidated);
-	incRevision(false);
+	incRevision();
 }
 
 void Column::setCodeType(computedColumnType codeType)
@@ -432,7 +431,7 @@ void Column::setDefaultValues(enum columnType columnType)
 	
 	labelsClear();
 	
-	dbUpdateValues(false);
+	dbUpdateValues();
 }
 
 void Column::setDropLevels(dropLevelsType dropEm)
@@ -449,12 +448,12 @@ void Column::setDropLevels(dropLevelsType dropEm)
 	incRevision();
 }
 
-void Column::dbUpdateValues(bool labelsTempCanBeMaintained)
+void Column::dbUpdateValues()
 {
 	if(!_data->writeBatchedToDB())
 		db().columnSetValues(_id, _ints, _dbls);
 	
-	incRevision(labelsTempCanBeMaintained);
+	incRevision();
 }
 
 columnType Column::resetValues(int thresholdScale)
@@ -493,8 +492,6 @@ stringset Column::mergeOldMissingDataMap(const Json::Value &missingData)
 
 void Column::updateLabelsPostLocaleChange()
 {
-	labelsTempReset();
-	
 	beginBatchedLabelsDB();
 	
 	for(Label * label : _labels)
@@ -561,7 +558,7 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	JASPTIMER_STOP(Column::setValues call setValue and count integers);
 	
 	
-	dbUpdateValues(false);
+	dbUpdateValues();
 	
 	//Now determine what the most logical columntype would be given the current values AND empty values!
 	if(onlyInts && ints.size() <= thresholdScale && ints.size() > 0)
@@ -699,8 +696,7 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 	
 	setValues(values, labels, 0, &changes);
 	setType(colType);
-	labelsTempReset();
-	
+	nonFilteredCountersReset();
 	labelsHandleAutoSort();
 	
 	return changes;
@@ -732,7 +728,7 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 
 	db().labelsSetOrder(orderPerDbIds);
 	
-	incRevision(false);
+	incRevision();
 }
 
 void Column::_sortLabelsByOrder()
@@ -753,7 +749,7 @@ void Column::labelsClear(bool doIncRevision)
 	_highestIntsId = 0;
 	
 	if(doIncRevision)
-		incRevision(false);
+		incRevision();
 }
 
 void Column::beginBatchedLabelsDB()
@@ -839,34 +835,14 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
-	
-	labelsTempReset();
-	
+
 	return _labelMapIt(label);
 }
 
 void Column::labelsRemove(int labelIndex)
 {
-	if(_labels.size() <= labelIndex)
+	if(_labels.size() > labelIndex)
 	{
-		//So it might be a temp label?
-		if(labelsTempCount() <= labelIndex)
-			return;
-		
-		//So we can assume that label == value and it is a double
-		double val = labelsTempValueDouble(labelIndex);
-		
-		for(size_t i=0; i<_ints.size(); i++)
-			if(_dbls[i] == val && _ints[i] == Label::DOUBLE_LABEL_VALUE)
-			{
-				_ints[i] = EmptyValues::missingValueInteger;
-				_dbls[i] = EmptyValues::missingValueDouble;
-			}
-		
-	}
-	else
-	{
-		
 		Label * label = _labels[labelIndex];
 		
 		int intsId = label->intsId();
@@ -882,7 +858,7 @@ void Column::labelsRemove(int labelIndex)
 	}
 	
 	db().columnSetValues(_id, _ints, _dbls);
-	labelsTempReset();
+	nonFilteredCountersReset();
 	_dbUpdateLabelOrder();
 	
 	incRevision();
@@ -990,79 +966,6 @@ void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 	_resetLabelValueMap();
 }
 
-void Column::labelsTempReset()
-{
-	_labelsTemp					. clear();
-	_labelsTempDbls				. clear();
-	_labelsTempToIndex			. clear();
-	_labelsTempRevision			= -1;
-	_labelsTempMaxWidth			= 0;
-	_labelsTempNumerics			= 0;
-	_labelByNonEmptyIndex		.clear();
-	_labelNonEmptyIndexByLabel	.clear();
-	
-	nonFilteredCountersReset();
-}
-
-int Column::labelsTempCount()
-{
-	if(_revision != _labelsTempRevision)
-	{
-		//first collect the labels that are actually Label
-		labelsTempReset();
-		_labelsTemp			. reserve(_labels.size());
-		_labelsTempDbls		. reserve(_labels.size());
-		
-		size_t nonEmptyIndex = 0;
-		for(size_t r=0; r<_labels.size(); r++)
-			if(!_labels[r]->isEmptyValue())
-			{
-				_labelsTemp												. push_back(_labels[r]->label());
-				_labelsTempDbls											. push_back(_labels[r]->originalValue().isDouble() ? _labels[r]->originalValue().asDouble() : EmptyValues::missingValueDouble);
-				_labelsTempToIndex[_labelsTemp[_labelsTemp.size()-1]]	= _labelsTemp.size()-1; //We store the index in _labelsTemp in a map.
-				_labelByNonEmptyIndex[nonEmptyIndex]					= _labels[r];
-				_labelNonEmptyIndexByLabel[_labels[r]]					= nonEmptyIndex;
-				
-				if(!isEmptyValue(*_labelsTempDbls.rbegin()))
-					_labelsTempNumerics++;
-				
-				nonEmptyIndex++;
-			}
-		
-		doubleset dblset;
-		
-		for(size_t r=0; r<rowCount(); r++)
-		{
-			if(!isEmptyValue(_dbls[r]) && _ints[r] == Label::DOUBLE_LABEL_VALUE)
-				dblset.insert(_dbls[r]);
-		}
-		
-		doublevec dbls(dblset.begin(), dblset.end());
-		
-		std::sort(dbls.begin(), dbls.end());
-		
-		//There might also be "double" values that should also be shown in the editor so we go through everything and add them to _labelsTemp and _labelsTempToIndex	
-		for(double dbl : dbls)
-		{
-			const std::string doubleLabel = doubleToDisplayString(dbl, false);
-			
-			if(!doubleLabel.empty() && !_labelsTempToIndex.count(doubleLabel))
-			{
-				_labelsTemp						. push_back(doubleLabel);
-				_labelsTempDbls					. push_back(dbl);
-				_labelsTempToIndex[doubleLabel] = _labelsTemp.size()-1;
-				_labelsTempMaxWidth				= std::max(_labelsTempMaxWidth, size_t(_labelsTemp[_labelsTemp.size()-1].size()));
-				_labelsTempNumerics				++;
-			}
-		}
-
-		//Make sure we dont do this too often be remembering at which revision we created the temp values:
-		_labelsTempRevision = _revision;
-	}
-	
-	return _labelsTemp.size();
-}
-
 int Column::nonFilteredNumericsCount()
 {
 	if (_nonFilteredNumericsCount == -1)
@@ -1107,9 +1010,9 @@ stringvec Column::nonFilteredLevels()
 				levels.insert(label->label());
 
 		// Use the right label order
-		for (std::string& label : _labelsTemp)
-			if (levels.find(label) != levels.end())
-				_nonFilteredLevels.push_back(label);
+		for(Label * label : _labels)
+			if (levels.count(label->label()))
+				_nonFilteredLevels.push_back(label->label());
 	}
 
 	return _nonFilteredLevels;
@@ -1119,28 +1022,6 @@ void Column::nonFilteredCountersReset()
 {
 	_nonFilteredLevels.clear();
 	_nonFilteredNumericsCount = -1;
-}
-
-int Column::labelsTempNumerics()
-{
-	labelsTempCount(); //generate the list if need be
-	
-	return _labelsTempNumerics;
-}
-
-const stringvec &Column::labelsTemp()
-{
-	labelsTempCount(); //generate the list if need be
-	
-	return _labelsTemp;
-}
-
-std::string Column::labelsTempDisplay(size_t tempLabelIndex)
-{
-	if(labelsTempCount() <= tempLabelIndex)
-		return "";
-	
-	return _labelsTemp[tempLabelIndex];
 }
 
 int Column::labelIndexNonEmpty(Label *label) const
@@ -1164,42 +1045,6 @@ size_t Column::labelCountNotEmpty() const
 	return nonEmpty;
 }
 
-std::string Column::labelsTempValue(size_t tempLabelIndex, bool fancyEmptyValue)
-{
-	if(labelsTempCount() <= tempLabelIndex)
-		return "";
-	
-	Label * label = labelByIndexNotEmpty(tempLabelIndex);
-	
-	if(label)
-		return label->originalValueAsString(fancyEmptyValue);
-	
-	//So its not from a Label, this means its from _dbls
-	//So that means the display value is actually the same as the value so:
-	return doubleToDisplayString(_labelsTempDbls[tempLabelIndex], fancyEmptyValue);
-}
-
-double Column::labelsTempValueDouble(size_t tempLabelIndex)
-{
-	if(labelsTempCount() <= tempLabelIndex)
-		return EmptyValues::missingValueDouble;
-	
-	Label * label = labelByIndexNotEmpty(tempLabelIndex);
-	
-	if(label)
-		return label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
-	
-	//So its not from a Label, this means its from _dbls
-	return _labelsTempDbls[tempLabelIndex];
-}
-
-int Column::labelsDoubleValueIsTempLabelRow(double dbl)
-{
-	for(size_t r=0; r<labelsTempCount(); r++)
-		if(Utils::isEqual(dbl, _labelsTempDbls[r]))
-			return r;
-	return -1;
-}
 
 void Column::_resetLabelValueMap()
 {
@@ -1211,8 +1056,6 @@ void Column::_resetLabelValueMap()
 		_labelByIntsIdMap[label->intsId()]														= label;
 		_labelByValDis[std::make_pair(label->originalValueAsString(), label->labelDisplay())]	= label;
 	}
-	
-	labelsTempReset();
 }
 
 std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue) const
@@ -1352,7 +1195,6 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	};
 	
 	//make sure we have temp labels for any doubles/ints outside of labels
-	labelsTempCount();
 	size_t nonEmpty = 0;
 		
 	//First we try to find all levels, start with the known labels and then add any  doubles as labels.
@@ -1362,10 +1204,6 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 			_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), false);
 			nonEmpty++;
 		}
-	
-	//Now we add the sorted temp dbl labels, so that we get the same order as shown in the variableswindow
-	for(size_t lti=nonEmpty; lti<_labelsTempDbls.size(); lti++)
-		_addLabel(doubleToDisplayString(_labelsTempDbls[lti], false), false);
 	
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
@@ -1453,94 +1291,6 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 	return doubles;
 }
 
-Label *Column::replaceDoubleWithLabel(double dbl)
-{
-	return replaceDoubleWithLabel(doublevec(dbl))[dbl];
-}
-
-std::map<double, Label*> Column::replaceDoubleWithLabel(doublevec dbls)
-{
-	JASPTIMER_SCOPE(Column::replaceDoubleWithLabel);
-	
-	std::sort(dbls.begin(), dbls.end());
-	
-	std::map<double, Label*	>	doubleLabelMap;
-	std::map<double, int	>	doubleIntIdMap;
-	
-	beginBatchedLabelsDB();
-	for(double dbl : dbls)
-		if(!doubleIntIdMap.count(dbl))
-		{
-			assert(!std::isnan(dbl)); //Because why would we be replacing it then?
-			doubleIntIdMap[dbl] = labelsAdd(doubleToDisplayString(dbl, false), "", dbl);
-			doubleLabelMap[dbl] = labelByIntsId(doubleIntIdMap[dbl]);
-		}
-	endBatchedLabelsDB();
-	
-	for(size_t r=0; r<rowCount(); r++)
-		if(!std::isnan(_dbls[r]) && doubleIntIdMap.count(_dbls[r]))
-			_ints[r] = doubleIntIdMap[_dbls[r]]; 
-	
-	dbUpdateValues(false);
-	
-	return doubleLabelMap;
-}
-
-Label *Column::replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl)
-{
-	JASPTIMER_SCOPE(Column::replaceDoublesTillLabelsRowWithLabels);
-	
-	//row here is in the label editor, not in the data!	
-	if(labelByIndexNotEmpty(row))
-		return labelByIndexNotEmpty(row);
-	
-	doublevec	dbls;
-	double		dbl;
-	
-	for(size_t r=labelCountNotEmpty()	;
-		r<=row && r<_labelsTemp.size()	;
-		r++						
-	)
-		if(ColumnUtils::getDoubleValue(_labelsTemp[r], dbl))
-			dbls.push_back(dbl);
-		else
-			throw std::runtime_error("replaceDoublesTillLabelsRowWithLabels choked on a temp-label that cant be converted to double???"); //Should never ever occur because it starts from _labels.size!
-
-	//the last dbl is the one we want so use it to get the right label from the map
-	auto	labelPerDbl = replaceDoubleWithLabel(dbls);
-	Label * label		= labelPerDbl[std::isnan(returnForDbl) || labelPerDbl.count(returnForDbl) == 0 ? dbl : returnForDbl];
-	
-	return label;
-}
-
-bool Column::replaceDoubleLabelFromRowWithDouble(size_t row, double dbl)
-{
-	if(row < _labels.size())
-	{
-		bool willWork = _labels[row]->originalValue().isDouble() && _labels[row]->labelDisplay() == _labels[row]->originalValueAsString(false);
-		if(willWork)
-		{
-			_labels[row]			-> setOriginalValue(	dbl	);
-			_labels[row]			-> setLabel(			_labels[row]->originalValueAsString(false));
-			_labelsTemp[row]		=  _labels[row]->label();
-			_labelsTempDbls[row]	=  dbl;
-		}
-		
-		return willWork;
-	}
-			
-	double	originalDbl = _labelsTempDbls[row];
-	if(!std::isnan(originalDbl))
-		for(double & dblsRef : _dbls)
-			if(Utils::isEqual(dblsRef, originalDbl))
-				dblsRef = dbl;
-	
-	_labelsTempDbls[row]	=  dbl;
-	_labelsTemp[row]		=  ColumnUtils::doubleToString(dbl);
-	
-	return true;
-}
-
 void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
 	auto prevOrigV	= Label::originalValueAsString(this, previousOriginal);
@@ -1617,18 +1367,7 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 	if(merged)
 		_dbUpdateLabelOrder();
 
-	if(_labelsTempRevision < _revision)
-		return; //We dont care about this change anymore if the list is out of date
-
-	size_t labelIdx = labelIndexNonEmpty(label);
-	
-	if(_labelsTemp.size() > labelIdx)
-		_labelsTemp[labelIdx] = label->label();
-
 	nonFilteredCountersReset();
-	
-	//So we know that label is about to trigger an incRevision for the column through dbUpdate and checkForChanges
-	_labelsTempRevision++;
 }
 
 void Column::labelValDisplayChanged(Label *label, const std::string &previousDisplay, const Json::Value &previousOriginal)
@@ -1790,7 +1529,7 @@ bool Column::setValue(size_t row, int valueInt, double valueDbl, bool writeToDB)
 	if(writeToDB && !_data->writeBatchedToDB())
 	{
 		db().columnSetValue(_id, row, valueInt, valueDbl);
-		incRevision(false);
+		incRevision();
 	}
 	
 	return changed;
@@ -1807,7 +1546,7 @@ void Column::rowDelete(size_t row)
 	_dbls.erase(_dbls.begin() + row);
 	_ints.erase(_ints.begin() + row);
 	
-	labelsTempReset();
+	nonFilteredCountersReset();
 }
 
 void Column::setRowCount(size_t rows)
@@ -1815,7 +1554,7 @@ void Column::setRowCount(size_t rows)
 	_dbls.resize(rows);
 	_ints.resize(rows);
 	
-	labelsTempReset();
+	nonFilteredCountersReset();
 }
 
 Label *Column::labelByIntsId(int value) const
@@ -1886,7 +1625,6 @@ void Column::labelsMergeDuplicateInto(Label * labelPrime)
 		labelsRemoveByIntsId(ids, false);
 		
 		_labelByValDis[labelPrime->origValDisplay()] = labelPrime;
-		labelsTempReset();
 	}
 }
 
@@ -1907,6 +1645,11 @@ bool Column::labelsRemoveOrphans()
 	return idsNotUsed.size();
 }
 
+size_t Column::labelsNonEmptyCount() const
+{
+	return _labelNonEmptyIndexByLabel.size();
+}
+
 std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 {
 	JASPTIMER_SCOPE(Column::labelsMoveRows);
@@ -1915,12 +1658,10 @@ std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 
 	std::sort(rows.begin(), rows.end(), [&](const auto & l, const auto & r) { return up ? l < r : r < l; });
 	
-	replaceDoublesTillLabelsRowWithLabels(std::min(size_t(labelsTempCount()), rows.back() + 1));
-	
 	std::vector<Label*> new_labels(_labels.begin(), _labels.end());
 
 	for (size_t row : rows)
-		if(int(row) + mod < 0 || int(row) + mod >= int(labelsTempCount()))
+		if(int(row) + mod < 0 || int(row) + mod >= int(labelsNonEmptyCount()))
 			return {}; //Because we can't move *out* of our _labels for obvious reasons
 
 	std::set<size_t> rowsChanged;
@@ -1933,8 +1674,6 @@ std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 	}
 
 	_labels = new_labels;
-	
-	labelsTempReset();
 	_dbUpdateLabelOrder();
 
 	return rowsChanged;
@@ -1944,10 +1683,7 @@ void Column::labelsReverse()
 {
 	JASPTIMER_SCOPE(Column::labelsReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
 	std::reverse(_labels.begin(), _labels.end());
-	
-	labelsTempReset();
 	_dbUpdateLabelOrder();
 }
 
@@ -1955,19 +1691,8 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 {
 	JASPTIMER_SCOPE(Column::labelsOrderByValue);
 
-	bool replaceAllDoubles = false;
 	static double dummy;
 
-	for(Label * label : labels())	
-		if(!label->isEmptyValue())
-		{
-				replaceAllDoubles = true; // because if there is any label at all it will show up at the end after the doubles without a Label. If this label is a double and the same as the label we could try to turn it back into a non-Label. But it still would break for Labels with a double value and a non-double label. So instead lets just make a label for everything. We keep the doubles only if there are only doubles. This should speed up a lot of operations for massive double datasets so its worth the extra hassle I guess. Just like you, who just read to the end of this line that really really breaks the 80's guideline of 80 characterwide code ;)
-				break;
-		}
-
-	if(replaceAllDoubles)
-		replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
-	
 	doublevec				asc			= valuesNumericOrdered();
 	auto					alpha		= valuesAlphabeticalOffsets();
 	size_t					ascMax		= asc.size()+1;
@@ -1990,7 +1715,7 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	}
 	
 	_sortLabelsByOrder();
-	labelsTempReset();
+	
 	if(doDbUpdateEtc)
 		_dbUpdateLabelOrder();
 }
@@ -2039,8 +1764,6 @@ void Column::valuesReverse()
 {
 	JASPTIMER_SCOPE(Column::valuesReverse);
 	
-	replaceDoublesTillLabelsRowWithLabels(labelsTempCount());
-	
 	doublevec	asc = valuesNumericOrdered(),
 				dsc	= asc;
 	
@@ -2065,7 +1788,6 @@ void Column::valuesReverse()
 			label->setOriginalValue(flipIt[aValue]);
 	}
 	
-	labelsTempReset();
 	_dbUpdateLabelOrder();
 }
 
@@ -2106,19 +1828,13 @@ void Column::resetFilter()
 	db().transactionWriteEnd();
 }
 
-void Column::incRevision(bool labelsTempCanBeMaintained)
+void Column::incRevision()
 {
 	assert(_id != -1);
 
 	if(!_data->writeBatchedToDB())
 	{
-		bool setLabelsTempRevision = labelsTempCanBeMaintained && _revision == _labelsTempRevision;
-		
 		_revision = db().columnIncRevision(_id);
-		
-		if(setLabelsTempRevision)
-			_labelsTempRevision = _revision;
-		
 		checkForChanges();
 	}
 }
@@ -2263,8 +1979,6 @@ Json::Value	Column::serializeLabels() const
 void Column::deserializeLabelsForCopy(const Json::Value & labels)
 {
 	labelsClear();
-	labelsTempReset();
-
 	beginBatchedLabelsDB();
 
 	if (labels.isArray())
@@ -2284,7 +1998,7 @@ void Column::deserializeLabelsForCopy(const Json::Value & labels)
 
 void Column::deserializeLabelsForRevert(const Json::Value & labels)
 {
- 	labelsTempReset();
+ 	nonFilteredCountersReset();
 	
 	beginBatchedLabelsDB();
 	
@@ -2394,7 +2108,7 @@ void Column::deserialize(const Json::Value &json)
 	
 	assert(_ints.size() == _dbls.size());
 	
-	dbUpdateValues(false);
+	dbUpdateValues();
 }
 
 std::string Column::getUniqueName(const std::string &name) const
@@ -2470,8 +2184,8 @@ size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlea
 	size_t	maxWidth	= 0;
 	std::string takeWidth;
 	
-	//Call labelsTempCount() to both find out how many there are and generate them if necessary
-	bool thereAreLabels = labelsTempCount() > 0;
+	//Call labelsNonEmptyCount() to both find out how many there are and generate them if necessary
+	bool thereAreLabels = labelsNonEmptyCount() > 0;
 	
 	if(thereAreLabels)
 		for(Label * label : labels())
@@ -2481,7 +2195,7 @@ size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlea
 		}
 	
 	
-	return std::max(maxWidth, _labelsTempMaxWidth) + extraPad;
+	return maxWidth + extraPad;
 }
 
 stringvec Column::previewTransform(columnType transformType)
@@ -2489,8 +2203,8 @@ stringvec Column::previewTransform(columnType transformType)
 	const int showThisMany = 16;
 	stringvec out;
 	
-	out.push_back(std::to_string(labelsTempCount()));
-	out.push_back(std::to_string(_labelsTempNumerics));
+	out.push_back(std::to_string(labelsNonEmptyCount()));
+	out.push_back(std::to_string(nonFilteredNumericsCount()));
 	
 	{
 		std::stringstream someValues;
@@ -2508,7 +2222,7 @@ stringvec Column::previewTransform(columnType transformType)
 	{
 		std::stringstream someImplicitEmptyValues;
 		
-		if(transformType == columnType::scale && labelsTempCount() > _labelsTempNumerics)
+		if(transformType == columnType::scale && labelsNonEmptyCount() > nonFilteredNumericsCount())
 		{
 			int count = 0;
 			

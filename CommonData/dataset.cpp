@@ -599,7 +599,7 @@ void DataSet::setWorkspaceEmptyValues(const stringset &values)
 {
 	_emptyValues->setEmptyValues(values);
 	for(Column * column : _columns)
-		column->labelsTempReset();
+		column->nonFilteredCountersReset();
 	dbUpdate();
 }
 

@@ -235,7 +235,7 @@ bool ColumnModel::hasSeveralNumericValues() const
 				return true;
 		}
 	
-	return column()->labelsTempNumerics() > 1;
+	return false;
 }
 
 void ColumnModel::setCustomEmptyValues(const QStringList& customEmptyValues)
@@ -621,7 +621,7 @@ int ColumnModel::rowCount(const QModelIndex & p) const
 	if(p.isValid())
 		return 0;
 	
-	return !column() ? 0 : column()->labelsTempCount(); //Im having some trouble with the proxymodel, so lets take a shortcut 
+	return !column() ? 0 : column()->labelsNonEmptyCount(); //Im having some trouble with the proxymodel, so lets take a shortcut 
 }
 
 void ColumnModel::onChosenColumnChanged()

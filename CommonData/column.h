@@ -21,7 +21,7 @@ class Analysis;
 /// 
 /// If no label exists _ints simply contains Label::DOUBLE_LABEL_VALUE (-1) and it tells JASP that _dbl should be used.
 /// We do want users to be able to edit them, or to set "filter allows" or something on it.
-/// To this end labelsTempCount() can be called to get the total of "labels" a column has.
+/// To this end labelsNonEmptyCount() can be called to get the total of "labels" a column has.
 /// The shown labels are stored in a temporary internal representation (stringvec).
 /// 
 /// What this means is that a column could have "labels" visible in the label-editor, but _labels.size() == 0!
@@ -54,7 +54,7 @@ public:
 			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
 			void					dbLoadIndex(int index, bool getValues = true);
 			void					dbUpdateComputedColumnStuff();
-			void					dbUpdateValues(bool labelsTempCanBeMaintained = true);
+			void					dbUpdateValues();
 			void					dbDelete(bool cleanUpRest = true);
 																														
 			
@@ -86,7 +86,7 @@ public:
 			bool					allLabelsPassFilter()	const;
 			bool					hasFilter()				const;
 			void					resetFilter();
-			void					incRevision(bool labelsTempCanBeMaintained = true);
+			void					incRevision();
 			bool					checkForUpdates();
 
 			bool					isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const;
@@ -128,16 +128,6 @@ public:
 			strintmap				labelsResetValues(	int & maxValue);
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
-			int						labelsTempCount(); ///< Generates the labelsTemp also!
-			int						labelsTempNumerics(); ///< Also calls labelsTempCount() to be sure it has some info
-			const stringvec		&	labelsTemp();
-			void					labelsTempReset();
-			std::string				labelsTempDisplay(		size_t tempLabelIndex);
-			std::string				labelsTempValue(		size_t tempLabelIndex, bool fancyEmptyValue = false);
-			double					labelsTempValueDouble(	size_t tempLabelIndex);
-			int						labelsDoubleValueIsTempLabelRow(double dbl);
-			Label				*	labelDoubleDummy()		{ return _doubleDummy; }
-
 			int						nonFilteredNumericsCount();
             stringvec				nonFilteredLevels();
 			void					nonFilteredCountersReset();
@@ -158,11 +148,6 @@ public:
 			stringvec				dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels = true)			; ///< values is output! If filter is of different length than the data an error is thrown, if length is zero it is ignored. useLabels indicates whether the levels will be based on the label or on the value as specified in the label editor.
 			doublevec				dataAsRDoubles(const boolvec & filter)													const; ///< If filter is of different length than the data an error is thrown, if length is zero it is ignored
 
-			std::map<double,Label*>	replaceDoubleWithLabel(doublevec dbls);
-			Label				* 	replaceDoubleWithLabel(double dbl);
-            Label				* 	replaceDoublesTillLabelsRowWithLabels(size_t row, double returnForDbl = NAN);
-			bool					replaceDoubleLabelFromRowWithDouble(size_t row, double dbl); ///< Returns true if succes
-
 			void					labelValueChanged(		Label * label,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
 			void					labelDisplayChanged(	Label * label,	const std::string & previousDisplay);
 			void					labelValDisplayChanged(	Label * label,	const std::string & previousDisplay,	const Json::Value & previousOriginal);
@@ -180,6 +165,7 @@ public:
 
 			Labels				&	labels()																						{ return _labels; }
 			const Labels		&	labels()																				const	{ return _labels; }
+			size_t					labelsNonEmptyCount()																	const;
 			void					labelsMergeDuplicateInto(Label * label);
 			bool					labelsRemoveOrphans();
 			Labelset				labelsByDisplay(		const std::string	&	display)								const; ///< SLOW! Might be nullptr for missing label
@@ -265,13 +251,7 @@ private:
 			columnType				_type				= columnType::unknown;
 			int						_id					= -1,
 									_analysisId			= -1,	// Actually initialized in DatabaseInterface::columnInsert
-									_labelsTempRevision	= -1,	///< When were the "temporary labels" created?
-									_labelsTempNumerics = 0,	///< Use the labelsTemp step to calculate the amount of numeric labels
 									_highestIntsId		= -1;
-			size_t					_labelsTempMaxWidth = 0;
-			stringvec				_labelsTemp;				///< Contains displaystring for labels. Used to allow people to edit "double" labels. Initialized when necessary
-			doublevec				_labelsTempDbls;
-			strintmap				_labelsTempToIndex;
             stringvec				_nonFilteredLevels;
 			int						_nonFilteredNumericsCount	= -1;
 			bool					_invalidated		= false,

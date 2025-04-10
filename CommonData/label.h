@@ -45,6 +45,7 @@ public:
 			int					order()						const	{ return _order;			}
 			bool				filterAllows()				const	{ return _filterAllows;		}
 	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
+			double				originalValueAsDouble()		const	{ return _dblValue;			}
 	std::pair<std::string
 		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), labelDisplay()); }
 
@@ -81,6 +82,7 @@ private:
 	std::string		_label,					///< What to display in the dataview
 					_description;			///< Extended information for tooltip in dataview and of course in the variableswindow
 	bool			_filterAllows	= true;	///< Used in generating filters for when users disable and enable certain labels/levels
+	double			_dblValue;
 };
 
 typedef std::vector<Label*>				Labels;

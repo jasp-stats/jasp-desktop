@@ -31,6 +31,8 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 	_originalValue	= originalValue;
 	_order			= order;
 
+	ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+	
 	if(id == -1)	dbCreate();
 	else			_dbId = id;
 }
@@ -102,6 +104,8 @@ void Label::setInformation(Column * column, int id, int order, const std::string
 	_filterAllows	= filterAllows;
 	_description	= description;
 	_originalValue	= originalValue;
+	
+	ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
 }
 
 void Label::updateDoubleLabelsPostLocaleChange()
@@ -169,6 +173,9 @@ bool Label::setOriginalValue(const Json::Value & originalValue)
 	{
 		Json::Value previous	= _originalValue;
 		_originalValue			= originalValue;
+		
+		ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+		
 		dbUpdate();
 		
 		_column->labelValueChanged(this, previous);
@@ -191,7 +198,10 @@ bool Label::setOrigValLabel(const Json::Value &originalValue)
 		_label = newLabel;
 	
 	if(valChange)
+	{
 		_originalValue			= originalValue;
+		ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+	}
 	
 	
 	if(aChange)
@@ -243,6 +253,7 @@ Label &Label::operator=(const Label &label)
 	this->_originalValue	= label._originalValue;
 	this->_filterAllows		= label._filterAllows;
 	this->_description		= label._description;
+	this->_dblValue			= label._dblValue;
 	this->_intsId			= label._intsId;
 	this->_label			= label._label;
 	this->_order			= label._order;
