@@ -178,7 +178,6 @@ public:
 			Label				*	labelByIndexNotEmpty(	int						index)									const;
 			Label				*	labelByValueAndDisplay(	const std::string	&	value, const std::string &	label)		const; ///< Might be nullptr for missing label, assumes you ran labelsMergeDuplicates before
 			void					labelsHandleAutoSort(	bool					doDbUpdateEtc = true);
-			size_t					labelCountNotEmpty()																	const;
 
 			bool					isValueEqual(size_t row, double value)				 const;
 			bool					isValueEqual(size_t row, int value)					 const;

@@ -714,16 +714,27 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 	}
 	
 	labelsHandleAutoSort(false);
+	
+	_labelNonEmptyIndexByLabel.clear();
+	_labelByNonEmptyIndex.clear();
 
 	intintmap orderPerDbIds;
 
 	_highestIntsId = 0;
+	size_t nonEmptyIndex = 0;
 	for(size_t i=0; i<_labels.size(); i++)
 	{
 		_labels[i]->setOrder(i);
 		orderPerDbIds[_labels[i]->dbId()] = i;
 
 		_highestIntsId = std::max(_highestIntsId, _labels[i]->intsId());
+		
+		if(!_labels[i]->isEmptyValue())
+		{
+			_labelNonEmptyIndexByLabel[_labels[i]]	= nonEmptyIndex;
+			_labelByNonEmptyIndex[nonEmptyIndex]	= _labels[i];
+			nonEmptyIndex++;
+		}
 	}
 
 	db().labelsSetOrder(orderPerDbIds);
@@ -741,11 +752,14 @@ void Column::labelsClear(bool doIncRevision)
 	for (Label* label : _labels)
 		delete label;
 	db().labelsClear(_id);
-	_labels.clear();
+	_labelNonEmptyIndexByLabel.clear();
+	_labelByNonEmptyIndex.clear();
 	_labelByIntsIdMap.clear();
 	_labelsByDisplay.clear();
 	_labelsByValue.clear();
 	_labelByValDis.clear();
+	_labels.clear();
+	
 	_highestIntsId = 0;
 	
 	if(doIncRevision)
@@ -762,8 +776,21 @@ void Column::endBatchedLabelsDB(bool wasWritingBatch)
 	assert(_batchedLabelDepth > 0);
 	_batchedLabelDepth--;
 	
+	_labelNonEmptyIndexByLabel.clear();
+	_labelByNonEmptyIndex.clear();
+	size_t nonEmptyIndex = 0;
+	
 	for(size_t i=0; i<_labels.size(); i++)
+	{
 		_labels[i]->setOrder(i);
+		
+		if(!_labels[i]->isEmptyValue())
+		{
+			_labelNonEmptyIndexByLabel[_labels[i]]	= nonEmptyIndex;
+			_labelByNonEmptyIndex[nonEmptyIndex]	= _labels[i];
+			nonEmptyIndex++;
+		}
+	}
 	
 	if(_batchedLabelDepth == 0)
 	{
@@ -1034,15 +1061,10 @@ Label * Column::labelByIndexNotEmpty(int index) const
 	return !_labelByNonEmptyIndex.count(index) ? nullptr : _labelByNonEmptyIndex.at(index);
 }
 
-size_t Column::labelCountNotEmpty() const
+
+size_t Column::labelsNonEmptyCount() const
 {
-	size_t	nonEmpty = 0;
-	
-	for(size_t l=0; l<_labels.size(); l++)
-		if(!_labels[l]->isEmptyValue())
-			nonEmpty++;
-	
-	return nonEmpty;
+	return _labelNonEmptyIndexByLabel.size();
 }
 
 
@@ -1425,9 +1447,11 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	
 	double		newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
-				itsMissingVal	= isEmptyValue(userEntered),
-				nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+				itsMissingVal	= isEmptyValue(userEntered);
+	JASPTIMER_RESUME(Column::setStringValue nothingThereYet);		
+	bool		nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
 								&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
+	JASPTIMER_STOP(Column::setStringValue nothingThereYet);		
 	
 	if(nothingThereYet && !itsMissingVal)
 	{
@@ -1645,10 +1669,6 @@ bool Column::labelsRemoveOrphans()
 	return idsNotUsed.size();
 }
 
-size_t Column::labelsNonEmptyCount() const
-{
-	return _labelNonEmptyIndexByLabel.size();
-}
 
 std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 {
@@ -2184,11 +2204,8 @@ size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlea
 	size_t	maxWidth	= 0;
 	std::string takeWidth;
 	
-	//Call labelsNonEmptyCount() to both find out how many there are and generate them if necessary
-	bool thereAreLabels = labelsNonEmptyCount() > 0;
-	
-	if(thereAreLabels)
-		for(Label * label : labels())
+	for(Label * label : labels())
+		if(!label->isEmptyValue())
 		{
 			takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
 			maxWidth	= std::max(maxWidth, size_t(stringUtils::approximateVisualLength(takeWidth)));
