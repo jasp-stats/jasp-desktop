@@ -17,11 +17,6 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 add_library(Common STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
-if(LINUX)
-  target_link_libraries(Common PUBLIC ${_LIB_RT})
-  target_link_options(Common PUBLIC -lrt)
-endif()
-
 target_include_directories(
   Common
   PUBLIC

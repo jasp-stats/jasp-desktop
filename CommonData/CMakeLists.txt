@@ -30,13 +30,6 @@ add_library(CommonData STATIC ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
 
 #add_dependencies(CommonData R-Interface)
 
-if(LINUX)
-
-  target_link_libraries(CommonData PUBLIC ${_LIB_RT})
-  target_link_options(CommonData PUBLIC -lrt)
-
-endif()
-
 target_include_directories(
 	CommonData
 	PUBLIC # JASP

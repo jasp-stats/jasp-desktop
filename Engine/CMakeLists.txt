@@ -13,7 +13,6 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-
 add_executable(
     JASPEngine
     ${SOURCE_FILES}
@@ -32,8 +31,8 @@ target_include_directories(
 target_link_libraries(
 	JASPEngine
 	PUBLIC
+        CommonData
 	Common
-	CommonData
 	Boost::system
 	Boost::date_time
 	Boost::timer
