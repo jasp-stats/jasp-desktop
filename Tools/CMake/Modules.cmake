@@ -12,7 +12,7 @@ add_custom_target(
   WORKING_DIRECTORY ${R_HOME_PATH}
   DEPENDS ${JASP_MODULE_BUNDLE_MANAGER_LIBRARY}/jaspModuleBundleManager
   DEPENDS ${SCRIPT_DIRECTORY}/install-modules.R
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+  COMMAND ${CMAKE_COMMAND}  -E env "JASP_R_HOME=${R_HOME_PATH}" ${R_EXECUTABLE} --slave --no-restore --no-save
         --file=${SCRIPT_DIRECTORY}/install-modules.R
   BYPRODUCTS  ${MODULES_BINARY_PATH}/bundles-downloaded.txt
   BYPRODUCTS  ${MODULES_BINARY_PATH}/bundles-installed.txt
