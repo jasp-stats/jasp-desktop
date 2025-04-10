@@ -22,7 +22,7 @@ class DatabaseInterface;
 class Label : public DataSetBaseNode
 {
 public:	
-	static const int DOUBLE_LABEL_VALUE;
+	static const int NO_LABEL;
 
 								Label(Column * column);
 								Label(Column * column, int value);

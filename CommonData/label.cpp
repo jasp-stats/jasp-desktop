@@ -5,7 +5,7 @@
 #include "columnutils.h"
 #include "databaseinterface.h"
 
-const int Label::DOUBLE_LABEL_VALUE			= -1; 
+const int Label::NO_LABEL			= -1; 
 
 Label::Label(Column * column)
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)

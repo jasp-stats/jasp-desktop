@@ -480,7 +480,7 @@ stringset Column::mergeOldMissingDataMap(const Json::Value &missingData)
 													: displayToLabel[displayValue]	= isDbl										// Be careful, we add something to the map and use the returnvalue from the assignment to also get it into `label`
 																					? nullptr									// Numbers dont need a label
 																					: labelByIntsId(labelsAdd(displayValue));	// And here we do, because where else are we going to store that string?
-									_ints[r]		= label ? label->intsId() : Label::DOUBLE_LABEL_VALUE;
+									_ints[r]		= label ? label->intsId() : -1;
 									_dbls[r]		= dbl;
 		}
 	}
@@ -582,7 +582,7 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	{
 		int value = _ints[i];
 		
-		if(value != Label::DOUBLE_LABEL_VALUE)
+		if(value != Label::NO_LABEL)
 		{
 			Label * label = labelByIntsId(value);
 			
@@ -636,8 +636,8 @@ bool Column::setDescriptions(strstrmap labelToDescriptionMap)
 			for(size_t row=0; row<_ints.size(); row++)
 				if(Utils::isEqual(_dbls[row], doubleValue))
 				{
-					if(_ints[row] != Label::DOUBLE_LABEL_VALUE && _ints[row] != labelValue)
-						Log::log() << "Column(" << name() << ")::setDescriptions(...)\n" << "_ints[" << row << "] != Label::DOUBLE_LABEL_VALUE && _ints[" << row << "] != labelValue (" << labelValue << ")" << std::endl;
+					if(_ints[row] != Label::NO_LABEL && _ints[row] != labelValue)
+						Log::log() << "Column(" << name() << ")::setDescriptions(...)\n" << "_ints[" << row << "] != Label::NO_LABEL && _ints[" << row << "] != labelValue (" << labelValue << ")" << std::endl;
 					_ints[row] = labelValue;
 				}
 		}
@@ -1022,7 +1022,7 @@ stringvec Column::nonFilteredLevels()
 		for(size_t r=0; r<_data->rowCount(); r++)
 			if(_data->filter()->filtered()[r])
 			{
-				if(_ints[r] != Label::DOUBLE_LABEL_VALUE)
+				if(_ints[r] != Label::NO_LABEL)
 				{
 					Label * label = labelByIntsId(_ints[r]);
 					if(label && !label->isEmptyValue())
@@ -1116,7 +1116,7 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 	
 	if (row < rowCount())
 	{
-		if (asType == columnType::scale || _ints[row] == Label::DOUBLE_LABEL_VALUE)
+		if (asType == columnType::scale || _ints[row] == Label::NO_LABEL)
 			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
 
 		else if (_ints[row] != EmptyValues::missingValueInteger)
@@ -1135,7 +1135,7 @@ std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 {
 	if (row < rowCount())
 	{
-		if (_ints[row] == Label::DOUBLE_LABEL_VALUE)
+		if (_ints[row] == Label::NO_LABEL)
 			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
 		else
 			return _getLabelDisplayStringByValue(_ints[row], ignoreEmptyValue);
@@ -1235,7 +1235,7 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
 		{
-			if(_ints[row] != Label::DOUBLE_LABEL_VALUE)
+			if(_ints[row] != Label::NO_LABEL)
 			{
 				Label * label = labelByIntsId(_ints[row]);
 				
@@ -1269,7 +1269,7 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
 		{
-			if(_ints[row] != Label::DOUBLE_LABEL_VALUE)
+			if(_ints[row] != Label::NO_LABEL)
 			{
 				Label * label = labelByIntsId(_ints[row]);
 				
@@ -1449,7 +1449,7 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
 				itsMissingVal	= isEmptyValue(userEntered);
 	JASPTIMER_RESUME(Column::setStringValue nothingThereYet);		
-	bool		nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::DOUBLE_LABEL_VALUE || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+	bool		nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
 								&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	JASPTIMER_STOP(Column::setStringValue nothingThereYet);		
 	
@@ -1499,30 +1499,15 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 	
-	if(!oldLabel && !newLabel && itsADouble) //no labels and it is a double, easy peasy
-		return setValue(row, newDoubleToSet, writeToDB);
+	if(!newLabel && itsADouble) //no labels and it is a double, easy peasy
+		newLabel = labelByIntsId(labelsAdd(label, "", Json::Value(newDoubleToSet)));
 
 	if(newLabel)
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 
 	JASPTIMER_STOP(Column::setValue(stringstring) last leg);
 		
-	if(itsADouble && (labelIsValue || justAValue))
-	{
-		//There is no new label, an oldLabel AND we have a non-empty double in _dbls
-		//This should mean that the label has this old double as a original value!
-		if(	oldLabel
-			&& !std::isnan(oldDouble)
-			&& (	!oldLabel->originalValue().isDouble()
-				|| !Utils::isEqual(_dbls[row], oldLabel->originalValue().asDouble())
-				))
-			Log::log() << "bool Column::setValue(" << row << ", '" << value << "', '" << label << "') had differences between _dbls[" << row << "](" << _dbls[row] << ") and oldLabel originalValue: '" << oldLabel->originalValueAsString() << "'" << std::endl;
-		
-		return setValue(row, newDoubleToSet, writeToDB);
-	}
-	else
-		//there is no new label yet for this and so lets make one
-		return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
+	return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
 
 }
 
@@ -1535,7 +1520,7 @@ bool Column::setValue(size_t row, int value, bool writeToDB)
 bool Column::setValue(size_t row, double value, bool writeToDB)
 {
 	JASPTIMER_SCOPE(Column::setValue double);
-	return setValue(row, Label::DOUBLE_LABEL_VALUE, value, writeToDB);
+	return setValue(row, Label::NO_LABEL, value, writeToDB);
 }
 
 bool Column::setValue(size_t row, int valueInt, double valueDbl, bool writeToDB)
@@ -1585,7 +1570,7 @@ Label *Column::labelByIntsId(int value) const
 {
 	JASPTIMER_SCOPE(Column::labelByValue);
 
-	return value != Label::DOUBLE_LABEL_VALUE && value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
+	return value != Label::NO_LABEL && value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
 }
 
 Label * Column::labelByDisplay(const std::string & display) const
@@ -1877,7 +1862,7 @@ bool Column::isColumnDifferentFromStringValues(const std::string & title, const 
 
 void Column::upgradeSetDoubleLabelsInInts()
 {
-	_ints = intvec(_dbls.size(), Label::DOUBLE_LABEL_VALUE);
+	_ints = intvec(_dbls.size(), Label::NO_LABEL);
 	
 	dbUpdateValues();
 }

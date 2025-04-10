@@ -19,7 +19,7 @@ class Analysis;
 /// Anything with a label on it will have a Label-object in Column and the "intsId" of this label is entered in the corresponding _ints row.
 /// If the originalValue of that label is convertible to double/int it will *also* be stored in _dbls. (Which is different from how <0.19 JASPs did it)
 /// 
-/// If no label exists _ints simply contains Label::DOUBLE_LABEL_VALUE (-1) and it tells JASP that _dbl should be used.
+/// If no label exists _ints simply contains Label::NO_LABEL (-1) and it tells JASP that _dbl should be used.
 /// We do want users to be able to edit them, or to set "filter allows" or something on it.
 /// To this end labelsNonEmptyCount() can be called to get the total of "labels" a column has.
 /// The shown labels are stored in a temporary internal representation (stringvec).
