@@ -53,11 +53,11 @@ ImportDataSet *RDataImporter::loadFile(const std::string &locator, std::function
 	if (colCount == 0)
 		throw std::runtime_error(fq(tr("0 valid columns were read from the file, please check your data file.")));
 
-	importColumns.reserve(colNames.size());
+	importColumns.reserve(ccolCount);
 
 	for (size_t colIndex = 0; colIndex < colCount; ++colIndex)
 	{
-		if (colIndex >= colNames.size() || colIndex >= columns.size())
+		if (colIndex >= colCount || colIndex >= columns.size())
 			throw std::runtime_error("Column names or data mismatch.");
 
 		RDataImportColumn *importColumn = new RDataImportColumn(data, colNames[colIndex], rowCount);

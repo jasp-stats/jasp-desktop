@@ -46,7 +46,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 					+ tr("SPSS Files %1").arg("(*.sav *.zsav *.por)") + ";;"
 					+ tr("Stata Files %1").arg("(*.dta);;")
 					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt);;")
-					+ tr("R Data files %1").arg("*.rdata *.rds");
+					+ tr("R Data files %1").arg("(*.rdata *.rds)");
 
 	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";

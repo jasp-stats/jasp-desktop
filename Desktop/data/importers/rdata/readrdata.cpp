@@ -25,21 +25,16 @@ RDataReader::RDataReader(const std::string &locator)
 
 void RDataReader::open()
 {
+	if (_filePath.empty())
+		throw std::runtime_error("File path cannot be empty.");
+
 	_parser = rdata_parser_init();
 
-	if (!_parser)
-	{
-		Log::log() << "Failed to initialize parser" << std::endl;
-		throw std::runtime_error("Could not access file");
-	}
-
-	if (_filePath.empty())
-		throw std::invalid_argument("File path cannot be empty.");
-		
 	rdata_set_table_handler(_parser, &_tableHandler);
 	rdata_set_column_handler(_parser, &_columnHandler);
 	rdata_set_text_value_handler(_parser, &_textValueHandler);
 	rdata_set_column_name_handler(_parser, &_columnNameHandler);
+	rdata_set_error_handler(_parser, &_errorHandler);
 	// rdata_set_value_label_handler(_parser, &_valueLabelHandler);
 
 	rdata_error_t result = rdata_parse(_parser, _filePath.c_str(), &_context);
@@ -49,32 +44,24 @@ void RDataReader::open()
 	_columnNames = _context.column_names;
 	_column_data = _context.column_data;
 
-	std::cout << "Total Columns: " << _colCount << ", Total Rows: " << _rowCount << std::endl;
-
 	if (result != RDATA_OK)
-	{
-		std::cerr << "Failed to parse file: " << rdata_error_message(result) << std::endl;
-	}
+		throw std::runtime_error("Failed to parse file");
 
 	if (_parser)
-	{
 		rdata_parser_free(_parser);
-		_parser = nullptr;
-	}
 }
 
 int RDataReader::_tableHandler(const char *name, void *ctx)
 {
 	RDataCtx *context = static_cast<RDataCtx *>(ctx);
+
 	if (!name)
-	{
-		context->table_name = "DEF_table_name";
-	}
+		context->table_name = "Default_table";
 	else
-	{
 		context->table_name = name;
-		// Log::log() << "Table Name: " << name << std::endl;
-	}
+
+	Log::log() << "Table Name: " << name << std::endl;
+
 	return 0;
 }
 
@@ -138,12 +125,11 @@ int RDataReader::_columnNameHandler(const char *value, int index, void *ctx)
 	RDataCtx *context = static_cast<RDataCtx *>(ctx);
 
 	if (index >= context->column_names.size())
-	{
 		context->column_names.resize(index + 1);
-	}
 
-	context->column_names[index] = value ? value : "Unnamed_Column";
-	// Log::log() << "Column name [Index " << index << "]: " << context->column_names[index] << std::endl;
+	context->column_names[index] = value ? std::string(value) : "Column_" + std::to_string(index + 1);
+	//Log::log() << "Column name : " << value << " [Index " << index << "]: " << context->column_names[index] << std::endl;
+
 	return 0;
 }
 
@@ -154,6 +140,7 @@ void RDataReader::_errorHandler(const char *error_message, void *ctx)
 
 int RDataReader::_textValueHandler(const char *value, int index, void *ctx)
 {
+	// This handled if data type in _columnHandler is "RDATA_TYPE_STRING", because it's empty!
 	RDataCtx *context = static_cast<RDataCtx *>(ctx);
 
 	if (context->column_data.empty())
@@ -175,5 +162,6 @@ int RDataReader::_textValueHandler(const char *value, int index, void *ctx)
 
 int RDataReader::_valueLabelHandler(const char *value, int index, void *ctx)
 {
+	// TODO: implement importing factor level as label
 	return 0;
 }
