@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2024 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ public:
 private:
 	struct RDataCtx
 	{
-		long 		column_count = 0;
-		long 		row_count = 0;
+		size_t 		column_count = 0;
+		size_t 		row_count = 0;
 		const char *table_name = nullptr;
 		stringvec 	column_names;
 		stringvecvec column_data;
