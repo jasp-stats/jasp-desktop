@@ -633,6 +633,13 @@
               "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-pakket jfa<\/i>",
               "kind": "file",
               "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Eerlijkheidsevaluatie",
+              "path": "fairnessEvaluation.jasp",
+              "description": "De dataset bevat variabelen die door het COMPAS-algoritme worden gebruikt om criminele verdachten te scoren, samen met hun resultaten binnen twee jaar na de beoordeling. <br><br> Het voorbeeldbestand in JASP laat zien hoe de eerlijkheidsevaluatie analyse kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-pakket jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "compas.csv"
           }
         ],
         "debug": false

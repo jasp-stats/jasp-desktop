@@ -633,6 +633,13 @@
                 "description": "BuildIt 的审计群体包含 3500 笔交易。 <br><br> 示例 JASP 文件演示了贝叶斯审计工作流程的使用。<br><br> <i>数据来自 R package jfa<\/i>",
                 "kind": "file",
                 "associated_datafile": "BuildIt_Monetary.csv"
+            },
+            {
+                "name": "Fairness Evaluation",
+                "path": "fairnessEvaluation.jasp",
+                "description": "数据集包括 COMPAS 算法用于给刑事被告评分的变量，以及他们在评估后两年内的结果。<br><br> JASP 中的示例文件展示了如何应用公平性评估分析. <br><br> <i>数据来自 R package jfa<\/i>",
+                "kind": "file",
+                "associated_datafile": "compas.csv"
             }
           ],
           "debug": false
