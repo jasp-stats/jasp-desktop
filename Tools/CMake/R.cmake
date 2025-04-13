@@ -110,7 +110,7 @@ set(AVAILABLE_R_VERSIONS
 "R-4.5.0"
 	  "R-4.5.0-x86_64"
 	  "R-4.5.0-arm64"
-	  "R-4.5.0-win-containerable"
+	  "R-4.5.0-win"
 )
 
 set(R_BINARY_HASHES
@@ -176,7 +176,7 @@ set(R_BINARY_HASHES
   "d1121c69451118c6e43d66b643c589008340f3e7"
   "d1121c69451118c6e43d66b643c589008340f3e7"
   "a47d9579664f0ca878b83d90416d66af2581ef9c"
-  "1d2b17134ce6c04225ac3b1b3ca8c91d37d25431"
+  "ed8be81b82f849e43cd85482753b0948acac0e19"
 )
 
 
@@ -686,13 +686,6 @@ elseif(WIN32)
       R_BINARY_HASHES
       ${HASH_INDEX}
       R_PACKAGE_HASH)
-
-      # Remove this before merging
-      set(R_VERSION_NAME "R-4.4.3-win-containerable")
-      set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
-      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
-      set(R_PACKAGE_HASH "D322E263E8EA55BDBD161B0EE57C76994DBE70DA")
-      ######
 
     fetchcontent_declare(
       r_win_exe
