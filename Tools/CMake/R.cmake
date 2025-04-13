@@ -107,6 +107,10 @@ set(AVAILABLE_R_VERSIONS
  	"R-4.4.3-x86_64"
   	"R-4.4.3-arm64"
    	"R-4.4.3-win"
+"R-4.5.0"
+	  "R-4.5.0-x86_64"
+	  "R-4.5.0-arm64"
+	  "R-4.5.0-win-containerable"
 )
 
 set(R_BINARY_HASHES
@@ -168,14 +172,19 @@ set(R_BINARY_HASHES
   "2391e3c97b3c9f3d36001a3a3eb314a6e6efc819"
   "c32bed5f8f0a7ddd31a8c5598a5a60f8b6c89073"
   "791361bb061421ca178f4c5124cc1ee114810a4b"
+  # 4.5.0
+  "d1121c69451118c6e43d66b643c589008340f3e7"
+  "d1121c69451118c6e43d66b643c589008340f3e7"
+  "a47d9579664f0ca878b83d90416d66af2581ef9c"
+  "1d2b17134ce6c04225ac3b1b3ca8c91d37d25431"
 )
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 # dont forget check and upgrande Rtools version if major_minor version changed.
-set(R_VERSION "4.4.2")
-set(R_VERSION_MAJOR_MINOR "4.4")
+set(R_VERSION "4.5.0")
+set(R_VERSION_MAJOR_MINOR "4.5")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
