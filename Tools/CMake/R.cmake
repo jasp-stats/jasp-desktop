@@ -373,45 +373,25 @@ if(APPLE)
           # Downloading the gfortran
           message(CHECK_START "Downloading gfortran")
 
-          # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
-          fetchcontent_declare(
-            gfortran_dmg
+
+	  fetchcontent_declare(
+            gfortran_tar_gz
             URL "${GFORTRAN_REPOSITORY}gfortran-14.2-intel.tar.xz"
             URL_HASH
               SHA256=30975208805e55819a1a74aa9590a7bc01224048e5659d347f8fae5dc9a8c07c
             DOWNLOAD_NO_EXTRACT ON
-            DOWNLOAD_NAME gfortran.dmg)
+            DOWNLOAD_NAME gfortran.tar.gz)
 
-          fetchcontent_makeavailable(gfortran_dmg)
+          fetchcontent_makeavailable(gfortran_tar_gz)
 
-          if(gfortran_dmg_POPULATED)
+          if(gfortran_tar_gz_POPULATED)
 
             message(CHECK_PASS "done.")
 
-            # message(CHECK_START "Unpacking the payloads.")
-            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
-                            COMMAND hdiutil attach gfortran.dmg)
+            execute_process(WORKING_DIRECTORY ${gfortran_tar_gz_SOURCE_DIR}
+                            COMMAND tar xzf gfortran.tar.gz -C ${r_pkg_r_home}/)
 
-            execute_process(
-              WORKING_DIRECTORY /Volumes/gfortran-8.2-Mojave/gfortran-8.2-Mojave
-              COMMAND ${CMAKE_COMMAND} -E copy gfortran.pkg
-                      ${gfortran_dmg_SOURCE_DIR}/)
-
-            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
-                            COMMAND xar -xf gfortran.pkg)
-
-            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
-                            COMMAND tar -xf Payload)
-
-            execute_process(
-              WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
-              COMMAND ${CMAKE_COMMAND} -E copy_directory usr/local
-                      ${r_pkg_r_home}/opt/local/)
-
-            execute_process(COMMAND hdiutil detach /Volumes/gfortran-8.2-Mojave)
-
-            set(GFORTRAN_PATH ${R_OPT_PATH}/local/gfortran/bin)
-
+            set(GFORTRAN_PATH ${R_OPT_PATH}/R/x86_64/bin)
           else()
 
             message(CHECK_FAIL "unsuccessful")
