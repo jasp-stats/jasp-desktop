@@ -136,11 +136,11 @@ if(WIN32)
     PATHS ${Qt6_DIR}/bin)
 
   # look for Rtools from most newest to oldest
-    message(CHECK_START "Looking for Rtools $ENV{RTOOLS44_HOME}")
+    message(CHECK_START "Looking for Rtools $ENV{RTOOLS45_HOME}")
     if(DEFINED ENV{RTOOLS44_HOME})
-		set(RTOOLS_PATH "$ENV{RTOOLS44_HOME}/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools44/ucrt64")
+		set(RTOOLS_PATH "$ENV{RTOOLS45_HOME}/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools45/ucrt64")
 	else()
-		set(RTOOLS_PATH "C:/rtools44/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools44/ucrt64")
+		set(RTOOLS_PATH "C:/rtools45/ucrt64" CACHE PATH "Path to Rtools45 x64 folder, e.g., C:/rtools45/ucrt64")
 	endif()
 
   if(EXISTS ${RTOOLS_PATH})
@@ -149,12 +149,14 @@ if(WIN32)
     message(STATUS "  ${RTOOLS_PATH}")
 
     message(CHECK_START 
-            "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS43_HOME` manually from Windows environment settings."
+            "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS44_HOME` manually from Windows environment settings."
     )
     if(DEFINED ENV{RTOOLS42_HOME})
         unset(ENV{RTOOLS42_HOME})
     elseif(DEFINED ENV{RTOOLS43_HOME})
         unset(ENV{RTOOLS43_HOME})
+    elseif(DEFINED ENV{RTOOLS44_HOME})
+        unset(ENV{RTOOLS44_HOME})
     else()
         message(CHECK_START "No Rtools legacy found")
     endif()
