@@ -109,8 +109,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
                     {"/usr/local/lib/libjags",										framework_resources + "opt/jags/lib/libjags"},
                     {"/usr/local/lib/libjrmath",									framework_resources + "opt/jags/lib/libjrmath"},
                     {"/usr/local/lib", 												framework_resources + "opt/local/lib"},
-                    {"/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0",		framework_resources + "opt/R/arm64/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0"},
-					{"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/14.2.0",		framework_resources + "opt/R/arm64/gfortran/lib/gcc/aarch64-apple-darwin20.0/14.2.0"},
+                    {"/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0",		framework_resources + "opt/R/x86_64/gfortran/lib"},
+					{"/opt/gfortran/lib/gcc/aarch64-apple-darwin20.0/14.2.0",		framework_resources + "opt/R/arm64/gfortran/lib"},
 					{"/opt/X11/lib",												framework_resources + "opt/X11/lib"},
 				};
 
