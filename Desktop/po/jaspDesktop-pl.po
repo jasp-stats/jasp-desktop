@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-04-15 19:02+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.11-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -5192,11 +5198,11 @@ msgstr "Zmień rozmiar danych do %1 wierszy i %2 kolumn"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Sprawdź aktualizacje"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
-msgstr ""
+msgstr "Codziennie sprawdzaj dostępność aktualizacji i znanych problemów"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -5211,6 +5217,17 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP nie udostępnia żadnych danych podczas pobierania aktualizacji, nawet "
+"informacji o używanej wersji.\n"
+"Aplikacja udostępnia Twój adres IP serwerowi, ale jest to wymóg techniczny, "
+"niezbędny do prawidłowego połączenia z serwerem.\n"
+"\n"
+"Pobierana lista znanych błędów jest rzadko używana. Informacje na temat "
+"błędów znajdują się głównie na stronie [jasp-issues](https://github.com/"
+"jasp-stats/jasp-issues/issues). Jeżeli jednak zdamy sobie sprawę, że do "
+"analizy wkradł się straszny błąd, *w analizie* zostanie wyświetlona "
+"informacja, że coś ważnego należy wziąć pod uwagę. Na szczęście prawie nigdy "
+"nie musieliśmy z tego korzystać."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5219,11 +5236,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"Łącznie jest %1 poziomów, z których %2 ma wartości liczbowe.\n"
+"Jako '%3' wygląda to następująco: %4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Domyślny brak danych: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5231,10 +5251,12 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"Łącznie jest %1 poziomów.\n"
+"Jako '%2' wygląda to następująco: %3"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Sprawdź aktualizacje"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5260,7 +5282,7 @@ msgstr "Nie"
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "Tylko %1 zmienne jest dozwolone"
 
 msgctxt "VariableInfo|"
 msgid "Scale"
@@ -5280,7 +5302,7 @@ msgstr "Nieznane"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<Nazwa kolumny>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
@@ -5295,7 +5317,7 @@ msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "Ładowanie nowego zbioru danych"
 
 msgctxt "ActionButtons|"
 msgid "New"
@@ -5303,22 +5325,22 @@ msgstr "Nowy"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Importowanie pliku Excel"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Wszystkie pliki danych %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "Pliki JASP %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "Pliki CSV %1"
 
 #, qt-format
 msgctxt "Computer|"
@@ -5328,41 +5350,41 @@ msgstr ""
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "Pliki SPSS %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Pliki Stata %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "Pliki SAS %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "Ustawienia PDF"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "Orientacja"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "Pionowa"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Pozioma"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Rozmiar strony"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
