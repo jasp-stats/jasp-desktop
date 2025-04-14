@@ -376,9 +376,9 @@ if(APPLE)
           # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
           fetchcontent_declare(
             gfortran_dmg
-            URL "${GFORTRAN_REPOSITORY}gfortran-8.2-Mojave.dmg"
+            URL "${GFORTRAN_REPOSITORY}gfortran-14.2-intel.tar.xz"
             URL_HASH
-              SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
+              SHA256=30975208805e55819a1a74aa9590a7bc01224048e5659d347f8fae5dc9a8c07c
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.dmg)
 
