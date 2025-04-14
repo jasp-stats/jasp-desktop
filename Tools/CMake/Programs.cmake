@@ -149,7 +149,7 @@ if(WIN32)
     message(STATUS "  ${RTOOLS_PATH}")
 
     message(CHECK_START 
-            "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS43_HOME` manually from Windows environment settings."
+            "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS44_HOME` manually from Windows environment settings."
     )
     if(DEFINED ENV{RTOOLS42_HOME})
         unset(ENV{RTOOLS42_HOME})
