@@ -336,7 +336,7 @@ if(APPLE)
             gfortran_tar_gz
             URL "${GFORTRAN_REPOSITORY}gfortran-14.2-arm64.tar.xz"
             URL_HASH
-              SHA256=54c6b91855f18bb5edcd496970693990cd4c757641257c3cb69a0d77dd5d9391
+              SHA256=77f5eb33b961eba4f9ffac015ca96dbabfd745fff6bf8883bc34c41b7208291d
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.tar.gz)
 
@@ -378,7 +378,7 @@ if(APPLE)
             gfortran_tar_gz
             URL "${GFORTRAN_REPOSITORY}gfortran-14.2-intel.tar.xz"
             URL_HASH
-              SHA256=30975208805e55819a1a74aa9590a7bc01224048e5659d347f8fae5dc9a8c07c
+              SHA256=fae5e451ace56b97c02e909cd864095bf2a749b71db61454f4fdfd8908a71919
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.tar.gz)
 
