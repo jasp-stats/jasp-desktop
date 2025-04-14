@@ -334,9 +334,9 @@ if(APPLE)
 
           fetchcontent_declare(
             gfortran_tar_gz
-            URL "${GFORTRAN_REPOSITORY}gfortran-12.0.1-20220312-is-darwin20-arm64.tar.xz"
+            URL "${GFORTRAN_REPOSITORY}gfortran-14.2-arm64.tar.xz"
             URL_HASH
-              SHA256=a2ab8be30a7d92a24f53e1509c8c0804f8502f0bc35469750e3f1e233d1c64b8
+              SHA256=54c6b91855f18bb5edcd496970693990cd4c757641257c3cb69a0d77dd5d9391
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.tar.gz)
 
