@@ -371,7 +371,7 @@ else()
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
             "/opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0"
-            "${FRAMEWORK_RESOURCES}/opt/R/arm64/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0"
+            "${FRAMEWORK_RESOURCES}/opt/R/x86_64/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0"
         )
         # For whatever reason, the above command cannot replace the prefix of these libraries. I have tried to
         # directly changed their 'id' even, and that didn't help either!
