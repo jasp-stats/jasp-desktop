@@ -7,7 +7,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.7
     - Qt Creator 13
-- [RTools44](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html), for building R modules
+- [RTools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html), for building R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 2.0.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
@@ -54,15 +54,15 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] CMake
 			- [x] Ninja
 
-### Installing Rtools44
+### Installing Rtools45
 
-Download the Rtools44 from [here](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html) and *preferably* install it in the **default** path, i.e., `C:\rtools44`.
+Download the Rtools45 from [here](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) and *preferably* install it in the **default** path, i.e., `C:\rtools45`.
 
-> ⚠️ This is important because JASP build system expect to find the Rtools44 in the following default path, otherwise you need to specify your custom path to CMake, using the `RTOOLS_PATH` variable, e.g., `-DRTOOLS_PATH=D:\rtools44\ucrt64`.
+> ⚠️ This is important because JASP build system expect to find the Rtools45 in the following default path, otherwise you need to specify your custom path to CMake, using the `RTOOLS_PATH` variable, e.g., `-DRTOOLS_PATH=D:\rtools45\ucrt64`.
 
-#### Installing Rtools44 Libraries and Packages
+#### Installing Rtools45 Libraries and Packages
 
-After installing Rtools44, you will find a new program in your Start Menu. Search for "Rtools44" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools44 installed, so, to make sure that you are running the right console, you can navigate to your Rtools44 installation folder, and find the `ucrt64` executable.
+After installing Rtools45, you will find a new program in your Start Menu. Search for "Rtools45" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools45 installed, so, to make sure that you are running the right console, you can navigate to your Rtools45 installation folder, and find the `ucrt64` executable.
 
 Copy and paste the following line into the `ucrt64` command line and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP. Run this command at least twice to make sure all required packages are installed.
 
@@ -70,7 +70,7 @@ Copy and paste the following line into the `ucrt64` command line and press Enter
 pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
 ```
 
-#### Downloading and Building ReadStat (on Rtools44)
+#### Downloading and Building ReadStat (on Rtools45)
 
 In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the `ucrt64` command line.
 
@@ -84,13 +84,13 @@ make -j
 make install
 ```
 
-This will build and install these libraries inside the Rtools44 environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+This will build and install these libraries inside the Rtools45 environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
 
-#### Adding Rtools44 to your PATH
+#### Adding Rtools45 to your PATH
 
-It's important that Rtools44 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools44\ucrt64\bin`.
+It's important that Rtools45 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools45\ucrt64\bin`.
 
-> ⚠️ **I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path. Moreover, please make sure that both Qt, and Rtools44 are the first two items after the last item mentioning the `SYSTEM`, or `WINDOWS`.** 
+> ⚠️ **I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path. Moreover, please make sure that both Qt, and Rtools45 are the first two items after the last item mentioning the `SYSTEM`, or `WINDOWS`.** 
 
 ### Installing Conan
 
@@ -144,11 +144,11 @@ If this is your first time preparing your project, CMake is going to configure *
 
 #### R-Interface 
 
-CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\rtools44\ucrt64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
+CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\rtools45\ucrt64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
 
 Find the "Build Environment" section under the "Projects -> Build", and expand its details by clicking the "Details". Here, you need to find the `Path` variable, select it, press "Edit", and add the mentioned path to the list.
 
-> ⚠️ One of the most common issues that you may run into is that Qt Creator, and CMake cannot figure out where compiler binaries are, and you'll get an error like this, `The C compiler "C:/rtools44/ucrt64/bin/qcc.exe"is not able to compile a simple test program`. In order to resolve this, you need to make sure that the order of items in `Qt Creator → Projects → Build Environment → Path` is similiar to your environment variables, as described above.
+> ⚠️ One of the most common issues that you may run into is that Qt Creator, and CMake cannot figure out where compiler binaries are, and you'll get an error like this, `The C compiler "C:/rtools45/ucrt64/bin/qcc.exe"is not able to compile a simple test program`. In order to resolve this, you need to make sure that the order of items in `Qt Creator → Projects → Build Environment → Path` is similiar to your environment variables, as described above.
 
 #### Configuring the CMake Variables
 
