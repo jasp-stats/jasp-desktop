@@ -118,6 +118,28 @@ FocusScope
 				}
 			}
 
+			Rectangle 
+			{
+				id: 		scrollingGuide
+				z:			3
+				height:		40 * jaspTheme.uiScale
+				anchors
+				{
+					left: 	parent.left
+					right: 	verticalScrollbar.left
+					bottom: parent.bottom
+				}
+
+				visible: 	analysesFlickable.contentY + analysesFlickable.height < analysesFlickable.contentHeight
+
+				gradient: Gradient 
+				{
+					GradientStop { position: 0.0; color: "transparent" }
+					GradientStop { position: 0.8; color: jaspTheme.grayLighter }
+					GradientStop { position: 1.0; color: jaspTheme.grayLighter }
+				}
+			}
+
 			MouseArea
 			{
 				id:					catchMouseEvents
