@@ -845,24 +845,20 @@ message(STATUS "Setting up renv, Rcpp, RInside, and jaspModuleBundleManager, etc
 message(STATUS "RENV_LIBRARY           = ${RENV_LIBRARY}")
 message(STATUS "R_CPP_INCLUDES_LIBRARY = ${R_CPP_INCLUDES_LIBRARY}")
 
-configure_file(${PROJECT_SOURCE_DIR}/Modules/install-tools.R.in
-                ${SCRIPT_DIRECTORY}/install-tools.R @ONLY)
 
+##################
+# renv bootstrap  
+configure_file(${PROJECT_SOURCE_DIR}/Modules/install-renv.R.in
+                ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
+
+              
 execute_process(
   COMMAND_ECHO STDOUT
   #ERROR_QUIET OUTPUT_QUIET
   WORKING_DIRECTORY ${R_HOME_PATH}
   COMMAND 
-    ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-tools.R
-    
+    ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R
 )
-
-execute_process(
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
-          ${MODULES_BINARY_PATH}/Tools/
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
-          ${MODULES_BINARY_PATH}/Tools/)
 
 if(APPLE)
   # Patch renv
@@ -879,8 +875,24 @@ if(APPLE)
       -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   )
-  # Patch RInside and RCpp
-  message(CHECK_START "Patching ${R_CPP_INCLUDES_LIBRARY}")
+endif()
+
+##################
+# install rest of the tools  
+configure_file(${PROJECT_SOURCE_DIR}/Modules/install-tools.R.in
+                ${SCRIPT_DIRECTORY}/install-tools.R @ONLY)
+
+execute_process(
+  COMMAND_ECHO STDOUT
+  #ERROR_QUIET OUTPUT_QUIET
+  WORKING_DIRECTORY ${R_HOME_PATH}
+  COMMAND 
+    ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-tools.R
+    
+)
+
+if(APPLE)
+  message(CHECK_START "Patching ${CMAKE_BINARY_DIR}/Modules/Tools/")
   execute_process(
     COMMAND_ECHO STDOUT
     #ERROR_QUIET OUTPUT_QUIET
@@ -888,12 +900,20 @@ if(APPLE)
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-      -D PATH=${R_CPP_INCLUDES_LIBRARY} -D R_HOME_PATH=${R_HOME_PATH} -D
+      -D PATH=${CMAKE_BINARY_DIR}/Modules/Tools/ -D R_HOME_PATH=${R_HOME_PATH} -D
       R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
       -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   )
 endif()
+
+execute_process(
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
+          ${MODULES_BINARY_PATH}/Tools/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
+          ${MODULES_BINARY_PATH}/Tools/)
+
  
 include(FindRPackagePath)
 

@@ -1,0 +1,20 @@
+{
+"Windows-x86_64" : [
+    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspDescriptives.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspAnova.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspTTests.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspJags.JASPModule"
+],
+"MacOS-arm64" : [
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspDescriptives.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspAnova.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspTTests.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspJags.JASPModule"
+],
+"MacOS-x86_64" : [
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspDescriptives.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspAnova.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspTTests.JASPModule",
+    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspJags.JASPModule"
+]
+}

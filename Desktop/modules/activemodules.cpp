@@ -47,7 +47,7 @@ std::vector<std::string> ActiveModules::getActiveCommonModules()
 {
 	std::vector<std::string> result;
 	for(auto& module : getShippedModules()) {
-		if(!(defaultExtraModules.find(module.toStdString()) == defaultExtraModules.end()))
+		if(defaultExtraModules.find(module.toStdString()) == defaultExtraModules.end())
 			result.push_back(module.toStdString());
 	}
 	return result;
@@ -57,7 +57,7 @@ std::vector<std::string> ActiveModules::getActiveExtraModules()
 {
 	std::vector<std::string> result;
 	for(auto& module : getShippedModules()) {
-		if(defaultExtraModules.find(module.toStdString()) == defaultExtraModules.end())
+		if(!(defaultExtraModules.find(module.toStdString()) == defaultExtraModules.end()))
 			result.push_back(module.toStdString());
 	}
 	return result;

@@ -2,6 +2,16 @@ MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
 LOCAL_MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules", "local")
 BUNDLE_DOWNLOAD_DIR <- file.path("@PROJECT_BINARY_DIR@", "Modules", "downloads")
 
+getPlatform <- function() {
+    info <- Sys.info()
+    os = ""
+    switch(info[['sysname']],
+        Windows = {os <- "Windows-x86_64"},
+        Linux   = {os <- "Linux"},
+        Darwin  = {os <- if(info[['machine']] == "arm64") "MacOS-arm64" else "MacOS-x86_64"}
+    )
+    os
+}
 mkdir <- function(paths) {
   for (path in paths)
     if (!dir.exists(path))
@@ -14,7 +24,7 @@ mkdir(c(MODULES_DIR, LOCAL_MODULES_DIR, BUNDLE_DOWNLOAD_DIR))
 library("jaspModuleBundleManager")
 
 #check which bundles need downloading
-remoteBundleURLS = read.delim("@MODULES_SOURCE_PATH@/remote-bundles.txt", header = FALSE)[[1]]
+remoteBundleURLS = rjson::fromJSON(file="@MODULES_SOURCE_PATH@/remote-bundles.json")[[getPlatform()]]
 remoteBundleDownloaded = c()
 if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
     tryCatch({
@@ -25,6 +35,7 @@ if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
 toDownload = remoteBundleURLS[!remoteBundleURLS %in% remoteBundleDownloaded]
 
 #download and write a file with all our successes
+downloaded = c()
 if(length(toDownload)) {
     cat("We will download: ", paste(toDownload, sep=' '), '\n')
     download <- function(url) {
@@ -48,14 +59,27 @@ if(length(toDownload)) {
     files = list.files(BUNDLE_DOWNLOAD_DIR)
     leftover = files[! files %in% basename(downloaded)]
     file.remove(file.path(BUNDLE_DOWNLOAD_DIR, leftover))
+}
 
 
-    # use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
-    toInstall = file.path(BUNDLE_DOWNLOAD_DIR, basename(downloaded))
-    toInstall = c(toInstall, file.path(LOCAL_MODULES_DIR, list.files(LOCAL_MODULES_DIR, pattern='*.JASPModule')))
-    install <- function(bundlePath) {
-        jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
-    }
-    sapply(toInstall, install)
+# use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
+toInstall = c()
+if(length(downloaded) > 0) {
+    toInstall = c(toInstall, file.path(BUNDLE_DOWNLOAD_DIR, basename(downloaded)))
+}
+toInstall = c(toInstall, file.path(LOCAL_MODULES_DIR, list.files(LOCAL_MODULES_DIR, pattern='*.JASPModule')))
+toInstall = c(toInstall, file.path(BUNDLE_DOWNLOAD_DIR, list.files(BUNDLE_DOWNLOAD_DIR, pattern='*.JASPModule')))
+cat("Installing the following bundles: ", paste(toInstall, sep = ' '), '\n')
+install <- function(bundlePath) {
+    cat("Installing: ", bundlePath)
+    jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
+}
+sapply(toInstall, install)
 
+#fix otool stuff and sign
+if (Sys.info()[['sysname']] == 'Darwin') {  
+    print("Patching and Signing all Module binaries")
+    jaspEngineLocation <- file.path("@CMAKE_BINARY_DIR@", "Desktop" , "JASPEngine")
+    jaspEngineCall     <- paste0(jaspEngineLocation, ' "', "@MODULES_BINARY_PATH@/binary_pkgs" ,'"')
+    system(jaspEngineCall)
 }

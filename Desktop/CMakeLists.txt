@@ -82,6 +82,7 @@ endif()
 
 if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
+  add_dependencies(JASP jags)
 endif()
 
 if(APPLE)

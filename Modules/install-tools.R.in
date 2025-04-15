@@ -1,4 +1,4 @@
-# Generated from install-jaspModuleBundle.R.in
+# Generated from install-tools.R.in
 #
 
 JASP_MODULE_BUNDLE_MANAGER_LIBRARY 	<- "@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@"
@@ -14,28 +14,7 @@ mkdir <- function(paths) {
     if (!dir.exists(path))
       dir.create(path, recursive = TRUE)
 }
-mkdir(c(RENV_LIBRARY, R_CPP_INCLUDES_LIBRARY, JUNCTION_HANDLING_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
-
-repos <- "https://packagemanager.posit.co/cran/latest"
-# alternative to 'http://cloud.r-project.org'
-if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
-  if (@IS_FLATPAK_USED@) {
-    cat("Installing renv from cellar\n")
-    install.packages(
-      pkgs         = file.path("@R_PKG_CELLAR_PATH@", "renv.tar.gz"),
-      lib          = RENV_LIBRARY,
-      INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
-  } else {
-    cat("Installing renv from CRAN\n")
-    install.packages(
-      pkgs         = "renv",
-      lib          = RENV_LIBRARY,
-      repos        ='http://cloud.r-project.org',
-      INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
-  }
-} else {
-  cat("renv already installed, not reinstalling\n")
-}
+mkdir(c(R_CPP_INCLUDES_LIBRARY, JUNCTION_HANDLING_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
 
 .libPaths(RENV_LIBRARY)
 
@@ -45,7 +24,6 @@ renv::restore(
   lockfile = file.path(MODULES, "Rcpp_RInside.lock"),
   clean    = TRUE
 )
-
 
 if (.Platform$OS.type == "windows") {
   cat("Restoring junction handling library\n")
@@ -57,6 +35,7 @@ if (.Platform$OS.type == "windows") {
   )
 }
 
+options(INSTALL_opts = "--no-test-load")
 cat("installing jaspModuleBundleManager\n")
 renv::install(
   file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
@@ -64,10 +43,3 @@ renv::install(
 	clean    = TRUE,
  	repos    =  "http://cloud.r-project.org"
 )
-
-# Converting the absolute symlinks to relative symlinks on macOS
-# Todo, I can do this using CMake like I do on Windows
-if (Sys.info()["sysname"] == "Darwin") {
-  source('@MODULES_BINARY_PATH@/Tools/symlinkTools.R')
-  convertAbsoluteSymlinksToRelative('@R_LIBRARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
-}

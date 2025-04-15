@@ -1,6 +1,15 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
+#prepare some cmake vars for script
+SET(MODULES_OS "Windows-x86_64")
+if(APPLE)
+  SET(MODULES_OS "MacOS-x86_64")
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    SET(MODULES_OS "MacOS-arm64")
+  endif()
+endif()
+
 #configure modules install script
 configure_file(${PROJECT_SOURCE_DIR}/Modules/install-modules.R.in
 		           ${SCRIPT_DIRECTORY}/install-modules.R @ONLY)
@@ -18,8 +27,5 @@ add_custom_target(
   BYPRODUCTS  ${MODULES_BINARY_PATH}/bundles-installed.txt
   COMMENT "------ Installing Modules"
 )
-
-
-
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

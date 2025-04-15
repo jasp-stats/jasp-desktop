@@ -82,7 +82,7 @@ QString AppDirs::bundledModulesDir()
 	bool useAppdata =  env != DynamicRuntimeInfo::MSIX;
 	folder = useAppdata ? programDir().absoluteFilePath("Modules/module_libs") + '/' : appData(false) + "/BundledJASPModules_" + QString(AppInfo::version.asString(4).c_str()) + "_" + QString(AppInfo::gitCommit.substr(0, 7).c_str()) + "_" + QString(AppInfo::builddate.c_str()).replace(":", "-").replace(" ", "") + "/";
 #elif __APPLE__
-	 folder = programDir().absoluteFilePath("../Modules/");
+	 folder = programDir().absoluteFilePath("../Modules/module_libs/");
 #elif FLATPAK_USED
 	folder = "/app/bin/../Modules/";
 #else  //Normal linux build
