@@ -1679,7 +1679,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					break;
 					
 				case SQLITE_BUSY:
-					std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
+					std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
 					break;
 			   }
 				
