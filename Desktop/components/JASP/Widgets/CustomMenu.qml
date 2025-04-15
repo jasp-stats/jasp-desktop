@@ -203,6 +203,28 @@ FocusScope
 			}
 		}
 
+		Rectangle 
+		{
+			id: 		scrollingGuideBottom
+			z:			3
+			height:		30 * jaspTheme.uiScale
+			anchors
+			{
+				left: 	parent.left
+				right: 	itemScrollbar.left
+				bottom: parent.bottom
+			}
+
+			visible: 	itemFlickable.contentY + itemFlickable.height < itemFlickable.contentHeight
+
+			gradient: Gradient 
+			{
+				GradientStop { position: 0.0; color: "transparent" }
+				GradientStop { position: 0.8; color: jaspTheme.grayLighter }
+				GradientStop { position: 1.0; color: jaspTheme.grayLighter }
+			}
+		}
+
 		Flickable
 		{
 			id						: itemFlickable
