@@ -773,6 +773,8 @@ void Column::beginBatchedLabelsDB()
 
 void Column::endBatchedLabelsDB(bool wasWritingBatch)
 {
+	JASPTIMER_SCOPE(Column::endBatchedLabelsDB);
+	
 	assert(_batchedLabelDepth > 0);
 	_batchedLabelDepth--;
 	
@@ -1500,7 +1502,7 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 	
 	if(!newLabel && itsADouble) //no labels and it is a double, easy peasy
-		newLabel = labelByIntsId(labelsAdd(label, "", Json::Value(newDoubleToSet)));
+		newLabel = labelByIntsId(labelsAdd(!justAValue ? label : ColumnUtils::doubleToString(newDoubleToSet), "", Json::Value(newDoubleToSet)));
 
 	if(newLabel)
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);

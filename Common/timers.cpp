@@ -17,7 +17,7 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 	
 	//Log::log() << "getTimer! "<< timerName << std::endl;
 	std::stringstream timerNameStream;
-	timerNameStream << timerName << std::this_thread::get_id();
+	timerNameStream << timerName << "_" << std::this_thread::get_id();
 	timerName = timerNameStream.str();
 
 	if(timers == nullptr)
