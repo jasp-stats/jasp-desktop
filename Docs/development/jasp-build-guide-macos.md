@@ -45,7 +45,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 
 #### Fortran
 Install the latest `gfortran` for macOs from https://cran.r-project.org/bin/macosx/tools/
-As of writing this is: https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
+As of writing this is: https://mac.r-project.org/tools/gfortran-14.2-universal.pkg
 This is only required to run this workaround: https://github.com/jasp-stats/jasp-desktop/blob/77ac6e148532aa3eb62620035a5a741387e184d7/Modules/install-jaspBase.R.in#L54-L58
 
 #### Homebrew and Homebrew Packages (Conan, CMake, etc.)
