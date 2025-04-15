@@ -27,7 +27,7 @@ cmake -E remove_directory build
 cmake -E make_directory build
 
 echo start build
-cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt/6.8.2/msvc2022_64
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt/6.8.3/msvc2022_64
 
 cmake --build build --target all
 
